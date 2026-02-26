@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Install package
+        run: pip install -e .
+
+      - name: Run unit tests
+        run: pytest tests/ -v --tb=short
+
+      - name: Smoke-test simulation pipeline
+        run: |
+          python - <<'EOF'
+          import numpy as np
+          from relaynet.relays.df import DecodeAndForwardRelay
+          from relaynet.relays.hybrid import HybridRelay
+          from relaynet.simulation.runner import simulate_transmission, run_monte_carlo
+          from relaynet.simulation.statistics import compute_confidence_interval
+
+          np.random.seed(42)
+
+          # Quick smoke-test: DF relay over 3 SNR points, 2 trials
+          relay = DecodeAndForwardRelay()
+          snr_vals, ber_vals, ber_trials = run_monte_carlo(
+              relay, snr_range=[0, 5, 10],
+              num_bits_per_trial=1000, num_trials=2
+          )
+          lower, upper = compute_confidence_interval(ber_trials)
+          assert len(ber_vals) == 3
+          assert all(0 <= b <= 1 for b in ber_vals)
+          print("Smoke test passed. BER values:", ber_vals)
+
+          # Smoke-test hybrid relay
+          hybrid = HybridRelay()
+          hybrid.train(training_snrs=[5], num_samples=500, epochs=3, seed=0)
+          ber, _ = simulate_transmission(hybrid, num_bits=500, snr_db=5, seed=0)
+          assert 0 <= ber <= 1
+          print("Hybrid relay smoke test passed. BER:", ber)
+          EOF
