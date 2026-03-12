@@ -1,0 +1,7 @@
+numpy>=1.22
+matplotlib>=3.5
+scipy>=1.8
+pytest>=7.0
+# PyTorch is optional — only required for the CGAN relay with WGAN-GP training.
+# Install manually if needed:
+#   pip install torch --index-url https://download.pytorch.org/whl/cpu
