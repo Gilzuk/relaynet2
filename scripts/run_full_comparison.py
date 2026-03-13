@@ -44,7 +44,7 @@ from relaynet.simulation.statistics import (
 )
 from relaynet.visualization.plots import plot_ber_curves, plot_ber_with_ci
 from relaynet.channels.fading import rayleigh_fading_channel, rician_fading_channel
-from relaynet.channels.mimo import mimo_2x2_channel
+from relaynet.channels.mimo import mimo_2x2_channel, mimo_2x2_mmse_channel
 
 try:
     from checkpoints.checkpoint_18_transformer_relay import TransformerRelayWrapper
@@ -408,6 +408,25 @@ def run_mimo_comparison(relays, snr_range, bits_per_trial, num_trials):
     return all_ber, all_trials
 
 
+def run_mimo_mmse_comparison(relays, snr_range, bits_per_trial, num_trials):
+    print("\n=== 2\u00d72 MIMO Rayleigh Channel (MMSE) Comparison ===")
+    all_ber, all_trials = {}, {}
+    for name, relay in relays.items():
+        print(f"  {name} \u2026", end=" ", flush=True)
+        start = perf_counter()
+        _, ber, trials = run_monte_carlo(
+            relay, snr_range,
+            num_bits_per_trial=bits_per_trial,
+            num_trials=num_trials,
+            channel_fn=mimo_2x2_mmse_channel,
+        )
+        all_ber[name] = ber
+        all_trials[name] = trials
+        elapsed = perf_counter() - start
+        print(f"done (device={_relay_device(relay)}, time={elapsed:.2f}s, mean BER range [{ber.min():.2e}, {ber.max():.2e}])")
+    return all_ber, all_trials
+
+
 def print_significance(snr_range, all_ber, all_trials, baseline="DF"):
     methods = [k for k in all_ber if k != baseline]
     print(f"\n=== Statistical Significance vs {baseline} ===")
@@ -504,6 +523,23 @@ def main():
             snr_range, mimo_ber, mimo_ci,
             title="2\u00d72 MIMO Rayleigh (ZF) \u2013 All Relay Methods (95% CI)",
             save_path="results/mimo_2x2_comparison_ci.png",
+        )
+
+    # 2×2 MIMO MMSE comparison
+    mimo_mmse_ber, mimo_mmse_trials = run_mimo_mmse_comparison(
+        relays, snr_range, args.bits_per_trial, args.num_trials
+    )
+    print_significance(snr_range, mimo_mmse_ber, mimo_mmse_trials)
+
+    if not args.no_plots:
+        mimo_mmse_ci = {}
+        for name, trials in mimo_mmse_trials.items():
+            lo, hi = compute_confidence_interval(trials)
+            mimo_mmse_ci[name] = (lo, hi)
+        plot_ber_with_ci(
+            snr_range, mimo_mmse_ber, mimo_mmse_ci,
+            title="2\u00d72 MIMO Rayleigh (MMSE) \u2013 All Relay Methods (95% CI)",
+            save_path="results/mimo_2x2_mmse_comparison_ci.png",
         )
 
     print("\nDone. Results saved to results/")
