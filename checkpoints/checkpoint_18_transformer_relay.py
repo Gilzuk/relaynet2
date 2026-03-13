@@ -282,7 +282,7 @@ class TransformerRelayWrapper(Relay):
                 window_input = torch.FloatTensor(window.reshape(1, -1, 1)).to(self.device)
                 
                 reconstruction = self.model(window_input)
-                processed[i] = reconstruction.cpu().numpy()[0, 0]
+                processed[i] = float(reconstruction.detach().cpu().flatten().tolist()[0])
         
         # Normalize power
         current_power = np.mean(np.abs(processed) ** 2)

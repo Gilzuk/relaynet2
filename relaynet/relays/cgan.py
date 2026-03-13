@@ -165,9 +165,13 @@ def _build_torch_cgan(window_size, noise_size, lambda_gp, lambda_l1, n_critic):
         with torch.no_grad():
             x_t = torch.FloatTensor(window_np)
             noise = torch.zeros(x_t.size(0), noise_size)
-            out = G(x_t, noise).numpy().flatten()
+            # Avoid calling Tensor.numpy(): some torch builds (compiled against
+            # NumPy 1.x) can raise "RuntimeError: Numpy is not available" when
+            # used with NumPy 2.x. Converting via Python lists avoids the
+            # torch↔numpy bridge.
+            out = G(x_t, noise).detach().cpu().flatten().tolist()
         G.train()
-        return out
+        return np.asarray(out, dtype=float)
 
     return {"train_step": train_step, "infer": infer}
 

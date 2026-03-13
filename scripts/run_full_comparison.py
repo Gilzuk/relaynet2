@@ -33,46 +33,102 @@ from relaynet.relays.cgan import CGANRelay
 from relaynet.simulation.runner import run_monte_carlo
 from relaynet.simulation.statistics import (
     compute_confidence_interval,
-    wilcoxon_test,
     significance_table,
 )
 from relaynet.visualization.plots import plot_ber_curves, plot_ber_with_ci
-from relaynet.channels.awgn import awgn_channel
 from relaynet.channels.fading import rayleigh_fading_channel
+
+try:
+    from checkpoints.checkpoint_18_transformer_relay import TransformerRelayWrapper
+    from checkpoints.checkpoint_20_mamba_s6_relay import MambaRelayWrapper
+    _HAS_SEQUENCE_MODELS = True
+except Exception:
+    TransformerRelayWrapper = None
+    MambaRelayWrapper = None
+    _HAS_SEQUENCE_MODELS = False
 
 
 def parse_args():
     p = argparse.ArgumentParser(description="Full relay comparison")
+    p.add_argument(
+        "--quick",
+        action="store_true",
+        help=(
+            "Run a much faster (lower-fidelity) comparison. "
+            "Generates the same plots but uses fewer training samples/epochs "
+            "and fewer Monte Carlo bits/trials."
+        ),
+    )
+    p.add_argument(
+        "--include-sequence-models",
+        action="store_true",
+        help="Include Transformer and Mamba relays from the checkpoint implementations.",
+    )
     p.add_argument("--snr-min", type=float, default=0)
     p.add_argument("--snr-max", type=float, default=20)
     p.add_argument("--snr-step", type=float, default=2)
     p.add_argument("--bits-per-trial", type=int, default=10_000)
     p.add_argument("--num-trials", type=int, default=10)
+
+    # Training hyperparameters (defaults reproduce the PR's intended settings)
+    p.add_argument("--genai-samples", type=int, default=25_000)
+    p.add_argument("--genai-epochs", type=int, default=100)
+    p.add_argument("--hybrid-samples", type=int, default=25_000)
+    p.add_argument("--hybrid-epochs", type=int, default=100)
+    p.add_argument("--vae-samples", type=int, default=50_000)
+    p.add_argument("--vae-epochs", type=int, default=100)
+    p.add_argument("--cgan-samples", type=int, default=50_000)
+    p.add_argument("--cgan-epochs", type=int, default=200)
+    p.add_argument("--transformer-samples", type=int, default=50_000)
+    p.add_argument("--transformer-epochs", type=int, default=100)
+    p.add_argument("--mamba-samples", type=int, default=50_000)
+    p.add_argument("--mamba-epochs", type=int, default=100)
+
     p.add_argument("--no-plots", action="store_true")
     p.add_argument("--seed", type=int, default=42)
     return p.parse_args()
 
 
-def train_models(seed):
+def train_models(args):
     print("\n=== Training AI relay models ===")
 
     print("  Training Minimal GenAI relay (169 params) …")
     genai = MinimalGenAIRelay(window_size=5, hidden_size=24)
-    genai.train(training_snrs=[5, 10, 15], num_samples=25_000, epochs=100, seed=seed)
+    genai.train(
+        training_snrs=[5, 10, 15],
+        num_samples=args.genai_samples,
+        epochs=args.genai_epochs,
+        seed=args.seed,
+    )
 
     print("  Training Hybrid relay …")
     hybrid = HybridRelay(snr_threshold=5.0)
-    hybrid.train(training_snrs=[2, 4, 6], num_samples=25_000, epochs=100, seed=seed)
+    hybrid.train(
+        training_snrs=[2, 4, 6],
+        num_samples=args.hybrid_samples,
+        epochs=args.hybrid_epochs,
+        seed=args.seed,
+    )
 
     print("  Training VAE relay …")
     vae = VAERelay(window_size=7, latent_size=8, beta=0.1)
-    vae.train(training_snrs=[5, 10, 15], num_samples=50_000, epochs=100, seed=seed)
+    vae.train(
+        training_snrs=[5, 10, 15],
+        num_samples=args.vae_samples,
+        epochs=args.vae_epochs,
+        seed=args.seed,
+    )
 
     print("  Training CGAN relay (WGAN-GP) …")
     cgan = CGANRelay(window_size=7, noise_size=8, lambda_gp=10, lambda_l1=20, n_critic=5)
-    cgan.train(training_snrs=[5, 10, 15], num_samples=50_000, epochs=200, seed=seed)
+    cgan.train(
+        training_snrs=[5, 10, 15],
+        num_samples=args.cgan_samples,
+        epochs=args.cgan_epochs,
+        seed=args.seed,
+    )
 
-    return {
+    relays = {
         "AF": AmplifyAndForwardRelay(),
         "DF": DecodeAndForwardRelay(),
         "GenAI (169p)": genai,
@@ -80,6 +136,126 @@ def train_models(seed):
         "VAE": vae,
         "CGAN (WGAN-GP)": cgan,
     }
+
+    if args.include_sequence_models:
+        if not _HAS_SEQUENCE_MODELS:
+            print("  [WARNING] Transformer/Mamba checkpoints could not be imported; skipping.")
+        else:
+            print("  Training Transformer relay …")
+            transformer = TransformerRelayWrapper(
+                target_power=1.0,
+                window_size=11,
+                d_model=32,
+                num_heads=4,
+                num_layers=2,
+            )
+            transformer.train(
+                training_snrs=[5, 10, 15],
+                num_samples=args.transformer_samples,
+                epochs=args.transformer_epochs,
+                lr=0.001,
+            )
+
+            print("  Training Mamba S6 relay …")
+            mamba = MambaRelayWrapper(
+                target_power=1.0,
+                window_size=11,
+                d_model=32,
+                d_state=16,
+                num_layers=2,
+            )
+            mamba.train(
+                training_snrs=[5, 10, 15],
+                num_samples=args.mamba_samples,
+                epochs=args.mamba_epochs,
+                lr=0.001,
+            )
+
+            relays["Transformer"] = transformer
+            relays["Mamba S6"] = mamba
+
+    return relays
+
+
+def _parameter_count(name, relay):
+    if name in {"AF", "DF"}:
+        return 0
+    if hasattr(relay, "num_params"):
+        return int(relay.num_params)
+    if hasattr(relay, "model"):
+        try:
+            return int(sum(p.numel() for p in relay.model.parameters()))
+        except Exception:
+            return 0
+    return 0
+
+
+def plot_complexity_comparison(relays, awgn_ber, snr_range, save_path="results/complexity_comparison_all_relays.png"):
+    try:
+        import matplotlib
+        matplotlib.use("Agg")
+        import matplotlib.pyplot as plt
+    except ImportError:
+        print("[WARNING] matplotlib not installed — skipping complexity plot.")
+        return None
+
+    params = []
+    ber0 = []
+    ber4 = []
+    ber8 = []
+    labels = []
+    colors = []
+    color_map = {
+        "AF": "gray",
+        "DF": "black",
+        "GenAI (169p)": "magenta",
+        "Hybrid": "red",
+        "VAE": "cyan",
+        "CGAN (WGAN-GP)": "orange",
+        "Transformer": "green",
+        "Mamba S6": "blue",
+    }
+
+    snr_list = list(np.asarray(snr_range).tolist())
+    idx0 = snr_list.index(0.0) if 0.0 in snr_list else 0
+    idx4 = snr_list.index(4.0) if 4.0 in snr_list else min(len(snr_list) - 1, 2)
+    idx8 = snr_list.index(8.0) if 8.0 in snr_list else min(len(snr_list) - 1, 4)
+
+    for name, relay in relays.items():
+        labels.append(name)
+        params.append(max(_parameter_count(name, relay), 1))
+        ber_curve = np.asarray(awgn_ber[name])
+        ber0.append(float(ber_curve[idx0]))
+        ber4.append(float(ber_curve[idx4]))
+        ber8.append(float(ber_curve[idx8]))
+        colors.append(color_map.get(name, "purple"))
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(18, 7))
+
+    for x, y, label, color in zip(params, ber0, labels, colors):
+        ax1.scatter(x, y, s=180, c=color, edgecolors="black", linewidth=1.2)
+        ax1.annotate(label, (x, y), textcoords="offset points", xytext=(5, 5), fontsize=9)
+    ax1.set_xscale("log")
+    ax1.grid(True, which="both", linestyle="--", alpha=0.5)
+    ax1.set_xlabel("Number of Parameters (log scale)", fontsize=12, fontweight="bold")
+    ax1.set_ylabel("BER at 0 dB", fontsize=12, fontweight="bold")
+    ax1.set_title("Complexity vs Low-SNR Performance", fontsize=13, fontweight="bold")
+
+    for x, y, label, color in zip(ber0, ber8, labels, colors):
+        ax2.scatter(x, y, s=180, c=color, edgecolors="black", linewidth=1.2)
+        ax2.annotate(label, (x, y), textcoords="offset points", xytext=(5, 5), fontsize=9)
+    ax2.set_yscale("log")
+    ax2.grid(True, which="both", linestyle="--", alpha=0.5)
+    ax2.set_xlabel("BER at 0 dB", fontsize=12, fontweight="bold")
+    ax2.set_ylabel("BER at 8 dB", fontsize=12, fontweight="bold")
+    ax2.set_title("Low-SNR vs High-SNR Trade-off", fontsize=13, fontweight="bold")
+
+    plt.tight_layout()
+    os.makedirs(os.path.dirname(save_path), exist_ok=True)
+    plt.savefig(save_path, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    print(f"Plot saved to: {save_path}")
+    return save_path
 
 
 def run_awgn_comparison(relays, snr_range, bits_per_trial, num_trials):
@@ -126,10 +302,27 @@ def main():
     args = parse_args()
     np.random.seed(args.seed)
 
+    if args.quick:
+        # Keep defaults for SNR sweep; reduce training and Monte Carlo effort.
+        args.bits_per_trial = min(args.bits_per_trial, 2_000)
+        args.num_trials = min(args.num_trials, 3)
+        args.genai_samples = min(args.genai_samples, 5_000)
+        args.hybrid_samples = min(args.hybrid_samples, 5_000)
+        args.vae_samples = min(args.vae_samples, 5_000)
+        args.cgan_samples = min(args.cgan_samples, 5_000)
+        args.genai_epochs = min(args.genai_epochs, 20)
+        args.hybrid_epochs = min(args.hybrid_epochs, 20)
+        args.vae_epochs = min(args.vae_epochs, 20)
+        args.cgan_epochs = min(args.cgan_epochs, 20)
+        args.transformer_samples = min(args.transformer_samples, 3_000)
+        args.mamba_samples = min(args.mamba_samples, 3_000)
+        args.transformer_epochs = min(args.transformer_epochs, 10)
+        args.mamba_epochs = min(args.mamba_epochs, 10)
+
     snr_range = np.arange(args.snr_min, args.snr_max + 0.01, args.snr_step)
     os.makedirs("results", exist_ok=True)
 
-    relays = train_models(args.seed)
+    relays = train_models(args)
 
     # AWGN comparison
     awgn_ber, awgn_trials = run_awgn_comparison(
@@ -147,6 +340,7 @@ def main():
             title="AWGN Channel – All Relay Methods (95% CI)",
             save_path="results/awgn_comparison_ci.png",
         )
+        plot_complexity_comparison(relays, awgn_ber, snr_range)
 
     # Fading comparison
     fading_ber, fading_trials = run_fading_comparison(
