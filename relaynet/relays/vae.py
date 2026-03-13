@@ -8,22 +8,24 @@ from relaynet.channels.awgn import awgn_channel
 from relaynet.utils.torch_compat import can_use_gpu, get_preferred_device, get_torch_module, to_numpy
 
 
-def _build_torch_vae(window_size, latent_size, beta, device):
+def _build_torch_vae(window_size, latent_size, beta, device, hidden_sizes=(32, 16)):
     """Build a Torch VAE backend for optional GPU training/inference."""
     torch = get_torch_module()
     import torch.nn as nn
     import torch.optim as optim
 
+    h1, h2 = hidden_sizes
+
     class TorchVAE(nn.Module):
         def __init__(self):
             super().__init__()
-            self.enc1 = nn.Linear(window_size, 32)
-            self.enc2 = nn.Linear(32, 16)
-            self.mu = nn.Linear(16, latent_size)
-            self.logvar = nn.Linear(16, latent_size)
-            self.dec1 = nn.Linear(latent_size, 16)
-            self.dec2 = nn.Linear(16, 32)
-            self.out = nn.Linear(32, 1)
+            self.enc1 = nn.Linear(window_size, h1)
+            self.enc2 = nn.Linear(h1, h2)
+            self.mu = nn.Linear(h2, latent_size)
+            self.logvar = nn.Linear(h2, latent_size)
+            self.dec1 = nn.Linear(latent_size, h2)
+            self.dec2 = nn.Linear(h2, h1)
+            self.out = nn.Linear(h1, 1)
 
         def encode(self, x):
             h1 = torch.relu(self.enc1(x))
@@ -81,16 +83,18 @@ class VAERelay(Relay):
     Uses only NumPy — no external ML framework dependency.
     """
 
-    def __init__(self, window_size=7, latent_size=8, beta=0.1, target_power=1.0, prefer_gpu=True):
+    def __init__(self, window_size=7, latent_size=8, beta=0.1, target_power=1.0,
+                 prefer_gpu=True, hidden_sizes=(32, 16)):
         self.window_size = window_size
         self.latent_size = latent_size
         self.beta = beta
         self.target_power = target_power
+        self.hidden_sizes = hidden_sizes
         self.device = get_preferred_device(prefer_gpu=prefer_gpu)
         self._use_torch = can_use_gpu(self.device)
 
         inp = window_size
-        h1, h2 = 32, 16
+        h1, h2 = hidden_sizes
 
         # Encoder
         self.W_e1 = np.random.randn(inp, h1) * np.sqrt(2 / inp)
@@ -110,9 +114,17 @@ class VAERelay(Relay):
         self.W_out = np.random.randn(h1, 1) * 0.1
         self.b_out = np.zeros(1)
 
-        self._torch_vae = _build_torch_vae(window_size, latent_size, beta, self.device) if self._use_torch else None
+        self._torch_vae = _build_torch_vae(window_size, latent_size, beta, self.device, hidden_sizes) if self._use_torch else None
 
         self.is_trained = False
+
+    @property
+    def num_params(self):
+        h1, h2 = self.hidden_sizes
+        ws, ls = self.window_size, self.latent_size
+        enc = ws * h1 + h1 + h1 * h2 + h2 + h2 * ls + ls + h2 * ls + ls
+        dec = ls * h2 + h2 + h2 * h1 + h1 + h1 * 1 + 1
+        return enc + dec
 
     def _encode(self, X):
         h1 = np.maximum(0, X @ self.W_e1 + self.b_e1)

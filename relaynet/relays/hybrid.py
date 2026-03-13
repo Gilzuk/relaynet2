@@ -77,6 +77,10 @@ class HybridRelay(Relay):
 
         self.is_trained = False
 
+    @property
+    def num_params(self):
+        return self.genai_relay.num_params
+
     def train(self, training_snrs=None, num_samples=25000, epochs=100, seed=None):
         """Train the internal GenAI sub-relay.
 

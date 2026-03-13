@@ -74,7 +74,9 @@ class _CritNP:
 # PyTorch implementation (used when torch is available)
 # ---------------------------------------------------------------------------
 
-def _build_torch_cgan(window_size, noise_size, lambda_gp, lambda_l1, n_critic, device):
+def _build_torch_cgan(window_size, noise_size, lambda_gp, lambda_l1, n_critic,
+                      device, g_hidden_sizes=(32, 32, 16),
+                      c_hidden_sizes=(32, 16)):
     """Return a PyTorch-based CGAN relay trainer (dict of objects)."""
     import torch
     import torch.nn as nn
@@ -83,13 +85,13 @@ def _build_torch_cgan(window_size, noise_size, lambda_gp, lambda_l1, n_critic, d
     class Generator(nn.Module):
         def __init__(self):
             super().__init__()
-            inp = window_size + noise_size
-            self.net = nn.Sequential(
-                nn.Linear(inp, 32), nn.LeakyReLU(0.2),
-                nn.Linear(32, 32), nn.LeakyReLU(0.2),
-                nn.Linear(32, 16), nn.LeakyReLU(0.2),
-                nn.Linear(16, 1), nn.Tanh(),
-            )
+            layers = []
+            in_dim = window_size + noise_size
+            for h in g_hidden_sizes:
+                layers.extend([nn.Linear(in_dim, h), nn.LeakyReLU(0.2)])
+                in_dim = h
+            layers.extend([nn.Linear(in_dim, 1), nn.Tanh()])
+            self.net = nn.Sequential(*layers)
             for m in self.modules():
                 if isinstance(m, nn.Linear):
                     nn.init.xavier_normal_(m.weight)
@@ -102,12 +104,16 @@ def _build_torch_cgan(window_size, noise_size, lambda_gp, lambda_l1, n_critic, d
         """Wasserstein critic with spectral normalisation."""
         def __init__(self):
             super().__init__()
-            inp = 1 + window_size
-            self.net = nn.Sequential(
-                nn.utils.spectral_norm(nn.Linear(inp, 32)), nn.LeakyReLU(0.2),
-                nn.utils.spectral_norm(nn.Linear(32, 16)), nn.LeakyReLU(0.2),
-                nn.utils.spectral_norm(nn.Linear(16, 1)),  # no sigmoid
-            )
+            layers = []
+            in_dim = 1 + window_size
+            for h in c_hidden_sizes:
+                layers.extend([
+                    nn.utils.spectral_norm(nn.Linear(in_dim, h)),
+                    nn.LeakyReLU(0.2),
+                ])
+                in_dim = h
+            layers.append(nn.utils.spectral_norm(nn.Linear(in_dim, 1)))
+            self.net = nn.Sequential(*layers)
             for m in self.modules():
                 if isinstance(m, nn.Linear):
                     nn.init.xavier_normal_(m.weight)
@@ -189,13 +195,16 @@ class CGANRelay(Relay):
     """
 
     def __init__(self, window_size=7, noise_size=8, target_power=1.0,
-                 lambda_gp=10, lambda_l1=20, n_critic=5, prefer_gpu=True):
+                 lambda_gp=10, lambda_l1=20, n_critic=5, prefer_gpu=True,
+                 g_hidden_sizes=(32, 32, 16), c_hidden_sizes=(32, 16)):
         self.window_size = window_size
         self.noise_size = noise_size
         self.target_power = target_power
         self.lambda_gp = lambda_gp
         self.lambda_l1 = lambda_l1
         self.n_critic = n_critic
+        self.g_hidden_sizes = g_hidden_sizes
+        self.c_hidden_sizes = c_hidden_sizes
         self.is_trained = False
         self.device = get_preferred_device(prefer_gpu=prefer_gpu)
 
@@ -204,11 +213,28 @@ class CGANRelay(Relay):
             import torch  # noqa: F401
             self._use_torch = True
             self._torch_model = _build_torch_cgan(
-                window_size, noise_size, lambda_gp, lambda_l1, n_critic, self.device
+                window_size, noise_size, lambda_gp, lambda_l1, n_critic,
+                self.device, g_hidden_sizes, c_hidden_sizes,
             )
         except ImportError:
             self._gen = _GenNP(window_size, noise_size)
             self._crit = _CritNP(window_size)
+
+    @property
+    def num_params(self):
+        g_in = self.window_size + self.noise_size
+        g = 0
+        for h in self.g_hidden_sizes:
+            g += g_in * h + h
+            g_in = h
+        g += g_in * 1 + 1  # output layer
+        c_in = 1 + self.window_size
+        c = 0
+        for h in self.c_hidden_sizes:
+            c += c_in * h + h
+            c_in = h
+        c += c_in * 1 + 1
+        return g + c
 
     def train(self, training_snrs=None, num_samples=50000, epochs=200, seed=None):
         """Train the CGAN relay.

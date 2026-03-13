@@ -55,6 +55,13 @@ except Exception:
     MambaRelayWrapper = None
     _HAS_SEQUENCE_MODELS = False
 
+try:
+    from checkpoints.checkpoint_22_normalized_3k import build_all_3k
+    _HAS_NORMALIZED = True
+except Exception:
+    build_all_3k = None
+    _HAS_NORMALIZED = False
+
 
 def parse_args():
     p = argparse.ArgumentParser(description="Full relay comparison")
@@ -71,6 +78,11 @@ def parse_args():
         "--include-sequence-models",
         action="store_true",
         help="Include Transformer and Mamba relays from the checkpoint implementations.",
+    )
+    p.add_argument(
+        "--include-normalized",
+        action="store_true",
+        help="Run an extra apples-to-apples comparison with all AI models at ~3K params.",
     )
     p.add_argument("--snr-min", type=float, default=0)
     p.add_argument("--snr-max", type=float, default=20)
@@ -427,6 +439,150 @@ def run_mimo_mmse_comparison(relays, snr_range, bits_per_trial, num_trials):
     return all_ber, all_trials
 
 
+def train_normalized_models(args):
+    """Train all six AI relay models at ~3K parameters."""
+    print("\n" + "=" * 60)
+    print("=== Training NORMALIZED (~3K params) relay models ===")
+    print("=" * 60)
+
+    timing = {}
+    relays = build_all_3k(
+        prefer_gpu=False,
+        include_sequence_models=args.include_sequence_models,
+    )
+
+    # --- GenAI-3K ---
+    r = relays["GenAI-3K"]
+    print(f"  Training GenAI-3K ({r.num_params}p) \u2026")
+    _, elapsed = _timed(
+        f"train GenAI-3K ({r.num_params}p)", r.train,
+        training_snrs=[5, 10, 15],
+        num_samples=args.genai_samples, epochs=args.genai_epochs,
+        seed=args.seed, log_timings=args.log_timings,
+    )
+    timing[f"GenAI-3K ({r.num_params}p)"] = (_relay_device(r), elapsed)
+
+    # --- Hybrid-3K ---
+    r = relays["Hybrid-3K"]
+    print(f"  Training Hybrid-3K ({r.num_params}p) \u2026")
+    _, elapsed = _timed(
+        f"train Hybrid-3K ({r.num_params}p)", r.train,
+        training_snrs=[2, 4, 6],
+        num_samples=args.hybrid_samples, epochs=args.hybrid_epochs,
+        seed=args.seed, log_timings=args.log_timings,
+    )
+    timing[f"Hybrid-3K ({r.num_params}p)"] = (_relay_device(r), elapsed)
+
+    # --- VAE-3K ---
+    r = relays["VAE-3K"]
+    print(f"  Training VAE-3K ({r.num_params}p) \u2026")
+    _, elapsed = _timed(
+        f"train VAE-3K ({r.num_params}p)", r.train,
+        training_snrs=[5, 10, 15],
+        num_samples=args.vae_samples, epochs=args.vae_epochs,
+        seed=args.seed, log_timings=args.log_timings,
+    )
+    timing[f"VAE-3K ({r.num_params}p)"] = (_relay_device(r), elapsed)
+
+    # --- CGAN-3K ---
+    r = relays["CGAN-3K"]
+    print(f"  Training CGAN-3K ({r.num_params}p) \u2026")
+    _, elapsed = _timed(
+        f"train CGAN-3K ({r.num_params}p)", r.train,
+        training_snrs=[5, 10, 15],
+        num_samples=args.cgan_samples, epochs=args.cgan_epochs,
+        seed=args.seed, log_timings=args.log_timings,
+    )
+    timing[f"CGAN-3K ({r.num_params}p)"] = (_relay_device(r), elapsed)
+
+    # --- Transformer-3K ---
+    if "Transformer-3K" in relays:
+        r = relays["Transformer-3K"]
+        print(f"  Training Transformer-3K ({r.num_params}p) \u2026")
+        _, elapsed = _timed(
+            f"train Transformer-3K ({r.num_params}p)", r.train,
+            training_snrs=[5, 10, 15],
+            num_samples=args.transformer_samples,
+            epochs=args.transformer_epochs, lr=0.001,
+            log_timings=args.log_timings,
+        )
+        timing[f"Transformer-3K ({r.num_params}p)"] = (_relay_device(r), elapsed)
+
+    # --- Mamba-3K ---
+    if "Mamba-3K" in relays:
+        r = relays["Mamba-3K"]
+        print(f"  Training Mamba-3K ({r.num_params}p) \u2026")
+        _, elapsed = _timed(
+            f"train Mamba-3K ({r.num_params}p)", r.train,
+            training_snrs=[5, 10, 15],
+            num_samples=args.mamba_samples,
+            epochs=args.mamba_epochs, lr=0.001,
+            log_timings=args.log_timings,
+        )
+        timing[f"Mamba-3K ({r.num_params}p)"] = (_relay_device(r), elapsed)
+
+    if args.log_timings:
+        print("\n=== Normalized Training Time Summary ===")
+        for name, (device, elapsed) in timing.items():
+            print(f"  {name:<28} {device:<6} {elapsed:>8.2f}s")
+
+    return relays
+
+
+def run_normalized_comparison(relays_3k, snr_range, bits_per_trial, num_trials,
+                              no_plots=False):
+    """Run all channels for the normalized ~3K-param models."""
+    channels = [
+        ("AWGN",        None,                    "normalized_awgn_3k_ci.png"),
+        ("Rayleigh",    rayleigh_fading_channel,  "normalized_rayleigh_3k_ci.png"),
+        ("Rician K=3",
+         lambda sig, snr: rician_fading_channel(sig, snr, k_factor=3.0),
+         "normalized_rician_3k_ci.png"),
+        ("2\u00d72 MIMO ZF",   mimo_2x2_channel,        "normalized_mimo_zf_3k_ci.png"),
+        ("2\u00d72 MIMO MMSE", mimo_2x2_mmse_channel,   "normalized_mimo_mmse_3k_ci.png"),
+    ]
+
+    for ch_name, ch_fn, plot_file in channels:
+        print(f"\n=== Normalized 3K: {ch_name} Channel ===")
+        all_ber, all_trials = {}, {}
+        for name, relay in relays_3k.items():
+            print(f"  {name} \u2026", end=" ", flush=True)
+            start = perf_counter()
+            kw = dict(
+                num_bits_per_trial=bits_per_trial,
+                num_trials=num_trials,
+            )
+            if ch_fn is not None:
+                kw["channel_fn"] = ch_fn
+            _, ber, trials = run_monte_carlo(relay, snr_range, **kw)
+            all_ber[name] = ber
+            all_trials[name] = trials
+            elapsed = perf_counter() - start
+            print(f"done (time={elapsed:.2f}s, BER [{ber.min():.2e}, {ber.max():.2e}])")
+
+        # Significance (use first model as baseline if no DF)
+        baseline = list(all_ber.keys())[0]
+        methods = [k for k in all_ber if k != baseline]
+        if methods:
+            print(f"\n=== Significance vs {baseline} ===")
+            significance_table(
+                snr_range, methods,
+                {k: all_trials[k] for k in all_trials},
+                baseline=baseline,
+            )
+
+        if not no_plots:
+            ci_dict = {}
+            for name, trials in all_trials.items():
+                lo, hi = compute_confidence_interval(trials)
+                ci_dict[name] = (lo, hi)
+            plot_ber_with_ci(
+                snr_range, all_ber, ci_dict,
+                title=f"Normalized ~3K params \u2013 {ch_name} (95% CI)",
+                save_path=f"results/{plot_file}",
+            )
+
+
 def print_significance(snr_range, all_ber, all_trials, baseline="DF"):
     methods = [k for k in all_ber if k != baseline]
     print(f"\n=== Statistical Significance vs {baseline} ===")
@@ -541,6 +697,19 @@ def main():
             title="2\u00d72 MIMO Rayleigh (MMSE) \u2013 All Relay Methods (95% CI)",
             save_path="results/mimo_2x2_mmse_comparison_ci.png",
         )
+
+    # ── Normalized (~3K params) apples-to-apples comparison ──────────
+    if args.include_normalized:
+        if not _HAS_NORMALIZED:
+            print("\n  [WARNING] checkpoint_22_normalized_3k could not be imported; "
+                  "skipping normalized comparison.")
+        else:
+            relays_3k = train_normalized_models(args)
+            run_normalized_comparison(
+                relays_3k, snr_range,
+                args.bits_per_trial, args.num_trials,
+                no_plots=args.no_plots,
+            )
 
     print("\nDone. Results saved to results/")
     if args.log_timings:
