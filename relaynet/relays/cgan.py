@@ -16,6 +16,7 @@ import numpy as np
 from .base import Relay
 from relaynet.modulation.bpsk import bpsk_modulate
 from relaynet.channels.awgn import awgn_channel
+from relaynet.utils.torch_compat import get_preferred_device, to_numpy
 
 
 # ---------------------------------------------------------------------------
@@ -73,7 +74,7 @@ class _CritNP:
 # PyTorch implementation (used when torch is available)
 # ---------------------------------------------------------------------------
 
-def _build_torch_cgan(window_size, noise_size, lambda_gp, lambda_l1, n_critic):
+def _build_torch_cgan(window_size, noise_size, lambda_gp, lambda_l1, n_critic, device):
     """Return a PyTorch-based CGAN relay trainer (dict of objects)."""
     import torch
     import torch.nn as nn
@@ -115,8 +116,8 @@ def _build_torch_cgan(window_size, noise_size, lambda_gp, lambda_l1, n_critic):
         def forward(self, signal, condition):
             return self.net(torch.cat([signal, condition], dim=1))
 
-    G = Generator()
-    C = Critic()
+    G = Generator().to(device)
+    C = Critic().to(device)
     opt_G = optim.Adam(G.parameters(), lr=1e-4, betas=(0.0, 0.9))
     opt_C = optim.Adam(C.parameters(), lr=1e-4, betas=(0.0, 0.9))
 
@@ -134,12 +135,12 @@ def _build_torch_cgan(window_size, noise_size, lambda_gp, lambda_l1, n_critic):
         return gp
 
     def train_step(X_batch, y_batch):
-        X_t = torch.FloatTensor(X_batch)
-        y_t = torch.FloatTensor(y_batch)
+        X_t = torch.as_tensor(X_batch, dtype=torch.float32, device=device)
+        y_t = torch.as_tensor(y_batch, dtype=torch.float32, device=device)
 
         # --- Critic steps ---
         for _ in range(n_critic):
-            noise = torch.randn(X_t.size(0), noise_size)
+            noise = torch.randn(X_t.size(0), noise_size, device=device)
             fake = G(X_t, noise).detach()
             loss_C = (
                 -C(y_t, X_t).mean()
@@ -151,7 +152,7 @@ def _build_torch_cgan(window_size, noise_size, lambda_gp, lambda_l1, n_critic):
             opt_C.step()
 
         # --- Generator step ---
-        noise = torch.randn(X_t.size(0), noise_size)
+        noise = torch.randn(X_t.size(0), noise_size, device=device)
         fake = G(X_t, noise)
         loss_G = -C(fake, X_t).mean() + lambda_l1 * torch.mean(torch.abs(fake - y_t))
         opt_G.zero_grad()
@@ -163,15 +164,15 @@ def _build_torch_cgan(window_size, noise_size, lambda_gp, lambda_l1, n_critic):
         import torch
         G.eval()
         with torch.no_grad():
-            x_t = torch.FloatTensor(window_np)
-            noise = torch.zeros(x_t.size(0), noise_size)
+            x_t = torch.as_tensor(window_np, dtype=torch.float32, device=device)
+            noise = torch.zeros(x_t.size(0), noise_size, device=device)
             # Avoid calling Tensor.numpy(): some torch builds (compiled against
             # NumPy 1.x) can raise "RuntimeError: Numpy is not available" when
             # used with NumPy 2.x. Converting via Python lists avoids the
             # torch↔numpy bridge.
-            out = G(x_t, noise).detach().cpu().flatten().tolist()
+            out = G(x_t, noise)
         G.train()
-        return np.asarray(out, dtype=float)
+        return to_numpy(out.flatten(), dtype=float)
 
     return {"train_step": train_step, "infer": infer}
 
@@ -188,7 +189,7 @@ class CGANRelay(Relay):
     """
 
     def __init__(self, window_size=7, noise_size=8, target_power=1.0,
-                 lambda_gp=10, lambda_l1=20, n_critic=5):
+                 lambda_gp=10, lambda_l1=20, n_critic=5, prefer_gpu=True):
         self.window_size = window_size
         self.noise_size = noise_size
         self.target_power = target_power
@@ -196,13 +197,14 @@ class CGANRelay(Relay):
         self.lambda_l1 = lambda_l1
         self.n_critic = n_critic
         self.is_trained = False
+        self.device = get_preferred_device(prefer_gpu=prefer_gpu)
 
         self._use_torch = False
         try:
             import torch  # noqa: F401
             self._use_torch = True
             self._torch_model = _build_torch_cgan(
-                window_size, noise_size, lambda_gp, lambda_l1, n_critic
+                window_size, noise_size, lambda_gp, lambda_l1, n_critic, self.device
             )
         except ImportError:
             self._gen = _GenNP(window_size, noise_size)

@@ -162,12 +162,16 @@ class TransformerRelay(nn.Module):
 class TransformerRelayWrapper(Relay):
     """Wrapper for Transformer relay."""
     
-    def __init__(self, target_power=1.0, window_size=11, d_model=32, num_heads=4, num_layers=2):
+    def __init__(self, target_power=1.0, window_size=11, d_model=32, num_heads=4, num_layers=2, prefer_gpu=False):
         self.target_power = target_power
         self.window_size = window_size
         
-        # Set device
-        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        # Set device — with only 17K parameters this model is too small to
+        # benefit from GPU; kernel-launch overhead dominates compute time.
+        if prefer_gpu and torch.cuda.is_available():
+            self.device = torch.device('cuda')
+        else:
+            self.device = torch.device('cpu')
         
         # Initialize transformer
         self.model = TransformerRelay(
@@ -218,11 +222,11 @@ class TransformerRelayWrapper(Relay):
         y_train = torch.FloatTensor(np.array(y_train_all).reshape(-1, 1)).to(self.device)
         
         print(f"  Training data ready: {len(X_train):,} samples")
-        
+
         # Optimizer and loss
         optimizer = optim.Adam(self.model.parameters(), lr=lr)
         criterion = nn.MSELoss()
-        
+
         print(f"\n  Training Transformer...")
         
         batch_size = 64

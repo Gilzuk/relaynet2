@@ -5,6 +5,7 @@ import numpy as np
 from .base import Relay
 from relaynet.modulation.bpsk import bpsk_modulate
 from relaynet.channels.awgn import awgn_channel
+from relaynet.utils.torch_compat import can_use_gpu, get_preferred_device, get_torch_module, to_numpy
 
 
 class _TinyNN:
@@ -43,6 +44,25 @@ class _TinyNN:
         return loss
 
 
+def _build_torch_tinynn(input_size, hidden_size, device):
+    """Create a tiny Torch model matching the 169-parameter network."""
+    torch = get_torch_module()
+    import torch.nn as nn
+
+    model = nn.Sequential(
+        nn.Linear(input_size, hidden_size),
+        nn.ReLU(),
+        nn.Linear(hidden_size, 1),
+        nn.Tanh(),
+    ).to(device)
+
+    for module in model.modules():
+        if isinstance(module, nn.Linear):
+            nn.init.xavier_uniform_(module.weight)
+            nn.init.zeros_(module.bias)
+    return model
+
+
 class MinimalGenAIRelay(Relay):
     """Minimal GenAI relay using a tiny (169-parameter) neural network.
 
@@ -50,16 +70,20 @@ class MinimalGenAIRelay(Relay):
     Uses only NumPy — no external ML framework dependency.
     """
 
-    def __init__(self, window_size=5, hidden_size=24, target_power=1.0):
+    def __init__(self, window_size=5, hidden_size=24, target_power=1.0, prefer_gpu=True):
         self.window_size = window_size
+        self.hidden_size = hidden_size
         self.target_power = target_power
+        self.device = get_preferred_device(prefer_gpu=prefer_gpu)
+        self._use_torch = can_use_gpu(self.device)
         self.nn = _TinyNN(window_size, hidden_size, 1)
+        self._torch_model = _build_torch_tinynn(window_size, hidden_size, self.device) if self._use_torch else None
         self.is_trained = False
 
     @property
     def num_params(self):
         ws = self.window_size
-        hs = self.nn.W2.shape[0]
+        hs = self.hidden_size
         return ws * hs + hs + hs * 1 + 1
 
     def train(self, training_snrs=None, num_samples=25000, epochs=100, seed=None):
@@ -99,10 +123,30 @@ class MinimalGenAIRelay(Relay):
         y = np.array(y_all).reshape(-1, 1)
 
         batch_size = 32
-        for _ in range(epochs):
-            idx = np.random.permutation(len(X))
-            for i in range(0, len(X), batch_size):
-                self.nn.train_step(X[idx[i: i + batch_size]], y[idx[i: i + batch_size]])
+        if self._use_torch:
+            torch = get_torch_module()
+            import torch.nn as nn
+            import torch.optim as optim
+
+            X_t = torch.as_tensor(X, dtype=torch.float32, device=self.device)
+            y_t = torch.as_tensor(y, dtype=torch.float32, device=self.device)
+            optimizer = optim.Adam(self._torch_model.parameters(), lr=0.01)
+            criterion = nn.MSELoss()
+
+            for _ in range(epochs):
+                idx = torch.randperm(X_t.size(0), device=self.device)
+                for i in range(0, X_t.size(0), batch_size):
+                    sl = idx[i: i + batch_size]
+                    output = self._torch_model(X_t[sl])
+                    loss = criterion(output, y_t[sl])
+                    optimizer.zero_grad()
+                    loss.backward()
+                    optimizer.step()
+        else:
+            for _ in range(epochs):
+                idx = np.random.permutation(len(X))
+                for i in range(0, len(X), batch_size):
+                    self.nn.train_step(X[idx[i: i + batch_size]], y[idx[i: i + batch_size]])
 
         self.is_trained = True
 
@@ -112,10 +156,21 @@ class MinimalGenAIRelay(Relay):
 
         pad = self.window_size // 2
         padded = np.pad(received_signal, pad, mode="edge")
-        processed = np.array([
-            self.nn.forward(padded[i: i + self.window_size].reshape(1, -1))[0, 0]
+        windows = np.array([
+            padded[i: i + self.window_size]
             for i in range(len(received_signal))
         ])
+
+        if self._use_torch:
+            torch = get_torch_module()
+            with torch.no_grad():
+                window_t = torch.as_tensor(windows, dtype=torch.float32, device=self.device)
+                processed = to_numpy(self._torch_model(window_t).flatten(), dtype=float)
+        else:
+            processed = np.array([
+                self.nn.forward(windows[i].reshape(1, -1))[0, 0]
+                for i in range(len(received_signal))
+            ])
 
         current_power = np.mean(np.abs(processed) ** 2)
         if current_power > 0:

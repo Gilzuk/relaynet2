@@ -5,6 +5,69 @@ import numpy as np
 from .base import Relay
 from relaynet.modulation.bpsk import bpsk_modulate
 from relaynet.channels.awgn import awgn_channel
+from relaynet.utils.torch_compat import can_use_gpu, get_preferred_device, get_torch_module, to_numpy
+
+
+def _build_torch_vae(window_size, latent_size, beta, device):
+    """Build a Torch VAE backend for optional GPU training/inference."""
+    torch = get_torch_module()
+    import torch.nn as nn
+    import torch.optim as optim
+
+    class TorchVAE(nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.enc1 = nn.Linear(window_size, 32)
+            self.enc2 = nn.Linear(32, 16)
+            self.mu = nn.Linear(16, latent_size)
+            self.logvar = nn.Linear(16, latent_size)
+            self.dec1 = nn.Linear(latent_size, 16)
+            self.dec2 = nn.Linear(16, 32)
+            self.out = nn.Linear(32, 1)
+
+        def encode(self, x):
+            h1 = torch.relu(self.enc1(x))
+            h2 = torch.relu(self.enc2(h1))
+            return self.mu(h2), self.logvar(h2)
+
+        def decode(self, z):
+            d1 = torch.relu(self.dec1(z))
+            d2 = torch.relu(self.dec2(d1))
+            return torch.tanh(self.out(d2))
+
+        def forward(self, x):
+            mu, logvar = self.encode(x)
+            std = torch.exp(0.5 * logvar)
+            eps = torch.randn_like(std)
+            z = mu + eps * std
+            return self.decode(z), mu, logvar
+
+        def infer(self, x):
+            mu, _ = self.encode(x)
+            return self.decode(mu)
+
+    model = TorchVAE().to(device)
+    optimizer = optim.Adam(model.parameters(), lr=0.001)
+
+    def train_step(X_batch, y_batch):
+        X_t = torch.as_tensor(X_batch, dtype=torch.float32, device=device)
+        y_t = torch.as_tensor(y_batch, dtype=torch.float32, device=device)
+        recon, mu, logvar = model(X_t)
+        recon_loss = torch.mean((recon - y_t) ** 2)
+        kl_loss = -0.5 * torch.mean(1 + logvar - mu.pow(2) - logvar.exp())
+        loss = recon_loss + beta * kl_loss
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+        return float(loss.item())
+
+    def infer(window_np):
+        with torch.no_grad():
+            X_t = torch.as_tensor(window_np, dtype=torch.float32, device=device)
+            out = model.infer(X_t)
+        return to_numpy(out.flatten(), dtype=float)
+
+    return {"train_step": train_step, "infer": infer}
 
 
 class VAERelay(Relay):
@@ -18,11 +81,13 @@ class VAERelay(Relay):
     Uses only NumPy — no external ML framework dependency.
     """
 
-    def __init__(self, window_size=7, latent_size=8, beta=0.1, target_power=1.0):
+    def __init__(self, window_size=7, latent_size=8, beta=0.1, target_power=1.0, prefer_gpu=True):
         self.window_size = window_size
         self.latent_size = latent_size
         self.beta = beta
         self.target_power = target_power
+        self.device = get_preferred_device(prefer_gpu=prefer_gpu)
+        self._use_torch = can_use_gpu(self.device)
 
         inp = window_size
         h1, h2 = 32, 16
@@ -44,6 +109,8 @@ class VAERelay(Relay):
         self.b_d2 = np.zeros(h1)
         self.W_out = np.random.randn(h1, 1) * 0.1
         self.b_out = np.zeros(1)
+
+        self._torch_vae = _build_torch_vae(window_size, latent_size, beta, self.device) if self._use_torch else None
 
         self.is_trained = False
 
@@ -159,10 +226,17 @@ class VAERelay(Relay):
         y = np.array(y_all).reshape(-1, 1)
 
         batch_size = 64
-        for _ in range(epochs):
-            idx = np.random.permutation(len(X))
-            for i in range(0, len(X), batch_size):
-                self._train_step(X[idx[i: i + batch_size]], y[idx[i: i + batch_size]])
+        if self._use_torch:
+            for _ in range(epochs):
+                idx = np.random.permutation(len(X))
+                for i in range(0, len(X), batch_size):
+                    sl = idx[i: i + batch_size]
+                    self._torch_vae["train_step"](X[sl], y[sl])
+        else:
+            for _ in range(epochs):
+                idx = np.random.permutation(len(X))
+                for i in range(0, len(X), batch_size):
+                    self._train_step(X[idx[i: i + batch_size]], y[idx[i: i + batch_size]])
 
         self.is_trained = True
 
@@ -178,10 +252,17 @@ class VAERelay(Relay):
 
         pad = self.window_size // 2
         padded = np.pad(received_signal, pad, mode="edge")
-        processed = np.zeros(len(received_signal))
-        for i in range(len(received_signal)):
-            window = padded[i: i + self.window_size].reshape(1, -1)
-            processed[i] = self._infer(window)[0, 0]
+        windows = np.array([
+            padded[i: i + self.window_size]
+            for i in range(len(received_signal))
+        ])
+
+        if self._use_torch:
+            processed = self._torch_vae["infer"](windows)
+        else:
+            processed = np.zeros(len(received_signal))
+            for i in range(len(received_signal)):
+                processed[i] = self._infer(windows[i].reshape(1, -1))[0, 0]
 
         pwr = np.mean(np.abs(processed) ** 2)
         if pwr > 0:

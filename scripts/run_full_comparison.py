@@ -18,6 +18,7 @@ Output plots are saved to the ``results/`` directory.
 import argparse
 import os
 import sys
+from time import perf_counter
 
 import numpy as np
 
@@ -85,48 +86,100 @@ def parse_args():
     p.add_argument("--mamba-epochs", type=int, default=100)
 
     p.add_argument("--no-plots", action="store_true")
+    p.add_argument(
+        "--log-timings",
+        action="store_true",
+        help="Print elapsed times and device selection for each training/evaluation stage.",
+    )
     p.add_argument("--seed", type=int, default=42)
     return p.parse_args()
+
+
+def _relay_device(relay):
+    device = getattr(relay, "device", None)
+    if device is None:
+        return "cpu"
+    return str(device)
+
+
+def _timed(label, fn, *args, log_timings=False, **kwargs):
+    start = perf_counter()
+    result = fn(*args, **kwargs)
+    elapsed = perf_counter() - start
+    if log_timings:
+        print(f"    [time] {label}: {elapsed:.2f}s")
+    return result, elapsed
 
 
 def train_models(args):
     print("\n=== Training AI relay models ===")
 
+    timing_summary = {}
+
     print("  Training Minimal GenAI relay (169 params) …")
-    genai = MinimalGenAIRelay(window_size=5, hidden_size=24)
-    genai.train(
+    # Tiny models are typically faster on CPU than GPU due to kernel-launch overhead.
+    genai = MinimalGenAIRelay(window_size=5, hidden_size=24, prefer_gpu=False)
+    print(f"    device: {_relay_device(genai)}")
+    _, elapsed = _timed(
+        "train GenAI (169p)",
+        genai.train,
         training_snrs=[5, 10, 15],
         num_samples=args.genai_samples,
         epochs=args.genai_epochs,
         seed=args.seed,
+        log_timings=args.log_timings,
     )
+    timing_summary["GenAI (169p)"] = (_relay_device(genai), elapsed)
 
     print("  Training Hybrid relay …")
-    hybrid = HybridRelay(snr_threshold=5.0)
-    hybrid.train(
+    hybrid = HybridRelay(snr_threshold=5.0, prefer_gpu=False)
+    print(f"    device: {_relay_device(hybrid)}")
+    _, elapsed = _timed(
+        "train Hybrid",
+        hybrid.train,
         training_snrs=[2, 4, 6],
         num_samples=args.hybrid_samples,
         epochs=args.hybrid_epochs,
         seed=args.seed,
+        log_timings=args.log_timings,
     )
+    timing_summary["Hybrid"] = (_relay_device(hybrid), elapsed)
 
     print("  Training VAE relay …")
-    vae = VAERelay(window_size=7, latent_size=8, beta=0.1)
-    vae.train(
+    vae = VAERelay(window_size=7, latent_size=8, beta=0.1, prefer_gpu=False)
+    print(f"    device: {_relay_device(vae)}")
+    _, elapsed = _timed(
+        "train VAE",
+        vae.train,
         training_snrs=[5, 10, 15],
         num_samples=args.vae_samples,
         epochs=args.vae_epochs,
         seed=args.seed,
+        log_timings=args.log_timings,
     )
+    timing_summary["VAE"] = (_relay_device(vae), elapsed)
 
     print("  Training CGAN relay (WGAN-GP) …")
-    cgan = CGANRelay(window_size=7, noise_size=8, lambda_gp=10, lambda_l1=20, n_critic=5)
-    cgan.train(
+    # CGAN networks are ~3K params total — too small for GPU benefit.
+    cgan = CGANRelay(
+        window_size=7,
+        noise_size=8,
+        lambda_gp=10,
+        lambda_l1=20,
+        n_critic=5,
+        prefer_gpu=False,
+    )
+    print(f"    device: {_relay_device(cgan)}")
+    _, elapsed = _timed(
+        "train CGAN (WGAN-GP)",
+        cgan.train,
         training_snrs=[5, 10, 15],
         num_samples=args.cgan_samples,
         epochs=args.cgan_epochs,
         seed=args.seed,
+        log_timings=args.log_timings,
     )
+    timing_summary["CGAN (WGAN-GP)"] = (_relay_device(cgan), elapsed)
 
     relays = {
         "AF": AmplifyAndForwardRelay(),
@@ -149,12 +202,17 @@ def train_models(args):
                 num_heads=4,
                 num_layers=2,
             )
-            transformer.train(
+            print(f"    device: {_relay_device(transformer)}")
+            _, elapsed = _timed(
+                "train Transformer",
+                transformer.train,
                 training_snrs=[5, 10, 15],
                 num_samples=args.transformer_samples,
                 epochs=args.transformer_epochs,
                 lr=0.001,
+                log_timings=args.log_timings,
             )
+            timing_summary["Transformer"] = (_relay_device(transformer), elapsed)
 
             print("  Training Mamba S6 relay …")
             mamba = MambaRelayWrapper(
@@ -164,15 +222,25 @@ def train_models(args):
                 d_state=16,
                 num_layers=2,
             )
-            mamba.train(
+            print(f"    device: {_relay_device(mamba)}")
+            _, elapsed = _timed(
+                "train Mamba S6",
+                mamba.train,
                 training_snrs=[5, 10, 15],
                 num_samples=args.mamba_samples,
                 epochs=args.mamba_epochs,
                 lr=0.001,
+                log_timings=args.log_timings,
             )
+            timing_summary["Mamba S6"] = (_relay_device(mamba), elapsed)
 
             relays["Transformer"] = transformer
             relays["Mamba S6"] = mamba
+
+    if args.log_timings:
+        print("\n=== Training Time Summary ===")
+        for name, (device, elapsed) in timing_summary.items():
+            print(f"  {name:<18} {device:<6} {elapsed:>8.2f}s")
 
     return relays
 
@@ -263,6 +331,7 @@ def run_awgn_comparison(relays, snr_range, bits_per_trial, num_trials):
     all_ber, all_trials = {}, {}
     for name, relay in relays.items():
         print(f"  {name} …", end=" ", flush=True)
+        start = perf_counter()
         _, ber, trials = run_monte_carlo(
             relay, snr_range,
             num_bits_per_trial=bits_per_trial,
@@ -270,7 +339,8 @@ def run_awgn_comparison(relays, snr_range, bits_per_trial, num_trials):
         )
         all_ber[name] = ber
         all_trials[name] = trials
-        print(f"done (mean BER range [{ber.min():.2e}, {ber.max():.2e}])")
+        elapsed = perf_counter() - start
+        print(f"done (device={_relay_device(relay)}, time={elapsed:.2f}s, mean BER range [{ber.min():.2e}, {ber.max():.2e}])")
     return all_ber, all_trials
 
 
@@ -279,6 +349,7 @@ def run_fading_comparison(relays, snr_range, bits_per_trial, num_trials):
     all_ber, all_trials = {}, {}
     for name, relay in relays.items():
         print(f"  {name} …", end=" ", flush=True)
+        start = perf_counter()
         _, ber, trials = run_monte_carlo(
             relay, snr_range,
             num_bits_per_trial=bits_per_trial,
@@ -287,7 +358,8 @@ def run_fading_comparison(relays, snr_range, bits_per_trial, num_trials):
         )
         all_ber[name] = ber
         all_trials[name] = trials
-        print(f"done (mean BER range [{ber.min():.2e}, {ber.max():.2e}])")
+        elapsed = perf_counter() - start
+        print(f"done (device={_relay_device(relay)}, time={elapsed:.2f}s, mean BER range [{ber.min():.2e}, {ber.max():.2e}])")
     return all_ber, all_trials
 
 
@@ -301,6 +373,7 @@ def print_significance(snr_range, all_ber, all_trials, baseline="DF"):
 def main():
     args = parse_args()
     np.random.seed(args.seed)
+    total_start = perf_counter()
 
     if args.quick:
         # Keep defaults for SNR sweep; reduce training and Monte Carlo effort.
@@ -356,6 +429,8 @@ def main():
         )
 
     print("\nDone. Results saved to results/")
+    if args.log_timings:
+        print(f"Total elapsed time: {perf_counter() - total_start:.2f}s")
 
 
 if __name__ == "__main__":
