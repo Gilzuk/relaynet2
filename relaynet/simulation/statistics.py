@@ -192,7 +192,7 @@ def significance_table(snr_values, methods, ber_trials_dict, baseline="df",
             p = p_vals[i]
             s = sig[i]
             w = a_wins[i]
-            symbol = "✓*" if (s and w) else ("✓" if w else ("✗*" if s else "✗"))
+            symbol = "Y*" if (s and w) else ("Y" if w else ("N*" if s else "N"))
             row += f"{symbol:>10}({p:.2f}) | "
             table.setdefault(method, {})[snr] = {"p": p, "sig": s, "wins": w}
         print(row)

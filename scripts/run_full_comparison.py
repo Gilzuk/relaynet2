@@ -20,6 +20,12 @@ import os
 import sys
 from time import perf_counter
 
+# Ensure UTF-8 output on Windows (avoids cp1252 crashes when redirecting)
+if sys.stdout and hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if sys.stderr and hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+
 import numpy as np
 
 # Allow running from the repository root
@@ -37,7 +43,8 @@ from relaynet.simulation.statistics import (
     significance_table,
 )
 from relaynet.visualization.plots import plot_ber_curves, plot_ber_with_ci
-from relaynet.channels.fading import rayleigh_fading_channel
+from relaynet.channels.fading import rayleigh_fading_channel, rician_fading_channel
+from relaynet.channels.mimo import mimo_2x2_channel
 
 try:
     from checkpoints.checkpoint_18_transformer_relay import TransformerRelayWrapper
@@ -363,6 +370,44 @@ def run_fading_comparison(relays, snr_range, bits_per_trial, num_trials):
     return all_ber, all_trials
 
 
+def run_rician_comparison(relays, snr_range, bits_per_trial, num_trials):
+    print("\n=== Rician Fading Channel (K=3) Comparison ===")
+    all_ber, all_trials = {}, {}
+    for name, relay in relays.items():
+        print(f"  {name} \u2026", end=" ", flush=True)
+        start = perf_counter()
+        _, ber, trials = run_monte_carlo(
+            relay, snr_range,
+            num_bits_per_trial=bits_per_trial,
+            num_trials=num_trials,
+            channel_fn=lambda sig, snr: rician_fading_channel(sig, snr, k_factor=3.0),
+        )
+        all_ber[name] = ber
+        all_trials[name] = trials
+        elapsed = perf_counter() - start
+        print(f"done (device={_relay_device(relay)}, time={elapsed:.2f}s, mean BER range [{ber.min():.2e}, {ber.max():.2e}])")
+    return all_ber, all_trials
+
+
+def run_mimo_comparison(relays, snr_range, bits_per_trial, num_trials):
+    print("\n=== 2\u00d72 MIMO Rayleigh Channel (ZF) Comparison ===")
+    all_ber, all_trials = {}, {}
+    for name, relay in relays.items():
+        print(f"  {name} \u2026", end=" ", flush=True)
+        start = perf_counter()
+        _, ber, trials = run_monte_carlo(
+            relay, snr_range,
+            num_bits_per_trial=bits_per_trial,
+            num_trials=num_trials,
+            channel_fn=mimo_2x2_channel,
+        )
+        all_ber[name] = ber
+        all_trials[name] = trials
+        elapsed = perf_counter() - start
+        print(f"done (device={_relay_device(relay)}, time={elapsed:.2f}s, mean BER range [{ber.min():.2e}, {ber.max():.2e}])")
+    return all_ber, all_trials
+
+
 def print_significance(snr_range, all_ber, all_trials, baseline="DF"):
     methods = [k for k in all_ber if k != baseline]
     print(f"\n=== Statistical Significance vs {baseline} ===")
@@ -426,6 +471,39 @@ def main():
             snr_range, fading_ber,
             title="Rayleigh Fading Channel – All Relay Methods",
             save_path="results/fading_comparison.png",
+        )
+    # Rician fading comparison
+    rician_ber, rician_trials = run_rician_comparison(
+        relays, snr_range, args.bits_per_trial, args.num_trials
+    )
+    print_significance(snr_range, rician_ber, rician_trials)
+
+    if not args.no_plots:
+        rician_ci = {}
+        for name, trials in rician_trials.items():
+            lo, hi = compute_confidence_interval(trials)
+            rician_ci[name] = (lo, hi)
+        plot_ber_with_ci(
+            snr_range, rician_ber, rician_ci,
+            title="Rician Fading Channel (K=3) \u2013 All Relay Methods (95% CI)",
+            save_path="results/rician_comparison_ci.png",
+        )
+
+    # 2×2 MIMO comparison
+    mimo_ber, mimo_trials = run_mimo_comparison(
+        relays, snr_range, args.bits_per_trial, args.num_trials
+    )
+    print_significance(snr_range, mimo_ber, mimo_trials)
+
+    if not args.no_plots:
+        mimo_ci = {}
+        for name, trials in mimo_trials.items():
+            lo, hi = compute_confidence_interval(trials)
+            mimo_ci[name] = (lo, hi)
+        plot_ber_with_ci(
+            snr_range, mimo_ber, mimo_ci,
+            title="2\u00d72 MIMO Rayleigh (ZF) \u2013 All Relay Methods (95% CI)",
+            save_path="results/mimo_2x2_comparison_ci.png",
         )
 
     print("\nDone. Results saved to results/")
