@@ -27,7 +27,7 @@ import matplotlib.pyplot as plt
 
 from relaynet.channels.awgn import awgn_channel
 from relaynet.channels.fading import rayleigh_fading_channel, rician_fading_channel
-from relaynet.channels.mimo import mimo_2x2_channel, mimo_2x2_mmse_channel
+from relaynet.channels.mimo import mimo_2x2_channel, mimo_2x2_mmse_channel, mimo_2x2_sic_channel
 from relaynet.simulation.runner import run_monte_carlo
 from checkpoints.checkpoint_22_normalized_3k import build_all_3k
 
@@ -50,6 +50,7 @@ CHANNELS = [
     ("Rician (K=3)",   lambda sig, snr: rician_fading_channel(sig, snr, k_factor=3.0)),
     ("2x2 MIMO ZF",   mimo_2x2_channel),
     ("2x2 MIMO MMSE", mimo_2x2_mmse_channel),
+    ("2x2 MIMO SIC",  mimo_2x2_sic_channel),
 ]
 
 MARKERS = ["o", "s", "^", "D", "v", "P"]

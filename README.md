@@ -4,9 +4,9 @@
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.6+-red.svg)](https://pytorch.org)
 [![CUDA](https://img.shields.io/badge/CUDA-12.4-green.svg)](https://developer.nvidia.com/cuda-toolkit)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Tests](https://img.shields.io/badge/Tests-60%20passed-brightgreen.svg)](#testing)
+[![Tests](https://img.shields.io/badge/Tests-66%20passed-brightgreen.svg)](#testing)
 
-A comprehensive framework for comparing **classical and AI-based relay strategies** in two-hop cooperative communication across **3 channel types** (AWGN, Rayleigh fading, Rician fading) and **2 antenna topologies** (SISO, 2×2 MIMO with ZF/MMSE equalization).
+A comprehensive framework for comparing **classical and AI-based relay strategies** in two-hop cooperative communication across **3 channel types** (AWGN, Rayleigh fading, Rician fading) and **2 antenna topologies** (SISO, 2×2 MIMO with ZF/MMSE/SIC equalization).
 
 ---
 
@@ -60,7 +60,7 @@ This project implements and compares **8 relay strategies** (2 classical + 6 AI-
 | Topology | Antennas | Channel per Link | Equalization |
 |----------|----------|------------------|----|
 | **SISO** | 1 TX, 1 RX | AWGN / Rayleigh / Rician | Perfect CSI |
-| **2×2 MIMO** | 2 TX, 2 RX | Rayleigh (i.i.d. per link) | **ZF** or **MMSE** |
+| **2×2 MIMO** | 2 TX, 2 RX | Rayleigh (i.i.d. per link) | **ZF**, **MMSE**, or **SIC** |
 
 ---
 
@@ -121,9 +121,20 @@ ZF:    x̂ = H⁻¹·y
 MMSE:  x̂ = (H^H·H + σ²·I)⁻¹ · H^H · y
 ```
 
-MMSE consistently outperforms ZF, especially at low SNR.
+And one **non-linear** technique:
 
-> **GPU Acceleration:** Both MIMO equalizers use vectorized PyTorch batched `torch.linalg.solve` instead of per-symbol Python loops, achieving >100× speed-up on CPU and further gains on CUDA GPUs.
+**MMSE-SIC (Successive Interference Cancellation):** Decodes streams one at a time in order of post-detection SINR. The stronger stream is MMSE-detected and hard-decided first, then cancelled from the received vector. The remaining stream is estimated interference-free via matched-filter:
+
+```
+SIC:   1. Order streams by MMSE post-detection SINR
+       2. x̂_first = sign(MMSE estimate of stronger stream)
+       3. y' = y − h_first · x̂_first          (cancel)
+       4. x̂_second = Re(h_second^H · y') / ||h_second||²   (MRC)
+```
+
+SIC outperforms linear MMSE because the second stream sees no inter-stream interference. The cost is **error propagation**: if the first hard decision is wrong, cancellation adds interference.
+
+> **GPU Acceleration:** All three MIMO equalizers use vectorized PyTorch batched `torch.linalg.solve` instead of per-symbol Python loops, achieving >100× speed-up on CPU and further gains on CUDA GPUs.
 
 ---
 
@@ -158,11 +169,11 @@ MMSE consistently outperforms ZF, especially at low SNR.
 
     Topology:  SISO (1×1)  │  2×2 MIMO (spatial multiplexing)
     Channels:  AWGN  │  Rayleigh  │  Rician K=3
-    Equalizers (MIMO): ZF  │  MMSE
+    Equalizers (MIMO): ZF  │  MMSE  │  SIC
     Relays:    AF │ DF │ GenAI │ Hybrid │ VAE │ CGAN │ Transformer │ Mamba S6
 ```
 
-Each relay strategy is evaluated across all 5 configurations (3 SISO channels + 2 MIMO equalization methods) using Monte Carlo simulation with 95% confidence intervals (10 trials × 10,000 bits per SNR point).
+Each relay strategy is evaluated across all 6 configurations (3 SISO channels + 3 MIMO equalization methods) using Monte Carlo simulation with 95% confidence intervals (10 trials × 10,000 bits per SNR point).
 
 ---
 
@@ -176,6 +187,7 @@ Each relay strategy is evaluated across all 5 configurations (3 SISO channels + 
 4. **Hybrid relay** provides the best practical trade-off: AI at low SNR, DF at high SNR
 5. **All AI relays dramatically outperform AF** across all channels
 6. **MMSE equalization consistently outperforms ZF** in the 2×2 MIMO topology at every SNR for all relay types
+7. **SIC further improves on MMSE** by cancelling the stronger stream before detecting the weaker one
 
 ### Normalized 3K Comparison (equal parameter budgets)
 
@@ -215,6 +227,7 @@ Per-channel BER comparison plots with 95% confidence intervals are in the `resul
 | Rician K=3 | `results/rician_comparison_ci.png` |
 | 2×2 MIMO ZF | `results/mimo_2x2_comparison_ci.png` |
 | 2×2 MIMO MMSE | `results/mimo_2x2_mmse_comparison_ci.png` |
+| 2×2 MIMO SIC | `results/mimo_2x2_sic_comparison_ci.png` |
 | Model Complexity | `results/complexity_comparison_all_relays.png` |
 
 ---
@@ -283,6 +296,7 @@ To enable a fair **apples-to-apples** comparison, all 6 AI models were scaled to
 | `results/normalized_3k_rician_k3.png` | Rician K=3, all 6 models at ~3K params |
 | `results/normalized_3k_2x2_mimo_zf.png` | 2×2 MIMO (Rayleigh) ZF, all 6 models at ~3K params |
 | `results/normalized_3k_2x2_mimo_mmse.png` | 2×2 MIMO (Rayleigh) MMSE, all 6 models at ~3K params |
+| `results/normalized_3k_2x2_mimo_sic.png` | 2×2 MIMO (Rayleigh) SIC, all 6 models at ~3K params |
 | `results/normalized_3k_all_channels.png` | **Consolidated 2×3 grid** of all channels |
 
 ---

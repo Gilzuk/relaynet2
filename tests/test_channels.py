@@ -5,7 +5,7 @@ import pytest
 
 from relaynet.channels.awgn import awgn_channel, calculate_snr
 from relaynet.channels.fading import rayleigh_fading_channel, rician_fading_channel
-from relaynet.channels.mimo import mimo_2x2_channel, mimo_2x2_mmse_channel
+from relaynet.channels.mimo import mimo_2x2_channel, mimo_2x2_mmse_channel, mimo_2x2_sic_channel
 
 
 class TestAWGNChannel:
@@ -177,4 +177,58 @@ class TestMIMOMMSEChannel:
             ber_mmse = np.mean(np.sign(out_mmse) != signal)
             assert ber_mmse <= ber_zf + 0.02, (
                 f"MMSE BER {ber_mmse:.4f} worse than ZF {ber_zf:.4f} at {snr} dB"
+            )
+
+
+class TestMIMOSICChannel:
+    def test_output_shape_even(self):
+        np.random.seed(0)
+        signal = 2 * np.random.randint(0, 2, 100) - 1.0
+        out = mimo_2x2_sic_channel(signal, snr_db=10)
+        assert out.shape == signal.shape
+
+    def test_output_shape_odd(self):
+        """Odd-length input is truncated to even."""
+        np.random.seed(0)
+        signal = 2 * np.random.randint(0, 2, 101) - 1.0
+        out = mimo_2x2_sic_channel(signal, snr_db=10)
+        assert len(out) == 100
+
+    def test_output_is_real(self):
+        np.random.seed(1)
+        signal = 2 * np.random.randint(0, 2, 200) - 1.0
+        out = mimo_2x2_sic_channel(signal, snr_db=10)
+        assert np.isrealobj(out)
+
+    def test_high_snr_recovers_signal(self):
+        """At very high SNR, SIC should recover BPSK symbols accurately."""
+        np.random.seed(42)
+        signal = 2 * np.random.randint(0, 2, 2000) - 1.0
+        out = mimo_2x2_sic_channel(signal, snr_db=30)
+        decoded = np.sign(out)
+        ber = np.mean(decoded != signal)
+        assert ber < 0.01, f"BER {ber:.4f} too high at 30 dB"
+
+    def test_low_snr_has_errors(self):
+        """At low SNR, BER should be significant."""
+        np.random.seed(7)
+        signal = 2 * np.random.randint(0, 2, 2000) - 1.0
+        out = mimo_2x2_sic_channel(signal, snr_db=0)
+        decoded = np.sign(out)
+        ber = np.mean(decoded != signal)
+        assert ber > 0.05, f"BER {ber:.4f} unexpectedly low at 0 dB"
+
+    def test_sic_better_than_mmse(self):
+        """SIC should yield equal or lower BER than MMSE at the same SNR."""
+        np.random.seed(99)
+        signal = 2 * np.random.randint(0, 2, 6000) - 1.0
+        for snr in [0, 5, 10]:
+            np.random.seed(99)
+            out_mmse = mimo_2x2_mmse_channel(signal, snr_db=snr)
+            np.random.seed(99)
+            out_sic = mimo_2x2_sic_channel(signal, snr_db=snr)
+            ber_mmse = np.mean(np.sign(out_mmse) != signal)
+            ber_sic = np.mean(np.sign(out_sic) != signal)
+            assert ber_sic <= ber_mmse + 0.02, (
+                f"SIC BER {ber_sic:.4f} worse than MMSE {ber_mmse:.4f} at {snr} dB"
             )

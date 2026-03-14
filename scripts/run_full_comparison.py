@@ -44,7 +44,7 @@ from relaynet.simulation.statistics import (
 )
 from relaynet.visualization.plots import plot_ber_curves, plot_ber_with_ci
 from relaynet.channels.fading import rayleigh_fading_channel, rician_fading_channel
-from relaynet.channels.mimo import mimo_2x2_channel, mimo_2x2_mmse_channel
+from relaynet.channels.mimo import mimo_2x2_channel, mimo_2x2_mmse_channel, mimo_2x2_sic_channel
 
 try:
     from checkpoints.checkpoint_18_transformer_relay import TransformerRelayWrapper
@@ -450,6 +450,25 @@ def run_mimo_mmse_comparison(relays, snr_range, bits_per_trial, num_trials):
     return all_ber, all_trials
 
 
+def run_mimo_sic_comparison(relays, snr_range, bits_per_trial, num_trials):
+    print("\n=== 2\u00d72 MIMO Topology \u2013 Rayleigh Fading \u2013 SIC Equalization ===")
+    all_ber, all_trials = {}, {}
+    for name, relay in relays.items():
+        print(f"  {name} \u2026", end=" ", flush=True)
+        start = perf_counter()
+        _, ber, trials = run_monte_carlo(
+            relay, snr_range,
+            num_bits_per_trial=bits_per_trial,
+            num_trials=num_trials,
+            channel_fn=mimo_2x2_sic_channel,
+        )
+        all_ber[name] = ber
+        all_trials[name] = trials
+        elapsed = perf_counter() - start
+        print(f"done (device={_relay_device(relay)}, time={elapsed:.2f}s, mean BER range [{ber.min():.2e}, {ber.max():.2e}])")
+    return all_ber, all_trials
+
+
 def train_normalized_models(args):
     """Train all six AI relay models at ~3K parameters."""
     print("\n" + "=" * 60)
@@ -551,6 +570,7 @@ def run_normalized_comparison(relays_3k, snr_range, bits_per_trial, num_trials,
          "normalized_rician_3k_ci.png"),
         ("2\u00d72 MIMO ZF",   mimo_2x2_channel,        "normalized_mimo_zf_3k_ci.png"),
         ("2\u00d72 MIMO MMSE", mimo_2x2_mmse_channel,   "normalized_mimo_mmse_3k_ci.png"),
+        ("2\u00d72 MIMO SIC",  mimo_2x2_sic_channel,    "normalized_mimo_sic_3k_ci.png"),
     ]
 
     for ch_name, ch_fn, plot_file in channels:
@@ -707,6 +727,23 @@ def main():
             snr_range, mimo_mmse_ber, mimo_mmse_ci,
             title="2\u00d72 MIMO (Rayleigh) \u2013 MMSE Equalization \u2013 All Relay Methods (95% CI)",
             save_path="results/mimo_2x2_mmse_comparison_ci.png",
+        )
+
+    # 2×2 MIMO SIC comparison
+    mimo_sic_ber, mimo_sic_trials = run_mimo_sic_comparison(
+        relays, snr_range, args.bits_per_trial, args.num_trials
+    )
+    print_significance(snr_range, mimo_sic_ber, mimo_sic_trials)
+
+    if not args.no_plots:
+        mimo_sic_ci = {}
+        for name, trials in mimo_sic_trials.items():
+            lo, hi = compute_confidence_interval(trials)
+            mimo_sic_ci[name] = (lo, hi)
+        plot_ber_with_ci(
+            snr_range, mimo_sic_ber, mimo_sic_ci,
+            title="2\u00d72 MIMO (Rayleigh) \u2013 SIC Equalization \u2013 All Relay Methods (95% CI)",
+            save_path="results/mimo_2x2_sic_comparison_ci.png",
         )
 
     # ── Normalized (~3K params) apples-to-apples comparison ──────────
