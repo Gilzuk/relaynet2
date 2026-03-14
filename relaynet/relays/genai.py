@@ -86,7 +86,8 @@ class MinimalGenAIRelay(Relay):
         hs = self.hidden_size
         return ws * hs + hs + hs * 1 + 1
 
-    def train(self, training_snrs=None, num_samples=25000, epochs=100, seed=None):
+    def train(self, training_snrs=None, num_samples=25000, epochs=100, seed=None,
+              epoch_callback=None):
         """Train the relay on simulated AWGN data.
 
         Parameters
@@ -100,6 +101,8 @@ class MinimalGenAIRelay(Relay):
             Training epochs.
         seed : int, optional
             Random seed for reproducibility.
+        epoch_callback : callable, optional
+            Called as ``epoch_callback(epoch, epochs)`` after each epoch.
         """
         if training_snrs is None:
             training_snrs = [5, 10, 15]
@@ -133,7 +136,7 @@ class MinimalGenAIRelay(Relay):
             optimizer = optim.Adam(self._torch_model.parameters(), lr=0.01)
             criterion = nn.MSELoss()
 
-            for _ in range(epochs):
+            for _ep in range(epochs):
                 idx = torch.randperm(X_t.size(0), device=self.device)
                 for i in range(0, X_t.size(0), batch_size):
                     sl = idx[i: i + batch_size]
@@ -142,11 +145,15 @@ class MinimalGenAIRelay(Relay):
                     optimizer.zero_grad()
                     loss.backward()
                     optimizer.step()
+                if epoch_callback:
+                    epoch_callback(_ep, epochs)
         else:
-            for _ in range(epochs):
+            for _ep in range(epochs):
                 idx = np.random.permutation(len(X))
                 for i in range(0, len(X), batch_size):
                     self.nn.train_step(X[idx[i: i + batch_size]], y[idx[i: i + batch_size]])
+                if epoch_callback:
+                    epoch_callback(_ep, epochs)
 
         self.is_trained = True
 

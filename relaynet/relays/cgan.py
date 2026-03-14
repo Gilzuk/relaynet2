@@ -236,7 +236,8 @@ class CGANRelay(Relay):
         c += c_in * 1 + 1
         return g + c
 
-    def train(self, training_snrs=None, num_samples=50000, epochs=200, seed=None):
+    def train(self, training_snrs=None, num_samples=50000, epochs=200, seed=None,
+              epoch_callback=None):
         """Train the CGAN relay.
 
         Parameters
@@ -246,6 +247,8 @@ class CGANRelay(Relay):
         num_samples : int
         epochs : int
         seed : int, optional
+        epoch_callback : callable, optional
+            Called as ``epoch_callback(epoch, epochs)`` after each epoch.
         """
         if training_snrs is None:
             training_snrs = [5, 10, 15]
@@ -270,16 +273,18 @@ class CGANRelay(Relay):
 
         batch_size = 64
         if self._use_torch:
-            for _ in range(epochs):
+            for _ep in range(epochs):
                 idx = np.random.permutation(len(X))
                 for i in range(0, len(X), batch_size):
                     sl = idx[i: i + batch_size]
                     self._torch_model["train_step"](X[sl], y[sl])
+                if epoch_callback:
+                    epoch_callback(_ep, epochs)
         else:
             # NumPy fallback — simple supervised pre-training only
             gen = self._gen
             lr = 0.001
-            for _ in range(epochs):
+            for _ep in range(epochs):
                 idx = np.random.permutation(len(X))
                 for i in range(0, len(X), batch_size):
                     sl = idx[i: i + batch_size]
@@ -293,6 +298,8 @@ class CGANRelay(Relay):
                     d4 = grad_out * d_tanh
                     gen.W4 -= lr * gen._h3.T @ d4
                     gen.b4 -= lr * np.sum(d4, axis=0)
+                if epoch_callback:
+                    epoch_callback(_ep, epochs)
 
         self.is_trained = True
 

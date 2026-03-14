@@ -205,7 +205,8 @@ class VAERelay(Relay):
             b -= lr * db
         return loss
 
-    def train(self, training_snrs=None, num_samples=50000, epochs=100, seed=None):
+    def train(self, training_snrs=None, num_samples=50000, epochs=100, seed=None,
+              epoch_callback=None):
         """Train the VAE relay.
 
         Parameters
@@ -215,6 +216,8 @@ class VAERelay(Relay):
         num_samples : int
         epochs : int
         seed : int, optional
+        epoch_callback : callable, optional
+            Called as ``epoch_callback(epoch, epochs)`` after each epoch.
         """
         if training_snrs is None:
             training_snrs = [5, 10, 15]
@@ -239,16 +242,20 @@ class VAERelay(Relay):
 
         batch_size = 64
         if self._use_torch:
-            for _ in range(epochs):
+            for _ep in range(epochs):
                 idx = np.random.permutation(len(X))
                 for i in range(0, len(X), batch_size):
                     sl = idx[i: i + batch_size]
                     self._torch_vae["train_step"](X[sl], y[sl])
+                if epoch_callback:
+                    epoch_callback(_ep, epochs)
         else:
-            for _ in range(epochs):
+            for _ep in range(epochs):
                 idx = np.random.permutation(len(X))
                 for i in range(0, len(X), batch_size):
                     self._train_step(X[idx[i: i + batch_size]], y[idx[i: i + batch_size]])
+                if epoch_callback:
+                    epoch_callback(_ep, epochs)
 
         self.is_trained = True
 

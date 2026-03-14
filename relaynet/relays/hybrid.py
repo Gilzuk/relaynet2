@@ -81,7 +81,8 @@ class HybridRelay(Relay):
     def num_params(self):
         return self.genai_relay.num_params
 
-    def train(self, training_snrs=None, num_samples=25000, epochs=100, seed=None):
+    def train(self, training_snrs=None, num_samples=25000, epochs=100, seed=None,
+              epoch_callback=None):
         """Train the internal GenAI sub-relay.
 
         Parameters
@@ -91,6 +92,8 @@ class HybridRelay(Relay):
         num_samples : int
         epochs : int
         seed : int, optional
+        epoch_callback : callable, optional
+            Called as ``epoch_callback(epoch, epochs)`` after each epoch.
         """
         if training_snrs is None:
             training_snrs = [2, 4, 6]
@@ -99,6 +102,7 @@ class HybridRelay(Relay):
             num_samples=num_samples,
             epochs=epochs,
             seed=seed,
+            epoch_callback=epoch_callback,
         )
         self.is_trained = True
 
