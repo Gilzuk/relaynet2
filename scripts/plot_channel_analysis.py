@@ -58,8 +58,18 @@ def Q(x):
 
 
 def ber_bpsk_awgn(snr_linear):
-    """Theoretical BER for BPSK over a single AWGN hop."""
-    return Q(np.sqrt(2 * snr_linear))
+    """Theoretical BER for BPSK over a single AWGN hop.
+    
+    The AWGN channel implementation adds *real* noise with variance
+    σ² = P_s / SNR.  For BPSK ±1 symbols the conditional BER is
+    Q(1/σ) = Q(√SNR).  This differs from the textbook Q(√(2·Eb/N0))
+    because the fading channels use complex noise (with total power
+    1/SNR split equally across I and Q) and take Re() after
+    equalization, which halves the effective noise variance per
+    decision dimension.  That factor-of-2 appears naturally in the
+    fading formulas but NOT in the real-noise AWGN path.
+    """
+    return Q(np.sqrt(snr_linear))
 
 
 def ber_bpsk_rayleigh(snr_linear):
@@ -115,7 +125,7 @@ def ber_twohop_af_awgn(snr_linear):
     BER = Q(sqrt(2·SNR_eff))
     """
     snr_eff = snr_linear ** 2 / (2 * snr_linear + 1)
-    return Q(np.sqrt(2 * snr_eff))
+    return Q(np.sqrt(snr_eff))
 
 
 def ber_twohop_df_rayleigh(snr_linear):
