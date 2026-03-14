@@ -106,6 +106,15 @@ def parse_args():
 
     p.add_argument("--no-plots", action="store_true")
     p.add_argument(
+        "--gpu",
+        action="store_true",
+        help=(
+            "Use GPU (CUDA) for the larger AI models (Transformer, Mamba, "
+            "and optionally VAE/CGAN). Small models (GenAI, Hybrid) stay "
+            "on CPU because kernel-launch overhead exceeds any speed-up."
+        ),
+    )
+    p.add_argument(
         "--log-timings",
         action="store_true",
         help="Print elapsed times and device selection for each training/evaluation stage.",
@@ -220,6 +229,7 @@ def train_models(args):
                 d_model=32,
                 num_heads=4,
                 num_layers=2,
+                prefer_gpu=args.gpu,
             )
             print(f"    device: {_relay_device(transformer)}")
             _, elapsed = _timed(
@@ -240,6 +250,7 @@ def train_models(args):
                 d_model=32,
                 d_state=16,
                 num_layers=2,
+                prefer_gpu=args.gpu,
             )
             print(f"    device: {_relay_device(mamba)}")
             _, elapsed = _timed(
@@ -402,7 +413,7 @@ def run_rician_comparison(relays, snr_range, bits_per_trial, num_trials):
 
 
 def run_mimo_comparison(relays, snr_range, bits_per_trial, num_trials):
-    print("\n=== 2\u00d72 MIMO Rayleigh Channel (ZF) Comparison ===")
+    print("\n=== 2\u00d72 MIMO Topology – Rayleigh Fading – ZF Equalization ===")
     all_ber, all_trials = {}, {}
     for name, relay in relays.items():
         print(f"  {name} \u2026", end=" ", flush=True)
@@ -421,7 +432,7 @@ def run_mimo_comparison(relays, snr_range, bits_per_trial, num_trials):
 
 
 def run_mimo_mmse_comparison(relays, snr_range, bits_per_trial, num_trials):
-    print("\n=== 2\u00d72 MIMO Rayleigh Channel (MMSE) Comparison ===")
+    print("\n=== 2\u00d72 MIMO Topology – Rayleigh Fading – MMSE Equalization ===")
     all_ber, all_trials = {}, {}
     for name, relay in relays.items():
         print(f"  {name} \u2026", end=" ", flush=True)
@@ -447,7 +458,7 @@ def train_normalized_models(args):
 
     timing = {}
     relays = build_all_3k(
-        prefer_gpu=False,
+        prefer_gpu=args.gpu,
         include_sequence_models=args.include_sequence_models,
     )
 
@@ -677,7 +688,7 @@ def main():
             mimo_ci[name] = (lo, hi)
         plot_ber_with_ci(
             snr_range, mimo_ber, mimo_ci,
-            title="2\u00d72 MIMO Rayleigh (ZF) \u2013 All Relay Methods (95% CI)",
+            title="2\u00d72 MIMO (Rayleigh) \u2013 ZF Equalization \u2013 All Relay Methods (95% CI)",
             save_path="results/mimo_2x2_comparison_ci.png",
         )
 
@@ -694,7 +705,7 @@ def main():
             mimo_mmse_ci[name] = (lo, hi)
         plot_ber_with_ci(
             snr_range, mimo_mmse_ber, mimo_mmse_ci,
-            title="2\u00d72 MIMO Rayleigh (MMSE) \u2013 All Relay Methods (95% CI)",
+            title="2\u00d72 MIMO (Rayleigh) \u2013 MMSE Equalization \u2013 All Relay Methods (95% CI)",
             save_path="results/mimo_2x2_mmse_comparison_ci.png",
         )
 

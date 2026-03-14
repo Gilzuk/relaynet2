@@ -6,14 +6,15 @@
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Tests](https://img.shields.io/badge/Tests-60%20passed-brightgreen.svg)](#testing)
 
-A comprehensive framework for comparing **classical and AI-based relay strategies** in two-hop cooperative communication across **5 channel models**: AWGN, Rayleigh fading, Rician fading, 2×2 MIMO with Zero-Forcing, and 2×2 MIMO with MMSE equalization.
+A comprehensive framework for comparing **classical and AI-based relay strategies** in two-hop cooperative communication across **3 channel types** (AWGN, Rayleigh fading, Rician fading) and **2 antenna topologies** (SISO, 2×2 MIMO with ZF/MMSE equalization).
 
 ---
 
 ## Table of Contents
 
 - [Overview](#overview)
-- [Channel Models](#channel-models)
+- [Channel Types](#channel-types)
+- [Antenna Topologies](#antenna-topologies)
 - [Relay Strategies](#relay-strategies)
 - [Architecture](#architecture)
 - [Key Findings](#key-findings)
@@ -31,7 +32,7 @@ A comprehensive framework for comparing **classical and AI-based relay strategie
 
 ## Overview
 
-This project implements and compares **8 relay strategies** (2 classical + 6 AI-based) across **5 wireless channel models** to evaluate the potential of generative AI and modern sequence models for cooperative relay communication.
+This project implements and compares **8 relay strategies** (2 classical + 6 AI-based) across **3 channel types** (AWGN, Rayleigh, Rician) and **2 antenna topologies** (SISO, 2×2 MIMO) to evaluate the potential of generative AI and modern sequence models for cooperative relay communication.
 
 ### Relay Methods
 
@@ -46,19 +47,24 @@ This project implements and compares **8 relay strategies** (2 classical + 6 AI-
 | **Transformer** | Attention | Multi-head Self-Attention | 17,697 |
 | **Mamba S6** | State Space | Selective State Space Model | 24,001 |
 
-### Channel Models
+### Channel Types
 
-| Channel | Type | Key Characteristic |
-|---------|------|--------------------|
-| **AWGN** | SISO | Additive white Gaussian noise only |
-| **Rayleigh** | SISO fading | Flat fading, no line-of-sight (NLOS) |
-| **Rician (K=3)** | SISO fading | Fading with line-of-sight component |
-| **2×2 MIMO ZF** | MIMO | Spatial multiplexing, Zero-Forcing equalization |
-| **2×2 MIMO MMSE** | MIMO | Spatial multiplexing, MMSE equalization |
+| Channel | Key Characteristic |
+|---------|--------------------|
+| **AWGN** | Additive white Gaussian noise only |
+| **Rayleigh** | Flat fading, no line-of-sight (NLOS) |
+| **Rician (K=3)** | Fading with dominant line-of-sight component |
+
+### Antenna Topologies & Equalization
+
+| Topology | Antennas | Channel per Link | Equalization |
+|----------|----------|------------------|----|
+| **SISO** | 1 TX, 1 RX | AWGN / Rayleigh / Rician | Perfect CSI |
+| **2×2 MIMO** | 2 TX, 2 RX | Rayleigh (i.i.d. per link) | **ZF** or **MMSE** |
 
 ---
 
-## Channel Models
+## Channel Types
 
 ### AWGN (Additive White Gaussian Noise)
 
@@ -87,28 +93,37 @@ h = √(K/(K+1)) · e^{jθ} + √(1/(K+1)) · h_scatter
 
 The Rician K-factor controls the ratio of LOS to scattered power. Higher K yields less severe fading.
 
-### 2×2 MIMO with Zero-Forcing (ZF)
+## Antenna Topologies
 
-Spatial multiplexing with two transmit and two receive antennas:
+### SISO (Single-Input Single-Output)
 
-```
-y = H·x + n,    H ∈ ℂ^{2×2},    H_ij ~ CN(0, 1)
-ZF equalization: x̂ = H⁻¹·y
-```
+Conventional single-antenna setup. Used with all three channel types above.
 
-ZF completely removes inter-stream interference but amplifies noise when H is ill-conditioned.
+### 2×2 MIMO (Multiple-Input Multiple-Output)
 
-### 2×2 MIMO with MMSE
-
-Regularized linear equalization that trades a small residual interference for reduced noise enhancement:
+The MIMO topology uses **2 transmit antennas** and **2 receive antennas**. The underlying channel between each TX–RX antenna pair is **independent Rayleigh fading** (i.i.d. CN(0, 1)). This is not a separate channel type — it is a spatial multiplexing topology where each of the 4 links (TX₁→RX₁, TX₁→RX₂, TX₂→RX₁, TX₂→RX₂) experiences Rayleigh fading:
 
 ```
-x̂ = (H^H·H + σ²·I)⁻¹ · H^H · y
+y = H·x + n,    H ∈ ℂ^{2×2},    H_ij ~ CN(0, 1)  (Rayleigh fading per link)
+```
+
+Two linear equalization techniques are applied at the receiver:
+
+**Zero-Forcing (ZF):** Inverts the channel matrix to completely remove inter-stream interference, but amplifies noise when H is ill-conditioned:
+
+```
+ZF:    x̂ = H⁻¹·y
+```
+
+**MMSE (Minimum Mean Square Error):** Adds noise-variance regularization to prevent excessive noise amplification, trading a small residual interference for better noise performance:
+
+```
+MMSE:  x̂ = (H^H·H + σ²·I)⁻¹ · H^H · y
 ```
 
 MMSE consistently outperforms ZF, especially at low SNR.
 
-> **GPU Acceleration:** Both MIMO channels use vectorized PyTorch batched `torch.linalg.solve` instead of per-symbol Python loops, achieving >100× speed-up on CPU and further gains on CUDA GPUs.
+> **GPU Acceleration:** Both MIMO equalizers use vectorized PyTorch batched `torch.linalg.solve` instead of per-symbol Python loops, achieving >100× speed-up on CPU and further gains on CUDA GPUs.
 
 ---
 
@@ -138,14 +153,16 @@ MMSE consistently outperforms ZF, especially at low SNR.
 
     Source ──── Channel ────► Relay ──── Channel ────► Destination
                   │              ▲              │
-             [AWGN/Fading/    [AI or        [AWGN/Fading/
-              MIMO]         Classical]       MIMO]
+             [AWGN/Fading]    [AI or        [AWGN/Fading]
+                           Classical]
 
-    Channels:  AWGN │ Rayleigh │ Rician K=3 │ 2×2 MIMO ZF │ 2×2 MIMO MMSE
+    Topology:  SISO (1×1)  │  2×2 MIMO (spatial multiplexing)
+    Channels:  AWGN  │  Rayleigh  │  Rician K=3
+    Equalizers (MIMO): ZF  │  MMSE
     Relays:    AF │ DF │ GenAI │ Hybrid │ VAE │ CGAN │ Transformer │ Mamba S6
 ```
 
-Each relay strategy is evaluated across all 5 channels using Monte Carlo simulation with 95% confidence intervals (10 trials × 10,000 bits per SNR point).
+Each relay strategy is evaluated across all 5 configurations (3 SISO channels + 2 MIMO equalization methods) using Monte Carlo simulation with 95% confidence intervals (10 trials × 10,000 bits per SNR point).
 
 ---
 
@@ -158,7 +175,7 @@ Each relay strategy is evaluated across all 5 channels using Monte Carlo simulat
 3. **DF dominates at medium/high SNR** (≥6 dB) — no training required
 4. **Hybrid relay** provides the best practical trade-off: AI at low SNR, DF at high SNR
 5. **All AI relays dramatically outperform AF** across all channels
-6. **MIMO MMSE consistently outperforms MIMO ZF** at every SNR for all relay types
+6. **MMSE equalization consistently outperforms ZF** in the 2×2 MIMO topology at every SNR for all relay types
 
 ### Normalized 3K Comparison (equal parameter budgets)
 
@@ -241,7 +258,7 @@ To enable a fair **apples-to-apples** comparison, all 6 AI models were scaled to
 | 10 | 1.54e-2 | 1.47e-2 | 1.98e-2 | 1.48e-2 | **1.45e-2** | 1.46e-2 |
 | 20 | 9.20e-4 | 8.80e-4 | 1.24e-3 | 8.80e-4 | **6.80e-4** | 7.20e-4 |
 
-#### 2×2 MIMO ZF
+#### 2×2 MIMO (Rayleigh) – ZF Equalization
 
 | SNR (dB) | GenAI-3K | Hybrid-3K | VAE-3K | CGAN-3K | Transformer-3K | Mamba-3K |
 |----------|----------|-----------|--------|---------|----------------|----------|
@@ -249,7 +266,7 @@ To enable a fair **apples-to-apples** comparison, all 6 AI models were scaled to
 | 10 | 4.82e-2 | 4.80e-2 | 5.55e-2 | 4.67e-2 | 4.64e-2 | **4.64e-2** |
 | 20 | 5.40e-3 | **5.12e-3** | 5.92e-3 | 5.16e-3 | **5.12e-3** | 5.16e-3 |
 
-#### 2×2 MIMO MMSE
+#### 2×2 MIMO (Rayleigh) – MMSE Equalization
 
 | SNR (dB) | GenAI-3K | Hybrid-3K | VAE-3K | CGAN-3K | Transformer-3K | Mamba-3K |
 |----------|----------|-----------|--------|---------|----------------|----------|
@@ -264,8 +281,8 @@ To enable a fair **apples-to-apples** comparison, all 6 AI models were scaled to
 | `results/normalized_3k_awgn.png` | AWGN channel, all 6 models at ~3K params |
 | `results/normalized_3k_rayleigh.png` | Rayleigh fading, all 6 models at ~3K params |
 | `results/normalized_3k_rician_k3.png` | Rician K=3, all 6 models at ~3K params |
-| `results/normalized_3k_2x2_mimo_zf.png` | 2×2 MIMO ZF, all 6 models at ~3K params |
-| `results/normalized_3k_2x2_mimo_mmse.png` | 2×2 MIMO MMSE, all 6 models at ~3K params |
+| `results/normalized_3k_2x2_mimo_zf.png` | 2×2 MIMO (Rayleigh) ZF, all 6 models at ~3K params |
+| `results/normalized_3k_2x2_mimo_mmse.png` | 2×2 MIMO (Rayleigh) MMSE, all 6 models at ~3K params |
 | `results/normalized_3k_all_channels.png` | **Consolidated 2×3 grid** of all channels |
 
 ---
@@ -348,7 +365,7 @@ relaynet2/
 │   ├── channels/
 │   │   ├── awgn.py                       # AWGN channel
 │   │   ├── fading.py                     # Rayleigh & Rician fading
-│   │   └── mimo.py                       # 2×2 MIMO ZF & MMSE (GPU-accelerated)
+│   │   └── mimo.py                       # 2×2 MIMO topology + ZF/MMSE equalization (GPU)
 │   ├── modulation/
 │   │   └── bpsk.py                       # BPSK modulation/demodulation
 │   ├── relays/
@@ -497,7 +514,7 @@ python -m pytest tests/ -q
 ```
 
 Tests cover:
-- **Channels:** AWGN noise power, Rayleigh/Rician fading statistics, MIMO ZF & MMSE equalization
+- **Channels & topologies:** AWGN noise power, Rayleigh/Rician fading statistics, 2×2 MIMO with ZF & MMSE equalization
 - **Modulation:** BPSK modulate/demodulate correctness
 - **Relays:** All 6 AI relays + 2 classical relays (training, inference, parameter counts)
 - **Simulation:** Monte Carlo runner, BER computation

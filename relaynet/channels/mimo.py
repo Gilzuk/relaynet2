@@ -1,33 +1,36 @@
 """
-MIMO Channel Implementation (2×2 Spatial Multiplexing)
+2×2 MIMO Spatial Multiplexing with Rayleigh Fading
 
-Implements a 2×2 MIMO Rayleigh flat-fading channel with two receiver
-equalization options:
+Implements a 2×2 MIMO antenna topology where the channel between each
+transmit–receive antenna pair undergoes independent Rayleigh flat
+fading.  Two linear receiver equalization techniques are provided:
 
-* **Zero-Forcing (ZF)** — inverts the channel; simple but amplifies
-  noise when H is ill-conditioned.
+* **Zero-Forcing (ZF)** — inverts the channel matrix; simple but
+  amplifies noise when H is ill-conditioned.
 * **MMSE (Minimum Mean Square Error)** — regularised inverse that
   trades a small amount of residual interference for a large noise
   reduction, yielding lower BER than ZF at every SNR.
 
-System model
-------------
-The input BPSK stream of length *N* (must be even) is demultiplexed
-into two spatial streams of length *N/2*:
+Topology & system model
+-----------------------
+The transmitter has 2 antennas and the receiver has 2 antennas.  The
+input BPSK stream of length *N* (must be even) is demultiplexed into
+two spatial streams of length *N/2*:
 
     x = [x₁, x₂]ᵀ          (2×1 per symbol interval)
 
 Each symbol interval uses an independent 2×2 complex channel matrix
-whose entries are i.i.d. CN(0, 1):
+whose entries are i.i.d. CN(0, 1), i.e. each link between a transmit
+antenna and a receive antenna experiences independent Rayleigh fading:
 
-    H = [[h₁₁, h₁₂],
+    H = [[h₁₁, h₁₂],       h_ij ~ CN(0, 1)
          [h₂₁, h₂₂]]
 
-The received vector is:
+The received vector at the 2 receive antennas is:
 
     y = H x + n,    n ~ CN(0, σ²I)
 
-Equalization:
+Equalization at the receiver:
 
     ZF:    x̂ = H⁻¹ y
     MMSE:  x̂ = (H^H H + σ²I)⁻¹ H^H y
@@ -37,15 +40,18 @@ output of the same length as the input.
 
 Notes
 -----
-* **Spatial multiplexing** doubles the spectral efficiency compared with
-  SISO, but ZF equalization amplifies noise (especially when H is
-  ill-conditioned).  MMSE avoids the worst noise enhancement at the
-  cost of a small bias, making it the preferred linear equalizer.
-* The channel assumes perfect CSI at the receiver (no channel
+* MIMO is an **antenna topology** (multiple-input multiple-output),
+  not a channel type.  The underlying fading channel between each
+  TX–RX antenna pair is Rayleigh (i.i.d. complex Gaussian).
+* **Spatial multiplexing** doubles the spectral efficiency compared
+  with SISO, but ZF equalization amplifies noise (especially when H
+  is ill-conditioned).  MMSE avoids the worst noise enhancement at
+  the cost of a small bias, making it the preferred linear equalizer.
+* The system assumes perfect CSI at the receiver (no channel
   estimation errors).
-* Each symbol interval has an independently drawn H (block-fading with
-  block length = 1 symbol).
-* Both channels use **vectorized PyTorch** batched linear-algebra
+* Each symbol interval has an independently drawn H (block-fading
+  with block length = 1 symbol).
+* Both equalizers use **vectorized PyTorch** batched linear-algebra
   (``torch.linalg.solve``) instead of a per-symbol Python loop,
   giving >100× speed-up on CPU and further gains on CUDA GPUs.
 
@@ -121,7 +127,7 @@ def _generate_mimo_batch(x1, x2, n_sym, n_rx, n_tx, noise_power):
 # ── ZF equalizer (vectorized) ──────────────────────────────────────
 
 def mimo_2x2_channel(signal, snr_db, device="auto"):
-    """Apply a 2×2 MIMO Rayleigh channel with ZF equalization.
+    """Apply a 2×2 MIMO topology with Rayleigh fading and ZF equalization.
 
     Parameters
     ----------
@@ -168,7 +174,7 @@ def mimo_2x2_channel(signal, snr_db, device="auto"):
 # ── MMSE equalizer (vectorized) ─────────────────────────────────────
 
 def mimo_2x2_mmse_channel(signal, snr_db, device="auto"):
-    """Apply a 2×2 MIMO Rayleigh channel with MMSE equalization.
+    """Apply a 2×2 MIMO topology with Rayleigh fading and MMSE equalization.
 
     The MMSE linear filter is:
 

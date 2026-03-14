@@ -119,14 +119,14 @@ def make_transformer_3k(prefer_gpu=False, **kw):
     """Return a ~3007-param Transformer relay."""
     if not _HAS_SEQ:
         raise ImportError("Transformer checkpoint not available")
-    return TransformerRelayWrapper(target_power=1.0, **TRANSFORMER_3K, **kw)
+    return TransformerRelayWrapper(target_power=1.0, **TRANSFORMER_3K, prefer_gpu=prefer_gpu, **kw)
 
 
 def make_mamba_3k(prefer_gpu=False, **kw):
     """Return a ~3027-param Mamba S6 relay."""
     if not _HAS_SEQ:
         raise ImportError("Mamba S6 checkpoint not available")
-    return MambaRelayWrapper(target_power=1.0, **MAMBA_3K, **kw)
+    return MambaRelayWrapper(target_power=1.0, **MAMBA_3K, prefer_gpu=prefer_gpu, **kw)
 
 
 def build_all_3k(prefer_gpu=False, include_sequence_models=True):
