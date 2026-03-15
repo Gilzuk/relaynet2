@@ -127,8 +127,8 @@ def train_relays(args):
     relays["CGAN (WGAN-GP)"] = cgan
 
     if args.include_sequence_models and _HAS_SEQ:
-        seq_samples = 50_000 if not args.quick else 3_000
-        seq_epochs = 100 if not args.quick else 10
+        seq_samples = 25_000 if not args.quick else 3_000
+        seq_epochs = 50 if not args.quick else 10
 
         for name, cls in [("Transformer", TransformerRelayWrapper),
                           ("Mamba S6", MambaRelayWrapper),
