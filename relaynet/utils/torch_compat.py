@@ -32,3 +32,19 @@ def to_numpy(value, dtype=None):
     if torch is not None and isinstance(value, torch.Tensor):
         return np.asarray(value.detach().cpu().tolist(), dtype=dtype)
     return np.asarray(value, dtype=dtype)
+
+
+def save_state(state, path):
+    """Save an arbitrary state dict.  Uses ``torch.save`` when available, else numpy."""
+    if torch is not None:
+        torch.save(state, path)
+    else:
+        np.save(path, state, allow_pickle=True)
+
+
+def load_state(path):
+    """Load a state dict saved by :func:`save_state`."""
+    if torch is not None:
+        return torch.load(path, map_location="cpu", weights_only=False)
+    data = np.load(path, allow_pickle=True)
+    return data.item() if data.ndim == 0 else data

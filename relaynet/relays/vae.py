@@ -69,7 +69,7 @@ def _build_torch_vae(window_size, latent_size, beta, device, hidden_sizes=(32, 1
             out = model.infer(X_t)
         return to_numpy(out.flatten(), dtype=float)
 
-    return {"train_step": train_step, "infer": infer}
+    return {"train_step": train_step, "infer": infer, "model": model}
 
 
 class VAERelay(Relay):
@@ -279,11 +279,47 @@ class VAERelay(Relay):
         if self._use_torch:
             processed = self._torch_vae["infer"](windows)
         else:
-            processed = np.zeros(len(received_signal))
-            for i in range(len(received_signal)):
-                processed[i] = self._infer(windows[i].reshape(1, -1))[0, 0]
+            processed = self._infer(windows).flatten()
 
         pwr = np.mean(np.abs(processed) ** 2)
         if pwr > 0:
             processed *= np.sqrt(self.target_power / pwr)
         return processed
+
+    # ------------------------------------------------------------------
+    # Weight persistence
+    # ------------------------------------------------------------------
+
+    def save_weights(self, path):
+        """Save trained weights to *path*."""
+        from relaynet.utils.torch_compat import save_state
+        state = {
+            "type": "VAERelay",
+            "config": {"window_size": self.window_size,
+                       "latent_size": self.latent_size,
+                       "hidden_sizes": self.hidden_sizes},
+        }
+        if self._use_torch and self._torch_vae is not None:
+            state["torch_state_dict"] = self._torch_vae["model"].state_dict()
+        else:
+            state["numpy"] = {
+                "W_e1": self.W_e1, "b_e1": self.b_e1,
+                "W_e2": self.W_e2, "b_e2": self.b_e2,
+                "W_mu": self.W_mu, "b_mu": self.b_mu,
+                "W_lv": self.W_lv, "b_lv": self.b_lv,
+                "W_d1": self.W_d1, "b_d1": self.b_d1,
+                "W_d2": self.W_d2, "b_d2": self.b_d2,
+                "W_out": self.W_out, "b_out": self.b_out,
+            }
+        save_state(state, path)
+
+    def load_weights(self, path):
+        """Load trained weights from *path* and mark the relay as trained."""
+        from relaynet.utils.torch_compat import load_state
+        state = load_state(path)
+        if "torch_state_dict" in state and self._use_torch and self._torch_vae is not None:
+            self._torch_vae["model"].load_state_dict(state["torch_state_dict"])
+        elif "numpy" in state:
+            for key, val in state["numpy"].items():
+                setattr(self, key, val)
+        self.is_trained = True

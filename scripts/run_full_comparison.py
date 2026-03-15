@@ -45,6 +45,7 @@ from relaynet.simulation.statistics import (
 from relaynet.visualization.plots import plot_ber_curves, plot_ber_with_ci
 from relaynet.channels.fading import rayleigh_fading_channel, rician_fading_channel
 from relaynet.channels.mimo import mimo_2x2_channel, mimo_2x2_mmse_channel, mimo_2x2_sic_channel
+from relaynet.utils.checkpoint_manager import CheckpointManager
 
 try:
     from checkpoints.checkpoint_18_transformer_relay import TransformerRelayWrapper
@@ -119,6 +120,29 @@ def parse_args():
         action="store_true",
         help="Print elapsed times and device selection for each training/evaluation stage.",
     )
+    p.add_argument(
+        "--save-weights",
+        action="store_true",
+        help=(
+            "Save all trained model weights to <weights-dir>/seed_<seed>/ "
+            "for later inference-only runs."
+        ),
+    )
+    p.add_argument(
+        "--inference-only",
+        action="store_true",
+        help=(
+            "Skip training entirely; load previously saved weights from "
+            "<weights-dir>/seed_<seed>/ and run evaluation only. "
+            "Much faster — useful for regenerating plots."
+        ),
+    )
+    p.add_argument(
+        "--weights-dir",
+        type=str,
+        default="trained_weights",
+        help="Directory for saving/loading model weights (default: trained_weights).",
+    )
     p.add_argument("--seed", type=int, default=42)
     return p.parse_args()
 
@@ -137,6 +161,42 @@ def _timed(label, fn, *args, log_timings=False, **kwargs):
     if log_timings:
         print(f"    [time] {label}: {elapsed:.2f}s")
     return result, elapsed
+
+
+def create_relay_instances(args):
+    """Create **untrained** relay instances (same architectures as train_models).
+
+    Used by ``--inference-only`` mode to instantiate models before loading
+    saved weights.
+    """
+    relays = {
+        "AF": AmplifyAndForwardRelay(),
+        "DF": DecodeAndForwardRelay(),
+        "GenAI (169p)": MinimalGenAIRelay(
+            window_size=5, hidden_size=24, prefer_gpu=False,
+        ),
+        "Hybrid": HybridRelay(snr_threshold=5.0, prefer_gpu=False),
+        "VAE": VAERelay(
+            window_size=7, latent_size=8, beta=0.1, prefer_gpu=False,
+        ),
+        "CGAN (WGAN-GP)": CGANRelay(
+            window_size=7, noise_size=8, lambda_gp=10, lambda_l1=20,
+            n_critic=5, prefer_gpu=args.gpu,
+        ),
+    }
+    if args.include_sequence_models:
+        if _HAS_SEQUENCE_MODELS:
+            relays["Transformer"] = TransformerRelayWrapper(
+                target_power=1.0, window_size=11, d_model=32,
+                num_heads=4, num_layers=2, prefer_gpu=args.gpu,
+            )
+            relays["Mamba S6"] = MambaRelayWrapper(
+                target_power=1.0, window_size=11, d_model=32,
+                d_state=16, num_layers=2, prefer_gpu=args.gpu,
+            )
+        else:
+            print("  [WARNING] Transformer/Mamba checkpoints not available; skipping.")
+    return relays
 
 
 def train_models(args):
@@ -188,14 +248,13 @@ def train_models(args):
     timing_summary["VAE"] = (_relay_device(vae), elapsed)
 
     print("  Training CGAN relay (WGAN-GP) …")
-    # CGAN networks are ~3K params total — too small for GPU benefit.
     cgan = CGANRelay(
         window_size=7,
         noise_size=8,
         lambda_gp=10,
         lambda_l1=20,
         n_critic=5,
-        prefer_gpu=False,
+        prefer_gpu=args.gpu,
     )
     print(f"    device: {_relay_device(cgan)}")
     _, elapsed = _timed(
@@ -624,6 +683,18 @@ def print_significance(snr_range, all_ber, all_trials, baseline="DF"):
 def main():
     args = parse_args()
     np.random.seed(args.seed)
+
+    # Warm up CUDA to avoid lazy-init warnings from cuBLAS/cuDNN.
+    if args.gpu:
+        try:
+            import torch
+            if torch.cuda.is_available():
+                _tmp = torch.randn(2, 2, device="cuda", requires_grad=True)
+                (_tmp @ _tmp).sum().backward()  # force cuBLAS + autograd init
+                del _tmp
+        except Exception:
+            pass
+
     total_start = perf_counter()
 
     if args.quick:
@@ -646,7 +717,39 @@ def main():
     snr_range = np.arange(args.snr_min, args.snr_max + 0.01, args.snr_step)
     os.makedirs("results", exist_ok=True)
 
-    relays = train_models(args)
+    ckpt_mgr = CheckpointManager(args.weights_dir)
+
+    if args.inference_only:
+        if not ckpt_mgr.has_checkpoint(args.seed):
+            print(f"\nERROR: No saved weights for seed={args.seed} "
+                  f"in '{args.weights_dir}/'")
+            print(f"  Available seeds: "
+                  f"{ckpt_mgr.list_checkpoints() or 'none'}")
+            print("  Run with --save-weights first to create a checkpoint.")
+            sys.exit(1)
+        print(f"\n=== Inference-only mode (seed={args.seed}) ===")
+        meta = ckpt_mgr.get_metadata(args.seed)
+        if meta:
+            print(f"  Checkpoint from: {meta.get('date', 'unknown')}")
+        relays = create_relay_instances(args)
+        loaded, skipped = ckpt_mgr.load_all(relays, args.seed)
+        print(f"  Loaded: {', '.join(loaded) if loaded else 'none'}")
+        non_trainable = {"AF", "DF"}
+        actually_skipped = [s for s in skipped if s not in non_trainable]
+        if actually_skipped:
+            print(f"  [WARNING] Missing weights for: "
+                  f"{', '.join(actually_skipped)}")
+    else:
+        relays = train_models(args)
+        if args.save_weights:
+            print(f"\n=== Saving weights (seed={args.seed}) ===")
+            config = {
+                k: v for k, v in vars(args).items()
+                if isinstance(v, (int, float, str, bool, list))
+            }
+            saved = ckpt_mgr.save_all(relays, args.seed, config)
+            ckpt_dir = ckpt_mgr.checkpoint_dir(args.seed)
+            print(f"  Saved {len(saved)} relay(s) \u2192 {ckpt_dir}/")
 
     # AWGN comparison
     awgn_ber, awgn_trials = run_awgn_comparison(
@@ -752,7 +855,18 @@ def main():
             print("\n  [WARNING] checkpoint_22_normalized_3k could not be imported; "
                   "skipping normalized comparison.")
         else:
-            relays_3k = train_normalized_models(args)
+            if args.inference_only:
+                relays_3k = build_all_3k(
+                    prefer_gpu=args.gpu,
+                    include_sequence_models=args.include_sequence_models,
+                )
+                loaded_3k, _ = ckpt_mgr.load_all(relays_3k, args.seed)
+                print(f"\n  Loaded normalized models: "
+                      f"{', '.join(loaded_3k) if loaded_3k else 'none'}")
+            else:
+                relays_3k = train_normalized_models(args)
+                if args.save_weights:
+                    ckpt_mgr.save_all(relays_3k, args.seed)
             run_normalized_comparison(
                 relays_3k, snr_range,
                 args.bits_per_trial, args.num_trials,

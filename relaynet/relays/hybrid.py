@@ -117,3 +117,16 @@ class HybridRelay(Relay):
         if est_snr < self.snr_threshold:
             return self.genai_relay.process(received_signal)
         return self.df_relay.process(received_signal)
+
+    # ------------------------------------------------------------------
+    # Weight persistence (delegates to GenAI sub-relay)
+    # ------------------------------------------------------------------
+
+    def save_weights(self, path):
+        """Save the internal GenAI sub-relay weights to *path*."""
+        self.genai_relay.save_weights(path)
+
+    def load_weights(self, path):
+        """Load weights into the GenAI sub-relay and mark as trained."""
+        self.genai_relay.load_weights(path)
+        self.is_trained = True

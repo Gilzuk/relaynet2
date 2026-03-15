@@ -99,3 +99,23 @@ class RLRelay(Relay):
         if pwr > 0:
             processed *= np.sqrt(self.target_power / pwr)
         return processed
+
+    # ------------------------------------------------------------------
+    # Weight persistence
+    # ------------------------------------------------------------------
+
+    def save_weights(self, path):
+        """Save trained Q-table to *path*."""
+        from relaynet.utils.torch_compat import save_state
+        save_state({
+            "type": "RLRelay",
+            "Q": self.Q,
+            "config": {"num_states": self.num_states},
+        }, path)
+
+    def load_weights(self, path):
+        """Load Q-table from *path* and mark the relay as trained."""
+        from relaynet.utils.torch_compat import load_state
+        state = load_state(path)
+        self.Q = state["Q"]
+        self.is_trained = True

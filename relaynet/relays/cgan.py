@@ -180,7 +180,8 @@ def _build_torch_cgan(window_size, noise_size, lambda_gp, lambda_l1, n_critic,
         G.train()
         return to_numpy(out.flatten(), dtype=float)
 
-    return {"train_step": train_step, "infer": infer}
+    return {"train_step": train_step, "infer": infer,
+            "generator": G, "critic": C}
 
 
 # ---------------------------------------------------------------------------
@@ -323,3 +324,48 @@ class CGANRelay(Relay):
         if pwr > 0:
             processed *= np.sqrt(self.target_power / pwr)
         return processed
+
+    # ------------------------------------------------------------------
+    # Weight persistence
+    # ------------------------------------------------------------------
+
+    def save_weights(self, path):
+        """Save trained weights to *path*."""
+        from relaynet.utils.torch_compat import save_state
+        state = {
+            "type": "CGANRelay",
+            "config": {"window_size": self.window_size,
+                       "noise_size": self.noise_size,
+                       "g_hidden_sizes": self.g_hidden_sizes,
+                       "c_hidden_sizes": self.c_hidden_sizes},
+        }
+        if self._use_torch:
+            state["torch_generator"] = self._torch_model["generator"].state_dict()
+            state["torch_critic"] = self._torch_model["critic"].state_dict()
+        else:
+            gen = self._gen
+            state["numpy_gen"] = {
+                "W1": gen.W1, "b1": gen.b1, "W2": gen.W2, "b2": gen.b2,
+                "W3": gen.W3, "b3": gen.b3, "W4": gen.W4, "b4": gen.b4,
+            }
+            crit = self._crit
+            state["numpy_crit"] = {
+                "W1": crit.W1, "b1": crit.b1,
+                "W2": crit.W2, "b2": crit.b2,
+                "W3": crit.W3, "b3": crit.b3,
+            }
+        save_state(state, path)
+
+    def load_weights(self, path):
+        """Load trained weights from *path* and mark the relay as trained."""
+        from relaynet.utils.torch_compat import load_state
+        state = load_state(path)
+        if self._use_torch and "torch_generator" in state:
+            self._torch_model["generator"].load_state_dict(state["torch_generator"])
+            self._torch_model["critic"].load_state_dict(state["torch_critic"])
+        elif "numpy_gen" in state:
+            for key, val in state["numpy_gen"].items():
+                setattr(self._gen, key, val)
+            for key, val in state["numpy_crit"].items():
+                setattr(self._crit, key, val)
+        self.is_trained = True

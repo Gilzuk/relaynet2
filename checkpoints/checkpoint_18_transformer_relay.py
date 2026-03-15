@@ -270,29 +270,50 @@ class TransformerRelayWrapper(Relay):
         print(f"  Total parameters: {self.num_params:,}")
     
     def process(self, received_signal):
-        """Process signal through transformer."""
+        """Process signal through transformer (batched)."""
         if not self.is_trained:
             return received_signal * 1.5
         
         self.model.eval()
         
-        processed = np.zeros_like(received_signal)
         pad_size = self.window_size // 2
         padded_signal = np.pad(received_signal, pad_size, mode='edge')
+        n = len(received_signal)
         
+        # Build all windows at once: (n, window_size)
+        windows = np.lib.stride_tricks.as_strided(
+            padded_signal,
+            shape=(n, self.window_size),
+            strides=(padded_signal.strides[0], padded_signal.strides[0]),
+        ).copy()  # copy to ensure contiguous memory
+        
+        # Single batched forward pass
         with torch.no_grad():
-            for i in range(len(received_signal)):
-                window = padded_signal[i:i+self.window_size]
-                window_input = torch.FloatTensor(window.reshape(1, -1, 1)).to(self.device)
-                
-                reconstruction = self.model(window_input)
-                processed[i] = float(reconstruction.detach().cpu().flatten().tolist()[0])
+            window_input = torch.as_tensor(
+                windows, dtype=torch.float32, device=self.device,
+            ).unsqueeze(-1)  # (n, window_size, 1)
+            processed = self.model(window_input).cpu().numpy().flatten()
         
         # Normalize power
         current_power = np.mean(np.abs(processed) ** 2)
         if current_power > 0:
             return processed * np.sqrt(self.target_power / current_power)
         return processed
+
+    def save_weights(self, path):
+        """Save trained model weights to *path*."""
+        torch.save({
+            "type": "TransformerRelayWrapper",
+            "model_state_dict": self.model.state_dict(),
+            "config": {"window_size": self.window_size,
+                       "num_params": self.num_params},
+        }, path)
+
+    def load_weights(self, path):
+        """Load model weights from *path* and mark as trained."""
+        state = torch.load(path, map_location=self.device, weights_only=False)
+        self.model.load_state_dict(state["model_state_dict"])
+        self.is_trained = True
 
 
 def simulate_transformer_transmission(num_bits, snr_db, relay, seed=None):

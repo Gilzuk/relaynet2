@@ -174,12 +174,42 @@ class MinimalGenAIRelay(Relay):
                 window_t = torch.as_tensor(windows, dtype=torch.float32, device=self.device)
                 processed = to_numpy(self._torch_model(window_t).flatten(), dtype=float)
         else:
-            processed = np.array([
-                self.nn.forward(windows[i].reshape(1, -1))[0, 0]
-                for i in range(len(received_signal))
-            ])
+            processed = self.nn.forward(windows).flatten()
 
         current_power = np.mean(np.abs(processed) ** 2)
         if current_power > 0:
             processed *= np.sqrt(self.target_power / current_power)
         return processed
+
+    # ------------------------------------------------------------------
+    # Weight persistence
+    # ------------------------------------------------------------------
+
+    def save_weights(self, path):
+        """Save trained weights to *path*."""
+        from relaynet.utils.torch_compat import save_state
+        state = {
+            "type": "MinimalGenAIRelay",
+            "config": {"window_size": self.window_size,
+                       "hidden_size": self.hidden_size},
+        }
+        if self._use_torch and self._torch_model is not None:
+            state["torch_state_dict"] = self._torch_model.state_dict()
+        else:
+            state["numpy"] = {
+                "W1": self.nn.W1, "b1": self.nn.b1,
+                "W2": self.nn.W2, "b2": self.nn.b2,
+            }
+        save_state(state, path)
+
+    def load_weights(self, path):
+        """Load trained weights from *path* and mark the relay as trained."""
+        from relaynet.utils.torch_compat import load_state
+        state = load_state(path)
+        if "torch_state_dict" in state and self._use_torch and self._torch_model is not None:
+            self._torch_model.load_state_dict(state["torch_state_dict"])
+        elif "numpy" in state:
+            nw = state["numpy"]
+            self.nn.W1, self.nn.b1 = nw["W1"], nw["b1"]
+            self.nn.W2, self.nn.b2 = nw["W2"], nw["b2"]
+        self.is_trained = True
