@@ -52,6 +52,7 @@ A thesis submitted in partial fulfillment of the requirements for the degree of 
    - 8.1 Interpretation of Results
    - 8.2 The "Less is More" Principle
    - 8.3 State Space vs. Attention for Signal Processing
+     - 8.3.1 Context-Length Benchmark: Validating the Crossover Hypothesis
    - 8.4 Practical Deployment Recommendations
    - 8.5 Limitations
    - 8.6 Future Work
@@ -106,6 +107,7 @@ A thesis submitted in partial fulfillment of the requirements for the degree of 
 | 10 | Normalized 3K BER results — 2×2 MIMO ZF | §7.8 |
 | 11 | Normalized 3K BER results — 2×2 MIMO MMSE | §7.8 |
 | 12 | Model complexity and timing comparison | §7.9 |
+| 13 | Context-length benchmark — three sequence models at $n = 255$ on CUDA | §8.3.1 |
 
 ---
 
@@ -140,6 +142,7 @@ A thesis submitted in partial fulfillment of the requirements for the degree of 
 | SINR | Signal-to-Interference-plus-Noise Ratio |
 | SISO | Single-Input Single-Output |
 | SNR | Signal-to-Noise Ratio |
+| SSD | Structured State Space Duality |
 | SSM | State Space Model |
 | V-BLAST | Vertical Bell Laboratories Layered Space-Time |
 | VAE | Variational Autoencoder |
@@ -248,7 +251,15 @@ $$\mathbf{x}_k = \bar{\mathbf{A}} \mathbf{x}_{k-1} + \bar{\mathbf{B}} u_k, \quad
 
 where $\bar{\mathbf{A}} = \exp(\Delta \mathbf{A})$ and $\bar{\mathbf{B}} = \Delta \mathbf{B}$ are the discretized state matrices. Critically, Mamba makes the parameters $\Delta$, $\mathbf{B}$, and $\mathbf{C}$ input-dependent through learned projections, enabling selective information propagation. This achieves $O(n)$ complexity while maintaining the ability to model long-range dependencies through the recurrent state.
 
-The application of state space models to physical-layer signal processing is largely unexplored. This thesis presents the first comparison of Mamba S6 against Transformers for relay communication, demonstrating that state space models are better suited to this domain.
+**Mamba-2 (Structured State Space Duality)** (Dao & Gu, 2024) reformulates the S6 recurrence as a structured (semi-separable) matrix multiply. For a chunk of length $L$, the causal SSM kernel is:
+
+$$M_{ij} = \mathbf{C}_i^T \left(\prod_{k=j+1}^{i} \bar{\mathbf{A}}_k\right) \mathbf{B}_j, \quad i \ge j$$
+
+$$\mathbf{y} = M \cdot (\mathbf{B} \odot \mathbf{u})$$
+
+The lower-triangular matrix $M$ can be built and applied via a single batched matmul per chunk, replacing the sequential per-step recurrence with chunk-parallel computation. This yields $O(L^2 N)$ per chunk — quadratic in chunk length but fully parallel on GPU. With small chunks ($L \le 32$) and inter-chunk state passing, SSD achieves the same effective $O(n)$ scaling as S6 while trading sequential kernel launches for parallel matrix operations. The duality between recurrence and matrix multiplication means the architecture can select the more efficient mode depending on hardware and sequence length.
+
+The application of state space models to physical-layer signal processing is largely unexplored. This thesis presents the first comparison of Mamba S6, Mamba-2 (SSD), and Transformers for relay communication, demonstrating that state space models are well suited to this domain and that the SSD formulation of Mamba-2 yields significant speed advantages at longer context lengths.
 
 ### 4.6 MIMO Systems and Equalization
 
@@ -587,6 +598,8 @@ $$\mathbf{h} = \text{ReLU}(\mathbf{W}_1 \mathbf{w} + \mathbf{b}_1), \quad \hat{x
 
 - **Mamba S6:** Selective state space model with input-dependent state transitions. Architecture: $d_{\text{model}}=32$, $d_{\text{state}}=16$, 2 Mamba blocks with residual connections. Total: 24,001 parameters. Each block applies: LayerNorm → expand ($32 \to 64$) → S6 selective scan → contract ($64 \to 32$) → residual. Trained for 100 epochs with Adam optimizer ($\text{lr}=10^{-3}$).
 
+- **Mamba2 (SSD):** Structured State Space Duality model that replaces the sequential S6 recurrence with a chunk-parallel structured matrix multiply. Architecture: $d_{\text{model}}=32$, $d_{\text{state}}=16$, chunk size 8, 2 Mamba-2 blocks with SiLU gating and residual connections. Total: 26,179 parameters. Each block applies: LayerNorm → parallel gate/SSD branches → SiLU gate → contract ($64 \to 32$) → residual. The SSD layer builds a lower-triangular causal kernel $M$ per chunk and applies it via batched matmul, with inter-chunk state passing for continuity. Trained for 100 epochs with Adam optimizer ($\text{lr}=10^{-3}$) and gradient clipping ($\|\nabla\| \le 1$).
+
 ### 6.4 MIMO Equalization Techniques
 
 Three equalization methods were implemented for the 2×2 MIMO topology:
@@ -869,6 +882,7 @@ Table 12: Model complexity and timing comparison (50,000 training samples, 100 e
 | CGAN (WGAN-GP) | 2,946 | CUDA | 7,293 s (~2 h) | 1.14 s | 2.34 s |
 | Transformer | 17,697 | CUDA | 474 s (~8 min) | 3.71 s | 3.69 s |
 | **Mamba S6** | **24,001** | **CUDA** | **2,141 s (~36 min)** | **1.88 s** | **3.02 s** |
+| **Mamba2 (SSD)** | **26,179** | **CUDA** | **1,438 s (~24 min)** | **4.11 s** | **5.61 s** |
 
 **Training time analysis.** Training times span four orders of magnitude, from under 5 seconds (GenAI) to over 2 hours (CGAN). The key drivers are:
 
@@ -878,6 +892,7 @@ Table 12: Model complexity and timing comparison (50,000 training samples, 100 e
 - **CGAN (WGAN-GP)** (2,946 parameters) requires approximately 2 hours despite having fewer parameters than the Transformer. Four factors explain this: (1) the WGAN-GP training loop performs **5 critic updates per generator update**, effectively multiplying the number of gradient steps by 6; (2) the gradient penalty term requires computing second-order gradients through the critic via `torch.autograd.grad`, which is computationally expensive; (3) 200 training epochs (vs. 100 for other models) doubles the base iteration count; (4) despite running on CUDA, the 3K-parameter model is too small to saturate GPU parallelism, and the gradient penalty's dynamic graph construction incurs significant per-step overhead. Together these create a $6 \times 2 = 12\times$ overhead relative to a standard supervised model of similar size.
 - **Transformer** (17,697 parameters) trains in 8 minutes on CUDA. The multi-head self-attention over the 11-symbol window is computed as a single batched matrix multiply $\mathbf{Q}\mathbf{K}^T / \sqrt{d_k}$, which parallelises efficiently on GPU. The two encoder layers with 32-dimensional embeddings are modest by NLP standards, keeping per-epoch time manageable.
 - **Mamba S6** (24,001 parameters) trains in 36 minutes, approximately 4.5× slower than the Transformer despite only 1.36× more parameters. The detailed analysis of this paradoxical result is given in Section 8.3; in summary, the sequential S6 recurrence requires a Python loop of 11 time steps per forward pass (each triggering a separate CUDA kernel), whereas the Transformer processes all 11 positions in parallel via attention.
+- **Mamba2 (SSD)** (26,179 parameters) trains in 24 minutes — 33% faster than Mamba S6 despite having 9% more parameters. The SSD layer replaces the sequential S6 scan with a chunk-parallel structured matrix multiply: for an 11-token sequence with chunk size 8, this means 2 parallel chunk matmuls instead of 11 sequential kernel launches. However, Mamba2 is still 3× slower than the Transformer at this short context length because building the $L \times L$ SSM matrix per chunk incurs overhead (4D tensor allocation, cumulative log-sum-exp, einsum) that only amortises over longer sequences.
 
 **Inference (evaluation) time analysis.** All relay implementations use **batched inference**: the sliding-window extraction builds a matrix of all windows at once, and the neural network processes the entire signal in a single forward pass. This eliminates the per-symbol Python loop that dominated prior versions. As a result, all eight relays evaluate the full AWGN Monte Carlo sweep (11 SNR × 10 trials × 10,000 bits = 1.1 M symbols) in under 4 seconds:
 
@@ -887,6 +902,7 @@ Table 12: Model complexity and timing comparison (50,000 training samples, 100 e
 - **CGAN** evaluates in 1.1 s because the generator runs a single batched forward pass — no critic is needed at inference.
 - **Transformer** evaluates in 3.7 s. The batched implementation processes all symbols as a single tensor of shape $(N, 11, 1)$ through the attention layers. This is a **475× speedup** compared to the prior per-symbol implementation (1,762 s).
 - **Mamba S6** evaluates in 1.9 s. Despite the sequential S6 recurrence over 11 time steps, the batch dimension ($N$ symbols) is processed in parallel at each step. This is a **3,933× speedup** compared to the prior per-symbol implementation (7,395 s).
+- **Mamba2 (SSD)** evaluates in 4.1 s (AWGN) and 5.6 s (SIC) — approximately 2× slower than Mamba S6 at the 11-token window. This counter-intuitive result is explained in Section 8.3.1: the chunk-parallel SSD kernel introduces $O(L^2)$ intermediate tensors and multiple einsum operations per chunk, which exceeds the cost of S6's simple 11-step sequential loop at this short context length.
 
 **SIC evaluation overhead.** The SIC column in Table 12 shows evaluation times for the most computationally expensive channel model (2×2 MIMO with successive interference cancellation). Times increase by roughly 2–3× compared to AWGN, reflecting the additional per-symbol SIC iterations in the channel model rather than any relay processing overhead.
 
@@ -950,6 +966,32 @@ The comparison of Mamba S6 and Transformer architectures yields nuanced conclusi
 
 The crossover point where Mamba's $O(n)$ advantage would outweigh the parallelism penalty occurs at sequence lengths in the hundreds to thousands, far beyond the $n = 11$ window used in this relay application. An optimised CUDA kernel implementing the S6 scan as a parallel prefix sum (as in the original Mamba paper) would eliminate the sequential bottleneck, but our implementation prioritises clarity and portability over raw throughput.
 
+#### 8.3.1 Context-Length Benchmark: Validating the Crossover Hypothesis
+
+To empirically validate the crossover hypothesis, we conducted a controlled benchmark comparing all three sequence models — Transformer, Mamba S6, and Mamba-2 (SSD) — at a context length of $n = 255$ (vs. $n = 11$ in the relay experiments). All models used identical hyperparameters: $d_{\text{model}} = 32$, $d_{\text{state}} = 16$, 2 layers, with Mamba-2 using chunk size 32 (yielding 8 chunks). The experiment used a reduced dataset (1,000 training symbols, 20 epochs) to isolate timing differences from convergence effects.
+
+Table 13 presents the results.
+
+**Table 13: Context-length benchmark — three sequence models at $n = 255$ on CUDA.**
+
+| Model | Parameters | Training Time (20 ep.) | Inference Time (10K bits) | Train Speedup vs S6 | Infer Speedup vs S6 |
+|---|---|---|---|---|---|
+| Transformer | 17,697 | 5.01 s | 0.99 s | 28.5× | 2.7× |
+| Mamba S6 | 24,001 | 142.56 s | 2.69 s | 1.0× (baseline) | 1.0× (baseline) |
+| Mamba2 (SSD) | 26,179 | 13.35 s | 1.05 s | 10.7× | 2.6× |
+
+The results confirm the crossover hypothesis decisively:
+
+1. **Mamba S6 becomes the bottleneck.** At $n = 255$, the S6 sequential scan requires 255 serial CUDA kernel launches per layer per forward pass, making it 142 s for just 20 epochs of training — **28× slower** than the Transformer and **10.7× slower** than Mamba-2.
+
+2. **Mamba-2 (SSD) recovers parallelism.** By chunking the 255-step sequence into 8 chunks of 32 and processing each chunk with a single batched matrix multiply, Mamba-2 eliminates the sequential bottleneck. At 13.35 s, it trains **10.7× faster** than S6 and approaches the Transformer's speed.
+
+3. **Inference parity.** Mamba-2 inference (1.05 s) is nearly identical to the Transformer (0.99 s) and **2.6× faster** than Mamba S6 (2.69 s). This is a complete reversal from the $n = 11$ case, where Mamba-2 was 2× *slower* than S6.
+
+4. **Direction reversal.** At $n = 11$: Mamba S6 (1.83 s) < Mamba-2 (4.11 s). At $n = 255$: Mamba-2 (1.05 s) < Mamba S6 (2.69 s). The crossover occurs because the overhead of building the $L \times L$ SSM matrix is amortised over longer chunks, while S6's per-step kernel launch cost grows linearly.
+
+This benchmark validates the architectural trade-off: Mamba-2's structured state space duality is designed for long-context efficiency where chunk-parallel computation outperforms sequential recurrence. For the 11-token relay window, the classical S6 scan remains faster due to lower per-operation overhead. The choice between S6 and SSD should therefore be guided by the target context length of the application.
+
 **Why state space suits signals.** Signal processing is inherently a sequential temporal task where the state space formulation — propagating a hidden state through time with input-dependent transitions — is a natural fit. The selective mechanism in Mamba allows it to dynamically control information flow, acting as an adaptive filter that selectively passes relevant signal features while suppressing noise.
 
 ### 8.4 Practical Deployment Recommendations
@@ -993,7 +1035,7 @@ Several directions warrant further investigation:
 
 5. **End-to-end learning.** Train the entire communication chain (modulation, relay, equalization, demodulation) jointly using autoencoder-based approaches.
 
-6. **Mamba-2 architectures.** The recently proposed Mamba-2 architecture offers further computational improvements that could benefit real-time relay processing.
+6. **Mamba-2 at longer context lengths.** Our benchmark (Section 8.3.1) demonstrates that Mamba-2 (SSD) achieves a 10.7× training speedup over Mamba S6 at $n = 255$. Future work should explore whether longer relay windows (e.g., 128–512 symbols) combined with the SSD architecture can improve both BER performance and processing speed simultaneously.
 
 7. **Diffusion models.** Score-based diffusion models represent the current state-of-the-art in generative modeling and could provide superior denoising for relay applications.
 
@@ -1137,6 +1179,18 @@ These findings demonstrate that AI-based relay processing is a viable and benefi
 - Training: MSE loss, Adam lr=1e-3, 100 epochs
 - Implementation: PyTorch (CPU)
 
+**Mamba2 (SSD):**
+- Input projection: 1 → 32
+- Mamba-2 blocks: 2 layers, each: LayerNorm → parallel branches (SiLU gate ∥ SSD layer) → gated output → contract (64→32) → residual
+- SSD layer: chunk_size=8, builds lower-triangular causal kernel $M \in \mathbb{R}^{L \times L}$ per chunk via cumulative log-decay, applies $Y = M \cdot V$ as batched matmul
+- Inter-chunk state: running state $(B, N, D)$ updated once per chunk
+- S4D-style A initialisation: $A_{\log} = \log(1, 2, \dots, d_{\text{state}})$
+- Selective parameters: Δ, B, C = f(input); value projection V = f(input)
+- Output projection: 32 → 16 (SiLU) → 1 (Tanh)
+- Parameters: 26,179
+- Training: MSE loss, Adam lr=1e-3, 100 epochs, gradient clipping (max_norm=1.0)
+- Implementation: PyTorch (CUDA)
+
 ### Appendix C: Software Architecture
 
 The project is implemented as a modular Python package (`relaynet`) with the following structure:
@@ -1182,6 +1236,7 @@ The framework uses object-oriented design with a common `Relay` base class, enab
 | CGAN-3K | 3,004 | 11 | noise=8, g_hidden=(30, 30, 16), c_hidden=(32, 16) |
 | Transformer-3K | 3,007 | 11 | d_model=18, heads=2, layers=1 |
 | Mamba-3K | 3,027 | 11 | d_model=16, d_state=6, layers=1 |
+| Mamba2-3K | 3,004 | 11 | d_model=15, d_state=6, chunk_size=8, layers=1 |
 
 All 3K configurations use a window size of 11 (vs. 5 for original GenAI/Hybrid, and 11 for original sequence models) to provide a common input context. The parameter counts are within ±1.2% of the 3,000 target.
 
@@ -1191,7 +1246,7 @@ All 3K configurations use a window size of 11 (vs. 5 for original GenAI/Hybrid, 
 
 **Generative AI for Two-Hop Relay Communication: A Comparative Study of Classical and AI-Based Relay Strategies**
 
-This thesis presents a comprehensive comparative study of classical and artificial intelligence (AI) based relay strategies for two-hop cooperative communication systems. Eight relay methods are implemented and evaluated: two classical approaches — amplify-and-forward (AF) and decode-and-forward (DF) — and six AI-based methods spanning supervised learning (GenAI minimal feedforward network, Hybrid SNR-adaptive relay), generative modeling (variational autoencoder, conditional GAN with WGAN-GP training), and modern sequence architectures (Transformer with multi-head self-attention, Mamba S6 selective state space model).
+This thesis presents a comprehensive comparative study of classical and artificial intelligence (AI) based relay strategies for two-hop cooperative communication systems. Nine relay methods are implemented and evaluated: two classical approaches — amplify-and-forward (AF) and decode-and-forward (DF) — and seven AI-based methods spanning supervised learning (GenAI minimal feedforward network, Hybrid SNR-adaptive relay), generative modeling (variational autoencoder, conditional GAN with WGAN-GP training), and modern sequence architectures (Transformer with multi-head self-attention, Mamba S6 selective state space model, Mamba-2 structured state space duality).
 
 The evaluation is conducted across six channel and topology configurations: AWGN, Rayleigh fading, and Rician fading (K=3) channels in single-antenna (SISO) topology, and 2×2 MIMO spatial multiplexing with Rayleigh fading using three equalization techniques — zero-forcing (ZF), minimum mean square error (MMSE), and successive interference cancellation (SIC). All experiments use BPSK modulation with Monte Carlo simulation (100,000 bits per SNR point) and 95% confidence intervals.
 
@@ -1203,7 +1258,7 @@ For MIMO systems, MMSE equalization consistently outperforms ZF, and non-linear 
 
 The recommended deployment strategy is a Hybrid relay that combines AI processing at low SNR with classical DF at high SNR, achieving near-optimal performance across the entire operating range with minimal computational overhead. For resource-constrained scenarios, the 169-parameter GenAI minimal relay provides competitive performance with approximately 0.7 KB of memory and under 3 seconds of training time.
 
-**Keywords:** Cooperative relay communication, generative AI, deep learning, two-hop relay, Mamba state space model, Transformer, variational autoencoder, conditional GAN, MIMO equalization, bit error rate
+**Keywords:** Cooperative relay communication, generative AI, deep learning, two-hop relay, Mamba state space model, Mamba-2 structured state space duality, Transformer, variational autoencoder, conditional GAN, MIMO equalization, bit error rate
 
 ---
 

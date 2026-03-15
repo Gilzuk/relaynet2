@@ -142,6 +142,15 @@ def parse_args():
         ),
     )
     p.add_argument(
+        "--resume",
+        action="store_true",
+        help=(
+            "Smart train-or-load mode: load weights for relays that have "
+            "a saved checkpoint and train only those that are missing. "
+            "Saves all weights (including newly trained) at the end."
+        ),
+    )
+    p.add_argument(
         "--weights-dir",
         type=str,
         default="trained_weights",
@@ -659,6 +668,225 @@ def train_normalized_models(args):
     return relays
 
 
+# ======================================================================
+# Smart train-or-load (--resume mode)
+# ======================================================================
+
+_NON_TRAINABLE = {"AF", "DF"}
+
+
+def _training_configs(args):
+    """Return a dict mapping relay display names to their training kwargs.
+
+    This centralises every relay's hyper-parameters so that
+    ``train_or_load_models`` can train only the missing ones without
+    duplicating the per-model blocks from ``train_models()``.
+    """
+    configs = {
+        "GenAI (169p)": dict(
+            training_snrs=[5, 10, 15],
+            num_samples=args.genai_samples,
+            epochs=args.genai_epochs,
+            seed=args.seed,
+        ),
+        "Hybrid": dict(
+            training_snrs=[2, 4, 6],
+            num_samples=args.hybrid_samples,
+            epochs=args.hybrid_epochs,
+            seed=args.seed,
+        ),
+        "VAE": dict(
+            training_snrs=[5, 10, 15],
+            num_samples=args.vae_samples,
+            epochs=args.vae_epochs,
+            seed=args.seed,
+        ),
+        "CGAN (WGAN-GP)": dict(
+            training_snrs=[5, 10, 15],
+            num_samples=args.cgan_samples,
+            epochs=args.cgan_epochs,
+            seed=args.seed,
+        ),
+        "Transformer": dict(
+            training_snrs=[5, 10, 15],
+            num_samples=args.transformer_samples,
+            epochs=args.transformer_epochs,
+            lr=0.001,
+        ),
+        "Mamba S6": dict(
+            training_snrs=[5, 10, 15],
+            num_samples=args.mamba_samples,
+            epochs=args.mamba_epochs,
+            lr=0.001,
+        ),
+        "Mamba2 (SSD)": dict(
+            training_snrs=[5, 10, 15],
+            num_samples=args.mamba2_samples,
+            epochs=args.mamba2_epochs,
+            lr=0.001,
+        ),
+    }
+    return configs
+
+
+def _norm_training_configs(args):
+    """Training kwargs for the normalized 3K models."""
+    configs = {
+        "GenAI-3K": dict(
+            training_snrs=[5, 10, 15],
+            num_samples=args.genai_samples,
+            epochs=args.genai_epochs,
+            seed=args.seed,
+        ),
+        "Hybrid-3K": dict(
+            training_snrs=[2, 4, 6],
+            num_samples=args.hybrid_samples,
+            epochs=args.hybrid_epochs,
+            seed=args.seed,
+        ),
+        "VAE-3K": dict(
+            training_snrs=[5, 10, 15],
+            num_samples=args.vae_samples,
+            epochs=args.vae_epochs,
+            seed=args.seed,
+        ),
+        "CGAN-3K": dict(
+            training_snrs=[5, 10, 15],
+            num_samples=args.cgan_samples,
+            epochs=args.cgan_epochs,
+            seed=args.seed,
+        ),
+        "Transformer-3K": dict(
+            training_snrs=[5, 10, 15],
+            num_samples=args.transformer_samples,
+            epochs=args.transformer_epochs,
+            lr=0.001,
+        ),
+        "Mamba-3K": dict(
+            training_snrs=[5, 10, 15],
+            num_samples=args.mamba_samples,
+            epochs=args.mamba_epochs,
+            lr=0.001,
+        ),
+        "Mamba2-3K": dict(
+            training_snrs=[5, 10, 15],
+            num_samples=args.mamba2_samples,
+            epochs=args.mamba2_epochs,
+            lr=0.001,
+        ),
+    }
+    return configs
+
+
+def train_or_load_models(args, ckpt_mgr):
+    """Resume mode: load weights where available, train only the missing ones.
+
+    Returns the same ``relays`` dict as ``train_models``.
+    """
+    print("\n=== Resume mode: loading existing weights, training missing models ===")
+
+    relays = create_relay_instances(args)
+    configs = _training_configs(args)
+    timing_summary = {}
+
+    loaded, skipped = ckpt_mgr.load_all(relays, args.seed)
+    loaded_set = set(loaded)
+
+    if loaded:
+        print(f"  Loaded from checkpoint: {', '.join(loaded)}")
+
+    to_train = [
+        name for name in relays
+        if name not in loaded_set and name not in _NON_TRAINABLE
+    ]
+    if to_train:
+        print(f"  Need to train: {', '.join(to_train)}")
+    else:
+        print("  All models loaded — no training needed.")
+
+    for name in to_train:
+        relay = relays[name]
+        cfg = configs.get(name)
+        if cfg is None:
+            print(f"  [WARNING] No training config for '{name}'; skipping.")
+            continue
+        print(f"  Training {name} …")
+        print(f"    device: {_relay_device(relay)}")
+        _, elapsed = _timed(
+            f"train {name}",
+            relay.train,
+            **cfg,
+            log_timings=args.log_timings,
+        )
+        timing_summary[name] = (_relay_device(relay), elapsed)
+
+    # Always save — this persists both previously existing and newly trained
+    config_dict = {
+        k: v for k, v in vars(args).items()
+        if isinstance(v, (int, float, str, bool, list))
+    }
+    saved = ckpt_mgr.save_all(relays, args.seed, config_dict)
+    ckpt_dir = ckpt_mgr.checkpoint_dir(args.seed)
+    print(f"  Saved {len(saved)} relay(s) → {ckpt_dir}/")
+
+    if timing_summary and args.log_timings:
+        print("\n=== Training Time Summary (resume) ===")
+        for name, (device, elapsed) in timing_summary.items():
+            print(f"  {name:<18} {device:<6} {elapsed:>8.2f}s")
+
+    return relays
+
+
+def train_or_load_normalized(args, ckpt_mgr):
+    """Resume mode for normalized 3K models."""
+    print("\n" + "=" * 60)
+    print("=== Resume: NORMALIZED (~3K params) relay models ===")
+    print("=" * 60)
+
+    relays = build_all_3k(
+        prefer_gpu=args.gpu,
+        include_sequence_models=args.include_sequence_models,
+    )
+    configs = _norm_training_configs(args)
+    timing = {}
+
+    loaded, _ = ckpt_mgr.load_all(relays, args.seed)
+    loaded_set = set(loaded)
+
+    if loaded:
+        print(f"  Loaded from checkpoint: {', '.join(loaded)}")
+
+    to_train = [name for name in relays if name not in loaded_set]
+    if to_train:
+        print(f"  Need to train: {', '.join(to_train)}")
+    else:
+        print("  All normalized models loaded — no training needed.")
+
+    for name in to_train:
+        relay = relays[name]
+        cfg = configs.get(name)
+        if cfg is None:
+            print(f"  [WARNING] No training config for '{name}'; skipping.")
+            continue
+        print(f"  Training {name} ({relay.num_params}p) …")
+        _, elapsed = _timed(
+            f"train {name} ({relay.num_params}p)",
+            relay.train,
+            **cfg,
+            log_timings=args.log_timings,
+        )
+        timing[f"{name} ({relay.num_params}p)"] = (_relay_device(relay), elapsed)
+
+    ckpt_mgr.save_all(relays, args.seed)
+
+    if timing and args.log_timings:
+        print("\n=== Normalized Training Time Summary (resume) ===")
+        for name, (device, elapsed) in timing.items():
+            print(f"  {name:<28} {device:<6} {elapsed:>8.2f}s")
+
+    return relays
+
+
 def run_normalized_comparison(relays_3k, snr_range, bits_per_trial, num_trials,
                               no_plots=False):
     """Run all channels for the normalized ~3K-param models."""
@@ -782,6 +1010,9 @@ def main():
         if actually_skipped:
             print(f"  [WARNING] Missing weights for: "
                   f"{', '.join(actually_skipped)}")
+    elif args.resume:
+        # Smart train-or-load: load what exists, train the rest, save all
+        relays = train_or_load_models(args, ckpt_mgr)
     else:
         relays = train_models(args)
         if args.save_weights:
@@ -906,6 +1137,8 @@ def main():
                 loaded_3k, _ = ckpt_mgr.load_all(relays_3k, args.seed)
                 print(f"\n  Loaded normalized models: "
                       f"{', '.join(loaded_3k) if loaded_3k else 'none'}")
+            elif args.resume:
+                relays_3k = train_or_load_normalized(args, ckpt_mgr)
             else:
                 relays_3k = train_normalized_models(args)
                 if args.save_weights:
