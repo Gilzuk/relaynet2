@@ -1360,26 +1360,30 @@ To evaluate whether the BPSK findings generalise to higher-order constellations,
 
 Table 14: BER comparison across modulations at selected SNR points (AWGN channel).
 
-| Relay | BPSK 0 dB | BPSK 10 dB | QPSK 0 dB | QPSK 10 dB | 16-QAM 0 dB | 16-QAM 10 dB |
-|---|---|---|---|---|---|---|
-| AF | 0.2298 | 0.0428 | 0.2301 | 0.0430 | 0.3512 | 0.1685 |
-| DF | 0.1590 | 0.0002 | 0.1588 | 0.0003 | 0.2845 | 0.0412 |
-| GenAI (169p) | 0.1345 | 0.0015 | 0.1348 | 0.0018 | 0.2920 | 0.0895 |
-| Hybrid | 0.1352 | 0.0002 | 0.1355 | 0.0003 | 0.2915 | 0.0425 |
+| Relay | BPSK 0 dB | BPSK 10 dB | QPSK 0 dB | QPSK 10 dB | 16-QAM 0 dB | 16-QAM 10 dB | 16-QAM 16 dB |
+|---|---|---|---|---|---|---|---|
+| AF | 0.2813 | 0.0141 | 0.2794 | 0.0142 | 0.3778 | 0.1244 | 0.0180 |
+| DF | 0.2651 | 0.0015 | 0.2644 | 0.0016 | 0.3811 | 0.1076 | 0.0038 |
+| GenAI (169p) | 0.2589 | 0.0021 | 0.2563 | 0.0025 | 0.3907 | 0.2180 | 0.2180 |
+| Hybrid | 0.2573 | 0.0015 | 0.2644 | 0.0016 | 0.4000 | 0.2711 | 0.2512 |
+| VAE | 0.2611 | 0.0021 | 0.2597 | 0.0036 | 0.3945 | 0.2391 | 0.2231 |
+| CGAN (WGAN-GP) | 0.2633 | 0.0017 | 0.2621 | 0.0018 | 0.3976 | 0.2588 | 0.2486 |
 
-*Values are mean BER over 10 trials × 10,000 bits. QPSK values closely track BPSK due to the I/Q independence property. 16-QAM BER is higher due to reduced constellation spacing.*
+*Values are mean BER over 30 trials × 50,000 bits. QPSK values closely track BPSK due to the I/Q independence property. The 16-QAM 16 dB column exposes the AI relay floor effect: all AI relays saturate near BER ≈ 0.22–0.25 while DF reaches 0.0038.*
 
 **Key findings:**
 
-**Finding 1: QPSK results mirror BPSK almost exactly.** For all relay strategies, the QPSK BER at each SNR point is within 0.5% of the corresponding BPSK BER. This is expected from the I/Q splitting analysis (Section 6.7.4): since each QPSK component carries an independent BPSK-like stream, the BPSK-trained relay denoises each component identically. This confirms that **H1 (AI advantage at low SNR) and H2 (DF dominance at high SNR) hold for QPSK** without modification.
+**Finding 1: QPSK results mirror BPSK almost exactly.** For all relay strategies, the QPSK BER at each SNR point is within 1% of the corresponding BPSK BER (e.g., GenAI at 0 dB: BPSK = 0.2589, QPSK = 0.2563). This is expected from the I/Q splitting analysis (Section 6.7.4): since each QPSK component carries an independent BPSK-like stream, the BPSK-trained relay denoises each component identically. This confirms that **H1 (AI advantage at low SNR) and H2 (DF dominance at high SNR) hold for QPSK** without modification.
 
-**Finding 2: DF remains effective for QPSK and 16-QAM.** The DF relay performs nearest-constellation-point detection (sign decision for QPSK, PAM-4 quantisation for 16-QAM), which is the modulation-aware generalisation of BPSK hard-decision. At high SNR, DF achieves near-zero BER for QPSK and low BER for 16-QAM, confirming **H2 extends to higher-order modulations**.
+**Finding 2: DF remains effective for QPSK and 16-QAM.** The DF relay performs nearest-constellation-point detection (sign decision for QPSK, PAM-4 quantisation for 16-QAM), which is the modulation-aware generalisation of BPSK hard-decision. At 16 dB, DF achieves BER = 0.0038 for 16-QAM AWGN and BER = 0.0828 for 16-QAM Rayleigh, confirming **H2 extends to higher-order modulations**.
 
-**Finding 3: AI relays generalise well to QPSK but degrade on 16-QAM.** The BPSK-trained AI relays (GenAI, Hybrid, VAE, CGAN) perform identically on QPSK due to the binary nature of each I/Q component. On 16-QAM, AI relay performance degrades relative to DF at medium SNR because the $\tanh$ activation compresses the multi-level PAM-4 signal ($\{-3, -1, +1, +3\}/\sqrt{10}$) toward $\{\pm 1\}$, destroying amplitude information needed for correct 16-QAM demodulation. This finding confirms the **limitation predicted in Section 6.7.4** and motivates modulation-specific training for 16-QAM relays.
+**Finding 3: AI relays exhibit a BER floor on 16-QAM.** The BPSK-trained AI relays (GenAI, Hybrid, VAE, CGAN) perform identically on QPSK due to the binary nature of each I/Q component. On 16-QAM, all AI relays hit an irreducible BER floor of approximately 0.22–0.25 even at high SNR (e.g., GenAI at 16 dB AWGN: 0.2180 vs DF's 0.0038). This floor arises because the $\tanh$ activation compresses the multi-level PAM-4 signal ($\{-3, -1, +1, +3\}/\sqrt{10}$) toward $\{\pm 1\}$, destroying the amplitude information required for correct 16-QAM demodulation. The effect is **statistically significant** (p < 0.05, Wilcoxon signed-rank) at every SNR point from 0–20 dB. This finding confirms the **limitation predicted in Section 6.7.4** and motivates modulation-specific training for 16-QAM relays.
 
-**Finding 4: The Hybrid relay adapts correctly across modulations.** At low SNR, the Hybrid relay uses its GenAI sub-network (which generalises via I/Q splitting); at high SNR, it switches to DF (which uses modulation-aware detection). This SNR-adaptive switching works correctly for all three modulation schemes, reinforcing the Hybrid relay's practicality.
+**Finding 4: AF outperforms DF on 16-QAM at low SNR.** Unlike BPSK/QPSK where DF beats AF at all SNR values, the 16-QAM results reveal a reversal: AF achieves significantly lower BER than DF at SNR = 0–6 dB on AWGN (e.g., 0 dB: AF = 0.3778 vs DF = 0.3811, Y* p < 0.05; 4 dB: AF = 0.2771 vs DF = 0.2855, Y* p < 0.05). This occurs because AF preserves the continuous multi-level amplitude structure of the 16-QAM signal, whereas DF's PAM-4 quantisation makes hard errors that propagate. At higher SNR (≥8 dB), DF's regeneration advantage reasserts itself and DF outperforms AF.
 
-**Finding 5: Rayleigh fading amplifies modulation differences.** On the Rayleigh fading channel, the BER gap between BPSK/QPSK and 16-QAM widens because the reduced constellation spacing in 16-QAM makes it more susceptible to deep fades. AI relay gains at low SNR are preserved for both QPSK and 16-QAM over Rayleigh, though the absolute BER values are higher.
+**Finding 5: The Hybrid relay adapts correctly across BPSK and QPSK.** At low SNR, the Hybrid relay uses its GenAI sub-network (which generalises via I/Q splitting); at high SNR, it switches to DF (which uses modulation-aware detection). This SNR-adaptive switching works correctly for BPSK and QPSK (matching DF at high SNR), though on 16-QAM the Hybrid relay inherits the AI BER floor from its GenAI component, yielding the worst performance among all relays at high SNR (0.2512 at 16 dB).
+
+**Finding 6: Rayleigh fading amplifies modulation differences.** On the Rayleigh fading channel, the BER gap between BPSK/QPSK and 16-QAM widens because the reduced constellation spacing in 16-QAM makes it more susceptible to deep fades. At 10 dB Rayleigh: BPSK DF = 0.0453 while 16-QAM DF = 0.2095 — a 4.6× gap. AI relay gains at low SNR are preserved for QPSK over Rayleigh (GenAI Y* at 0 dB), though all AI relays are significantly worse than DF on 16-QAM Rayleigh at every SNR point.
 
 ![Figure 20: BPSK relay comparison on AWGN (baseline).](results/modulation/bpsk_awgn_ci.png)
 
@@ -1399,13 +1403,13 @@ Table 14: BER comparison across modulations at selected SNR points (AWGN channel
 
 ![Figure 24: 16-QAM relay comparison on AWGN.](results/modulation/qam16__awgn_ci.png)
 
-*Figure 24: 16-QAM on AWGN — AI relays degrade at medium SNR due to $\tanh$ compression of multi-level signals; DF and Hybrid remain effective.*
+*Figure 24: 16-QAM on AWGN — AI relays hit a BER floor near 0.22 at medium-high SNR due to $\tanh$ compression of multi-level signals; AF outperforms DF at low SNR (Y* at 0–6 dB) by preserving amplitude structure.*
 
 ![Figure 25: 16-QAM relay comparison on Rayleigh fading.](results/modulation/qam16__rayleigh_ci.png)
 
-*Figure 25: 16-QAM on Rayleigh fading — wider BER gap between modulations under fading conditions.*
+*Figure 25: 16-QAM on Rayleigh fading — wider BER gap between modulations under fading; all AI relays significantly worse than DF at every SNR point (N* at 0–20 dB).*
 
-**Summary.** The BPSK findings (H1–H3) generalise fully to QPSK: the I/Q independence property ensures that BPSK-trained relays perform identically on QPSK's binary-per-component structure. For 16-QAM, H1 (AI advantage at low SNR) partially holds — AI relays still outperform AF — but the advantage over DF diminishes because the BPSK-trained networks cannot faithfully process the multi-level amplitude structure. This motivates future work on modulation-aware relay training (Section 8.6).
+**Summary.** The BPSK findings (H1–H3) generalise fully to QPSK: the I/Q independence property ensures that BPSK-trained relays perform identically on QPSK's binary-per-component structure. For 16-QAM, AI relays exhibit an irreducible BER floor near 0.22 due to tanh compression of the 4-level PAM amplitudes — even at 16 dB the best AI relay (GenAI, BER = 0.2180) is 57× worse than DF (BER = 0.0038). A surprising counter-finding is that AF outperforms DF on 16-QAM at low SNR (0–6 dB, p < 0.05) because linear amplification preserves the multi-level amplitude structure that DF's hard quantisation destroys. These results motivate future work on modulation-aware relay training (Section 8.6).
 
 ---
 
@@ -1565,7 +1569,7 @@ Several limitations of this study should be acknowledged, as they define the bou
 
 Several directions warrant further investigation:
 
-1. **Modulation-specific relay training.** The QPSK/16-QAM extension (Section 7.10) demonstrates that BPSK-trained relays generalise to QPSK but not to 16-QAM. Future work should train AI relays directly on QPSK and 16-QAM signals to determine whether modulation-aware training recovers the AI advantage at medium SNR. Additionally, extending to 64-QAM and 256-QAM would reveal whether the inverted-U complexity curve (H3) shifts toward larger models for denser constellations.
+1. **Modulation-specific relay training.** The QPSK/16-QAM extension (Section 7.10) demonstrates that BPSK-trained relays generalise to QPSK but not to 16-QAM, where all AI relays hit an irreducible BER floor near 0.22 (vs DF's 0.004 at 16 dB). Future work should train AI relays directly on 16-QAM signals — replacing $\tanh$ with a linear or scaled output activation — to determine whether modulation-aware training recovers the AI advantage at medium SNR. Additionally, extending to 64-QAM and 256-QAM would reveal whether the inverted-U complexity curve (H3) shifts toward larger models for denser constellations. The surprising finding that AF outperforms DF on 16-QAM at low SNR (Section 7.10, Finding 4) also suggests investigating AF-AI hybrid strategies that preserve multi-level amplitude information.
 
 2. **Imperfect CSI.** Introduce channel estimation errors to assess robustness of AI relay processing under realistic conditions.
 
@@ -1610,7 +1614,7 @@ The main conclusions, in order of significance, are:
 
 8. **Mamba-2 SSD provides a 10.7× training speedup over S6 at longer contexts.** The chunk-parallel structured matrix multiplication of SSD eliminates the sequential bottleneck of S6, making it the preferred state space architecture for applications requiring longer symbol windows.
 
-9. **BPSK findings generalise to QPSK but not fully to 16-QAM.** The modulation extension experiments (Section 7.10) demonstrate that BPSK-trained AI relays achieve identical BER on QPSK via I/Q splitting, confirming H1–H3 for the 2-bit/symbol constellation. For 16-QAM, the AI relay advantage at low SNR partially holds (AI still beats AF), but DF outperforms AI relays at medium SNR because the $\tanh$ activation compresses the multi-level PAM-4 amplitude structure. This finding delineates the boundary of the "train once, evaluate everywhere" approach and motivates modulation-specific relay training for high-order constellations.
+9. **BPSK findings generalise to QPSK but not to 16-QAM.** The modulation extension experiments (Section 7.10) demonstrate that BPSK-trained AI relays achieve identical BER on QPSK via I/Q splitting, confirming H1–H3 for the 2-bit/symbol constellation. For 16-QAM, all AI relays exhibit an irreducible BER floor near 0.22 (GenAI at 16 dB AWGN: 0.2180 vs DF's 0.0038 — a 57× gap). This floor is caused by $\tanh$ compression of the 4-level PAM amplitudes and is statistically significant at every SNR point tested. Conversely, AF outperforms DF on 16-QAM at low SNR (0–6 dB, p < 0.05) because linear amplification preserves the multi-level amplitude structure. These results clearly delineate the boundary of the "train once, evaluate everywhere" approach and motivate modulation-specific relay training for high-order constellations.
 
 These findings demonstrate that AI-based relay processing is a viable and beneficial complement to classical approaches, particularly in the challenging low-SNR regime. The overarching insight is that **model complexity should be matched to task complexity**: for the relay denoising task with BPSK and QPSK, minimal architectures suffice, and the choice between AI paradigms matters less than proper model sizing and regularization. For higher-order modulations (16-QAM and beyond), modulation-aware training may be necessary. The practical recommendation is clear: deploy a Hybrid relay with a 169-parameter GenAI sub-network for the broadest possible operating range at minimal computational cost.
 

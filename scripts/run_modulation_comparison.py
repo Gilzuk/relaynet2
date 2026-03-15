@@ -84,9 +84,9 @@ def train_relays(args):
 
     samples = 25_000 if not args.quick else 5_000
     epochs = 100 if not args.quick else 20
-    vae_samples = 50_000 if not args.quick else 5_000
-    cgan_samples = 50_000 if not args.quick else 5_000
-    cgan_epochs = 200 if not args.quick else 20
+    vae_samples = 25_000 if not args.quick else 5_000
+    cgan_samples = 10_000 if not args.quick else 5_000
+    cgan_epochs = 50 if not args.quick else 20
 
     relays = {
         "AF": AmplifyAndForwardRelay(prefer_gpu=False),
