@@ -50,10 +50,12 @@ from relaynet.utils.checkpoint_manager import CheckpointManager
 try:
     from checkpoints.checkpoint_18_transformer_relay import TransformerRelayWrapper
     from checkpoints.checkpoint_20_mamba_s6_relay import MambaRelayWrapper
+    from checkpoints.checkpoint_23_mamba2_relay import Mamba2RelayWrapper
     _HAS_SEQUENCE_MODELS = True
 except Exception:
     TransformerRelayWrapper = None
     MambaRelayWrapper = None
+    Mamba2RelayWrapper = None
     _HAS_SEQUENCE_MODELS = False
 
 try:
@@ -104,6 +106,8 @@ def parse_args():
     p.add_argument("--transformer-epochs", type=int, default=100)
     p.add_argument("--mamba-samples", type=int, default=50_000)
     p.add_argument("--mamba-epochs", type=int, default=100)
+    p.add_argument("--mamba2-samples", type=int, default=50_000)
+    p.add_argument("--mamba2-epochs", type=int, default=100)
 
     p.add_argument("--no-plots", action="store_true")
     p.add_argument(
@@ -191,6 +195,10 @@ def create_relay_instances(args):
                 num_heads=4, num_layers=2, prefer_gpu=args.gpu,
             )
             relays["Mamba S6"] = MambaRelayWrapper(
+                target_power=1.0, window_size=11, d_model=32,
+                d_state=16, num_layers=2, prefer_gpu=args.gpu,
+            )
+            relays["Mamba2 (SSD)"] = Mamba2RelayWrapper(
                 target_power=1.0, window_size=11, d_model=32,
                 d_state=16, num_layers=2, prefer_gpu=args.gpu,
             )
@@ -323,8 +331,30 @@ def train_models(args):
             )
             timing_summary["Mamba S6"] = (_relay_device(mamba), elapsed)
 
+            print("  Training Mamba-2 (SSD) relay …")
+            mamba2 = Mamba2RelayWrapper(
+                target_power=1.0,
+                window_size=11,
+                d_model=32,
+                d_state=16,
+                num_layers=2,
+                prefer_gpu=args.gpu,
+            )
+            print(f"    device: {_relay_device(mamba2)}")
+            _, elapsed = _timed(
+                "train Mamba2 (SSD)",
+                mamba2.train,
+                training_snrs=[5, 10, 15],
+                num_samples=args.mamba2_samples,
+                epochs=args.mamba2_epochs,
+                lr=0.001,
+                log_timings=args.log_timings,
+            )
+            timing_summary["Mamba2 (SSD)"] = (_relay_device(mamba2), elapsed)
+
             relays["Transformer"] = transformer
             relays["Mamba S6"] = mamba
+            relays["Mamba2 (SSD)"] = mamba2
 
     if args.log_timings:
         print("\n=== Training Time Summary ===")
@@ -609,7 +639,18 @@ def train_normalized_models(args):
             log_timings=args.log_timings,
         )
         timing[f"Mamba-3K ({r.num_params}p)"] = (_relay_device(r), elapsed)
-
+    # --- Mamba2-3K ---
+    if "Mamba2-3K" in relays:
+        r = relays["Mamba2-3K"]
+        print(f"  Training Mamba2-3K ({r.num_params}p) …")
+        _, elapsed = _timed(
+            f"train Mamba2-3K ({r.num_params}p)", r.train,
+            training_snrs=[5, 10, 15],
+            num_samples=args.mamba2_samples,
+            epochs=args.mamba2_epochs, lr=0.001,
+            log_timings=args.log_timings,
+        )
+        timing[f"Mamba2-3K ({r.num_params}p)"] = (_relay_device(r), elapsed)
     if args.log_timings:
         print("\n=== Normalized Training Time Summary ===")
         for name, (device, elapsed) in timing.items():
@@ -711,8 +752,10 @@ def main():
         args.cgan_epochs = min(args.cgan_epochs, 20)
         args.transformer_samples = min(args.transformer_samples, 3_000)
         args.mamba_samples = min(args.mamba_samples, 3_000)
+        args.mamba2_samples = min(args.mamba2_samples, 3_000)
         args.transformer_epochs = min(args.transformer_epochs, 10)
         args.mamba_epochs = min(args.mamba_epochs, 10)
+        args.mamba2_epochs = min(args.mamba2_epochs, 10)
 
     snr_range = np.arange(args.snr_min, args.snr_max + 0.01, args.snr_step)
     os.makedirs("results", exist_ok=True)

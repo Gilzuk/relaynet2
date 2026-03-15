@@ -2,7 +2,7 @@
 Checkpoint 22 – Normalized ~3K-parameter relay models
 =====================================================
 
-Provides factory functions that instantiate **all six** AI relay
+Provides factory functions that instantiate **all seven** AI relay
 architectures with approximately **3,000 learnable parameters** each,
 enabling a fair apples-to-apples BER comparison.
 
@@ -17,6 +17,7 @@ Target parameter budget: ~3,000 ± 40
 | CGAN-3K       | window=11, g_hidden=(30,30,16), c=(32,16)    | 3,004  |
 | Transformer-3K| d_model=18, heads=2, layers=1, window=11     | 3,007  |
 | Mamba S6-3K   | d_model=16, d_state=6, layers=1, window=11   | 3,027  |
+| Mamba2-3K     | d_model=15, d_state=6, layers=1, window=11   | 3,004  |
 +---------------+----------------------------------------------+--------+
 
 Usage
@@ -46,6 +47,7 @@ from relaynet.relays.cgan import CGANRelay
 try:
     from checkpoints.checkpoint_18_transformer_relay import TransformerRelayWrapper
     from checkpoints.checkpoint_20_mamba_s6_relay import MambaRelayWrapper
+    from checkpoints.checkpoint_23_mamba2_relay import Mamba2RelayWrapper
     _HAS_SEQ = True
 except Exception:
     _HAS_SEQ = False
@@ -85,6 +87,15 @@ TRANSFORMER_3K = dict(
 MAMBA_3K = dict(
     window_size=11,
     d_model=16,
+    d_state=6,
+    num_layers=1,
+)
+
+# Mamba2 (SSD): 1→15, 1 block (inner=30, SSD(30,6)), out LN+15→7→1
+#               = 3004 params  (d_model=15, d_state=6, layers=1)
+MAMBA2_3K = dict(
+    window_size=11,
+    d_model=15,
     d_state=6,
     num_layers=1,
 )
@@ -129,6 +140,13 @@ def make_mamba_3k(prefer_gpu=False, **kw):
     return MambaRelayWrapper(target_power=1.0, **MAMBA_3K, prefer_gpu=prefer_gpu, **kw)
 
 
+def make_mamba2_3k(prefer_gpu=False, **kw):
+    """Return a ~3004-param Mamba-2 (SSD) relay."""
+    if not _HAS_SEQ:
+        raise ImportError("Mamba-2 checkpoint not available")
+    return Mamba2RelayWrapper(target_power=1.0, **MAMBA2_3K, prefer_gpu=prefer_gpu, **kw)
+
+
 def build_all_3k(prefer_gpu=False, include_sequence_models=True):
     """Build all six normalized relay models.
 
@@ -146,6 +164,7 @@ def build_all_3k(prefer_gpu=False, include_sequence_models=True):
     if include_sequence_models and _HAS_SEQ:
         relays["Transformer-3K"] = make_transformer_3k(prefer_gpu=prefer_gpu)
         relays["Mamba-3K"] = make_mamba_3k(prefer_gpu=prefer_gpu)
+        relays["Mamba2-3K"] = make_mamba2_3k(prefer_gpu=prefer_gpu)
     return relays
 
 

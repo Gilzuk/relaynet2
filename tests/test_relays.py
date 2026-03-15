@@ -12,6 +12,13 @@ from relaynet.relays.hybrid import HybridRelay, estimate_snr
 from relaynet.relays.vae import VAERelay
 from relaynet.relays.cgan import CGANRelay
 
+# Sequence-model relays live in the checkpoints directory.
+try:
+    from checkpoints.checkpoint_23_mamba2_relay import Mamba2RelayWrapper
+    _HAS_MAMBA2 = True
+except Exception:
+    _HAS_MAMBA2 = False
+
 
 @pytest.fixture
 def bpsk_signal():
@@ -139,6 +146,36 @@ class TestCGANRelay:
         assert out.shape == symbols.shape
 
 
+@pytest.mark.skipif(not _HAS_MAMBA2, reason="Mamba-2 checkpoint not available")
+class TestMamba2Relay:
+    def test_train_and_process(self, bpsk_signal):
+        np.random.seed(4)
+        symbols, _ = bpsk_signal
+        relay = Mamba2RelayWrapper(
+            window_size=11, d_model=16, d_state=4, num_layers=1,
+        )
+        relay.train(training_snrs=[10], num_samples=500, epochs=2, seed=4)
+        assert relay.is_trained
+        out = relay.process(awgn_channel(symbols, 10))
+        assert out.shape == symbols.shape
+
+    def test_power_normalisation(self, bpsk_signal):
+        symbols, _ = bpsk_signal
+        relay = Mamba2RelayWrapper(
+            target_power=1.0, window_size=11, d_model=16,
+            d_state=4, num_layers=1,
+        )
+        relay.train(training_snrs=[10], num_samples=500, epochs=2, seed=4)
+        out = relay.process(awgn_channel(symbols, 10))
+        assert abs(np.mean(out ** 2) - 1.0) < 0.05
+
+    def test_untrained_passthrough(self, bpsk_signal):
+        symbols, _ = bpsk_signal
+        relay = Mamba2RelayWrapper(window_size=11, d_model=16, d_state=4, num_layers=1)
+        out = relay.process(symbols)
+        assert out.shape == symbols.shape
+
+
 # ======================================================================
 # Weight save / load round-trip tests
 # ======================================================================
@@ -206,6 +243,27 @@ class TestWeightSaveLoad:
         relay.save_weights(path)
 
         relay2 = HybridRelay()
+        relay2.load_weights(path)
+        assert relay2.is_trained
+        out_after = relay2.process(noisy)
+        np.testing.assert_array_almost_equal(out_before, out_after)
+
+    @pytest.mark.skipif(not _HAS_MAMBA2, reason="Mamba-2 checkpoint not available")
+    def test_mamba2_save_load(self, bpsk_signal, tmp_path):
+        symbols, _ = bpsk_signal
+        relay = Mamba2RelayWrapper(
+            window_size=11, d_model=16, d_state=4, num_layers=1,
+        )
+        relay.train(training_snrs=[10], num_samples=500, epochs=2, seed=4)
+        noisy = awgn_channel(symbols, 10)
+        out_before = relay.process(noisy)
+
+        path = str(tmp_path / "mamba2.pt")
+        relay.save_weights(path)
+
+        relay2 = Mamba2RelayWrapper(
+            window_size=11, d_model=16, d_state=4, num_layers=1,
+        )
         relay2.load_weights(path)
         assert relay2.is_trained
         out_after = relay2.process(noisy)
