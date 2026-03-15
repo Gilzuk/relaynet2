@@ -87,6 +87,14 @@ def parse_args():
         action="store_true",
         help="Run an extra apples-to-apples comparison with all AI models at ~3K params.",
     )
+    p.add_argument(
+        "--include-cgan",
+        action="store_true",
+        help=(
+            "Include CGAN (WGAN-GP) in the normalized 3K comparison. "
+            "Disabled by default due to ~12x training overhead."
+        ),
+    )
     p.add_argument("--snr-min", type=float, default=0)
     p.add_argument("--snr-max", type=float, default=20)
     p.add_argument("--snr-step", type=float, default=2)
@@ -410,6 +418,7 @@ def plot_complexity_comparison(relays, awgn_ber, snr_range, save_path="results/c
         "CGAN (WGAN-GP)": "orange",
         "Transformer": "green",
         "Mamba S6": "blue",
+        "Mamba2 (SSD)": "#e377c2",
     }
 
     snr_list = list(np.asarray(snr_range).tolist())
@@ -577,6 +586,7 @@ def train_normalized_models(args):
     relays = build_all_3k(
         prefer_gpu=args.gpu,
         include_sequence_models=args.include_sequence_models,
+        include_cgan=getattr(args, 'include_cgan', False),
     )
 
     # --- GenAI-3K ---
@@ -613,15 +623,16 @@ def train_normalized_models(args):
     timing[f"VAE-3K ({r.num_params}p)"] = (_relay_device(r), elapsed)
 
     # --- CGAN-3K ---
-    r = relays["CGAN-3K"]
-    print(f"  Training CGAN-3K ({r.num_params}p) \u2026")
-    _, elapsed = _timed(
-        f"train CGAN-3K ({r.num_params}p)", r.train,
-        training_snrs=[5, 10, 15],
-        num_samples=args.cgan_samples, epochs=args.cgan_epochs,
-        seed=args.seed, log_timings=args.log_timings,
-    )
-    timing[f"CGAN-3K ({r.num_params}p)"] = (_relay_device(r), elapsed)
+    if "CGAN-3K" in relays:
+        r = relays["CGAN-3K"]
+        print(f"  Training CGAN-3K ({r.num_params}p) \u2026")
+        _, elapsed = _timed(
+            f"train CGAN-3K ({r.num_params}p)", r.train,
+            training_snrs=[5, 10, 15],
+            num_samples=args.cgan_samples, epochs=args.cgan_epochs,
+            seed=args.seed, log_timings=args.log_timings,
+        )
+        timing[f"CGAN-3K ({r.num_params}p)"] = (_relay_device(r), elapsed)
 
     # --- Transformer-3K ---
     if "Transformer-3K" in relays:
@@ -846,6 +857,7 @@ def train_or_load_normalized(args, ckpt_mgr):
     relays = build_all_3k(
         prefer_gpu=args.gpu,
         include_sequence_models=args.include_sequence_models,
+        include_cgan=getattr(args, 'include_cgan', False),
     )
     configs = _norm_training_configs(args)
     timing = {}
@@ -1133,6 +1145,7 @@ def main():
                 relays_3k = build_all_3k(
                     prefer_gpu=args.gpu,
                     include_sequence_models=args.include_sequence_models,
+                    include_cgan=getattr(args, 'include_cgan', False),
                 )
                 loaded_3k, _ = ckpt_mgr.load_all(relays_3k, args.seed)
                 print(f"\n  Loaded normalized models: "

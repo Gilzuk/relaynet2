@@ -1,4 +1,4 @@
-# Generative AI for Two-Hop Relay Communication: A Comparative Study of Classical and AI-Based Relay Strategies
+﻿# Generative AI for Two-Hop Relay Communication: A Comparative Study of Classical and AI-Based Relay Strategies
 
 ---
 
@@ -78,24 +78,24 @@ A thesis submitted in partial fulfillment of the requirements for the degree of 
 | 5 | 2×2 MIMO Rayleigh — single-hop BER with ZF, MMSE, and SIC equalization | §6.2.5 |
 | 6 | Consolidated 2×3 grid of all channel model validations | §6.2.6 |
 | 7 | Single-hop BPSK BER for all three SISO channel models | §6.2.6 |
-| 8 | AWGN channel — BER vs. SNR for all eight relay strategies with 95% CI | §7.2 |
-| 9 | Rayleigh fading — BER vs. SNR for all eight relay strategies with 95% CI | §7.3 |
-| 10 | Rician fading (K=3) — BER vs. SNR for all eight relay strategies with 95% CI | §7.4 |
-| 11 | 2×2 MIMO with ZF equalization — BER vs. SNR for all eight relay strategies with 95% CI | §7.5 |
-| 12 | 2×2 MIMO with MMSE equalization — BER vs. SNR for all eight relay strategies with 95% CI | §7.6 |
-| 13 | 2×2 MIMO with MMSE-SIC equalization — BER vs. SNR for all eight relay strategies with 95% CI | §7.7 |
+| 8 | AWGN channel — BER vs. SNR for all nine relay strategies with 95% CI | §7.2 |
+| 9 | Rayleigh fading — BER vs. SNR for all nine relay strategies with 95% CI | §7.3 |
+| 10 | Rician fading (K=3) — BER vs. SNR for all nine relay strategies with 95% CI | §7.4 |
+| 11 | 2×2 MIMO with ZF equalization — BER vs. SNR for all nine relay strategies with 95% CI | §7.5 |
+| 12 | 2×2 MIMO with MMSE equalization — BER vs. SNR for all nine relay strategies with 95% CI | §7.6 |
+| 13 | 2×2 MIMO with MMSE-SIC equalization — BER vs. SNR for all nine relay strategies with 95% CI | §7.7 |
 | 14 | Normalized 3K-parameter comparison across all channels | §7.8 |
 | 15 | Normalized 3K-parameter BER comparison on AWGN | §7.8 |
 | 16 | Normalized 3K-parameter BER comparison on Rayleigh fading | §7.8 |
 | 17 | Normalized 3K-parameter BER comparison on Rician fading (K=3) | §7.8 |
 | 18 | Complexity–performance trade-off: training time vs. parameter count vs. BER improvement | §7.9 |
-| 19 | Master BER comparison — all eight relay strategies across all six channel configurations | §7.9 |
+| 19 | Master BER comparison — all nine relay strategies across all six channel configurations | §7.9 |
 
 ## List of Tables
 
 | No. | Caption | Page |
 |---|---|---|
-| 1 | BER comparison of all eight relay strategies on the AWGN channel | §7.2 |
+| 1 | BER comparison of all nine relay strategies on the AWGN channel | §7.2 |
 | 2 | BER comparison on the Rayleigh fading channel (SISO) | §7.3 |
 | 3 | BER comparison on the Rician fading channel with K-factor = 3 | §7.4 |
 | 4 | BER comparison on 2×2 MIMO Rayleigh channel with ZF equalization | §7.5 |
@@ -156,7 +156,7 @@ A thesis submitted in partial fulfillment of the requirements for the degree of 
 *[תקציר בעברית — עד 2 עמודים]*
 
 *לפי הנחיות בית הספר להנדסת חשמל, התקציר בעברית חייב לכלול לפחות ארבעה פסקאות:*
-*1. מטרות המחקר — השוואה שיטתית בין שמונה אסטרטגיות ממסר (AF, DF, GenAI, Hybrid, VAE, CGAN, Transformer, Mamba S6) לתקשורת שיתופית דו-קפיצתית.*
+*1. מטרות המחקר — השוואה שיטתית בין תשע אסטרטגיות ממסר (AF, DF, GenAI, Hybrid, VAE, CGAN, Transformer, Mamba S6, Mamba-2 SSD) לתקשורת שיתופית דו-קפיצתית.*
 *2. שיטות — סימולציית מונטה קרלו (100,000 ביטים לנקודת SNR) על שישה ערוצים/טופולוגיות (AWGN, Rayleigh, Rician K=3, MIMO 2×2 עם ZF/MMSE/SIC), כולל ניתוח תיאורטי וסימולטיבי של מודלי הערוץ.*
 *3. תוצאות — ממסרי AI עולים על שיטות קלאסיות ב-SNR נמוך (0–4 dB); DF אופטימלי ב-SNR בינוני-גבוה עם 0 פרמטרים; רשת עם 169 פרמטרים מספיקה; Mamba S6 מוביל בביצועים.*
 *4. מסקנות — גישת Hybrid (GenAI + DF) מומלצת לשימוש מעשי; מורכבות ארכיטקטונית חשובה פחות מגודל מודל; MMSE-SIC מספק את הביצועים הטובים ביותר ב-MIMO.*
@@ -277,7 +277,7 @@ Equalization at the receiver aims to recover $\mathbf{x}$ from $\mathbf{y}$. Thr
 
 - **Successive Interference Cancellation (SIC):** A non-linear technique that detects streams sequentially, cancelling each detected stream from the observation before detecting the next. The MMSE-ordered V-BLAST variant (Wolniansky et al., 1998) orders streams by post-detection SINR, detecting the strongest stream first to minimize error propagation.
 
-Combining AI-based relay processing with MIMO equalization has not been studied in the literature. This thesis evaluates all eight relay strategies across all three equalization methods.
+Combining AI-based relay processing with MIMO equalization has not been studied in the literature. This thesis evaluates all nine relay strategies across all three equalization methods.
 
 ### 4.7 Research Gap and Motivation
 
@@ -291,7 +291,7 @@ Despite growing interest in AI for wireless communication, several important que
 
 4. **Are state space models better than Transformers for signal processing?** The Mamba architecture has shown promise in NLP, but its suitability for physical-layer signal processing is unexplored.
 
-This thesis addresses all four questions through a comprehensive framework that implements and compares eight relay strategies across six channel/topology configurations.
+This thesis addresses all four questions through a comprehensive framework that implements and compares nine relay strategies across six channel/topology configurations.
 
 ---
 
@@ -303,11 +303,11 @@ To systematically evaluate and compare classical and AI-based relay strategies f
 
 ### Secondary Objectives
 
-1. **Implement and compare eight relay strategies** spanning four learning paradigms: no learning (AF, DF), supervised learning (GenAI, Hybrid), generative modeling (VAE, CGAN), and sequence modeling (Transformer, Mamba S6).
+1. **Implement and compare nine relay strategies** spanning four learning paradigms: no learning (AF, DF), supervised learning (GenAI, Hybrid), generative modeling (VAE, CGAN), and sequence modeling (Transformer, Mamba S6, Mamba-2 SSD).
 
 2. **Evaluate across six channel/topology configurations:** AWGN, Rayleigh fading, and Rician fading (K=3) channels in SISO topology, and 2×2 MIMO Rayleigh with ZF, MMSE, and SIC equalization.
 
-3. **Investigate the complexity–performance trade-off** by testing model architectures ranging from 0 parameters (classical) to 24,001 parameters (Mamba S6), and by conducting a normalized comparison at approximately 3,000 parameters.
+3. **Investigate the complexity–performance trade-off** by testing model architectures ranging from 0 parameters (classical) to 26,179 parameters (Mamba-2 SSD), and by conducting a normalized comparison at approximately 3,000 parameters.
 
 4. **Determine whether state space models outperform attention mechanisms** for relay signal processing by comparing Mamba S6 and Transformer architectures at both original and normalized parameter counts.
 
@@ -567,7 +567,7 @@ Table 0 summarizes the theoretical SNR required to achieve a target BER of $10^{
 
 ### 6.3 Relay Strategies
 
-Eight relay strategies were implemented, spanning four learning paradigms:
+nine relay strategies were implemented, spanning four learning paradigms:
 
 **Classical (0 parameters):**
 
@@ -652,7 +652,7 @@ where $\mathbb{1}(\cdot)$ is the indicator function. The 95% confidence interval
 
 ### 6.6 Normalized Parameter Comparison
 
-To enable a fair apples-to-apples comparison, all six AI models were scaled to approximately 3,000 parameters:
+To enable a fair apples-to-apples comparison, all seven AI models were scaled to approximately 3,000 parameters:
 
 | Model | Parameters | Configuration |
 |---|---|---|
@@ -704,7 +704,7 @@ With the channel models validated, we proceed to evaluate the relay strategies o
 
 ### 7.2 AWGN Channel — Relay Comparison
 
-Table 1: BER comparison of all eight relay strategies on the AWGN channel.
+Table 1: BER comparison of all nine relay strategies on the AWGN channel.
 
 | SNR (dB) | AF | DF | GenAI | Hybrid | VAE | CGAN | Transformer | Mamba S6 |
 |---|---|---|---|---|---|---|---|---|
@@ -717,9 +717,9 @@ Table 1: BER comparison of all eight relay strategies on the AWGN channel.
 
 At low SNR (0–4 dB), Mamba S6 achieves the lowest BER across all methods. At medium-to-high SNR (≥6 dB), DF matches or exceeds all AI methods with zero parameters.
 
-![Figure 8: AWGN channel — BER comparison of all eight relay strategies.](results/awgn_comparison_ci.png)
+![Figure 8: AWGN channel — BER comparison of all nine relay strategies.](results/awgn_comparison_ci.png)
 
-*Figure 8: AWGN channel — BER vs. SNR for all eight relay strategies with 95% CI. AI relays outperform classical methods at low SNR; DF dominates at medium-to-high SNR.*
+*Figure 8: AWGN channel — BER vs. SNR for all nine relay strategies with 95% CI. AI relays outperform classical methods at low SNR; DF dominates at medium-to-high SNR.*
 
 ### 7.3 Rayleigh Fading Channel
 
@@ -734,9 +734,9 @@ Table 2: BER comparison on the Rayleigh fading channel (SISO).
 
 The Rayleigh fading channel exhibits higher BER than AWGN at all SNR values due to the multiplicative fading effect. Mamba S6 again leads at low SNR, while DF dominates at medium-to-high SNR. The relative ordering of methods is consistent with the AWGN results.
 
-![Figure 9: Rayleigh fading — BER comparison of all eight relay strategies.](results/fading_comparison.png)
+![Figure 9: Rayleigh fading — BER comparison of all nine relay strategies.](results/fading_comparison.png)
 
-*Figure 9: Rayleigh fading — BER vs. SNR for all eight relay strategies with 95% CI.*
+*Figure 9: Rayleigh fading — BER vs. SNR for all nine relay strategies with 95% CI.*
 
 ### 7.4 Rician Fading Channel (K=3)
 
@@ -751,9 +751,9 @@ Table 3: BER comparison on the Rician fading channel with K-factor = 3.
 
 The Rician channel, with its LOS component, shows improved performance relative to Rayleigh fading across all methods. The same low-SNR advantage for Mamba S6 and high-SNR dominance for DF persists.
 
-![Figure 10: Rician fading K=3 — BER comparison of all eight relay strategies.](results/rician_comparison_ci.png)
+![Figure 10: Rician fading K=3 — BER comparison of all nine relay strategies.](results/rician_comparison_ci.png)
 
-*Figure 10: Rician fading (K=3) — BER vs. SNR for all eight relay strategies with 95% CI.*
+*Figure 10: Rician fading (K=3) — BER vs. SNR for all nine relay strategies with 95% CI.*
 
 ### 7.5 2×2 MIMO with ZF Equalization
 
@@ -768,9 +768,9 @@ Table 4: BER comparison on 2×2 MIMO Rayleigh channel with ZF equalization.
 
 ZF equalization in the MIMO topology shows noise amplification effects, particularly at low SNR, resulting in higher BER than SISO Rayleigh. The AI relay advantage at low SNR is preserved.
 
-![Figure 11: 2×2 MIMO ZF — BER comparison of all eight relay strategies.](results/mimo_2x2_comparison_ci.png)
+![Figure 11: 2×2 MIMO ZF — BER comparison of all nine relay strategies.](results/mimo_2x2_comparison_ci.png)
 
-*Figure 11: 2×2 MIMO with ZF equalization — BER vs. SNR for all eight relay strategies with 95% CI.*
+*Figure 11: 2×2 MIMO with ZF equalization — BER vs. SNR for all nine relay strategies with 95% CI.*
 
 ### 7.6 2×2 MIMO with MMSE Equalization
 
@@ -785,9 +785,9 @@ Table 5: BER comparison on 2×2 MIMO Rayleigh channel with MMSE equalization.
 
 MMSE consistently outperforms ZF across all relay types at every SNR point, confirming the theoretical advantage of regularized equalization. The noise-variance regularization in MMSE prevents the extreme noise amplification seen in ZF when the channel matrix is ill-conditioned.
 
-![Figure 12: 2×2 MIMO MMSE — BER comparison of all eight relay strategies.](results/mimo_2x2_mmse_comparison_ci.png)
+![Figure 12: 2×2 MIMO MMSE — BER comparison of all nine relay strategies.](results/mimo_2x2_mmse_comparison_ci.png)
 
-*Figure 12: 2×2 MIMO with MMSE equalization — BER vs. SNR for all eight relay strategies with 95% CI.*
+*Figure 12: 2×2 MIMO with MMSE equalization — BER vs. SNR for all nine relay strategies with 95% CI.*
 
 ### 7.7 2×2 MIMO with SIC Equalization
 
@@ -797,13 +797,13 @@ SIC further improves upon MMSE by cancelling the stronger stream's interference 
 
 The SIC results demonstrate that combining AI-based relay processing with advanced MIMO equalization yields the lowest BER achievable in the spatial multiplexing configuration.
 
-![Figure 13: 2×2 MIMO SIC — BER comparison of all eight relay strategies.](results/mimo_2x2_sic_comparison_ci.png)
+![Figure 13: 2×2 MIMO SIC — BER comparison of all nine relay strategies.](results/mimo_2x2_sic_comparison_ci.png)
 
-*Figure 13: 2×2 MIMO with MMSE-SIC equalization — BER vs. SNR for all eight relay strategies with 95% CI.*
+*Figure 13: 2×2 MIMO with MMSE-SIC equalization — BER vs. SNR for all nine relay strategies with 95% CI.*
 
 ### 7.8 Normalized 3K-Parameter Comparison
 
-To isolate architectural inductive biases from parameter count effects, all six AI models were scaled to approximately 3,000 parameters.
+To isolate architectural inductive biases from parameter count effects, all seven AI models were scaled to approximately 3,000 parameters.
 
 Table 7: Normalized 3K BER results — AWGN channel.
 
@@ -894,7 +894,7 @@ Table 12: Model complexity and timing comparison (50,000 training samples, 100 e
 - **Mamba S6** (24,001 parameters) trains in 36 minutes, approximately 4.5× slower than the Transformer despite only 1.36× more parameters. The detailed analysis of this paradoxical result is given in Section 8.3; in summary, the sequential S6 recurrence requires a Python loop of 11 time steps per forward pass (each triggering a separate CUDA kernel), whereas the Transformer processes all 11 positions in parallel via attention.
 - **Mamba2 (SSD)** (26,179 parameters) trains in 24 minutes — 33% faster than Mamba S6 despite having 9% more parameters. The SSD layer replaces the sequential S6 scan with a chunk-parallel structured matrix multiply: for an 11-token sequence with chunk size 8, this means 2 parallel chunk matmuls instead of 11 sequential kernel launches. However, Mamba2 is still 3× slower than the Transformer at this short context length because building the $L \times L$ SSM matrix per chunk incurs overhead (4D tensor allocation, cumulative log-sum-exp, einsum) that only amortises over longer sequences.
 
-**Inference (evaluation) time analysis.** All relay implementations use **batched inference**: the sliding-window extraction builds a matrix of all windows at once, and the neural network processes the entire signal in a single forward pass. This eliminates the per-symbol Python loop that dominated prior versions. As a result, all eight relays evaluate the full AWGN Monte Carlo sweep (11 SNR × 10 trials × 10,000 bits = 1.1 M symbols) in under 4 seconds:
+**Inference (evaluation) time analysis.** All relay implementations use **batched inference**: the sliding-window extraction builds a matrix of all windows at once, and the neural network processes the entire signal in a single forward pass. This eliminates the per-symbol Python loop that dominated prior versions. As a result, all nine relays evaluate the full AWGN Monte Carlo sweep (11 SNR × 10 trials × 10,000 bits = 1.1 M symbols) in under 4 seconds:
 
 - **AF and DF** evaluate in 0.8 s — a single vectorised operation per signal block. The SIC evaluation (3.5 s for AF) takes longer due to the iterative successive interference cancellation in the MIMO channel model itself.
 - **GenAI** evaluates in 1.6 s. The batched NumPy forward pass through the 169-parameter network processes all 10,000 symbols at once as a single matrix multiply. The Hybrid relay is even faster (0.4 s) because at high SNR it routes to the DF path.
@@ -914,7 +914,7 @@ Table 12: Model complexity and timing comparison (50,000 training samples, 100 e
 
 ![Figure 19: Master BER comparison — all relay strategies across all channels.](results/master_ber_comparison.png)
 
-*Figure 19: Master BER comparison — consolidated view of all eight relay strategies across all six channel/topology configurations.*
+*Figure 19: Master BER comparison — consolidated view of all nine relay strategies across all six channel/topology configurations.*
 
 ---
 
@@ -1041,9 +1041,9 @@ Several directions warrant further investigation:
 
 ### 8.7 Conclusions
 
-This thesis presents a comprehensive comparative study of eight relay strategies — two classical (AF, DF) and six AI-based (GenAI, Hybrid, VAE, CGAN, Transformer, Mamba S6) — evaluated across six channel/topology configurations (AWGN, Rayleigh, Rician in SISO; 2×2 MIMO with ZF, MMSE, SIC equalization). The main conclusions are:
+This thesis presents a comprehensive comparative study of nine relay strategies — two classical (AF, DF) and seven AI-based (GenAI, Hybrid, VAE, CGAN, Transformer, Mamba S6, Mamba-2 SSD) — evaluated across six channel/topology configurations (AWGN, Rayleigh, Rician in SISO; 2×2 MIMO with ZF, MMSE, SIC equalization). The main conclusions are:
 
-1. **AI relays outperform classical methods at low SNR (0–4 dB).** All six AI methods achieve lower BER than both AF and DF in the low-SNR regime, with improvements of up to 4% in absolute BER. This advantage is consistent across all channel types and MIMO configurations.
+1. **AI relays outperform classical methods at low SNR (0–4 dB).** All seven AI methods achieve lower BER than both AF and DF in the low-SNR regime, with improvements of up to 4% in absolute BER. This advantage is consistent across all channel types and MIMO configurations.
 
 2. **DF is optimal at medium-to-high SNR (≥6 dB) with zero parameters.** The classical decode-and-forward relay requires no training and no parameters yet achieves the best performance when channel quality is sufficient for reliable first-hop demodulation.
 

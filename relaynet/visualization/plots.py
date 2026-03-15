@@ -37,8 +37,8 @@ def plot_ber_curves(snr_values, ber_dict, title="BER Comparison",
         print("[WARNING] matplotlib not installed — skipping plot.")
         return None
 
-    markers = ["o", "s", "^", "d", "v", "x", "P", "*"]
-    colors = ["k", "m", "b", "r", "g", "c", "orange", "brown"]
+    markers = ["o", "s", "^", "d", "v", "x", "P", "*", "X"]
+    colors = ["k", "m", "b", "r", "g", "c", "orange", "brown", "#e377c2"]
     fig, ax = plt.subplots(figsize=(10, 6))
     snr = np.asarray(snr_values)
 
@@ -92,8 +92,8 @@ def plot_ber_with_ci(snr_values, ber_dict, ci_dict=None,
         print("[WARNING] matplotlib not installed — skipping plot.")
         return None
 
-    markers = ["o", "s", "^", "d", "v", "x", "P", "*"]
-    colors = ["k", "m", "b", "r", "g", "c", "orange", "brown"]
+    markers = ["o", "s", "^", "d", "v", "x", "P", "*", "X"]
+    colors = ["k", "m", "b", "r", "g", "c", "orange", "brown", "#e377c2"]
     fig, ax = plt.subplots(figsize=(10, 6))
     snr = np.asarray(snr_values)
 

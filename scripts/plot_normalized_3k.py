@@ -29,6 +29,7 @@ from relaynet.channels.awgn import awgn_channel
 from relaynet.channels.fading import rayleigh_fading_channel, rician_fading_channel
 from relaynet.channels.mimo import mimo_2x2_channel, mimo_2x2_mmse_channel, mimo_2x2_sic_channel
 from relaynet.simulation.runner import run_monte_carlo
+from relaynet.utils.checkpoint_manager import CheckpointManager
 from checkpoints.checkpoint_22_normalized_3k import build_all_3k
 
 # ── CLI ─────────────────────────────────────────────────────────────
@@ -37,6 +38,12 @@ def parse_args():
     p = argparse.ArgumentParser(description="Normalized 3K relay plots")
     p.add_argument("--full", action="store_true",
                    help="Use higher-fidelity settings (more samples/epochs/trials)")
+    p.add_argument("--include-cgan", action="store_true",
+                   help="Include CGAN (WGAN-GP) relay (slow: ~12x training overhead)")
+    p.add_argument("--gpu", action="store_true", default=True,
+                   help="Use GPU for Transformer/Mamba models (default: True)")
+    p.add_argument("--weights-dir", type=str, default="trained_weights",
+                   help="Directory for saving/loading 3K model weights")
     p.add_argument("--seed", type=int, default=42)
     return p.parse_args()
 
@@ -53,21 +60,36 @@ CHANNELS = [
     ("2x2 MIMO SIC",  mimo_2x2_sic_channel),
 ]
 
-MARKERS = ["o", "s", "^", "D", "v", "P"]
-COLORS  = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b"]
+MARKERS = ["o", "s", "^", "D", "v", "P", "X"]
+COLORS  = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2"]
 
 # ── Training ────────────────────────────────────────────────────────
 
-def train_relays(full=False, seed=42):
-    """Build and train all 3K relays."""
+def train_relays(full=False, seed=42, include_cgan=False, gpu=True,
+                 weights_dir="trained_weights"):
+    """Build, load (if available) or train all 3K relays."""
     print("\n=== Building 3K-normalized relays ===")
-    relays = build_all_3k(prefer_gpu=False, include_sequence_models=True)
+    relays = build_all_3k(prefer_gpu=False, include_sequence_models=True,
+                           include_cgan=include_cgan, prefer_gpu_seq=gpu)
 
+    ckpt = CheckpointManager(weights_dir)
+    loaded, _ = ckpt.load_all(relays, seed)
+    loaded_set = set(loaded)
+    if loaded:
+        print(f"  Loaded from checkpoint: {', '.join(loaded)}")
+
+    to_train = [n for n in relays if n not in loaded_set]
+    if not to_train:
+        print("  All 3K models loaded — skipping training.")
+        return relays
+
+    print(f"  Need to train: {', '.join(to_train)}")
     samples = 25_000 if full else 10_000
     epochs  = 100    if full else 50
     cgan_epochs = 200 if full else 100
 
-    for name, relay in relays.items():
+    for name in to_train:
+        relay = relays[name]
         n = getattr(relay, "num_params", "?")
         print(f"  Training {name} ({n}p) ...", end=" ", flush=True)
         t0 = time.perf_counter()
@@ -80,6 +102,11 @@ def train_relays(full=False, seed=42):
                         epochs=ep, seed=seed)
         dt = time.perf_counter() - t0
         print(f"done ({dt:.1f}s)")
+
+    # Save all weights (including freshly trained)
+    saved = ckpt.save_all(relays, seed)
+    if saved:
+        print(f"  Saved weights: {', '.join(saved.keys())}")
 
     return relays
 
@@ -142,11 +169,11 @@ def plot_individual(snrs, results):
 
 
 def plot_consolidated(snrs, results, relays):
-    """2x3 grid with all channels + parameter table."""
+    """3x3 grid with all channels + parameter table."""
     os.makedirs(RESULTS_DIR, exist_ok=True)
     ch_names = list(results.keys())
 
-    fig, axes = plt.subplots(2, 3, figsize=(20, 11))
+    fig, axes = plt.subplots(3, 3, figsize=(22, 16))
     axes_flat = axes.flatten()
 
     for idx, ch_name in enumerate(ch_names):
@@ -154,8 +181,8 @@ def plot_consolidated(snrs, results, relays):
         if idx == 0:
             axes_flat[idx].legend(fontsize=7, loc="upper right")
 
-    # 6th cell: parameter table
-    ax = axes_flat[5]
+    # 7th cell: parameter table
+    ax = axes_flat[6]
     ax.axis("off")
     table_data = []
     for r_name, relay in relays.items():
@@ -167,6 +194,10 @@ def plot_consolidated(snrs, results, relays):
     tbl.set_fontsize(11)
     tbl.scale(0.8, 1.8)
     ax.set_title("Parameter Counts", fontsize=12, fontweight="bold")
+
+    # Hide remaining empty cells
+    for i in range(7, len(axes_flat)):
+        axes_flat[i].axis("off")
 
     fig.suptitle("Normalized ~3K Parameter Relay Comparison Across All Channels",
                  fontsize=15, fontweight="bold", y=0.98)
@@ -219,7 +250,9 @@ def main():
     bits   = 10_000 if args.full else 5_000
     trials = 10     if args.full else 5
 
-    relays  = train_relays(full=args.full, seed=args.seed)
+    relays  = train_relays(full=args.full, seed=args.seed,
+                            include_cgan=args.include_cgan, gpu=args.gpu,
+                            weights_dir=args.weights_dir)
     results = run_all_channels(relays, snr_range, bits, trials)
 
     print_summary(snr_range, results)

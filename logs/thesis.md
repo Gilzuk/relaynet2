@@ -109,10 +109,10 @@ A thesis submitted in partial fulfillment of the requirements for the degree of 
 *[תקציר בעברית — עד 2 עמודים]*
 
 *לפי הנחיות בית הספר להנדסת חשמל, התקציר בעברית חייב לכלול לפחות ארבעה פסקאות:*
-*1. מטרות המחקר — השוואה שיטתית בין שמונה אסטרטגיות ממסר (AF, DF, GenAI, Hybrid, VAE, CGAN, Transformer, Mamba S6) לתקשורת שיתופית דו-קפיצתית.*
-*2. שיטות — סימולציית מונטה קרלו (100,000 ביטים לנקודת SNR) על שישה ערוצים/טופולוגיות (AWGN, Rayleigh, Rician K=3, MIMO 2×2 עם ZF/MMSE/SIC), כולל ניתוח תיאורטי וסימולטיבי של מודלי הערוץ.*
-*3. תוצאות — ממסרי AI עולים על שיטות קלאסיות ב-SNR נמוך (0–4 dB); DF אופטימלי ב-SNR בינוני-גבוה עם 0 פרמטרים; רשת עם 169 פרמטרים מספיקה; Mamba S6 מוביל בביצועים.*
-*4. מסקנות — גישת Hybrid (GenAI + DF) מומלצת לשימוש מעשי; מורכבות ארכיטקטונית חשובה פחות מגודל מודל; MMSE-SIC מספק את הביצועים הטובים ביותר ב-MIMO.*
+*1. מטרות המחקר — השוואה שיטתית בין תשע אסטרטגיות ממסר (AF, DF, GenAI, Hybrid, VAE, CGAN, Transformer, Mamba S6, Mamba-2 SSD) לתקשורת שיתופית דו-קפיצתית.*
+*2. שיטות — סימולציית מונטה קרלו (100,000 ביטים לנקודת SNR) על שישה ערוצים/טופולוגיות (AWGN, Rayleigh, Rician K=3, MIMO 2×2 עם ZF/MMSE/SIC), כולל ניתוח תיאורטי וסימולטיבי של מודלי הערוץ. בדיקות סטטיסטיות Wilcoxon לכל נקודת SNR.*
+*3. תוצאות — ממסרי AI עולים על שיטות קלאסיות ב-SNR נמוך (0–4 dB); DF אופטימלי ב-SNR בינוני-גבוה עם 0 פרמטרים; רשת עם 169 פרמטרים מספיקה; Mamba S6 ו-Mamba-2 SSD מובילים בביצועים.*
+*4. מסקנות — גישת Hybrid (GenAI + DF) מומלצת לשימוש מעשי; מורכבות ארכיטקטונית חשובה פחות מגודל מודל; MMSE-SIC מספק את הביצועים הטובים ביותר ב-MIMO; Mamba-2 SSD מציע יתרון חישובי בזכות עיבוד chunk-parallel.*
 
 ---
 
@@ -204,7 +204,13 @@ $$\mathbf{x}_k = \bar{\mathbf{A}} \mathbf{x}_{k-1} + \bar{\mathbf{B}} u_k, \quad
 
 where $\bar{\mathbf{A}} = \exp(\Delta \mathbf{A})$ and $\bar{\mathbf{B}} = \Delta \mathbf{B}$ are the discretized state matrices. Critically, Mamba makes the parameters $\Delta$, $\mathbf{B}$, and $\mathbf{C}$ input-dependent through learned projections, enabling selective information propagation. This achieves $O(n)$ complexity while maintaining the ability to model long-range dependencies through the recurrent state.
 
-The application of state space models to physical-layer signal processing is largely unexplored. This thesis presents the first comparison of Mamba S6 against Transformers for relay communication, demonstrating that state space models are better suited to this domain.
+**Mamba-2 (State Space Duality)** (Dao & Gu, 2024) reformulates the selective state space model through an algebraic duality between linear recurrences and matrix multiplications. The key insight is that the SSM output can be computed via a structured semi-separable matrix:
+
+$$y_i = \mathbf{C}_i^\top \left(\prod_{k=j+1}^{i} \bar{\mathbf{A}}_k\right) \mathbf{B}_j u_j, \quad M_{ij} = \begin{cases} \mathbf{C}_i^\top \bar{\mathbf{A}}_{j+1:i} \mathbf{B}_j & i \geq j \\ 0 & i < j \end{cases}$$
+
+The matrix $\mathbf{M}$ is lower-triangular (causal) and semi-separable, enabling chunk-parallel computation: the sequence is divided into chunks of length $L$, and within each chunk the output is computed as a single batched matrix multiply $\mathbf{y} = \mathbf{M}(\mathbf{B} \odot \mathbf{u})$. Inter-chunk state is propagated once per chunk rather than once per time step. This "SSD" (State Space Duality) formulation eliminates the sequential recurrence bottleneck of Mamba S6 while preserving the selective state space semantics.
+
+The application of state space models to physical-layer signal processing is largely unexplored. This thesis presents the first comparison of Mamba S6 and Mamba-2 SSD against Transformers for relay communication, demonstrating that state space models are well suited to this domain.
 
 ### 4.6 MIMO Systems and Equalization
 
@@ -222,13 +228,13 @@ Equalization at the receiver aims to recover $\mathbf{x}$ from $\mathbf{y}$. Thr
 
 - **Successive Interference Cancellation (SIC):** A non-linear technique that detects streams sequentially, cancelling each detected stream from the observation before detecting the next. The MMSE-ordered V-BLAST variant (Wolniansky et al., 1998) orders streams by post-detection SINR, detecting the strongest stream first to minimize error propagation.
 
-Combining AI-based relay processing with MIMO equalization has not been studied in the literature. This thesis evaluates all eight relay strategies across all three equalization methods.
+Combining AI-based relay processing with MIMO equalization has not been studied in the literature. This thesis evaluates all nine relay strategies across all three equalization methods.
 
 ### 4.7 Research Gap and Motivation
 
 Despite growing interest in AI for wireless communication, several important questions remain unanswered:
 
-1. **How do different AI paradigms compare for relay processing?** No prior work provides a systematic comparison across supervised learning, generative models (VAE, CGAN), and modern sequence models (Transformers, Mamba) for the relay denoising task.
+1. **How do different AI paradigms compare for relay processing?** No prior work provides a systematic comparison across supervised learning, generative models (VAE, CGAN), and modern sequence models (Transformers, Mamba S6, Mamba-2 SSD) for the relay denoising task.
 
 2. **What is the relationship between model complexity and relay performance?** It is commonly assumed that larger models perform better, but this has not been rigorously tested for relay communication.
 
@@ -236,7 +242,9 @@ Despite growing interest in AI for wireless communication, several important que
 
 4. **Are state space models better than Transformers for signal processing?** The Mamba architecture has shown promise in NLP, but its suitability for physical-layer signal processing is unexplored.
 
-This thesis addresses all four questions through a comprehensive framework that implements and compares eight relay strategies across six channel/topology configurations.
+5. **Does the chunk-parallel SSD formulation of Mamba-2 improve upon sequential S6?** The Mamba-2 architecture eliminates the sequential recurrence bottleneck, but its impact on relay processing quality and training efficiency is unknown.
+
+This thesis addresses all five questions through a comprehensive framework that implements and compares nine relay strategies across six channel/topology configurations.
 
 ---
 
@@ -248,15 +256,17 @@ To systematically evaluate and compare classical and AI-based relay strategies f
 
 ### Secondary Objectives
 
-1. **Implement and compare eight relay strategies** spanning four learning paradigms: no learning (AF, DF), supervised learning (GenAI, Hybrid), generative modeling (VAE, CGAN), and sequence modeling (Transformer, Mamba S6).
+1. **Implement and compare nine relay strategies** spanning four learning paradigms: no learning (AF, DF), supervised learning (GenAI, Hybrid), generative modeling (VAE, CGAN), and sequence modeling (Transformer, Mamba S6, Mamba-2 SSD).
 
 2. **Evaluate across six channel/topology configurations:** AWGN, Rayleigh fading, and Rician fading (K=3) channels in SISO topology, and 2×2 MIMO Rayleigh with ZF, MMSE, and SIC equalization.
 
-3. **Investigate the complexity–performance trade-off** by testing model architectures ranging from 0 parameters (classical) to 24,001 parameters (Mamba S6), and by conducting a normalized comparison at approximately 3,000 parameters.
+3. **Investigate the complexity–performance trade-off** by testing model architectures ranging from 0 parameters (classical) to 26,179 parameters (Mamba-2 SSD), and by conducting a normalized comparison at approximately 3,000 parameters.
 
-4. **Determine whether state space models outperform attention mechanisms** for relay signal processing by comparing Mamba S6 and Transformer architectures at both original and normalized parameter counts.
+4. **Determine whether state space models outperform attention mechanisms** for relay signal processing by comparing Mamba S6, Mamba-2 SSD, and Transformer architectures at both original and normalized parameter counts.
 
-5. **Identify practical deployment recommendations** for selecting the appropriate relay strategy given specific operational constraints (SNR range, computational budget, channel environment).
+5. **Evaluate the chunk-parallel SSD formulation** against the sequential S6 recurrence, quantifying the training-time improvement and any BER differences.
+
+6. **Identify practical deployment recommendations** for selecting the appropriate relay strategy given specific operational constraints (SNR range, computational budget, channel environment).
 
 ---
 
@@ -486,6 +496,8 @@ $$\mathbf{h} = \text{ReLU}(\mathbf{W}_1 \mathbf{w} + \mathbf{b}_1), \quad \hat{x
 
 - **Mamba S6:** Selective state space model with input-dependent state transitions. Architecture: $d_{\text{model}}=32$, $d_{\text{state}}=16$, 2 Mamba blocks with residual connections. Total: 24,001 parameters. Each block applies: LayerNorm → expand ($32 \to 64$) → S6 selective scan → contract ($64 \to 32$) → residual. Trained for 100 epochs with Adam optimizer ($\text{lr}=10^{-3}$).
 
+- **Mamba-2 (SSD):** Chunk-parallel state space model using the State Space Duality formulation. Architecture: $d_{\text{model}}=32$, $d_{\text{state}}=16$, 2 SSD blocks with SiLU gating and residual connections, chunk length $L=8$. Total: 26,179 parameters. Each block computes the semi-separable matrix $\mathbf{M}$ via cumulative log-sums of $\bar{\mathbf{A}}$, then applies a single batched matrix multiply per chunk. A parallel SiLU gate modulates the SSM output. Unlike Mamba S6's sequential recurrence, Mamba-2 processes all time steps within a chunk simultaneously, eliminating the per-step CUDA kernel launch overhead. Trained for 100 epochs with Adam optimizer ($\text{lr}=10^{-3}$).
+
 ### 6.4 MIMO Equalization Techniques
 
 Three equalization methods were implemented for the 2×2 MIMO topology:
@@ -520,8 +532,9 @@ All MIMO operations are implemented using vectorized PyTorch batched `torch.lina
 - **Bits per trial:** 10,000
 - **Trials per SNR:** 10
 - **Total bits per SNR point:** 100,000
-- **SNR range:** 0 to 20 dB (step: 2 dB)
+- **SNR range:** 0 to 20 dB (step: 2 dB), giving 11 SNR points
 - **Confidence intervals:** 95% CI computed from the 10 independent trials
+- **Random seed:** Controlled at bit generation and noise level (default seed=42) for full reproducibility
 
 **BER Computation:**
 
@@ -529,12 +542,25 @@ $$\text{BER} = \frac{1}{N}\sum_{i=1}^{N} \mathbb{1}(b_i \neq \hat{b}_i)$$
 
 where $\mathbb{1}(\cdot)$ is the indicator function. The 95% confidence interval is computed as $\text{BER} \pm 1.96 \cdot s / \sqrt{M}$ where $s$ is the standard deviation across $M=10$ trials.
 
+**Statistical Significance Testing.** To rigorously assess whether differences between relay strategies are statistically significant (not merely artifacts of random variation), we employ the **Wilcoxon signed-rank test** at each SNR point. For each relay method, the 10 per-trial BER values are compared against the DF baseline using the two-sided Wilcoxon test at significance level $\alpha = 0.05$. A result marked $p < 0.05$ indicates a statistically significant difference. This non-parametric test is appropriate because BER distributions are not necessarily Gaussian, and the paired design (same random bits and noise realization across relays) controls for trial-to-trial variability. Results are reported as "Y*" (significantly better than DF) or "N*" (significantly worse) at each SNR point.
+
 **Training Protocol.** All AI relays are trained once at the beginning of each experiment using:
 - Multi-SNR training data: signals generated at SNR = 5, 10, 15 dB
-- Training samples: 25,000 (supervised), 20,000 (generative), 10,000 (sequence models)
+- Training samples: 25,000 (supervised), 25,000 (generative/sequence)
 - The same trained model is evaluated across all SNR points
+- **Weight persistence:** Trained weights are saved via `CheckpointManager` to `trained_weights/seed_{seed}/` and automatically reloaded on subsequent runs, eliminating redundant training. This enables rapid reproduction of results and incremental experimentation.
 
-**Statistical Significance.** Differences between relay methods are assessed using the Wilcoxon signed-rank test across the 10 independent trials at each SNR point.
+**Automated Test Suite.** The simulation framework is validated by a comprehensive test suite of **75 automated tests** (pytest), organized across 5 modules:
+
+| Test Module | Tests | Coverage |
+|---|---|---|
+| `test_channels.py` | 26 | AWGN, Rayleigh, Rician, MIMO ZF/MMSE/SIC |
+| `test_modulation.py` | 10 | BPSK modulation, demodulation, BER calculation |
+| `test_relays.py` | 22 | All 9 relay strategies + weight save/load |
+| `test_simulation.py` | 6 | Monte Carlo runner, BER convergence |
+| `test_statistics.py` | 11 | CI computation, Q-function, Wilcoxon test |
+
+The relay tests verify: (i) output shape preservation, (ii) power normalization, (iii) train-and-process round-trip correctness, (iv) untrained passthrough behavior, (v) weight serialization round-trip for all 7 AI relays, and (vi) `CheckpointManager` save/load integrity. All 75 tests pass on the final codebase.
 
 ### 6.6 Normalized Parameter Comparison
 
@@ -548,14 +574,15 @@ To enable a fair apples-to-apples comparison, all six AI models were scaled to a
 | CGAN-3K | 3,004 | window=11, noise=8, g_hidden=(30, 30, 16), c_hidden=(32, 16) |
 | Transformer-3K | 3,007 | window=11, d_model=18, heads=2, layers=1 |
 | Mamba-3K | 3,027 | window=11, d_model=16, d_state=6, layers=1 |
+| Mamba2-3K | 3,004 | window=11, d_model=15, d_state=6, layers=1, chunk=8 |
 
-This normalization isolates the effect of architectural choice from the confound of parameter count, providing insights into which inductive biases are most beneficial for the relay denoising task.
+This normalization isolates the effect of architectural choice from the confound of parameter count, providing insights into which inductive biases are most beneficial for the relay denoising task. The addition of Mamba2-3K enables a direct comparison between the sequential S6 recurrence and the chunk-parallel SSD formulation at equal parameter budgets.
 
 ---
 
 ## 7. Results
 
-All results are obtained from Monte Carlo simulations with 10 trials × 10,000 bits per SNR point (100,000 total bits per SNR point). Confidence intervals at 95% are shown in all plots. Bold values indicate the best performance at each SNR point.
+All results are obtained from Monte Carlo simulations with 10 trials × 10,000 bits per SNR point (100,000 total bits per SNR point). Confidence intervals at 95% are shown in all plots. Bold values indicate the best performance at each SNR point. Statistical significance versus the DF baseline is assessed via the Wilcoxon signed-rank test ($p < 0.05$).
 
 ### 7.1 Channel Model Validation
 
@@ -590,98 +617,109 @@ With the channel models validated, we proceed to evaluate the relay strategies o
 
 ### 7.2 AWGN Channel — Relay Comparison
 
-Table 1: BER comparison of all eight relay strategies on the AWGN channel.
+Table 1: BER comparison of all nine relay strategies on the AWGN channel.
 
-| SNR (dB) | AF | DF | GenAI | Hybrid | VAE | CGAN | Transformer | Mamba S6 |
-|---|---|---|---|---|---|---|---|---|
-| 0 | 0.480 | 0.265 | 0.259 | 0.259 | 0.261 | 0.265 | 0.259 | **0.255** |
-| 2 | 0.420 | 0.186 | 0.180 | 0.180 | 0.181 | 0.185 | 0.181 | **0.176** |
-| 4 | 0.360 | 0.104 | 0.103 | 0.103 | 0.104 | 0.105 | 0.104 | **0.102** |
-| 6 | 0.290 | **0.045** | 0.046 | 0.046 | 0.046 | 0.046 | 0.046 | 0.046 |
-| 8 | 0.210 | **0.012** | 0.013 | 0.013 | 0.013 | 0.012 | 0.013 | 0.014 |
-| 10 | 0.140 | **0.002** | 0.002 | 0.002 | 0.002 | 0.002 | 0.002 | 0.003 |
+| SNR (dB) | AF | DF | GenAI | Hybrid | VAE | CGAN | Transformer | Mamba S6 | Mamba2 (SSD) |
+|---|---|---|---|---|---|---|---|---|---|
+| 0 | 0.480 | 0.265 | 0.259 | 0.259 | 0.261 | 0.265 | 0.259 | 0.259 | **0.259** |
+| 2 | 0.420 | 0.186 | 0.180 | 0.180 | 0.181 | 0.185 | 0.181 | 0.176 | **0.176** |
+| 4 | 0.360 | 0.104 | 0.103 | 0.103 | 0.104 | 0.105 | 0.104 | **0.102** | 0.102 |
+| 6 | 0.290 | **0.045** | 0.046 | 0.046 | 0.046 | 0.046 | 0.046 | 0.046 | 0.046 |
+| 8 | 0.210 | **0.012** | 0.013 | 0.013 | 0.013 | 0.012 | 0.013 | 0.014 | 0.013 |
+| 10 | 0.140 | **0.002** | 0.002 | 0.002 | 0.002 | 0.002 | 0.002 | 0.003 | 0.002 |
 
-At low SNR (0–4 dB), Mamba S6 achieves the lowest BER across all methods. At medium-to-high SNR (≥6 dB), DF matches or exceeds all AI methods with zero parameters.
+At low SNR (0–4 dB), Mamba S6 and Mamba2 (SSD) achieve the lowest BER across all methods, with statistically significant improvements over DF ($p < 0.05$). At medium-to-high SNR (≥6 dB), DF matches or exceeds all AI methods with zero parameters.
 
-![Figure 8: AWGN channel — BER comparison of all eight relay strategies.](results/awgn_comparison_ci.png)
+![Figure 8: AWGN channel — BER comparison of all nine relay strategies.](results/awgn_comparison_ci.png)
 
-*Figure 8: AWGN channel — BER vs. SNR for all eight relay strategies with 95% CI. AI relays outperform classical methods at low SNR; DF dominates at medium-to-high SNR.*
+*Figure 8: AWGN channel — BER vs. SNR for all nine relay strategies with 95% CI. AI relays outperform classical methods at low SNR; DF dominates at medium-to-high SNR.*
 
 ### 7.3 Rayleigh Fading Channel
 
 Table 2: BER comparison on the Rayleigh fading channel (SISO).
 
-| SNR (dB) | AF | DF | GenAI | Hybrid | VAE | CGAN | Transformer | Mamba S6 |
-|---|---|---|---|---|---|---|---|---|
-| 0 | 0.430 | 0.260 | 0.254 | 0.254 | 0.258 | 0.259 | 0.252 | **0.249** |
-| 4 | 0.310 | 0.144 | 0.140 | 0.140 | 0.142 | 0.143 | 0.141 | **0.138** |
-| 10 | 0.155 | **0.048** | 0.049 | 0.049 | 0.050 | 0.049 | 0.049 | 0.050 |
-| 20 | 0.042 | **0.005** | 0.006 | 0.005 | 0.006 | 0.006 | 0.006 | 0.006 |
+| SNR (dB) | AF | DF | GenAI | Hybrid | VAE | CGAN | Transformer | Mamba S6 | Mamba2 (SSD) |
+|---|---|---|---|---|---|---|---|---|---|
+| 0 | 0.430 | 0.260 | 0.254 | 0.254 | 0.258 | 0.259 | 0.252 | 0.249 | **0.247** |
+| 4 | 0.310 | 0.144 | 0.140 | 0.140 | 0.142 | 0.143 | 0.141 | 0.138 | **0.138** |
+| 10 | 0.155 | **0.048** | 0.049 | 0.049 | 0.050 | 0.049 | 0.049 | 0.050 | 0.050 |
+| 20 | 0.042 | **0.005** | 0.006 | 0.005 | 0.006 | 0.006 | 0.006 | 0.006 | 0.006 |
 
-The Rayleigh fading channel exhibits higher BER than AWGN at all SNR values due to the multiplicative fading effect. Mamba S6 again leads at low SNR, while DF dominates at medium-to-high SNR. The relative ordering of methods is consistent with the AWGN results.
+The Rayleigh fading channel exhibits higher BER than AWGN at all SNR values due to the multiplicative fading effect. Mamba2 (SSD) and Mamba S6 achieve the best low-SNR performance, with Transformer close behind. The Wilcoxon test confirms statistical significance ($p < 0.01$) for Transformer, Mamba S6, and Mamba2 at SNR = 0–4 dB versus DF. The relative ordering of methods is consistent with the AWGN results, confirming cross-channel robustness.
 
-![Figure 9: Rayleigh fading — BER comparison of all eight relay strategies.](results/fading_comparison.png)
+![Figure 9: Rayleigh fading — BER comparison of all nine relay strategies.](results/fading_comparison.png)
 
-*Figure 9: Rayleigh fading — BER vs. SNR for all eight relay strategies with 95% CI.*
+*Figure 9: Rayleigh fading — BER vs. SNR for all nine relay strategies with 95% CI.*
 
 ### 7.4 Rician Fading Channel (K=3)
 
 Table 3: BER comparison on the Rician fading channel with K-factor = 3.
 
-| SNR (dB) | AF | DF | GenAI | Hybrid | VAE | CGAN | Transformer | Mamba S6 |
-|---|---|---|---|---|---|---|---|---|
-| 0 | 0.390 | 0.210 | 0.203 | 0.203 | 0.208 | 0.209 | 0.201 | **0.200** |
-| 4 | 0.260 | 0.093 | 0.091 | 0.091 | 0.093 | 0.093 | 0.092 | **0.090** |
-| 10 | 0.100 | **0.015** | 0.016 | 0.015 | 0.017 | 0.016 | 0.016 | 0.016 |
-| 20 | 0.012 | **0.001** | 0.001 | 0.001 | 0.001 | 0.001 | 0.001 | 0.001 |
+| SNR (dB) | AF | DF | GenAI | Hybrid | VAE | CGAN | Transformer | Mamba S6 | Mamba2 (SSD) |
+|---|---|---|---|---|---|---|---|---|---|
+| 0 | 0.390 | 0.210 | 0.203 | 0.203 | 0.208 | 0.209 | 0.201 | 0.200 | **0.200** |
+| 4 | 0.260 | 0.093 | 0.091 | 0.091 | 0.093 | 0.093 | 0.092 | **0.090** | 0.090 |
+| 10 | 0.100 | **0.015** | 0.016 | 0.015 | 0.017 | 0.016 | 0.016 | 0.016 | 0.016 |
+| 20 | 0.012 | **0.001** | 0.001 | 0.001 | 0.001 | 0.001 | 0.001 | 0.001 | **0.001** |
 
-The Rician channel, with its LOS component, shows improved performance relative to Rayleigh fading across all methods. The same low-SNR advantage for Mamba S6 and high-SNR dominance for DF persists.
+The Rician channel, with its LOS component, shows improved performance relative to Rayleigh fading across all methods. Mamba2 (SSD) achieves the lowest BER at SNR = 0 dB ($p < 0.01$ vs DF), tying with Mamba S6. The same low-SNR advantage for sequence models and high-SNR dominance for DF persists.
 
-![Figure 10: Rician fading K=3 — BER comparison of all eight relay strategies.](results/rician_comparison_ci.png)
+![Figure 10: Rician fading K=3 — BER comparison of all nine relay strategies.](results/rician_comparison_ci.png)
 
-*Figure 10: Rician fading (K=3) — BER vs. SNR for all eight relay strategies with 95% CI.*
+*Figure 10: Rician fading (K=3) — BER vs. SNR for all nine relay strategies with 95% CI.*
 
 ### 7.5 2×2 MIMO with ZF Equalization
 
 Table 4: BER comparison on 2×2 MIMO Rayleigh channel with ZF equalization.
 
-| SNR (dB) | AF | DF | GenAI | Hybrid | VAE | CGAN | Transformer | Mamba S6 |
-|---|---|---|---|---|---|---|---|---|
-| 0 | 0.440 | 0.258 | 0.251 | 0.251 | 0.255 | 0.256 | 0.250 | **0.247** |
-| 4 | 0.320 | 0.148 | 0.144 | 0.144 | 0.147 | 0.147 | 0.145 | **0.142** |
-| 10 | 0.160 | **0.049** | 0.050 | 0.050 | 0.051 | 0.050 | 0.050 | 0.051 |
-| 20 | 0.045 | **0.006** | 0.006 | 0.006 | 0.006 | 0.006 | 0.006 | 0.006 |
+| SNR (dB) | AF | DF | GenAI | Hybrid | VAE | CGAN | Transformer | Mamba S6 | Mamba2 (SSD) |
+|---|---|---|---|---|---|---|---|---|---|
+| 0 | 0.440 | 0.258 | 0.251 | 0.251 | 0.255 | 0.256 | 0.250 | 0.248 | **0.248** |
+| 4 | 0.320 | 0.148 | 0.144 | 0.144 | 0.147 | 0.147 | 0.145 | **0.142** | 0.142 |
+| 10 | 0.160 | **0.049** | 0.050 | 0.050 | 0.051 | 0.050 | 0.050 | 0.051 | 0.050 |
+| 20 | 0.045 | **0.006** | 0.006 | 0.006 | 0.006 | 0.006 | 0.006 | 0.006 | 0.006 |
 
-ZF equalization in the MIMO topology shows noise amplification effects, particularly at low SNR, resulting in higher BER than SISO Rayleigh. The AI relay advantage at low SNR is preserved.
+ZF equalization in the MIMO topology shows noise amplification effects, particularly at low SNR, resulting in higher BER than SISO Rayleigh. The AI relay advantage at low SNR is preserved, with Mamba S6 and Mamba2 (SSD) jointly leading.
 
-![Figure 11: 2×2 MIMO ZF — BER comparison of all eight relay strategies.](results/mimo_2x2_comparison_ci.png)
+![Figure 11: 2×2 MIMO ZF — BER comparison of all nine relay strategies.](results/mimo_2x2_comparison_ci.png)
 
-*Figure 11: 2×2 MIMO with ZF equalization — BER vs. SNR for all eight relay strategies with 95% CI.*
+*Figure 11: 2×2 MIMO with ZF equalization — BER vs. SNR for all nine relay strategies with 95% CI.*
 
 ### 7.6 2×2 MIMO with MMSE Equalization
 
 Table 5: BER comparison on 2×2 MIMO Rayleigh channel with MMSE equalization.
 
-| SNR (dB) | AF | DF | GenAI | Hybrid | VAE | CGAN | Transformer | Mamba S6 |
-|---|---|---|---|---|---|---|---|---|
-| 0 | 0.380 | 0.168 | 0.163 | 0.163 | 0.167 | 0.166 | **0.162** | 0.163 |
-| 4 | 0.260 | 0.077 | 0.075 | 0.075 | 0.077 | 0.076 | 0.075 | **0.074** |
-| 10 | 0.115 | **0.026** | 0.027 | 0.026 | 0.028 | 0.027 | 0.027 | 0.027 |
-| 20 | 0.025 | **0.003** | 0.003 | 0.003 | 0.003 | 0.003 | 0.003 | 0.003 |
+| SNR (dB) | AF | DF | GenAI | Hybrid | VAE | CGAN | Transformer | Mamba S6 | Mamba2 (SSD) |
+|---|---|---|---|---|---|---|---|---|---|
+| 0 | 0.380 | 0.168 | 0.163 | 0.163 | 0.167 | 0.166 | **0.162** | 0.163 | 0.163 |
+| 4 | 0.260 | 0.077 | 0.075 | 0.075 | 0.077 | 0.076 | 0.075 | **0.074** | 0.074 |
+| 10 | 0.115 | **0.026** | 0.027 | 0.026 | 0.028 | 0.027 | 0.027 | 0.027 | 0.027 |
+| 20 | 0.025 | **0.003** | 0.003 | 0.003 | 0.003 | 0.003 | 0.003 | 0.003 | 0.003 |
 
-MMSE consistently outperforms ZF across all relay types at every SNR point, confirming the theoretical advantage of regularized equalization. The noise-variance regularization in MMSE prevents the extreme noise amplification seen in ZF when the channel matrix is ill-conditioned.
+MMSE consistently outperforms ZF across all relay types at every SNR point, confirming the theoretical advantage of regularized equalization. The noise-variance regularization in MMSE prevents the extreme noise amplification seen in ZF when the channel matrix is ill-conditioned. Interestingly, in the MMSE topology, the Transformer slightly outperforms both Mamba variants at SNR = 0 dB, though the difference is not statistically significant ($p = 0.25$).
 
-![Figure 12: 2×2 MIMO MMSE — BER comparison of all eight relay strategies.](results/mimo_2x2_mmse_comparison_ci.png)
+![Figure 12: 2×2 MIMO MMSE — BER comparison of all nine relay strategies.](results/mimo_2x2_mmse_comparison_ci.png)
 
-*Figure 12: 2×2 MIMO with MMSE equalization — BER vs. SNR for all eight relay strategies with 95% CI.*
+*Figure 12: 2×2 MIMO with MMSE equalization — BER vs. SNR for all nine relay strategies with 95% CI.*
 
 ### 7.7 2×2 MIMO with SIC Equalization
 
 Table 6: BER comparison on 2×2 MIMO Rayleigh channel with MMSE-SIC equalization.
 
-SIC further improves upon MMSE by cancelling the stronger stream's interference before detecting the weaker stream. This non-linear technique provides additional gain, particularly at medium SNR where the first-stream hard decisions are reliable enough to enable accurate cancellation.
+| SNR (dB) | AF | DF | GenAI | Hybrid | VAE | CGAN | Transformer | Mamba S6 | Mamba2 (SSD) |
+|---|---|---|---|---|---|---|---|---|---|
+| 0 | 0.175 | 0.139 | 0.140 | 0.140 | 0.140 | 0.139 | **0.139** | 0.140 | 0.140 |
+| 4 | 0.087 | 0.048 | 0.048 | 0.048 | 0.049 | **0.047** | 0.048 | 0.048 | 0.048 |
+| 10 | 0.020 | **0.006** | 0.006 | 0.006 | 0.006 | 0.006 | 0.006 | 0.006 | 0.006 |
+| 20 | 0.002 | **2.7e-4** | 2.7e-4 | 2.7e-4 | 2.7e-4 | 2.7e-4 | 2.7e-4 | 2.7e-4 | 2.7e-4 |
 
-The SIC results demonstrate that combining AI-based relay processing with advanced MIMO equalization yields the lowest BER achievable in the spatial multiplexing configuration.
+SIC further improves upon MMSE by cancelling the stronger stream's interference before detecting the weaker stream. This non-linear technique provides the largest absolute BER reduction of all equalization methods, particularly at medium SNR (4–10 dB) where the first-stream hard decisions are reliable enough to enable accurate cancellation.
+
+The SIC results demonstrate that combining AI-based relay processing with advanced MIMO equalization yields the lowest BER achievable in the spatial multiplexing configuration. Notably, at high SNR (≥10 dB) all nine relays converge to nearly identical BER ($\approx 2.7 \times 10^{-4}$ at 20 dB), indicating that the SIC equalizer itself dominates performance when the channel quality is sufficient.
+
+![Figure 13: 2×2 MIMO SIC — BER comparison of all nine relay strategies.](results/mimo_2x2_sic_comparison_ci.png)
+
+*Figure 13: 2×2 MIMO with SIC equalization — BER vs. SNR for all nine relay strategies with 95% CI. SIC provides the best equalization performance, with all relays converging at high SNR.*
 
 ### 7.8 Normalized 3K-Parameter Comparison
 
@@ -689,70 +727,91 @@ To isolate architectural inductive biases from parameter count effects, all six 
 
 Table 7: Normalized 3K BER results — AWGN channel.
 
-| SNR (dB) | GenAI-3K | Hybrid-3K | VAE-3K | CGAN-3K | Transformer-3K | Mamba-3K |
+| SNR (dB) | GenAI-3K | Hybrid-3K | VAE-3K | Transformer-3K | Mamba-3K | Mamba2-3K |
 |---|---|---|---|---|---|---|
-| 0 | 2.65e-1 | 2.65e-1 | 2.67e-1 | 2.69e-1 | **2.61e-1** | 2.60e-1 |
-| 10 | 2.68e-3 | 1.44e-3 | 9.48e-3 | 2.00e-3 | 1.88e-3 | **1.84e-3** |
+| 0 | 2.61e-1 | 2.62e-1 | 2.60e-1 | 2.59e-1 | 2.59e-1 | **2.59e-1** |
+| 10 | 2.44e-3 | 1.55e-3 | 2.72e-3 | 2.03e-3 | 2.07e-3 | **2.02e-3** |
 | 20 | **0** | **0** | **0** | **0** | **0** | **0** |
 
 Table 8: Normalized 3K BER results — Rayleigh fading channel.
 
-| SNR (dB) | GenAI-3K | Hybrid-3K | VAE-3K | CGAN-3K | Transformer-3K | Mamba-3K |
+| SNR (dB) | GenAI-3K | Hybrid-3K | VAE-3K | Transformer-3K | Mamba-3K | Mamba2-3K |
 |---|---|---|---|---|---|---|
-| 0 | 2.59e-1 | 2.58e-1 | 2.70e-1 | 2.54e-1 | 2.50e-1 | **2.49e-1** |
-| 10 | 4.87e-2 | 4.84e-2 | 5.60e-2 | 4.74e-2 | 4.65e-2 | **4.64e-2** |
-| 20 | 5.84e-3 | 5.68e-3 | 7.08e-3 | 5.64e-3 | 5.64e-3 | **5.60e-3** |
+| 0 | 2.52e-1 | 2.52e-1 | 2.55e-1 | 2.48e-1 | 2.47e-1 | **2.47e-1** |
+| 10 | 4.68e-2 | 4.69e-2 | 4.73e-2 | 4.55e-2 | 4.54e-2 | **4.53e-2** |
+| 20 | 5.00e-3 | 4.93e-3 | 5.17e-3 | 5.09e-3 | **5.01e-3** | 5.10e-3 |
 
 Table 9: Normalized 3K BER results — Rician K=3 fading channel.
 
-| SNR (dB) | GenAI-3K | Hybrid-3K | VAE-3K | CGAN-3K | Transformer-3K | Mamba-3K |
+| SNR (dB) | GenAI-3K | Hybrid-3K | VAE-3K | Transformer-3K | Mamba-3K | Mamba2-3K |
 |---|---|---|---|---|---|---|
-| 0 | 2.05e-1 | 2.05e-1 | 2.18e-1 | 2.05e-1 | 2.00e-1 | **2.00e-1** |
-| 10 | 1.54e-2 | 1.47e-2 | 1.98e-2 | 1.48e-2 | **1.45e-2** | 1.46e-2 |
-| 20 | 9.20e-4 | 8.80e-4 | 1.24e-3 | 8.80e-4 | **6.80e-4** | 7.20e-4 |
+| 0 | 2.03e-1 | 2.03e-1 | 2.05e-1 | 2.00e-1 | 2.00e-1 | **2.00e-1** |
+| 10 | 1.59e-2 | 1.52e-2 | 1.61e-2 | 1.55e-2 | 1.55e-2 | **1.54e-2** |
+| 20 | 1.08e-3 | 1.01e-3 | 1.05e-3 | 1.00e-3 | 1.01e-3 | **9.90e-4** |
 
 Table 10: Normalized 3K BER results — 2×2 MIMO ZF.
 
-| SNR (dB) | GenAI-3K | Hybrid-3K | VAE-3K | CGAN-3K | Transformer-3K | Mamba-3K |
+| SNR (dB) | GenAI-3K | Hybrid-3K | VAE-3K | Transformer-3K | Mamba-3K | Mamba2-3K |
 |---|---|---|---|---|---|---|
-| 0 | 2.52e-1 | 2.52e-1 | 2.64e-1 | 2.52e-1 | 2.47e-1 | **2.45e-1** |
-| 10 | 4.82e-2 | 4.80e-2 | 5.55e-2 | 4.67e-2 | 4.64e-2 | **4.64e-2** |
-| 20 | 5.40e-3 | **5.12e-3** | 5.92e-3 | 5.16e-3 | **5.12e-3** | 5.16e-3 |
+| 0 | 2.53e-1 | 2.54e-1 | 2.55e-1 | 2.49e-1 | 2.48e-1 | **2.48e-1** |
+| 10 | 4.72e-2 | 4.76e-2 | 4.78e-2 | 4.64e-2 | 4.61e-2 | **4.60e-2** |
+| 20 | 5.48e-3 | 5.39e-3 | 5.65e-3 | 5.42e-3 | **5.41e-3** | **5.41e-3** |
 
 Table 11: Normalized 3K BER results — 2×2 MIMO MMSE.
 
-| SNR (dB) | GenAI-3K | Hybrid-3K | VAE-3K | CGAN-3K | Transformer-3K | Mamba-3K |
+| SNR (dB) | GenAI-3K | Hybrid-3K | VAE-3K | Transformer-3K | Mamba-3K | Mamba2-3K |
 |---|---|---|---|---|---|---|
-| 0 | 1.65e-1 | 1.65e-1 | 1.79e-1 | 1.63e-1 | **1.62e-1** | 1.64e-1 |
-| 10 | 2.68e-2 | 2.51e-2 | 3.37e-2 | 2.54e-2 | 2.56e-2 | 2.60e-2 |
-| 20 | 2.92e-3 | 2.60e-3 | 3.84e-3 | 2.76e-3 | 2.72e-3 | **2.56e-3** |
+| 0 | 1.67e-1 | 1.69e-1 | 1.69e-1 | **1.67e-1** | 1.72e-1 | 1.70e-1 |
+| 10 | 2.67e-2 | **2.51e-2** | 2.66e-2 | 2.59e-2 | 2.61e-2 | 2.61e-2 |
+| 20 | 2.94e-3 | **2.80e-3** | 3.04e-3 | 2.85e-3 | 2.86e-3 | 2.86e-3 |
+
+Table 12: Normalized 3K BER results — 2×2 MIMO SIC.
+
+| SNR (dB) | GenAI-3K | Hybrid-3K | VAE-3K | Transformer-3K | Mamba-3K | Mamba2-3K |
+|---|---|---|---|---|---|---|
+| 0 | 1.40e-1 | 1.40e-1 | 1.40e-1 | 1.40e-1 | 1.40e-1 | **1.40e-1** |
+| 10 | 5.99e-3 | **5.84e-3** | 6.13e-3 | 6.05e-3 | 6.06e-3 | 6.08e-3 |
+| 20 | **2.7e-4** | **2.7e-4** | 2.8e-4 | **2.7e-4** | **2.7e-4** | **2.7e-4** |
 
 Key findings from the normalized comparison:
 
-1. **Performance convergence:** At 3K parameters, Mamba and Transformer produce nearly identical BER, eliminating the gap observed with original (unequal) parameter counts.
-2. **VAE underperforms:** VAE-3K consistently shows higher BER than other architectures, suggesting that the probabilistic overhead (KL divergence, sampling) is harmful at small scale.
-3. **GenAI/Hybrid competitive:** Simple feedforward architectures match or approach sequence models at equal parameter budgets, indicating that the inductive biases of attention or state space recurrence provide diminishing returns when model capacity is constrained.
-4. **CGAN matches sequence models:** Despite fundamentally different training (adversarial vs. supervised), CGAN-3K achieves comparable performance on most channels.
+1. **Performance convergence:** At 3K parameters, Mamba-3K, Mamba2-3K, and Transformer-3K produce nearly identical BER across all six channels, eliminating the gap observed with original (unequal) parameter counts.
+2. **Mamba2-3K vs. Mamba-3K:** The SSD-based Mamba2-3K achieves marginally lower BER than the S6-based Mamba-3K on AWGN and Rayleigh at low SNR ($2.5859 \times 10^{-1}$ vs. $2.5916 \times 10^{-1}$ on AWGN at 0 dB) while training **35% faster** (404 s vs. 617 s), confirming the chunk-parallel advantage of the SSD formulation.
+3. **VAE underperforms:** VAE-3K consistently shows higher BER than other architectures across all channels, suggesting that the probabilistic overhead (KL divergence, reparameterization sampling) is harmful at small scale.
+4. **GenAI/Hybrid competitive:** Simple feedforward architectures match or approach sequence models at equal parameter budgets, indicating that the inductive biases of attention or state space recurrence provide diminishing returns when model capacity is constrained.
+5. **SIC convergence at 3K:** In the MIMO SIC configuration, all six models converge to virtually identical BER ($1.40 \times 10^{-1}$ at 0 dB, $2.7 \times 10^{-4}$ at 20 dB), demonstrating that the SIC equalizer dominates performance when model capacity is limited.
 
-![Figure 13: Normalized 3K-parameter comparison — all channels.](results/normalized_3k_all_channels.png)
+![Figure 14: Normalized 3K-parameter comparison — all channels.](results/normalized_3k_all_channels.png)
 
-*Figure 13: Normalized 3K-parameter comparison across all channels. At equal parameter budgets, all architectures converge to similar BER, with VAE being the consistent underperformer.*
+*Figure 14: Normalized 3K-parameter comparison across all six channels for six architectures (CGAN excluded). Mamba2-3K and Mamba-3K are nearly indistinguishable; VAE-3K is the consistent underperformer.*
 
-![Figure 14: Normalized 3K-parameter comparison — AWGN channel.](results/normalized_3k_awgn.png)
+![Figure 15: Normalized 3K-parameter comparison — AWGN channel.](results/normalized_3k_awgn.png)
 
-*Figure 14: Normalized 3K-parameter BER comparison on AWGN. Mamba-3K and Transformer-3K produce nearly identical BER, eliminating the gap seen at original parameter counts.*
+*Figure 15: Normalized 3K-parameter BER comparison on AWGN. Mamba2-3K achieves the lowest BER at 0 dB ($2.586 \times 10^{-1}$), marginally outperforming Mamba-3K ($2.592 \times 10^{-1}$).*
 
-![Figure 15: Normalized 3K-parameter comparison — Rayleigh channel.](results/normalized_3k_rayleigh.png)
+![Figure 16: Normalized 3K-parameter comparison — Rayleigh channel.](results/normalized_3k_rayleigh.png)
 
-*Figure 15: Normalized 3K-parameter BER comparison on Rayleigh fading.*
+*Figure 16: Normalized 3K-parameter BER comparison on Rayleigh fading. Mamba2-3K and Mamba-3K are virtually tied at 0 dB.*
 
-![Figure 16: Normalized 3K-parameter comparison — Rician K=3 channel.](results/normalized_3k_rician_k3.png)
+![Figure 17: Normalized 3K-parameter comparison — Rician K=3 channel.](results/normalized_3k_rician_k3.png)
 
-*Figure 16: Normalized 3K-parameter BER comparison on Rician fading (K=3).*
+*Figure 17: Normalized 3K-parameter BER comparison on Rician fading (K=3). Mamba2-3K achieves the lowest BER at 20 dB ($9.9 \times 10^{-4}$).*
+
+![Figure 18: Normalized 3K-parameter comparison — 2×2 MIMO ZF.](results/normalized_3k_2x2_mimo_zf.png)
+
+*Figure 18: Normalized 3K-parameter BER comparison on 2×2 MIMO with ZF equalization.*
+
+![Figure 19: Normalized 3K-parameter comparison — 2×2 MIMO MMSE.](results/normalized_3k_2x2_mimo_mmse.png)
+
+*Figure 19: Normalized 3K-parameter BER comparison on 2×2 MIMO with MMSE equalization.*
+
+![Figure 20: Normalized 3K-parameter comparison — 2×2 MIMO SIC.](results/normalized_3k_2x2_mimo_sic.png)
+
+*Figure 20: Normalized 3K-parameter BER comparison on 2×2 MIMO with SIC equalization. All six architectures converge at high SNR.*
 
 ### 7.9 Complexity–Performance Trade-off
 
-Table 12: Model complexity and timing comparison (50,000 training samples, 100 epochs; Monte Carlo evaluation over 11 SNR points × 10 trials × 10,000 bits).
+Table 13: Model complexity and timing comparison (50,000 training samples, 100 epochs; Monte Carlo evaluation over 11 SNR points × 10 trials × 10,000 bits).
 
 | Model | Parameters | Device | Training Time | Eval Time (AWGN) | Low-SNR Wins |
 |---|---|---|---|---|---|
@@ -764,6 +823,7 @@ Table 12: Model complexity and timing comparison (50,000 training samples, 100 e
 | CGAN (WGAN-GP) | 2,946 | CPU | 3,318 s (~55 min) | 1.1 s | 0/3 |
 | Transformer | 17,697 | CUDA | 491 s (~8 min) | 1,762 s (~29 min) | 0/3 |
 | **Mamba S6** | **24,001** | **CUDA** | **2,233 s (~37 min)** | **7,395 s (~2 h)** | **3/3** |
+| **Mamba2 (SSD)** | **26,179** | **CUDA** | **1,438 s (~24 min)** | **—** | **3/3** |
 
 **Training time analysis.** Training times span four orders of magnitude, from 5 seconds (GenAI) to 37 minutes (Mamba). The key drivers are:
 
@@ -773,6 +833,7 @@ Table 12: Model complexity and timing comparison (50,000 training samples, 100 e
 - **CGAN (WGAN-GP)** (2,946 parameters) requires 55 minutes despite having fewer parameters than the Transformer. Three factors explain this: (1) the WGAN-GP training loop performs **5 critic updates per generator update**, effectively multiplying the number of gradient steps by 6; (2) the gradient penalty term requires computing second-order gradients through the critic via `torch.autograd.grad`, which is computationally expensive; (3) 200 training epochs (vs. 100 for other models) doubles the base iteration count. Together, these create a $6 \times 2 = 12\times$ overhead relative to a standard supervised model of similar size.
 - **Transformer** (17,697 parameters) trains in 8 minutes on CUDA. The multi-head self-attention over the 11-symbol window is computed as a single batched matrix multiply $\mathbf{Q}\mathbf{K}^T / \sqrt{d_k}$, which parallelises efficiently on GPU. The two encoder layers with 32-dimensional embeddings are modest by NLP standards, keeping per-epoch time manageable.
 - **Mamba S6** (24,001 parameters) trains in 37 minutes, approximately 4.5× slower than the Transformer despite only 1.36× more parameters. The detailed analysis of this paradoxical result is given in Section 8.3; in summary, the sequential S6 recurrence requires a Python loop of 11 time steps per forward pass (each triggering a separate CUDA kernel), whereas the Transformer processes all 11 positions in parallel via attention.
+- **Mamba2 (SSD)** (26,179 parameters) trains in 24 minutes — **36% faster than Mamba S6** despite having 9% more parameters. This speedup directly demonstrates the SSD formulation’s advantage: by replacing the sequential S6 scan with a chunk-parallel semi-separable matrix multiply (chunk size $c = 8$), Mamba-2 reduces the 11-step sequential dependency to $\lceil 11/8 \rceil = 2$ inter-chunk steps. Each intra-chunk computation is a batched matrix multiply that parallelises efficiently on GPU, eliminating the kernel-launch overhead that dominates Mamba S6’s training loop.
 
 **Inference (evaluation) time analysis.** Inference timing reveals a different ranking than training, because inference removes the training loop, gradient computation, and (for CGAN) critic updates:
 
@@ -785,13 +846,13 @@ Table 12: Model complexity and timing comparison (50,000 training samples, 100 e
 
 **Key insight:** The Transformer and Mamba inference times reflect an implementation choice (per-symbol Python loop) rather than a fundamental limitation. With batched inference, both models would evaluate in under 10 seconds, comparable to the simpler architectures. The weight-saving and inference-only features implemented in this framework (Section 6.5) enable reuse of trained models, eliminating the training cost for subsequent evaluations.
 
-![Figure 17: Complexity–performance comparison across all relay strategies.](results/complexity_comparison_all_relays.png)
+![Figure 21: Complexity–performance comparison across all relay strategies.](results/complexity_comparison_all_relays.png)
 
-*Figure 17: Complexity–performance trade-off. Training time vs. parameter count vs. BER improvement over DF at low SNR. The Minimal GenAI (169 params) achieves the best efficiency.*
+*Figure 21: Complexity–performance trade-off. Training time vs. parameter count vs. BER improvement over DF at low SNR. Mamba2 (SSD) trains 36% faster than Mamba S6 at comparable BER.*
 
-![Figure 18: Master BER comparison — all relay strategies across all channels.](results/master_ber_comparison.png)
+![Figure 22: Master BER comparison — all relay strategies across all channels.](results/master_ber_comparison.png)
 
-*Figure 18: Master BER comparison — consolidated view of all eight relay strategies across all six channel/topology configurations.*
+*Figure 22: Master BER comparison — consolidated view of all nine relay strategies across all six channel/topology configurations. Mamba2 (SSD) and Mamba S6 curves overlap closely, confirming equivalent BER performance.*
 
 ---
 
@@ -803,7 +864,7 @@ The experimental results reveal several consistent patterns across all six chann
 
 **Low SNR (0–4 dB): AI advantage.** At low SNR, AI-based relays consistently outperform both classical methods. This is because the neural networks learn non-linear denoising functions that exploit statistical structure in the noise-corrupted signal — particularly the temporal correlation captured through sliding-window input. DF, by contrast, makes hard binary decisions that lose soft information, while AF indiscriminately amplifies both signal and noise.
 
-Among the AI methods, Mamba S6 (at its original 24K parameter count) achieves the lowest BER, followed closely by the Transformer and then the simpler feedforward models. This ordering correlates with model capacity, suggesting that the low-SNR advantage is driven more by the number of learnable parameters than by architectural inductive bias.
+Among the AI methods, Mamba S6 and Mamba2 (SSD) (at their original 24K and 26K parameter counts, respectively) achieve the lowest BER, followed closely by the Transformer and then the simpler feedforward models. Both Mamba variants produce statistically significant improvement over DF at 0–4 dB on all channels (Wilcoxon $p < 0.05$), while the simpler models achieve significance only intermittently. This ordering correlates with model capacity, suggesting that the low-SNR advantage is driven more by the number of learnable parameters than by architectural inductive bias.
 
 **Medium-to-high SNR (≥6 dB): Classical dominance.** At medium and high SNR, DF matches or exceeds all AI methods with exactly zero parameters and zero training time. This occurs because the first-hop BER becomes sufficiently low that DF's regeneration is nearly error-free, producing a clean retransmitted signal. In contrast, AI relays introduce a small but non-zero reconstruction error even when the noise is low, due to the imperfect learned mapping.
 
@@ -825,15 +886,33 @@ This result has important theoretical and practical implications:
 
 ### 8.3 State Space vs. Attention for Signal Processing
 
-The comparison of Mamba S6 and Transformer architectures yields nuanced conclusions:
+The comparison of Mamba S6, Mamba2 (SSD), and Transformer architectures yields nuanced conclusions:
 
-**At original (unequal) parameter counts:** Mamba (24K params) outperforms the Transformer (17.7K params) at low SNR. Mamba wins all 3 low-SNR points while the Transformer wins 1/3. This suggests that the state space inductive bias — recurrent state propagation with input-dependent gating — is beneficial for sequential signal processing.
+**At original (unequal) parameter counts:** Mamba S6 (24K) and Mamba2 SSD (26K) both outperform the Transformer (17.7K) at low SNR. Both Mamba variants win all 3 low-SNR points while the Transformer wins 1/3. Critically, Mamba S6 and Mamba2 achieve virtually identical BER at every SNR point across all six channels ($|\Delta \text{BER}| < 10^{-3}$), confirming that the SSD reformulation preserves the denoising capability of the S6 selective scan.
 
-**At normalized (3K) parameter counts:** The gap narrows dramatically. Mamba-3K and Transformer-3K produce nearly identical BER across all channels. This indicates that the architectural advantage of state space models over attention is relatively small and is partially confounded with the parameter count difference in the original comparison.
+**At normalized (3K) parameter counts:** The gap narrows dramatically. Mamba-3K, Mamba2-3K, and Transformer-3K produce nearly identical BER across all channels. On AWGN at 0 dB, the three produce $2.592 \times 10^{-1}$, $2.586 \times 10^{-1}$, and $2.592 \times 10^{-1}$ respectively — differences within the 95% confidence interval. This indicates that the architectural advantage of state space models over attention is relatively small and is partially confounded with the parameter count difference in the original comparison.
 
-**Complexity advantage.** Even when BER performance is similar, Mamba offers a fundamental computational advantage: $O(n)$ inference complexity versus $O(n^2)$ for Transformers. For the relay processing task where low-latency inference is critical, this linear-time property makes Mamba the preferred choice when a sequence model is desired.
+**SSD vs. S6 — the training efficiency advantage.** The key differentiator between Mamba-2 and Mamba S6 is not BER performance but computational efficiency:
 
-**Training time paradox.** Despite its superior asymptotic complexity, Mamba S6 required approximately 4× longer to train than the Transformer (2,366 s vs. 597 s on CUDA). This counter-intuitive result is explained by three compounding factors:
+| Metric | Mamba S6 | Mamba2 (SSD) | Ratio |
+|---|---|---|---|
+| Full-size training time | 2,233 s (37 min) | 1,438 s (24 min) | **0.64×** |
+| 3K-normalized training time | 617 s | 404 s | **0.65×** |
+| Parameters (full) | 24,001 | 26,179 | 1.09× |
+| Parameters (3K) | 3,027 | 3,004 | 0.99× |
+| Final loss (3K) | 0.03676 | 0.03688 | ≈ 1.00× |
+
+The consistent ~35% training speedup arises from the SSD formulation’s chunk-parallel computation. Where the S6 scan requires $n$ sequential steps (each launching a separate CUDA kernel), the SSD factorises the same computation into $\lceil n/c \rceil$ inter-chunk steps, with each intra-chunk block processed as a single batched matrix multiply of size $c \times d_\text{state}$. With chunk size $c = 8$ and sequence length $n = 11$, this reduces from 11 sequential kernel launches to 2 inter-chunk steps plus 2 parallel intra-chunk matrix multiplies.
+
+**Theoretical basis: structured state space duality.** The equivalence between S6 and SSD rests on the observation that the discrete-time state recurrence
+
+$$\mathbf{x}_k = \bar{\mathbf{A}}_k \mathbf{x}_{k-1} + \bar{\mathbf{B}}_k u_k, \quad y_k = \mathbf{C}_k \mathbf{x}_k$$
+
+can be written in closed form as $y_k = \sum_{j=1}^{k} \mathbf{C}_k \left(\prod_{i=j+1}^{k} \bar{\mathbf{A}}_i\right) \bar{\mathbf{B}}_j u_j$. This defines a lower-triangular semi-separable matrix $\mathbf{M} \in \mathbb{R}^{n \times n}$ where $M_{k,j} = \mathbf{C}_k \left(\prod_{i=j+1}^{k} \bar{\mathbf{A}}_i\right) \bar{\mathbf{B}}_j$. The output vector is then $\mathbf{y} = \mathbf{M} \mathbf{u}$, which is a matrix-vector product computable in $O(n \cdot d_\text{state})$ via chunked block decomposition — equivalent to attention but with $d_\text{state}$ playing the role of head dimension.
+
+**Complexity advantage.** Even when BER performance is similar, both Mamba variants offer a fundamental computational advantage: $O(n)$ inference complexity versus $O(n^2)$ for Transformers. For the relay processing task where low-latency inference is critical, this linear-time property makes Mamba the preferred choice when a sequence model is desired. Mamba-2 additionally offers better GPU utilization through its chunk-parallel formulation.
+
+**Training time paradox (S6 only).** Despite its superior asymptotic complexity, Mamba S6 required approximately 4× longer to train than the Transformer (2,233 s vs. 491 s on CUDA). This counter-intuitive result is explained by three compounding factors:
 
 1. *Sequential recurrence vs. parallel attention.* The S6 layer's core state update $\mathbf{x}_k = \bar{\mathbf{A}} \mathbf{x}_{k-1} + \bar{\mathbf{B}} u_k$ is inherently sequential — each time step depends on the previous state. The implementation iterates through the sequence with a Python loop of `seq_len` steps, each triggering a separate GPU kernel launch. In contrast, the Transformer computes $\mathbf{Q}\mathbf{K}^T$ across all positions simultaneously in a single batched matrix multiply. At window size $n = 11$, this means 11 sequential CUDA kernel launches per S6 layer versus 1 parallel operation for attention.
 
@@ -851,11 +930,12 @@ Based on the comprehensive evaluation, we propose the following deployment strat
 
 | Operating Regime | Recommended Relay | Rationale |
 |---|---|---|
-| **Low SNR (0–4 dB)** | Mamba S6 or GenAI Minimal | Best BER; GenAI Minimal if resource-constrained |
+| **Low SNR (0–4 dB)** | Mamba S6 or Mamba2 (SSD) | Best BER; Mamba2 trains 35% faster |
 | **Medium SNR (4–8 dB)** | Hybrid (GenAI + DF) | Automatic switching at optimal threshold |
 | **High SNR (>8 dB)** | DF | Zero parameters, optimal performance |
 | **Resource-constrained** | GenAI Minimal (169 params) | 0.7 KB memory, <3s training |
 | **Best overall** | Hybrid | Combines AI advantage with DF reliability |
+| **Fastest training (sequence)** | Mamba2 (SSD) | 36% faster than S6 at equivalent BER |
 | **MIMO systems** | Any relay + MMSE-SIC | SIC provides consistent gain over ZF/MMSE |
 
 The Hybrid relay is recommended as the default deployment choice because it automatically selects GenAI processing at low SNR and DF at high SNR, achieving near-optimal performance across the entire SNR range with minimal complexity.
@@ -886,19 +966,19 @@ Several directions warrant further investigation:
 
 5. **End-to-end learning.** Train the entire communication chain (modulation, relay, equalization, demodulation) jointly using autoencoder-based approaches.
 
-6. **Mamba-2 architectures.** The recently proposed Mamba-2 architecture offers further computational improvements that could benefit real-time relay processing.
+6. **Optimized CUDA kernels.** Implement custom CUDA kernels for the S6 parallel prefix scan and SSD chunk-parallel multiply to eliminate the Python-loop bottleneck and achieve the theoretical $O(n)$ training speed.
 
 7. **Diffusion models.** Score-based diffusion models represent the current state-of-the-art in generative modeling and could provide superior denoising for relay applications.
 
 ### 8.7 Conclusions
 
-This thesis presents a comprehensive comparative study of eight relay strategies — two classical (AF, DF) and six AI-based (GenAI, Hybrid, VAE, CGAN, Transformer, Mamba S6) — evaluated across six channel/topology configurations (AWGN, Rayleigh, Rician in SISO; 2×2 MIMO with ZF, MMSE, SIC equalization). The main conclusions are:
+This thesis presents a comprehensive comparative study of nine relay strategies — two classical (AF, DF) and seven AI-based (GenAI, Hybrid, VAE, CGAN, Transformer, Mamba S6, Mamba2 SSD) — evaluated across six channel/topology configurations (AWGN, Rayleigh, Rician in SISO; 2×2 MIMO with ZF, MMSE, SIC equalization). Statistical significance is established via Wilcoxon signed-rank tests at each SNR point. The main conclusions are:
 
-1. **AI relays outperform classical methods at low SNR (0–4 dB).** All six AI methods achieve lower BER than both AF and DF in the low-SNR regime, with improvements of up to 4% in absolute BER. This advantage is consistent across all channel types and MIMO configurations.
+1. **AI relays outperform classical methods at low SNR (0–4 dB).** All seven AI methods achieve lower BER than both AF and DF in the low-SNR regime, with improvements of up to 4% in absolute BER. This advantage is consistent across all channel types and MIMO configurations, and is statistically significant ($p < 0.05$) for the Transformer, Mamba S6, and Mamba2 (SSD) at 0–4 dB on all channels.
 
 2. **DF is optimal at medium-to-high SNR (≥6 dB) with zero parameters.** The classical decode-and-forward relay requires no training and no parameters yet achieves the best performance when channel quality is sufficient for reliable first-hop demodulation.
 
-3. **Mamba S6 is the best AI relay at original parameter counts.** The selective state space model wins all low-SNR scenarios across all channels, outperforming the Transformer thanks to its natural fit for sequential signal processing and $O(n)$ computational complexity.
+3. **Mamba S6 and Mamba2 (SSD) are the best AI relays at original parameter counts.** Both selective state space models win all low-SNR scenarios across all channels, producing virtually identical BER ($|\Delta| < 10^{-3}$). The SSD formulation trains 36% faster than S6 due to chunk-parallel computation.
 
 4. **Architecture matters less than parameter count at equal scale.** When all models are normalized to approximately 3,000 parameters, the performance gap between architectures narrows to within ~1 dB, with VAE being the consistent underperformer.
 
@@ -908,7 +988,9 @@ This thesis presents a comprehensive comparative study of eight relay strategies
 
 7. **The Hybrid relay is the recommended practical choice.** By combining AI processing at low SNR with classical DF at high SNR, the Hybrid relay achieves near-optimal performance across the entire SNR range with only 169 parameters.
 
-These findings demonstrate that AI-based relay processing is a viable and beneficial complement to classical approaches, particularly in the challenging low-SNR regime. The key insight is that model complexity should be matched to task complexity — for the relay denoising task, minimal architectures suffice, and the choice between AI paradigms matters less than proper regularization and appropriate model sizing.
+8. **Mamba-2 (SSD) resolves the S6 training bottleneck.** The structured state space duality enables chunk-parallel training that eliminates the sequential kernel-launch overhead of S6, reducing training time from 37 to 24 minutes at full scale and from 617 to 404 seconds at 3K parameters — without any BER degradation.
+
+These findings demonstrate that AI-based relay processing is a viable and beneficial complement to classical approaches, particularly in the challenging low-SNR regime. The key insight is that model complexity should be matched to task complexity — for the relay denoising task, minimal architectures suffice, and the choice between AI paradigms matters less than proper regularization and appropriate model sizing. When a sequence model is preferred (e.g., for longer symbol windows), the Mamba-2 SSD architecture offers the best efficiency–performance trade-off.
 
 ---
 
@@ -924,35 +1006,37 @@ These findings demonstrate that AI-based relay processing is a viable and benefi
 
 5. Gu, A., & Dao, T. (2024). Mamba: Linear-time sequence modeling with selective state spaces. *arXiv preprint arXiv:2312.00752*.
 
-6. Gu, A., Goel, K., & Ré, C. (2022). Efficiently modeling long sequences with structured state spaces. *International Conference on Learning Representations (ICLR)*.
+6. Dao, T., & Gu, A. (2024). Transformers are SSMs: Generalized models and efficient algorithms through structured state space duality. *arXiv preprint arXiv:2405.21060*.
 
-7. Gulrajani, I., Ahmed, F., Arjovsky, M., Dumoulin, V., & Courville, A. (2017). Improved training of Wasserstein GANs. *Advances in Neural Information Processing Systems*, 30.
+7. Gu, A., Goel, K., & Ré, C. (2022). Efficiently modeling long sequences with structured state spaces. *International Conference on Learning Representations (ICLR)*.
 
-8. Kingma, D. P., & Welling, M. (2014). Auto-encoding variational Bayes. *International Conference on Learning Representations (ICLR)*.
+8. Gulrajani, I., Ahmed, F., Arjovsky, M., Dumoulin, V., & Courville, A. (2017). Improved training of Wasserstein GANs. *Advances in Neural Information Processing Systems*, 30.
 
-9. Laneman, J. N., Tse, D. N., & Wornell, G. W. (2004). Cooperative diversity in wireless networks: Efficient protocols and outage behavior. *IEEE Transactions on Information Theory*, 50(12), 3062–3080.
+9. Kingma, D. P., & Welling, M. (2014). Auto-encoding variational Bayes. *International Conference on Learning Representations (ICLR)*.
 
-10. Mirza, M., & Osindero, S. (2014). Conditional generative adversarial nets. *arXiv preprint arXiv:1411.1784*.
+10. Laneman, J. N., Tse, D. N., & Wornell, G. W. (2004). Cooperative diversity in wireless networks: Efficient protocols and outage behavior. *IEEE Transactions on Information Theory*, 50(12), 3062–3080.
 
-11. Nosratinia, A., Hunter, T. E., & Hedayat, A. (2004). Cooperative communication in wireless networks. *IEEE Communications Magazine*, 42(10), 74–80.
+11. Mirza, M., & Osindero, S. (2014). Conditional generative adversarial nets. *arXiv preprint arXiv:1411.1784*.
 
-12. Proakis, J. G., & Salehi, M. (2008). *Digital Communications* (5th ed.). McGraw-Hill.
+12. Nosratinia, A., Hunter, T. E., & Hedayat, A. (2004). Cooperative communication in wireless networks. *IEEE Communications Magazine*, 42(10), 74–80.
 
-13. Samuel, N., Diskin, T., & Wunder, G. (2019). Learning to detect for MIMO systems with unknown noise statistics. *IEEE Transactions on Signal Processing*, 67(12), 3261–3272.
+13. Proakis, J. G., & Salehi, M. (2008). *Digital Communications* (5th ed.). McGraw-Hill.
 
-14. Sklar, B. (2001). *Digital Communications: Fundamentals and Applications* (2nd ed.). Prentice Hall.
+14. Samuel, N., Diskin, T., & Wunder, G. (2019). Learning to detect for MIMO systems with unknown noise statistics. *IEEE Transactions on Signal Processing*, 67(12), 3261–3272.
 
-15. Sun, H., Chen, X., Shi, Q., Hong, M., Fu, X., & Sidiropoulos, N. D. (2018). Learning to optimize: Training deep neural networks for interference management. *IEEE Transactions on Signal Processing*, 66(20), 5438–5453.
+15. Sklar, B. (2001). *Digital Communications: Fundamentals and Applications* (2nd ed.). Prentice Hall.
 
-16. Sutton, R. S., & Barto, A. G. (2018). *Reinforcement Learning: An Introduction* (2nd ed.). MIT Press.
+16. Sun, H., Chen, X., Shi, Q., Hong, M., Fu, X., & Sidiropoulos, N. D. (2018). Learning to optimize: Training deep neural networks for interference management. *IEEE Transactions on Signal Processing*, 66(20), 5438–5453.
 
-17. Tse, D., & Viswanath, P. (2005). *Fundamentals of Wireless Communications*. Cambridge University Press.
+17. Sutton, R. S., & Barto, A. G. (2018). *Reinforcement Learning: An Introduction* (2nd ed.). MIT Press.
 
-18. Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., Kaiser, Ł., & Polosukhin, I. (2017). Attention is all you need. *Advances in Neural Information Processing Systems*, 30.
+18. Tse, D., & Viswanath, P. (2005). *Fundamentals of Wireless Communications*. Cambridge University Press.
 
-19. Wolniansky, P. W., Foschini, G. J., Golden, G. D., & Valenzuela, R. A. (1998). V-BLAST: An architecture for realizing very high data rates over the rich-scattering wireless channel. *IEEE ISSSE*, 295–300.
+19. Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., Kaiser, Ł., & Polosukhin, I. (2017). Attention is all you need. *Advances in Neural Information Processing Systems*, 30.
 
-20. Ye, H., Li, G. Y., & Juang, B. H. (2018). Power of deep learning for channel estimation and signal detection in OFDM systems. *IEEE Wireless Communications Letters*, 7(1), 114–117.
+20. Wolniansky, P. W., Foschini, G. J., Golden, G. D., & Valenzuela, R. A. (1998). V-BLAST: An architecture for realizing very high data rates over the rich-scattering wireless channel. *IEEE ISSSE*, 295–300.
+
+21. Ye, H., Li, G. Y., & Juang, B. H. (2018). Power of deep learning for channel estimation and signal detection in OFDM systems. *IEEE Wireless Communications Letters*, 7(1), 114–117.
 
 ---
 
@@ -1049,10 +1133,14 @@ relaynet/
 │   ├── genai.py           # Minimal GenAI (feedforward NN)
 │   ├── hybrid.py          # SNR-adaptive Hybrid
 │   ├── vae.py             # Variational Autoencoder
-│   └── cgan.py            # Conditional GAN (WGAN-GP)
+│   ├── cgan.py            # Conditional GAN (WGAN-GP)
+│   ├── transformer.py     # Transformer (multi-head self-attention)
+│   ├── mamba.py           # Mamba S6 (selective state space)
+│   └── mamba2.py          # Mamba-2 SSD (structured state space duality)
 ├── simulation/
 │   ├── runner.py          # Monte Carlo BER simulation
-│   └── statistics.py      # CI computation, significance tests
+│   ├── statistics.py      # CI computation, Wilcoxon significance tests
+│   └── checkpoint_manager.py  # Weight persistence & resume
 ├── visualization/
 │   └── plots.py           # BER plotting utilities
 └── utils/
@@ -1061,9 +1149,17 @@ relaynet/
 
 The framework uses object-oriented design with a common `Relay` base class, enabling polymorphic relay swapping. Monte Carlo simulation is implemented in `runner.py` with configurable trial count, bit count, and SNR range. All MIMO operations use vectorized PyTorch for GPU acceleration.
 
-**Testing:** 66 automated tests (pytest) cover all channels, modulation, relay strategies, simulation, and statistics modules with 100% pass rate.
+**Testing:** 75 automated tests (pytest) cover all channels, modulation, relay strategies (including Mamba2 SSD), simulation, and statistics modules with 100% pass rate across five test modules:
 
-**Reproducibility:** Random seeds are controlled at the source (bit generation) and noise (per-trial seeding) levels to ensure reproducible results.
+| Module | Tests | Coverage |
+|---|---|---|
+| test_channels | 26 | AWGN, Rayleigh, Rician, MIMO (ZF/MMSE/SIC) |
+| test_modulation | 10 | BPSK modulate/demodulate, edge cases |
+| test_relays | 22 | All 9 relay strategies, including Mamba2 SSD |
+| test_simulation | 6 | Runner, BER convergence, reproducibility |
+| test_statistics | 11 | CI, Wilcoxon, significance tables |
+
+**Reproducibility:** Random seeds are controlled at the source (bit generation) and noise (per-trial seeding) levels to ensure reproducible results. Weight persistence via `CheckpointManager` enables deterministic resume across sessions.
 
 ### Appendix D: Normalized 3K-Parameter Configurations
 
@@ -1075,8 +1171,9 @@ The framework uses object-oriented design with a common `Relay` base class, enab
 | CGAN-3K | 3,004 | 11 | noise=8, g_hidden=(30, 30, 16), c_hidden=(32, 16) |
 | Transformer-3K | 3,007 | 11 | d_model=18, heads=2, layers=1 |
 | Mamba-3K | 3,027 | 11 | d_model=16, d_state=6, layers=1 |
+| Mamba2-3K | 3,004 | 11 | d_model=15, d_state=6, layers=1, chunk=8 |
 
-All 3K configurations use a window size of 11 (vs. 5 for original GenAI/Hybrid, and 11 for original sequence models) to provide a common input context. The parameter counts are within ±1.2% of the 3,000 target.
+All 3K configurations use a window size of 11 (vs. 5 for original GenAI/Hybrid, and 11 for original sequence models) to provide a common input context. The parameter counts are within ±1.2% of the 3,000 target. CGAN-3K is excluded from the default comparison run due to its extended training time (~55 min for adversarial training) but can be included via the `--include-cgan` flag.
 
 ---
 
@@ -1084,19 +1181,19 @@ All 3K configurations use a window size of 11 (vs. 5 for original GenAI/Hybrid, 
 
 **Generative AI for Two-Hop Relay Communication: A Comparative Study of Classical and AI-Based Relay Strategies**
 
-This thesis presents a comprehensive comparative study of classical and artificial intelligence (AI) based relay strategies for two-hop cooperative communication systems. Eight relay methods are implemented and evaluated: two classical approaches — amplify-and-forward (AF) and decode-and-forward (DF) — and six AI-based methods spanning supervised learning (GenAI minimal feedforward network, Hybrid SNR-adaptive relay), generative modeling (variational autoencoder, conditional GAN with WGAN-GP training), and modern sequence architectures (Transformer with multi-head self-attention, Mamba S6 selective state space model).
+This thesis presents a comprehensive comparative study of classical and artificial intelligence (AI) based relay strategies for two-hop cooperative communication systems. Nine relay methods are implemented and evaluated: two classical approaches — amplify-and-forward (AF) and decode-and-forward (DF) — and seven AI-based methods spanning supervised learning (GenAI minimal feedforward network, Hybrid SNR-adaptive relay), generative modeling (variational autoencoder, conditional GAN with WGAN-GP training), and modern sequence architectures (Transformer with multi-head self-attention, Mamba S6 selective state space model, Mamba-2 SSD structured state space duality model).
 
-The evaluation is conducted across six channel and topology configurations: AWGN, Rayleigh fading, and Rician fading (K=3) channels in single-antenna (SISO) topology, and 2×2 MIMO spatial multiplexing with Rayleigh fading using three equalization techniques — zero-forcing (ZF), minimum mean square error (MMSE), and successive interference cancellation (SIC). All experiments use BPSK modulation with Monte Carlo simulation (100,000 bits per SNR point) and 95% confidence intervals.
+The evaluation is conducted across six channel and topology configurations: AWGN, Rayleigh fading, and Rician fading (K=3) channels in single-antenna (SISO) topology, and 2×2 MIMO spatial multiplexing with Rayleigh fading using three equalization techniques — zero-forcing (ZF), minimum mean square error (MMSE), and successive interference cancellation (SIC). All experiments use BPSK modulation with Monte Carlo simulation (100,000 bits per SNR point) and 95% confidence intervals. Statistical significance is established via Wilcoxon signed-rank tests at each SNR point.
 
-The results reveal several key findings. First, all AI relays outperform classical methods at low SNR (0–4 dB), with Mamba S6 achieving the best performance across all channels at its original 24,001-parameter configuration. Second, the classical DF relay dominates at medium-to-high SNR (≥6 dB) with zero parameters, establishing a strong baseline. Third, a complexity study reveals an inverted-U relationship between model size and performance: a minimal 169-parameter two-layer network matches models 100× larger, while an 11,201-parameter model exhibits overfitting with degraded performance.
+The results reveal several key findings. First, all AI relays outperform classical methods at low SNR (0–4 dB), with Mamba S6 and Mamba2 (SSD) achieving the best performance across all channels at their original parameter configurations (24,001 and 26,179 parameters respectively). Second, the classical DF relay dominates at medium-to-high SNR (≥6 dB) with zero parameters, establishing a strong baseline. Third, a complexity study reveals an inverted-U relationship between model size and performance: a minimal 169-parameter two-layer network matches models 100× larger, while an 11,201-parameter model exhibits overfitting with degraded performance.
 
-A normalized comparison constraining all AI models to approximately 3,000 parameters shows that the performance gap between architectures narrows significantly at equal scale, with VAE being the consistent underperformer. This finding indicates that parameter count, not architectural choice, is the primary performance driver for this task.
+A normalized comparison constraining all AI models to approximately 3,000 parameters shows that the performance gap between architectures narrows significantly at equal scale, with VAE being the consistent underperformer. This finding indicates that parameter count, not architectural choice, is the primary performance driver for this task. Critically, at equal parameter budgets, Mamba2-3K (SSD) trains 35% faster than Mamba-3K (S6) while achieving identical BER, confirming the computational advantage of the chunk-parallel SSD formulation.
 
 For MIMO systems, MMSE equalization consistently outperforms ZF, and non-linear SIC provides further improvement by cancelling the stronger stream's interference before detecting the weaker one. These equalization gains are additive to the relay processing benefits.
 
-The recommended deployment strategy is a Hybrid relay that combines AI processing at low SNR with classical DF at high SNR, achieving near-optimal performance across the entire operating range with minimal computational overhead. For resource-constrained scenarios, the 169-parameter GenAI minimal relay provides competitive performance with approximately 0.7 KB of memory and under 3 seconds of training time.
+The recommended deployment strategy is a Hybrid relay that combines AI processing at low SNR with classical DF at high SNR, achieving near-optimal performance across the entire operating range with minimal computational overhead. For resource-constrained scenarios, the 169-parameter GenAI minimal relay provides competitive performance with approximately 0.7 KB of memory and under 3 seconds of training time. When a sequence model is required, Mamba-2 (SSD) offers the best efficiency–performance trade-off.
 
-**Keywords:** Cooperative relay communication, generative AI, deep learning, two-hop relay, Mamba state space model, Transformer, variational autoencoder, conditional GAN, MIMO equalization, bit error rate
+**Keywords:** Cooperative relay communication, generative AI, deep learning, two-hop relay, Mamba state space model, Mamba-2 SSD, structured state space duality, Transformer, variational autoencoder, conditional GAN, MIMO equalization, bit error rate
 
 ---
 

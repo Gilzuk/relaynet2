@@ -3,7 +3,7 @@
 
 This is a one-off script to fill the missing SIC data in the thesis.
 """
-import sys, os
+import sys, os, argparse
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 import numpy as np
@@ -22,10 +22,16 @@ SEED = 42
 
 
 def main():
+    parser = argparse.ArgumentParser(description="Normalized 3K – MIMO SIC only")
+    parser.add_argument("--include-cgan", action="store_true",
+                        help="Include CGAN (WGAN-GP) relay (slow)")
+    cli_args = parser.parse_args()
+
     t0 = perf_counter()
 
-    # ── Build & train all six 3K models ──────────────────────────────
-    relays = build_all_3k(prefer_gpu=True, include_sequence_models=True)
+    # ── Build & train 3K models ──────────────────────────────────────────
+    relays = build_all_3k(prefer_gpu=True, include_sequence_models=True,
+                           include_cgan=cli_args.include_cgan)
 
     train_cfg = {
         "GenAI-3K":       dict(training_snrs=[5, 10, 15], num_samples=50_000, epochs=100),
@@ -37,7 +43,7 @@ def main():
     }
 
     for name, relay in relays.items():
-        cfg = train_cfg[name]
+        cfg = train_cfg.get(name, dict(training_snrs=[5, 10, 15], num_samples=50_000, epochs=100))
         print(f"Training {name} ({relay.num_params}p) …", flush=True)
         ts = perf_counter()
         relay.train(**cfg, seed=SEED)

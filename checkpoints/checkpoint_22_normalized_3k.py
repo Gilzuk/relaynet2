@@ -147,24 +147,42 @@ def make_mamba2_3k(prefer_gpu=False, **kw):
     return Mamba2RelayWrapper(target_power=1.0, **MAMBA2_3K, prefer_gpu=prefer_gpu, **kw)
 
 
-def build_all_3k(prefer_gpu=False, include_sequence_models=True):
-    """Build all six normalized relay models.
+def build_all_3k(prefer_gpu=False, include_sequence_models=True,
+                  include_cgan=False, prefer_gpu_seq=None):
+    """Build all normalized relay models.
+
+    Parameters
+    ----------
+    prefer_gpu : bool
+        GPU preference for small models (GenAI, Hybrid, VAE, CGAN).
+    include_sequence_models : bool
+        Include Transformer, Mamba S6, and Mamba-2 relays.
+    include_cgan : bool
+        Include CGAN (WGAN-GP) relay.  Disabled by default because
+        its adversarial training loop is extremely slow (~12× overhead
+        compared to supervised models of equal size).
+    prefer_gpu_seq : bool or None
+        GPU preference for sequence models (Transformer, Mamba S6,
+        Mamba-2).  When *None* (default), inherits *prefer_gpu*.
 
     Returns
     -------
     relays : dict
         Mapping ``{display_name: relay_instance}``.
     """
+    if prefer_gpu_seq is None:
+        prefer_gpu_seq = prefer_gpu
     relays = {
         "GenAI-3K": make_genai_3k(prefer_gpu=prefer_gpu),
         "Hybrid-3K": make_hybrid_3k(prefer_gpu=prefer_gpu),
         "VAE-3K": make_vae_3k(prefer_gpu=prefer_gpu),
-        "CGAN-3K": make_cgan_3k(prefer_gpu=prefer_gpu),
     }
+    if include_cgan:
+        relays["CGAN-3K"] = make_cgan_3k(prefer_gpu=prefer_gpu)
     if include_sequence_models and _HAS_SEQ:
-        relays["Transformer-3K"] = make_transformer_3k(prefer_gpu=prefer_gpu)
-        relays["Mamba-3K"] = make_mamba_3k(prefer_gpu=prefer_gpu)
-        relays["Mamba2-3K"] = make_mamba2_3k(prefer_gpu=prefer_gpu)
+        relays["Transformer-3K"] = make_transformer_3k(prefer_gpu=prefer_gpu_seq)
+        relays["Mamba-3K"] = make_mamba_3k(prefer_gpu=prefer_gpu_seq)
+        relays["Mamba2-3K"] = make_mamba2_3k(prefer_gpu=prefer_gpu_seq)
     return relays
 
 
@@ -175,7 +193,8 @@ if __name__ == "__main__":
 
     print("=== Normalized 3K-param relay verification ===\n")
 
-    relays = build_all_3k(prefer_gpu=False, include_sequence_models=_HAS_SEQ)
+    relays = build_all_3k(prefer_gpu=False, include_sequence_models=_HAS_SEQ,
+                           include_cgan=True)
 
     for name, relay in relays.items():
         # Count parameters
