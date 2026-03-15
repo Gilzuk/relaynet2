@@ -46,7 +46,10 @@ def rayleigh_fading_channel(signal, snr_db, return_channel=False):
     received = h * signal + noise
 
     # Perfect CSI equalization: divide by h
-    equalized = np.real(received / h)
+    equalized = received / h
+    # For real-valued input (BPSK), discard imaginary noise component
+    if not np.iscomplexobj(signal):
+        equalized = np.real(equalized)
 
     if return_channel:
         return equalized, h
@@ -103,7 +106,10 @@ def rician_fading_channel(signal, snr_db, k_factor=1.0, return_channel=False):
     received = h * signal + noise
 
     # Perfect CSI equalization
-    equalized = np.real(received / h)
+    equalized = received / h
+    # For real-valued input (BPSK), discard imaginary noise component
+    if not np.iscomplexobj(signal):
+        equalized = np.real(equalized)
 
     if return_channel:
         return equalized, h

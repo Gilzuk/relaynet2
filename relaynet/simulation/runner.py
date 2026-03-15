@@ -7,8 +7,83 @@ from relaynet.modulation.bpsk import calculate_ber
 from relaynet.channels.awgn import awgn_channel
 
 
+# ── Modulation-aware relay processing helpers ───────────────────────
+
+def _df_constellation_detect(received_signal, modulation, target_power=1.0):
+    """DF-like processing for complex signals: nearest constellation point.
+
+    For QPSK the I and Q decisions are independent sign decisions.
+    For 16-QAM each component is quantised to {−3, −1, +1, +3}/√10.
+    """
+    if modulation == "qpsk":
+        I_clean = np.sign(received_signal.real)
+        Q_clean = np.sign(received_signal.imag)
+        clean = (I_clean + 1j * Q_clean) / np.sqrt(2)
+    elif modulation == "qam16":
+        norm = np.sqrt(10.0)
+        levels = np.array([-3.0, -1.0, 1.0, 3.0])
+        I = received_signal.real * norm
+        Q = received_signal.imag * norm
+        I_idx = np.argmin(np.abs(I[:, None] - levels[None, :]), axis=1)
+        Q_idx = np.argmin(np.abs(Q[:, None] - levels[None, :]), axis=1)
+        clean = (levels[I_idx] + 1j * levels[Q_idx]) / norm
+    else:
+        raise ValueError(f"Unsupported modulation for complex DF: {modulation}")
+
+    pwr = np.mean(np.abs(clean) ** 2)
+    if pwr > 0:
+        clean = clean * np.sqrt(target_power / pwr)
+    return clean
+
+
+def _process_relay(relay, received_signal, modulation="bpsk"):
+    """Route signal through *relay* with modulation awareness.
+
+    * **BPSK** (real signal) — delegates directly to ``relay.process()``.
+    * **QPSK / QAM16** (complex signal after a fading or AWGN channel):
+      - **AF**: amplifies the complex signal as-is (power normalisation
+        handles complex magnitudes correctly).
+      - **DF**: nearest-constellation-point detection + re-transmission.
+      - **All other relays** (GenAI, Hybrid, VAE, CGAN, Transformer,
+        Mamba, …): process the I and Q components independently through
+        the real-valued neural network, then recombine.
+
+    Parameters
+    ----------
+    relay : Relay
+    received_signal : numpy.ndarray
+    modulation : str
+    """
+    from relaynet.relays.af import AmplifyAndForwardRelay
+    from relaynet.relays.df import DecodeAndForwardRelay
+
+    # Real signal → vanilla relay processing (BPSK or already I/Q split)
+    if not np.iscomplexobj(received_signal):
+        return relay.process(received_signal)
+
+    # ── Complex signal (QPSK / QAM16) ──────────────────────────────
+
+    if isinstance(relay, AmplifyAndForwardRelay):
+        # AF: analogue amplification — works natively on complex
+        return relay.process(received_signal)
+
+    if isinstance(relay, DecodeAndForwardRelay):
+        # DF: ML constellation-point detection
+        return _df_constellation_detect(
+            received_signal, modulation,
+            target_power=relay.target_power,
+        )
+
+    # AI-based relays: process I and Q independently
+    out_i = relay.process(received_signal.real.copy())
+    out_q = relay.process(received_signal.imag.copy())
+    return out_i + 1j * out_q
+
+
+# ── Public simulation API ──────────────────────────────────────────
+
 def simulate_transmission(relay, num_bits, snr_db, seed=None,
-                           channel_fn=None):
+                           channel_fn=None, modulation="bpsk"):
     """Simulate a single two-hop transmission through a relay.
 
     Parameters
@@ -24,6 +99,9 @@ def simulate_transmission(relay, num_bits, snr_db, seed=None,
     channel_fn : callable, optional
         Channel function ``f(signal, snr_db) -> noisy_signal``.
         Defaults to :func:`relaynet.channels.awgn.awgn_channel`.
+    modulation : str, optional
+        Modulation scheme: ``'bpsk'``, ``'qpsk'``, or ``'qam16'``.
+        Default ``'bpsk'``.
 
     Returns
     -------
@@ -35,12 +113,14 @@ def simulate_transmission(relay, num_bits, snr_db, seed=None,
     if channel_fn is None:
         channel_fn = awgn_channel
 
-    source = Source(seed=seed)
-    destination = Destination()
+    source = Source(seed=seed, modulation=modulation)
+    destination = Destination(modulation=modulation)
 
     tx_bits, tx_symbols = source.transmit(num_bits)
     rx_relay = channel_fn(tx_symbols, snr_db)
-    relay_out = relay.process(rx_relay)
+
+    relay_out = _process_relay(relay, rx_relay, modulation)
+
     rx_dest = channel_fn(relay_out, snr_db)
     rx_bits = destination.receive(rx_dest)
 
@@ -48,7 +128,8 @@ def simulate_transmission(relay, num_bits, snr_db, seed=None,
 
 
 def run_monte_carlo(relay, snr_range, num_bits_per_trial=10000,
-                    num_trials=10, channel_fn=None, seed_offset=0):
+                    num_trials=10, channel_fn=None, seed_offset=0,
+                    modulation="bpsk"):
     """Run a Monte Carlo BER simulation over a range of SNR values.
 
     Parameters
@@ -65,6 +146,9 @@ def run_monte_carlo(relay, snr_range, num_bits_per_trial=10000,
         Channel function. Defaults to AWGN.
     seed_offset : int
         Base seed offset.
+    modulation : str, optional
+        Modulation scheme: ``'bpsk'``, ``'qpsk'``, or ``'qam16'``.
+        Default ``'bpsk'``.
 
     Returns
     -------
@@ -85,6 +169,7 @@ def run_monte_carlo(relay, snr_range, num_bits_per_trial=10000,
                 relay, num_bits_per_trial, snr_db,
                 seed=seed_offset + trial,
                 channel_fn=channel_fn,
+                modulation=modulation,
             )
             trial_bers.append(ber)
         ber_trials[i] = trial_bers

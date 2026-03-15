@@ -18,7 +18,7 @@ class AmplifyAndForwardRelay(Relay):
         self.device = get_preferred_device(prefer_gpu=prefer_gpu)
 
     def process(self, received_signal):
-        if can_use_gpu(self.device):
+        if can_use_gpu(self.device) and not np.iscomplexobj(received_signal):
             torch = get_torch_module()
             signal_t = torch.as_tensor(received_signal, dtype=torch.float32, device=self.device)
             current_power = torch.mean(torch.abs(signal_t) ** 2)
