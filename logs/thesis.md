@@ -126,10 +126,11 @@ A thesis submitted in partial fulfillment of the requirements for the degree of 
 | DF | Decode-and-Forward |
 | DNN | Deep Neural Network |
 | GAN | Generative Adversarial Network |
-| GenAI | Generative AI (Minimal Feedforward Relay) |
+| GenAI | Minimal MLP Relay (two-layer feedforward network; see §6.3 naming note) |
 | GPU | Graphics Processing Unit |
 | KL | Kullback–Leibler |
 | LOS | Line-of-Sight |
+| MLP | Multi-Layer Perceptron |
 | MIMO | Multiple-Input Multiple-Output |
 | MMSE | Minimum Mean Square Error |
 | MRC | Maximal Ratio Combining |
@@ -171,7 +172,7 @@ A thesis submitted in partial fulfillment of the requirements for the degree of 
 
 ## 3. Keywords
 
-Cooperative relay communication, generative AI, deep learning, two-hop relay, Mamba state space model, Transformer, variational autoencoder, conditional GAN, MIMO equalization, bit error rate
+Cooperative relay communication, multi-layer perceptron, deep learning, two-hop relay, Mamba state space model, Transformer, variational autoencoder, conditional GAN, MIMO equalization, bit error rate
 
 ---
 
@@ -842,11 +843,13 @@ Nine relay strategies were implemented, spanning four learning paradigms. The se
 
 **Supervised Learning:**
 
-- **GenAI (Minimal):** A two-layer feedforward neural network with 169 parameters:
+- **GenAI (Minimal):** A two-layer feedforward neural network (multi-layer perceptron, MLP) with 169 parameters:
 
 $$\mathbf{h} = \text{ReLU}(\mathbf{W}_1 \mathbf{w} + \mathbf{b}_1), \quad \hat{x} = \tanh(\mathbf{W}_2 \mathbf{h} + \mathbf{b}_2)$$
 
   where $\mathbf{w} \in \mathbb{R}^5$ is a sliding window of received symbols ($w=2$ neighbors on each side), and the hidden layer has 24 neurons. Parameters: $(5 \times 24 + 24) + (24 \times 1 + 1) = 169$.
+
+  > **Naming note.** Despite its label, the GenAI relay is *not* a generative model. It is a standard discriminative MLP trained with supervised learning (MSE loss on input–output pairs). The name "GenAI" is a legacy project identifier retained for consistency with the codebase. In contrast, the generative models in this study are the VAE (§6.3, Generative Models) and CGAN, which learn to *sample from* or *approximate* the data distribution. The GenAI relay simply learns a deterministic mapping $f: \mathbb{R}^5 \to [-1,+1]$ from a noisy observation window to a denoised symbol estimate — a classical regression task.
 
   *Design rationale:* The tanh output activation naturally constrains the output to $[-1, +1]$, matching the BPSK symbol range. The ReLU hidden layer provides the non-linearity needed to approximate the Bayes-optimal soft threshold $\tanh(y/\sigma^2)$. With 24 hidden neurons and a 5-dimensional input, the network has approximately 34 parameters per input dimension — sufficient for the low-complexity denoising task while avoiding overfitting. He initialization is used for ReLU layers to maintain proper gradient flow.
 
@@ -1673,7 +1676,7 @@ All 3K configurations use a window size of 11 (vs. 5 for original GenAI/Hybrid, 
 
 **Generative AI for Two-Hop Relay Communication: A Comparative Study of Classical and AI-Based Relay Strategies**
 
-This thesis presents a comprehensive comparative study of classical and artificial intelligence (AI) based relay strategies for two-hop cooperative communication systems. Nine relay methods are implemented and evaluated: two classical approaches — amplify-and-forward (AF) and decode-and-forward (DF) — and seven AI-based methods spanning supervised learning (GenAI minimal feedforward network, Hybrid SNR-adaptive relay), generative modeling (variational autoencoder, conditional GAN with WGAN-GP training), and modern sequence architectures (Transformer with multi-head self-attention, Mamba S6 selective state space model, Mamba-2 structured state space duality).
+This thesis presents a comprehensive comparative study of classical and artificial intelligence (AI) based relay strategies for two-hop cooperative communication systems. Nine relay methods are implemented and evaluated: two classical approaches — amplify-and-forward (AF) and decode-and-forward (DF) — and seven AI-based methods spanning supervised learning (GenAI minimal MLP feedforward network — a discriminative multi-layer perceptron, not a generative model despite its name; Hybrid SNR-adaptive relay), generative modeling (variational autoencoder, conditional GAN with WGAN-GP training), and modern sequence architectures (Transformer with multi-head self-attention, Mamba S6 selective state space model, Mamba-2 structured state space duality).
 
 The evaluation is conducted across six channel and topology configurations: AWGN, Rayleigh fading, and Rician fading (K=3) channels in single-antenna (SISO) topology, and 2×2 MIMO spatial multiplexing with Rayleigh fading using three equalization techniques — zero-forcing (ZF), minimum mean square error (MMSE), and successive interference cancellation (SIC). All experiments use BPSK modulation with Monte Carlo simulation (100,000 bits per SNR point) and 95% confidence intervals.
 
@@ -1685,7 +1688,7 @@ For MIMO systems, MMSE equalization consistently outperforms ZF, and non-linear 
 
 The recommended deployment strategy is a Hybrid relay that combines AI processing at low SNR with classical DF at high SNR, achieving near-optimal performance across the entire operating range with minimal computational overhead. For resource-constrained scenarios, the 169-parameter GenAI minimal relay provides competitive performance with approximately 0.7 KB of memory and under 3 seconds of training time.
 
-**Keywords:** Cooperative relay communication, generative AI, deep learning, two-hop relay, Mamba state space model, Mamba-2 structured state space duality, Transformer, variational autoencoder, conditional GAN, MIMO equalization, bit error rate
+**Keywords:** Cooperative relay communication, multi-layer perceptron, deep learning, two-hop relay, Mamba state space model, Mamba-2 structured state space duality, Transformer, variational autoencoder, conditional GAN, MIMO equalization, bit error rate
 
 ---
 
