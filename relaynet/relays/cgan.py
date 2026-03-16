@@ -17,6 +17,10 @@ from .base import Relay
 from relaynet.modulation.bpsk import bpsk_modulate
 from relaynet.channels.awgn import awgn_channel
 from relaynet.utils.torch_compat import get_preferred_device, to_numpy
+from relaynet.utils.activations import (
+    apply_activation, activation_derivative, make_torch_activation,
+    generate_training_targets,
+)
 
 
 # ---------------------------------------------------------------------------
@@ -26,7 +30,7 @@ from relaynet.utils.torch_compat import get_preferred_device, to_numpy
 class _GenNP:
     """Small generator network (NumPy)."""
 
-    def __init__(self, window_size=7, noise_size=8):
+    def __init__(self, window_size=7, noise_size=8, output_activation="tanh"):
         inp = window_size + noise_size
         self.W1 = np.random.randn(inp, 32) * np.sqrt(2 / inp)
         self.b1 = np.zeros(32)
@@ -36,6 +40,7 @@ class _GenNP:
         self.b3 = np.zeros(16)
         self.W4 = np.random.randn(16, 1) * 0.1
         self.b4 = np.zeros(1)
+        self.output_activation = output_activation
 
     def forward(self, noisy, noise):
         x = np.concatenate([noisy, noise], axis=1)
@@ -43,8 +48,10 @@ class _GenNP:
         self._h1 = np.maximum(0.2 * (x @ self.W1 + self.b1), x @ self.W1 + self.b1)
         self._h2 = np.maximum(0.2 * (self._h1 @ self.W2 + self.b2), self._h1 @ self.W2 + self.b2)
         self._h3 = np.maximum(0.2 * (self._h2 @ self.W3 + self.b3), self._h2 @ self.W3 + self.b3)
-        out = np.tanh(self._h3 @ self.W4 + self.b4)
+        z_out = self._h3 @ self.W4 + self.b4
+        out = apply_activation(z_out, self.output_activation)
         self._out = out
+        self._z_out = z_out
         return out
 
 
@@ -76,7 +83,7 @@ class _CritNP:
 
 def _build_torch_cgan(window_size, noise_size, lambda_gp, lambda_l1, n_critic,
                       device, g_hidden_sizes=(32, 32, 16),
-                      c_hidden_sizes=(32, 16)):
+                      c_hidden_sizes=(32, 16), output_activation="tanh"):
     """Return a PyTorch-based CGAN relay trainer (dict of objects)."""
     import torch
     import torch.nn as nn
@@ -90,7 +97,7 @@ def _build_torch_cgan(window_size, noise_size, lambda_gp, lambda_l1, n_critic,
             for h in g_hidden_sizes:
                 layers.extend([nn.Linear(in_dim, h), nn.LeakyReLU(0.2)])
                 in_dim = h
-            layers.extend([nn.Linear(in_dim, 1), nn.Tanh()])
+            layers.extend([nn.Linear(in_dim, 1), make_torch_activation(output_activation)])
             self.net = nn.Sequential(*layers)
             for m in self.modules():
                 if isinstance(m, nn.Linear):
@@ -197,7 +204,8 @@ class CGANRelay(Relay):
 
     def __init__(self, window_size=7, noise_size=8, target_power=1.0,
                  lambda_gp=10, lambda_l1=20, n_critic=5, prefer_gpu=True,
-                 g_hidden_sizes=(32, 32, 16), c_hidden_sizes=(32, 16)):
+                 g_hidden_sizes=(32, 32, 16), c_hidden_sizes=(32, 16),
+                 output_activation="tanh"):
         self.window_size = window_size
         self.noise_size = noise_size
         self.target_power = target_power
@@ -206,6 +214,7 @@ class CGANRelay(Relay):
         self.n_critic = n_critic
         self.g_hidden_sizes = g_hidden_sizes
         self.c_hidden_sizes = c_hidden_sizes
+        self.output_activation = output_activation
         self.is_trained = False
         self.device = get_preferred_device(prefer_gpu=prefer_gpu)
 
@@ -216,9 +225,10 @@ class CGANRelay(Relay):
             self._torch_model = _build_torch_cgan(
                 window_size, noise_size, lambda_gp, lambda_l1, n_critic,
                 self.device, g_hidden_sizes, c_hidden_sizes,
+                output_activation=output_activation,
             )
         except ImportError:
-            self._gen = _GenNP(window_size, noise_size)
+            self._gen = _GenNP(window_size, noise_size, output_activation=output_activation)
             self._crit = _CritNP(window_size)
 
     @property
@@ -238,7 +248,7 @@ class CGANRelay(Relay):
         return g + c
 
     def train(self, training_snrs=None, num_samples=50000, epochs=200, seed=None,
-              epoch_callback=None):
+              epoch_callback=None, training_modulation="bpsk"):
         """Train the CGAN relay.
 
         Parameters
@@ -250,6 +260,8 @@ class CGANRelay(Relay):
         seed : int, optional
         epoch_callback : callable, optional
             Called as ``epoch_callback(epoch, epochs)`` after each epoch.
+        training_modulation : str, optional
+            ``'bpsk'`` (default) or ``'qam16'``.
         """
         if training_snrs is None:
             training_snrs = [5, 10, 15]
@@ -261,10 +273,11 @@ class CGANRelay(Relay):
         X_all, y_all = [], []
 
         for snr in training_snrs:
-            np.random.seed(42 + int(snr))
-            bits = np.random.randint(0, 2, samples_per_snr)
-            clean = bpsk_modulate(bits)
-            noisy = awgn_channel(clean, snr)
+            clean, noisy = generate_training_targets(
+                samples_per_snr, snr,
+                training_modulation=training_modulation,
+                seed=42 + int(snr),
+            )
             for i in range(pad, len(noisy) - pad):
                 X_all.append(noisy[i - pad: i + pad + 1])
                 y_all.append(clean[i])
@@ -294,9 +307,9 @@ class CGANRelay(Relay):
                     fake = gen.forward(Xb, noise)
                     # L1 reconstruction gradient: d|fake - y|/d_fake = sign(fake - y)
                     grad_out = np.sign(fake - yb) * self.lambda_l1
-                    # Backprop through output tanh layer
-                    d_tanh = 1 - fake ** 2
-                    d4 = grad_out * d_tanh
+                    # Backprop through output activation
+                    d_act = activation_derivative(fake, gen._z_out, self.output_activation)
+                    d4 = grad_out * d_act
                     gen.W4 -= lr * gen._h3.T @ d4
                     gen.b4 -= lr * np.sum(d4, axis=0)
                 if epoch_callback:

@@ -6,29 +6,34 @@ from .base import Relay
 from relaynet.modulation.bpsk import bpsk_modulate
 from relaynet.channels.awgn import awgn_channel
 from relaynet.utils.torch_compat import can_use_gpu, get_preferred_device, get_torch_module, to_numpy
+from relaynet.utils.activations import (
+    apply_activation, activation_derivative, make_torch_activation,
+    generate_training_targets,
+)
 
 
 class _TinyNN:
-    """Two-layer feedforward network with ReLU hidden and tanh output."""
+    """Two-layer feedforward network with ReLU hidden and configurable output."""
 
-    def __init__(self, input_size, hidden_size, output_size):
+    def __init__(self, input_size, hidden_size, output_size, output_activation="tanh"):
         self.W1 = np.random.randn(input_size, hidden_size) * np.sqrt(2.0 / input_size)
         self.b1 = np.zeros(hidden_size)
         self.W2 = np.random.randn(hidden_size, output_size) * 0.1
         self.b2 = np.zeros(output_size)
+        self.output_activation = output_activation
 
     def forward(self, X):
         self.z1 = np.dot(X, self.W1) + self.b1
         self.a1 = np.maximum(0, self.z1)  # ReLU
         self.z2 = np.dot(self.a1, self.W2) + self.b2
-        return np.tanh(self.z2)
+        return apply_activation(self.z2, self.output_activation)
 
     def train_step(self, X, y, lr=0.01):
         batch_size = X.shape[0]
         output = self.forward(X)
         loss = np.mean((output - y) ** 2)
 
-        dz2 = 2 * (output - y) / batch_size * (1 - output ** 2)
+        dz2 = 2 * (output - y) / batch_size * activation_derivative(output, self.z2, self.output_activation)
         dW2 = np.dot(self.a1.T, dz2)
         db2 = np.sum(dz2, axis=0)
 
@@ -44,7 +49,7 @@ class _TinyNN:
         return loss
 
 
-def _build_torch_tinynn(input_size, hidden_size, device):
+def _build_torch_tinynn(input_size, hidden_size, device, output_activation="tanh"):
     """Create a tiny Torch model matching the 169-parameter network."""
     torch = get_torch_module()
     import torch.nn as nn
@@ -53,7 +58,7 @@ def _build_torch_tinynn(input_size, hidden_size, device):
         nn.Linear(input_size, hidden_size),
         nn.ReLU(),
         nn.Linear(hidden_size, 1),
-        nn.Tanh(),
+        make_torch_activation(output_activation),
     ).to(device)
 
     for module in model.modules():
@@ -70,14 +75,16 @@ class MinimalGenAIRelay(Relay):
     Uses only NumPy — no external ML framework dependency.
     """
 
-    def __init__(self, window_size=5, hidden_size=24, target_power=1.0, prefer_gpu=True):
+    def __init__(self, window_size=5, hidden_size=24, target_power=1.0, prefer_gpu=True,
+                 output_activation="tanh"):
         self.window_size = window_size
         self.hidden_size = hidden_size
         self.target_power = target_power
+        self.output_activation = output_activation
         self.device = get_preferred_device(prefer_gpu=prefer_gpu)
         self._use_torch = can_use_gpu(self.device)
-        self.nn = _TinyNN(window_size, hidden_size, 1)
-        self._torch_model = _build_torch_tinynn(window_size, hidden_size, self.device) if self._use_torch else None
+        self.nn = _TinyNN(window_size, hidden_size, 1, output_activation=output_activation)
+        self._torch_model = _build_torch_tinynn(window_size, hidden_size, self.device, output_activation=output_activation) if self._use_torch else None
         self.is_trained = False
 
     @property
@@ -87,7 +94,7 @@ class MinimalGenAIRelay(Relay):
         return ws * hs + hs + hs * 1 + 1
 
     def train(self, training_snrs=None, num_samples=25000, epochs=100, seed=None,
-              epoch_callback=None):
+              epoch_callback=None, training_modulation="bpsk"):
         """Train the relay on simulated AWGN data.
 
         Parameters
@@ -103,6 +110,9 @@ class MinimalGenAIRelay(Relay):
             Random seed for reproducibility.
         epoch_callback : callable, optional
             Called as ``epoch_callback(epoch, epochs)`` after each epoch.
+        training_modulation : str, optional
+            ``'bpsk'`` (default) or ``'qam16'`` — controls what target
+            symbols are generated for training.
         """
         if training_snrs is None:
             training_snrs = [5, 10, 15]
@@ -114,10 +124,11 @@ class MinimalGenAIRelay(Relay):
         pad = self.window_size // 2
 
         for snr in training_snrs:
-            np.random.seed(42 + int(snr))
-            bits = np.random.randint(0, 2, samples_per_snr)
-            clean = bpsk_modulate(bits)
-            noisy = awgn_channel(clean, snr)
+            clean, noisy = generate_training_targets(
+                samples_per_snr, snr,
+                training_modulation=training_modulation,
+                seed=42 + int(snr),
+            )
             for i in range(pad, len(noisy) - pad):
                 X_all.append(noisy[i - pad: i + pad + 1])
                 y_all.append(clean[i])

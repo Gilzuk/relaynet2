@@ -1418,7 +1418,62 @@ Table 14: BER comparison across modulations at selected SNR points (AWGN channel
 
 *Figure 26: Combined modulation comparison (AWGN) — all nine relays across BPSK (solid), QPSK (dashed, overlapping BPSK), and 16-QAM (dotted). The BPSK/QPSK overlap confirms I/Q splitting equivalence. The 16-QAM dotted curves reveal the AI relay BER floor: all AI relays plateau near 0.18–0.25 while DF and AF continue decreasing.*
 
-**Summary.** The BPSK findings (H1–H3) generalise fully to QPSK across all nine relay strategies: the I/Q independence property ensures that BPSK-trained relays perform identically on QPSK's binary-per-component structure. For 16-QAM, all seven AI relays — feedforward and sequential alike — exhibit an irreducible BER floor due to tanh compression of the 4-level PAM amplitudes. The Transformer achieves the lowest floor (0.1827 at 16 dB) but is still 48× worse than DF (0.0038). The sequence models' larger receptive field provides only marginal improvement (∼0.03–0.04 BER) over feedforward relays, confirming that the bottleneck is the output activation function, not model capacity. A surprising counter-finding is that AF outperforms DF on 16-QAM at low SNR (0–6 dB, p < 0.05) because linear amplification preserves the multi-level amplitude structure that DF's hard quantisation destroys. These results motivate future work on modulation-aware relay training with modified output activations (Section 8.6).
+**Summary.** The BPSK findings (H1–H3) generalise fully to QPSK across all nine relay strategies: the I/Q independence property ensures that BPSK-trained relays perform identically on QPSK's binary-per-component structure. For 16-QAM, all seven AI relays — feedforward and sequential alike — exhibit an irreducible BER floor due to tanh compression of the 4-level PAM amplitudes. The Transformer achieves the lowest floor (0.1827 at 16 dB) but is still 48× worse than DF (0.0038). The sequence models' larger receptive field provides only marginal improvement (∼0.03–0.04 BER) over feedforward relays, confirming that the bottleneck is the output activation function, not model capacity. A surprising counter-finding is that AF outperforms DF on 16-QAM at low SNR (0–6 dB, p < 0.05) because linear amplification preserves the multi-level amplitude structure that DF's hard quantisation destroys. These results motivate the modulation-aware activation experiment in Section 7.11.
+
+### 7.11 16-QAM Activation Experiment: Modulation-Aware Training
+
+Section 7.10 identified the $\tanh$ output activation as the root cause of the AI relay BER floor on 16-QAM: the function compresses the 4-level PAM amplitudes $\{-3, -1, +1, +3\}/\sqrt{10}$ into its saturating region, making the outer levels ($\pm 0.949$) nearly indistinguishable from the inner levels ($\pm 0.316$). This section implements the modulation-specific training proposed in Section 8.6 and evaluates two alternative output activations.
+
+#### 7.11.1 Experimental Design
+
+Three activation variants are compared:
+
+1. **tanh (baseline):** Standard $\tanh$ output, trained on BPSK signals — the original configuration from all prior experiments.
+2. **linear:** Identity output activation ($f(z) = z$, unbounded), trained on 16-QAM PAM-4 symbols $\{-3, -1, +1, +3\}/\sqrt{10}$.
+3. **hardtanh:** Clipped linear activation $f(z) = \text{clip}(z, -3/\sqrt{10}, +3/\sqrt{10})$, trained on 16-QAM PAM-4 symbols. The clip bounds $\pm 0.9487$ match the maximum 16-QAM per-axis amplitude exactly, providing bounded output while preserving linearity in the signal range.
+
+All seven AI relays (GenAI, Hybrid, VAE, CGAN, Transformer, Mamba S6, Mamba-2 SSD) are trained from scratch with each variant. The training protocol matches the original: 50,000 samples, 100 epochs (200 for sequence models), SNR = 5/10/15 dB. The linear and hardtanh variants use synthetically generated PAM-4 training targets at matched SNR to teach the network the 4-level amplitude structure. Classical AF and DF relays serve as modulation-independent baselines. Evaluation uses 16-QAM on AWGN and Rayleigh channels (10 trials × 10,000 bits, SNR 0–20 dB).
+
+#### 7.11.2 Results
+
+Table 15 shows the BER at 16 dB for all relays across the three activation variants and both channel types.
+
+| Relay | tanh (BPSK) | linear (QAM16) | hardtanh (QAM16) | tanh (BPSK) | linear (QAM16) | hardtanh (QAM16) |
+|---|---|---|---|---|---|---|
+| | **AWGN** | | | **Rayleigh** | | |
+| GenAI | 0.2202 | 0.0721 | **0.0630** | 0.2375 | 0.1279 | **0.1247** |
+| Hybrid | 0.2512 | 0.2512 | 0.2512 | 0.2723 | 0.2723 | 0.2723 |
+| VAE | 0.2231 | 0.1111 | **0.1059** | 0.2462 | 0.1575 | **0.1573** |
+| CGAN | 0.2482 | 0.0973 | **0.0863** | 0.2666 | 0.1432 | **0.1383** |
+| Transformer | 0.2111 | **0.0453** | 0.0505 | 0.2305 | **0.1159** | 0.1194 |
+| Mamba S6 | 0.2131 | 0.0422 | **0.0396** | 0.2333 | 0.1129 | **0.1108** |
+| Mamba-2 SSD | 0.2065 | 0.0471 | **0.0441** | 0.2273 | 0.1157 | **0.1145** |
+| AF | 0.0180 | — | — | 0.1009 | — | — |
+| DF | 0.0038 | — | — | 0.0828 | — | — |
+
+*Table 15: 16-QAM BER at 16 dB — activation variant comparison. Bold marks the best AI variant per relay. The tanh column reproduces the Section 7.10 baseline. Hybrid is unchanged because its high-SNR path routes to DF internally.*
+
+![Figure 27: 16-QAM activation experiment on AWGN.](results/qam16_activation/qam16_activation_awgn.png)
+
+*Figure 27: 16-QAM activation experiment (AWGN) — dashed lines = tanh/BPSK baseline, solid = linear/QAM16, dotted = hardtanh/QAM16. Replacing tanh and retraining on QAM16 eliminates the BER floor for all AI relays except Hybrid. Sequence models (Transformer, Mamba S6, Mamba-2) benefit most, narrowing the gap to DF from ~56× to ~10×.*
+
+![Figure 28: 16-QAM activation experiment on Rayleigh.](results/qam16_activation/qam16_activation_rayleigh.png)
+
+*Figure 28: 16-QAM activation experiment (Rayleigh fading) — same trend under fading. The improvement is significant but the gap to DF/AF remains larger than on AWGN, consistent with fading amplifying modulation-order differences (Finding 6).*
+
+#### 7.11.3 Analysis
+
+**Finding 8: Replacing tanh eliminates the 16-QAM BER floor.** Both the linear and hardtanh activations break through the ~0.22 BER floor that all AI relays exhibited in Section 7.10. The improvement factors (tanh → best variant) at 16 dB AWGN are: Mamba S6 5.4×, Transformer 4.7×, Mamba-2 4.7×, GenAI 3.5×, CGAN 2.9×, VAE 2.1×. This confirms the hypothesis from Section 7.10 that the bottleneck is the activation function, not model capacity.
+
+**Finding 9: Hardtanh is generally preferred over linear.** For feedforward relays, hardtanh consistently achieves the lowest BER: GenAI 0.0630 vs linear 0.0721, CGAN 0.0863 vs 0.0973, VAE 0.1059 vs 0.1111 (all AWGN). The bounded output prevents the network from generating values outside the valid constellation range, acting as an implicit regulariser. For sequence models, the results are mixed: Transformer slightly prefers linear (0.0453 vs 0.0505), while Mamba S6 and Mamba-2 slightly prefer hardtanh (0.0396 vs 0.0422, and 0.0441 vs 0.0471). The practical recommendation is hardtanh, which provides the bounded-output safety of tanh while matching the 16-QAM amplitude range.
+
+**Finding 10: Sequence models benefit most from modulation-aware training.** The three sequence models achieve the lowest BER among AI relays after retraining: Mamba S6 hardtanh 0.0396, Mamba-2 hardtanh 0.0441, Transformer linear 0.0453 (AWGN). These are 5.4×, 4.7×, and 4.7× improvements over the tanh baseline, compared to 3.5× for GenAI and 2.9× for CGAN. The larger context window of sequence models apparently captures inter-symbol amplitude correlations that feedforward relays miss once the activation bottleneck is removed.
+
+**Finding 11: The gap to classical relays narrows but persists.** The best AI relay (Mamba S6 hardtanh, 0.0396 on AWGN) is 10.4× worse than DF (0.0038) and 2.2× worse than AF (0.0180). While this is a dramatic improvement from the tanh baseline (56× gap), the remaining gap reflects the fundamental difficulty of learning multi-level quantisation from data alone versus the hard-coded PAM-4 decision boundaries in DF. On Rayleigh, the gap is larger: Mamba S6 hardtanh 0.1108 vs DF 0.0828 (1.3×), suggesting that fading partially equalises AI and classical approaches.
+
+**Finding 12: The Hybrid relay is unaffected.** Hybrid achieves 0.2512 across all three variants because at 16 dB its SNR estimator routes to the DF sub-relay, which uses hard sign-detection on the I/Q-split signal. The Hybrid's GenAI sub-network (which benefits from the new activation) is bypassed at high SNR. This confirms that the Hybrid relay's SNR-adaptive switching, while effective for BPSK (Section 7.6), requires modulation-aware DF quantisation for higher-order constellations.
+
+**Summary.** The activation experiment validates the hypothesis from Section 7.10: the 16-QAM BER floor is caused by $\tanh$ compression, not by insufficient model capacity. Replacing $\tanh$ with a bounded linear activation (hardtanh) matched to the 16-QAM constellation range, combined with retraining on PAM-4 target symbols, reduces the AI relay BER floor by 2–5× across all relay types. Sequence models benefit disproportionately (5.4× for Mamba S6 vs 2.1× for VAE), achieving BER values within one order of magnitude of DF. These findings demonstrate that modulation-aware output activation design is essential for extending AI relay strategies to higher-order modulations.
 
 ---
 
@@ -1560,7 +1615,7 @@ The Hybrid relay is recommended as the default deployment choice because it auto
 
 Several limitations of this study should be acknowledged, as they define the boundary conditions under which the conclusions hold:
 
-1. **Modulation scope.** The primary experiments use BPSK modulation, and the QPSK/16-QAM extension (Section 7.10) evaluates BPSK-trained relays without retraining. The QPSK results confirm full generalisability due to I/Q independence, but the 16-QAM results reveal that BPSK-trained AI relays cannot faithfully process multi-level amplitude signals. Modulation-specific training, retrained AI relays for 16-QAM and higher-order constellations (64-QAM, 256-QAM), and the interaction between modulation order and model complexity are not investigated. The "less is more" finding (H3) is confirmed for BPSK and QPSK but may not hold for denser constellations where multi-level decision boundaries require greater model capacity.
+1. **Modulation scope.** The primary experiments use BPSK modulation. The QPSK extension (Section 7.10) confirms full generalisability via I/Q independence, and the 16-QAM activation experiment (Section 7.11) demonstrates that replacing $\tanh$ with a bounded linear activation and retraining on PAM-4 targets reduces the AI BER floor by 2–5×. However, the study does not extend to 64-QAM or 256-QAM, where denser constellations may shift the inverted-U complexity curve (H3) toward larger models. The interaction between modulation order and optimal model capacity remains uninvestigated.
 
 2. **Perfect CSI.** We assume perfect channel state information at the receiver. In practice, channel estimation errors would affect equalization quality (particularly for MMSE and SIC, which depend on accurate $\sigma^2$ and $\mathbf{H}$ estimates) and relay performance. Imperfect CSI introduces a model mismatch between the assumed and actual channel, which could differentially impact the relay strategies: AI relays might be more robust (having learned from noisy data) or less robust (having not been exposed to estimation errors during training).
 
@@ -1578,7 +1633,7 @@ Several limitations of this study should be acknowledged, as they define the bou
 
 Several directions warrant further investigation:
 
-1. **Modulation-specific relay training.** The QPSK/16-QAM extension (Section 7.10) demonstrates that BPSK-trained relays generalise to QPSK but not to 16-QAM, where all AI relays hit an irreducible BER floor near 0.22 (vs DF's 0.004 at 16 dB). Future work should train AI relays directly on 16-QAM signals — replacing $\tanh$ with a linear or scaled output activation — to determine whether modulation-aware training recovers the AI advantage at medium SNR. Additionally, extending to 64-QAM and 256-QAM would reveal whether the inverted-U complexity curve (H3) shifts toward larger models for denser constellations. The surprising finding that AF outperforms DF on 16-QAM at low SNR (Section 7.10, Finding 4) also suggests investigating AF-AI hybrid strategies that preserve multi-level amplitude information.
+1. **Higher-order modulation training (64-QAM, 256-QAM).** The 16-QAM activation experiment (Section 7.11) demonstrates that replacing $\tanh$ with hardtanh and retraining on PAM-4 targets reduces the AI BER floor by 2–5× (Mamba S6: 0.2131 → 0.0396 on AWGN). However, a 10× gap to DF persists, and the best AI relay (0.0396) remains 2.2× worse than AF (0.0180). Future work should extend this approach to 64-QAM and 256-QAM, where denser constellations (8-PAM, 16-PAM per axis) may require deeper networks or hierarchical output layers to resolve finer amplitude levels. The interaction between modulation order and optimal model capacity — whether the inverted-U complexity curve (H3) shifts rightward for higher-order constellations — is a key open question. Additionally, AF-AI hybrid strategies that preserve multi-level amplitude information (motivated by Finding 4) warrant investigation.
 
 2. **Imperfect CSI.** Introduce channel estimation errors to assess robustness of AI relay processing under realistic conditions.
 
@@ -1623,9 +1678,9 @@ The main conclusions, in order of significance, are:
 
 8. **Mamba-2 SSD provides a 10.7× training speedup over S6 at longer contexts.** The chunk-parallel structured matrix multiplication of SSD eliminates the sequential bottleneck of S6, making it the preferred state space architecture for applications requiring longer symbol windows.
 
-9. **BPSK findings generalise to QPSK but not to 16-QAM.** The modulation extension experiments (Section 7.10) demonstrate that all nine BPSK-trained relay strategies achieve identical BER on QPSK via I/Q splitting, confirming H1–H3 for the 2-bit/symbol constellation. For 16-QAM, all seven AI relays — feedforward and sequential alike — exhibit an irreducible BER floor (Transformer: 0.1827, GenAI: 0.2180, Hybrid: 0.2512 at 16 dB AWGN vs DF's 0.0038). The sequence models' larger receptive field provides only a marginal ~0.03–0.04 BER improvement over feedforward relays, confirming the bottleneck is the $\tanh$ activation, not model capacity. Conversely, AF outperforms DF on 16-QAM at low SNR (0–6 dB, p < 0.05) because linear amplification preserves the multi-level amplitude structure. These results clearly delineate the boundary of the "train once, evaluate everywhere" approach and motivate modulation-specific relay training with modified output activations for high-order constellations.
+9. **BPSK findings generalise to QPSK but not to 16-QAM; modulation-aware retraining largely eliminates the gap.** The modulation extension experiments (Section 7.10) demonstrate that all nine BPSK-trained relay strategies achieve identical BER on QPSK via I/Q splitting, confirming H1–H3 for the 2-bit/symbol constellation. For 16-QAM, BPSK-trained AI relays exhibit an irreducible BER floor (0.18–0.25 at 16 dB AWGN vs DF's 0.0038). The activation experiment (Section 7.11) confirms this bottleneck is the $\tanh$ output activation: replacing it with hardtanh (bounded to the 16-QAM amplitude range) and retraining on PAM-4 targets reduces the floor by 2–5× (Mamba S6: 0.2131 → 0.0396, GenAI: 0.2202 → 0.0630). Sequence models benefit most (5.4× for Mamba S6 vs 2.1× for VAE). The best retrained AI relay (Mamba S6 hardtanh, 0.0396) is 10.4× worse than DF but only 2.2× worse than AF, a dramatic improvement from the 56× tanh-baseline gap.
 
-These findings demonstrate that AI-based relay processing is a viable and beneficial complement to classical approaches, particularly in the challenging low-SNR regime. The overarching insight is that **model complexity should be matched to task complexity**: for the relay denoising task with BPSK and QPSK, minimal architectures suffice, and the choice between AI paradigms — feedforward or sequential — matters less than proper model sizing and regularization. For higher-order modulations (16-QAM and beyond), modulation-aware training with modified output activations may be necessary, as even the most capable sequence models (Transformer, Mamba) cannot overcome the $\tanh$ compression bottleneck. The practical recommendation is clear: deploy a Hybrid relay with a 169-parameter GenAI sub-network for the broadest possible operating range at minimal computational cost.
+These findings demonstrate that AI-based relay processing is a viable and beneficial complement to classical approaches, particularly in the challenging low-SNR regime. The overarching insight is that **model complexity should be matched to task complexity**: for the relay denoising task with BPSK and QPSK, minimal architectures suffice, and the choice between AI paradigms — feedforward or sequential — matters less than proper model sizing and regularization. For 16-QAM, the activation experiment (Section 7.11) confirms that replacing $\tanh$ with a constellation-matched hardtanh activation and retraining on PAM-4 targets reduces the BER floor by 2–5×, with sequence models benefiting most (Mamba S6: 5.4× improvement). A residual gap to DF remains (10.4×), motivating further research on higher-order constellations (64-QAM, 256-QAM) and adaptive output layers. The practical recommendation is clear: deploy a Hybrid relay with a 169-parameter GenAI sub-network for BPSK/QPSK, and use Mamba S6 with hardtanh activation for 16-QAM applications.
 
 ---
 

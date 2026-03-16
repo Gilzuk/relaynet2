@@ -62,7 +62,8 @@ class HybridRelay(Relay):
     """
 
     def __init__(self, snr_threshold=5.0, target_power=1.0,
-                 genai_window_size=5, genai_hidden_size=24, prefer_gpu=True):
+                 genai_window_size=5, genai_hidden_size=24, prefer_gpu=True,
+                 output_activation="tanh"):
         self.snr_threshold = snr_threshold
         self.target_power = target_power
 
@@ -71,6 +72,7 @@ class HybridRelay(Relay):
             hidden_size=genai_hidden_size,
             target_power=target_power,
             prefer_gpu=prefer_gpu,
+            output_activation=output_activation,
         )
         self.df_relay = DecodeAndForwardRelay(target_power=target_power, prefer_gpu=prefer_gpu)
         self.device = getattr(self.genai_relay, "device", None)
@@ -82,7 +84,7 @@ class HybridRelay(Relay):
         return self.genai_relay.num_params
 
     def train(self, training_snrs=None, num_samples=25000, epochs=100, seed=None,
-              epoch_callback=None):
+              epoch_callback=None, training_modulation="bpsk"):
         """Train the internal GenAI sub-relay.
 
         Parameters
@@ -94,6 +96,8 @@ class HybridRelay(Relay):
         seed : int, optional
         epoch_callback : callable, optional
             Called as ``epoch_callback(epoch, epochs)`` after each epoch.
+        training_modulation : str, optional
+            ``'bpsk'`` (default) or ``'qam16'``.
         """
         if training_snrs is None:
             training_snrs = [2, 4, 6]
@@ -103,6 +107,7 @@ class HybridRelay(Relay):
             epochs=epochs,
             seed=seed,
             epoch_callback=epoch_callback,
+            training_modulation=training_modulation,
         )
         self.is_trained = True
 

@@ -30,6 +30,8 @@ from checkpoint_01_channel import awgn_channel
 from checkpoint_02_modulation import bpsk_modulate, calculate_ber
 from checkpoint_03_nodes import Source, Relay, Destination
 
+from relaynet.utils.activations import make_torch_activation, generate_training_targets
+
 
 class S6Layer(nn.Module):
     """
@@ -165,7 +167,8 @@ class MambaBlock(nn.Module):
 class MambaRelay(nn.Module):
     """Mamba-based relay for signal denoising."""
     
-    def __init__(self, window_size=11, d_model=32, d_state=16, num_layers=2):
+    def __init__(self, window_size=11, d_model=32, d_state=16, num_layers=2,
+                 output_activation="tanh"):
         super(MambaRelay, self).__init__()
         
         self.window_size = window_size
@@ -186,7 +189,7 @@ class MambaRelay(nn.Module):
             nn.Linear(d_model, d_model // 2),
             nn.SiLU(),
             nn.Linear(d_model // 2, 1),
-            nn.Tanh()
+            make_torch_activation(output_activation),
         )
         
         # Initialize weights
@@ -232,9 +235,11 @@ class MambaRelay(nn.Module):
 class MambaRelayWrapper(Relay):
     """Wrapper for Mamba relay."""
     
-    def __init__(self, target_power=1.0, window_size=11, d_model=32, d_state=16, num_layers=2, prefer_gpu=False):
+    def __init__(self, target_power=1.0, window_size=11, d_model=32, d_state=16, num_layers=2, prefer_gpu=False,
+                 output_activation="tanh"):
         self.target_power = target_power
         self.window_size = window_size
+        self.output_activation = output_activation
         
         # Set device — with only 24K parameters this model is too small to
         # benefit from GPU; kernel-launch overhead dominates compute time.
@@ -248,7 +253,8 @@ class MambaRelayWrapper(Relay):
             window_size=window_size,
             d_model=d_model,
             d_state=d_state,
-            num_layers=num_layers
+            num_layers=num_layers,
+            output_activation=output_activation,
         ).to(self.device)
         
         self.is_trained = False
@@ -256,7 +262,8 @@ class MambaRelayWrapper(Relay):
         # Count parameters
         self.num_params = sum(p.numel() for p in self.model.parameters())
     
-    def train(self, training_snrs=[5, 10, 15], num_samples=50000, epochs=100, lr=0.001):
+    def train(self, training_snrs=[5, 10, 15], num_samples=50000, epochs=100, lr=0.001,
+              training_modulation="bpsk"):
         """
         Train Mamba relay.
         """
@@ -268,6 +275,8 @@ class MambaRelayWrapper(Relay):
         print(f"    Parameters: {self.num_params:,}")
         print(f"    Training SNRs: {training_snrs} dB")
         print(f"    Samples: {num_samples:,}, Epochs: {epochs}")
+        if training_modulation != "bpsk":
+            print(f"    Training modulation: {training_modulation}")
         
         # Generate training data
         print(f"\n  Generating training data...")
@@ -276,15 +285,16 @@ class MambaRelayWrapper(Relay):
         y_train_all = []
         
         for snr in training_snrs:
-            np.random.seed(42 + int(snr))
-            clean_bits = np.random.randint(0, 2, samples_per_snr)
-            clean_symbols = bpsk_modulate(clean_bits)
-            noisy_symbols = awgn_channel(clean_symbols, snr)
+            clean, noisy = generate_training_targets(
+                samples_per_snr, snr,
+                training_modulation=training_modulation,
+                seed=42 + int(snr),
+            )
             
-            for i in range(self.window_size // 2, len(noisy_symbols) - self.window_size // 2):
-                window = noisy_symbols[i - self.window_size // 2 : i + self.window_size // 2 + 1]
+            for i in range(self.window_size // 2, len(noisy) - self.window_size // 2):
+                window = noisy[i - self.window_size // 2 : i + self.window_size // 2 + 1]
                 X_train_all.append(window)
-                y_train_all.append(clean_symbols[i])
+                y_train_all.append(clean[i])
         
         X_train = torch.FloatTensor(np.array(X_train_all)).unsqueeze(-1).to(self.device)
         y_train = torch.FloatTensor(np.array(y_train_all).reshape(-1, 1)).to(self.device)

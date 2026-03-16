@@ -48,6 +48,8 @@ from checkpoint_01_channel import awgn_channel
 from checkpoint_02_modulation import bpsk_modulate, calculate_ber
 from checkpoint_03_nodes import Source, Relay, Destination
 
+from relaynet.utils.activations import make_torch_activation, generate_training_targets
+
 
 # ======================================================================
 # Core SSD layer
@@ -284,7 +286,7 @@ class Mamba2Relay(nn.Module):
     """Mamba-2 based relay for signal denoising."""
 
     def __init__(self, window_size=11, d_model=32, d_state=16,
-                 num_layers=2, chunk_size=8):
+                 num_layers=2, chunk_size=8, output_activation="tanh"):
         super().__init__()
         self.window_size = window_size
         self.d_model = d_model
@@ -301,7 +303,7 @@ class Mamba2Relay(nn.Module):
             nn.Linear(d_model, d_model // 2),
             nn.SiLU(),
             nn.Linear(d_model // 2, 1),
-            nn.Tanh(),
+            make_torch_activation(output_activation),
         )
 
         self.apply(self._init_weights)
@@ -340,9 +342,11 @@ class Mamba2RelayWrapper(Relay):
     """Wrapper that integrates Mamba2Relay into the relay pipeline."""
 
     def __init__(self, target_power=1.0, window_size=11, d_model=32,
-                 d_state=16, num_layers=2, chunk_size=8, prefer_gpu=False):
+                 d_state=16, num_layers=2, chunk_size=8, prefer_gpu=False,
+                 output_activation="tanh"):
         self.target_power = target_power
         self.window_size = window_size
+        self.output_activation = output_activation
 
         if prefer_gpu and torch.cuda.is_available():
             self.device = torch.device("cuda")
@@ -355,6 +359,7 @@ class Mamba2RelayWrapper(Relay):
             d_state=d_state,
             num_layers=num_layers,
             chunk_size=chunk_size,
+            output_activation=output_activation,
         ).to(self.device)
 
         self.is_trained = False
@@ -364,7 +369,8 @@ class Mamba2RelayWrapper(Relay):
     # Training
     # ------------------------------------------------------------------
     def train(self, training_snrs=[5, 10, 15], num_samples=50000,
-              epochs=100, lr=0.001, seed=None, log_timings=False):
+              epochs=100, lr=0.001, seed=None, log_timings=False,
+              training_modulation="bpsk"):
         """Train the Mamba-2 relay."""
         print(f"  Mamba-2 (SSD) Training Configuration:")
         print(f"    Device: {self.device}")
@@ -375,6 +381,8 @@ class Mamba2RelayWrapper(Relay):
         print(f"    Parameters: {self.num_params:,}")
         print(f"    Training SNRs: {training_snrs} dB")
         print(f"    Samples: {num_samples:,}, Epochs: {epochs}")
+        if training_modulation != "bpsk":
+            print(f"    Training modulation: {training_modulation}")
 
         # Generate training data
         samples_per_snr = num_samples // len(training_snrs)
@@ -382,16 +390,17 @@ class Mamba2RelayWrapper(Relay):
 
         for snr in training_snrs:
             rng_seed = (42 + int(snr)) if seed is None else (seed + int(snr))
-            np.random.seed(rng_seed)
-            clean_bits = np.random.randint(0, 2, samples_per_snr)
-            clean_symbols = bpsk_modulate(clean_bits)
-            noisy_symbols = awgn_channel(clean_symbols, snr)
+            clean, noisy = generate_training_targets(
+                samples_per_snr, snr,
+                training_modulation=training_modulation,
+                seed=rng_seed,
+            )
 
             half = self.window_size // 2
-            for i in range(half, len(noisy_symbols) - half):
-                window = noisy_symbols[i - half: i + half + 1]
+            for i in range(half, len(noisy) - half):
+                window = noisy[i - half: i + half + 1]
                 X_all.append(window)
-                y_all.append(clean_symbols[i])
+                y_all.append(clean[i])
 
         X_train = torch.FloatTensor(np.array(X_all)).unsqueeze(-1).to(self.device)
         y_train = torch.FloatTensor(np.array(y_all).reshape(-1, 1)).to(self.device)

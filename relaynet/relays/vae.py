@@ -6,15 +6,21 @@ from .base import Relay
 from relaynet.modulation.bpsk import bpsk_modulate
 from relaynet.channels.awgn import awgn_channel
 from relaynet.utils.torch_compat import can_use_gpu, get_preferred_device, get_torch_module, to_numpy
+from relaynet.utils.activations import (
+    apply_activation, activation_derivative, make_torch_activation,
+    generate_training_targets,
+)
 
 
-def _build_torch_vae(window_size, latent_size, beta, device, hidden_sizes=(32, 16)):
+def _build_torch_vae(window_size, latent_size, beta, device, hidden_sizes=(32, 16),
+                     output_activation="tanh"):
     """Build a Torch VAE backend for optional GPU training/inference."""
     torch = get_torch_module()
     import torch.nn as nn
     import torch.optim as optim
 
     h1, h2 = hidden_sizes
+    out_act = make_torch_activation(output_activation)
 
     class TorchVAE(nn.Module):
         def __init__(self):
@@ -26,6 +32,7 @@ def _build_torch_vae(window_size, latent_size, beta, device, hidden_sizes=(32, 1
             self.dec1 = nn.Linear(latent_size, h2)
             self.dec2 = nn.Linear(h2, h1)
             self.out = nn.Linear(h1, 1)
+            self._out_act = out_act
 
         def encode(self, x):
             h1 = torch.relu(self.enc1(x))
@@ -35,7 +42,7 @@ def _build_torch_vae(window_size, latent_size, beta, device, hidden_sizes=(32, 1
         def decode(self, z):
             d1 = torch.relu(self.dec1(z))
             d2 = torch.relu(self.dec2(d1))
-            return torch.tanh(self.out(d2))
+            return self._out_act(self.out(d2))
 
         def forward(self, x):
             mu, logvar = self.encode(x)
@@ -84,12 +91,13 @@ class VAERelay(Relay):
     """
 
     def __init__(self, window_size=7, latent_size=8, beta=0.1, target_power=1.0,
-                 prefer_gpu=True, hidden_sizes=(32, 16)):
+                 prefer_gpu=True, hidden_sizes=(32, 16), output_activation="tanh"):
         self.window_size = window_size
         self.latent_size = latent_size
         self.beta = beta
         self.target_power = target_power
         self.hidden_sizes = hidden_sizes
+        self.output_activation = output_activation
         self.device = get_preferred_device(prefer_gpu=prefer_gpu)
         self._use_torch = can_use_gpu(self.device)
 
@@ -114,7 +122,7 @@ class VAERelay(Relay):
         self.W_out = np.random.randn(h1, 1) * 0.1
         self.b_out = np.zeros(1)
 
-        self._torch_vae = _build_torch_vae(window_size, latent_size, beta, self.device, hidden_sizes) if self._use_torch else None
+        self._torch_vae = _build_torch_vae(window_size, latent_size, beta, self.device, hidden_sizes, output_activation=output_activation) if self._use_torch else None
 
         self.is_trained = False
 
@@ -136,7 +144,7 @@ class VAERelay(Relay):
     def _decode(self, z):
         d1 = np.maximum(0, z @ self.W_d1 + self.b_d1)
         d2 = np.maximum(0, d1 @ self.W_d2 + self.b_d2)
-        out = np.tanh(d2 @ self.W_out + self.b_out)
+        out = apply_activation(d2 @ self.W_out + self.b_out, self.output_activation)
         return out, d1, d2
 
     def _forward(self, X):
@@ -156,7 +164,8 @@ class VAERelay(Relay):
         loss = recon_loss + self.beta * kl_loss
 
         # Backprop through decoder
-        d_recon = 2 * (recon - y) / bs * (1 - recon ** 2)
+        z_out = d2 @ self.W_out + self.b_out
+        d_recon = 2 * (recon - y) / bs * activation_derivative(recon, z_out, self.output_activation)
         dW_out = d2.T @ d_recon
         db_out = np.sum(d_recon, axis=0)
         d_d2 = d_recon @ self.W_out.T * (d2 > 0)
@@ -206,7 +215,7 @@ class VAERelay(Relay):
         return loss
 
     def train(self, training_snrs=None, num_samples=50000, epochs=100, seed=None,
-              epoch_callback=None):
+              epoch_callback=None, training_modulation="bpsk"):
         """Train the VAE relay.
 
         Parameters
@@ -218,6 +227,8 @@ class VAERelay(Relay):
         seed : int, optional
         epoch_callback : callable, optional
             Called as ``epoch_callback(epoch, epochs)`` after each epoch.
+        training_modulation : str, optional
+            ``'bpsk'`` (default) or ``'qam16'``.
         """
         if training_snrs is None:
             training_snrs = [5, 10, 15]
@@ -229,10 +240,11 @@ class VAERelay(Relay):
         X_all, y_all = [], []
 
         for snr in training_snrs:
-            np.random.seed(42 + int(snr))
-            bits = np.random.randint(0, 2, samples_per_snr)
-            clean = bpsk_modulate(bits)
-            noisy = awgn_channel(clean, snr)
+            clean, noisy = generate_training_targets(
+                samples_per_snr, snr,
+                training_modulation=training_modulation,
+                seed=42 + int(snr),
+            )
             for i in range(pad, len(noisy) - pad):
                 X_all.append(noisy[i - pad: i + pad + 1])
                 y_all.append(clean[i])
