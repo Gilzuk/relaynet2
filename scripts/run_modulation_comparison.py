@@ -233,6 +233,90 @@ def print_summary_table(results, snr_range):
             print(row)
 
 
+def plot_combined_modulation(results, snr_range, out_dir="results/modulation"):
+    """Generate a single chart comparing BPSK, QPSK, and 16-QAM on one plot.
+
+    Uses AWGN channel results only.  All relays are shown with:
+      - solid lines for BPSK
+      - dashed lines for QPSK  (thin — expected to overlap BPSK)
+      - dotted lines for 16-QAM (thick — shows the BER floor)
+
+    Same colour / marker per relay across all three modulations.
+    """
+    try:
+        import matplotlib
+        matplotlib.use("Agg")
+        import matplotlib.pyplot as plt
+    except ImportError:
+        print("  [WARNING] matplotlib not available — skipping combined plot.")
+        return
+
+    # Collect AWGN results only
+    mod_keys = ["bpsk", "qpsk", "qam16"]
+    mod_labels = {"bpsk": "BPSK", "qpsk": "QPSK", "qam16": "16-QAM"}
+    mod_styles = {"bpsk": "-", "qpsk": "--", "qam16": ":"}
+    mod_lw = {"bpsk": 2.0, "qpsk": 1.2, "qam16": 2.5}
+    mod_alpha = {"bpsk": 1.0, "qpsk": 0.45, "qam16": 1.0}
+    mod_ms = {"bpsk": 7, "qpsk": 0, "qam16": 7}
+
+    awgn_data = {}
+    for mod in mod_keys:
+        key = (mod, "AWGN")
+        if key in results:
+            awgn_data[mod] = results[key][0]  # ber_dict
+
+    if len(awgn_data) < 2:
+        print("  [WARNING] Not enough AWGN data for combined plot.")
+        return
+
+    relay_names = list(next(iter(awgn_data.values())).keys())
+
+    # Consistent colours and markers (matching existing CI plots)
+    markers = ["o", "s", "^", "d", "v", "x", "P", "*", "X"]
+    colors = ["k", "m", "b", "r", "g", "c", "orange", "brown", "#e377c2"]
+
+    fig, ax = plt.subplots(figsize=(14, 9))
+
+    for idx, relay_name in enumerate(relay_names):
+        c = colors[idx % len(colors)]
+        m = markers[idx % len(markers)]
+        for mod in mod_keys:
+            if mod not in awgn_data:
+                continue
+            ber = awgn_data[mod][relay_name]
+            # Clip zeros for log scale
+            ber_plot = np.clip(ber, 1e-6, None)
+            lbl = f"{relay_name} ({mod_labels[mod]})"
+            ax.semilogy(snr_range, ber_plot,
+                        linestyle=mod_styles[mod],
+                        color=c,
+                        marker=m if mod_ms[mod] > 0 else "",
+                        markersize=mod_ms[mod],
+                        markevery=2 if mod == "qam16" else 3,
+                        linewidth=mod_lw[mod],
+                        alpha=mod_alpha[mod],
+                        label=lbl)
+
+    ax.set_xlabel("SNR (dB)", fontsize=13)
+    ax.set_ylabel("Bit Error Rate (BER)", fontsize=13)
+    ax.set_title("Combined Modulation Comparison — All Relays (AWGN)",
+                 fontsize=14, fontweight="bold")
+    ax.grid(True, which="both", alpha=0.3)
+    ax.set_ylim(bottom=5e-6, top=0.6)
+
+    # Organise legend: 3 columns, sorted by modulation
+    handles, labels = ax.get_legend_handles_labels()
+    ax.legend(handles, labels, fontsize=7.5, ncol=3, loc="lower left",
+              columnspacing=1.0, handlelength=2.5,
+              title="solid = BPSK  |  dashed = QPSK  |  dotted = 16-QAM",
+              title_fontsize=9)
+
+    path = os.path.join(out_dir, "combined_modulation_awgn.png")
+    fig.savefig(path, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    print(f"\nCombined modulation plot saved to: {path}")
+
+
 def main():
     args = parse_args()
     np.random.seed(args.seed)
@@ -272,6 +356,10 @@ def main():
 
     # Summary table
     print_summary_table(results, snr_range)
+
+    # Combined modulation chart (all modulations on one plot)
+    if not args.no_plots:
+        plot_combined_modulation(results, snr_range, out_dir)
 
     elapsed = perf_counter() - total_start
     print(f"\nDone. Total time: {elapsed:.1f}s")
