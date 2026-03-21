@@ -13,14 +13,14 @@ from relaynet.utils.activations import (
 
 
 def _build_torch_vae(window_size, latent_size, beta, device, hidden_sizes=(32, 16),
-                     output_activation="tanh"):
+                     output_activation="tanh", clip_range=None):
     """Build a Torch VAE backend for optional GPU training/inference."""
     torch = get_torch_module()
     import torch.nn as nn
     import torch.optim as optim
 
     h1, h2 = hidden_sizes
-    out_act = make_torch_activation(output_activation)
+    out_act = make_torch_activation(output_activation, clip_range=clip_range)
 
     class TorchVAE(nn.Module):
         def __init__(self):
@@ -91,13 +91,15 @@ class VAERelay(Relay):
     """
 
     def __init__(self, window_size=7, latent_size=8, beta=0.1, target_power=1.0,
-                 prefer_gpu=True, hidden_sizes=(32, 16), output_activation="tanh"):
+                 prefer_gpu=True, hidden_sizes=(32, 16), output_activation="tanh",
+                 clip_range=None):
         self.window_size = window_size
         self.latent_size = latent_size
         self.beta = beta
         self.target_power = target_power
         self.hidden_sizes = hidden_sizes
         self.output_activation = output_activation
+        self.clip_range = clip_range
         self.device = get_preferred_device(prefer_gpu=prefer_gpu)
         self._use_torch = can_use_gpu(self.device)
 
@@ -122,7 +124,7 @@ class VAERelay(Relay):
         self.W_out = np.random.randn(h1, 1) * 0.1
         self.b_out = np.zeros(1)
 
-        self._torch_vae = _build_torch_vae(window_size, latent_size, beta, self.device, hidden_sizes, output_activation=output_activation) if self._use_torch else None
+        self._torch_vae = _build_torch_vae(window_size, latent_size, beta, self.device, hidden_sizes, output_activation=output_activation, clip_range=clip_range) if self._use_torch else None
 
         self.is_trained = False
 
@@ -144,7 +146,7 @@ class VAERelay(Relay):
     def _decode(self, z):
         d1 = np.maximum(0, z @ self.W_d1 + self.b_d1)
         d2 = np.maximum(0, d1 @ self.W_d2 + self.b_d2)
-        out = apply_activation(d2 @ self.W_out + self.b_out, self.output_activation)
+        out = apply_activation(d2 @ self.W_out + self.b_out, self.output_activation, clip_range=self.clip_range)
         return out, d1, d2
 
     def _forward(self, X):
@@ -165,7 +167,7 @@ class VAERelay(Relay):
 
         # Backprop through decoder
         z_out = d2 @ self.W_out + self.b_out
-        d_recon = 2 * (recon - y) / bs * activation_derivative(recon, z_out, self.output_activation)
+        d_recon = 2 * (recon - y) / bs * activation_derivative(recon, z_out, self.output_activation, clip_range=self.clip_range)
         dW_out = d2.T @ d_recon
         db_out = np.sum(d_recon, axis=0)
         d_d2 = d_recon @ self.W_out.T * (d2 > 0)

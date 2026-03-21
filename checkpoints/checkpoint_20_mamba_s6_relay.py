@@ -168,7 +168,7 @@ class MambaRelay(nn.Module):
     """Mamba-based relay for signal denoising."""
     
     def __init__(self, window_size=11, d_model=32, d_state=16, num_layers=2,
-                 output_activation="tanh", use_input_norm=False):
+                 output_activation="tanh", use_input_norm=False, clip_range=None):
         super(MambaRelay, self).__init__()
         
         self.window_size = window_size
@@ -195,7 +195,7 @@ class MambaRelay(nn.Module):
             nn.Linear(d_model, d_model // 2),
             nn.SiLU(),
             nn.Linear(d_model // 2, 1),
-            make_torch_activation(output_activation),
+            make_torch_activation(output_activation, clip_range=clip_range),
         )
         
         # Initialize weights
@@ -246,11 +246,12 @@ class MambaRelayWrapper(Relay):
     """Wrapper for Mamba relay."""
     
     def __init__(self, target_power=1.0, window_size=11, d_model=32, d_state=16, num_layers=2, prefer_gpu=False,
-                 output_activation="tanh", use_input_norm=False):
+                 output_activation="tanh", use_input_norm=False, clip_range=None):
         self.target_power = target_power
         self.window_size = window_size
         self.output_activation = output_activation
         self.use_input_norm = use_input_norm
+        self.clip_range = clip_range
         
         # Set device — with only 24K parameters this model is too small to
         # benefit from GPU; kernel-launch overhead dominates compute time.
@@ -267,6 +268,7 @@ class MambaRelayWrapper(Relay):
             num_layers=num_layers,
             output_activation=output_activation,
             use_input_norm=use_input_norm,
+            clip_range=clip_range,
         ).to(self.device)
         
         self.is_trained = False

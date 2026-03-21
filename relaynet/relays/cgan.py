@@ -30,7 +30,8 @@ from relaynet.utils.activations import (
 class _GenNP:
     """Small generator network (NumPy)."""
 
-    def __init__(self, window_size=7, noise_size=8, output_activation="tanh"):
+    def __init__(self, window_size=7, noise_size=8, output_activation="tanh",
+                 clip_range=None):
         inp = window_size + noise_size
         self.W1 = np.random.randn(inp, 32) * np.sqrt(2 / inp)
         self.b1 = np.zeros(32)
@@ -41,6 +42,7 @@ class _GenNP:
         self.W4 = np.random.randn(16, 1) * 0.1
         self.b4 = np.zeros(1)
         self.output_activation = output_activation
+        self.clip_range = clip_range
 
     def forward(self, noisy, noise):
         x = np.concatenate([noisy, noise], axis=1)
@@ -49,7 +51,7 @@ class _GenNP:
         self._h2 = np.maximum(0.2 * (self._h1 @ self.W2 + self.b2), self._h1 @ self.W2 + self.b2)
         self._h3 = np.maximum(0.2 * (self._h2 @ self.W3 + self.b3), self._h2 @ self.W3 + self.b3)
         z_out = self._h3 @ self.W4 + self.b4
-        out = apply_activation(z_out, self.output_activation)
+        out = apply_activation(z_out, self.output_activation, clip_range=self.clip_range)
         self._out = out
         self._z_out = z_out
         return out
@@ -83,7 +85,8 @@ class _CritNP:
 
 def _build_torch_cgan(window_size, noise_size, lambda_gp, lambda_l1, n_critic,
                       device, g_hidden_sizes=(32, 32, 16),
-                      c_hidden_sizes=(32, 16), output_activation="tanh"):
+                      c_hidden_sizes=(32, 16), output_activation="tanh",
+                      clip_range=None):
     """Return a PyTorch-based CGAN relay trainer (dict of objects)."""
     import torch
     import torch.nn as nn
@@ -97,7 +100,7 @@ def _build_torch_cgan(window_size, noise_size, lambda_gp, lambda_l1, n_critic,
             for h in g_hidden_sizes:
                 layers.extend([nn.Linear(in_dim, h), nn.LeakyReLU(0.2)])
                 in_dim = h
-            layers.extend([nn.Linear(in_dim, 1), make_torch_activation(output_activation)])
+            layers.extend([nn.Linear(in_dim, 1), make_torch_activation(output_activation, clip_range=clip_range)])
             self.net = nn.Sequential(*layers)
             for m in self.modules():
                 if isinstance(m, nn.Linear):
@@ -205,7 +208,7 @@ class CGANRelay(Relay):
     def __init__(self, window_size=7, noise_size=8, target_power=1.0,
                  lambda_gp=10, lambda_l1=20, n_critic=5, prefer_gpu=True,
                  g_hidden_sizes=(32, 32, 16), c_hidden_sizes=(32, 16),
-                 output_activation="tanh"):
+                 output_activation="tanh", clip_range=None):
         self.window_size = window_size
         self.noise_size = noise_size
         self.target_power = target_power
@@ -215,6 +218,7 @@ class CGANRelay(Relay):
         self.g_hidden_sizes = g_hidden_sizes
         self.c_hidden_sizes = c_hidden_sizes
         self.output_activation = output_activation
+        self.clip_range = clip_range
         self.is_trained = False
         self.device = get_preferred_device(prefer_gpu=prefer_gpu)
 
@@ -226,9 +230,11 @@ class CGANRelay(Relay):
                 window_size, noise_size, lambda_gp, lambda_l1, n_critic,
                 self.device, g_hidden_sizes, c_hidden_sizes,
                 output_activation=output_activation,
+                clip_range=clip_range,
             )
         except ImportError:
-            self._gen = _GenNP(window_size, noise_size, output_activation=output_activation)
+            self._gen = _GenNP(window_size, noise_size, output_activation=output_activation,
+                               clip_range=clip_range)
             self._crit = _CritNP(window_size)
 
     @property

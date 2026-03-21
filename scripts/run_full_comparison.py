@@ -46,6 +46,7 @@ from relaynet.visualization.plots import plot_ber_curves, plot_ber_with_ci
 from relaynet.channels.fading import rayleigh_fading_channel, rician_fading_channel
 from relaynet.channels.mimo import mimo_2x2_channel, mimo_2x2_mmse_channel, mimo_2x2_sic_channel
 from relaynet.utils.checkpoint_manager import CheckpointManager
+from relaynet.utils.activations import get_clip_range
 
 try:
     from checkpoints.checkpoint_18_transformer_relay import TransformerRelayWrapper
@@ -263,23 +264,24 @@ def create_relay_instances(args):
     saved weights.
     """
     _act = getattr(args, 'output_activation', 'tanh')
+    _cr = getattr(args, 'clip_range', None)
     relays = {
         "AF": AmplifyAndForwardRelay(),
         "DF": DecodeAndForwardRelay(),
         "GenAI (169p)": MinimalGenAIRelay(
             window_size=5, hidden_size=24, prefer_gpu=False,
-            output_activation=_act,
+            output_activation=_act, clip_range=_cr,
         ),
         "Hybrid": HybridRelay(snr_threshold=5.0, prefer_gpu=False,
-                               output_activation=_act),
+                               output_activation=_act, clip_range=_cr),
         "VAE": VAERelay(
             window_size=7, latent_size=8, beta=0.1, prefer_gpu=False,
-            output_activation=_act,
+            output_activation=_act, clip_range=_cr,
         ),
         "CGAN (WGAN-GP)": CGANRelay(
             window_size=7, noise_size=8, lambda_gp=10, lambda_l1=20,
             n_critic=5, prefer_gpu=args.gpu,
-            output_activation=_act,
+            output_activation=_act, clip_range=_cr,
         ),
     }
     if args.include_sequence_models:
@@ -288,17 +290,17 @@ def create_relay_instances(args):
             relays["Transformer"] = TransformerRelayWrapper(
                 target_power=1.0, window_size=11, d_model=32,
                 num_heads=4, num_layers=2, prefer_gpu=args.gpu,
-                use_input_norm=_ln, output_activation=_act,
+                use_input_norm=_ln, output_activation=_act, clip_range=_cr,
             )
             relays["Mamba S6"] = MambaRelayWrapper(
                 target_power=1.0, window_size=11, d_model=32,
                 d_state=16, num_layers=2, prefer_gpu=args.gpu,
-                use_input_norm=_ln, output_activation=_act,
+                use_input_norm=_ln, output_activation=_act, clip_range=_cr,
             )
             relays["Mamba2 (SSD)"] = Mamba2RelayWrapper(
                 target_power=1.0, window_size=11, d_model=32,
                 d_state=16, num_layers=2, prefer_gpu=args.gpu,
-                use_input_norm=_ln, output_activation=_act,
+                use_input_norm=_ln, output_activation=_act, clip_range=_cr,
             )
         else:
             print("  [WARNING] Transformer/Mamba checkpoints not available; skipping.")
@@ -331,7 +333,7 @@ def train_models(args):
 
     print("  Training Hybrid relay …")
     hybrid = HybridRelay(snr_threshold=5.0, prefer_gpu=False,
-                         output_activation=_act)
+                         output_activation=_act, clip_range=_cr)
     print(f"    device: {_relay_device(hybrid)}")
     _, elapsed = _timed(
         "train Hybrid",
@@ -347,7 +349,7 @@ def train_models(args):
 
     print("  Training VAE relay …")
     vae = VAERelay(window_size=7, latent_size=8, beta=0.1, prefer_gpu=False,
-                   output_activation=_act)
+                   output_activation=_act, clip_range=_cr)
     print(f"    device: {_relay_device(vae)}")
     _, elapsed = _timed(
         "train VAE",
@@ -370,6 +372,7 @@ def train_models(args):
         n_critic=5,
         prefer_gpu=args.gpu,
         output_activation=_act,
+        clip_range=_cr,
     )
     print(f"    device: {_relay_device(cgan)}")
     _, elapsed = _timed(
@@ -408,6 +411,7 @@ def train_models(args):
                 prefer_gpu=args.gpu,
                 use_input_norm=_ln,
                 output_activation=_act,
+                clip_range=_cr,
             )
             print(f"    device: {_relay_device(transformer)}")
             _, elapsed = _timed(
@@ -432,6 +436,7 @@ def train_models(args):
                 prefer_gpu=args.gpu,
                 use_input_norm=_ln,
                 output_activation=_act,
+                clip_range=_cr,
             )
             print(f"    device: {_relay_device(mamba)}")
             _, elapsed = _timed(
@@ -456,6 +461,7 @@ def train_models(args):
                 prefer_gpu=args.gpu,
                 use_input_norm=_ln,
                 output_activation=_act,
+                clip_range=_cr,
             )
             print(f"    device: {_relay_device(mamba2)}")
             _, elapsed = _timed(
@@ -699,12 +705,14 @@ def train_normalized_models(args):
     _ln = getattr(args, 'layer_norm', False)
     _act = getattr(args, 'output_activation', 'tanh')
     _tmod = getattr(args, 'training_modulation', 'bpsk')
+    _cr = getattr(args, 'clip_range', None)
     relays = build_all_3k(
         prefer_gpu=args.gpu,
         include_sequence_models=args.include_sequence_models,
         include_cgan=getattr(args, 'include_cgan', False),
         use_input_norm=_ln,
         output_activation=_act,
+        clip_range=_cr,
     )
 
     # --- GenAI-3K ---
@@ -1097,14 +1105,15 @@ def run_normalized_comparison(relays_3k, snr_range, bits_per_trial, num_trials,
 # Activation comparison  (--compare-activations)
 # ======================================================================
 
-def _act_train_models(args, activation, layer_norm=False):
+def _act_train_models(args, activation, layer_norm=False, constellation="qam16"):
     """Train all relay models with a specific activation for the comparison."""
-    _tmod = "qam16"
+    _tmod = constellation if constellation in ("qam16", "qpsk") else "bpsk"
+    _cr = get_clip_range(constellation)
     relays = {}
 
     print(f"    GenAI …", end=" ", flush=True)
     g = MinimalGenAIRelay(window_size=5, hidden_size=24, prefer_gpu=False,
-                          output_activation=activation)
+                          output_activation=activation, clip_range=_cr)
     _, elapsed = _timed("train GenAI", g.train,
                         training_snrs=[5, 10, 15],
                         num_samples=args.genai_samples,
@@ -1116,7 +1125,7 @@ def _act_train_models(args, activation, layer_norm=False):
 
     print(f"    Hybrid …", end=" ", flush=True)
     h = HybridRelay(snr_threshold=5.0, prefer_gpu=False,
-                    output_activation=activation)
+                    output_activation=activation, clip_range=_cr)
     _, elapsed = _timed("train Hybrid", h.train,
                         training_snrs=[2, 4, 6],
                         num_samples=args.hybrid_samples,
@@ -1128,7 +1137,7 @@ def _act_train_models(args, activation, layer_norm=False):
 
     print(f"    VAE …", end=" ", flush=True)
     v = VAERelay(window_size=7, latent_size=8, beta=0.1, prefer_gpu=False,
-                 output_activation=activation)
+                 output_activation=activation, clip_range=_cr)
     _, elapsed = _timed("train VAE", v.train,
                         training_snrs=[5, 10, 15],
                         num_samples=args.vae_samples,
@@ -1142,7 +1151,7 @@ def _act_train_models(args, activation, layer_norm=False):
         print(f"    CGAN …", end=" ", flush=True)
         c = CGANRelay(window_size=7, noise_size=8, lambda_gp=10,
                       lambda_l1=20, n_critic=5, prefer_gpu=args.gpu,
-                      output_activation=activation)
+                      output_activation=activation, clip_range=_cr)
         _, elapsed = _timed("train CGAN", c.train,
                             training_snrs=[5, 10, 15],
                             num_samples=args.cgan_samples,
@@ -1160,7 +1169,8 @@ def _act_train_models(args, activation, layer_norm=False):
             kw = dict(target_power=1.0, window_size=11, d_model=32,
                       num_layers=2, prefer_gpu=args.gpu,
                       output_activation=activation,
-                      use_input_norm=layer_norm)
+                      use_input_norm=layer_norm,
+                      clip_range=_cr)
             if "Mamba" in name:
                 kw["d_state"] = 16
             else:
@@ -1185,19 +1195,21 @@ def _act_train_models(args, activation, layer_norm=False):
     return relays
 
 
-def _act_train_normalized(args, activation, layer_norm=False):
+def _act_train_normalized(args, activation, layer_norm=False, constellation="qam16"):
     """Train normalized ~3K-param models with a specific activation."""
     if not _HAS_NORMALIZED:
         print("  [WARNING] Normalized 3K checkpoint not available; skipping.")
         return {}
 
-    _tmod = "qam16"
+    _tmod = constellation if constellation in ("qam16", "qpsk") else "bpsk"
+    _cr = get_clip_range(constellation)
     relays = build_all_3k(
         prefer_gpu=args.gpu,
         include_sequence_models=_HAS_SEQUENCE_MODELS,
         include_cgan=getattr(args, "include_cgan", False),
         use_input_norm=layer_norm,
         output_activation=activation,
+        clip_range=_cr,
     )
 
     feed_cfg = dict(training_snrs=[5, 10, 15],
@@ -1441,7 +1453,8 @@ def run_activation_comparison(args, snr_range):
             print(f"{'='*60}")
 
             print(f"\n  Training models [{variant}] \u2026")
-            relays = _act_train_models(args, act, layer_norm=use_ln)
+            relays = _act_train_models(args, act, layer_norm=use_ln,
+                                       constellation=constellation)
 
             print(f"\n  Evaluating {constellation.upper()} AWGN [{variant}] \u2026")
             results_awgn[variant] = _act_evaluate(
@@ -1479,7 +1492,8 @@ def run_activation_comparison(args, snr_range):
                     act, use_ln = variant, False
 
                 print(f"\n  Training normalized 3K [{variant}] \u2026")
-                relays_3k = _act_train_normalized(args, act, layer_norm=use_ln)
+                relays_3k = _act_train_normalized(args, act, layer_norm=use_ln,
+                                                  constellation=constellation)
                 if not relays_3k:
                     continue
 
@@ -1579,10 +1593,12 @@ def main():
         if constellation == "qam16":
             args.output_activation = "hardtanh"
             args.training_modulation = "qam16"
+            args.clip_range = get_clip_range("qam16")
             _ckpt = CheckpointManager(args.weights_dir + "_qam16")
         else:
             args.output_activation = "tanh"
             args.training_modulation = "bpsk"
+            args.clip_range = None  # tanh ignores clip_range
             _ckpt = ckpt_mgr
 
         print(f"\n=== Running experiments for constellation: {constellation.upper()} ===")

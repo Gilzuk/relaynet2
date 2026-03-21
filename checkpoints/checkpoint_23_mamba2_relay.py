@@ -287,7 +287,7 @@ class Mamba2Relay(nn.Module):
 
     def __init__(self, window_size=11, d_model=32, d_state=16,
                  num_layers=2, chunk_size=8, output_activation="tanh",
-                 use_input_norm=False):
+                 use_input_norm=False, clip_range=None):
         super().__init__()
         self.window_size = window_size
         self.d_model = d_model
@@ -310,7 +310,7 @@ class Mamba2Relay(nn.Module):
             nn.Linear(d_model, d_model // 2),
             nn.SiLU(),
             nn.Linear(d_model // 2, 1),
-            make_torch_activation(output_activation),
+            make_torch_activation(output_activation, clip_range=clip_range),
         )
 
         self.apply(self._init_weights)
@@ -352,11 +352,12 @@ class Mamba2RelayWrapper(Relay):
 
     def __init__(self, target_power=1.0, window_size=11, d_model=32,
                  d_state=16, num_layers=2, chunk_size=8, prefer_gpu=False,
-                 output_activation="tanh", use_input_norm=False):
+                 output_activation="tanh", use_input_norm=False, clip_range=None):
         self.target_power = target_power
         self.window_size = window_size
         self.output_activation = output_activation
         self.use_input_norm = use_input_norm
+        self.clip_range = clip_range
 
         if prefer_gpu and torch.cuda.is_available():
             self.device = torch.device("cuda")
@@ -371,6 +372,7 @@ class Mamba2RelayWrapper(Relay):
             chunk_size=chunk_size,
             output_activation=output_activation,
             use_input_norm=use_input_norm,
+            clip_range=clip_range,
         ).to(self.device)
 
         self.is_trained = False

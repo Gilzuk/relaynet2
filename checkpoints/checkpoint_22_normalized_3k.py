@@ -149,7 +149,8 @@ def make_mamba2_3k(prefer_gpu=False, **kw):
 
 def build_all_3k(prefer_gpu=False, include_sequence_models=True,
                   include_cgan=False, prefer_gpu_seq=None,
-                  use_input_norm=False, output_activation="tanh"):
+                  use_input_norm=False, output_activation="tanh",
+                  clip_range=None):
     """Build all normalized relay models.
 
     Parameters
@@ -172,6 +173,9 @@ def build_all_3k(prefer_gpu=False, include_sequence_models=True,
         Output activation function for all AI relays.
         ``"tanh"`` (default) for BPSK/QPSK, ``"hardtanh"`` for 16-QAM
         (clips to ±3/√10 matching the QAM16 per-axis range).
+    clip_range : float or None
+        Override the default clip / scale value for bounded activations.
+        ``None`` uses the built-in default (QAM16_CLIP).
 
     Returns
     -------
@@ -182,25 +186,29 @@ def build_all_3k(prefer_gpu=False, include_sequence_models=True,
         prefer_gpu_seq = prefer_gpu
     relays = {
         "GenAI-3K": make_genai_3k(prefer_gpu=prefer_gpu,
-                                   output_activation=output_activation),
+                                   output_activation=output_activation,
+                                   clip_range=clip_range),
         "Hybrid-3K": make_hybrid_3k(prefer_gpu=prefer_gpu,
-                                     output_activation=output_activation),
+                                     output_activation=output_activation,
+                                     clip_range=clip_range),
         "VAE-3K": make_vae_3k(prefer_gpu=prefer_gpu,
-                               output_activation=output_activation),
+                               output_activation=output_activation,
+                               clip_range=clip_range),
     }
     if include_cgan:
         relays["CGAN-3K"] = make_cgan_3k(prefer_gpu=prefer_gpu,
-                                          output_activation=output_activation)
+                                          output_activation=output_activation,
+                                          clip_range=clip_range)
     if include_sequence_models and _HAS_SEQ:
         relays["Transformer-3K"] = make_transformer_3k(
             prefer_gpu=prefer_gpu_seq, use_input_norm=use_input_norm,
-            output_activation=output_activation)
+            output_activation=output_activation, clip_range=clip_range)
         relays["Mamba-3K"] = make_mamba_3k(
             prefer_gpu=prefer_gpu_seq, use_input_norm=use_input_norm,
-            output_activation=output_activation)
+            output_activation=output_activation, clip_range=clip_range)
         relays["Mamba2-3K"] = make_mamba2_3k(
             prefer_gpu=prefer_gpu_seq, use_input_norm=use_input_norm,
-            output_activation=output_activation)
+            output_activation=output_activation, clip_range=clip_range)
     return relays
 
 

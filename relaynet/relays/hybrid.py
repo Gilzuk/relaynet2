@@ -63,7 +63,7 @@ class HybridRelay(Relay):
 
     def __init__(self, snr_threshold=5.0, target_power=1.0,
                  genai_window_size=5, genai_hidden_size=24, prefer_gpu=True,
-                 output_activation="tanh"):
+                 output_activation="tanh", clip_range=None):
         self.snr_threshold = snr_threshold
         self.target_power = target_power
 
@@ -73,6 +73,7 @@ class HybridRelay(Relay):
             target_power=target_power,
             prefer_gpu=prefer_gpu,
             output_activation=output_activation,
+            clip_range=clip_range,
         )
         self.df_relay = DecodeAndForwardRelay(target_power=target_power, prefer_gpu=prefer_gpu)
         self.device = getattr(self.genai_relay, "device", None)

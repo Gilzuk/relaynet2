@@ -93,7 +93,7 @@ class TransformerRelay(nn.Module):
     """Transformer-based relay for signal denoising."""
     
     def __init__(self, window_size=11, d_model=32, num_heads=4, num_layers=2, d_ff=64, dropout=0.1,
-                 output_activation="tanh", use_input_norm=False):
+                 output_activation="tanh", use_input_norm=False, clip_range=None):
         super(TransformerRelay, self).__init__()
         
         self.window_size = window_size
@@ -122,7 +122,7 @@ class TransformerRelay(nn.Module):
             nn.Linear(d_model, d_model // 2),
             nn.ReLU(),
             nn.Linear(d_model // 2, 1),
-            make_torch_activation(output_activation),
+            make_torch_activation(output_activation, clip_range=clip_range),
         )
         
         # Initialize weights
@@ -176,11 +176,12 @@ class TransformerRelayWrapper(Relay):
     """Wrapper for Transformer relay."""
     
     def __init__(self, target_power=1.0, window_size=11, d_model=32, num_heads=4, num_layers=2, prefer_gpu=False,
-                 output_activation="tanh", use_input_norm=False):
+                 output_activation="tanh", use_input_norm=False, clip_range=None):
         self.target_power = target_power
         self.window_size = window_size
         self.output_activation = output_activation
         self.use_input_norm = use_input_norm
+        self.clip_range = clip_range
         
         # Set device — with only 17K parameters this model is too small to
         # benefit from GPU; kernel-launch overhead dominates compute time.
@@ -199,6 +200,7 @@ class TransformerRelayWrapper(Relay):
             dropout=0.1,
             output_activation=output_activation,
             use_input_norm=use_input_norm,
+            clip_range=clip_range,
         ).to(self.device)
         
         self.is_trained = False
