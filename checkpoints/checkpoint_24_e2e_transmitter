@@ -1,0 +1,135 @@
+import torch
+import torch.nn as nn
+import torch.optim as optim
+import numpy as np
+
+class E2E_Transmitter(nn.Module):
+    def __init__(self, M=16, n_complex_uses=1, hidden_dim=64):
+        super(E2E_Transmitter, self).__init__()
+        self.M = M
+        self.n_real_dims = 2 * n_complex_uses # 2 dims (I and Q) per complex use
+        
+        # Maps the message index (0 to M-1) directly to a dense vector
+        # This acts as our trainable "constellation lookup table"
+        self.embedding = nn.Embedding(M, hidden_dim)
+        
+        self.mlp = nn.Sequential(
+            nn.Linear(hidden_dim, hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, self.n_real_dims)
+        )
+
+    def forward(self, message_indices):
+        # 1. Map message index to latent space
+        z = self.embedding(message_indices)
+        
+        # 2. Generate raw continuous signal
+        raw_x = self.mlp(z)
+        
+        # 3. Average Power Constraint: E[|x|^2] <= 2n
+        # We use batch standardization to enforce zero mean and unit variance per dimension.
+        # This allows the network to learn variable amplitudes (like QAM) 
+        # rather than being forced onto a circle (like PSK).
+        x = (raw_x - raw_x.mean(dim=0)) / torch.sqrt(raw_x.var(dim=0) + 1e-8)
+        
+        return x
+
+class Differentiable_Rayleigh_Channel(nn.Module):
+    def __init__(self):
+        super(Differentiable_Rayleigh_Channel, self).__init__()
+
+    def forward(self, x, snr_linear):
+        batch_size = x.shape[0]
+        
+        # 1. Generate Rayleigh fading coefficients (h = h_r + j*h_i)
+        # Variance of 1.0 complex -> 0.5 per real dimension
+        h_r = torch.randn(batch_size) / np.sqrt(2.0)
+        h_i = torch.randn(batch_size) / np.sqrt(2.0)
+        
+        # 2. Extract I and Q from transmitted signal (x = x_r + j*x_i)
+        x_r, x_i = x[:, 0], x[:, 1]
+        
+        # 3. Explicit Complex Multiplication: h * x
+        y_r_faded = (h_r * x_r) - (h_i * x_i)
+        y_i_faded = (h_r * x_i) + (h_i * x_r)
+        
+        # 4. Add AWGN
+        noise_std = np.sqrt(1.0 / snr_linear) # Assuming unit signal power per complex dim
+        w_r = torch.randn(batch_size) * noise_std
+        w_i = torch.randn(batch_size) * noise_std
+        
+        y_r = y_r_faded + w_r
+        y_i = y_i_faded + w_i
+        
+        # Stack back into [batch_size, 2] tensors
+        y = torch.stack([y_r, y_i], dim=1)
+        h = torch.stack([h_r, h_i], dim=1)
+        
+        return y, h
+
+class E2E_Receiver(nn.Module):
+    def __init__(self, M=16, n_complex_uses=1, hidden_dim=64):
+        super(E2E_Receiver, self).__init__()
+        self.M = M
+        self.n_real_dims = 2 * n_complex_uses
+        
+        # Input is received signal 'y' PLUS channel state 'h' (Perfect CSI assumption)
+        input_dim = self.n_real_dims * 2 
+        
+        self.mlp = nn.Sequential(
+            nn.Linear(input_dim, hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, M) 
+            # Note: No Softmax here. PyTorch's CrossEntropyLoss expects raw logits.
+        )
+
+    def forward(self, y, h):
+        # Concatenate received signal and CSI
+        u = torch.cat([y, h], dim=1)
+        logits = self.mlp(u)
+        return logits
+    
+# --- Setup ---
+M = 16 # Equivalent to 16-QAM
+snr_db = 15.0
+snr_linear = 10 ** (snr_db / 10.0)
+
+transmitter = E2E_Transmitter(M=M)
+channel = Differentiable_Rayleigh_Channel()
+receiver = E2E_Receiver(M=M)
+
+# We optimize both Tx and Rx simultaneously
+optimizer = optim.Adam(list(transmitter.parameters()) + list(receiver.parameters()), lr=0.01)
+criterion = nn.CrossEntropyLoss()
+
+# --- Training Loop ---
+epochs = 10000
+batch_size = 1024
+
+for epoch in range(epochs):
+    optimizer.zero_grad()
+    
+    # 1. Generate random messages (indices 0 to 15)
+    messages = torch.randint(0, M, (batch_size,))
+    
+    # 2. Encode to continuous signal
+    x = transmitter(messages)
+    
+    # 3. Pass through physical channel
+    y, h = channel(x, snr_linear)
+    
+    # 4. Decode
+    logits = receiver(y, h)
+    
+    # 5. Compute loss and backpropagate
+    loss = criterion(logits, messages)
+    loss.backward()
+    optimizer.step()
+    
+    if epoch % 200 == 0:
+        # Calculate approximate batch accuracy
+        predictions = torch.argmax(logits, dim=1)
+        accuracy = (predictions == messages).float().mean()
+        print(f"Epoch {epoch} | Loss: {loss.item():.4f} | Accuracy: {accuracy.item():.4f}")    

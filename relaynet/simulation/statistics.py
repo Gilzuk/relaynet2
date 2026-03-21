@@ -116,10 +116,19 @@ def wilcoxon_test(ber_trials_a, ber_trials_b, alpha=0.05):
     for i in range(n_snr):
         diff = a[i] - b[i]
         a_wins[i] = np.mean(a[i]) < np.mean(b[i])
+        # Skip test when all differences are zero (e.g., both methods
+        # achieve BER=0 at high SNR) — avoids scipy RuntimeWarning
+        # about division by zero that causes PowerShell exit-code 1.
+        if np.allclose(diff, 0):
+            p_values[i] = 1.0
+            continue
         try:
             from scipy.stats import wilcoxon
+            import warnings
             # alternative='less': test whether A < B
-            stat, p = wilcoxon(diff, alternative="less" if a_wins[i] else "greater")
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore", RuntimeWarning)
+                stat, p = wilcoxon(diff, alternative="less" if a_wins[i] else "greater")
             p_values[i] = p
         except ImportError:
             # Fallback: paired t-test approximation

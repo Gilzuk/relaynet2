@@ -286,12 +286,19 @@ class Mamba2Relay(nn.Module):
     """Mamba-2 based relay for signal denoising."""
 
     def __init__(self, window_size=11, d_model=32, d_state=16,
-                 num_layers=2, chunk_size=8, output_activation="tanh"):
+                 num_layers=2, chunk_size=8, output_activation="tanh",
+                 use_input_norm=False):
         super().__init__()
         self.window_size = window_size
         self.d_model = d_model
+        self.use_input_norm = use_input_norm
 
         self.input_proj = nn.Linear(1, d_model)
+
+        # Optional input LayerNorm — stabilises the distribution entering
+        # the Mamba-2 blocks and prevents extreme activations.
+        if use_input_norm:
+            self.input_norm = nn.LayerNorm(d_model)
 
         self.blocks = nn.ModuleList([
             Mamba2Block(d_model, d_state, chunk_size=chunk_size)
@@ -326,6 +333,8 @@ class Mamba2Relay(nn.Module):
         (batch, 1)
         """
         x = self.input_proj(x)           # → (B, W, d_model)
+        if self.use_input_norm:
+            x = self.input_norm(x)
         for block in self.blocks:
             x = block(x)
         center = self.window_size // 2
@@ -343,10 +352,11 @@ class Mamba2RelayWrapper(Relay):
 
     def __init__(self, target_power=1.0, window_size=11, d_model=32,
                  d_state=16, num_layers=2, chunk_size=8, prefer_gpu=False,
-                 output_activation="tanh"):
+                 output_activation="tanh", use_input_norm=False):
         self.target_power = target_power
         self.window_size = window_size
         self.output_activation = output_activation
+        self.use_input_norm = use_input_norm
 
         if prefer_gpu and torch.cuda.is_available():
             self.device = torch.device("cuda")
@@ -360,6 +370,7 @@ class Mamba2RelayWrapper(Relay):
             num_layers=num_layers,
             chunk_size=chunk_size,
             output_activation=output_activation,
+            use_input_norm=use_input_norm,
         ).to(self.device)
 
         self.is_trained = False
@@ -381,6 +392,8 @@ class Mamba2RelayWrapper(Relay):
         print(f"    Parameters: {self.num_params:,}")
         print(f"    Training SNRs: {training_snrs} dB")
         print(f"    Samples: {num_samples:,}, Epochs: {epochs}")
+        if self.use_input_norm:
+            print(f"    Input LayerNorm: ENABLED")
         if training_modulation != "bpsk":
             print(f"    Training modulation: {training_modulation}")
 

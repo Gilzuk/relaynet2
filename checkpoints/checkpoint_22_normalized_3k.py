@@ -148,7 +148,8 @@ def make_mamba2_3k(prefer_gpu=False, **kw):
 
 
 def build_all_3k(prefer_gpu=False, include_sequence_models=True,
-                  include_cgan=False, prefer_gpu_seq=None):
+                  include_cgan=False, prefer_gpu_seq=None,
+                  use_input_norm=False, output_activation="tanh"):
     """Build all normalized relay models.
 
     Parameters
@@ -164,6 +165,13 @@ def build_all_3k(prefer_gpu=False, include_sequence_models=True,
     prefer_gpu_seq : bool or None
         GPU preference for sequence models (Transformer, Mamba S6,
         Mamba-2).  When *None* (default), inherits *prefer_gpu*.
+    use_input_norm : bool
+        Enable Input LayerNorm on sequence models (Transformer,
+        Mamba S6, Mamba-2).  Default ``False``.
+    output_activation : str
+        Output activation function for all AI relays.
+        ``"tanh"`` (default) for BPSK/QPSK, ``"hardtanh"`` for 16-QAM
+        (clips to ±3/√10 matching the QAM16 per-axis range).
 
     Returns
     -------
@@ -173,16 +181,26 @@ def build_all_3k(prefer_gpu=False, include_sequence_models=True,
     if prefer_gpu_seq is None:
         prefer_gpu_seq = prefer_gpu
     relays = {
-        "GenAI-3K": make_genai_3k(prefer_gpu=prefer_gpu),
-        "Hybrid-3K": make_hybrid_3k(prefer_gpu=prefer_gpu),
-        "VAE-3K": make_vae_3k(prefer_gpu=prefer_gpu),
+        "GenAI-3K": make_genai_3k(prefer_gpu=prefer_gpu,
+                                   output_activation=output_activation),
+        "Hybrid-3K": make_hybrid_3k(prefer_gpu=prefer_gpu,
+                                     output_activation=output_activation),
+        "VAE-3K": make_vae_3k(prefer_gpu=prefer_gpu,
+                               output_activation=output_activation),
     }
     if include_cgan:
-        relays["CGAN-3K"] = make_cgan_3k(prefer_gpu=prefer_gpu)
+        relays["CGAN-3K"] = make_cgan_3k(prefer_gpu=prefer_gpu,
+                                          output_activation=output_activation)
     if include_sequence_models and _HAS_SEQ:
-        relays["Transformer-3K"] = make_transformer_3k(prefer_gpu=prefer_gpu_seq)
-        relays["Mamba-3K"] = make_mamba_3k(prefer_gpu=prefer_gpu_seq)
-        relays["Mamba2-3K"] = make_mamba2_3k(prefer_gpu=prefer_gpu_seq)
+        relays["Transformer-3K"] = make_transformer_3k(
+            prefer_gpu=prefer_gpu_seq, use_input_norm=use_input_norm,
+            output_activation=output_activation)
+        relays["Mamba-3K"] = make_mamba_3k(
+            prefer_gpu=prefer_gpu_seq, use_input_norm=use_input_norm,
+            output_activation=output_activation)
+        relays["Mamba2-3K"] = make_mamba2_3k(
+            prefer_gpu=prefer_gpu_seq, use_input_norm=use_input_norm,
+            output_activation=output_activation)
     return relays
 
 

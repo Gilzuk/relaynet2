@@ -15,25 +15,27 @@ from relaynet.utils.activations import (
 class _TinyNN:
     """Two-layer feedforward network with ReLU hidden and configurable output."""
 
-    def __init__(self, input_size, hidden_size, output_size, output_activation="tanh"):
+    def __init__(self, input_size, hidden_size, output_size, output_activation="tanh",
+                 clip_range=None):
         self.W1 = np.random.randn(input_size, hidden_size) * np.sqrt(2.0 / input_size)
         self.b1 = np.zeros(hidden_size)
         self.W2 = np.random.randn(hidden_size, output_size) * 0.1
         self.b2 = np.zeros(output_size)
         self.output_activation = output_activation
+        self.clip_range = clip_range
 
     def forward(self, X):
         self.z1 = np.dot(X, self.W1) + self.b1
         self.a1 = np.maximum(0, self.z1)  # ReLU
         self.z2 = np.dot(self.a1, self.W2) + self.b2
-        return apply_activation(self.z2, self.output_activation)
+        return apply_activation(self.z2, self.output_activation, clip_range=self.clip_range)
 
     def train_step(self, X, y, lr=0.01):
         batch_size = X.shape[0]
         output = self.forward(X)
         loss = np.mean((output - y) ** 2)
 
-        dz2 = 2 * (output - y) / batch_size * activation_derivative(output, self.z2, self.output_activation)
+        dz2 = 2 * (output - y) / batch_size * activation_derivative(output, self.z2, self.output_activation, clip_range=self.clip_range)
         dW2 = np.dot(self.a1.T, dz2)
         db2 = np.sum(dz2, axis=0)
 
@@ -49,7 +51,8 @@ class _TinyNN:
         return loss
 
 
-def _build_torch_tinynn(input_size, hidden_size, device, output_activation="tanh"):
+def _build_torch_tinynn(input_size, hidden_size, device, output_activation="tanh",
+                       clip_range=None):
     """Create a tiny Torch model matching the 169-parameter network."""
     torch = get_torch_module()
     import torch.nn as nn
@@ -58,7 +61,7 @@ def _build_torch_tinynn(input_size, hidden_size, device, output_activation="tanh
         nn.Linear(input_size, hidden_size),
         nn.ReLU(),
         nn.Linear(hidden_size, 1),
-        make_torch_activation(output_activation),
+        make_torch_activation(output_activation, clip_range=clip_range),
     ).to(device)
 
     for module in model.modules():
@@ -76,15 +79,16 @@ class MinimalGenAIRelay(Relay):
     """
 
     def __init__(self, window_size=5, hidden_size=24, target_power=1.0, prefer_gpu=True,
-                 output_activation="tanh"):
+                 output_activation="tanh", clip_range=None):
         self.window_size = window_size
         self.hidden_size = hidden_size
         self.target_power = target_power
         self.output_activation = output_activation
+        self.clip_range = clip_range
         self.device = get_preferred_device(prefer_gpu=prefer_gpu)
         self._use_torch = can_use_gpu(self.device)
-        self.nn = _TinyNN(window_size, hidden_size, 1, output_activation=output_activation)
-        self._torch_model = _build_torch_tinynn(window_size, hidden_size, self.device, output_activation=output_activation) if self._use_torch else None
+        self.nn = _TinyNN(window_size, hidden_size, 1, output_activation=output_activation, clip_range=clip_range)
+        self._torch_model = _build_torch_tinynn(window_size, hidden_size, self.device, output_activation=output_activation, clip_range=clip_range) if self._use_torch else None
         self.is_trained = False
 
     @property

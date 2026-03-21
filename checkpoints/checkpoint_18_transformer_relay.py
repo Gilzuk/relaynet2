@@ -93,14 +93,20 @@ class TransformerRelay(nn.Module):
     """Transformer-based relay for signal denoising."""
     
     def __init__(self, window_size=11, d_model=32, num_heads=4, num_layers=2, d_ff=64, dropout=0.1,
-                 output_activation="tanh"):
+                 output_activation="tanh", use_input_norm=False):
         super(TransformerRelay, self).__init__()
         
         self.window_size = window_size
         self.d_model = d_model
+        self.use_input_norm = use_input_norm
         
         # Input projection
         self.input_proj = nn.Linear(1, d_model)
+        
+        # Optional input LayerNorm — stabilises the distribution entering
+        # the Transformer blocks and prevents extreme activations.
+        if use_input_norm:
+            self.input_norm = nn.LayerNorm(d_model)
         
         # Positional encoding
         self.pos_encoding = PositionalEncoding(d_model, max_len=window_size)
@@ -145,6 +151,10 @@ class TransformerRelay(nn.Module):
         # Project input to d_model dimensions
         x = self.input_proj(x)  # (batch, window_size, d_model)
         
+        # Optional input normalisation
+        if self.use_input_norm:
+            x = self.input_norm(x)
+        
         # Add positional encoding
         x = self.pos_encoding(x)
         
@@ -166,10 +176,11 @@ class TransformerRelayWrapper(Relay):
     """Wrapper for Transformer relay."""
     
     def __init__(self, target_power=1.0, window_size=11, d_model=32, num_heads=4, num_layers=2, prefer_gpu=False,
-                 output_activation="tanh"):
+                 output_activation="tanh", use_input_norm=False):
         self.target_power = target_power
         self.window_size = window_size
         self.output_activation = output_activation
+        self.use_input_norm = use_input_norm
         
         # Set device — with only 17K parameters this model is too small to
         # benefit from GPU; kernel-launch overhead dominates compute time.
@@ -187,6 +198,7 @@ class TransformerRelayWrapper(Relay):
             d_ff=d_model * 2,
             dropout=0.1,
             output_activation=output_activation,
+            use_input_norm=use_input_norm,
         ).to(self.device)
         
         self.is_trained = False
@@ -207,6 +219,8 @@ class TransformerRelayWrapper(Relay):
         print(f"    Parameters: {self.num_params:,}")
         print(f"    Training SNRs: {training_snrs} dB")
         print(f"    Samples: {num_samples:,}, Epochs: {epochs}")
+        if self.use_input_norm:
+            print(f"    Input LayerNorm: ENABLED")
         if training_modulation != "bpsk":
             print(f"    Training modulation: {training_modulation}")
         

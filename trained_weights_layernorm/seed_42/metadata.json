@@ -1,0 +1,118 @@
+{
+  "seed": 42,
+  "date": "2026-03-21T09:29:32.621700",
+  "training_config": {
+    "quick": false,
+    "include_sequence_models": true,
+    "include_normalized": true,
+    "snr_min": 0,
+    "snr_max": 20,
+    "snr_step": 2,
+    "bits_per_trial": 10000,
+    "num_trials": 10,
+    "genai_samples": 25000,
+    "genai_epochs": 100,
+    "hybrid_samples": 25000,
+    "hybrid_epochs": 100,
+    "vae_samples": 50000,
+    "vae_epochs": 100,
+    "cgan_samples": 50000,
+    "cgan_epochs": 200,
+    "transformer_samples": 50000,
+    "transformer_epochs": 100,
+    "mamba_samples": 50000,
+    "mamba_epochs": 100,
+    "no_plots": false,
+    "gpu": true,
+    "log_timings": true,
+    "save_weights": true,
+    "inference_only": false,
+    "weights_dir": "trained_weights_layernorm",
+    "seed": 42,
+    "mamba2_samples": 50000,
+    "mamba2_epochs": 100,
+    "resume": true,
+    "include_cgan": true,
+    "constellations": [
+      "bpsk",
+      "qpsk",
+      "qam16"
+    ],
+    "skip_existing": true,
+    "layer_norm": true,
+    "output_activation": "tanh",
+    "training_modulation": "bpsk"
+  },
+  "relays": {
+    "GenAI (169p)": {
+      "file": "genai_169p.pt",
+      "type": "MinimalGenAIRelay",
+      "num_params": 169
+    },
+    "Hybrid": {
+      "file": "hybrid.pt",
+      "type": "HybridRelay",
+      "num_params": 169
+    },
+    "VAE": {
+      "file": "vae.pt",
+      "type": "VAERelay",
+      "num_params": 1777
+    },
+    "CGAN (WGAN-GP)": {
+      "file": "cgan_wgan_gp.pt",
+      "type": "CGANRelay",
+      "num_params": 2946
+    },
+    "Transformer": {
+      "file": "transformer.pt",
+      "type": "TransformerRelayWrapper",
+      "num_params": 17761
+    },
+    "Mamba S6": {
+      "file": "mamba_s6.pt",
+      "type": "MambaRelayWrapper",
+      "num_params": 24065
+    },
+    "Mamba2 (SSD)": {
+      "file": "mamba2_ssd.pt",
+      "type": "Mamba2RelayWrapper",
+      "num_params": 26243
+    },
+    "GenAI-3K": {
+      "file": "genai_3k.pt",
+      "type": "MinimalGenAIRelay",
+      "num_params": 3004
+    },
+    "Hybrid-3K": {
+      "file": "hybrid_3k.pt",
+      "type": "HybridRelay",
+      "num_params": 3004
+    },
+    "VAE-3K": {
+      "file": "vae_3k.pt",
+      "type": "VAERelay",
+      "num_params": 3037
+    },
+    "Transformer-3K": {
+      "file": "transformer_3k.pt",
+      "type": "TransformerRelayWrapper",
+      "num_params": 3043
+    },
+    "Mamba-3K": {
+      "file": "mamba_3k.pt",
+      "type": "MambaRelayWrapper",
+      "num_params": 3059
+    },
+    "Mamba2-3K": {
+      "file": "mamba2_3k.pt",
+      "type": "Mamba2RelayWrapper",
+      "num_params": 3034
+    },
+    "CGAN-3K": {
+      "file": "cgan_3k.pt",
+      "type": "CGANRelay",
+      "num_params": 3004
+    }
+  }
+}
