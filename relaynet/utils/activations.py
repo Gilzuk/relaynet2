@@ -126,7 +126,7 @@ def make_torch_activation(activation="tanh", clip_range=None):
 # ── Training-data generator ──────────────────────────────────────
 
 def generate_training_targets(num_samples, snr_db, training_modulation="bpsk",
-                              seed=None):
+                              seed=None, use_rayleigh=False, return_csi=False):
     """Generate *clean* and *noisy* 1-D real training symbols.
 
     Parameters
@@ -138,14 +138,20 @@ def generate_training_targets(num_samples, snr_db, training_modulation="bpsk",
         ``"qpsk"`` → targets ∈ {-1, +1}/√2 (one I/Q axis).
         ``"qam16"`` → targets ∈ {-3, -1, +1, +3}/√10 (one I/Q axis).
     seed : int, optional
+    use_rayleigh : bool, optional
+        If True, apply Rayleigh fading channel instead of AWGN.
+    return_csi : bool, optional
+        If True and use_rayleigh is True, returns (clean, noisy, h).
 
     Returns
     -------
     clean : ndarray, shape (num_samples,)
     noisy : ndarray, shape (num_samples,)
+    h : ndarray, shape (num_samples,), optional (if return_csi is True)
     """
     from relaynet.modulation.bpsk import bpsk_modulate
     from relaynet.channels.awgn import awgn_channel
+    from relaynet.channels.fading import rayleigh_fading_channel
 
     if seed is not None:
         np.random.seed(seed)
@@ -161,5 +167,13 @@ def generate_training_targets(num_samples, snr_db, training_modulation="bpsk",
         bits = np.random.randint(0, 2, num_samples)
         clean = bpsk_modulate(bits)
 
-    noisy = awgn_channel(clean, snr_db)
+    if use_rayleigh:
+        noisy, h = rayleigh_fading_channel(clean, snr_db, return_channel=True)
+        if return_csi:
+            return clean, noisy, h
+    else:
+        noisy = awgn_channel(clean, snr_db)
+        if return_csi:
+            return clean, noisy, np.ones_like(noisy, dtype=np.complex128)
+            
     return clean, noisy

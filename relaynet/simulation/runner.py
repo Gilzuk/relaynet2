@@ -57,26 +57,41 @@ def _process_relay(relay, received_signal, modulation="bpsk"):
     from relaynet.relays.af import AmplifyAndForwardRelay
     from relaynet.relays.df import DecodeAndForwardRelay
 
+    # ── Handle CSI tuple if provided ───────────────────────────────
+    if isinstance(received_signal, tuple):
+        y, h_csi = received_signal
+    else:
+        y = received_signal
+        h_csi = None
+
     # Real signal → vanilla relay processing (BPSK or already I/Q split)
-    if not np.iscomplexobj(received_signal):
-        return relay.process(received_signal)
+    if not np.iscomplexobj(y):
+        if h_csi is not None:
+            return relay.process((y, np.abs(h_csi)))
+        return relay.process(y)
 
     # ── Complex signal (QPSK / QAM16) ──────────────────────────────
 
     if isinstance(relay, AmplifyAndForwardRelay):
         # AF: analogue amplification — works natively on complex
-        return relay.process(received_signal)
+        return relay.process(y)
 
     if isinstance(relay, DecodeAndForwardRelay):
         # DF: ML constellation-point detection
         return _df_constellation_detect(
-            received_signal, modulation,
+            y, modulation,
             target_power=relay.target_power,
         )
 
     # AI-based relays: process I and Q independently
-    out_i = relay.process(received_signal.real.copy())
-    out_q = relay.process(received_signal.imag.copy())
+    if h_csi is not None:
+        h_mag = np.abs(h_csi).copy()
+        out_i = relay.process((y.real.copy(), h_mag))
+        out_q = relay.process((y.imag.copy(), h_mag))
+    else:
+        out_i = relay.process(y.real.copy())
+        out_q = relay.process(y.imag.copy())
+        
     return out_i + 1j * out_q
 
 
@@ -122,7 +137,14 @@ def simulate_transmission(relay, num_bits, snr_db, seed=None,
     relay_out = _process_relay(relay, rx_relay, modulation)
 
     rx_dest = channel_fn(relay_out, snr_db)
-    rx_bits = destination.receive(rx_dest)
+    
+    # Destination only cares about the signal, not CSI, assuming perfectly equalized
+    if isinstance(rx_dest, tuple):
+        rx_dest_signal = rx_dest[0]
+    else:
+        rx_dest_signal = rx_dest
+        
+    rx_bits = destination.receive(rx_dest_signal)
 
     return calculate_ber(tx_bits, rx_bits)
 

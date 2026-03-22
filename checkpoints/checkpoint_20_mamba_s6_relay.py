@@ -168,7 +168,7 @@ class MambaRelay(nn.Module):
     """Mamba-based relay for signal denoising."""
     
     def __init__(self, window_size=11, d_model=32, d_state=16, num_layers=2,
-                 output_activation="tanh", use_input_norm=False, clip_range=None):
+                 output_activation="tanh", use_input_norm=False, clip_range=None, in_channels=1):
         super(MambaRelay, self).__init__()
         
         self.window_size = window_size
@@ -176,7 +176,7 @@ class MambaRelay(nn.Module):
         self.use_input_norm = use_input_norm
         
         # Input projection
-        self.input_proj = nn.Linear(1, d_model)
+        self.input_proj = nn.Linear(in_channels, d_model)
         
         # Optional input LayerNorm — stabilises the distribution entering
         # the Mamba blocks and prevents extreme activations from noisy inputs.
@@ -239,19 +239,21 @@ class MambaRelay(nn.Module):
         
         # Project to output
         output = self.output_proj(x)  # (batch, 1)
-        
-        return output + x_raw[:, center_idx, :]
+
+        # Only add residual for the primary signal channel (index 0)
+        return output + x_raw[:, center_idx, 0:1]
 
 class MambaRelayWrapper(Relay):
     """Wrapper for Mamba relay."""
 
     def __init__(self, target_power=1.0, window_size=11, d_model=32, d_state=16, num_layers=2, prefer_gpu=False,
-                 output_activation="tanh", use_input_norm=False, clip_range=None):
+                 output_activation="tanh", use_input_norm=False, clip_range=None, in_channels=1):
         self.target_power = target_power
         self.window_size = window_size
         self.output_activation = output_activation
         self.use_input_norm = use_input_norm
         self.clip_range = clip_range
+        self.in_channels = in_channels
         
         # Set device — with only 24K parameters this model is too small to
         # benefit from GPU; kernel-launch overhead dominates compute time.
@@ -269,6 +271,7 @@ class MambaRelayWrapper(Relay):
             output_activation=output_activation,
             use_input_norm=use_input_norm,
             clip_range=clip_range,
+            in_channels=in_channels,
         ).to(self.device)
         
         self.is_trained = False
@@ -277,7 +280,7 @@ class MambaRelayWrapper(Relay):
         self.num_params = sum(p.numel() for p in self.model.parameters())
     
     def train(self, training_snrs=[5, 10, 15], num_samples=50000, epochs=100, lr=0.001,
-              training_modulation="bpsk"):
+              training_modulation="bpsk", use_rayleigh=False):
         """
         Train Mamba relay.
         """
@@ -285,6 +288,7 @@ class MambaRelayWrapper(Relay):
         print(f"    Device: {self.device}")
         print(f"    Architecture: {self.window_size}-token Mamba (S6)")
         print(f"    d_model: {self.model.d_model}, d_state: {self.model.blocks[0].s6.d_state}")
+        print(f"    in_channels: {self.model.input_proj.in_features}")
         print(f"    Layers: {len(self.model.blocks)}")
         print(f"    Parameters: {self.num_params:,}")
         print(f"    Training SNRs: {training_snrs} dB")
@@ -300,19 +304,35 @@ class MambaRelayWrapper(Relay):
         X_train_all = []
         y_train_all = []
         
+        in_channels = self.model.input_proj.in_features
+        return_csi = (in_channels > 1)
+        
         for snr in training_snrs:
-            clean, noisy = generate_training_targets(
-                samples_per_snr, snr,
-                training_modulation=training_modulation,
-                seed=42 + int(snr),
-            )
+            if return_csi:
+                clean, noisy, h_csi = generate_training_targets(
+                    samples_per_snr, snr,
+                    training_modulation=training_modulation,
+                    seed=42 + int(snr),
+                    use_rayleigh=use_rayleigh,
+                    return_csi=True
+                )
+                features = np.column_stack([noisy, np.abs(h_csi)]) # (N, 2)
+            else:
+                clean, noisy = generate_training_targets(
+                    samples_per_snr, snr,
+                    training_modulation=training_modulation,
+                    seed=42 + int(snr),
+                    use_rayleigh=use_rayleigh,
+                    return_csi=False
+                )
+                features = noisy.reshape(-1, 1) # (N, 1)
             
             for i in range(self.window_size // 2, len(noisy) - self.window_size // 2):
-                window = noisy[i - self.window_size // 2 : i + self.window_size // 2 + 1]
+                window = features[i - self.window_size // 2 : i + self.window_size // 2 + 1]
                 X_train_all.append(window)
                 y_train_all.append(clean[i])
         
-        X_train = torch.FloatTensor(np.array(X_train_all)).unsqueeze(-1).to(self.device)
+        X_train = torch.FloatTensor(np.array(X_train_all)).to(self.device)  # (N, win, in_channels)
         y_train = torch.FloatTensor(np.array(y_train_all).reshape(-1, 1)).to(self.device)
         
         print(f"  Training data ready: {len(X_train):,} samples")
@@ -366,26 +386,48 @@ class MambaRelayWrapper(Relay):
     def process(self, received_signal):
         """Process signal through Mamba (batched)."""
         if not self.is_trained:
+            # Fake processing if not trained
+            if isinstance(received_signal, tuple):
+                return received_signal[0] * 1.5
             return received_signal * 1.5
         
         self.model.eval()
         
-        pad_size = self.window_size // 2
-        padded_signal = np.pad(received_signal, pad_size, mode='edge')
-        n = len(received_signal)
-        
-        # Build all windows at once: (n, window_size)
-        windows = np.lib.stride_tricks.as_strided(
-            padded_signal,
-            shape=(n, self.window_size),
-            strides=(padded_signal.strides[0], padded_signal.strides[0]),
-        ).copy()  # copy to ensure contiguous memory
-        
+        # Unpack CSI if provided
+        if isinstance(received_signal, tuple):
+            y, h_csi = received_signal
+            n = len(y)
+            # Combine into 2D features
+            features = np.column_stack([y, h_csi])
+            pad_size = self.window_size // 2
+            padded_features = np.pad(features, ((pad_size, pad_size), (0, 0)), mode='edge')
+            
+            # Extract windows dynamically
+            windows = np.lib.stride_tricks.as_strided(
+                padded_features,
+                shape=(n, self.window_size, 2),
+                strides=(padded_features.strides[0], padded_features.strides[0], padded_features.strides[1]),
+            ).copy()
+        else:
+            y = received_signal
+            n = len(y)
+            pad_size = self.window_size // 2
+            padded_signal = np.pad(y, pad_size, mode='edge')
+            
+            # Build all windows at once: (n, window_size)
+            windows = np.lib.stride_tricks.as_strided(
+                padded_signal,
+                shape=(n, self.window_size),
+                strides=(padded_signal.strides[0], padded_signal.strides[0]),
+            ).copy()
+            # shape target: (n, window_size, 1)
+            windows = np.expand_dims(windows, -1)
+            
         # Single batched forward pass
         with torch.no_grad():
             window_input = torch.as_tensor(
                 windows, dtype=torch.float32, device=self.device,
-            ).unsqueeze(-1)  # (n, window_size, 1)
+            )
             processed = self.model(window_input).cpu().numpy().flatten()
         
         # Normalize power
