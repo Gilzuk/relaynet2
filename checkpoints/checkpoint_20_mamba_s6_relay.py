@@ -405,18 +405,18 @@ class MambaRelayWrapper(Relay):
             else:
                 y, h_csi = received_signal
                 n = len(y)
-                # Combine into 2D features
-            features = np.column_stack([y, h_csi])
-            pad_size = self.window_size // 2
-            padded_features = np.pad(features, ((pad_size, pad_size), (0, 0)), mode='edge')
-            
-            # Extract windows dynamically
-            windows = np.lib.stride_tricks.as_strided(
-                padded_features,
-                shape=(n, self.window_size, 2),
-                strides=(padded_features.strides[0], padded_features.strides[0], padded_features.strides[1]),
-            ).copy()
-        else:
+                features = np.column_stack([y, h_csi])
+                pad_size = self.window_size // 2
+                padded_features = np.pad(features, ((pad_size, pad_size), (0, 0)), mode='edge')
+                
+                # Extract windows dynamically
+                windows = np.lib.stride_tricks.as_strided(
+                    padded_features,
+                    shape=(n, self.window_size, 2),
+                    strides=(padded_features.strides[0], padded_features.strides[0], padded_features.strides[1]),
+                ).copy()
+
+        if not isinstance(received_signal, tuple):
             y = received_signal
             n = len(y)
             pad_size = self.window_size // 2
