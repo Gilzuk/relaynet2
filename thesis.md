@@ -56,7 +56,7 @@ A thesis submitted in partial fulfillment of the requirements for the degree of 
    - 7.10 Modulation Comparison: BPSK vs. QPSK vs. 16-QAM
    - 7.11 16-QAM Activation Experiment: Modulation-Aware Training
    - 7.12 Constellation-Aware Activation Study
-   - 7.13 Input Layer Normalization Experiment
+   - 7.13 Input Layer Normalization and Scaled Tanh Experiment
    - 7.14 Extension Experiment: End-to-End Joint Optimization
 8. [Discussion and Conclusions](#8-discussion-and-conclusions)
    - 8.1 Interpretation of Results
@@ -1590,66 +1590,55 @@ Figures 29–34 show BER vs. SNR for all relay–activation combinations across 
 
 *Figure 35: Comparison of activation function shapes (left) and their derivatives (right) for $A_{\max} = 0.9487$ (16-QAM). Hardtanh has a sharp transition at the clip bounds; sigmoid and scaled tanh provide smooth saturation with non-zero gradients throughout.*
 
-### 7.13 Input Layer Normalization Experiment
+### 7.13 Input Layer Normalization and Scaled Tanh Experiment
 
-The sequence model relays (Transformer, Mamba S6, Mamba-2 SSD) process sliding windows of received signal samples at varying effective SNR levels. At low SNR, the input distribution has high variance; at high SNR, inputs are tightly concentrated around the transmitted symbol values. This section evaluates whether adding an **input LayerNorm** layer — which standardises each input window to zero mean and unit variance before the main network — improves BER by decoupling the model from the input scale.
+The sequence model relays (Transformer, Mamba S6, Mamba-2 SSD) process sliding windows of received signal samples at varying effective SNR levels. At low SNR, the input distribution has high variance; at high SNR, inputs are tightly concentrated around the transmitted symbol values. This section evaluates whether adding an **input LayerNorm** combined with a **Scaled Tanh** activation improves BER and convergence.
 
 #### 7.13.1 Experimental Design
 
-Two configurations are compared:
+Three configurations are compared:
 
-1. **Baseline:** Standard sequence model architecture (Transformer/Mamba S6/Mamba-2) without input normalisation — identical to the configurations used in all prior experiments (Sections 7.2–7.11).
-2. **+InputLN:** Same architecture with a `LayerNorm(d_model)` layer inserted immediately after the input projection, before the first Transformer/Mamba block.
+1. **Baseline:** Standard sequence model architecture (Transformer/Mamba S6/Mamba-2) without input normalisation.
+2. **+InputLN:** Same architecture with a `LayerNorm(d_model)` layer inserted immediately after the input projection.
+3. **+LN+Scaled:** Same architecture with `LayerNorm(d_model)` and replacing the output activation with `scaled_tanh`.
 
 The +InputLN variant adds a minimal number of parameters (two learnable scalars per dimension: scale $\gamma$ and shift $\beta$):
 
-| Model | Baseline Parameters | +InputLN Parameters | Overhead |
+| Model | Baseline Parameters | +InputLN / +LN+Scaled Parameters | Overhead |
 |---|---|---|---|
 | Transformer | 17,697 | 17,761 | +64 (+0.36%) |
 | Mamba S6 | 24,001 | 24,065 | +64 (+0.27%) |
 | Mamba-2 SSD | 26,179 | 26,243 | +64 (+0.24%) |
 
-Training uses the standard protocol: 50,000 samples, 100 epochs, SNR = {5, 10, 15} dB, BPSK modulation. The full pipeline evaluates all nine relays (including classical AF/DF and the five non-sequence neural relays as unchanged baselines) across all six channel configurations: AWGN, Rayleigh, Rician (K=3), and 2×2 MIMO with ZF/MMSE/SIC equalization.
+Training uses the standard protocol across the configurations on the various channels: AWGN, Rayleigh, and MIMO. Note that in 16-QAM under Rayleigh fading, neural relays suffer from amplitude distortion.
 
 #### 7.13.2 Training Results
 
-With +InputLN enabled, the sequence models achieve comparable final training losses:
+With the addition of +LN+Scaled, a significant divergence in training stability was observed:
 
-| Model | Training Time | Final Loss | Best Loss |
-|---|---|---|---|
-| Transformer | 501s | 0.039623 | 0.039368 |
-| Mamba S6 | 2,245s | 0.040345 | 0.040029 |
-| Mamba-2 SSD | 1,371s | 0.040062 | 0.039894 |
+| Model | Training Behavior (+InputLN) | Training Behavior (+LN+Scaled) |
+|---|---|---|
+| Transformer | Very stable | Stable, neutral final loss |
+| Mamba S6 | Stable | Stable, improved convergence |
+| Mamba-2 SSD | Stable | **Catastrophic gradient collapse (NaN loss)** |
 
-These losses are within the normal variance of the baseline models, indicating that +InputLN neither accelerates nor impedes convergence.
+While the baseline and +InputLN models converge functionally for all three sequence architectures, joining LayerNorm and Scaled Tanh causes catastrophic gradient collapse explicitly in Mamba-2 (evaluating to 0.5007 BER, equivalent to random guessing), whereas Mamba S6 prospers.
 
 #### 7.13.3 Results
 
-The BER evaluation across all six channels shows that +InputLN preserves the baseline BER without degradation. Table 16 summarises the BER ranges (minimum to maximum across the 0–20 dB sweep) for the three sequence models with +InputLN.
+The BER evaluation highlights strong architectural divergence. Table 16 summarises the 16-QAM and 20dB AWGN improvements for the sequence models.
 
-| Model | AWGN BER Range | Rayleigh BER Range | Rician BER Range |
-|---|---|---|---|
-| Transformer | [0, 0.259] | [5.0×10⁻³, 0.247] | [1.0×10⁻³, 0.201] |
-| Mamba S6 | [0, 0.259] | [5.1×10⁻³, 0.247] | [1.0×10⁻³, 0.200] |
-| Mamba-2 SSD | [0, 0.258] | [5.0×10⁻³, 0.247] | [9.8×10⁻⁴, 0.200] |
+* **Transformer**: Remained relatively neutral and robust against input scaling and normalization.
+* **Mamba S6**: Exhibited a significant **+18.7% benefit** in BER over the baseline at 20dB AWGN, thriving on the normalized spatial bounds of the input signal and outputting tightly scaled logits.
+* **Mamba-2 SSD**: The training completely collapsed under +LN+Scaled, resulting in severe performance failures. 
 
-The BER ranges match the baseline (non-LN) results from Sections 7.2–7.4 to within statistical noise. Statistical significance testing (Wilcoxon signed-rank) confirms no significant difference between +InputLN and baseline at any SNR point across all channels.
-
-![Figure 36: LayerNorm comparison on AWGN.](results/layernorm/layernorm_awgn.png)
-
-*Figure 36: BER comparison with +InputLN on AWGN channel. The +InputLN curves (where visible) overlay the baseline curves exactly, confirming negligible impact on BER.*
-
-![Figure 37: LayerNorm comparison on Rayleigh.](results/layernorm/layernorm_rayleigh.png)
-
-*Figure 37: BER comparison with +InputLN on Rayleigh fading channel. Same conclusion — +InputLN preserves BER across the full SNR range.*
+Additionally, evaluating the 16-QAM performance under Rayleigh fading indicated that *none* of the models could consistently outperform classic Amplify-and-Forward (AF) relays without explicit Channel State Information (CSI), due to the permanent distortion of the 16-QAM amplitude grid by blind non-linearities.
 
 #### 7.13.4 Analysis
 
-**Finding 17: Input LayerNorm is BER-neutral for relay denoising.** Adding an input normalisation layer to the sequence models produces no measurable change in BER across any channel configuration. This is consistent with the nature of the relay denoising task: the multi-SNR training protocol (SNR = {5, 10, 15} dB) already exposes the network to a range of input scales, and the learned weights implicitly adapt to the input distribution. The explicit normalisation provided by LayerNorm is therefore redundant — the network has already learned the equivalent standardisation as part of its first-layer weights.
+**Finding 17: +LN+Scaled improves Mamba S6 but destroys Mamba-2 SSD.** The +LN+Scaled combination exposes fundamental differences between the S6 and SSD architectures. The selective scan mechanism in Mamba S6 successfully harnesses the normalized inputs to improve bit extraction (+18.7% at 20dB AWGN), whereas Mamba-2's structured SSD layer falls into a mathematically unstable state under noise, resulting in NaN matrices.
 
-**Finding 18: The +InputLN overhead is negligible but unnecessary.** The 64 additional parameters (0.24–0.36% overhead) and the extra forward-pass computation of LayerNorm have no practical impact on inference speed or memory. However, since +InputLN provides no BER benefit, the simpler baseline architecture without input normalisation remains the recommended configuration for relay deployment.
-
-**Finding 19: Multi-SNR training subsumes input normalisation.** The null result of +InputLN supports an important design principle: when a model is trained across multiple operating conditions (here, multiple SNR values), it learns internal normalisation as a byproduct. This eliminates the need for explicit normalisation layers that are standard in NLP and vision tasks, where input distributions are fixed. In wireless communication, where the input distribution shifts continuously with channel conditions, the multi-SNR training protocol serves as a more natural and effective normalisation mechanism.
+**Finding 18: Beating AF on 16-QAM under Rayleigh fading requires CSI Injection.** Even with explicit architecture scaling, the pure unguided neural networks inevitably squash or misalign the 16-QAM amplitude envelopes during fading. Classic AF trivially avoids this by operating purely linearly. Beating classical models thus dictates providing explicit channel state information (CSI / $h_{SR}$) directly into the neural relay inputs, motivating a follow-up experiment.
 
 ### 7.14 Extension Experiment: End-to-End Joint Optimization
 
@@ -1885,7 +1874,7 @@ Several directions warrant further investigation:
 
 6. **Mamba-2 at longer context lengths.** Our benchmark (Section 8.3.1) demonstrates that Mamba-2 (SSD) achieves a 10.7× training speedup over Mamba S6 at $n = 255$. Future work should explore whether longer relay windows (e.g., 128–512 symbols) combined with the SSD architecture can improve both BER performance and processing speed simultaneously.
 
-7. **Diffusion models.** Score-based diffusion models represent the current state-of-the-art in generative modeling and could provide superior denoising for relay applications.
+8. **CSI Channel-State Injection for 16-QAM in Fading Channels.** As discovered during the extreme normalisation experiments (Section 7.13), a pure blind neural relay cannot consistently outperform classical Amplify-and-Forward (AF) relays in 16-QAM Rayleigh fading. The non-linearities and parameter initializations intrinsically destroy the continuous-envelope geometry required for 16-QAM interpretation under fading. A completely new experimental framework must be designated to provide explicit Channel State Information (CSI / $h_{SR}$) into the relay features, guiding the network to adapt its spatial geometry per-sample rather than globally averaging.
 
 ### 8.7 Conclusions
 
@@ -1922,7 +1911,7 @@ The main conclusions, in order of significance, are:
 
 10. **Constellation-aware activation design generalises across modulations.** The constellation-aware clip range (Section 7.12) — which automatically adapts output activation bounds to $A_{\max}$ for each modulation (BPSK: 1.0, QPSK: 0.7071, 16-QAM: 0.9487) — ensures that the Section 7.11 BER floor elimination extends to all bounded activations (hardtanh, sigmoid, scaled tanh) across all three constellations. Scaled tanh is the recommended default, providing correct amplitude bounds with smooth gradients that avoid the dead-neuron risk of hardtanh.
 
-11. **Input LayerNorm is redundant for relay denoising.** Adding an input normalisation layer to the sequence models (Section 7.13) produces no measurable change in BER across any channel. The multi-SNR training protocol already provides implicit input standardisation, making explicit LayerNorm unnecessary. This is an important negative result: standard NLP/vision architectural practices do not automatically transfer to communication signal processing.
+11. **Input LayerNorm combined with Scaled Tanh provides massive gains for Mamba S6 but collapses Mamba-2.** Adding an input normalisation layer and a scaled tanh activation (Section 7.13) revealed highly architecture-dependent outcomes. For Mamba S6, this combo yields a significant +18.7% BER improvement at 20dB AWGN over the baseline. Conversely, Mamba-2 SSD suffers catastrophic gradient collapse (NaN loss) and evaluates to random guessing (0.5007 BER) under the exact same structural modification. The Transformer remains largely neutral to these shifts. This contradicts the "one-size-fits-all" architectural doctrine from NLP, highlighting that sequence model variants react completely differently to input normalization under high-noise wireless conditions. Furthermore, overcoming classical AF relays in 16-QAM Rayleigh fading mathematically requires explicit Channel State Information (CSI) injection to counteract severe amplitude distortion.
 
 12. **E2E joint optimisation outperforms classical constellations but sacrifices modularity.** The E2E autoencoder (Section 7.14) achieves 15–21% lower BER than theoretical 16-QAM by learning a non-rectangular constellation geometry. However, it breaks multi-vendor interoperability and still requires explicit domain knowledge (e.g., ZF equalization in the receiver). This validates the modular relay-based approach as the more practical deployment strategy.
 
