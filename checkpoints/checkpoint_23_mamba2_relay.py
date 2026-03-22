@@ -332,14 +332,15 @@ class Mamba2Relay(nn.Module):
         -------
         (batch, 1)
         """
-        x = self.input_proj(x)           # → (B, W, d_model)
+        x_raw = x
+        x = self.input_proj(x)           # -> (B, W, d_model)
         if self.use_input_norm:
             x = self.input_norm(x)
         for block in self.blocks:
             x = block(x)
         center = self.window_size // 2
-        x = x[:, center, :]              # → (B, d_model)
-        return self.output_proj(x)        # → (B, 1)
+        x = x[:, center, :]              # -> (B, d_model)
+        return self.output_proj(x) + x_raw[:, center, :]
 
 
 # ======================================================================

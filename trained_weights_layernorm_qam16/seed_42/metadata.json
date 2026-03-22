@@ -1,6 +1,6 @@
 {
   "seed": 42,
-  "date": "2026-03-21T09:29:32.846761",
+  "date": "2026-03-21T12:16:46.545733",
   "training_config": {
     "quick": false,
     "include_sequence_models": true,
@@ -78,6 +78,41 @@
       "file": "mamba2_ssd.pt",
       "type": "Mamba2RelayWrapper",
       "num_params": 26243
+    },
+    "GenAI-3K": {
+      "file": "genai_3k.pt",
+      "type": "MinimalGenAIRelay",
+      "num_params": 3004
+    },
+    "Hybrid-3K": {
+      "file": "hybrid_3k.pt",
+      "type": "HybridRelay",
+      "num_params": 3004
+    },
+    "VAE-3K": {
+      "file": "vae_3k.pt",
+      "type": "VAERelay",
+      "num_params": 3037
+    },
+    "CGAN-3K": {
+      "file": "cgan_3k.pt",
+      "type": "CGANRelay",
+      "num_params": 3004
+    },
+    "Transformer-3K": {
+      "file": "transformer_3k.pt",
+      "type": "TransformerRelayWrapper",
+      "num_params": 3043
+    },
+    "Mamba-3K": {
+      "file": "mamba_3k.pt",
+      "type": "MambaRelayWrapper",
+      "num_params": 3059
+    },
+    "Mamba2-3K": {
+      "file": "mamba2_3k.pt",
+      "type": "Mamba2RelayWrapper",
+      "num_params": 3034
     }
   }
 }

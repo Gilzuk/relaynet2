@@ -222,6 +222,7 @@ class MambaRelay(nn.Module):
             Output of shape (batch_size, 1)
         """
         # Project input to d_model dimensions
+        x_raw = x
         x = self.input_proj(x)  # (batch, window_size, d_model)
         
         # Optional input normalisation
@@ -239,12 +240,11 @@ class MambaRelay(nn.Module):
         # Project to output
         output = self.output_proj(x)  # (batch, 1)
         
-        return output
-
+        return output + x_raw[:, center_idx, :]
 
 class MambaRelayWrapper(Relay):
     """Wrapper for Mamba relay."""
-    
+
     def __init__(self, target_power=1.0, window_size=11, d_model=32, d_state=16, num_layers=2, prefer_gpu=False,
                  output_activation="tanh", use_input_norm=False, clip_range=None):
         self.target_power = target_power

@@ -149,6 +149,7 @@ class TransformerRelay(nn.Module):
             Output of shape (batch_size, 1)
         """
         # Project input to d_model dimensions
+        x_raw = x
         x = self.input_proj(x)  # (batch, window_size, d_model)
         
         # Optional input normalisation
@@ -169,7 +170,7 @@ class TransformerRelay(nn.Module):
         # Project to output
         output = self.output_proj(x)  # (batch, 1)
         
-        return output
+        return output + x_raw[:, center_idx, :]
 
 
 class TransformerRelayWrapper(Relay):
