@@ -1,0 +1,146 @@
+"""
+run_csi_experiment.py
+============================
+Experiment: Evaluate whether introducing Channel State Information (CSI) 
+as an explicit secondary input feature helps Sequence Realy Models 
+exceed Amplify-and-Forward (AF) performance for 16-QAM in Rayleigh.
+
+Usage::
+    python scripts/run_csi_experiment.py --quick
+"""
+
+import argparse
+import os
+import sys
+from time import perf_counter
+
+if sys.stdout and hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+
+import numpy as np
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+
+from relaynet.relays.af import AmplifyAndForwardRelay
+from relaynet.relays.df import DecodeAndForwardRelay
+from relaynet.simulation.runner import run_monte_carlo
+from relaynet.channels.fading import rayleigh_fading_channel
+from relaynet.utils.activations import get_clip_range
+
+try:
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    _HAS_PLT = True
+except Exception:
+    _HAS_PLT = False
+
+from checkpoints.checkpoint_20_mamba_s6_relay import MambaRelayWrapper
+
+def parse_args():
+    p = argparse.ArgumentParser()
+    p.add_argument("--quick", action="store_true")
+    p.add_argument("--gpu", action="store_true")
+    p.add_argument("--snr-min", type=float, default=0)
+    p.add_argument("--snr-max", type=float, default=20)
+    p.add_argument("--snr-step", type=float, default=2)
+    p.add_argument("--bits-per-trial", type=int, default=10000)
+    p.add_argument("--num-trials", type=int, default=10)
+    p.add_argument("--seed", type=int, default=42)
+    return p.parse_args()
+
+def evaluate(relays, snr_range, args, modulation="qam16"):
+    results = {}
+    channel_fn = lambda s, snr: rayleigh_fading_channel(s, snr, return_channel=True)
+    for name, relay in relays.items():
+        print(f"    {name} ...", end=" ", flush=True)
+        t0 = perf_counter()
+        _, ber_mean, ber_trials = run_monte_carlo(
+            relay, snr_range,
+            num_bits_per_trial=args.bits_per_trial,
+            num_trials=args.num_trials,
+            channel_fn=channel_fn,
+            seed_offset=args.seed,
+            modulation=modulation,
+        )
+        print(f"done ({perf_counter()-t0:.1f}s)")
+        results[name] = (ber_mean, ber_trials)
+    return results
+
+def plot_csi_results(results, snr_range, out_path):
+    if not _HAS_PLT: return
+    fig, ax = plt.subplots(figsize=(8, 6))
+    styles = {
+        "AF": ("#999999", "x", "--"),
+        "DF": ("#555555", "+", "-."),
+        "Mamba S6 (Baseline)": ("#0072b2", "^", "dotted"),
+        "Mamba S6 (+LayerNorm)": ("#d55e00", "s", "--"),
+        "Mamba S6 (+CSI + LN)": ("#009e73", "*", "-")
+    }
+    for name, (ber_mean, _) in results.items():
+        color, marker, ls = styles.get(name, ("k", "o", "-"))
+        ax.semilogy(snr_range, ber_mean, marker=marker, color=color, linestyle=ls, label=name, markersize=8)
+    
+    ax.set_xlabel("SNR (dB)")
+    ax.set_ylabel("Bit Error Rate (BER)")
+    ax.set_title("16-QAM in Rayleigh Fading: Baseline vs CSI Injection")
+    ax.grid(True, which="both", ls="--", alpha=0.5)
+    ax.legend()
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    plt.savefig(out_path, dpi=300, bbox_inches="tight")
+    plt.close()
+
+def main():
+    args = parse_args()
+    snr_range = np.arange(args.snr_min, args.snr_max + args.snr_step, args.snr_step)
+    
+    samples = 1000 if args.quick else 20000
+    epochs = 5 if args.quick else 25
+    
+    print("--- CSI Injection Experiment (16-QAM / Rayleigh) ---")
+    clip = get_clip_range("qam16")
+    
+    relays = {
+        "AF": AmplifyAndForwardRelay(target_power=1.0),
+        "DF": DecodeAndForwardRelay(target_power=1.0)
+    }
+    
+    base_kw = dict(target_power=1.0, window_size=11, d_model=32, d_state=16, num_layers=2, clip_range=clip)
+    
+    print("\nBuilding Mamba S6 (Baseline)...")
+    r_base = MambaRelayWrapper(**base_kw, in_channels=1, use_input_norm=False, output_activation="tanh")
+    r_base.train(training_snrs=[5, 10, 15], num_samples=samples, epochs=epochs, training_modulation="qam16", use_rayleigh=True)
+    relays["Mamba S6 (Baseline)"] = r_base
+    
+    print("\nBuilding Mamba S6 (+LayerNorm)...")
+    r_ln = MambaRelayWrapper(**base_kw, in_channels=1, use_input_norm=True, output_activation="scaled_tanh")
+    r_ln.train(training_snrs=[5, 10, 15], num_samples=samples, epochs=epochs, training_modulation="qam16", use_rayleigh=True)
+    relays["Mamba S6 (+LayerNorm)"] = r_ln
+    
+    print("\nBuilding Mamba S6 (+CSI + LN)...")
+    r_csi = MambaRelayWrapper(**base_kw, in_channels=2, use_input_norm=True, output_activation="scaled_tanh")
+    r_csi.train(training_snrs=[5, 10, 15], num_samples=samples, epochs=epochs, training_modulation="qam16", use_rayleigh=True)
+    relays["Mamba S6 (+CSI + LN)"] = r_csi
+    
+    print("\nEvaluating...")
+    res = evaluate(relays, snr_range, args, "qam16")
+    
+    # print BER table
+    print("\n--- BER Summary ---")
+    print(f"{'SNR':>5} |", end="")
+    for name in relays.keys():
+        print(f" {name[:12]:>12} |", end="")
+    print()
+    for i, snr in enumerate(snr_range):
+        print(f"{snr:5.1f} |", end="")
+        for name in relays.keys():
+            ber = res[name][0][i]
+            print(f" {ber:12.4e} |", end="")
+        print()
+    
+    out_path = "results/csi/csi_experiment_qam16_rayleigh.png"
+    plot_csi_results(res, snr_range, out_path)
+    print(f"\nSaved plot to {out_path}")
+    print("DONE.")
+
+if __name__ == "__main__":
+    main()
