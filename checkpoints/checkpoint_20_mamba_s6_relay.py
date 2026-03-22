@@ -283,10 +283,41 @@ class MambaRelayWrapper(Relay):
         # Count parameters
         self.num_params = sum(p.numel() for p in self.model.parameters())
     
+    def _compute_accuracy(self, X, y_true, batch_size=512):
+        """Compute symbol-level accuracy (fraction of predictions close to target)."""
+        self.model.eval()
+        correct = 0
+        total = 0
+        with torch.no_grad():
+            for i in range(0, len(X), batch_size):
+                X_batch = X[i:i+batch_size]
+                y_batch = y_true[i:i+batch_size]
+                output = self.model(X_batch)
+                # Symbol is "correct" if nearest constellation point matches
+                correct += (torch.sign(output) == torch.sign(y_batch)).sum().item()
+                total += y_batch.numel()
+        return correct / total if total > 0 else 0.0
+
     def train(self, training_snrs=[5, 10, 15], num_samples=50000, epochs=100, lr=0.001,
-              training_modulation="bpsk", use_rayleigh=False):
+              training_modulation="bpsk", use_rayleigh=False,
+              patience=0, min_delta=1e-5, val_split=0.15):
         """
         Train Mamba relay.
+
+        Parameters
+        ----------
+        patience : int
+            Early-stopping patience (epochs with no improvement).
+            0 disables early stopping.
+        min_delta : float
+            Minimum loss decrease to count as improvement.
+        val_split : float
+            Fraction of data reserved for validation / test accuracy.
+
+        Returns
+        -------
+        history : dict
+            Keys: 'train_loss', 'train_acc', 'val_acc' — lists of per-epoch values.
         """
         print(f"  Mamba S6 Training Configuration:")
         print(f"    Device: {self.device}")
@@ -297,6 +328,8 @@ class MambaRelayWrapper(Relay):
         print(f"    Parameters: {self.num_params:,}")
         print(f"    Training SNRs: {training_snrs} dB")
         print(f"    Samples: {num_samples:,}, Epochs: {epochs}")
+        if patience > 0:
+            print(f"    Early stopping: patience={patience}, min_delta={min_delta}")
         if self.use_input_norm:
             print(f"    Input LayerNorm: ENABLED")
         if training_modulation != "bpsk":
@@ -305,8 +338,8 @@ class MambaRelayWrapper(Relay):
         # Generate training data
         print(f"\n  Generating training data...")
         samples_per_snr = num_samples // len(training_snrs)
-        X_train_all = []
-        y_train_all = []
+        X_all = []
+        y_all = []
         
         in_channels = self.model.input_proj.in_features
         return_csi = (in_channels > 1)
@@ -333,13 +366,21 @@ class MambaRelayWrapper(Relay):
             
             for i in range(self.window_size // 2, len(noisy) - self.window_size // 2):
                 window = features[i - self.window_size // 2 : i + self.window_size // 2 + 1]
-                X_train_all.append(window)
-                y_train_all.append(clean[i])
+                X_all.append(window)
+                y_all.append(clean[i])
         
-        X_train = torch.FloatTensor(np.array(X_train_all)).to(self.device)  # (N, win, in_channels)
-        y_train = torch.FloatTensor(np.array(y_train_all).reshape(-1, 1)).to(self.device)
+        X_full = torch.FloatTensor(np.array(X_all)).to(self.device)
+        y_full = torch.FloatTensor(np.array(y_all).reshape(-1, 1)).to(self.device)
+
+        # Train / validation split
+        n_total = len(X_full)
+        n_val = max(1, int(n_total * val_split))
+        perm = torch.randperm(n_total)
+        val_idx, train_idx = perm[:n_val], perm[n_val:]
+        X_train, y_train = X_full[train_idx], y_full[train_idx]
+        X_val,   y_val   = X_full[val_idx],   y_full[val_idx]
         
-        print(f"  Training data ready: {len(X_train):,} samples")
+        print(f"  Training data ready: {len(X_train):,} train, {len(X_val):,} val samples")
 
         # Optimizer and loss
         optimizer = optim.Adam(self.model.parameters(), lr=lr)
@@ -349,6 +390,10 @@ class MambaRelayWrapper(Relay):
         
         batch_size = 64
         best_loss = float('inf')
+        patience_counter = 0
+        best_state = None
+
+        history = {'train_loss': [], 'train_acc': [], 'val_acc': []}
         
         for epoch in range(epochs):
             self.model.train()
@@ -376,16 +421,41 @@ class MambaRelayWrapper(Relay):
                 num_batches += 1
             
             avg_loss = total_loss / num_batches
-            if avg_loss < best_loss:
+
+            # Compute accuracies
+            train_acc = self._compute_accuracy(X_train, y_train)
+            val_acc   = self._compute_accuracy(X_val,   y_val)
+            history['train_loss'].append(avg_loss)
+            history['train_acc'].append(train_acc)
+            history['val_acc'].append(val_acc)
+
+            # Early stopping check
+            if avg_loss < best_loss - min_delta:
                 best_loss = avg_loss
+                patience_counter = 0
+                best_state = {k: v.cpu().clone() for k, v in self.model.state_dict().items()}
+            else:
+                patience_counter += 1
             
-            if (epoch + 1) % 20 == 0:
-                print(f"    Epoch {epoch+1}/{epochs}, Loss: {avg_loss:.6f}, Best: {best_loss:.6f}")
+            if (epoch + 1) % max(1, epochs // 10) == 0 or epoch == 0:
+                print(f"    Epoch {epoch+1}/{epochs}, Loss: {avg_loss:.6f}, "
+                      f"Train Acc: {train_acc:.4f}, Val Acc: {val_acc:.4f}, "
+                      f"Best: {best_loss:.6f}")
+
+            if patience > 0 and patience_counter >= patience:
+                print(f"    Early stopping at epoch {epoch+1} (no improvement for {patience} epochs)")
+                break
         
+        # Restore best weights
+        if best_state is not None:
+            self.model.load_state_dict({k: v.to(self.device) for k, v in best_state.items()})
+
         self.is_trained = True
         print(f"\n  Mamba training complete!")
-        print(f"  Final loss: {avg_loss:.6f}")
+        print(f"  Final loss: {avg_loss:.6f}, Best loss: {best_loss:.6f}")
         print(f"  Total parameters: {self.num_params:,}")
+
+        return history
     
     def process(self, received_signal):
         """Process signal through Mamba (batched)."""

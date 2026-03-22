@@ -36,6 +36,43 @@ except Exception:
 
 from checkpoints.checkpoint_20_mamba_s6_relay import MambaRelayWrapper
 
+
+def plot_training_history(all_histories, out_dir):
+    """Plot train loss, train accuracy and val accuracy for each model."""
+    if not _HAS_PLT:
+        return
+    os.makedirs(out_dir, exist_ok=True)
+    for name, hist in all_histories.items():
+        epochs_range = range(1, len(hist['train_loss']) + 1)
+        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 4))
+        fig.suptitle(name, fontsize=13)
+
+        # Loss
+        ax1.plot(epochs_range, hist['train_loss'], 'b-', label='Train Loss')
+        ax1.set_xlabel('Epoch')
+        ax1.set_ylabel('Loss (MSE)')
+        ax1.set_title('Training Loss')
+        ax1.legend()
+        ax1.grid(True, alpha=0.3)
+
+        # Accuracy
+        ax2.plot(epochs_range, hist['train_acc'], 'g-', label='Train Accuracy')
+        ax2.plot(epochs_range, hist['val_acc'], 'r--', label='Val Accuracy')
+        ax2.set_xlabel('Epoch')
+        ax2.set_ylabel('Accuracy')
+        ax2.set_title('Accuracy')
+        ax2.set_ylim(0, 1)
+        ax2.legend()
+        ax2.grid(True, alpha=0.3)
+
+        plt.tight_layout()
+        safe_name = name.replace(' ', '_').replace('(', '').replace(')', '').replace('+', '')
+        path = os.path.join(out_dir, f"training_{safe_name}.png")
+        plt.savefig(path, dpi=200, bbox_inches='tight')
+        plt.close()
+        print(f"  Saved training chart: {path}")
+
+
 def parse_args():
     p = argparse.ArgumentParser()
     p.add_argument("--quick", action="store_true")
@@ -46,6 +83,10 @@ def parse_args():
     p.add_argument("--bits-per-trial", type=int, default=10000)
     p.add_argument("--num-trials", type=int, default=10)
     p.add_argument("--seed", type=int, default=42)
+    p.add_argument("--patience", type=int, default=0,
+                   help="Early-stopping patience (0=disabled)")
+    p.add_argument("--min-delta", type=float, default=1e-5,
+                   help="Min loss improvement for early stopping")
     return p.parse_args()
 
 def evaluate(relays, snr_range, args, modulation="qam16"):
@@ -73,8 +114,7 @@ def plot_csi_results(results, snr_range, out_path):
         "AF": ("#999999", "x", "--"),
         "DF": ("#555555", "+", "-."),
         "Mamba S6 (Baseline)": ("#0072b2", "^", "dotted"),
-        "Mamba S6 (+LayerNorm)": ("#d55e00", "s", "--"),
-        "Mamba S6 (+CSI + LN)": ("#009e73", "*", "-")
+        "Mamba S6 (+CSI)": ("#009e73", "*", "-")
     }
     for name, (ber_mean, _) in results.items():
         color, marker, ls = styles.get(name, ("k", "o", "-"))
@@ -103,23 +143,22 @@ def main():
         "AF": AmplifyAndForwardRelay(target_power=1.0),
         "DF": DecodeAndForwardRelay(target_power=1.0)
     }
+    all_histories = {}
     
     base_kw = dict(target_power=1.0, window_size=11, d_model=32, d_state=16, num_layers=2, clip_range=clip, prefer_gpu=args.gpu)
+    train_kw = dict(training_snrs=[5, 10, 15], num_samples=samples, epochs=epochs,
+                    training_modulation="qam16", use_rayleigh=True,
+                    patience=args.patience, min_delta=args.min_delta)
     
     print("\nBuilding Mamba S6 (Baseline)...")
-    r_base = MambaRelayWrapper(**base_kw, in_channels=1, use_input_norm=False, output_activation="tanh")
-    r_base.train(training_snrs=[5, 10, 15], num_samples=samples, epochs=epochs, training_modulation="qam16", use_rayleigh=True)
+    r_base = MambaRelayWrapper(**base_kw, in_channels=1, use_input_norm=False, output_activation="hardtanh")
+    all_histories["Mamba S6 (Baseline)"] = r_base.train(**train_kw)
     relays["Mamba S6 (Baseline)"] = r_base
     
-    print("\nBuilding Mamba S6 (+LayerNorm)...")
-    r_ln = MambaRelayWrapper(**base_kw, in_channels=1, use_input_norm=True, output_activation="scaled_tanh")
-    r_ln.train(training_snrs=[5, 10, 15], num_samples=samples, epochs=epochs, training_modulation="qam16", use_rayleigh=True)
-    relays["Mamba S6 (+LayerNorm)"] = r_ln
-    
-    print("\nBuilding Mamba S6 (+CSI + LN)...")
-    r_csi = MambaRelayWrapper(**base_kw, in_channels=2, use_input_norm=True, output_activation="scaled_tanh")
-    r_csi.train(training_snrs=[5, 10, 15], num_samples=samples, epochs=epochs, training_modulation="qam16", use_rayleigh=True)
-    relays["Mamba S6 (+CSI + LN)"] = r_csi
+    print("\nBuilding Mamba S6 (+CSI)...")
+    r_csi = MambaRelayWrapper(**base_kw, in_channels=2, use_input_norm=False, output_activation="hardtanh")
+    all_histories["Mamba S6 (+CSI)"] = r_csi.train(**train_kw)
+    relays["Mamba S6 (+CSI)"] = r_csi
     
     print("\nEvaluating...")
     res = evaluate(relays, snr_range, args, "qam16")
@@ -140,6 +179,9 @@ def main():
     out_path = "results/csi/csi_experiment_qam16_rayleigh.png"
     plot_csi_results(res, snr_range, out_path)
     print(f"\nSaved plot to {out_path}")
+
+    # Training history charts
+    plot_training_history(all_histories, "results/csi")
     print("DONE.")
 
 if __name__ == "__main__":
