@@ -104,7 +104,7 @@ def main():
         "DF": DecodeAndForwardRelay(target_power=1.0)
     }
     
-    base_kw = dict(target_power=1.0, window_size=11, d_model=32, d_state=16, num_layers=2, clip_range=clip)
+    base_kw = dict(target_power=1.0, window_size=11, d_model=32, d_state=16, num_layers=2, clip_range=clip, prefer_gpu=args.gpu)
     
     print("\nBuilding Mamba S6 (Baseline)...")
     r_base = MambaRelayWrapper(**base_kw, in_channels=1, use_input_norm=False, output_activation="tanh")

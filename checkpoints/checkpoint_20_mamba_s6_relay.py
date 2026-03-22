@@ -255,10 +255,14 @@ class MambaRelayWrapper(Relay):
         self.clip_range = clip_range
         self.in_channels = in_channels
         
-        # Set device — with only 24K parameters this model is too small to
-        # benefit from GPU; kernel-launch overhead dominates compute time.
-        if prefer_gpu and torch.cuda.is_available():
-            self.device = torch.device('cuda')
+        # Set device
+        if prefer_gpu:
+            if torch.cuda.is_available():
+                self.device = torch.device('cuda')
+            elif hasattr(torch.backends, 'mps') and torch.backends.mps.is_available():
+                self.device = torch.device('mps')
+            else:
+                self.device = torch.device('cpu')
         else:
             self.device = torch.device('cpu')
         
@@ -395,9 +399,13 @@ class MambaRelayWrapper(Relay):
         
         # Unpack CSI if provided
         if isinstance(received_signal, tuple):
-            y, h_csi = received_signal
-            n = len(y)
-            # Combine into 2D features
+            if self.in_channels == 1:
+                # Discard CSI if model only expects 1 channel
+                received_signal = received_signal[0]
+            else:
+                y, h_csi = received_signal
+                n = len(y)
+                # Combine into 2D features
             features = np.column_stack([y, h_csi])
             pad_size = self.window_size // 2
             padded_features = np.pad(features, ((pad_size, pad_size), (0, 0)), mode='edge')
