@@ -27,6 +27,13 @@ def _df_constellation_detect(received_signal, modulation, target_power=1.0):
         I_idx = np.argmin(np.abs(I[:, None] - levels[None, :]), axis=1)
         Q_idx = np.argmin(np.abs(Q[:, None] - levels[None, :]), axis=1)
         clean = (levels[I_idx] + 1j * levels[Q_idx]) / norm
+    elif modulation == "psk16":
+        # Nearest of 16 uniformly-spaced unit-circle points
+        angles = np.angle(received_signal)
+        angles = np.where(angles < 0, angles + 2.0 * np.pi, angles)
+        ref_angles = 2.0 * np.pi * np.arange(16) / 16.0
+        idx = np.round(angles * 16.0 / (2.0 * np.pi)).astype(int) % 16
+        clean = np.exp(1j * ref_angles[idx])
     else:
         raise ValueError(f"Unsupported modulation for complex DF: {modulation}")
 

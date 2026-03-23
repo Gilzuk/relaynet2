@@ -20,4 +20,6 @@
 18. **BER summary tables**: In addition to plots, provide BER summary tables at key SNR points (e.g., 4 dB and 16 dB) with Δ BER between activations for quick reference.
 19. provide summary charts that aggregate results across constellations and models, using bar charts or heatmaps to show overall trends in activation performance.
 20. provide achievement chart where the winner of each constellation/model is highlighted, showing which activation performed best in each scenario while the others are faded out.
+21. **JSON persistence**: Every experiment run must save full BER results (mean, per-trial, 95% CI bounds) to a `.json` file alongside the plots, enabling later chart regeneration without re-running the experiment.
+22. **Top-3 chart**: After each experiment, automatically generate a focused chart showing only the 3 best-performing neural architectures compared to AF and DF baselines. Ranking is by average BER across the upper half of the SNR range. Use bold distinct colors for the top-3 and grey/black for baselines.
 

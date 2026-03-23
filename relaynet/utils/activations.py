@@ -26,6 +26,7 @@ CONSTELLATION_CLIP = {
     "bpsk":  1.0,
     "qpsk":  1.0 / np.sqrt(2.0),
     "qam16": QAM16_CLIP,
+    "psk16": 1.0,
 }
 
 
@@ -160,6 +161,13 @@ def generate_training_targets(num_samples, snr_db, training_modulation="bpsk",
         levels = np.array([-3.0, -1.0, 1.0, 3.0]) / np.sqrt(10.0)
         indices = np.random.randint(0, 4, num_samples)
         clean = levels[indices]
+    elif training_modulation == "psk16":
+        # 16-PSK: 16 equally-spaced points on the unit circle.
+        # For 1-D per-axis training, project onto I or Q axis.
+        angles = 2.0 * np.pi * np.arange(16) / 16.0
+        cos_vals = np.cos(angles)  # I-axis projections
+        indices = np.random.randint(0, 16, num_samples)
+        clean = cos_vals[indices]
     elif training_modulation == "qpsk":
         bits = np.random.randint(0, 2, num_samples)
         clean = bpsk_modulate(bits) / np.sqrt(2.0)

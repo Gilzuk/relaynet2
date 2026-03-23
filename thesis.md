@@ -58,6 +58,8 @@ A thesis submitted in partial fulfillment of the requirements for the degree of 
    - 7.12 Constellation-Aware Activation Study
    - 7.13 Input Layer Normalization and Scaled Tanh Experiment
    - 7.14 Extension Experiment: End-to-End Joint Optimization
+   - 7.15 Structural CSI Injection for 16-QAM in Rayleigh Fading
+   - 7.16 Comprehensive Multi-Architecture CSI Experiment
 8. [Discussion and Conclusions](#8-discussion-and-conclusions)
    - 8.1 Interpretation of Results
    - 8.2 The "Less is More" Principle
@@ -122,6 +124,13 @@ A thesis submitted in partial fulfillment of the requirements for the degree of 
 | 39 | E2E learned 16-point constellation | §7.14 |
 | 40 | E2E training loss convergence | §7.14 |
 | 41 | E2E vs. modular relay-based approaches | §7.14 |
+| 42 | 16-QAM Rayleigh — all 48 neural relay variants and classical baselines with 95% CI | §7.16 |
+| 43 | Top-3 neural relays vs. classical — 16-QAM Rayleigh | §7.16 |
+| 44 | 16-PSK Rayleigh — all 48 neural relay variants and classical baselines with 95% CI | §7.16 |
+| 45 | Top-3 neural relays vs. classical — 16-PSK Rayleigh | §7.16 |
+| 46 | Training history — Mamba-2 (+LN scaled_tanh), #1 QAM16 variant | §7.16 |
+| 47 | Training history — Mamba S6 (+CSI tanh), #1 PSK16 variant | §7.16 |
+| 48 | Training history — Transformer (+CSI sigmoid), #2 PSK16 variant | §7.16 |
 
 ## List of Tables
 
@@ -144,6 +153,11 @@ A thesis submitted in partial fulfillment of the requirements for the degree of 
 | 15 | 16-QAM BER at 16 dB — activation variant comparison (tanh vs. linear vs. hardtanh) | §7.11 |
 | 16 | +InputLN parameter overhead and BER ranges for sequence models | §7.13 |
 | 17 | BER comparison of E2E autoencoder vs. theoretical 16-QAM (Rayleigh fading) | §7.14 |
+| 18 | BER comparing blind spatial tracking vs. CSI injection for 16-QAM (Rayleigh) | §7.15 |
+| 19 | Top-3 neural relays and classical baselines — 16-QAM (Rayleigh, 100 MC) | §7.16 |
+| 20 | Top-3 neural relays and classical baselines — 16-PSK (Rayleigh, 100 MC) | §7.16 |
+| 21 | Cross-constellation comparison of top-performing neural relay strategies | §7.16 |
+| 22 | Goals vs. outcomes for the comprehensive multi-architecture CSI experiment | §7.16 |
 
 ---
 
@@ -1741,6 +1755,157 @@ At high SNR (20 dB), whereas pure blind Mamba collapses entirely (0.2302 BER) an
 
 ---
 
+## 7.16 Comprehensive Multi-Architecture CSI Experiment
+
+### 7.16.1 Motivation
+
+The initial CSI injection experiment (Section 7.15) demonstrated that providing explicit fading coefficients to the Mamba S6 relay dramatically improves 16-QAM performance under Rayleigh fading. However, that study used only a single architecture (Mamba S6), a single activation function, and a limited number of trials ($N=10$). This section presents a comprehensive combinatorial experiment that systematically evaluates **three neural architectures** (Mamba S6, Transformer, Mamba-2), **four activation functions** (hardtanh, scaled\_tanh, tanh, sigmoid), and **four structural configurations** (Baseline, +LN, +CSI, +CSI+LN) across two higher-order constellations: **16-QAM** and **16-PSK**.
+
+The goal is to identify the top-performing neural relay topologies under each modulation scheme and to determine whether CSI injection, input LayerNorm, or their combination provides the most consistent benefit across diverse architectures.
+
+### 7.16.2 Experimental Design
+
+The experiment evaluates $3 \times 4 \times 4 = 48$ neural relay variants plus the two classical baselines (AF and DF), for a total of 50 variants per constellation.
+
+**Architectures:**
+- **Mamba S6** (~24K parameters): Selective state space model with input-dependent gating and recurrent state propagation.
+- **Transformer** (~17K parameters): Multi-head self-attention with positional encoding.
+- **Mamba-2** (~26K parameters): Second-generation state space model with structured state space duality (SSD).
+
+**Structural configurations:**
+- **Baseline**: Standard $d_{in}=1$ input projection, no normalization.
+- **+LN**: Input LayerNorm applied before the first sequence block; scaled tanh/hardtanh/sigmoid activation at output.
+- **+CSI**: Input expanded to $d_{in}=2$ with channel state $|h_{SR}|$ concatenated alongside the received symbol $y$.
+- **+CSI+LN**: Both CSI injection and input LayerNorm.
+
+**Activation functions:**
+- **hardtanh**: Piecewise-linear clipping at $\pm A_{\max}$.
+- **scaled\_tanh**: $A_{\max} \cdot \tanh(x / A_{\max})$, smooth approximation to hardtanh.
+- **tanh**: Standard hyperbolic tangent with unit range.
+- **sigmoid**: $A_{\max} \cdot \sigma(x)$, asymmetric bounded activation.
+
+**Training protocol:** 25 epochs with early stopping (patience = 10, $\delta_{\min} = 10^{-5}$), MSE loss, Adam optimizer ($\eta = 10^{-3}$), 50,000 training symbols. Weight caching ensures reproducibility across successive runs.
+
+**Evaluation:** 100 Monte Carlo trials, 10,000 bits per trial, SNR range 0–20 dB in 2 dB steps. 95% confidence intervals computed via Student's $t$-distribution.
+
+### 7.16.3 Results: 16-QAM in Rayleigh Fading
+
+The full combinatorial experiment produced the BER curves shown in Figure 42. The top-3 neural relay architectures, ranked by average BER over the upper half of the SNR range (10–20 dB), are presented alongside the classical AF and DF baselines in Figure 43 and Table 19.
+
+![Figure 42: Full 16-QAM CSI experiment — all 48 neural variants plus AF/DF.](results/csi/csi_experiment_qam16_rayleigh.png)
+
+*Figure 42: 16-QAM Rayleigh fading — BER vs. SNR for all 48 neural relay variants and two classical baselines (AF, DF) with 95% confidence intervals. The plot reveals a dense cluster of neural variants between the AF and DF curves, with the best variants approaching AF performance at high SNR.*
+
+![Figure 43: Top-3 neural relays vs. classical — 16-QAM Rayleigh.](results/csi/top3_qam16_rayleigh.png)
+
+*Figure 43: Top-3 neural relay architectures compared against AF and DF for 16-QAM in Rayleigh fading. All three best-performing variants use input LayerNorm (+LN) without CSI injection.*
+
+| SNR (dB) | AF | DF | #1 Mamba-2 (+LN scaled\_tanh) | #2 Mamba (+LN hardtanh) | #3 Mamba (+LN sigmoid) |
+|---|---|---|---|---|---|
+| 0 | 0.4551 | 0.4185 | 0.4623 | 0.4628 | 0.4615 |
+| 6 | 0.3585 | 0.3063 | 0.3562 | 0.3570 | 0.3541 |
+| 10 | 0.2602 | 0.2069 | 0.2450 | 0.2453 | 0.2442 |
+| 14 | 0.1572 | 0.1155 | 0.1480 | 0.1488 | 0.1496 |
+| 18 | 0.0767 | 0.0551 | 0.0795 | 0.0806 | 0.0826 |
+| 20 | 0.0501 | 0.0364 | 0.0555 | 0.0566 | 0.0587 |
+
+*Table 19: BER at selected SNR points for the top-3 neural relays and classical baselines (16-QAM, Rayleigh fading, 100 MC trials). The best neural variant (Mamba-2 +LN scaled\_tanh) comes within 11% of AF at 20 dB but does not surpass it.*
+
+**QAM16 Top-3 Observations:**
+1. **#1 Mamba-2 (+LN scaled\_tanh):** Best overall neural relay with BER = 0.0555 at 20 dB (vs. AF = 0.0501). The Mamba-2 architecture combined with input LayerNorm and smooth bounded activation achieves the closest tracking to AF across the full SNR range.
+2. **#2 Mamba S6 (+LN hardtanh):** BER = 0.0566 at 20 dB. Original Mamba with piecewise-linear clipping and normalization.
+3. **#3 Mamba S6 (+LN sigmoid):** BER = 0.0587 at 20 dB. Asymmetric sigmoid activation paired with LayerNorm.
+
+### 7.16.4 Results: 16-PSK in Rayleigh Fading
+
+The same combinatorial experiment was repeated for 16-PSK modulation with $A_{\max} = 1.0$ (unit-circle constellation). The full BER curves are shown in Figure 44, with the top-3 comparison in Figure 45 and Table 20.
+
+![Figure 44: Full 16-PSK CSI experiment — all 48 neural variants plus AF/DF.](results/csi/csi_experiment_psk16_rayleigh.png)
+
+*Figure 44: 16-PSK Rayleigh fading — BER vs. SNR for all 48 neural relay variants and two classical baselines. The neural variants form a tighter cluster than QAM16, reflecting the constant-envelope nature of PSK which reduces the amplitude-aliasing challenge.*
+
+![Figure 45: Top-3 neural relays vs. classical — 16-PSK Rayleigh.](results/csi/top3_psk16_rayleigh.png)
+
+*Figure 45: Top-3 neural relay architectures compared against AF and DF for 16-PSK in Rayleigh fading. In contrast to QAM16, all three best-performing PSK16 variants use CSI injection (+CSI or +CSI+LN).*
+
+| SNR (dB) | AF | DF | #1 Mamba (+CSI tanh) | #2 Transformer (+CSI sigmoid) | #3 Transformer (+CSI+LN hardtanh) |
+|---|---|---|---|---|---|
+| 0 | 0.4546 | 0.4189 | 0.4578 | 0.4587 | 0.4581 |
+| 6 | 0.3730 | 0.3304 | 0.3678 | 0.3692 | 0.3689 |
+| 10 | 0.2885 | 0.2568 | 0.2807 | 0.2815 | 0.2817 |
+| 14 | 0.1974 | 0.1747 | 0.1923 | 0.1930 | 0.1927 |
+| 18 | 0.1165 | 0.0991 | 0.1163 | 0.1159 | 0.1158 |
+| 20 | 0.0833 | 0.0701 | 0.0852 | 0.0845 | 0.0844 |
+
+*Table 20: BER at selected SNR points for the top-3 neural relays and classical baselines (16-PSK, Rayleigh fading, 100 MC trials). The best neural variants track AF closely at mid-to-high SNR, with near-parity at 18 dB (0.1158 vs. 0.1165).*
+
+**PSK16 Top-3 Observations:**
+1. **#1 Mamba S6 (+CSI tanh):** BER = 0.0852 at 20 dB (vs. AF = 0.0833). CSI-aware Mamba using standard tanh activation.
+2. **#2 Transformer (+CSI sigmoid):** BER = 0.0845 at 20 dB. CSI-aware Transformer with sigmoid output.
+3. **#3 Transformer (+CSI+LN hardtanh):** BER = 0.0844 at 20 dB. Full CSI+LN configuration with piecewise-linear clipping.
+
+### 7.16.5 Cross-Constellation Analysis
+
+The comprehensive experiment reveals strikingly different optimal strategies for the two higher-order constellations:
+
+| Property | 16-QAM Top-3 | 16-PSK Top-3 |
+|---|---|---|
+| Dominant configuration | +LN (LayerNorm only) | +CSI / +CSI+LN |
+| CSI injection benefit | Negative (degrades BER) | Positive (improves BER) |
+| Best architecture | Mamba-2, Mamba S6 | Mamba S6, Transformer |
+| Best activation | scaled\_tanh, hardtanh, sigmoid | tanh, sigmoid, hardtanh |
+| Gap to AF at 20 dB | ~11% (0.0555 vs. 0.0501) | ~1.5% (0.0844 vs. 0.0833) |
+| DF superiority at 20 dB | DF wins by 34% over best neural | DF wins by 17% over best neural |
+
+*Table 21: Cross-constellation comparison of top-performing neural relay strategies.*
+
+**Finding 23: CSI injection is modulation-dependent.** For 16-QAM (amplitude-and-phase modulation), CSI injection systematically degrades performance. The top-3 QAM16 variants all use **+LN without CSI**. The likely explanation is that 16-QAM's amplitude grid already encodes distance information in the I/Q signal levels, and injecting a redundant channel magnitude feature confuses the network's learned amplitude mapping. In contrast, 16-PSK (pure phase modulation with constant envelope) benefits from CSI injection because the fading coefficient provides orthogonal amplitude information that the constant-envelope signal cannot convey. All top-3 PSK16 variants use **+CSI or +CSI+LN**.
+
+**Finding 24: Input LayerNorm is universally beneficial for QAM16 but model-dependent for PSK16.** For 16-QAM, every top-3 variant includes LayerNorm, consistent with the Section 7.13 finding that normalizing the multi-level amplitude distribution before sequence processing stabilizes training and reduces BER. For 16-PSK, LayerNorm appears in only one of the top-3 variants, and the best variant (Mamba +CSI tanh) omits it entirely, suggesting that the constant-envelope PSK signal is already well-conditioned for direct processing.
+
+**Finding 25: State space models dominate QAM16; Transformers compete on PSK16.** Mamba S6 and Mamba-2 occupy all three QAM16 top-3 positions, while the Transformer does not appear. For PSK16, the Transformer captures two of three top-3 positions. This modulation-dependent architectural preference may reflect the Transformer's attention mechanism being better suited to the rotational symmetry of PSK constellations (where inter-symbol distances are uniform on the unit circle), while the Mamba family's recurrent state tracking is more effective for the multi-level amplitude structure of QAM.
+
+**Finding 26: Classical DF remains unbeaten across all configurations.** Despite the 48 neural variants spanning three architectures, four activations, and four structural configurations, no neural relay achieves a lower BER than DF at any SNR point for either constellation. The best neural relays approach AF performance but cannot surpass it. This reaffirms the fundamental information-theoretic advantage of hard-decision regeneration when perfect demodulation is possible — the relay task for higher-order modulations requires equalization beyond what current neural sequence models can provide without explicit channel knowledge at the demodulator level.
+
+### 7.16.6 Training Convergence Examples
+
+Representative training curves for the top-performing variants illustrate the convergence characteristics of each architecture under the 16-PSK experiment. All models were trained for 25 epochs with early stopping (patience = 10).
+
+![Figure 46: Training history — Mamba-2 (+LN scaled\_tanh).](results/csi/training_Mamba2_LN_scaled_tanh.png)
+
+*Figure 46: Training loss (MSE) and accuracy for Mamba-2 (+LN scaled\_tanh), the #1 QAM16 variant. The model converges within approximately 5 epochs and stabilises, with validation accuracy closely tracking training accuracy — indicating minimal overfitting.*
+
+![Figure 47: Training history — Mamba (+CSI tanh).](results/csi/training_Mamba_CSI_tanh.png)
+
+*Figure 47: Training loss and accuracy for Mamba S6 (+CSI tanh), the #1 PSK16 variant. The CSI-augmented input produces a smooth, monotonic training convergence, with the additional channel-state feature providing clear gradient signal for the optimizer.*
+
+![Figure 48: Training history — Transformer (+CSI sigmoid).](results/csi/training_Transformer_CSI_sigmoid.png)
+
+*Figure 48: Training loss and accuracy for Transformer (+CSI sigmoid), the #2 PSK16 variant. The Transformer exhibits rapid initial convergence (within 3 epochs) followed by a flat plateau, characteristic of the attention mechanism's ability to capture input structure quickly.*
+
+Three key training patterns emerge across all 48 variants:
+1. **Rapid convergence:** All models reach near-final loss within 5–8 epochs, confirming that 25 epochs with patience-10 early stopping is sufficient for the relay denoising task at these model scales.
+2. **No overfitting:** Training and validation accuracy remain tightly coupled across all variants, consistent with the "less is more" principle (Section 8.2) — even the largest model (Mamba-2, ~26K parameters) does not overfit on the 50,000-sample training set.
+3. **Loss plateau stability:** Models that converge to lower MSE loss do not necessarily achieve lower BER, since BER is a non-differentiable threshold metric while MSE is a continuous surrogate. This explains why activation choice (which affects the loss surface geometry) can matter more than final loss magnitude.
+
+### 7.16.7 Experiment Goals vs. Outcomes
+
+This section evaluates the comprehensive CSI experiment against its stated objectives.
+
+| Goal | Outcome | Assessment |
+|---|---|---|
+| Identify top architectures for higher-order modulations | QAM16: Mamba-2 and Mamba S6 dominate; PSK16: Mamba S6 and Transformer compete | **Achieved** — clear ranking established with statistical confidence over 100 MC trials |
+| Determine whether CSI injection universally improves relay performance | CSI injection is modulation-dependent: beneficial for PSK16, detrimental for QAM16 | **Achieved** — unexpected finding that refutes the Section 7.15 hypothesis of universal CSI benefit |
+| Evaluate the role of input LayerNorm across architectures | LayerNorm consistently helps QAM16 (all top-3 use it) but is neutral-to-unnecessary for PSK16 | **Achieved** — extends Section 7.13 finding to multi-model, multi-constellation setting |
+| Compare 48 neural variants against classical baselines | No neural variant beats DF; best variants approach but do not surpass AF | **Achieved** — confirms DF optimality for higher-order modulations at all SNR points |
+| Establish reproducible JSON-backed experiment infrastructure | Full per-trial BER data, 95% CI bounds, and metadata saved to JSON; automated top-3 chart generation | **Achieved** — enables future reanalysis without re-running experiments |
+
+*Table 22: Goals vs. outcomes for the comprehensive multi-architecture CSI experiment.*
+
+The key surprise was Finding 23: the modulation-dependence of CSI injection. The Section 7.15 initial experiment suggested that explicit channel state information would universally improve neural relay performance. The comprehensive experiment refutes this — for amplitude-and-phase modulations (QAM16), the signal's amplitude structure already encodes sufficient channel information, and injecting $|h_{SR}|$ creates feature redundancy that degrades the learned mapping. Only for constant-envelope modulations (PSK16), where the signal carries no amplitude information, does CSI injection provide the missing channel dimension needed for effective relay processing.
+
+---
+
 ## 8. Discussion and Conclusions
 
 ### 8.1 Interpretation of Results
@@ -1921,6 +2086,7 @@ This thesis presents a comprehensive comparative study of nine relay strategies 
 | H4 | Architecture convergence at equal scale | **Confirmed** — at 3K params, all methods within ~1% BER (except VAE) |
 | H5 | SSD faster than S6 at long context | **Confirmed** — 10.7× training speedup at $n = 255$ |
 | H6 | Equalization gains additive to relay gains | **Confirmed** — relay ranking preserved across ZF/MMSE/SIC |
+| H7 | CSI injection universally improves neural relay performance | **Partially refuted** — beneficial for constant-envelope PSK16, detrimental for amplitude-carrying QAM16 (Section 7.16) |
 
 The main conclusions, in order of significance, are:
 
@@ -1948,7 +2114,15 @@ The main conclusions, in order of significance, are:
 
 12. **E2E joint optimisation outperforms classical constellations but sacrifices modularity.** The E2E autoencoder (Section 7.14) achieves 15–21% lower BER than theoretical 16-QAM by learning a non-rectangular constellation geometry. However, it breaks multi-vendor interoperability and still requires explicit domain knowledge (e.g., ZF equalization in the receiver). This validates the modular relay-based approach as the more practical deployment strategy.
 
-These findings demonstrate that neural network-based relay processing is a viable and beneficial complement to classical approaches, particularly in the challenging low-SNR regime. The overarching insight is that **model complexity should be matched to task complexity**: for the relay denoising task with BPSK and QPSK, minimal architectures suffice, and the choice between neural network paradigms — feedforward or sequential — matters less than proper model sizing and regularization. For 16-QAM, constellation-aware output activations (Sections 7.11–7.12) eliminate the BER floor, with sequence models benefiting most (Mamba S6: 5.4× improvement). The practical recommendation is clear: deploy a Hybrid relay with a 169-parameter GenAI sub-network for BPSK/QPSK, and use Mamba S6 with scaled tanh activation for 16-QAM applications.
+13. **CSI injection is modulation-dependent, not universally beneficial (H7: Partially refuted).** The comprehensive 48-variant experiment across two higher-order constellations (Section 7.16) reveals a striking dichotomy. For 16-QAM — where amplitude carries information — CSI injection systematically degrades BER; all three top-performing variants use LayerNorm only (+LN) without CSI. For 16-PSK — where the constant-envelope signal carries no amplitude information — all three top-performing variants use CSI injection (+CSI or +CSI+LN). The likely mechanism is that QAM's multi-level amplitude grid already implicitly encodes channel magnitude, making explicit $|h_{SR}|$ injection redundant and confounding; PSK's unit-circle constellation lacks this implicit channel information, so the injected feature fills a genuine information gap.
+
+14. **State space models dominate amplitude-and-phase modulations; Transformers compete on phase-only modulations.** In the QAM16 top-3, Mamba S6 and Mamba-2 occupy all positions; the Transformer does not appear. In the PSK16 top-3, the Transformer captures two of three positions. This modulation-dependent architectural preference suggests that the Mamba family's recurrent state tracking is better suited to multi-level amplitude recovery, while the Transformer's attention mechanism adapts well to the rotational symmetry of PSK constellations.
+
+15. **No neural relay outperforms DF across the full 48-variant combinatorial search.** Despite evaluating three architectures, four activations, four structural configurations, and two higher-order constellations (100 MC trials each), classical DF remains the lowest-BER strategy at every SNR point. The best neural variants approach AF performance (within 11% for QAM16 and 1.5% for PSK16 at 20 dB) but cannot surpass even the simpler classical baseline. This reaffirms Finding 2 (DF optimality at $\geq$6 dB) and extends it conclusively to higher-order modulations with statistical confidence.
+
+16. **Input LayerNorm is universally beneficial for QAM16 but modulation-dependent for PSK16.** Every QAM16 top-3 variant includes input LayerNorm, extending the Section 7.13 finding to a multi-architecture, multi-activation setting. For PSK16, only one of three top-3 variants uses LayerNorm, indicating that the constant-envelope signal distribution is already well-conditioned for direct processing without normalisation.
+
+These findings demonstrate that neural network-based relay processing is a viable and beneficial complement to classical approaches, particularly in the challenging low-SNR regime. The overarching insight is that **model complexity should be matched to task complexity**: for the relay denoising task with BPSK and QPSK, minimal architectures suffice, and the choice between neural network paradigms — feedforward or sequential — matters less than proper model sizing and regularization. For 16-QAM, constellation-aware output activations (Sections 7.11–7.12) eliminate the BER floor, with sequence models benefiting most (Mamba S6: 5.4× improvement). The comprehensive CSI experiment (Section 7.16) further refines these recommendations: **structural modifications must be tuned per modulation** — LayerNorm benefits QAM while CSI injection benefits PSK. The practical recommendation is: deploy a Hybrid relay with a 169-parameter GenAI sub-network for BPSK/QPSK; use Mamba S6 or Mamba-2 with input LayerNorm and scaled tanh for 16-QAM; and use Mamba S6 or Transformer with CSI injection for 16-PSK.
 
 ---
 

@@ -514,20 +514,41 @@ class MambaRelayWrapper(Relay):
             return processed * np.sqrt(self.target_power / current_power)
         return processed
 
+    def _arch_config(self):
+        """Return a dict describing the full architecture (for cache invalidation)."""
+        return {
+            "window_size": self.window_size,
+            "d_model": self.model.d_model,
+            "d_state": self.model.blocks[0].s6.d_state,
+            "num_layers": len(self.model.blocks),
+            "in_channels": self.in_channels,
+            "use_input_norm": self.use_input_norm,
+            "output_activation": self.output_activation,
+            "clip_range": self.clip_range,
+            "num_params": self.num_params,
+        }
+
     def save_weights(self, path):
         """Save trained model weights to *path*."""
         torch.save({
             "type": "MambaRelayWrapper",
             "model_state_dict": self.model.state_dict(),
-            "config": {"window_size": self.window_size,
-                       "num_params": self.num_params},
+            "config": self._arch_config(),
         }, path)
 
     def load_weights(self, path):
-        """Load model weights from *path* and mark as trained."""
+        """Load model weights from *path* if architecture matches.
+
+        Returns True if weights were loaded, False if the saved config
+        doesn't match the current architecture (caller should retrain).
+        """
         state = torch.load(path, map_location=self.device, weights_only=False)
+        saved_cfg = state.get("config", {})
+        if saved_cfg != self._arch_config():
+            return False
         self.model.load_state_dict(state["model_state_dict"])
         self.is_trained = True
+        return True
 
 
 def simulate_mamba_transmission(num_bits, snr_db, relay, seed=None):

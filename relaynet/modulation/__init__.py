@@ -3,6 +3,7 @@
 from .bpsk import bpsk_modulate, bpsk_demodulate, calculate_ber
 from .qpsk import qpsk_modulate, qpsk_demodulate
 from .qam import qam16_modulate, qam16_demodulate
+from .psk import psk16_modulate, psk16_demodulate
 
 __all__ = [
     "bpsk_modulate",
@@ -12,6 +13,8 @@ __all__ = [
     "qpsk_demodulate",
     "qam16_modulate",
     "qam16_demodulate",
+    "psk16_modulate",
+    "psk16_demodulate",
     "get_modulation_functions",
 ]
 
@@ -39,4 +42,6 @@ def get_modulation_functions(modulation):
         return qpsk_modulate, qpsk_demodulate, 2
     if modulation == "qam16":
         return qam16_modulate, qam16_demodulate, 4
+    if modulation == "psk16":
+        return psk16_modulate, psk16_demodulate, 4
     raise ValueError(f"Unknown modulation scheme: {modulation!r}")

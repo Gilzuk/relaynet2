@@ -287,13 +287,13 @@ class Mamba2Relay(nn.Module):
 
     def __init__(self, window_size=11, d_model=32, d_state=16,
                  num_layers=2, chunk_size=8, output_activation="tanh",
-                 use_input_norm=False, clip_range=None):
+                 use_input_norm=False, clip_range=None, in_channels=1):
         super().__init__()
         self.window_size = window_size
         self.d_model = d_model
         self.use_input_norm = use_input_norm
 
-        self.input_proj = nn.Linear(1, d_model)
+        self.input_proj = nn.Linear(in_channels, d_model)
 
         # Optional input LayerNorm — stabilises the distribution entering
         # the Mamba-2 blocks and prevents extreme activations.
@@ -340,7 +340,7 @@ class Mamba2Relay(nn.Module):
             x = block(x)
         center = self.window_size // 2
         x = x[:, center, :]              # -> (B, d_model)
-        return self.output_proj(x) + x_raw[:, center, :]
+        return self.output_proj(x) + x_raw[:, center, 0:1]
 
 
 # ======================================================================
@@ -353,15 +353,22 @@ class Mamba2RelayWrapper(Relay):
 
     def __init__(self, target_power=1.0, window_size=11, d_model=32,
                  d_state=16, num_layers=2, chunk_size=8, prefer_gpu=False,
-                 output_activation="tanh", use_input_norm=False, clip_range=None):
+                 output_activation="tanh", use_input_norm=False, clip_range=None,
+                 in_channels=1):
         self.target_power = target_power
         self.window_size = window_size
         self.output_activation = output_activation
         self.use_input_norm = use_input_norm
         self.clip_range = clip_range
+        self.in_channels = in_channels
 
-        if prefer_gpu and torch.cuda.is_available():
-            self.device = torch.device("cuda")
+        if prefer_gpu:
+            if torch.cuda.is_available():
+                self.device = torch.device("cuda")
+            elif hasattr(torch.backends, 'mps') and torch.backends.mps.is_available():
+                self.device = torch.device('mps')
+            else:
+                self.device = torch.device('cpu')
         else:
             self.device = torch.device("cpu")
 
@@ -374,6 +381,7 @@ class Mamba2RelayWrapper(Relay):
             output_activation=output_activation,
             use_input_norm=use_input_norm,
             clip_range=clip_range,
+            in_channels=in_channels,
         ).to(self.device)
 
         self.is_trained = False
@@ -382,19 +390,43 @@ class Mamba2RelayWrapper(Relay):
     # ------------------------------------------------------------------
     # Training
     # ------------------------------------------------------------------
+    def _compute_accuracy(self, X, y_true, batch_size=512):
+        """Compute symbol-level accuracy."""
+        self.model.eval()
+        correct = 0
+        total = 0
+        with torch.no_grad():
+            for i in range(0, len(X), batch_size):
+                X_batch = X[i:i+batch_size]
+                y_batch = y_true[i:i+batch_size]
+                output = self.model(X_batch)
+                correct += (torch.sign(output) == torch.sign(y_batch)).sum().item()
+                total += y_batch.numel()
+        return correct / total if total > 0 else 0.0
+
     def train(self, training_snrs=[5, 10, 15], num_samples=50000,
               epochs=100, lr=0.001, seed=None, log_timings=False,
-              training_modulation="bpsk"):
-        """Train the Mamba-2 relay."""
+              training_modulation="bpsk", use_rayleigh=False,
+              patience=0, min_delta=1e-5, val_split=0.15):
+        """Train the Mamba-2 relay.
+
+        Returns
+        -------
+        history : dict
+            Keys: 'train_loss', 'train_acc', 'val_acc'.
+        """
         print(f"  Mamba-2 (SSD) Training Configuration:")
         print(f"    Device: {self.device}")
         print(f"    Architecture: {self.window_size}-token Mamba-2 (SSD)")
         print(f"    d_model: {self.model.d_model}, "
               f"d_state: {self.model.blocks[0].ssd.d_state}")
+        print(f"    in_channels: {self.model.input_proj.in_features}")
         print(f"    Layers: {len(self.model.blocks)}")
         print(f"    Parameters: {self.num_params:,}")
         print(f"    Training SNRs: {training_snrs} dB")
         print(f"    Samples: {num_samples:,}, Epochs: {epochs}")
+        if patience > 0:
+            print(f"    Early stopping: patience={patience}, min_delta={min_delta}")
         if self.use_input_norm:
             print(f"    Input LayerNorm: ENABLED")
         if training_modulation != "bpsk":
@@ -404,30 +436,58 @@ class Mamba2RelayWrapper(Relay):
         samples_per_snr = num_samples // len(training_snrs)
         X_all, y_all = [], []
 
+        in_channels = self.model.input_proj.in_features
+        return_csi = (in_channels > 1)
+
         for snr in training_snrs:
             rng_seed = (42 + int(snr)) if seed is None else (seed + int(snr))
-            clean, noisy = generate_training_targets(
-                samples_per_snr, snr,
-                training_modulation=training_modulation,
-                seed=rng_seed,
-            )
+            if return_csi:
+                clean, noisy, h_csi = generate_training_targets(
+                    samples_per_snr, snr,
+                    training_modulation=training_modulation,
+                    seed=rng_seed,
+                    use_rayleigh=use_rayleigh,
+                    return_csi=True
+                )
+                features = np.column_stack([noisy, np.abs(h_csi)])
+            else:
+                clean, noisy = generate_training_targets(
+                    samples_per_snr, snr,
+                    training_modulation=training_modulation,
+                    seed=rng_seed,
+                    use_rayleigh=use_rayleigh,
+                    return_csi=False
+                )
+                features = noisy.reshape(-1, 1)
 
             half = self.window_size // 2
             for i in range(half, len(noisy) - half):
-                window = noisy[i - half: i + half + 1]
+                window = features[i - half: i + half + 1]
                 X_all.append(window)
                 y_all.append(clean[i])
 
-        X_train = torch.FloatTensor(np.array(X_all)).unsqueeze(-1).to(self.device)
-        y_train = torch.FloatTensor(np.array(y_all).reshape(-1, 1)).to(self.device)
+        X_full = torch.FloatTensor(np.array(X_all)).to(self.device)
+        y_full = torch.FloatTensor(np.array(y_all).reshape(-1, 1)).to(self.device)
 
-        print(f"  Training data: {len(X_train):,} samples")
+        # Train / validation split
+        n_total = len(X_full)
+        n_val = max(1, int(n_total * val_split))
+        perm = torch.randperm(n_total)
+        val_idx, train_idx = perm[:n_val], perm[n_val:]
+        X_train, y_train = X_full[train_idx], y_full[train_idx]
+        X_val,   y_val   = X_full[val_idx],   y_full[val_idx]
+
+        print(f"  Training data: {len(X_train):,} train, {len(X_val):,} val samples")
 
         optimizer = optim.Adam(self.model.parameters(), lr=lr)
         criterion = nn.MSELoss()
 
         batch_size = 64
         best_loss = float("inf")
+        patience_counter = 0
+        best_state = None
+
+        history = {'train_loss': [], 'train_acc': [], 'val_acc': []}
 
         for epoch in range(epochs):
             self.model.train()
@@ -455,16 +515,38 @@ class Mamba2RelayWrapper(Relay):
                 num_batches += 1
 
             avg_loss = total_loss / num_batches
-            if avg_loss < best_loss:
-                best_loss = avg_loss
 
-            if (epoch + 1) % 20 == 0:
-                print(f"    Epoch {epoch + 1}/{epochs}, "
-                      f"Loss: {avg_loss:.6f}, Best: {best_loss:.6f}")
+            train_acc = self._compute_accuracy(X_train, y_train)
+            val_acc   = self._compute_accuracy(X_val,   y_val)
+            history['train_loss'].append(avg_loss)
+            history['train_acc'].append(train_acc)
+            history['val_acc'].append(val_acc)
+
+            if avg_loss < best_loss - min_delta:
+                best_loss = avg_loss
+                patience_counter = 0
+                best_state = {k: v.cpu().clone() for k, v in self.model.state_dict().items()}
+            else:
+                patience_counter += 1
+
+            if (epoch + 1) % max(1, epochs // 10) == 0 or epoch == 0:
+                print(f"    Epoch {epoch + 1}/{epochs}, Loss: {avg_loss:.6f}, "
+                      f"Train Acc: {train_acc:.4f}, Val Acc: {val_acc:.4f}, "
+                      f"Best: {best_loss:.6f}")
+
+            if patience > 0 and patience_counter >= patience:
+                print(f"    Early stopping at epoch {epoch+1} (no improvement for {patience} epochs)")
+                break
+
+        if best_state is not None:
+            self.model.load_state_dict({k: v.to(self.device) for k, v in best_state.items()})
 
         self.is_trained = True
         print(f"\n  Mamba-2 training complete!  "
-              f"Final loss: {avg_loss:.6f}  Parameters: {self.num_params:,}")
+              f"Final loss: {avg_loss:.6f}, Best: {best_loss:.6f}  "
+              f"Parameters: {self.num_params:,}")
+
+        return history
 
     # ------------------------------------------------------------------
     # Inference (batched — same approach as Mamba S6 / Transformer)
@@ -472,24 +554,43 @@ class Mamba2RelayWrapper(Relay):
     def process(self, received_signal):
         """Process signal through Mamba-2 (batched)."""
         if not self.is_trained:
+            if isinstance(received_signal, tuple):
+                return received_signal[0] * 1.5
             return received_signal * 1.5
 
         self.model.eval()
 
-        pad_size = self.window_size // 2
-        padded = np.pad(received_signal, pad_size, mode="edge")
-        n = len(received_signal)
+        # Unpack CSI if provided
+        if isinstance(received_signal, tuple):
+            if self.in_channels == 1:
+                received_signal = received_signal[0]
+            else:
+                y, h_csi = received_signal
+                n = len(y)
+                features = np.column_stack([y, h_csi])
+                pad_size = self.window_size // 2
+                padded_features = np.pad(features, ((pad_size, pad_size), (0, 0)), mode='edge')
+                windows = np.lib.stride_tricks.as_strided(
+                    padded_features,
+                    shape=(n, self.window_size, 2),
+                    strides=(padded_features.strides[0], padded_features.strides[0], padded_features.strides[1]),
+                ).copy()
 
-        windows = np.lib.stride_tricks.as_strided(
-            padded,
-            shape=(n, self.window_size),
-            strides=(padded.strides[0], padded.strides[0]),
-        ).copy()
+        if not isinstance(received_signal, tuple):
+            n = len(received_signal)
+            pad_size = self.window_size // 2
+            padded = np.pad(received_signal, pad_size, mode="edge")
+            windows = np.lib.stride_tricks.as_strided(
+                padded,
+                shape=(n, self.window_size),
+                strides=(padded.strides[0], padded.strides[0]),
+            ).copy()
+            windows = np.expand_dims(windows, -1)
 
         with torch.no_grad():
             inp = torch.as_tensor(
                 windows, dtype=torch.float32, device=self.device,
-            ).unsqueeze(-1)
+            )
             processed = self.model(inp).cpu().numpy().flatten()
 
         current_power = np.mean(np.abs(processed) ** 2)
@@ -500,20 +601,36 @@ class Mamba2RelayWrapper(Relay):
     # ------------------------------------------------------------------
     # Weight persistence
     # ------------------------------------------------------------------
+    def _arch_config(self):
+        """Return a dict describing the full architecture (for cache invalidation)."""
+        return {
+            "window_size": self.window_size,
+            "d_model": self.model.d_model,
+            "d_state": self.model.blocks[0].ssd.d_state,
+            "num_layers": len(self.model.blocks),
+            "in_channels": self.in_channels,
+            "use_input_norm": self.use_input_norm,
+            "output_activation": self.output_activation,
+            "clip_range": self.clip_range,
+            "num_params": self.num_params,
+        }
+
     def save_weights(self, path):
         torch.save({
             "type": "Mamba2RelayWrapper",
             "model_state_dict": self.model.state_dict(),
-            "config": {
-                "window_size": self.window_size,
-                "num_params": self.num_params,
-            },
+            "config": self._arch_config(),
         }, path)
 
     def load_weights(self, path):
+        """Load model weights if architecture matches. Returns True/False."""
         state = torch.load(path, map_location=self.device, weights_only=False)
+        saved_cfg = state.get("config", {})
+        if saved_cfg != self._arch_config():
+            return False
         self.model.load_state_dict(state["model_state_dict"])
         self.is_trained = True
+        return True
 
 
 # ======================================================================
