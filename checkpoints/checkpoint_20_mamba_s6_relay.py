@@ -24,11 +24,12 @@ import torch.optim as optim
 import sys
 import os
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 
-from checkpoint_01_channel import awgn_channel
-from checkpoint_02_modulation import bpsk_modulate, calculate_ber
-from checkpoint_03_nodes import Source, Relay, Destination
+from relaynet.channels.awgn import awgn_channel
+from relaynet.modulation.bpsk import bpsk_modulate, calculate_ber
+from relaynet.nodes import Source, Destination
+from relaynet.relays.base import Relay
 
 from relaynet.utils.activations import make_torch_activation, generate_training_targets
 
