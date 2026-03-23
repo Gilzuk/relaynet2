@@ -42,7 +42,9 @@ A thesis submitted in partial fulfillment of the requirements for the degree of 
      - 6.7.1 BPSK
      - 6.7.2 QPSK — Gray-Coded Quadrature Phase-Shift Keying
      - 6.7.3 16-QAM — Gray-Coded Quadrature Amplitude Modulation
-     - 6.7.4 I/Q Splitting for AI Relay Processing of Complex Constellations
+     - 6.7.4 16-PSK — Gray-Coded Phase-Shift Keying
+     - 6.7.5 Constellation Diagram Summary
+     - 6.7.6 I/Q Splitting for AI Relay Processing of Complex Constellations
 7. [Results](#7-results)
    - 7.1 Channel Model Validation
    - 7.2 AWGN Channel — Relay Comparison
@@ -90,47 +92,48 @@ A thesis submitted in partial fulfillment of the requirements for the degree of 
 | 5 | 2×2 MIMO Rayleigh — single-hop BER with ZF, MMSE, and SIC equalization | §6.2.5 |
 | 6 | Consolidated 2×3 grid of all channel model validations | §6.2.6 |
 | 7 | Single-hop BPSK BER for all three SISO channel models | §6.2.6 |
-| 8 | AWGN channel — BER vs. SNR for all nine relay strategies with 95% CI | §7.2 |
-| 9 | Rayleigh fading — BER vs. SNR for all nine relay strategies with 95% CI | §7.3 |
-| 10 | Rician fading (K=3) — BER vs. SNR for all nine relay strategies with 95% CI | §7.4 |
-| 11 | 2×2 MIMO with ZF equalization — BER vs. SNR for all nine relay strategies with 95% CI | §7.5 |
-| 12 | 2×2 MIMO with MMSE equalization — BER vs. SNR for all nine relay strategies with 95% CI | §7.6 |
-| 13 | 2×2 MIMO with MMSE-SIC equalization — BER vs. SNR for all nine relay strategies with 95% CI | §7.7 |
-| 14 | Normalized 3K-parameter comparison across all channels | §7.8 |
-| 15 | Normalized 3K-parameter BER comparison on AWGN | §7.8 |
-| 16 | Normalized 3K-parameter BER comparison on Rayleigh fading | §7.8 |
-| 17 | Normalized 3K-parameter BER comparison on Rician fading (K=3) | §7.8 |
-| 18 | Complexity–performance trade-off: training time vs. parameter count vs. BER improvement | §7.9 |
-| 19 | Master BER comparison — all nine relay strategies across all six channel configurations | §7.9 |
-| 20 | BPSK relay comparison on AWGN channel (baseline) | §7.10 |
-| 21 | BPSK relay comparison on Rayleigh fading channel (baseline) | §7.10 |
-| 22 | QPSK relay comparison on AWGN channel | §7.10 |
-| 23 | QPSK relay comparison on Rayleigh fading channel | §7.10 |
-| 24 | 16-QAM relay comparison on AWGN channel | §7.10 |
-| 25 | 16-QAM relay comparison on Rayleigh fading channel | §7.10 |
-| 26 | 16-QAM activation experiment on AWGN — tanh vs. linear vs. hardtanh | §7.11 |
-| 27 | 16-QAM activation experiment on AWGN | §7.11 |
-| 28 | 16-QAM activation experiment on Rayleigh fading | §7.11 |
-| 29 | BPSK constellation-aware activation comparison (AWGN) | §7.12 |
-| 30 | BPSK constellation-aware activation comparison (Rayleigh) | §7.12 |
-| 31 | QPSK constellation-aware activation comparison (AWGN) | §7.12 |
-| 32 | QPSK constellation-aware activation comparison (Rayleigh) | §7.12 |
-| 33 | 16-QAM constellation-aware activation comparison (AWGN) | §7.12 |
-| 34 | 16-QAM constellation-aware activation comparison (Rayleigh) | §7.12 |
-| 35 | Activation function shapes and derivatives | §7.12 |
-| 36 | LayerNorm comparison on AWGN channel | §7.13 |
-| 37 | LayerNorm comparison on Rayleigh fading channel | §7.13 |
-| 38 | E2E BER comparison vs. theoretical 16-QAM | §7.14 |
-| 39 | E2E learned 16-point constellation | §7.14 |
-| 40 | E2E training loss convergence | §7.14 |
-| 41 | E2E vs. modular relay-based approaches | §7.14 |
-| 42 | 16-QAM Rayleigh — all 48 neural relay variants and classical baselines with 95% CI | §7.16 |
-| 43 | Top-3 neural relays vs. classical — 16-QAM Rayleigh | §7.16 |
-| 44 | 16-PSK Rayleigh — all 48 neural relay variants and classical baselines with 95% CI | §7.16 |
-| 45 | Top-3 neural relays vs. classical — 16-PSK Rayleigh | §7.16 |
-| 46 | Training history — Mamba-2 (+LN scaled_tanh), #1 QAM16 variant | §7.16 |
-| 47 | Training history — Mamba S6 (+CSI tanh), #1 PSK16 variant | §7.16 |
-| 48 | Training history — Transformer (+CSI sigmoid), #2 PSK16 variant | §7.16 |
+| 8 | Constellation diagrams — BPSK, QPSK, 16-QAM, 16-PSK | §6.7 |
+| 9 | AWGN channel — BER vs. SNR for all nine relay strategies with 95% CI | §7.2 |
+| 10 | Rayleigh fading — BER vs. SNR for all nine relay strategies with 95% CI | §7.3 |
+| 11 | Rician fading (K=3) — BER vs. SNR for all nine relay strategies with 95% CI | §7.4 |
+| 12 | 2×2 MIMO with ZF equalization — BER vs. SNR for all nine relay strategies with 95% CI | §7.5 |
+| 13 | 2×2 MIMO with MMSE equalization — BER vs. SNR for all nine relay strategies with 95% CI | §7.6 |
+| 14 | 2×2 MIMO with MMSE-SIC equalization — BER vs. SNR for all nine relay strategies with 95% CI | §7.7 |
+| 15 | Normalized 3K-parameter comparison across all channels | §7.8 |
+| 16 | Normalized 3K-parameter BER comparison on AWGN | §7.8 |
+| 17 | Normalized 3K-parameter BER comparison on Rayleigh fading | §7.8 |
+| 18 | Normalized 3K-parameter BER comparison on Rician fading (K=3) | §7.8 |
+| 19 | Complexity–performance trade-off: training time vs. parameter count vs. BER improvement | §7.9 |
+| 20 | Master BER comparison — all nine relay strategies across all six channel configurations | §7.9 |
+| 21 | BPSK relay comparison on AWGN channel (baseline) | §7.10 |
+| 22 | BPSK relay comparison on Rayleigh fading channel (baseline) | §7.10 |
+| 23 | QPSK relay comparison on AWGN channel | §7.10 |
+| 24 | QPSK relay comparison on Rayleigh fading channel | §7.10 |
+| 25 | 16-QAM relay comparison on AWGN channel | §7.10 |
+| 26 | 16-QAM relay comparison on Rayleigh fading channel | §7.10 |
+| 27 | 16-QAM activation experiment on AWGN — tanh vs. linear vs. hardtanh | §7.11 |
+| 28 | 16-QAM activation experiment on AWGN | §7.11 |
+| 29 | 16-QAM activation experiment on Rayleigh fading | §7.11 |
+| 30 | BPSK constellation-aware activation comparison (AWGN) | §7.12 |
+| 31 | BPSK constellation-aware activation comparison (Rayleigh) | §7.12 |
+| 32 | QPSK constellation-aware activation comparison (AWGN) | §7.12 |
+| 33 | QPSK constellation-aware activation comparison (Rayleigh) | §7.12 |
+| 34 | 16-QAM constellation-aware activation comparison (AWGN) | §7.12 |
+| 35 | 16-QAM constellation-aware activation comparison (Rayleigh) | §7.12 |
+| 36 | Activation function shapes and derivatives | §7.12 |
+| 37 | LayerNorm comparison on AWGN channel | §7.13 |
+| 38 | LayerNorm comparison on Rayleigh fading channel | §7.13 |
+| 39 | E2E BER comparison vs. theoretical 16-QAM | §7.14 |
+| 40 | E2E learned 16-point constellation | §7.14 |
+| 41 | E2E training loss convergence | §7.14 |
+| 42 | E2E vs. modular relay-based approaches | §7.14 |
+| 43 | 16-QAM Rayleigh — all 48 neural relay variants and classical baselines with 95% CI | §7.16 |
+| 44 | Top-3 neural relays vs. classical — 16-QAM Rayleigh | §7.16 |
+| 45 | 16-PSK Rayleigh — all 48 neural relay variants and classical baselines with 95% CI | §7.16 |
+| 46 | Top-3 neural relays vs. classical — 16-PSK Rayleigh | §7.16 |
+| 47 | Training history — Mamba-2 (+LN scaled_tanh), #1 QAM16 variant | §7.16 |
+| 48 | Training history — Mamba S6 (+CSI tanh), #1 PSK16 variant | §7.16 |
+| 49 | Training history — Transformer (+CSI sigmoid), #2 PSK16 variant | §7.16 |
 
 ## List of Tables
 
@@ -143,21 +146,21 @@ A thesis submitted in partial fulfillment of the requirements for the degree of 
 | 5 | BER comparison on 2×2 MIMO Rayleigh channel with MMSE equalization | §7.6 |
 | 6 | BER comparison on 2×2 MIMO Rayleigh channel with MMSE-SIC equalization | §7.7 |
 | 7 | Normalized 3K BER results — AWGN channel | §7.8 |
-| 8 | Normalized 3K BER results — Rayleigh fading channel | §7.8 |
-| 9 | Normalized 3K BER results — Rician K=3 fading channel | §7.8 |
-| 10 | Normalized 3K BER results — 2×2 MIMO ZF | §7.8 |
-| 11 | Normalized 3K BER results — 2×2 MIMO MMSE | §7.8 |
-| 12 | Model complexity and timing comparison | §7.9 |
-| 13 | Context-length benchmark — three sequence models at $n = 255$ on CUDA | §8.3.1 |
-| 14 | BER comparison across modulations — BPSK vs. QPSK vs. 16-QAM at SNR = 0, 4, 10 dB | §7.10 |
-| 15 | 16-QAM BER at 16 dB — activation variant comparison (tanh vs. linear vs. hardtanh) | §7.11 |
-| 16 | +InputLN parameter overhead and BER ranges for sequence models | §7.13 |
-| 17 | BER comparison of E2E autoencoder vs. theoretical 16-QAM (Rayleigh fading) | §7.14 |
-| 18 | BER comparing blind spatial tracking vs. CSI injection for 16-QAM (Rayleigh) | §7.15 |
-| 19 | Top-3 neural relays and classical baselines — 16-QAM (Rayleigh, 100 MC) | §7.16 |
-| 20 | Top-3 neural relays and classical baselines — 16-PSK (Rayleigh, 100 MC) | §7.16 |
-| 21 | Cross-constellation comparison of top-performing neural relay strategies | §7.16 |
-| 22 | Goals vs. outcomes for the comprehensive multi-architecture CSI experiment | §7.16 |
+| 9 | Normalized 3K BER results — Rayleigh fading channel | §7.8 |
+| 10 | Normalized 3K BER results — Rician K=3 fading channel | §7.8 |
+| 11 | Normalized 3K BER results — 2×2 MIMO ZF | §7.8 |
+| 12 | Normalized 3K BER results — 2×2 MIMO MMSE | §7.8 |
+| 13 | Model complexity and timing comparison | §7.9 |
+| 14 | Context-length benchmark — three sequence models at $n = 255$ on CUDA | §8.3.1 |
+| 15 | BER comparison across modulations — BPSK vs. QPSK vs. 16-QAM at SNR = 0, 4, 10 dB | §7.10 |
+| 16 | 16-QAM BER at 16 dB — activation variant comparison (tanh vs. linear vs. hardtanh) | §7.11 |
+| 17 | +InputLN parameter overhead and BER ranges for sequence models | §7.13 |
+| 18 | BER comparison of E2E autoencoder vs. theoretical 16-QAM (Rayleigh fading) | §7.14 |
+| 19 | BER comparing blind spatial tracking vs. CSI injection for 16-QAM (Rayleigh) | §7.15 |
+| 20 | Top-3 neural relays and classical baselines — 16-QAM (Rayleigh, 100 MC) | §7.16 |
+| 21 | Top-3 neural relays and classical baselines — 16-PSK (Rayleigh, 100 MC) | §7.16 |
+| 22 | Cross-constellation comparison of top-performing neural relay strategies | §7.16 |
+| 23 | Goals vs. outcomes for the comprehensive multi-architecture CSI experiment | §7.16 |
 
 ---
 
@@ -622,7 +625,7 @@ Based on the theoretical analysis in Section 4, this thesis tests the following 
 
 The following delimitations define the scope of this study:
 
-- **Modulation:** Primary experiments use BPSK. Extension experiments with QPSK and 16-QAM are presented in Section 7.10 to evaluate hypothesis generalisability; however, 64-QAM and higher-order constellations are deferred to future work.
+- **Modulation:** Primary experiments use BPSK. Extension experiments with QPSK and 16-QAM are presented in Section 7.10, and 16-PSK in Section 7.16, to evaluate hypothesis generalisability; however, 64-QAM and higher-order constellations are deferred to future work.
 - **Channel knowledge:** Perfect CSI is assumed at the receiver. Channel estimation errors are not modeled.
 - **Relay topology:** Single relay, two-hop, half-duplex. Multi-relay and full-duplex configurations are excluded.
 - **MIMO configuration:** $2 \times 2$ spatial multiplexing with Rayleigh fading. Larger arrays and beamforming are not considered.
@@ -640,7 +643,7 @@ The system under study is a two-hop relay network with a single relay node:
 
 $$\text{Source} \xrightarrow{\text{Hop 1}} \text{Relay} \xrightarrow{\text{Hop 2}} \text{Destination}$$
 
-**Modulation.** Three modulation schemes are supported. The primary experiments use Binary Phase-Shift Keying (BPSK): bits $b \in \{0, 1\}$ are mapped to real symbols $x = 1 - 2b \in \{-1, +1\}$. Extensions to Quadrature Phase-Shift Keying (QPSK) and 16-point Quadrature Amplitude Modulation (16-QAM) are evaluated in Section 7.10 to test whether the BPSK findings generalise to complex constellations. QPSK maps pairs of bits to complex symbols on the unit circle (2 bits/symbol); 16-QAM maps groups of four bits to a $4 \times 4$ Gray-coded grid (4 bits/symbol). Full modulation details are given in Section 6.7.
+**Modulation.** Four modulation schemes are supported. The primary experiments use Binary Phase-Shift Keying (BPSK): bits $b \in \{0, 1\}$ are mapped to real symbols $x = 1 - 2b \in \{-1, +1\}$. Extensions to Quadrature Phase-Shift Keying (QPSK), 16-point Quadrature Amplitude Modulation (16-QAM), and 16-point Phase-Shift Keying (16-PSK) are evaluated in Sections 7.10 and 7.16 to test whether the BPSK findings generalise to complex constellations. QPSK maps pairs of bits to complex symbols on the unit circle (2 bits/symbol); 16-QAM maps groups of four bits to a $4 \times 4$ Gray-coded grid (4 bits/symbol); 16-PSK maps groups of four bits to 16 equally spaced points on the unit circle (4 bits/symbol). Full modulation details are given in Section 6.7.
 
 **Hop Model.** Each hop applies a channel function followed by optional equalization:
 
@@ -1033,7 +1036,7 @@ A **weight checkpoint system** saves trained model parameters to disk after trai
 - Resume from saved weights with architecture validation
 - Seed-specific weight directories (e.g., `trained_weights/seed_42/`)
 
-The framework includes 126 automated tests (pytest) covering all modules: channels, modulation (BPSK, QPSK, 16-QAM), relay strategies, simulation, statistics, and weight management, with 100% pass rate.
+The framework includes 126 automated tests (pytest) covering all modules: channels, modulation (BPSK, QPSK, 16-QAM, 16-PSK), relay strategies, simulation, statistics, and weight management, with 100% pass rate.
 
 ### 6.6 Normalized Parameter Comparison
 
@@ -1061,7 +1064,7 @@ This normalization isolates the effect of architectural choice from the confound
 
 ### 6.7 Modulation Schemes
 
-The primary experiments in Sections 7.1–7.9 use BPSK modulation to isolate the relay processing comparison from modulation complexity. To test whether the BPSK findings generalise to higher-order constellations, Section 7.10 extends the evaluation to QPSK and 16-QAM. This section defines the three modulation schemes and the I/Q splitting technique that enables real-valued AI relays to process complex-valued signals.
+The primary experiments in Sections 7.1–7.9 use BPSK modulation to isolate the relay processing comparison from modulation complexity. To test whether the BPSK findings generalise to higher-order constellations, Section 7.10 extends the evaluation to QPSK and 16-QAM, while Section 7.16 further extends to 16-PSK. This section defines the four modulation schemes and the I/Q splitting technique that enables real-valued AI relays to process complex-valued signals.
 
 #### 6.7.1 BPSK
 
@@ -1083,8 +1086,8 @@ yielding four constellation points at $\{(\pm 1 \pm j)/\sqrt{2}\}$ with unit ave
 |---|---|---|
 | 00 | $(+1+j)/\sqrt{2}$ | I |
 | 01 | $(+1-j)/\sqrt{2}$ | IV |
-| 10 | $(-1+j)/\sqrt{2}$ | II |
-| 11 | $(-1-j)/\sqrt{2}$ | III |
+| 11 | $(-1+j)/\sqrt{2}$ | II |
+| 12 | $(-1-j)/\sqrt{2}$ | III |
 
 Demodulation applies independent sign decisions on each component: $\hat{b}_0 = \mathbb{1}(\text{Re}(\hat{x}) < 0)$ and $\hat{b}_1 = \mathbb{1}(\text{Im}(\hat{x}) < 0)$. The spectral efficiency is 2 bits/symbol, double that of BPSK.
 
@@ -1096,7 +1099,7 @@ The advantage of QPSK is doubled throughput for the same BER and per-bit energy.
 
 #### 6.7.3 16-QAM — Gray-Coded Quadrature Amplitude Modulation
 
-16-QAM maps groups of four bits $(b_0, b_1, b_2, b_3)$ to one of 16 complex constellation points arranged on a $4 \times 4$ rectangular grid. Each axis (I and Q) uses independent Gray-coded PAM-4 mapping:
+16-QAM maps groups of four bits $(b_0, b_1, b_2, b_3)$ to one of 16 complex constellation points arranged on a $4 \times 4$ rectangular grid (Figure 8c). Each axis (I and Q) uses independent Gray-coded PAM-4 mapping:
 
 $$I = \frac{L(b_0, b_1)}{\sqrt{10}}, \quad Q = \frac{L(b_2, b_3)}{\sqrt{10}}, \quad x = I + jQ$$
 
@@ -1104,8 +1107,8 @@ where $L(\cdot)$ maps bit pairs to PAM-4 levels using Gray coding:
 
 | Bit pair | Level | Bit pair | Level |
 |---|---|---|---|
-| 00 | $+3$ | 11 | $-1$ |
-| 01 | $+1$ | 10 | $-3$ |
+| 00 | $+3$ | 12 | $-1$ |
+| 01 | $+1$ | 11 | $-3$ |
 
 The normalization factor $\sqrt{10}$ ensures unit average symbol power: $E[|x|^2] = \frac{2 \cdot (9+1+1+9)}{4 \cdot 10} = 1$. Adjacent constellation points differ by one bit (Gray property), minimizing the BER for a given symbol error rate.
 
@@ -1117,9 +1120,39 @@ $$P_b^{\text{16-QAM}} \approx \frac{3}{8} \operatorname{erfc}\!\left(\sqrt{\frac
 
 At the same $E_b/N_0$, 16-QAM has a higher BER than BPSK or QPSK due to the reduced Euclidean distance between constellation points. The trade-off is 4× throughput improvement.
 
-#### 6.7.4 I/Q Splitting for AI Relay Processing of Complex Constellations
+#### 6.7.5 Constellation Diagram Summary
 
-A key methodological challenge is that the AI relay architectures (GenAI, Hybrid, VAE, CGAN, Transformer, Mamba) are trained on real-valued BPSK signals and use real-valued weights. To process complex QPSK and 16-QAM signals without retraining, we employ **I/Q splitting**: the complex received signal is separated into its in-phase (I) and quadrature (Q) components, each component is processed independently through the real-valued relay, and the outputs are recombined:
+Figure 8 presents the constellation diagrams for all four modulation schemes used in this thesis. The progression from BPSK (2 points on the real axis) through QPSK (4 points on the unit circle) to 16-QAM (16 points on a rectangular grid) and 16-PSK (16 points on the unit circle) illustrates the fundamental trade-off between spectral efficiency and noise robustness: higher-order constellations pack more bits per symbol but reduce the minimum Euclidean distance between points, increasing the BER at a given SNR.
+
+![Figure 8: Constellation diagrams for all four modulation schemes.](results/modulation/constellation_diagrams.png)
+
+*Figure 8: Constellation diagrams. (a) BPSK: 2 real-valued symbols at $\pm 1$. (b) QPSK: 4 Gray-coded symbols on the unit circle. (c) 16-QAM: 16 Gray-coded symbols on a $4 \times 4$ rectangular grid with decision boundaries (dotted lines). (d) 16-PSK: 16 Gray-coded symbols uniformly spaced on the unit circle. All constellations are normalised to unit average power.*
+
+#### 6.7.6 16-PSK — Gray-Coded Phase-Shift Keying
+
+16-PSK maps groups of four bits to one of 16 complex constellation points uniformly spaced on the unit circle (Figure 8d). Unlike 16-QAM, which modulates both amplitude and phase, 16-PSK uses **constant-envelope** transmission — all symbols have identical magnitude ($|x| = 1$) and differ only in phase:
+
+$$x_k = e^{j \theta_k}, \quad \theta_k = \frac{2\pi k}{16}, \quad k = 0, 1, \ldots, 15$$
+
+The 16 constellation points are assigned 4-bit Gray-coded labels such that adjacent points on the circle differ by exactly one bit, minimising the BER for a given symbol error rate. The average symbol energy is $E_s = E[|x|^2] = 1$ (unit circle).
+
+**Demodulation.** Hard-decision demodulation computes the phase of the received symbol and assigns it to the nearest constellation point:
+
+$$\hat{k} = \arg\min_{k \in \{0,\ldots,15\}} \left| \angle \hat{x} - \theta_k \right|$$
+
+The recovered bits are obtained from the inverse Gray mapping of $\hat{k}$. The spectral efficiency is 4 bits/symbol, identical to 16-QAM.
+
+**Theoretical 16-PSK BER.** The approximate BER for Gray-coded 16-PSK over AWGN is:
+
+$$P_b^{\text{16-PSK}} \approx \frac{1}{4} \operatorname{erfc}\!\left(\sqrt{\frac{E_b}{N_0}} \sin\!\left(\frac{\pi}{16}\right)\right)$$
+
+At the same $E_b/N_0$, 16-PSK has a higher BER than 16-QAM because the minimum Euclidean distance between adjacent symbols on the unit circle ($d_{\min} = 2\sin(\pi/16) \approx 0.39$) is smaller than the minimum distance in the 16-QAM grid ($d_{\min} = 2/\sqrt{10} \approx 0.63$). The advantage of 16-PSK is its constant-envelope property, which is important for non-linear power amplifiers.
+
+**Relevance to CSI injection.** The constant-envelope property has a critical implication for neural relay design (explored in Section 7.16): since all 16-PSK symbols have unit magnitude, the received signal amplitude carries no modulation information — only channel fading information. This makes CSI injection ($|h_{SR}|$) particularly valuable for PSK, unlike QAM where the amplitude already encodes both modulation and channel effects.
+
+#### 6.7.6 I/Q Splitting for AI Relay Processing of Complex Constellations
+
+A key methodological challenge is that the AI relay architectures (GenAI, Hybrid, VAE, CGAN, Transformer, Mamba) are trained on real-valued BPSK signals and use real-valued weights. To process complex QPSK, 16-QAM, and 16-PSK signals without retraining, we employ **I/Q splitting**: the complex received signal is separated into its in-phase (I) and quadrature (Q) components, each component is processed independently through the real-valued relay, and the outputs are recombined:
 
 $$\hat{x}_R = f_\theta(\text{Re}(y_R)) + j \cdot f_\theta(\text{Im}(y_R))$$
 
@@ -1130,10 +1163,12 @@ $$\hat{x}_R = f_\theta(\text{Re}(y_R)) + j \cdot f_\theta(\text{Im}(y_R))$$
 | Relay type | Complex signal processing | Rationale |
 |---|---|---|
 | **AF** | Amplifies complex signal directly | Power normalization ($\|y\|^2$) is valid for complex vectors |
-| **DF** | Nearest constellation point detection | Modulation-aware: sign decision for QPSK; PAM-4 quantisation for 16-QAM |
+| **DF** | Nearest constellation point detection | Modulation-aware: sign decision for QPSK; PAM-4 quantisation for 16-QAM; phase quantisation for 16-PSK |
 | **AI relays** | I/Q splitting (process Re and Im separately) | Real-valued networks; independence of I/Q in rectangular constellations |
 
 **Limitation for 16-QAM with AI relays.** For 16-QAM, each I/Q component takes four amplitude levels ($\{-3, -1, +1, +3\}/\sqrt{10}$) rather than the binary $\{\pm 1\}$ of BPSK. The BPSK-trained relays, which use $\tanh$ activations bounded in $[-1, +1]$, may not faithfully reproduce the multi-level structure. This provides a natural test of generalisation: if AI relays degrade significantly on 16-QAM but not on QPSK, it indicates that the BPSK training generalises to binary-per-component signals (QPSK) but not to multi-level signals (16-QAM). Such a finding would motivate modulation-specific relay training.
+
+**Limitation for 16-PSK with AI relays.** The I/Q splitting assumption of component independence does not hold for PSK constellations, where the I and Q components of each symbol are coupled through the phase constraint $I^2 + Q^2 = 1$. For 16-PSK, the CSI-injection experiments (Section 7.16) therefore train dedicated models on the full complex signal rather than relying on BPSK-pretrained I/Q splitting.
 
 ---
 
@@ -1182,16 +1217,16 @@ Table 1: BER comparison of all nine relay strategies on the AWGN channel.
 | 2 | 0.420 | 0.186 | 0.180 | 0.180 | 0.181 | 0.185 | 0.181 | **0.176** |
 | 4 | 0.360 | 0.104 | 0.103 | 0.103 | 0.104 | 0.105 | 0.104 | **0.102** |
 | 6 | 0.290 | **0.045** | 0.046 | 0.046 | 0.046 | 0.046 | 0.046 | 0.046 |
-| 8 | 0.210 | **0.012** | 0.013 | 0.013 | 0.013 | 0.012 | 0.013 | 0.014 |
-| 10 | 0.140 | **0.002** | 0.002 | 0.002 | 0.002 | 0.002 | 0.002 | 0.003 |
+| 9 | 0.210 | **0.012** | 0.013 | 0.013 | 0.013 | 0.012 | 0.013 | 0.014 |
+| 11 | 0.140 | **0.002** | 0.002 | 0.002 | 0.002 | 0.002 | 0.002 | 0.003 |
 
 At low SNR (0–4 dB), Mamba S6 achieves the lowest BER across all methods. At medium-to-high SNR (≥6 dB), DF matches or exceeds all AI methods with zero parameters.
 
 **Analysis.** The AWGN results directly test Hypotheses H1 and H2. At 0 dB, Mamba S6 reduces BER by 3.8% relative to DF (0.255 vs. 0.265), which is statistically significant across all 10 trials ($p < 0.01$, Wilcoxon). This confirms H1. At 6 dB, DF's BER of 0.045 equals or beats all AI methods, confirming H2. The crossover occurs between 4 and 6 dB — precisely the SNR range where the Bayes-optimal relay function $f^*(y) = \tanh(y/\sigma^2)$ transitions from a smooth sigmoid (exploitable by neural networks) to a near-step function (exactly matched by DF's hard decision). Notably, the six AI methods (GenAI through Mamba) cluster within a narrow BER band at each SNR point (spread $< 0.005$), suggesting that the architectural choice matters less than the shared advantage of non-linear processing over AF/DF at low SNR.
 
-![Figure 8: AWGN channel — BER comparison of all nine relay strategies.](results/awgn_comparison_ci.png)
+![Figure 9: AWGN channel — BER comparison of all nine relay strategies.](results/awgn_comparison_ci.png)
 
-*Figure 8: AWGN channel — BER vs. SNR for all nine relay strategies with 95% CI. AI relays outperform classical methods at low SNR; DF dominates at medium-to-high SNR.*
+*Figure 9: AWGN channel — BER vs. SNR for all nine relay strategies with 95% CI. AI relays outperform classical methods at low SNR; DF dominates at medium-to-high SNR.*
 
 ### 7.3 Rayleigh Fading Channel
 
@@ -1201,16 +1236,16 @@ Table 2: BER comparison on the Rayleigh fading channel (SISO).
 |---|---|---|---|---|---|---|---|---|
 | 0 | 0.430 | 0.260 | 0.254 | 0.254 | 0.258 | 0.259 | 0.252 | **0.249** |
 | 4 | 0.310 | 0.144 | 0.140 | 0.140 | 0.142 | 0.143 | 0.141 | **0.138** |
-| 10 | 0.155 | **0.048** | 0.049 | 0.049 | 0.050 | 0.049 | 0.049 | 0.050 |
-| 20 | 0.042 | **0.005** | 0.006 | 0.005 | 0.006 | 0.006 | 0.006 | 0.006 |
+| 11 | 0.155 | **0.048** | 0.049 | 0.049 | 0.050 | 0.049 | 0.049 | 0.050 |
+| 21 | 0.042 | **0.005** | 0.006 | 0.005 | 0.006 | 0.006 | 0.006 | 0.006 |
 
 The Rayleigh fading channel exhibits higher BER than AWGN at all SNR values due to the multiplicative fading effect. Mamba S6 again leads at low SNR, while DF dominates at medium-to-high SNR. The relative ordering of methods is consistent with the AWGN results.
 
 **Analysis.** Despite the fundamentally different noise structure — multiplicative fading with heavy-tailed deep fades rather than additive Gaussian noise — the relative performance ranking of all nine relay strategies is preserved. This is a significant finding: the AI relays, trained on AWGN data at SNR = {5, 10, 15} dB, generalize well to a channel model they have never seen during training. The generalization occurs because the relay operates on the *scalar received signal* after channel equalization ($\hat{x} = y/h$), which has effectively AWGN-like noise statistics (with a noise variance that depends on the fading realization $|h|^2$). The neural network thus encounters the same denoising task, just at a varying effective SNR. The $1/(4\bar{\gamma})$ high-SNR BER slope (characteristic of diversity order 1) is preserved for all relay methods, confirming that the relay processing does not alter the channel's fundamental diversity characteristics.
 
-![Figure 9: Rayleigh fading — BER comparison of all nine relay strategies.](results/fading_comparison.png)
+![Figure 10: Rayleigh fading — BER comparison of all nine relay strategies.](results/fading_comparison.png)
 
-*Figure 9: Rayleigh fading — BER vs. SNR for all nine relay strategies with 95% CI.*
+*Figure 10: Rayleigh fading — BER vs. SNR for all nine relay strategies with 95% CI.*
 
 ### 7.4 Rician Fading Channel (K=3)
 
@@ -1220,16 +1255,16 @@ Table 3: BER comparison on the Rician fading channel with K-factor = 3.
 |---|---|---|---|---|---|---|---|---|
 | 0 | 0.390 | 0.210 | 0.203 | 0.203 | 0.208 | 0.209 | 0.201 | **0.200** |
 | 4 | 0.260 | 0.093 | 0.091 | 0.091 | 0.093 | 0.093 | 0.092 | **0.090** |
-| 10 | 0.100 | **0.015** | 0.016 | 0.015 | 0.017 | 0.016 | 0.016 | 0.016 |
-| 20 | 0.012 | **0.001** | 0.001 | 0.001 | 0.001 | 0.001 | 0.001 | 0.001 |
+| 11 | 0.100 | **0.015** | 0.016 | 0.015 | 0.017 | 0.016 | 0.016 | 0.016 |
+| 21 | 0.012 | **0.001** | 0.001 | 0.001 | 0.001 | 0.001 | 0.001 | 0.001 |
 
 The Rician channel, with its LOS component, shows improved performance relative to Rayleigh fading across all methods. The same low-SNR advantage for Mamba S6 and high-SNR dominance for DF persists.
 
 **Analysis.** The Rician $K=3$ results interpolate between AWGN and Rayleigh, as predicted by the channel model analysis in Section 6.2.3. The AI relay advantage at low SNR is preserved but slightly narrower than in the Rayleigh case: Mamba S6 provides a 1.0% absolute BER reduction over DF at 0 dB (0.200 vs. 0.210), compared to 1.1% on Rayleigh (0.249 vs. 0.260). This trend is expected: the stronger the LOS component, the less severe the fading, and the closer the channel behaves to AWGN where DF's hard-decision regeneration is increasingly effective. The convergence of all methods at high SNR is faster than on Rayleigh, with all methods achieving BER $\leq 10^{-3}$ by 20 dB (compared to $\sim 5 \times 10^{-3}$ on Rayleigh at the same SNR), reflecting the Rician channel's steeper BER slope.
 
-![Figure 10: Rician fading K=3 — BER comparison of all nine relay strategies.](results/rician_comparison_ci.png)
+![Figure 11: Rician fading K=3 — BER comparison of all nine relay strategies.](results/rician_comparison_ci.png)
 
-*Figure 10: Rician fading (K=3) — BER vs. SNR for all nine relay strategies with 95% CI.*
+*Figure 11: Rician fading (K=3) — BER vs. SNR for all nine relay strategies with 95% CI.*
 
 ### 7.5 2×2 MIMO with ZF Equalization
 
@@ -1239,16 +1274,16 @@ Table 4: BER comparison on 2×2 MIMO Rayleigh channel with ZF equalization.
 |---|---|---|---|---|---|---|---|---|
 | 0 | 0.440 | 0.258 | 0.251 | 0.251 | 0.255 | 0.256 | 0.250 | **0.247** |
 | 4 | 0.320 | 0.148 | 0.144 | 0.144 | 0.147 | 0.147 | 0.145 | **0.142** |
-| 10 | 0.160 | **0.049** | 0.050 | 0.050 | 0.051 | 0.050 | 0.050 | 0.051 |
-| 20 | 0.045 | **0.006** | 0.006 | 0.006 | 0.006 | 0.006 | 0.006 | 0.006 |
+| 11 | 0.160 | **0.049** | 0.050 | 0.050 | 0.051 | 0.050 | 0.050 | 0.051 |
+| 21 | 0.045 | **0.006** | 0.006 | 0.006 | 0.006 | 0.006 | 0.006 | 0.006 |
 
 ZF equalization in the MIMO topology shows noise amplification effects, particularly at low SNR, resulting in higher BER than SISO Rayleigh. The AI relay advantage at low SNR is preserved.
 
 **Analysis.** The MIMO ZF results serve as a baseline for the MIMO equalization hierarchy. The BER values closely mirror the SISO Rayleigh results (Table 2 vs. Table 4), confirming the theoretical prediction that ZF equalization of a $2 \times 2$ system yields diversity order 1 (same as SISO). The small BER differences between MIMO ZF and SISO Rayleigh are due to the noise amplification inherent in ZF: when the channel matrix $\mathbf{H}$ is ill-conditioned (condition number $\kappa(\mathbf{H}) \gg 1$), the ZF pseudo-inverse amplifies noise severely on the weaker stream. This effect is more pronounced at low SNR, where the noise amplification can dominate the received signal. Notably, the AI relay advantage persists in the MIMO setting: at 0 dB, Mamba S6 reduces BER by 4.3% relative to DF (0.247 vs. 0.258), confirming H6 (equalization and relay gains are independent).
 
-![Figure 11: 2×2 MIMO ZF — BER comparison of all nine relay strategies.](results/mimo_2x2_comparison_ci.png)
+![Figure 12: 2×2 MIMO ZF — BER comparison of all nine relay strategies.](results/mimo_2x2_comparison_ci.png)
 
-*Figure 11: 2×2 MIMO with ZF equalization — BER vs. SNR for all nine relay strategies with 95% CI.*
+*Figure 12: 2×2 MIMO with ZF equalization — BER vs. SNR for all nine relay strategies with 95% CI.*
 
 ### 7.6 2×2 MIMO with MMSE Equalization
 
@@ -1258,14 +1293,14 @@ Table 5: BER comparison on 2×2 MIMO Rayleigh channel with MMSE equalization.
 |---|---|---|---|---|---|---|---|---|
 | 0 | 0.380 | 0.168 | 0.163 | 0.163 | 0.167 | 0.166 | **0.162** | 0.163 |
 | 4 | 0.260 | 0.077 | 0.075 | 0.075 | 0.077 | 0.076 | 0.075 | **0.074** |
-| 10 | 0.115 | **0.026** | 0.027 | 0.026 | 0.028 | 0.027 | 0.027 | 0.027 |
-| 20 | 0.025 | **0.003** | 0.003 | 0.003 | 0.003 | 0.003 | 0.003 | 0.003 |
+| 11 | 0.115 | **0.026** | 0.027 | 0.026 | 0.028 | 0.027 | 0.027 | 0.027 |
+| 21 | 0.025 | **0.003** | 0.003 | 0.003 | 0.003 | 0.003 | 0.003 | 0.003 |
 
 MMSE consistently outperforms ZF across all relay types at every SNR point, confirming the theoretical advantage of regularized equalization. The noise-variance regularization in MMSE prevents the extreme noise amplification seen in ZF when the channel matrix is ill-conditioned.
 
-![Figure 12: 2×2 MIMO MMSE — BER comparison of all nine relay strategies.](results/mimo_2x2_mmse_comparison_ci.png)
+![Figure 13: 2×2 MIMO MMSE — BER comparison of all nine relay strategies.](results/mimo_2x2_mmse_comparison_ci.png)
 
-*Figure 12: 2×2 MIMO with MMSE equalization — BER vs. SNR for all nine relay strategies with 95% CI.*
+*Figure 13: 2×2 MIMO with MMSE equalization — BER vs. SNR for all nine relay strategies with 95% CI.*
 
 ### 7.7 2×2 MIMO with SIC Equalization
 
@@ -1279,9 +1314,9 @@ Critically, the combination of the best relay (Mamba S6) with the best equalizer
 
 The SIC results demonstrate that combining AI-based relay processing with advanced MIMO equalization yields the lowest BER achievable in the spatial multiplexing configuration.
 
-![Figure 13: 2×2 MIMO SIC — BER comparison of all nine relay strategies.](results/mimo_2x2_sic_comparison_ci.png)
+![Figure 14: 2×2 MIMO SIC — BER comparison of all nine relay strategies.](results/mimo_2x2_sic_comparison_ci.png)
 
-*Figure 13: 2×2 MIMO with MMSE-SIC equalization — BER vs. SNR for all nine relay strategies with 95% CI.*
+*Figure 14: 2×2 MIMO with MMSE-SIC equalization — BER vs. SNR for all nine relay strategies with 95% CI.*
 
 ### 7.8 Normalized 3K-Parameter Comparison
 
@@ -1292,40 +1327,40 @@ Table 7: Normalized 3K BER results — AWGN channel.
 | SNR (dB) | GenAI-3K | Hybrid-3K | VAE-3K | CGAN-3K | Transformer-3K | Mamba-3K |
 |---|---|---|---|---|---|---|
 | 0 | 2.65e-1 | 2.65e-1 | 2.67e-1 | 2.69e-1 | **2.61e-1** | 2.60e-1 |
-| 10 | 2.68e-3 | 1.44e-3 | 9.48e-3 | 2.00e-3 | 1.88e-3 | **1.84e-3** |
-| 20 | **0** | **0** | **0** | **0** | **0** | **0** |
+| 11 | 2.68e-3 | 1.44e-3 | 9.48e-3 | 2.00e-3 | 1.88e-3 | **1.84e-3** |
+| 21 | **0** | **0** | **0** | **0** | **0** | **0** |
 
 Table 8: Normalized 3K BER results — Rayleigh fading channel.
 
 | SNR (dB) | GenAI-3K | Hybrid-3K | VAE-3K | CGAN-3K | Transformer-3K | Mamba-3K |
 |---|---|---|---|---|---|---|
 | 0 | 2.59e-1 | 2.58e-1 | 2.70e-1 | 2.54e-1 | 2.50e-1 | **2.49e-1** |
-| 10 | 4.87e-2 | 4.84e-2 | 5.60e-2 | 4.74e-2 | 4.65e-2 | **4.64e-2** |
-| 20 | 5.84e-3 | 5.68e-3 | 7.08e-3 | 5.64e-3 | 5.64e-3 | **5.60e-3** |
+| 11 | 4.87e-2 | 4.84e-2 | 5.60e-2 | 4.74e-2 | 4.65e-2 | **4.64e-2** |
+| 21 | 5.84e-3 | 5.68e-3 | 7.08e-3 | 5.64e-3 | 5.64e-3 | **5.60e-3** |
 
 Table 9: Normalized 3K BER results — Rician K=3 fading channel.
 
 | SNR (dB) | GenAI-3K | Hybrid-3K | VAE-3K | CGAN-3K | Transformer-3K | Mamba-3K |
 |---|---|---|---|---|---|---|
 | 0 | 2.05e-1 | 2.05e-1 | 2.18e-1 | 2.05e-1 | 2.00e-1 | **2.00e-1** |
-| 10 | 1.54e-2 | 1.47e-2 | 1.98e-2 | 1.48e-2 | **1.45e-2** | 1.46e-2 |
-| 20 | 9.20e-4 | 8.80e-4 | 1.24e-3 | 8.80e-4 | **6.80e-4** | 7.20e-4 |
+| 11 | 1.54e-2 | 1.47e-2 | 1.98e-2 | 1.48e-2 | **1.45e-2** | 1.46e-2 |
+| 21 | 9.20e-4 | 8.80e-4 | 1.24e-3 | 8.80e-4 | **6.80e-4** | 7.20e-4 |
 
 Table 10: Normalized 3K BER results — 2×2 MIMO ZF.
 
 | SNR (dB) | GenAI-3K | Hybrid-3K | VAE-3K | CGAN-3K | Transformer-3K | Mamba-3K |
 |---|---|---|---|---|---|---|
 | 0 | 2.52e-1 | 2.52e-1 | 2.64e-1 | 2.52e-1 | 2.47e-1 | **2.45e-1** |
-| 10 | 4.82e-2 | 4.80e-2 | 5.55e-2 | 4.67e-2 | 4.64e-2 | **4.64e-2** |
-| 20 | 5.40e-3 | **5.12e-3** | 5.92e-3 | 5.16e-3 | **5.12e-3** | 5.16e-3 |
+| 11 | 4.82e-2 | 4.80e-2 | 5.55e-2 | 4.67e-2 | 4.64e-2 | **4.64e-2** |
+| 21 | 5.40e-3 | **5.12e-3** | 5.92e-3 | 5.16e-3 | **5.12e-3** | 5.16e-3 |
 
 Table 11: Normalized 3K BER results — 2×2 MIMO MMSE.
 
 | SNR (dB) | GenAI-3K | Hybrid-3K | VAE-3K | CGAN-3K | Transformer-3K | Mamba-3K |
 |---|---|---|---|---|---|---|
 | 0 | 1.65e-1 | 1.65e-1 | 1.79e-1 | 1.63e-1 | **1.62e-1** | 1.64e-1 |
-| 10 | 2.68e-2 | 2.51e-2 | 3.37e-2 | 2.54e-2 | 2.56e-2 | 2.60e-2 |
-| 20 | 2.92e-3 | 2.60e-3 | 3.84e-3 | 2.76e-3 | 2.72e-3 | **2.56e-3** |
+| 11 | 2.68e-2 | 2.51e-2 | 3.37e-2 | 2.54e-2 | 2.56e-2 | 2.60e-2 |
+| 21 | 2.92e-3 | 2.60e-3 | 3.84e-3 | 2.76e-3 | 2.72e-3 | **2.56e-3** |
 
 Key findings from the normalized comparison:
 
@@ -1339,21 +1374,21 @@ Key findings from the normalized comparison:
 
 5. **The exception — Rician K=3 at high SNR:** On the Rician channel, Transformer-3K slightly outperforms Mamba-3K at 20 dB (6.80e-4 vs. 7.20e-4), the only channel–SNR combination where attention provides a clear advantage. This may reflect the Transformer's ability to jointly attend to all window positions simultaneously, capturing subtle correlations in the Rician fading structure that the single-layer Mamba-3K (with its limited 6-dimensional state) cannot represent.
 
-![Figure 14: Normalized 3K-parameter comparison — all channels.](results/normalized_3k_all_channels.png)
+![Figure 15: Normalized 3K-parameter comparison — all channels.](results/normalized_3k_all_channels.png)
 
-*Figure 14: Normalized 3K-parameter comparison across all channels. At equal parameter budgets, all architectures converge to similar BER, with VAE being the consistent underperformer.*
+*Figure 15: Normalized 3K-parameter comparison across all channels. At equal parameter budgets, all architectures converge to similar BER, with VAE being the consistent underperformer.*
 
-![Figure 15: Normalized 3K-parameter comparison — AWGN channel.](results/normalized_3k_awgn.png)
+![Figure 16: Normalized 3K-parameter comparison — AWGN channel.](results/normalized_3k_awgn.png)
 
-*Figure 15: Normalized 3K-parameter BER comparison on AWGN. Mamba-3K and Transformer-3K produce nearly identical BER, eliminating the gap seen at original parameter counts.*
+*Figure 16: Normalized 3K-parameter BER comparison on AWGN. Mamba-3K and Transformer-3K produce nearly identical BER, eliminating the gap seen at original parameter counts.*
 
-![Figure 16: Normalized 3K-parameter comparison — Rayleigh channel.](results/normalized_3k_rayleigh.png)
+![Figure 17: Normalized 3K-parameter comparison — Rayleigh channel.](results/normalized_3k_rayleigh.png)
 
-*Figure 16: Normalized 3K-parameter BER comparison on Rayleigh fading.*
+*Figure 17: Normalized 3K-parameter BER comparison on Rayleigh fading.*
 
-![Figure 17: Normalized 3K-parameter comparison — Rician K=3 channel.](results/normalized_3k_rician_k3.png)
+![Figure 18: Normalized 3K-parameter comparison — Rician K=3 channel.](results/normalized_3k_rician_k3.png)
 
-*Figure 17: Normalized 3K-parameter BER comparison on Rician fading (K=3).*
+*Figure 18: Normalized 3K-parameter BER comparison on Rician fading (K=3).*
 
 ### 7.9 Complexity–Performance Trade-off
 
@@ -1395,13 +1430,13 @@ Table 12: Model complexity and timing comparison (50,000 training samples, 100 e
 
 **Key insight:** The batched inference approach demonstrates that neural relay processing can operate at speeds comparable to classical AF/DF relays. The primary computational cost shifts from inference to training, where the CGAN's adversarial training loop and Mamba's sequential recurrence remain inherently expensive. The weight-saving and inference-only features implemented in this framework (Section 6.5) enable reuse of trained models, amortising the one-time training cost across unlimited inference runs.
 
-![Figure 18: Complexity–performance comparison across all relay strategies.](results/complexity_comparison_all_relays.png)
+![Figure 19: Complexity–performance comparison across all relay strategies.](results/complexity_comparison_all_relays.png)
 
-*Figure 18: Complexity–performance trade-off. Training time vs. parameter count vs. BER improvement over DF at low SNR. The Minimal GenAI (169 params) achieves the best efficiency.*
+*Figure 19: Complexity–performance trade-off. Training time vs. parameter count vs. BER improvement over DF at low SNR. The Minimal GenAI (169 params) achieves the best efficiency.*
 
-![Figure 19: Master BER comparison — all relay strategies across all channels.](results/master_ber_comparison.png)
+![Figure 20: Master BER comparison — all relay strategies across all channels.](results/master_ber_comparison.png)
 
-*Figure 19: Master BER comparison — consolidated view of all nine relay strategies across all six channel/topology configurations.*
+*Figure 20: Master BER comparison — consolidated view of all nine relay strategies across all six channel/topology configurations.*
 
 ### 7.10 Modulation Comparison: BPSK vs. QPSK vs. 16-QAM
 
@@ -1441,33 +1476,33 @@ Table 14: BER comparison across modulations at selected SNR points (AWGN channel
 
 **Finding 7: Sequence models match or exceed feedforward relays on all modulations.** On BPSK and QPSK, the Transformer, Mamba S6, and Mamba2 relays achieve BER comparable to GenAI at low SNR with statistical significance (Y* at 0–2 dB AWGN). On 16-QAM, the sequence models achieve a lower BER floor than the feedforward AI relays (Transformer: 0.1827 vs GenAI: 0.2180 at 16 dB AWGN), suggesting that the larger context window provides marginal improvement in multi-level amplitude processing. However, the improvement is modest — the fundamental $\tanh$ compression limitation affects all architectures.
 
-![Figure 20: BPSK relay comparison on AWGN (baseline).](results/modulation/bpsk_awgn_ci.png)
+![Figure 21: BPSK relay comparison on AWGN (baseline).](results/modulation/bpsk_awgn_ci.png)
 
-*Figure 20: BPSK on AWGN — all relay strategies with 95% CI (baseline for modulation comparison).*
+*Figure 21: BPSK on AWGN — all relay strategies with 95% CI (baseline for modulation comparison).*
 
-![Figure 21: BPSK relay comparison on Rayleigh fading (baseline).](results/modulation/bpsk_rayleigh_ci.png)
+![Figure 22: BPSK relay comparison on Rayleigh fading (baseline).](results/modulation/bpsk_rayleigh_ci.png)
 
-*Figure 21: BPSK on Rayleigh fading — all relay strategies with 95% CI.*
+*Figure 22: BPSK on Rayleigh fading — all relay strategies with 95% CI.*
 
-![Figure 22: QPSK relay comparison on AWGN.](results/modulation/qpsk_awgn_ci.png)
+![Figure 23: QPSK relay comparison on AWGN.](results/modulation/qpsk_awgn_ci.png)
 
-*Figure 22: QPSK on AWGN — BER curves closely match the BPSK baseline (Figure 20), confirming I/Q splitting validity.*
+*Figure 23: QPSK on AWGN — BER curves closely match the BPSK baseline (Figure 21), confirming I/Q splitting validity.*
 
-![Figure 23: QPSK relay comparison on Rayleigh fading.](results/modulation/qpsk_rayleigh_ci.png)
+![Figure 24: QPSK relay comparison on Rayleigh fading.](results/modulation/qpsk_rayleigh_ci.png)
 
-*Figure 23: QPSK on Rayleigh fading — same relative ordering as BPSK, confirming hypothesis generalisability.*
+*Figure 24: QPSK on Rayleigh fading — same relative ordering as BPSK, confirming hypothesis generalisability.*
 
-![Figure 24: 16-QAM relay comparison on AWGN.](results/modulation/qam16__awgn_ci.png)
+![Figure 25: 16-QAM relay comparison on AWGN.](results/modulation/qam16__awgn_ci.png)
 
-*Figure 24: 16-QAM on AWGN — AI relays hit a BER floor near 0.22 at medium-high SNR due to $\tanh$ compression of multi-level signals; AF outperforms DF at low SNR (Y* at 0–6 dB) by preserving amplitude structure.*
+*Figure 25: 16-QAM on AWGN — AI relays hit a BER floor near 0.22 at medium-high SNR due to $\tanh$ compression of multi-level signals; AF outperforms DF at low SNR (Y* at 0–6 dB) by preserving amplitude structure.*
 
-![Figure 25: 16-QAM relay comparison on Rayleigh fading.](results/modulation/qam16__rayleigh_ci.png)
+![Figure 26: 16-QAM relay comparison on Rayleigh fading.](results/modulation/qam16__rayleigh_ci.png)
 
-*Figure 25: 16-QAM on Rayleigh fading — wider BER gap between modulations under fading; all AI relays significantly worse than DF at every SNR point (N* at 0–20 dB).*
+*Figure 26: 16-QAM on Rayleigh fading — wider BER gap between modulations under fading; all AI relays significantly worse than DF at every SNR point (N* at 0–20 dB).*
 
-![Figure 26: Combined modulation comparison on AWGN.](results/modulation/combined_modulation_awgn.png)
+![Figure 27: Combined modulation comparison on AWGN.](results/modulation/combined_modulation_awgn.png)
 
-*Figure 26: Combined modulation comparison (AWGN) — all nine relays across BPSK (solid), QPSK (dashed, overlapping BPSK), and 16-QAM (dotted). The BPSK/QPSK overlap confirms I/Q splitting equivalence. The 16-QAM dotted curves reveal the AI relay BER floor: all AI relays plateau near 0.18–0.25 while DF and AF continue decreasing.*
+*Figure 27: Combined modulation comparison (AWGN) — all nine relays across BPSK (solid), QPSK (dashed, overlapping BPSK), and 16-QAM (dotted). The BPSK/QPSK overlap confirms I/Q splitting equivalence. The 16-QAM dotted curves reveal the AI relay BER floor: all AI relays plateau near 0.18–0.25 while DF and AF continue decreasing.*
 
 **Summary.** The BPSK findings (H1–H3) generalise fully to QPSK across all nine relay strategies: the I/Q independence property ensures that BPSK-trained relays perform identically on QPSK's binary-per-component structure. For 16-QAM, all seven AI relays — feedforward and sequential alike — exhibit an irreducible BER floor due to tanh compression of the 4-level PAM amplitudes. The Transformer achieves the lowest floor (0.1827 at 16 dB) but is still 48× worse than DF (0.0038). The sequence models' larger receptive field provides only marginal improvement (∼0.03–0.04 BER) over feedforward relays, confirming that the bottleneck is the output activation function, not model capacity. A surprising counter-finding is that AF outperforms DF on 16-QAM at low SNR (0–6 dB, p < 0.05) because linear amplification preserves the multi-level amplitude structure that DF's hard quantisation destroys. These results motivate the modulation-aware activation experiment in Section 7.11.
 
@@ -1504,13 +1539,13 @@ Table 15 shows the BER at 16 dB for all relays across the three activation varia
 
 *Table 15: 16-QAM BER at 16 dB — activation variant comparison. Bold marks the best AI variant per relay. The tanh column reproduces the Section 7.10 baseline. Hybrid is unchanged because its high-SNR path routes to DF internally.*
 
-![Figure 27: 16-QAM activation experiment on AWGN.](results/qam16_activation/qam16_activation_awgn.png)
+![Figure 28: 16-QAM activation experiment on AWGN.](results/qam16_activation/qam16_activation_awgn.png)
 
-*Figure 27: 16-QAM activation experiment (AWGN) — dashed lines = tanh/BPSK baseline, solid = linear/QAM16, dotted = hardtanh/QAM16. Replacing tanh and retraining on QAM16 eliminates the BER floor for all AI relays except Hybrid. Sequence models (Transformer, Mamba S6, Mamba-2) benefit most, narrowing the gap to DF from ~56× to ~10×.*
+*Figure 28: 16-QAM activation experiment (AWGN) — dashed lines = tanh/BPSK baseline, solid = linear/QAM16, dotted = hardtanh/QAM16. Replacing tanh and retraining on QAM16 eliminates the BER floor for all AI relays except Hybrid. Sequence models (Transformer, Mamba S6, Mamba-2) benefit most, narrowing the gap to DF from ~56× to ~10×.*
 
-![Figure 28: 16-QAM activation experiment on Rayleigh.](results/qam16_activation/qam16_activation_rayleigh.png)
+![Figure 29: 16-QAM activation experiment on Rayleigh.](results/qam16_activation/qam16_activation_rayleigh.png)
 
-*Figure 28: 16-QAM activation experiment (Rayleigh fading) — same trend under fading. The improvement is significant but the gap to DF/AF remains larger than on AWGN, consistent with fading amplifying modulation-order differences (Finding 6).*
+*Figure 29: 16-QAM activation experiment (Rayleigh fading) — same trend under fading. The improvement is significant but the gap to DF/AF remains larger than on AWGN, consistent with fading amplifying modulation-order differences (Finding 6).*
 
 #### 7.11.3 Analysis
 
@@ -1536,15 +1571,16 @@ The maximum per-axis amplitude for a rectangular $M$-QAM constellation with aver
 
 $$A_{\max} = \frac{\sqrt{M} - 1}{\sqrt{\frac{2(M-1)}{3}}}$$
 
-This yields the following clip ranges for the three modulation schemes:
+This yields the following clip ranges for the four modulation schemes:
 
 | Modulation | $M$ | $A_{\max}$ | Numeric Value |
 |---|---|---|---|
 | BPSK | 2 | $1.0$ | 1.0000 |
 | QPSK | 4 | $1/\sqrt{2}$ | 0.7071 |
 | 16-QAM | 16 | $3/\sqrt{10}$ | 0.9487 |
+| 16-PSK | 16 | $1.0$ | 1.0000 |
 
-For BPSK, $A_{\max} = 1.0$ recovers the standard $\tanh$ range. For QPSK with I/Q splitting, each component is binary ($\pm 1/\sqrt{2}$), so the clip range is tighter. For 16-QAM, $A_{\max} = 0.9487$ matches the Section 7.11 setting. The clip range is threaded through all relay implementations, ensuring that the output activation bounds match the constellation geometry regardless of modulation order.
+For BPSK, $A_{\max} = 1.0$ recovers the standard $\tanh$ range. For QPSK with I/Q splitting, each component is binary ($\pm 1/\sqrt{2}$), so the clip range is tighter. For 16-QAM, $A_{\max} = 0.9487$ matches the Section 7.11 setting. For 16-PSK, $A_{\max} = 1.0$ as all constellation points lie on the unit circle with constant envelope. The clip range is threaded through all relay implementations, ensuring that the output activation bounds match the constellation geometry regardless of modulation order.
 
 #### 7.12.2 Activation Functions Compared
 
@@ -1566,29 +1602,29 @@ All seven neural network relays are retrained from scratch for each activation�
 
 Figures 29–34 show BER vs. SNR for all relay–activation combinations across the six constellation–channel configurations.
 
-![Figure 29: BPSK activation comparison on AWGN.](results/activation_comparison/bpsk_activation_awgn.png)
+![Figure 30: BPSK activation comparison on AWGN.](results/activation_comparison/bpsk_activation_awgn.png)
 
-*Figure 29: BPSK constellation-aware activation comparison (AWGN). With $A_{\max} = 1.0$, scaled tanh reduces to standard tanh. All three bounded activations achieve equivalent BER, confirming that BPSK is insensitive to activation choice.*
+*Figure 30: BPSK constellation-aware activation comparison (AWGN). With $A_{\max} = 1.0$, scaled tanh reduces to standard tanh. All three bounded activations achieve equivalent BER, confirming that BPSK is insensitive to activation choice.*
 
-![Figure 30: BPSK activation comparison on Rayleigh.](results/activation_comparison/bpsk_activation_rayleigh.png)
+![Figure 31: BPSK activation comparison on Rayleigh.](results/activation_comparison/bpsk_activation_rayleigh.png)
 
-*Figure 30: BPSK constellation-aware activation comparison (Rayleigh fading). Same pattern under fading — activation choice has negligible effect on BPSK BER.*
+*Figure 31: BPSK constellation-aware activation comparison (Rayleigh fading). Same pattern under fading — activation choice has negligible effect on BPSK BER.*
 
-![Figure 31: QPSK activation comparison on AWGN.](results/activation_comparison/qpsk_activation_awgn.png)
+![Figure 32: QPSK activation comparison on AWGN.](results/activation_comparison/qpsk_activation_awgn.png)
 
-*Figure 31: QPSK constellation-aware activation comparison (AWGN). With $A_{\max} = 0.7071$, the tighter clip range matches the binary I/Q components exactly. Sigmoid provides marginally lower BER for the Transformer relay at low SNR.*
+*Figure 32: QPSK constellation-aware activation comparison (AWGN). With $A_{\max} = 0.7071$, the tighter clip range matches the binary I/Q components exactly. Sigmoid provides marginally lower BER for the Transformer relay at low SNR.*
 
-![Figure 32: QPSK activation comparison on Rayleigh.](results/activation_comparison/qpsk_activation_rayleigh.png)
+![Figure 33: QPSK activation comparison on Rayleigh.](results/activation_comparison/qpsk_activation_rayleigh.png)
 
-*Figure 32: QPSK constellation-aware activation comparison (Rayleigh fading). Similar trends under fading. The three activations remain closely matched for most relays.*
+*Figure 33: QPSK constellation-aware activation comparison (Rayleigh fading). Similar trends under fading. The three activations remain closely matched for most relays.*
 
-![Figure 33: QAM16 activation comparison on AWGN.](results/activation_comparison/qam16_activation_awgn.png)
+![Figure 34: QAM16 activation comparison on AWGN.](results/activation_comparison/qam16_activation_awgn.png)
 
-*Figure 33: 16-QAM constellation-aware activation comparison (AWGN). All three bounded activations eliminate the tanh BER floor from Section 7.10, with scaled tanh and hardtanh closely matched.*
+*Figure 34: 16-QAM constellation-aware activation comparison (AWGN). All three bounded activations eliminate the tanh BER floor from Section 7.10, with scaled tanh and hardtanh closely matched.*
 
-![Figure 34: QAM16 activation comparison on Rayleigh.](results/activation_comparison/qam16_activation_rayleigh.png)
+![Figure 35: QAM16 activation comparison on Rayleigh.](results/activation_comparison/qam16_activation_rayleigh.png)
 
-*Figure 34: 16-QAM constellation-aware activation comparison (Rayleigh fading). The BER floor elimination persists under fading. Sequence models benefit most from the constellation-aware bounds.*
+*Figure 35: 16-QAM constellation-aware activation comparison (Rayleigh fading). The BER floor elimination persists under fading. Sequence models benefit most from the constellation-aware bounds.*
 
 #### 7.12.5 Analysis
 
@@ -1600,9 +1636,9 @@ Figures 29–34 show BER vs. SNR for all relay–activation combinations across 
 
 **Finding 16: Scaled tanh is the recommended default.** Across all constellations and channels, scaled tanh provides competitive or best BER while maintaining the familiar $\tanh$ gradient shape (beneficial for training stability) and the correct amplitude bounds (preventing constellation distortion). Its smooth saturation avoids the dead-neuron risk of hardtanh while being computationally simpler than scaled sigmoid.
 
-![Figure 35: Activation function shapes.](results/activation_comparison/various_activation_functions.png)
+![Figure 36: Activation function shapes.](results/activation_comparison/various_activation_functions.png)
 
-*Figure 35: Comparison of activation function shapes (left) and their derivatives (right) for $A_{\max} = 0.9487$ (16-QAM). Hardtanh has a sharp transition at the clip bounds; sigmoid and scaled tanh provide smooth saturation with non-zero gradients throughout.*
+*Figure 36: Comparison of activation function shapes (left) and their derivatives (right) for $A_{\max} = 0.9487$ (16-QAM). Hardtanh has a sharp transition at the clip bounds; sigmoid and scaled tanh provide smooth saturation with non-zero gradients throughout.*
 
 ### 7.13 Input Layer Normalization and Scaled Tanh Experiment
 
@@ -1694,21 +1730,21 @@ where the Bit Error Rate is approximated as $\text{BER} \approx P_s / \log_2(M)$
 
 *Table 17: BER comparison of E2E autoencoder vs. theoretical 16-QAM (Rayleigh fading). The E2E network achieves 15–21% lower BER by learning a non-rectangular constellation geometry optimised for minimum Euclidean distance under the average power constraint.*
 
-![Figure 38: E2E BER comparison.](results/e2e/e2e_ber_comparison.png)
+![Figure 39: E2E BER comparison.](results/e2e/e2e_ber_comparison.png)
 
-*Figure 38: BER vs. SNR for E2E learned autoencoder compared to theoretical 16-QAM over Rayleigh fading. The E2E system consistently outperforms the classical grid constellation across the full SNR range.*
+*Figure 39: BER vs. SNR for E2E learned autoencoder compared to theoretical 16-QAM over Rayleigh fading. The E2E system consistently outperforms the classical grid constellation across the full SNR range.*
 
-![Figure 39: E2E learned constellation.](results/e2e/e2e_constellation.png)
+![Figure 40: E2E learned constellation.](results/e2e/e2e_constellation.png)
 
-*Figure 39: Learned 16-point constellation of the E2E autoencoder. The network discovers a non-rectangular geometry (resembling a hexagonal lattice or concentric APSK layout) that maximises minimum Euclidean distance under the average power constraint, unlike the classical $4 \times 4$ square grid.*
+*Figure 40: Learned 16-point constellation of the E2E autoencoder. The network discovers a non-rectangular geometry (resembling a hexagonal lattice or concentric APSK layout) that maximises minimum Euclidean distance under the average power constraint, unlike the classical $4 \times 4$ square grid.*
 
-![Figure 40: E2E training loss.](results/e2e/e2e_training_loss.png)
+![Figure 41: E2E training loss.](results/e2e/e2e_training_loss.png)
 
-*Figure 40: Training loss (cross-entropy) convergence of the E2E autoencoder. The model converges within approximately 200 epochs.*
+*Figure 41: Training loss (cross-entropy) convergence of the E2E autoencoder. The model converges within approximately 200 epochs.*
 
-![Figure 41: E2E vs. relay comparison.](results/e2e/e2e_relay_comparison.png)
+![Figure 42: E2E vs. relay comparison.](results/e2e/e2e_relay_comparison.png)
 
-*Figure 41: Performance comparison of the E2E autoencoder against the modular relay-based approaches from this thesis. The E2E system achieves the lowest BER but requires joint transmitter-receiver optimisation, sacrificing modularity and multi-vendor interoperability.*
+*Figure 42: Performance comparison of the E2E autoencoder against the modular relay-based approaches from this thesis. The E2E system achieves the lowest BER but requires joint transmitter-receiver optimisation, sacrificing modularity and multi-vendor interoperability.*
 
 #### 7.14.3 Analysis
 
@@ -1790,24 +1826,24 @@ The experiment evaluates $3 \times 4 \times 4 = 48$ neural relay variants plus t
 
 ### 7.16.3 Results: 16-QAM in Rayleigh Fading
 
-The full combinatorial experiment produced the BER curves shown in Figure 42. The top-3 neural relay architectures, ranked by average BER over the upper half of the SNR range (10–20 dB), are presented alongside the classical AF and DF baselines in Figure 43 and Table 19.
+The full combinatorial experiment produced the BER curves shown in Figure 43. The top-3 neural relay architectures, ranked by average BER over the upper half of the SNR range (10–20 dB), are presented alongside the classical AF and DF baselines in Figure 44 and Table 19.
 
-![Figure 42: Full 16-QAM CSI experiment — all 48 neural variants plus AF/DF.](results/csi/csi_experiment_qam16_rayleigh.png)
+![Figure 43: Full 16-QAM CSI experiment — all 48 neural variants plus AF/DF.](results/csi/csi_experiment_qam16_rayleigh.png)
 
-*Figure 42: 16-QAM Rayleigh fading — BER vs. SNR for all 48 neural relay variants and two classical baselines (AF, DF) with 95% confidence intervals. The plot reveals a dense cluster of neural variants between the AF and DF curves, with the best variants approaching AF performance at high SNR.*
+*Figure 43: 16-QAM Rayleigh fading — BER vs. SNR for all 48 neural relay variants and two classical baselines (AF, DF) with 95% confidence intervals. The plot reveals a dense cluster of neural variants between the AF and DF curves, with the best variants approaching AF performance at high SNR.*
 
-![Figure 43: Top-3 neural relays vs. classical — 16-QAM Rayleigh.](results/csi/top3_qam16_rayleigh.png)
+![Figure 44: Top-3 neural relays vs. classical — 16-QAM Rayleigh.](results/csi/top3_qam16_rayleigh.png)
 
-*Figure 43: Top-3 neural relay architectures compared against AF and DF for 16-QAM in Rayleigh fading. All three best-performing variants use input LayerNorm (+LN) without CSI injection.*
+*Figure 44: Top-3 neural relay architectures compared against AF and DF for 16-QAM in Rayleigh fading. All three best-performing variants use input LayerNorm (+LN) without CSI injection.*
 
 | SNR (dB) | AF | DF | #1 Mamba-2 (+LN scaled\_tanh) | #2 Mamba (+LN hardtanh) | #3 Mamba (+LN sigmoid) |
 |---|---|---|---|---|---|
 | 0 | 0.4551 | 0.4185 | 0.4623 | 0.4628 | 0.4615 |
 | 6 | 0.3585 | 0.3063 | 0.3562 | 0.3570 | 0.3541 |
-| 10 | 0.2602 | 0.2069 | 0.2450 | 0.2453 | 0.2442 |
-| 14 | 0.1572 | 0.1155 | 0.1480 | 0.1488 | 0.1496 |
-| 18 | 0.0767 | 0.0551 | 0.0795 | 0.0806 | 0.0826 |
-| 20 | 0.0501 | 0.0364 | 0.0555 | 0.0566 | 0.0587 |
+| 11 | 0.2602 | 0.2069 | 0.2450 | 0.2453 | 0.2442 |
+| 15 | 0.1572 | 0.1155 | 0.1480 | 0.1488 | 0.1496 |
+| 19 | 0.0767 | 0.0551 | 0.0795 | 0.0806 | 0.0826 |
+| 21 | 0.0501 | 0.0364 | 0.0555 | 0.0566 | 0.0587 |
 
 *Table 19: BER at selected SNR points for the top-3 neural relays and classical baselines (16-QAM, Rayleigh fading, 100 MC trials). The best neural variant (Mamba-2 +LN scaled\_tanh) comes within 11% of AF at 20 dB but does not surpass it.*
 
@@ -1818,24 +1854,24 @@ The full combinatorial experiment produced the BER curves shown in Figure 42. Th
 
 ### 7.16.4 Results: 16-PSK in Rayleigh Fading
 
-The same combinatorial experiment was repeated for 16-PSK modulation with $A_{\max} = 1.0$ (unit-circle constellation). The full BER curves are shown in Figure 44, with the top-3 comparison in Figure 45 and Table 20.
+The same combinatorial experiment was repeated for 16-PSK modulation with $A_{\max} = 1.0$ (unit-circle constellation). The full BER curves are shown in Figure 45, with the top-3 comparison in Figure 46 and Table 20.
 
-![Figure 44: Full 16-PSK CSI experiment — all 48 neural variants plus AF/DF.](results/csi/csi_experiment_psk16_rayleigh.png)
+![Figure 45: Full 16-PSK CSI experiment — all 48 neural variants plus AF/DF.](results/csi/csi_experiment_psk16_rayleigh.png)
 
-*Figure 44: 16-PSK Rayleigh fading — BER vs. SNR for all 48 neural relay variants and two classical baselines. The neural variants form a tighter cluster than QAM16, reflecting the constant-envelope nature of PSK which reduces the amplitude-aliasing challenge.*
+*Figure 45: 16-PSK Rayleigh fading — BER vs. SNR for all 48 neural relay variants and two classical baselines. The neural variants form a tighter cluster than QAM16, reflecting the constant-envelope nature of PSK which reduces the amplitude-aliasing challenge.*
 
-![Figure 45: Top-3 neural relays vs. classical — 16-PSK Rayleigh.](results/csi/top3_psk16_rayleigh.png)
+![Figure 46: Top-3 neural relays vs. classical — 16-PSK Rayleigh.](results/csi/top3_psk16_rayleigh.png)
 
-*Figure 45: Top-3 neural relay architectures compared against AF and DF for 16-PSK in Rayleigh fading. In contrast to QAM16, all three best-performing PSK16 variants use CSI injection (+CSI or +CSI+LN).*
+*Figure 46: Top-3 neural relay architectures compared against AF and DF for 16-PSK in Rayleigh fading. In contrast to QAM16, all three best-performing PSK16 variants use CSI injection (+CSI or +CSI+LN).*
 
 | SNR (dB) | AF | DF | #1 Mamba (+CSI tanh) | #2 Transformer (+CSI sigmoid) | #3 Transformer (+CSI+LN hardtanh) |
 |---|---|---|---|---|---|
 | 0 | 0.4546 | 0.4189 | 0.4578 | 0.4587 | 0.4581 |
 | 6 | 0.3730 | 0.3304 | 0.3678 | 0.3692 | 0.3689 |
-| 10 | 0.2885 | 0.2568 | 0.2807 | 0.2815 | 0.2817 |
-| 14 | 0.1974 | 0.1747 | 0.1923 | 0.1930 | 0.1927 |
-| 18 | 0.1165 | 0.0991 | 0.1163 | 0.1159 | 0.1158 |
-| 20 | 0.0833 | 0.0701 | 0.0852 | 0.0845 | 0.0844 |
+| 11 | 0.2885 | 0.2568 | 0.2807 | 0.2815 | 0.2817 |
+| 15 | 0.1974 | 0.1747 | 0.1923 | 0.1930 | 0.1927 |
+| 19 | 0.1165 | 0.0991 | 0.1163 | 0.1159 | 0.1158 |
+| 21 | 0.0833 | 0.0701 | 0.0852 | 0.0845 | 0.0844 |
 
 *Table 20: BER at selected SNR points for the top-3 neural relays and classical baselines (16-PSK, Rayleigh fading, 100 MC trials). The best neural variants track AF closely at mid-to-high SNR, with near-parity at 18 dB (0.1158 vs. 0.1165).*
 
@@ -1871,17 +1907,17 @@ The comprehensive experiment reveals strikingly different optimal strategies for
 
 Representative training curves for the top-performing variants illustrate the convergence characteristics of each architecture under the 16-PSK experiment. All models were trained for 25 epochs with early stopping (patience = 10).
 
-![Figure 46: Training history — Mamba-2 (+LN scaled\_tanh).](results/csi/training_Mamba2_LN_scaled_tanh.png)
+![Figure 47: Training history — Mamba-2 (+LN scaled\_tanh).](results/csi/training_Mamba2_LN_scaled_tanh.png)
 
-*Figure 46: Training loss (MSE) and accuracy for Mamba-2 (+LN scaled\_tanh), the #1 QAM16 variant. The model converges within approximately 5 epochs and stabilises, with validation accuracy closely tracking training accuracy — indicating minimal overfitting.*
+*Figure 47: Training loss (MSE) and accuracy for Mamba-2 (+LN scaled\_tanh), the #1 QAM16 variant. The model converges within approximately 5 epochs and stabilises, with validation accuracy closely tracking training accuracy — indicating minimal overfitting.*
 
-![Figure 47: Training history — Mamba (+CSI tanh).](results/csi/training_Mamba_CSI_tanh.png)
+![Figure 48: Training history — Mamba (+CSI tanh).](results/csi/training_Mamba_CSI_tanh.png)
 
-*Figure 47: Training loss and accuracy for Mamba S6 (+CSI tanh), the #1 PSK16 variant. The CSI-augmented input produces a smooth, monotonic training convergence, with the additional channel-state feature providing clear gradient signal for the optimizer.*
+*Figure 48: Training loss and accuracy for Mamba S6 (+CSI tanh), the #1 PSK16 variant. The CSI-augmented input produces a smooth, monotonic training convergence, with the additional channel-state feature providing clear gradient signal for the optimizer.*
 
-![Figure 48: Training history — Transformer (+CSI sigmoid).](results/csi/training_Transformer_CSI_sigmoid.png)
+![Figure 49: Training history — Transformer (+CSI sigmoid).](results/csi/training_Transformer_CSI_sigmoid.png)
 
-*Figure 48: Training loss and accuracy for Transformer (+CSI sigmoid), the #2 PSK16 variant. The Transformer exhibits rapid initial convergence (within 3 epochs) followed by a flat plateau, characteristic of the attention mechanism's ability to capture input structure quickly.*
+*Figure 49: Training loss and accuracy for Transformer (+CSI sigmoid), the #2 PSK16 variant. The Transformer exhibits rapid initial convergence (within 3 epochs) followed by a flat plateau, characteristic of the attention mechanism's ability to capture input structure quickly.*
 
 Three key training patterns emerge across all 48 variants:
 1. **Rapid convergence:** All models reach near-final loss within 5–8 epochs, confirming that 25 epochs with patience-10 early stopping is sufficient for the relay denoising task at these model scales.
@@ -2076,7 +2112,7 @@ Several directions warrant further investigation:
 
 ### 8.7 Conclusions
 
-This thesis presents a comprehensive comparative study of nine relay strategies — two classical (AF, DF) and seven AI-based (GenAI, Hybrid, VAE, CGAN, Transformer, Mamba S6, Mamba-2 SSD) — evaluated across six channel/topology configurations (AWGN, Rayleigh, Rician in SISO; 2×2 MIMO with ZF, MMSE, SIC equalization) and three modulation schemes (BPSK, QPSK, 16-QAM). The study addresses five identified research gaps through controlled experiments with statistical rigor (100,000 bits per SNR point, 10 independent trials, Wilcoxon significance testing). The following table summarizes the hypothesis outcomes:
+This thesis presents a comprehensive comparative study of nine relay strategies — two classical (AF, DF) and seven AI-based (GenAI, Hybrid, VAE, CGAN, Transformer, Mamba S6, Mamba-2 SSD) — evaluated across six channel/topology configurations (AWGN, Rayleigh, Rician in SISO; 2×2 MIMO with ZF, MMSE, SIC equalization) and four modulation schemes (BPSK, QPSK, 16-QAM, 16-PSK). The study addresses five identified research gaps (Section 4.7) plus one emergent hypothesis (H7, arising from the CSI injection experiments) through controlled experiments with statistical rigor (100,000 bits per SNR point, 10 independent trials, Wilcoxon significance testing). The following table summarizes the hypothesis outcomes:
 
 | Hypothesis | Statement | Result |
 |---|---|---|
@@ -2313,7 +2349,7 @@ relaynet/
 
 The framework uses object-oriented design with a common `Relay` base class, enabling polymorphic relay swapping. Monte Carlo simulation is implemented in `runner.py` with configurable trial count, bit count, and SNR range. All MIMO operations use vectorized PyTorch for GPU acceleration.
 
-**Testing:** 126 automated tests (pytest) cover all channels, modulation (BPSK, QPSK, 16-QAM), relay strategies, simulation, statistics, and modulation-comparison modules with 100% pass rate.
+**Testing:** 126 automated tests (pytest) cover all channels, modulation (BPSK, QPSK, 16-QAM, 16-PSK), relay strategies, simulation, statistics, and modulation-comparison modules with 100% pass rate.
 
 **Reproducibility:** Random seeds are controlled at the source (bit generation) and noise (per-trial seeding) levels to ensure reproducible results.
 
@@ -2321,13 +2357,13 @@ The framework uses object-oriented design with a common `Relay` base class, enab
 
 | Model | Parameters | Window | Hidden / Architecture |
 |---|---|---|---|
-| GenAI-3K | 3,004 | 11 | hidden=231 |
-| Hybrid-3K | 3,004 | 11 | hidden=231 (+ DF switch) |
-| VAE-3K | 3,037 | 11 | latent=10, hidden=(44, 20) |
-| CGAN-3K | 3,004 | 11 | noise=8, g_hidden=(30, 30, 16), c_hidden=(32, 16) |
-| Transformer-3K | 3,007 | 11 | d_model=18, heads=2, layers=1 |
-| Mamba-3K | 3,027 | 11 | d_model=16, d_state=6, layers=1 |
-| Mamba2-3K | 3,004 | 11 | d_model=15, d_state=6, chunk_size=8, layers=1 |
+| GenAI-3K | 3,004 | 12 | hidden=231 |
+| Hybrid-3K | 3,004 | 12 | hidden=231 (+ DF switch) |
+| VAE-3K | 3,037 | 12 | latent=10, hidden=(44, 20) |
+| CGAN-3K | 3,004 | 12 | noise=8, g_hidden=(30, 30, 16), c_hidden=(32, 16) |
+| Transformer-3K | 3,007 | 12 | d_model=18, heads=2, layers=1 |
+| Mamba-3K | 3,027 | 12 | d_model=16, d_state=6, layers=1 |
+| Mamba2-3K | 3,004 | 12 | d_model=15, d_state=6, chunk_size=8, layers=1 |
 
 All 3K configurations use a window size of 11 (vs. 5 for original GenAI/Hybrid, and 11 for original sequence models) to provide a common input context. The parameter counts are within ±1.2% of the 3,000 target.
 
@@ -2339,7 +2375,7 @@ All 3K configurations use a window size of 11 (vs. 5 for original GenAI/Hybrid, 
 
 This thesis presents a comprehensive comparative study of classical and neural network-based relay strategies for two-hop cooperative communication systems. Nine relay methods are implemented and evaluated: two classical approaches — amplify-and-forward (AF) and decode-and-forward (DF) — and seven neural network-based methods spanning supervised learning (GenAI minimal MLP feedforward network — a discriminative multi-layer perceptron, not a generative model despite its name; Hybrid SNR-adaptive relay), generative modeling (variational autoencoder, conditional GAN with WGAN-GP training), and modern sequence architectures (Transformer with multi-head self-attention, Mamba S6 selective state space model, Mamba-2 structured state space duality).
 
-The evaluation is conducted across six channel and topology configurations: AWGN, Rayleigh fading, and Rician fading (K=3) channels in single-antenna (SISO) topology, and 2×2 MIMO spatial multiplexing with Rayleigh fading using three equalization techniques — zero-forcing (ZF), minimum mean square error (MMSE), and successive interference cancellation (SIC). The primary experiments use BPSK modulation with Monte Carlo simulation (100,000 bits per SNR point) and 95% confidence intervals. Extension experiments evaluate the same relays on QPSK and 16-QAM using I/Q splitting, testing whether the BPSK findings generalise to complex higher-order constellations.
+The evaluation is conducted across six channel and topology configurations: AWGN, Rayleigh fading, and Rician fading (K=3) channels in single-antenna (SISO) topology, and 2×2 MIMO spatial multiplexing with Rayleigh fading using three equalization techniques — zero-forcing (ZF), minimum mean square error (MMSE), and successive interference cancellation (SIC). The primary experiments use BPSK modulation with Monte Carlo simulation (100,000 bits per SNR point) and 95% confidence intervals. Extension experiments evaluate the same relays on QPSK, 16-QAM, and 16-PSK, testing whether the BPSK findings generalise to complex higher-order constellations.
 
 The results reveal several key findings. First, all neural network relays outperform classical methods at low SNR (0–4 dB), with Mamba S6 achieving the best performance across all channels at its original 24,001-parameter configuration. Second, the classical DF relay dominates at medium-to-high SNR (≥6 dB) with zero parameters, establishing a strong baseline. Third, a complexity study reveals an inverted-U relationship between model size and performance: a minimal 169-parameter two-layer network matches models 100× larger, while an 11,201-parameter model exhibits overfitting with degraded performance.
 
@@ -2347,9 +2383,9 @@ A normalized comparison constraining all neural network models to approximately 
 
 For MIMO systems, MMSE equalization consistently outperforms ZF, and non-linear SIC provides further improvement by cancelling the stronger stream's interference before detecting the weaker one. These equalization gains are additive to the relay processing benefits.
 
-The recommended deployment strategy is a Hybrid relay that combines neural network processing at low SNR with classical DF at high SNR, achieving near-optimal performance across the entire operating range with minimal computational overhead. The modulation extension experiments demonstrate that all BPSK findings generalise fully to QPSK (via I/Q splitting of the complex constellation), while for 16-QAM the neural relay advantage diminishes at medium SNR due to the multi-level amplitude structure, motivating modulation-specific training for dense constellations. For resource-constrained scenarios, the 169-parameter GenAI minimal relay provides competitive performance with approximately 0.7 KB of memory and under 3 seconds of training time.
+The recommended deployment strategy is a Hybrid relay that combines neural network processing at low SNR with classical DF at high SNR, achieving near-optimal performance across the entire operating range with minimal computational overhead. The modulation extension experiments demonstrate that all BPSK findings generalise fully to QPSK (via I/Q splitting of the complex constellation), while for 16-QAM the neural relay advantage diminishes at medium SNR due to the multi-level amplitude structure. A comprehensive CSI injection study across 48 neural variants reveals that CSI is modulation-dependent: detrimental for amplitude-carrying 16-QAM but beneficial for constant-envelope 16-PSK, motivating modulation-specific architecture selection. For resource-constrained scenarios, the 169-parameter GenAI minimal relay provides competitive performance with approximately 0.7 KB of memory and under 3 seconds of training time.
 
-**Keywords:** Cooperative relay communication, multi-layer perceptron, deep learning, two-hop relay, Mamba state space model, Mamba-2 structured state space duality, Transformer, variational autoencoder, conditional GAN, MIMO equalization, QPSK, 16-QAM, bit error rate
+**Keywords:** Cooperative relay communication, multi-layer perceptron, deep learning, two-hop relay, Mamba state space model, Mamba-2 structured state space duality, Transformer, variational autoencoder, conditional GAN, MIMO equalization, QPSK, 16-QAM, 16-PSK, CSI injection, bit error rate
 
 ---
 
