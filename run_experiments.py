@@ -1176,13 +1176,13 @@ def exp_7_16_e2e(args):
     bits_per_sym = int(np.log2(M))
     num_trials_e2e = 3 if args.quick else 10
     num_symbols = 1_000 if args.quick else 5_000
-    ber_results = evaluate_ber(
-        tx, channel, rx, M=M, snr_range_db=snr_eval,
+    snr_vals, mean_ber, ber_trials_arr = evaluate_ber(
+        tx, channel, rx, snr_range_db=snr_eval,
         num_symbols=num_symbols, num_trials=num_trials_e2e,
         device=device)
 
     # ── Constellation metrics ──
-    metrics = constellation_metrics(tx, M=M, device=device)
+    metrics = constellation_metrics(tx)
     print(f"  d_min = {metrics['d_min']:.4f}, PAPR = {metrics['papr']:.4f}")
 
     # ── Relay comparison (AF vs DF vs E2E) ──
@@ -1214,9 +1214,9 @@ def exp_7_16_e2e(args):
 
     # Save all results
     save_results_json(
-        os.path.join(out, "e2e_ber.json"), snr_eval,
-        {"E2E": {"ber_mean": [r[1] for r in ber_results],
-                 "ber_trials": [r[2] for r in ber_results]}},
+        os.path.join(out, "e2e_ber.json"), snr_vals,
+        {"E2E": {"ber_mean": mean_ber,
+                 "ber_trials": ber_trials_arr}},
         meta={"experiment": "7.16", "M": M, "epochs": epochs,
               "metrics": {k: float(v) if isinstance(v, (float, np.floating)) else v
                           for k, v in metrics.items() if k != "points"}},
@@ -1231,13 +1231,13 @@ def exp_7_16_e2e(args):
         # Constellation
         if hasattr(plot_constellation, '__call__'):
             try:
-                plot_constellation(tx, M=M, device=device,
+                plot_constellation(tx,
                                    save_path=os.path.join(out, "e2e_constellation.png"))
             except Exception:
                 pass
 
         # BER vs SNR
-        e2e_bers = np.array([r[1] for r in ber_results])
+        e2e_bers = np.asarray(mean_ber)
         plot_ber_chart(
             snr_eval, {"E2E Autoencoder": e2e_bers},
             title="E2E BER vs SNR — Rayleigh Fading (§7.16)",
