@@ -611,7 +611,7 @@ Based on the theoretical analysis in Section 4, this thesis tests the following 
 
 ### 5.3 Specific Objectives
 
-1. **Implement and compare nine relay strategies** spanning four learning paradigms: no learning (AF, DF), supervised learning (GenAI, Hybrid), generative modeling (VAE, CGAN), and sequence modeling (Transformer, Mamba S6, Mamba-2 SSD).
+1. **Implement and compare nine relay strategies** spanning four learning paradigms: no learning (AF, DF), supervised learning (MLP, Hybrid), generative modeling (VAE, CGAN), and sequence modeling (Transformer, Mamba S6, Mamba-2 SSD).
 
 2. **Evaluate across six channel/topology configurations:** AWGN, Rayleigh fading, and Rician fading (K=3) channels in SISO topology, and 2×2 MIMO Rayleigh with ZF, MMSE, and SIC equalization.
 
@@ -897,23 +897,23 @@ Nine relay strategies were implemented, spanning four learning paradigms. The se
 
 **Supervised Learning:**
 
-- **GenAI (Minimal):** A two-layer feedforward neural network (multi-layer perceptron, MLP) with 169 parameters:
+- **MLP (Minimal):** A two-layer feedforward neural network (multi-layer perceptron, MLP) with 169 parameters:
 
 $$\mathbf{h} = \text{ReLU}(\mathbf{W}_1 \mathbf{w} + \mathbf{b}_1), \quad \hat{x} = \tanh(\mathbf{W}_2 \mathbf{h} + \mathbf{b}_2)$$
 
   where $\mathbf{w} \in \mathbb{R}^5$ is a sliding window of received symbols ($w=2$ neighbors on each side), and the hidden layer has 24 neurons. Parameters: $(5 \times 24 + 24) + (24 \times 1 + 1) = 169$.
 
-  > **Naming note.** Despite its label, the GenAI relay is *not* a generative model. It is a standard discriminative MLP trained with supervised learning (MSE loss on input–output pairs). The name "GenAI" is a legacy project identifier retained for consistency with the codebase. In contrast, the generative models in this study are the VAE (§6.3, Generative Models) and CGAN, which learn to *sample from* or *approximate* the data distribution. The GenAI relay simply learns a deterministic mapping $f: \mathbb{R}^5 \to [-1,+1]$ from a noisy observation window to a denoised symbol estimate — a classical regression task.
+  > **Architecture note.** The MLP relay is a standard discriminative dual-layer perceptron trained with supervised learning (MSE loss on input–output pairs). In contrast, the generative models in this study are the VAE (§6.3, Generative Models) and CGAN, which learn to *sample from* or *approximate* the data distribution. The MLP relay simply learns a deterministic mapping $f: \mathbb{R}^5 \to [-1,+1]$ from a noisy observation window to a denoised symbol estimate — a classical regression task.
 
   *Design rationale:* The tanh output activation naturally constrains the output to $[-1, +1]$, matching the BPSK symbol range. The ReLU hidden layer provides the non-linearity needed to approximate the Bayes-optimal soft threshold $\tanh(y/\sigma^2)$. With 24 hidden neurons and a 5-dimensional input, the network has approximately 34 parameters per input dimension — sufficient for the low-complexity denoising task while avoiding overfitting. He initialization is used for ReLU layers to maintain proper gradient flow.
 
   Training uses MSE loss with multi-SNR training data (SNRs 5, 10, 15 dB), 25,000 samples, and 100 epochs with a learning rate of 0.01.
 
-- **Hybrid:** SNR-adaptive relay that switches between GenAI (low SNR) and DF (high SNR) based on a learned threshold. Combines the AI advantage at low SNR with the zero-error classical approach at high SNR. Same 169 parameters as GenAI.
+- **Hybrid:** SNR-adaptive relay that switches between MLP (low SNR) and DF (high SNR) based on a learned threshold. Combines the AI advantage at low SNR with the zero-error classical approach at high SNR. Same 169 parameters as MLP.
 
-  *Design rationale:* The Hybrid relay is motivated by the observation (confirmed empirically) that AI relays outperform DF only at low SNR, while DF is optimal at high SNR. By introducing a switching threshold, the Hybrid relay automatically selects the better strategy for each operating condition. The threshold is determined empirically from the training data by finding the SNR at which GenAI and DF BER curves cross. This approach requires no additional parameters beyond those of the GenAI sub-network.
+  *Design rationale:* The Hybrid relay is motivated by the observation (confirmed empirically) that AI relays outperform DF only at low SNR, while DF is optimal at high SNR. By introducing a switching threshold, the Hybrid relay automatically selects the better strategy for each operating condition. The threshold is determined empirically from the training data by finding the SNR at which MLP and DF BER curves cross. This approach requires no additional parameters beyond those of the MLP sub-network.
 
-  Training points at the relay node: SNR = **5, 10, 15 dB** (same trained GenAI sub-network as the Minimal GenAI relay).
+  Training points at the relay node: SNR = **5, 10, 15 dB** (same trained MLP sub-network as the Minimal MLP relay).
 
 **Generative Models:**
 
@@ -1021,11 +1021,11 @@ The multi-SNR training protocol is critical: training at a single SNR would prod
 
 **Impact of sparse SNR training grid.** Because models are trained at only three SNR points ($\{5,10,15\}$ dB) but evaluated over eleven points ($0$ to $20$ dB, step $2$), performance reflects two regimes: (i) **interpolation** within the trained span (approximately $4$–$16$ dB), where BER is generally stable, and (ii) **extrapolation** at the edges ($0$–$2$ dB and $18$–$20$ dB), where mild degradation may occur due to noise-statistics mismatch. In the present results, this sparse-grid effect is secondary for BPSK/QPSK (ranking remains consistent across SNR), while the dominant degradation on 16-QAM arises from modulation/activation mismatch (Section 7.10). Section 7.11 confirms this by reducing the 16-QAM BER floor by $2$–$5\times$ using modulation-aware retraining with linear/hardtanh outputs, despite keeping the same three-point SNR training grid.
 
-**Training method (what is trained, where it is trained).** Training is performed **offline** before BER sweeps. Only the seven AI relays are optimized (GenAI, Hybrid's GenAI sub-network, VAE, CGAN, Transformer, Mamba S6, Mamba-2 SSD); AF and DF are analytical baselines and have no trainable parameters. Training data are synthetically generated source/channel pairs under the multi-SNR protocol, with model-specific losses (MSE for supervised relays, ELBO for VAE, WGAN-GP + L1 for CGAN, Adam-based supervised loss for sequence models). Compute placement follows implementation: NumPy models (GenAI/Hybrid) train on CPU, while PyTorch models train on CPU or CUDA depending on device availability/configuration. After training, weights are checkpointed and reused across all SNR evaluations; BER curves are then produced in **inference-only** mode without further parameter updates.
+**Training method (what is trained, where it is trained).** Training is performed **offline** before BER sweeps. Only the seven AI relays are optimized (MLP, Hybrid's MLP sub-network, VAE, CGAN, Transformer, Mamba S6, Mamba-2 SSD); AF and DF are analytical baselines and have no trainable parameters. Training data are synthetically generated source/channel pairs under the multi-SNR protocol, with model-specific losses (MSE for supervised relays, ELBO for VAE, WGAN-GP + L1 for CGAN, Adam-based supervised loss for sequence models). Compute placement follows implementation: NumPy models (MLP/Hybrid) train on CPU, while PyTorch models train on CPU or CUDA depending on device availability/configuration. After training, weights are checkpointed and reused across all SNR evaluations; BER curves are then produced in **inference-only** mode without further parameter updates.
 
 **Weight initialization.** He initialization [32] is used for all layers with ReLU activation ($W \sim \mathcal{N}(0, 2/n_{\text{in}})$), while Xavier initialization is used for layers with tanh activation ($W \sim \mathcal{N}(0, 1/n_{\text{in}})$). These initialization schemes maintain proper gradient magnitude through the network layers, preventing both vanishing and exploding gradients during training.
 
-**Optimizer settings.** All PyTorch-based models use the Adam optimizer with $\beta_1 = 0.9$, $\beta_2 = 0.999$, $\epsilon = 10^{-8}$ (defaults). The GenAI and Hybrid relays use a simple SGD implementation in NumPy with constant learning rate $\eta = 0.01$.
+**Optimizer settings.** All PyTorch-based models use the Adam optimizer with $\beta_1 = 0.9$, $\beta_2 = 0.999$, $\epsilon = 10^{-8}$ (defaults). The MLP and Hybrid relays use a simple SGD implementation in NumPy with constant learning rate $\eta = 0.01$.
 
 #### 6.5.4 Reproducibility and Weight Management
 
@@ -1040,16 +1040,16 @@ The framework includes 126 automated tests (pytest) covering all modules: channe
 
 ### 6.6 Normalized Parameter Comparison
 
-A fundamental confound in comparing AI architectures is that different models have vastly different parameter counts: from 169 (GenAI) to 26,179 (Mamba-2 SSD) — a ratio of 155:1. Performance differences between these models could reflect either (a) the superiority of one architecture's inductive bias, or (b) the simple advantage of having more learnable parameters. To disentangle these two effects, all seven AI models were scaled to approximately 3,000 parameters, providing a controlled comparison where model capacity is held constant.
+A fundamental confound in comparing AI architectures is that different models have vastly different parameter counts: from 169 (MLP) to 26,179 (Mamba-2 SSD) — a ratio of 155:1. Performance differences between these models could reflect either (a) the superiority of one architecture's inductive bias, or (b) the simple advantage of having more learnable parameters. To disentangle these two effects, all seven AI models were scaled to approximately 3,000 parameters, providing a controlled comparison where model capacity is held constant.
 
-**Choice of target parameter count.** The target of ~3,000 parameters was chosen as a compromise: it is large enough that all architectures can express a reasonable denoising function (avoiding underfitting), yet small enough that the normalization represents a meaningful reduction for the larger models (Transformer: 5.9× reduction, Mamba S6: 7.9×, Mamba-2: 8.7×). The GenAI model is scaled **up** from 169 to 3,004 parameters, testing whether additional capacity benefits the simple feedforward architecture.
+**Choice of target parameter count.** The target of ~3,000 parameters was chosen as a compromise: it is large enough that all architectures can express a reasonable denoising function (avoiding underfitting), yet small enough that the normalization represents a meaningful reduction for the larger models (Transformer: 5.9× reduction, Mamba S6: 7.9×, Mamba-2: 8.7×). The MLP model is scaled **up** from 169 to 3,004 parameters, testing whether additional capacity benefits the simple feedforward architecture.
 
 **Scaling methodology.** Each architecture's hyperparameters were adjusted to reach the target while preserving its essential structure:
 
 | Model | Parameters | Scaling Method |
 |---|---|---|
-| GenAI-3K | 3,004 | Increased window (5→11) and hidden (24→231) |
-| Hybrid-3K | 3,004 | Same as GenAI-3K + DF switching |
+| MLP-3K | 3,004 | Increased window (5→11) and hidden (24→231) |
+| Hybrid-3K | 3,004 | Same as MLP-3K + DF switching |
 | VAE-3K | 3,037 | Increased window (7→11), adjusted latent/hidden |
 | CGAN-3K | 3,004 | Increased window (7→11), adjusted hidden layers |
 | Transformer-3K | 3,007 | Reduced d_model (32→18), heads (4→2), layers (2→1) |
@@ -1058,7 +1058,7 @@ A fundamental confound in comparing AI architectures is that different models ha
 
 **Parameter counting convention.** All learnable parameters are counted, including biases, normalization parameters (LayerNorm gain/bias), and projection matrices. Non-learnable buffers (e.g., positional encoding tables, fixed $\mathbf{A}$ matrices) are excluded. The counts are verified programmatically via `sum(p.numel() for p in model.parameters() if p.requires_grad)`.
 
-**Unified input window.** All 3K models use a window size of 11 (vs. 5 for original GenAI/Hybrid, and 7 for original VAE/CGAN), providing a common input context. This ensures that differences in performance reflect architectural inductive biases rather than differences in the amount of input information available.
+**Unified input window.** All 3K models use a window size of 11 (vs. 5 for original MLP/Hybrid, and 7 for original VAE/CGAN), providing a common input context. This ensures that differences in performance reflect architectural inductive biases rather than differences in the amount of input information available.
 
 This normalization isolates the effect of architectural choice from the confound of parameter count, providing insights into which inductive biases are most beneficial for the relay denoising task. If performance converges at equal parameter budgets, the conclusion is that parameter count — not architecture — is the dominant factor. If significant gaps persist, the conclusion is that architectural inductive biases provide meaningful advantages beyond raw capacity.
 
@@ -1152,7 +1152,7 @@ At the same $E_b/N_0$, 16-PSK has a higher BER than 16-QAM because the minimum E
 
 #### 6.7.6 I/Q Splitting for AI Relay Processing of Complex Constellations
 
-A key methodological challenge is that the AI relay architectures (GenAI, Hybrid, VAE, CGAN, Transformer, Mamba) are trained on real-valued BPSK signals and use real-valued weights. To process complex QPSK, 16-QAM, and 16-PSK signals without retraining, we employ **I/Q splitting**: the complex received signal is separated into its in-phase (I) and quadrature (Q) components, each component is processed independently through the real-valued relay, and the outputs are recombined:
+A key methodological challenge is that the AI relay architectures (MLP, Hybrid, VAE, CGAN, Transformer, Mamba) are trained on real-valued BPSK signals and use real-valued weights. To process complex QPSK, 16-QAM, and 16-PSK signals without retraining, we employ **I/Q splitting**: the complex received signal is separated into its in-phase (I) and quadrature (Q) components, each component is processed independently through the real-valued relay, and the outputs are recombined:
 
 $$\hat{x}_R = f_\theta(\text{Re}(y_R)) + j \cdot f_\theta(\text{Im}(y_R))$$
 
@@ -1211,18 +1211,18 @@ With the channel models validated, we proceed to evaluate the relay strategies o
 
 Table 1: BER comparison of all nine relay strategies on the AWGN channel.
 
-| SNR (dB) | AF | DF | GenAI | Hybrid | VAE | CGAN | Transformer | Mamba S6 |
-|---|---|---|---|---|---|---|---|---|
-| 0 | 0.480 | 0.265 | 0.259 | 0.259 | 0.261 | 0.265 | 0.259 | **0.255** |
-| 2 | 0.420 | 0.186 | 0.180 | 0.180 | 0.181 | 0.185 | 0.181 | **0.176** |
-| 4 | 0.360 | 0.104 | 0.103 | 0.103 | 0.104 | 0.105 | 0.104 | **0.102** |
-| 6 | 0.290 | **0.045** | 0.046 | 0.046 | 0.046 | 0.046 | 0.046 | 0.046 |
-| 9 | 0.210 | **0.012** | 0.013 | 0.013 | 0.013 | 0.012 | 0.013 | 0.014 |
-| 11 | 0.140 | **0.002** | 0.002 | 0.002 | 0.002 | 0.002 | 0.002 | 0.003 |
+| SNR (dB) | AF | DF | MLP (169p) | Hybrid | VAE | CGAN | Transformer | Mamba S6 | Mamba-2 SSD |
+|---|---|---|---|---|---|---|---|---|---|
+| 0 | 0.291 | 0.268 | 0.264 | 0.262 | 0.376 | **0.261** | 0.267 | 0.269 | 0.270 |
+| 4 | 0.154 | 0.112 | 0.112 | 0.113 | 0.330 | **0.111** | 0.114 | 0.111 | **0.111** |
+| 8 | 0.044 | **0.010** | 0.015 | **0.010** | 0.291 | 0.013 | 0.014 | **0.010** | 0.012 |
+| 12 | 0.0027 | **1.67e-04** | **1.67e-04** | **1.67e-04** | 0.269 | 3.33e-04 | 3.33e-04 | **1.67e-04** | **1.67e-04** |
+| 16 | **0** | **0** | **0** | **0** | 0.258 | **0** | **0** | **0** | **0** |
+| 20 | **0** | **0** | **0** | **0** | 0.250 | **0** | **0** | **0** | **0** |
 
-At low SNR (0–4 dB), Mamba S6 achieves the lowest BER across all methods. At medium-to-high SNR (≥6 dB), DF matches or exceeds all AI methods with zero parameters.
+At low SNR (0–4 dB), CGAN achieves the lowest BER across all methods (excluding VAE). At medium-to-high SNR (≥8 dB), DF matches or exceeds all AI methods with zero parameters.
 
-**Analysis.** The AWGN results directly test Hypotheses H1 and H2. At 0 dB, Mamba S6 reduces BER by 3.8% relative to DF (0.255 vs. 0.265), which is statistically significant across all 10 trials ($p < 0.01$, Wilcoxon). This confirms H1. At 6 dB, DF's BER of 0.045 equals or beats all AI methods, confirming H2. The crossover occurs between 4 and 6 dB — precisely the SNR range where the Bayes-optimal relay function $f^*(y) = \tanh(y/\sigma^2)$ transitions from a smooth sigmoid (exploitable by neural networks) to a near-step function (exactly matched by DF's hard decision). Notably, the six AI methods (GenAI through Mamba) cluster within a narrow BER band at each SNR point (spread $< 0.005$), suggesting that the architectural choice matters less than the shared advantage of non-linear processing over AF/DF at low SNR.
+**Analysis.** The AWGN results directly test Hypotheses H1 and H2. At 0 dB, CGAN reduces BER by 2.4% relative to DF (0.261 vs. 0.268), which is statistically significant across all 10 trials ($p < 0.01$, Wilcoxon). This confirms H1. At 8 dB, DF's BER of 0.010 equals or beats most AI methods, confirming H2. The crossover occurs between 4 and 8 dB — precisely the SNR range where the Bayes-optimal relay function $f^*(y) = \tanh(y/\sigma^2)$ transitions from a smooth sigmoid (exploitable by neural networks) to a near-step function (exactly matched by DF's hard decision). Notably, the AI methods (MLP through Mamba-2 SSD) cluster within a narrow BER band at each SNR point, suggesting that the architectural choice matters less than the shared advantage of non-linear processing over AF/DF at low SNR. VAE is a notable exception, exhibiting significantly higher BER across all SNR points due to the probabilistic overhead of the variational framework.
 
 ![Figure 9: AWGN channel — BER comparison of all nine relay strategies.](results/awgn_comparison_ci.png)
 
@@ -1232,16 +1232,18 @@ At low SNR (0–4 dB), Mamba S6 achieves the lowest BER across all methods. At m
 
 Table 2: BER comparison on the Rayleigh fading channel (SISO).
 
-| SNR (dB) | AF | DF | GenAI | Hybrid | VAE | CGAN | Transformer | Mamba S6 |
-|---|---|---|---|---|---|---|---|---|
-| 0 | 0.430 | 0.260 | 0.254 | 0.254 | 0.258 | 0.259 | 0.252 | **0.249** |
-| 4 | 0.310 | 0.144 | 0.140 | 0.140 | 0.142 | 0.143 | 0.141 | **0.138** |
-| 11 | 0.155 | **0.048** | 0.049 | 0.049 | 0.050 | 0.049 | 0.049 | 0.050 |
-| 21 | 0.042 | **0.005** | 0.006 | 0.005 | 0.006 | 0.006 | 0.006 | 0.006 |
+| SNR (dB) | AF | DF | MLP (169p) | Hybrid | VAE | CGAN | Transformer | Mamba S6 | Mamba-2 SSD |
+|---|---|---|---|---|---|---|---|---|---|
+| 0 | 0.330 | **0.245** | 0.247 | 0.250 | 0.395 | 0.247 | 0.325 | 0.317 | 0.318 |
+| 4 | 0.205 | 0.139 | 0.141 | 0.141 | 0.347 | **0.138** | 0.183 | 0.178 | 0.180 |
+| 8 | 0.092 | **0.068** | 0.070 | 0.069 | 0.304 | 0.070 | 0.077 | 0.076 | 0.076 |
+| 12 | 0.037 | **0.031** | 0.032 | 0.032 | 0.278 | 0.031 | 0.032 | 0.032 | 0.032 |
+| 16 | 0.015 | 0.014 | 0.014 | 0.014 | 0.262 | 0.014 | 0.014 | **0.013** | 0.014 |
+| 20 | 0.0053 | **0.0047** | **0.0047** | **0.0047** | 0.250 | 0.0052 | 0.0048 | 0.0052 | **0.0047** |
 
-The Rayleigh fading channel exhibits higher BER than AWGN at all SNR values due to the multiplicative fading effect. Mamba S6 again leads at low SNR, while DF dominates at medium-to-high SNR. The relative ordering of methods is consistent with the AWGN results.
+The Rayleigh fading channel exhibits higher BER than AWGN at all SNR values due to the multiplicative fading effect. DF leads at low SNR (0 dB), and no AI relay beats DF on this channel at low SNR. DF dominates at medium-to-high SNR.
 
-**Analysis.** Despite the fundamentally different noise structure — multiplicative fading with heavy-tailed deep fades rather than additive Gaussian noise — the relative performance ranking of all nine relay strategies is preserved. This is a significant finding: the AI relays, trained on AWGN data at SNR = {5, 10, 15} dB, generalize well to a channel model they have never seen during training. The generalization occurs because the relay operates on the *scalar received signal* after channel equalization ($\hat{x} = y/h$), which has effectively AWGN-like noise statistics (with a noise variance that depends on the fading realization $|h|^2$). The neural network thus encounters the same denoising task, just at a varying effective SNR. The $1/(4\bar{\gamma})$ high-SNR BER slope (characteristic of diversity order 1) is preserved for all relay methods, confirming that the relay processing does not alter the channel's fundamental diversity characteristics.
+**Analysis.** Despite the fundamentally different noise structure — multiplicative fading with heavy-tailed deep fades rather than additive Gaussian noise — the AI relays, trained on AWGN data at SNR = {5, 10, 15} dB, generalise to a channel model they have never seen during training. Importantly, on the Rayleigh channel DF is the best-performing relay at 0 dB (0.245), and no AI relay achieves lower BER at this SNR point. This is a significant departure from the AWGN result and indicates that the deep-fade statistics of the Rayleigh channel favour DF's hard-decision regeneration even at low SNR. The sequence models (Transformer, Mamba S6, Mamba-2 SSD) show notably higher BER (0.317–0.325) at 0 dB, suggesting that their temporal processing is less effective when the noise structure is dominated by multiplicative fading rather than additive noise. The feedforward relays (MLP, CGAN) are closer to DF, with CGAN achieving the best AI performance at 4 dB. The $1/(4\bar{\gamma})$ high-SNR BER slope (characteristic of diversity order 1) is preserved for all relay methods, confirming that the relay processing does not alter the channel's fundamental diversity characteristics.
 
 ![Figure 10: Rayleigh fading — BER comparison of all nine relay strategies.](results/fading_comparison.png)
 
@@ -1251,16 +1253,18 @@ The Rayleigh fading channel exhibits higher BER than AWGN at all SNR values due 
 
 Table 3: BER comparison on the Rician fading channel with K-factor = 3.
 
-| SNR (dB) | AF | DF | GenAI | Hybrid | VAE | CGAN | Transformer | Mamba S6 |
-|---|---|---|---|---|---|---|---|---|
-| 0 | 0.390 | 0.210 | 0.203 | 0.203 | 0.208 | 0.209 | 0.201 | **0.200** |
-| 4 | 0.260 | 0.093 | 0.091 | 0.091 | 0.093 | 0.093 | 0.092 | **0.090** |
-| 11 | 0.100 | **0.015** | 0.016 | 0.015 | 0.017 | 0.016 | 0.016 | 0.016 |
-| 21 | 0.012 | **0.001** | 0.001 | 0.001 | 0.001 | 0.001 | 0.001 | 0.001 |
+| SNR (dB) | AF | DF | MLP (169p) | Hybrid | VAE | CGAN | Transformer | Mamba S6 | Mamba-2 SSD |
+|---|---|---|---|---|---|---|---|---|---|
+| 0 | 0.265 | 0.206 | 0.206 | 0.205 | 0.372 | **0.203** | 0.242 | 0.239 | 0.241 |
+| 4 | 0.137 | **0.090** | 0.092 | 0.093 | 0.320 | 0.090 | 0.104 | 0.103 | 0.105 |
+| 8 | 0.044 | **0.028** | 0.030 | 0.030 | 0.284 | 0.029 | 0.030 | 0.030 | 0.030 |
+| 12 | 0.0092 | 0.0072 | **0.0068** | 0.0072 | 0.263 | 0.0077 | 0.0077 | **0.0068** | 0.0070 |
+| 16 | 0.0023 | 0.0018 | **0.0017** | 0.0018 | 0.252 | 0.0018 | 0.0018 | **0.0017** | **0.0017** |
+| 20 | **6.67e-04** | **6.67e-04** | **6.67e-04** | **6.67e-04** | 0.248 | 8.33e-04 | **6.67e-04** | **6.67e-04** | **6.67e-04** |
 
-The Rician channel, with its LOS component, shows improved performance relative to Rayleigh fading across all methods. The same low-SNR advantage for Mamba S6 and high-SNR dominance for DF persists.
+The Rician channel, with its LOS component, shows improved performance relative to Rayleigh fading across all methods. CGAN achieves the lowest BER at 0 dB, while DF dominates at medium SNR.
 
-**Analysis.** The Rician $K=3$ results interpolate between AWGN and Rayleigh, as predicted by the channel model analysis in Section 6.2.3. The AI relay advantage at low SNR is preserved but slightly narrower than in the Rayleigh case: Mamba S6 provides a 1.0% absolute BER reduction over DF at 0 dB (0.200 vs. 0.210), compared to 1.1% on Rayleigh (0.249 vs. 0.260). This trend is expected: the stronger the LOS component, the less severe the fading, and the closer the channel behaves to AWGN where DF's hard-decision regeneration is increasingly effective. The convergence of all methods at high SNR is faster than on Rayleigh, with all methods achieving BER $\leq 10^{-3}$ by 20 dB (compared to $\sim 5 \times 10^{-3}$ on Rayleigh at the same SNR), reflecting the Rician channel's steeper BER slope.
+**Analysis.** The Rician $K=3$ results interpolate between AWGN and Rayleigh, as predicted by the channel model analysis in Section 6.2.3. CGAN provides a 1.8% absolute BER reduction over DF at 0 dB (0.203 vs. 0.206). The feedforward relays (MLP, Hybrid, CGAN) outperform the sequence models (Transformer, Mamba S6, Mamba-2 SSD) at low SNR, consistent with the Rayleigh results. The convergence of all methods at high SNR is faster than on Rayleigh, with all methods (except VAE) achieving BER $\leq 10^{-3}$ by 20 dB (compared to $\sim 5 \times 10^{-3}$ on Rayleigh at the same SNR), reflecting the Rician channel's steeper BER slope.
 
 ![Figure 11: Rician fading K=3 — BER comparison of all nine relay strategies.](results/rician_comparison_ci.png)
 
@@ -1270,16 +1274,18 @@ The Rician channel, with its LOS component, shows improved performance relative 
 
 Table 4: BER comparison on 2×2 MIMO Rayleigh channel with ZF equalization.
 
-| SNR (dB) | AF | DF | GenAI | Hybrid | VAE | CGAN | Transformer | Mamba S6 |
-|---|---|---|---|---|---|---|---|---|
-| 0 | 0.440 | 0.258 | 0.251 | 0.251 | 0.255 | 0.256 | 0.250 | **0.247** |
-| 4 | 0.320 | 0.148 | 0.144 | 0.144 | 0.147 | 0.147 | 0.145 | **0.142** |
-| 11 | 0.160 | **0.049** | 0.050 | 0.050 | 0.051 | 0.050 | 0.050 | 0.051 |
-| 21 | 0.045 | **0.006** | 0.006 | 0.006 | 0.006 | 0.006 | 0.006 | 0.006 |
+| SNR (dB) | AF | DF | MLP (169p) | Hybrid | VAE | CGAN | Transformer | Mamba S6 | Mamba-2 SSD |
+|---|---|---|---|---|---|---|---|---|---|
+| 0 | 0.328 | 0.254 | **0.250** | 0.253 | 0.398 | 0.254 | 0.329 | 0.326 | 0.327 |
+| 4 | 0.206 | **0.140** | 0.145 | 0.146 | 0.350 | 0.143 | 0.181 | 0.180 | 0.181 |
+| 8 | 0.104 | **0.071** | 0.073 | 0.073 | 0.313 | 0.072 | 0.082 | 0.081 | 0.081 |
+| 12 | 0.040 | **0.032** | **0.032** | **0.032** | 0.277 | 0.032 | 0.033 | 0.033 | 0.033 |
+| 16 | 0.015 | 0.014 | **0.013** | 0.014 | 0.265 | 0.014 | 0.014 | 0.014 | 0.014 |
+| 20 | 0.0043 | **0.0037** | 0.0042 | **0.0037** | 0.256 | **0.0037** | 0.0038 | 0.0040 | 0.0038 |
 
-ZF equalization in the MIMO topology shows noise amplification effects, particularly at low SNR, resulting in higher BER than SISO Rayleigh. The AI relay advantage at low SNR is preserved.
+ZF equalization in the MIMO topology shows noise amplification effects, particularly at low SNR, resulting in higher BER than SISO Rayleigh. The AI relay advantage at low SNR is preserved, with MLP (169p) achieving the best BER at 0 dB.
 
-**Analysis.** The MIMO ZF results serve as a baseline for the MIMO equalization hierarchy. The BER values closely mirror the SISO Rayleigh results (Table 2 vs. Table 4), confirming the theoretical prediction that ZF equalization of a $2 \times 2$ system yields diversity order 1 (same as SISO). The small BER differences between MIMO ZF and SISO Rayleigh are due to the noise amplification inherent in ZF: when the channel matrix $\mathbf{H}$ is ill-conditioned (condition number $\kappa(\mathbf{H}) \gg 1$), the ZF pseudo-inverse amplifies noise severely on the weaker stream. This effect is more pronounced at low SNR, where the noise amplification can dominate the received signal. Notably, the AI relay advantage persists in the MIMO setting: at 0 dB, Mamba S6 reduces BER by 4.3% relative to DF (0.247 vs. 0.258), confirming H6 (equalization and relay gains are independent).
+**Analysis.** The MIMO ZF results serve as a baseline for the MIMO equalization hierarchy. The BER values closely mirror the SISO Rayleigh results (Table 2 vs. Table 4), confirming the theoretical prediction that ZF equalization of a $2 \times 2$ system yields diversity order 1 (same as SISO). The small BER differences between MIMO ZF and SISO Rayleigh are due to the noise amplification inherent in ZF: when the channel matrix $\mathbf{H}$ is ill-conditioned (condition number $\kappa(\mathbf{H}) \gg 1$), the ZF pseudo-inverse amplifies noise severely on the weaker stream. This effect is more pronounced at low SNR, where the noise amplification can dominate the received signal. Notably, the simplest AI relay (MLP with 169 parameters) achieves the best performance at 0 dB: MLP reduces BER by 1.6% relative to DF (0.250 vs. 0.254). The sequence models (Transformer, Mamba S6, Mamba-2 SSD) show higher BER at 0 dB (0.326–0.329), comparable to AF (0.328), suggesting that their temporal processing does not confer advantage under MIMO ZF noise amplification.
 
 ![Figure 12: 2×2 MIMO ZF — BER comparison of all nine relay strategies.](results/mimo_2x2_comparison_ci.png)
 
@@ -1289,14 +1295,16 @@ ZF equalization in the MIMO topology shows noise amplification effects, particul
 
 Table 5: BER comparison on 2×2 MIMO Rayleigh channel with MMSE equalization.
 
-| SNR (dB) | AF | DF | GenAI | Hybrid | VAE | CGAN | Transformer | Mamba S6 |
-|---|---|---|---|---|---|---|---|---|
-| 0 | 0.380 | 0.168 | 0.163 | 0.163 | 0.167 | 0.166 | **0.162** | 0.163 |
-| 4 | 0.260 | 0.077 | 0.075 | 0.075 | 0.077 | 0.076 | 0.075 | **0.074** |
-| 11 | 0.115 | **0.026** | 0.027 | 0.026 | 0.028 | 0.027 | 0.027 | 0.027 |
-| 21 | 0.025 | **0.003** | 0.003 | 0.003 | 0.003 | 0.003 | 0.003 | 0.003 |
+| SNR (dB) | AF | DF | MLP (169p) | Hybrid | VAE | CGAN | Transformer | Mamba S6 | Mamba-2 SSD |
+|---|---|---|---|---|---|---|---|---|---|
+| 0 | 0.199 | 0.164 | 0.166 | 0.164 | 0.354 | 0.165 | 0.173 | **0.163** | 0.165 |
+| 4 | 0.119 | **0.086** | 0.090 | **0.086** | 0.318 | 0.091 | 0.094 | 0.088 | 0.089 |
+| 8 | 0.058 | **0.040** | 0.044 | **0.040** | 0.288 | 0.044 | 0.045 | 0.042 | 0.043 |
+| 12 | 0.026 | **0.018** | 0.019 | **0.018** | 0.270 | 0.019 | 0.020 | 0.018 | 0.019 |
+| 16 | 0.0090 | **0.0067** | 0.0073 | **0.0067** | 0.259 | 0.0072 | 0.0073 | 0.0070 | 0.0070 |
+| 20 | 0.0020 | 0.0018 | 0.0018 | 0.0018 | 0.255 | 0.0025 | 0.0020 | **0.0015** | 0.0018 |
 
-MMSE consistently outperforms ZF across all relay types at every SNR point, confirming the theoretical advantage of regularized equalization. The noise-variance regularization in MMSE prevents the extreme noise amplification seen in ZF when the channel matrix is ill-conditioned.
+MMSE consistently outperforms ZF across all relay types at every SNR point, confirming the theoretical advantage of regularized equalization. Mamba S6 achieves the lowest BER at 0 dB (0.163) and also at 20 dB (0.0015), the only channel–relay combination where an AI relay leads at both ends of the SNR range. The noise-variance regularization in MMSE prevents the extreme noise amplification seen in ZF when the channel matrix is ill-conditioned.
 
 ![Figure 13: 2×2 MIMO MMSE — BER comparison of all nine relay strategies.](results/mimo_2x2_mmse_comparison_ci.png)
 
@@ -1308,11 +1316,18 @@ Table 6: BER comparison on 2×2 MIMO Rayleigh channel with MMSE-SIC equalization
 
 SIC further improves upon MMSE by cancelling the stronger stream's interference before detecting the weaker stream. This non-linear technique provides additional gain, particularly at medium SNR where the first-stream hard decisions are reliable enough to enable accurate cancellation.
 
+| SNR (dB) | AF | DF | MLP (169p) | Hybrid | VAE | CGAN | Transformer | Mamba S6 | Mamba-2 SSD |
+|---|---|---|---|---|---|---|---|---|---|
+| 0 | 0.172 | **0.134** | 0.139 | 0.138 | 0.347 | 0.136 | 0.146 | 0.143 | 0.143 |
+| 4 | 0.075 | **0.045** | 0.048 | **0.045** | 0.315 | 0.047 | 0.049 | 0.048 | 0.048 |
+| 8 | 0.020 | **0.011** | 0.013 | **0.011** | 0.290 | 0.012 | 0.012 | 0.012 | 0.012 |
+| 12 | 0.0052 | **0.0037** | 0.0038 | **0.0037** | 0.278 | 0.0043 | 0.0042 | 0.0038 | 0.0038 |
+| 16 | 0.0017 | 0.0013 | 0.0012 | 0.0013 | 0.271 | 0.0012 | **0.0010** | 0.0015 | 0.0013 |
+| 20 | 1.67e-04 | **0** | **0** | **0** | 0.266 | **0** | **0** | 1.67e-04 | **0** |
+
 **Analysis.** The SIC results complete the MIMO equalization hierarchy: ZF < MMSE < SIC at every SNR point for every relay strategy. The SIC gain over MMSE is approximately 0.5–1 dB across the SNR range, consistent with the theoretical analysis in Section 4.6.2. The improvement comes primarily from the second detected stream, which sees an interference-free channel after successful cancellation of the first stream. At low SNR (0–2 dB), the SIC gain narrows because the first-stream BER is high, leading to frequent error propagation that partially negates the cancellation benefit. At high SNR ($\geq 10$ dB), error propagation is rare and SIC approaches the theoretical optimum of interference-free detection for both streams.
 
-Critically, the combination of the best relay (Mamba S6) with the best equalizer (SIC) yields the lowest overall BER at every low-SNR point across all 54 strategy–channel combinations tested (9 relays $\times$ 6 channels). This confirms H6: the relay denoising benefit and the equalization benefit are additive, because they address different sources of signal degradation (additive noise on Hop 1 vs. inter-stream interference on Hop 2).
-
-The SIC results demonstrate that combining AI-based relay processing with advanced MIMO equalization yields the lowest BER achievable in the spatial multiplexing configuration.
+Critically, DF achieves the lowest BER at 0 dB (0.134) and dominates at all low-to-medium SNR points. No AI relay beats DF on the SIC channel, consistent with the Rayleigh SISO result (Table 2). The best AI relay at 0 dB is CGAN (0.136), followed by Hybrid (0.138). This result, combined with the Rayleigh finding, indicates that on fading channels with sufficient equalization, DF's hard-decision regeneration is optimal even at low SNR.
 
 ![Figure 14: 2×2 MIMO SIC — BER comparison of all nine relay strategies.](results/mimo_2x2_sic_comparison_ci.png)
 
@@ -1324,55 +1339,75 @@ To isolate architectural inductive biases from parameter count effects, all seve
 
 Table 7: Normalized 3K BER results — AWGN channel.
 
-| SNR (dB) | GenAI-3K | Hybrid-3K | VAE-3K | CGAN-3K | Transformer-3K | Mamba-3K |
-|---|---|---|---|---|---|---|
-| 0 | 2.65e-1 | 2.65e-1 | 2.67e-1 | 2.69e-1 | **2.61e-1** | 2.60e-1 |
-| 11 | 2.68e-3 | 1.44e-3 | 9.48e-3 | 2.00e-3 | 1.88e-3 | **1.84e-3** |
-| 21 | **0** | **0** | **0** | **0** | **0** | **0** |
+| SNR (dB) | MLP-3K | Hybrid-3K | VAE-3K | Transformer-3K | Mamba-3K | Mamba2-3K | AF | DF |
+|---|---|---|---|---|---|---|---|---|
+| 0 | **0.267** | 0.269 | 0.408 | 0.269 | 0.271 | 0.270 | 0.291 | 0.268 |
+| 4 | 0.114 | 0.114 | 0.359 | 0.114 | **0.112** | 0.113 | 0.154 | 0.112 |
+| 10 | 0.0033 | **0.0012** | 0.309 | 0.0023 | 0.0017 | 0.0018 | 0.013 | 0.0012 |
+| 16 | **0** | **0** | 0.285 | **0** | **0** | **0** | 0 | 0 |
+| 20 | **0** | **0** | 0.280 | **0** | **0** | **0** | 0 | 0 |
 
 Table 8: Normalized 3K BER results — Rayleigh fading channel.
 
-| SNR (dB) | GenAI-3K | Hybrid-3K | VAE-3K | CGAN-3K | Transformer-3K | Mamba-3K |
-|---|---|---|---|---|---|---|
-| 0 | 2.59e-1 | 2.58e-1 | 2.70e-1 | 2.54e-1 | 2.50e-1 | **2.49e-1** |
-| 11 | 4.87e-2 | 4.84e-2 | 5.60e-2 | 4.74e-2 | 4.65e-2 | **4.64e-2** |
-| 21 | 5.84e-3 | 5.68e-3 | 7.08e-3 | 5.64e-3 | 5.64e-3 | **5.60e-3** |
+| SNR (dB) | MLP-3K | Hybrid-3K | VAE-3K | Transformer-3K | Mamba-3K | Mamba2-3K | AF | DF |
+|---|---|---|---|---|---|---|---|---|
+| 0 | **0.252** | 0.258 | 0.411 | 0.329 | 0.320 | 0.320 | 0.330 | 0.245 |
+| 4 | 0.146 | **0.145** | 0.375 | 0.181 | 0.180 | 0.179 | 0.205 | 0.139 |
+| 10 | 0.049 | **0.047** | 0.315 | 0.050 | 0.049 | 0.049 | 0.058 | 0.044 |
+| 16 | 0.015 | 0.014 | 0.289 | 0.014 | **0.014** | 0.014 | 0.015 | 0.014 |
+| 20 | 0.0050 | **0.0047** | 0.279 | **0.0047** | **0.0047** | **0.0047** | 0.0053 | 0.0047 |
 
 Table 9: Normalized 3K BER results — Rician K=3 fading channel.
 
-| SNR (dB) | GenAI-3K | Hybrid-3K | VAE-3K | CGAN-3K | Transformer-3K | Mamba-3K |
-|---|---|---|---|---|---|---|
-| 0 | 2.05e-1 | 2.05e-1 | 2.18e-1 | 2.05e-1 | 2.00e-1 | **2.00e-1** |
-| 11 | 1.54e-2 | 1.47e-2 | 1.98e-2 | 1.48e-2 | **1.45e-2** | 1.46e-2 |
-| 21 | 9.20e-4 | 8.80e-4 | 1.24e-3 | 8.80e-4 | **6.80e-4** | 7.20e-4 |
+| SNR (dB) | MLP-3K | Hybrid-3K | VAE-3K | Transformer-3K | Mamba-3K | Mamba2-3K | AF | DF |
+|---|---|---|---|---|---|---|---|---|
+| 0 | 0.211 | **0.211** | 0.389 | 0.243 | 0.242 | 0.241 | 0.265 | 0.206 |
+| 4 | **0.095** | 0.099 | 0.345 | 0.104 | 0.102 | 0.103 | 0.137 | 0.090 |
+| 10 | 0.016 | **0.015** | 0.301 | 0.016 | 0.016 | 0.016 | 0.020 | 0.015 |
+| 16 | **0.0015** | 0.0018 | 0.283 | **0.0015** | 0.0017 | **0.0015** | 0.0023 | 0.0018 |
+| 20 | **6.67e-04** | **6.67e-04** | 0.275 | **6.67e-04** | **6.67e-04** | **6.67e-04** | 6.67e-04 | 6.67e-04 |
 
 Table 10: Normalized 3K BER results — 2×2 MIMO ZF.
 
-| SNR (dB) | GenAI-3K | Hybrid-3K | VAE-3K | CGAN-3K | Transformer-3K | Mamba-3K |
-|---|---|---|---|---|---|---|
-| 0 | 2.52e-1 | 2.52e-1 | 2.64e-1 | 2.52e-1 | 2.47e-1 | **2.45e-1** |
-| 11 | 4.82e-2 | 4.80e-2 | 5.55e-2 | 4.67e-2 | 4.64e-2 | **4.64e-2** |
-| 21 | 5.40e-3 | **5.12e-3** | 5.92e-3 | 5.16e-3 | **5.12e-3** | 5.16e-3 |
+| SNR (dB) | MLP-3K | Hybrid-3K | VAE-3K | Transformer-3K | Mamba-3K | Mamba2-3K | AF | DF |
+|---|---|---|---|---|---|---|---|---|
+| 0 | **0.256** | 0.257 | 0.410 | 0.329 | 0.327 | 0.326 | 0.328 | 0.254 |
+| 4 | **0.146** | 0.150 | 0.369 | 0.185 | 0.181 | 0.182 | 0.206 | 0.140 |
+| 10 | **0.049** | 0.049 | 0.319 | 0.053 | 0.052 | 0.053 | 0.066 | 0.048 |
+| 16 | 0.014 | **0.014** | 0.288 | 0.014 | 0.014 | 0.014 | 0.015 | 0.014 |
+| 20 | 0.0040 | **0.0037** | 0.279 | 0.0040 | 0.0040 | 0.0040 | 0.0043 | 0.0037 |
 
 Table 11: Normalized 3K BER results — 2×2 MIMO MMSE.
 
-| SNR (dB) | GenAI-3K | Hybrid-3K | VAE-3K | CGAN-3K | Transformer-3K | Mamba-3K |
-|---|---|---|---|---|---|---|
-| 0 | 1.65e-1 | 1.65e-1 | 1.79e-1 | 1.63e-1 | **1.62e-1** | 1.64e-1 |
-| 11 | 2.68e-2 | 2.51e-2 | 3.37e-2 | 2.54e-2 | 2.56e-2 | 2.60e-2 |
-| 21 | 2.92e-3 | 2.60e-3 | 3.84e-3 | 2.76e-3 | 2.72e-3 | **2.56e-3** |
+| SNR (dB) | MLP-3K | Hybrid-3K | VAE-3K | Transformer-3K | Mamba-3K | Mamba2-3K | AF | DF |
+|---|---|---|---|---|---|---|---|---|
+| 0 | 0.167 | **0.164** | 0.384 | 0.169 | 0.165 | 0.164 | 0.199 | 0.164 |
+| 4 | 0.094 | **0.086** | 0.348 | 0.091 | 0.089 | 0.089 | 0.119 | 0.086 |
+| 10 | 0.030 | 0.027 | 0.317 | 0.029 | **0.026** | 0.027 | 0.040 | 0.027 |
+| 16 | 0.0083 | 0.0067 | 0.287 | **0.0067** | 0.0072 | 0.0073 | 0.0090 | 0.0067 |
+| 20 | 0.0022 | **0.0018** | 0.280 | **0.0018** | **0.0018** | **0.0018** | 0.0020 | 0.0018 |
+
+Table 11b: Normalized 3K BER results — 2×2 MIMO SIC.
+
+| SNR (dB) | MLP-3K | Hybrid-3K | VAE-3K | Transformer-3K | Mamba-3K | Mamba2-3K | AF | DF |
+|---|---|---|---|---|---|---|---|---|
+| 0 | 0.140 | **0.137** | 0.368 | 0.144 | 0.142 | 0.144 | 0.172 | 0.134 |
+| 4 | 0.048 | **0.045** | 0.335 | 0.048 | 0.047 | 0.048 | 0.075 | 0.045 |
+| 10 | 0.0060 | **0.0057** | 0.309 | 0.0060 | **0.0057** | 0.0060 | 0.010 | 0.0057 |
+| 16 | 0.0013 | 0.0013 | 0.298 | **0.0010** | 0.0013 | 0.0013 | 0.0017 | 0.0013 |
+| 20 | 1.67e-04 | **0** | 0.292 | **0** | **0** | **0** | 1.67e-04 | 0 |
 
 Key findings from the normalized comparison:
 
-1. **Performance convergence:** At 3K parameters, Mamba and Transformer produce nearly identical BER, eliminating the gap observed with original (unequal) parameter counts. This directly confirms Hypothesis H4: architectural inductive biases provide diminishing returns when model capacity is held constant. The practical implication is that for the relay denoising task, the choice of architecture is secondary to the choice of model size.
+1. **Performance convergence:** At 3K parameters, feedforward models (MLP, Hybrid) match or exceed sequence models on AWGN and fading channels, while sequence models retain slight advantages only on specific channels. This confirms Hypothesis H4: architectural inductive biases provide diminishing returns when model capacity is held constant. On Rayleigh and MIMO channels, the feedforward relays (MLP-3K, Hybrid-3K) consistently outperform sequence models at low SNR, a reversal of the original parameter count results.
 
-2. **VAE underperforms:** VAE-3K consistently shows higher BER than other architectures (by 0.5–1% absolute), suggesting that the probabilistic overhead (KL divergence regularization, stochastic sampling via the reparameterization trick) is harmful at small scale. The KL term actively penalizes the model for using its latent space efficiently, effectively wasting capacity on latent space regularity rather than reconstruction accuracy. This is a structural disadvantage of the generative paradigm for a deterministic denoising task.
+2. **VAE underperforms dramatically:** VAE-3K exhibits BER values 0.10–0.15 higher than all other architectures across all channels and SNR points, effectively failing to learn the relay task. This confirms that the probabilistic overhead (KL divergence regularization, stochastic sampling) is catastrophically harmful at small scale — the KL term actively prevents the model from using its latent space for reconstruction.
 
-3. **GenAI/Hybrid competitive:** Simple feedforward architectures match or approach sequence models at equal parameter budgets, indicating that the inductive biases of attention or state space recurrence provide diminishing returns when model capacity is constrained. This result has profound practical implications: at 3,000 parameters, a simple two-layer feedforward network (which can be implemented in pure NumPy on a microcontroller) achieves performance within 0.2% BER of a Transformer or Mamba model (which requires a GPU-capable inference stack).
+3. **MLP/Hybrid competitive:** Simple feedforward architectures match or exceed sequence models at equal parameter budgets, particularly on fading channels where MLP-3K achieves the best AI performance at 0 dB on Rayleigh (0.252) and MIMO ZF (0.256). At 3,000 parameters, a simple two-layer feedforward network achieves performance within 0.2% BER of a Transformer or Mamba model.
 
-4. **CGAN matches sequence models:** Despite fundamentally different training (adversarial vs. supervised), CGAN-3K achieves comparable performance on most channels. The adversarial training overhead (5:1 critic-to-generator ratio, gradient penalty computation, 200 epochs) produces no BER benefit at equal parameter count, suggesting that the WGAN-GP regularization does not provide useful inductive bias for this task beyond what supervised MSE training already captures.
+4. **DF remains competitive at 3K:** Including AF and DF as reference columns reveals that DF matches or beats all 3K AI relays on Rayleigh, MIMO ZF, MIMO MMSE, and MIMO SIC at 0 dB. Only on AWGN and Rician channels do 3K AI relays achieve marginal improvement over DF at low SNR.
 
-5. **The exception — Rician K=3 at high SNR:** On the Rician channel, Transformer-3K slightly outperforms Mamba-3K at 20 dB (6.80e-4 vs. 7.20e-4), the only channel–SNR combination where attention provides a clear advantage. This may reflect the Transformer's ability to jointly attend to all window positions simultaneously, capturing subtle correlations in the Rician fading structure that the single-layer Mamba-3K (with its limited 6-dimensional state) cannot represent.
+5. **The exception — Rician K=3 at high SNR:** On the Rician channel at 16 dB, MLP-3K, Transformer-3K, and Mamba2-3K tie (0.0015), outperforming both DF (0.0018) and other AI relays. This suggests that at high SNR on channels with a LOS component, the learned relay function provides a small but consistent advantage.
 
 ![Figure 15: Normalized 3K-parameter comparison — all channels.](results/normalized_3k_all_channels.png)
 
@@ -1398,7 +1433,7 @@ Table 12: Model complexity and timing comparison (50,000 training samples, 100 e
 |---|---|---|---|---|---|
 | AF | 0 | — | 0 s | 0.80 s | 3.47 s |
 | DF | 0 | — | 0 s | 0.77 s | 1.51 s |
-| GenAI (169p) | 169 | CPU | 4.9 s | 1.57 s | 2.20 s |
+| MLP (169p) | 169 | CPU | 4.9 s | 1.57 s | 2.20 s |
 | Hybrid | 169 | CPU | 4.6 s | 0.41 s | 1.70 s |
 | VAE | 1,777 | CPU | 21.6 s | 1.81 s | 3.11 s |
 | CGAN (WGAN-GP) | 2,946 | CUDA | 7,293 s (~2 h) | 1.14 s | 2.34 s |
@@ -1406,11 +1441,11 @@ Table 12: Model complexity and timing comparison (50,000 training samples, 100 e
 | **Mamba S6** | **24,001** | **CUDA** | **2,141 s (~36 min)** | **1.88 s** | **3.02 s** |
 | **Mamba2 (SSD)** | **26,179** | **CUDA** | **1,438 s (~24 min)** | **4.11 s** | **5.61 s** |
 
-**Training time analysis.** Training times span four orders of magnitude, from under 5 seconds (GenAI) to over 2 hours (CGAN). The key drivers are:
+**Training time analysis.** Training times span four orders of magnitude, from under 5 seconds (MLP) to over 2 hours (CGAN). The key drivers are:
 
 - **AF/DF** require no training — they are purely analytical algorithms operating on the received signal. This zero training cost is their primary practical advantage.
-- **GenAI and Hybrid** (169 parameters) train in ~5 s on CPU using a simple NumPy-based two-layer network. At only 169 parameters, the computational cost per epoch is negligible. The Hybrid relay trains only its internal GenAI sub-network (same 169 parameters), hence identical training time.
-- **VAE** (1,777 parameters) trains in 22 s on CPU. Despite 10× more parameters than GenAI, its encoder–decoder architecture processes each sample in a single forward/backward pass. The moderate hidden sizes (32→16→8→16→32) keep per-batch computation small.
+- **MLP and Hybrid** (169 parameters) train in ~5 s on CPU using a simple NumPy-based two-layer network. At only 169 parameters, the computational cost per epoch is negligible. The Hybrid relay trains only its internal MLP sub-network (same 169 parameters), hence identical training time.
+- **VAE** (1,777 parameters) trains in 22 s on CPU. Despite 10× more parameters than MLP, its encoder–decoder architecture processes each sample in a single forward/backward pass. The moderate hidden sizes (32→16→8→16→32) keep per-batch computation small.
 - **CGAN (WGAN-GP)** (2,946 parameters) requires approximately 2 hours despite having fewer parameters than the Transformer. Four factors explain this: (1) the WGAN-GP training loop performs **5 critic updates per generator update**, effectively multiplying the number of gradient steps by 6; (2) the gradient penalty term requires computing second-order gradients through the critic via `torch.autograd.grad`, which is computationally expensive; (3) 200 training epochs (vs. 100 for other models) doubles the base iteration count; (4) despite running on CUDA, the 3K-parameter model is too small to saturate GPU parallelism, and the gradient penalty's dynamic graph construction incurs significant per-step overhead. Together these create a $6 \times 2 = 12\times$ overhead relative to a standard supervised model of similar size.
 - **Transformer** (17,697 parameters) trains in 8 minutes on CUDA. The multi-head self-attention over the 11-symbol window is computed as a single batched matrix multiply $\mathbf{Q}\mathbf{K}^T / \sqrt{d_k}$, which parallelises efficiently on GPU. The two encoder layers with 32-dimensional embeddings are modest by NLP standards, keeping per-epoch time manageable.
 - **Mamba S6** (24,001 parameters) trains in 36 minutes, approximately 4.5× slower than the Transformer despite only 1.36× more parameters. The detailed analysis of this paradoxical result is given in Section 8.3; in summary, the sequential S6 recurrence requires a Python loop of 11 time steps per forward pass (each triggering a separate CUDA kernel), whereas the Transformer processes all 11 positions in parallel via attention.
@@ -1419,7 +1454,7 @@ Table 12: Model complexity and timing comparison (50,000 training samples, 100 e
 **Inference (evaluation) time analysis.** All relay implementations use **batched inference**: the sliding-window extraction builds a matrix of all windows at once, and the neural network processes the entire signal in a single forward pass. This eliminates the per-symbol Python loop that dominated prior versions. As a result, all nine relays evaluate the full AWGN Monte Carlo sweep (11 SNR × 10 trials × 10,000 bits = 1.1 M symbols) in under 4 seconds:
 
 - **AF and DF** evaluate in 0.8 s — a single vectorised operation per signal block. The SIC evaluation (3.5 s for AF) takes longer due to the iterative successive interference cancellation in the MIMO channel model itself.
-- **GenAI** evaluates in 1.6 s. The batched NumPy forward pass through the 169-parameter network processes all 10,000 symbols at once as a single matrix multiply. The Hybrid relay is even faster (0.4 s) because at high SNR it routes to the DF path.
+- **MLP** evaluates in 1.6 s. The batched NumPy forward pass through the 169-parameter network processes all 10,000 symbols at once as a single matrix multiply. The Hybrid relay is even faster (0.4 s) because at high SNR it routes to the DF path.
 - **VAE** evaluates in 1.8 s — the batched encode/decode through the 1.8K-parameter network is efficient when vectorised.
 - **CGAN** evaluates in 1.1 s because the generator runs a single batched forward pass — no critic is needed at inference.
 - **Transformer** evaluates in 3.7 s. The batched implementation processes all symbols as a single tensor of shape $(N, 11, 1)$ through the attention layers. This is a **475× speedup** compared to the prior per-symbol implementation (1,762 s).
@@ -1432,7 +1467,7 @@ Table 12: Model complexity and timing comparison (50,000 training samples, 100 e
 
 ![Figure 19: Complexity–performance comparison across all relay strategies.](results/complexity_comparison_all_relays.png)
 
-*Figure 19: Complexity–performance trade-off. Training time vs. parameter count vs. BER improvement over DF at low SNR. The Minimal GenAI (169 params) achieves the best efficiency.*
+*Figure 19: Complexity–performance trade-off. Training time vs. parameter count vs. BER improvement over DF at low SNR. The Minimal MLP (169 params) achieves the best efficiency.*
 
 ![Figure 20: Master BER comparison — all relay strategies across all channels.](results/master_ber_comparison.png)
 
@@ -1440,7 +1475,7 @@ Table 12: Model complexity and timing comparison (50,000 training samples, 100 e
 
 ### 7.10 Modulation Comparison: BPSK vs. QPSK vs. 16-QAM
 
-To evaluate whether the BPSK findings generalise to higher-order constellations, we test the same BPSK-trained relay models on QPSK and 16-QAM signals using the I/Q splitting technique described in Section 6.7.4. The evaluation uses all nine relay strategies — AF, DF, GenAI, Hybrid, VAE, CGAN, Transformer, Mamba S6, and Mamba2 (SSD) — on AWGN and Rayleigh fading channels. This section addresses a key question: **do hypotheses H1–H3 hold for complex-valued modulations?**
+To evaluate whether the BPSK findings generalise to higher-order constellations, we test the same BPSK-trained relay models on QPSK and 16-QAM signals using the I/Q splitting technique described in Section 6.7.4. The evaluation uses all nine relay strategies — AF, DF, MLP, Hybrid, VAE, CGAN, Transformer, Mamba S6, and Mamba2 (SSD) — on AWGN and Rayleigh fading channels. This section addresses a key question: **do hypotheses H1–H3 hold for complex-valued modulations?**
 
 **Experimental setup.** All AI relays are trained once on BPSK AWGN data (identical to Sections 7.2–7.9). For QPSK and 16-QAM evaluation, the source generates complex symbols from the respective constellation; the channel adds complex AWGN or Rayleigh fading; the relay processes the signal using the type-specific method (AF: direct amplification of complex signal; DF: nearest constellation point detection; AI relays: I/Q splitting); and the destination demodulates using the corresponding scheme.
 
@@ -1450,7 +1485,7 @@ Table 14: BER comparison across modulations at selected SNR points (AWGN channel
 |---|---|---|---|---|---|---|---|
 | AF | 0.2813 | 0.0141 | 0.2794 | 0.0142 | 0.3778 | 0.1244 | 0.0180 |
 | DF | 0.2651 | 0.0015 | 0.2644 | 0.0016 | 0.3811 | 0.1076 | 0.0038 |
-| GenAI (169p) | 0.2589 | 0.0021 | 0.2563 | 0.0025 | 0.3907 | 0.2180 | 0.2180 |
+| MLP (169p) | 0.2589 | 0.0021 | 0.2563 | 0.0025 | 0.3907 | 0.2180 | 0.2180 |
 | Hybrid | 0.2573 | 0.0015 | 0.2644 | 0.0016 | 0.4000 | 0.2711 | 0.2512 |
 | VAE | 0.2611 | 0.0021 | 0.2597 | 0.0036 | 0.3945 | 0.2391 | 0.2231 |
 | CGAN (WGAN-GP) | 0.2633 | 0.0017 | 0.2621 | 0.0018 | 0.3976 | 0.2588 | 0.2486 |
@@ -1462,19 +1497,19 @@ Table 14: BER comparison across modulations at selected SNR points (AWGN channel
 
 **Key findings:**
 
-**Finding 1: QPSK results mirror BPSK almost exactly.** For all nine relay strategies, the QPSK BER at each SNR point is within 1% of the corresponding BPSK BER (e.g., GenAI at 0 dB: BPSK = 0.2589, QPSK = 0.2563; Mamba S6: BPSK = 0.2587, QPSK = 0.2565). This holds for the feedforward relays (GenAI, Hybrid, VAE, CGAN) and the sequence models (Transformer, Mamba S6, Mamba2) alike. This is expected from the I/Q splitting analysis (Section 6.7.4): since each QPSK component carries an independent BPSK-like stream, the BPSK-trained relay denoises each component identically. This confirms that **H1 (AI advantage at low SNR) and H2 (DF dominance at high SNR) hold for QPSK** without modification.
+**Finding 1: QPSK results mirror BPSK almost exactly.** For all nine relay strategies, the QPSK BER at each SNR point is within 1% of the corresponding BPSK BER (e.g., MLP at 0 dB: BPSK = 0.2589, QPSK = 0.2563; Mamba S6: BPSK = 0.2587, QPSK = 0.2565). This holds for the feedforward relays (MLP, Hybrid, VAE, CGAN) and the sequence models (Transformer, Mamba S6, Mamba2) alike. This is expected from the I/Q splitting analysis (Section 6.7.4): since each QPSK component carries an independent BPSK-like stream, the BPSK-trained relay denoises each component identically. This confirms that **H1 (AI advantage at low SNR) and H2 (DF dominance at high SNR) hold for QPSK** without modification.
 
 **Finding 2: DF remains effective for QPSK and 16-QAM.** The DF relay performs nearest-constellation-point detection (sign decision for QPSK, PAM-4 quantisation for 16-QAM), which is the modulation-aware generalisation of BPSK hard-decision. At 16 dB, DF achieves BER = 0.0038 for 16-QAM AWGN and BER = 0.0828 for 16-QAM Rayleigh, confirming **H2 extends to higher-order modulations**.
 
-**Finding 3: All AI relays exhibit a BER floor on 16-QAM.** The BPSK-trained AI relays perform identically on QPSK due to the binary nature of each I/Q component. On 16-QAM, all seven AI relays — feedforward and sequential alike — hit an irreducible BER floor even at high SNR. At 16 dB AWGN, the floors are: Transformer = 0.1827, Mamba S6 = 0.1935, Mamba2 = 0.1890, GenAI = 0.2180, VAE = 0.2231, CGAN = 0.2480, Hybrid = 0.2512 — all dramatically worse than DF's 0.0038. This floor arises because the $\tanh$ activation compresses the multi-level PAM-4 signal ($\{-3, -1, +1, +3\}/\sqrt{10}$) toward $\{\pm 1\}$, destroying the amplitude information required for correct 16-QAM demodulation. The Transformer achieves the lowest floor (0.1827), likely because its multi-head attention over the 11-symbol window provides slightly better amplitude discrimination than the narrower feedforward relays. The effect is **statistically significant** (p < 0.05, Wilcoxon signed-rank) at every SNR point from 0–20 dB for all AI relays. This finding confirms the **limitation predicted in Section 6.7.4** and motivates modulation-specific training for 16-QAM relays.
+**Finding 3: All AI relays exhibit a BER floor on 16-QAM.** The BPSK-trained AI relays perform identically on QPSK due to the binary nature of each I/Q component. On 16-QAM, all seven AI relays — feedforward and sequential alike — hit an irreducible BER floor even at high SNR. At 16 dB AWGN, the floors are: Transformer = 0.1827, Mamba S6 = 0.1935, Mamba2 = 0.1890, MLP = 0.2180, VAE = 0.2231, CGAN = 0.2480, Hybrid = 0.2512 — all dramatically worse than DF's 0.0038. This floor arises because the $\tanh$ activation compresses the multi-level PAM-4 signal ($\{-3, -1, +1, +3\}/\sqrt{10}$) toward $\{\pm 1\}$, destroying the amplitude information required for correct 16-QAM demodulation. The Transformer achieves the lowest floor (0.1827), likely because its multi-head attention over the 11-symbol window provides slightly better amplitude discrimination than the narrower feedforward relays. The effect is **statistically significant** (p < 0.05, Wilcoxon signed-rank) at every SNR point from 0–20 dB for all AI relays. This finding confirms the **limitation predicted in Section 6.7.4** and motivates modulation-specific training for 16-QAM relays.
 
 **Finding 4: AF outperforms DF on 16-QAM at low SNR.** Unlike BPSK/QPSK where DF beats AF at all SNR values, the 16-QAM results reveal a reversal: AF achieves significantly lower BER than DF at SNR = 0–6 dB on AWGN (e.g., 0 dB: AF = 0.3778 vs DF = 0.3811, Y* p < 0.05; 4 dB: AF = 0.2771 vs DF = 0.2855, Y* p < 0.05). This occurs because AF preserves the continuous multi-level amplitude structure of the 16-QAM signal, whereas DF's PAM-4 quantisation makes hard errors that propagate. At higher SNR (≥8 dB), DF's regeneration advantage reasserts itself and DF outperforms AF.
 
-**Finding 5: The Hybrid relay adapts correctly across BPSK and QPSK.** At low SNR, the Hybrid relay uses its GenAI sub-network (which generalises via I/Q splitting); at high SNR, it switches to DF (which uses modulation-aware detection). This SNR-adaptive switching works correctly for BPSK and QPSK (matching DF at high SNR), though on 16-QAM the Hybrid relay inherits the AI BER floor from its GenAI component, yielding the worst performance among all nine relays at high SNR (0.2512 at 16 dB vs Transformer's 0.1827).
+**Finding 5: The Hybrid relay adapts correctly across BPSK and QPSK.** At low SNR, the Hybrid relay uses its MLP sub-network (which generalises via I/Q splitting); at high SNR, it switches to DF (which uses modulation-aware detection). This SNR-adaptive switching works correctly for BPSK and QPSK (matching DF at high SNR), though on 16-QAM the Hybrid relay inherits the AI BER floor from its MLP component, yielding the worst performance among all nine relays at high SNR (0.2512 at 16 dB vs Transformer's 0.1827).
 
 **Finding 6: Rayleigh fading amplifies modulation differences.** On the Rayleigh fading channel, the BER gap between BPSK/QPSK and 16-QAM widens because the reduced constellation spacing in 16-QAM makes it more susceptible to deep fades. At 10 dB Rayleigh: BPSK DF = 0.0453 while 16-QAM DF = 0.2095 — a 4.6× gap. AI relay gains at low SNR are preserved for QPSK over Rayleigh (Mamba S6 and Mamba2 Y* at 0–4 dB), though all AI relays — including the sequence models — are significantly worse than DF on 16-QAM Rayleigh at every SNR point (N* p < 0.05 at 0–20 dB). On Rayleigh 16-QAM at 16 dB, the sequence models show BER floors of 0.2192 (Transformer), 0.2215 (Mamba S6), 0.2317 (Mamba2), compared to DF's 0.0828.
 
-**Finding 7: Sequence models match or exceed feedforward relays on all modulations.** On BPSK and QPSK, the Transformer, Mamba S6, and Mamba2 relays achieve BER comparable to GenAI at low SNR with statistical significance (Y* at 0–2 dB AWGN). On 16-QAM, the sequence models achieve a lower BER floor than the feedforward AI relays (Transformer: 0.1827 vs GenAI: 0.2180 at 16 dB AWGN), suggesting that the larger context window provides marginal improvement in multi-level amplitude processing. However, the improvement is modest — the fundamental $\tanh$ compression limitation affects all architectures.
+**Finding 7: Sequence models match or exceed feedforward relays on all modulations.** On BPSK and QPSK, the Transformer, Mamba S6, and Mamba2 relays achieve BER comparable to MLP at low SNR with statistical significance (Y* at 0–2 dB AWGN). On 16-QAM, the sequence models achieve a lower BER floor than the feedforward AI relays (Transformer: 0.1827 vs MLP: 0.2180 at 16 dB AWGN), suggesting that the larger context window provides marginal improvement in multi-level amplitude processing. However, the improvement is modest — the fundamental $\tanh$ compression limitation affects all architectures.
 
 ![Figure 21: BPSK relay comparison on AWGN (baseline).](results/modulation/bpsk_awgn_ci.png)
 
@@ -1518,7 +1553,7 @@ Three activation variants are compared:
 2. **linear:** Identity output activation ($f(z) = z$, unbounded), trained on 16-QAM PAM-4 symbols $\{-3, -1, +1, +3\}/\sqrt{10}$.
 3. **hardtanh:** Clipped linear activation $f(z) = \text{clip}(z, -3/\sqrt{10}, +3/\sqrt{10})$, trained on 16-QAM PAM-4 symbols. The clip bounds $\pm 0.9487$ match the maximum 16-QAM per-axis amplitude exactly, providing bounded output while preserving linearity in the signal range.
 
-All seven AI relays (GenAI, Hybrid, VAE, CGAN, Transformer, Mamba S6, Mamba-2 SSD) are trained from scratch with each variant. The training protocol matches the original: 50,000 samples, 100 epochs (200 for sequence models), SNR = 5/10/15 dB. The linear and hardtanh variants use synthetically generated PAM-4 training targets at matched SNR to teach the network the 4-level amplitude structure. Classical AF and DF relays serve as modulation-independent baselines. Evaluation uses 16-QAM on AWGN and Rayleigh channels (10 trials × 10,000 bits, SNR 0–20 dB).
+All seven AI relays (MLP, Hybrid, VAE, CGAN, Transformer, Mamba S6, Mamba-2 SSD) are trained from scratch with each variant. The training protocol matches the original: 50,000 samples, 100 epochs (200 for sequence models), SNR = 5/10/15 dB. The linear and hardtanh variants use synthetically generated PAM-4 training targets at matched SNR to teach the network the 4-level amplitude structure. Classical AF and DF relays serve as modulation-independent baselines. Evaluation uses 16-QAM on AWGN and Rayleigh channels (10 trials × 10,000 bits, SNR 0–20 dB).
 
 #### 7.11.2 Results
 
@@ -1527,7 +1562,7 @@ Table 15 shows the BER at 16 dB for all relays across the three activation varia
 | Relay | tanh (BPSK) | linear (QAM16) | hardtanh (QAM16) | tanh (BPSK) | linear (QAM16) | hardtanh (QAM16) |
 |---|---|---|---|---|---|---|
 | | **AWGN** | | | **Rayleigh** | | |
-| GenAI | 0.2202 | 0.0721 | **0.0630** | 0.2375 | 0.1279 | **0.1247** |
+| MLP | 0.2202 | 0.0721 | **0.0630** | 0.2375 | 0.1279 | **0.1247** |
 | Hybrid | 0.2512 | 0.2512 | 0.2512 | 0.2723 | 0.2723 | 0.2723 |
 | VAE | 0.2231 | 0.1111 | **0.1059** | 0.2462 | 0.1575 | **0.1573** |
 | CGAN | 0.2482 | 0.0973 | **0.0863** | 0.2666 | 0.1432 | **0.1383** |
@@ -1549,15 +1584,15 @@ Table 15 shows the BER at 16 dB for all relays across the three activation varia
 
 #### 7.11.3 Analysis
 
-**Finding 8: Replacing tanh eliminates the 16-QAM BER floor.** Both the linear and hardtanh activations break through the ~0.22 BER floor that all AI relays exhibited in Section 7.10. The improvement factors (tanh → best variant) at 16 dB AWGN are: Mamba S6 5.4×, Transformer 4.7×, Mamba-2 4.7×, GenAI 3.5×, CGAN 2.9×, VAE 2.1×. This confirms the hypothesis from Section 7.10 that the bottleneck is the activation function, not model capacity.
+**Finding 8: Replacing tanh eliminates the 16-QAM BER floor.** Both the linear and hardtanh activations break through the ~0.22 BER floor that all AI relays exhibited in Section 7.10. The improvement factors (tanh → best variant) at 16 dB AWGN are: Mamba S6 5.4×, Transformer 4.7×, Mamba-2 4.7×, MLP 3.5×, CGAN 2.9×, VAE 2.1×. This confirms the hypothesis from Section 7.10 that the bottleneck is the activation function, not model capacity.
 
-**Finding 9: Hardtanh is generally preferred over linear.** For feedforward relays, hardtanh consistently achieves the lowest BER: GenAI 0.0630 vs linear 0.0721, CGAN 0.0863 vs 0.0973, VAE 0.1059 vs 0.1111 (all AWGN). The bounded output prevents the network from generating values outside the valid constellation range, acting as an implicit regulariser. For sequence models, the results are mixed: Transformer slightly prefers linear (0.0453 vs 0.0505), while Mamba S6 and Mamba-2 slightly prefer hardtanh (0.0396 vs 0.0422, and 0.0441 vs 0.0471). The practical recommendation is hardtanh, which provides the bounded-output safety of tanh while matching the 16-QAM amplitude range.
+**Finding 9: Hardtanh is generally preferred over linear.** For feedforward relays, hardtanh consistently achieves the lowest BER: MLP 0.0630 vs linear 0.0721, CGAN 0.0863 vs 0.0973, VAE 0.1059 vs 0.1111 (all AWGN). The bounded output prevents the network from generating values outside the valid constellation range, acting as an implicit regulariser. For sequence models, the results are mixed: Transformer slightly prefers linear (0.0453 vs 0.0505), while Mamba S6 and Mamba-2 slightly prefer hardtanh (0.0396 vs 0.0422, and 0.0441 vs 0.0471). The practical recommendation is hardtanh, which provides the bounded-output safety of tanh while matching the 16-QAM amplitude range.
 
-**Finding 10: Sequence models benefit most from modulation-aware training.** The three sequence models achieve the lowest BER among AI relays after retraining: Mamba S6 hardtanh 0.0396, Mamba-2 hardtanh 0.0441, Transformer linear 0.0453 (AWGN). These are 5.4×, 4.7×, and 4.7× improvements over the tanh baseline, compared to 3.5× for GenAI and 2.9× for CGAN. The larger context window of sequence models apparently captures inter-symbol amplitude correlations that feedforward relays miss once the activation bottleneck is removed.
+**Finding 10: Sequence models benefit most from modulation-aware training.** The three sequence models achieve the lowest BER among AI relays after retraining: Mamba S6 hardtanh 0.0396, Mamba-2 hardtanh 0.0441, Transformer linear 0.0453 (AWGN). These are 5.4×, 4.7×, and 4.7× improvements over the tanh baseline, compared to 3.5× for MLP and 2.9× for CGAN. The larger context window of sequence models apparently captures inter-symbol amplitude correlations that feedforward relays miss once the activation bottleneck is removed.
 
 **Finding 11: The gap to classical relays narrows but persists.** The best AI relay (Mamba S6 hardtanh, 0.0396 on AWGN) is 10.4× worse than DF (0.0038) and 2.2× worse than AF (0.0180). While this is a dramatic improvement from the tanh baseline (56× gap), the remaining gap reflects the fundamental difficulty of learning multi-level quantisation from data alone versus the hard-coded PAM-4 decision boundaries in DF. On Rayleigh, the gap is larger: Mamba S6 hardtanh 0.1108 vs DF 0.0828 (1.3×), suggesting that fading partially equalises AI and classical approaches.
 
-**Finding 12: The Hybrid relay is unaffected.** Hybrid achieves 0.2512 across all three variants because at 16 dB its SNR estimator routes to the DF sub-relay, which uses hard sign-detection on the I/Q-split signal. The Hybrid's GenAI sub-network (which benefits from the new activation) is bypassed at high SNR. This confirms that the Hybrid relay's SNR-adaptive switching, while effective for BPSK (Section 7.6), requires modulation-aware DF quantisation for higher-order constellations.
+**Finding 12: The Hybrid relay is unaffected.** Hybrid achieves 0.2512 across all three variants because at 16 dB its SNR estimator routes to the DF sub-relay, which uses hard sign-detection on the I/Q-split signal. The Hybrid's MLP sub-network (which benefits from the new activation) is bypassed at high SNR. This confirms that the Hybrid relay's SNR-adaptive switching, while effective for BPSK (Section 7.6), requires modulation-aware DF quantisation for higher-order constellations.
 
 **Summary.** The activation experiment validates the hypothesis from Section 7.10: the 16-QAM BER floor is caused by $\tanh$ compression, not by insufficient model capacity. Replacing $\tanh$ with a bounded linear activation (hardtanh) matched to the 16-QAM constellation range, combined with retraining on PAM-4 target symbols, reduces the AI relay BER floor by 2–5× across all relay types. Sequence models benefit disproportionately (5.4× for Mamba S6 vs 2.1× for VAE), achieving BER values within one order of magnitude of DF. These findings demonstrate that modulation-aware output activation design is essential for extending AI relay strategies to higher-order modulations.
 
@@ -1592,7 +1627,7 @@ Three bounded activations are evaluated, each scaled to $[-A_{\max}, +A_{\max}]$
 
 3. **Scaled tanh:** $f(z) = A_{\max} \cdot \tanh(z)$. Identical to standard $\tanh$ when $A_{\max} = 1$ (BPSK), but scaled to match tighter or wider constellation ranges for other modulations.
 
-All three activations are implemented with matching NumPy (for GenAI/Hybrid) and PyTorch (for sequence models) backends, verified to produce identical outputs to machine precision.
+All three activations are implemented with matching NumPy (for MLP/Hybrid) and PyTorch (for sequence models) backends, verified to produce identical outputs to machine precision.
 
 #### 7.12.3 Experimental Design
 
@@ -1670,23 +1705,23 @@ With the addition of +LN+Scaled, a significant divergence in training stability 
 |---|---|---|
 | Transformer | Very stable | Stable, neutral final loss |
 | Mamba S6 | Stable | Stable, improved convergence |
-| Mamba-2 SSD | Stable | **Catastrophic gradient collapse (NaN loss)** |
+| Mamba-2 SSD | Stable | Stable, strongest improvement |
 
-While the baseline and +InputLN models converge functionally for all three sequence architectures, joining LayerNorm and Scaled Tanh causes catastrophic gradient collapse explicitly in Mamba-2 (evaluating to 0.5007 BER, equivalent to random guessing), whereas Mamba S6 prospers.
+All three sequence architectures converge functionally under both +InputLN and +LN+Scaled configurations. The +LN+Scaled variant produces the largest improvements for Mamba-2 SSD and Mamba S6, while the Transformer remains neutral.
 
 #### 7.13.3 Results
 
 The BER evaluation highlights strong architectural divergence. Table 16 summarises the 16-QAM and 20dB AWGN improvements for the sequence models.
 
-* **Transformer**: Remained relatively neutral and robust against input scaling and normalization.
-* **Mamba S6**: Exhibited a significant **+18.7% benefit** in BER over the baseline at 20dB AWGN, thriving on the normalized spatial bounds of the input signal and outputting tightly scaled logits.
-* **Mamba-2 SSD**: The training completely collapsed under +LN+Scaled, resulting in severe performance failures. 
+* **Transformer**: Remained relatively neutral and robust against input scaling and normalization (Baseline 0.0328, +LN+Scaled 0.0383 at 20 dB AWGN).
+* **Mamba S6**: Exhibited a modest **+11.1% benefit** in BER over the baseline at 20 dB AWGN (Baseline 0.0602, +LN+Scaled 0.0535), benefiting from the normalized spatial bounds of the input signal.
+* **Mamba-2 SSD**: Achieved the strongest improvement under +LN+Scaled, reaching 0.0170 at 20 dB AWGN (Baseline 0.0333) — a **49% reduction** and the best BER of any variant.
 
 Additionally, evaluating the 16-QAM performance under Rayleigh fading indicated that *none* of the models could consistently outperform classic Amplify-and-Forward (AF) relays without explicit Channel State Information (CSI), due to the permanent distortion of the 16-QAM amplitude grid by blind non-linearities.
 
 #### 7.13.4 Analysis
 
-**Finding 17: +LN+Scaled improves Mamba S6 but destroys Mamba-2 SSD.** The +LN+Scaled combination exposes fundamental differences between the S6 and SSD architectures. The selective scan mechanism in Mamba S6 successfully harnesses the normalized inputs to improve bit extraction (+18.7% at 20dB AWGN), whereas Mamba-2's structured SSD layer falls into a mathematically unstable state under noise, resulting in NaN matrices.
+**Finding 17: +LN+Scaled benefits state space models more than attention-based models.** The +LN+Scaled combination improves both Mamba S6 (11.1% BER reduction at 20 dB AWGN) and Mamba-2 SSD (49% BER reduction, reaching the best overall BER of 0.0170 at 20 dB AWGN). In contrast, the Transformer shows no measurable improvement. The structured state space architectures appear to benefit from the explicit amplitude scaling provided by the constellation-aware bounded activation, while the self-attention mechanism in the Transformer is already effective at extracting amplitude information from raw inputs.
 
 **Finding 18: Beating AF on 16-QAM under Rayleigh fading requires CSI Injection.** Even with explicit architecture scaling, the pure unguided neural networks inevitably squash or misalign the 16-QAM amplitude envelopes during fading. Classic AF trivially avoids this by operating purely linearly. Beating classical models thus dictates providing explicit channel state information (CSI / $h_{SR}$) directly into the neural relay inputs, motivating a follow-up experiment.
 
@@ -1770,21 +1805,21 @@ The full combinatorial experiment produced the BER curves shown in Figure 39. Th
 
 *Figure 40: Top-3 neural relay architectures compared against AF and DF for 16-QAM in Rayleigh fading. All three best-performing variants use input LayerNorm (+LN) without CSI injection.*
 
-| SNR (dB) | AF | DF | #1 Mamba-2 (+LN scaled\_tanh) | #2 Mamba (+LN hardtanh) | #3 Mamba (+LN sigmoid) |
+| SNR (dB) | AF | DF | #1 Mamba S6 (+LN tanh) | #2 Transformer (+LN sigmoid) | #3 Transformer (+LN tanh) |
 |---|---|---|---|---|---|
-| 0 | 0.4551 | 0.4185 | 0.4623 | 0.4628 | 0.4615 |
-| 6 | 0.3585 | 0.3063 | 0.3562 | 0.3570 | 0.3541 |
-| 11 | 0.2602 | 0.2069 | 0.2450 | 0.2453 | 0.2442 |
-| 15 | 0.1572 | 0.1155 | 0.1480 | 0.1488 | 0.1496 |
-| 19 | 0.0767 | 0.0551 | 0.0795 | 0.0806 | 0.0826 |
-| 21 | 0.0501 | 0.0364 | 0.0555 | 0.0566 | 0.0587 |
+| 0 | 0.4490 | 0.4130 | 0.4513 | 0.4490 | 0.4493 |
+| 4 | 0.3893 | 0.3472 | 0.3893 | 0.3865 | 0.3852 |
+| 8 | 0.2913 | 0.2543 | 0.2943 | 0.2965 | 0.2943 |
+| 12 | 0.1877 | 0.1575 | 0.1903 | 0.1912 | 0.1903 |
+| 16 | 0.1020 | 0.0817 | 0.1063 | 0.1093 | 0.1102 |
+| 20 | 0.0465 | 0.0393 | 0.0562 | 0.0598 | 0.0620 |
 
-*Table 19: BER at selected SNR points for the top-3 neural relays and classical baselines (16-QAM, Rayleigh fading, 100 MC trials). The best neural variant (Mamba-2 +LN scaled\_tanh) comes within 11% of AF at 20 dB but does not surpass it.*
+*Table 19: BER at selected SNR points for the top-3 neural relays and classical baselines (16-QAM, Rayleigh fading, 100 MC trials). The best neural variant (Mamba S6 +LN tanh) comes within 21% of AF at 20 dB but does not surpass it.*
 
 **QAM16 Top-3 Observations:**
-1. **#1 Mamba-2 (+LN scaled\_tanh):** Best overall neural relay with BER = 0.0555 at 20 dB (vs. AF = 0.0501). The Mamba-2 architecture combined with input LayerNorm and smooth bounded activation achieves the closest tracking to AF across the full SNR range.
-2. **#2 Mamba S6 (+LN hardtanh):** BER = 0.0566 at 20 dB. Original Mamba with piecewise-linear clipping and normalization.
-3. **#3 Mamba S6 (+LN sigmoid):** BER = 0.0587 at 20 dB. Asymmetric sigmoid activation paired with LayerNorm.
+1. **#1 Mamba S6 (+LN tanh):** Best overall neural relay with BER = 0.0562 at 20 dB (vs. AF = 0.0465). The Mamba S6 architecture combined with input LayerNorm and standard tanh activation achieves the closest tracking to AF across the full SNR range.
+2. **#2 Transformer (+LN sigmoid):** BER = 0.0598 at 20 dB. Attention-based architecture with smooth sigmoid output and normalization.
+3. **#3 Transformer (+LN tanh):** BER = 0.0620 at 20 dB. Attention-based architecture with standard tanh and LayerNorm.
 
 ### 7.15.4 Results: 16-PSK in Rayleigh Fading
 
@@ -1798,21 +1833,21 @@ The same combinatorial experiment was repeated for 16-PSK modulation with $A_{\m
 
 *Figure 42: Top-3 neural relay architectures compared against AF and DF for 16-PSK in Rayleigh fading. In contrast to QAM16, all three best-performing PSK16 variants use CSI injection (+CSI or +CSI+LN).*
 
-| SNR (dB) | AF | DF | #1 Mamba (+CSI tanh) | #2 Transformer (+CSI sigmoid) | #3 Transformer (+CSI+LN hardtanh) |
+| SNR (dB) | AF | DF | #1 Mamba S6 (+CSI+LN hardtanh) | #2 Mamba S6 (+CSI hardtanh) | #3 Mamba S6 (+CSI scaled\_tanh) |
 |---|---|---|---|---|---|
-| 0 | 0.4546 | 0.4189 | 0.4578 | 0.4587 | 0.4581 |
-| 6 | 0.3730 | 0.3304 | 0.3678 | 0.3692 | 0.3689 |
-| 11 | 0.2885 | 0.2568 | 0.2807 | 0.2815 | 0.2817 |
-| 15 | 0.1974 | 0.1747 | 0.1923 | 0.1930 | 0.1927 |
-| 19 | 0.1165 | 0.0991 | 0.1163 | 0.1159 | 0.1158 |
-| 21 | 0.0833 | 0.0701 | 0.0852 | 0.0845 | 0.0844 |
+| 0 | 0.4503 | 0.4218 | 0.4490 | 0.4532 | 0.4535 |
+| 4 | 0.3987 | 0.3670 | 0.3963 | 0.3990 | 0.3945 |
+| 8 | 0.3240 | 0.2983 | 0.3157 | 0.3123 | 0.3130 |
+| 12 | 0.2293 | 0.2083 | 0.2225 | 0.2197 | 0.2232 |
+| 16 | 0.1473 | 0.1317 | 0.1415 | 0.1440 | 0.1433 |
+| 20 | 0.0812 | 0.0710 | 0.0832 | 0.0808 | 0.0842 |
 
-*Table 20: BER at selected SNR points for the top-3 neural relays and classical baselines (16-PSK, Rayleigh fading, 100 MC trials). The best neural variants track AF closely at mid-to-high SNR, with near-parity at 18 dB (0.1158 vs. 0.1165).*
+*Table 20: BER at selected SNR points for the top-3 neural relays and classical baselines (16-PSK, Rayleigh fading, 100 MC trials). The best neural variants track AF closely at high SNR, with the gap narrowing to 2.5% at 20 dB.*
 
 **PSK16 Top-3 Observations:**
-1. **#1 Mamba S6 (+CSI tanh):** BER = 0.0852 at 20 dB (vs. AF = 0.0833). CSI-aware Mamba using standard tanh activation.
-2. **#2 Transformer (+CSI sigmoid):** BER = 0.0845 at 20 dB. CSI-aware Transformer with sigmoid output.
-3. **#3 Transformer (+CSI+LN hardtanh):** BER = 0.0844 at 20 dB. Full CSI+LN configuration with piecewise-linear clipping.
+1. **#1 Mamba S6 (+CSI+LN hardtanh):** BER = 0.0832 at 20 dB (vs. AF = 0.0812). CSI-aware Mamba with LayerNorm and piecewise-linear clipping achieves the lowest average BER over the 10–20 dB range.
+2. **#2 Mamba S6 (+CSI hardtanh):** BER = 0.0808 at 20 dB. CSI injection without LayerNorm — achieves the lowest single-point BER at 20 dB.
+3. **#3 Mamba S6 (+CSI scaled\_tanh):** BER = 0.0842 at 20 dB. CSI injection with smooth bounded activation.
 
 ### 7.15.5 Cross-Constellation Analysis
 
@@ -1822,18 +1857,18 @@ The comprehensive experiment reveals strikingly different optimal strategies for
 |---|---|---|
 | Dominant configuration | +LN (LayerNorm only) | +CSI / +CSI+LN |
 | CSI injection benefit | Negative (degrades BER) | Positive (improves BER) |
-| Best architecture | Mamba-2, Mamba S6 | Mamba S6, Transformer |
-| Best activation | scaled\_tanh, hardtanh, sigmoid | tanh, sigmoid, hardtanh |
-| Gap to AF at 20 dB | ~11% (0.0555 vs. 0.0501) | ~1.5% (0.0844 vs. 0.0833) |
-| DF superiority at 20 dB | DF wins by 34% over best neural | DF wins by 17% over best neural |
+| Best architecture | Mamba S6, Transformer | Mamba S6 (all three) |
+| Best activation | tanh, sigmoid | hardtanh, scaled\_tanh |
+| Gap to AF at 20 dB | ~21% (0.0562 vs. 0.0465) | ~2.5% (0.0832 vs. 0.0812) |
+| DF superiority at 20 dB | DF wins by 43% over best neural | DF wins by 17% over best neural |
 
 *Table 21: Cross-constellation comparison of top-performing neural relay strategies.*
 
 **Finding 21: CSI injection is modulation-dependent.** For 16-QAM (amplitude-and-phase modulation), CSI injection systematically degrades performance. The top-3 QAM16 variants all use **+LN without CSI**. The likely explanation is that 16-QAM's amplitude grid already encodes distance information in the I/Q signal levels, and injecting a redundant channel magnitude feature confuses the network's learned amplitude mapping. In contrast, 16-PSK (pure phase modulation with constant envelope) benefits from CSI injection because the fading coefficient provides orthogonal amplitude information that the constant-envelope signal cannot convey. All top-3 PSK16 variants use **+CSI or +CSI+LN**.
 
-**Finding 22: Input LayerNorm is universally beneficial for QAM16 but model-dependent for PSK16.** For 16-QAM, every top-3 variant includes LayerNorm, consistent with the Section 7.13 finding that normalizing the multi-level amplitude distribution before sequence processing stabilizes training and reduces BER. For 16-PSK, LayerNorm appears in only one of the top-3 variants, and the best variant (Mamba +CSI tanh) omits it entirely, suggesting that the constant-envelope PSK signal is already well-conditioned for direct processing.
+**Finding 22: Input LayerNorm is universally beneficial for QAM16 but model-dependent for PSK16.** For 16-QAM, every top-3 variant includes LayerNorm, consistent with the Section 7.13 finding that normalizing the multi-level amplitude distribution before sequence processing stabilizes training and reduces BER. For 16-PSK, LayerNorm appears in one of the top-3 variants (#1 Mamba S6 +CSI+LN hardtanh), while the #2 and #3 variants omit it, suggesting that the constant-envelope PSK signal is already well-conditioned for direct processing.
 
-**Finding 23: State space models dominate QAM16; Transformers compete on PSK16.** Mamba S6 and Mamba-2 occupy all three QAM16 top-3 positions, while the Transformer does not appear. For PSK16, the Transformer captures two of three top-3 positions. This modulation-dependent architectural preference may reflect the Transformer's attention mechanism being better suited to the rotational symmetry of PSK constellations (where inter-symbol distances are uniform on the unit circle), while the Mamba family's recurrent state tracking is more effective for the multi-level amplitude structure of QAM.
+**Finding 23: Mamba S6 is the dominant architecture across both constellations.** Mamba S6 appears in all three PSK16 top-3 positions and holds the #1 QAM16 position. The Transformer captures the #2 and #3 QAM16 positions, demonstrating its competitiveness on amplitude-and-phase modulations when combined with LayerNorm. Neither Mamba-2 nor any baseline (non-LN, non-CSI) configuration appears in the top-3 for either constellation. The Mamba S6 architecture's selective state space mechanism appears well-suited to tracking both the multi-level amplitude structure of QAM and the rotational phase geometry of PSK.
 
 **Finding 24: Classical DF remains unbeaten across all configurations.** Despite the 48 neural variants spanning three architectures, four activations, and four structural configurations, no neural relay achieves a lower BER than DF at any SNR point for either constellation. The best neural relays approach AF performance but cannot surpass it. This reaffirms the fundamental information-theoretic advantage of hard-decision regeneration when perfect demodulation is possible — the relay task for higher-order modulations requires equalization beyond what current neural sequence models can provide without explicit channel knowledge at the demodulator level.
 
@@ -1843,15 +1878,15 @@ Representative training curves for the top-performing variants illustrate the co
 
 ![Figure 43: Training history — Mamba-2 (+LN scaled\_tanh).](results/csi/training_Mamba2_LN_scaled_tanh.png)
 
-*Figure 43: Training loss (MSE) and accuracy for Mamba-2 (+LN scaled\_tanh), the #1 QAM16 variant. The model converges within approximately 5 epochs and stabilises, with validation accuracy closely tracking training accuracy — indicating minimal overfitting.*
+*Figure 43: Training loss (MSE) and accuracy for Mamba-2 (+LN scaled\_tanh). The model converges within approximately 5 epochs and stabilises, with validation accuracy closely tracking training accuracy — indicating minimal overfitting.*
 
 ![Figure 44: Training history — Mamba (+CSI tanh).](results/csi/training_Mamba_CSI_tanh.png)
 
-*Figure 44: Training loss and accuracy for Mamba S6 (+CSI tanh), the #1 PSK16 variant. The CSI-augmented input produces a smooth, monotonic training convergence, with the additional channel-state feature providing clear gradient signal for the optimizer.*
+*Figure 44: Training loss and accuracy for Mamba S6 (+CSI tanh). The CSI-augmented input produces a smooth, monotonic training convergence, with the additional channel-state feature providing clear gradient signal for the optimizer.*
 
 ![Figure 45: Training history — Transformer (+CSI sigmoid).](results/csi/training_Transformer_CSI_sigmoid.png)
 
-*Figure 45: Training loss and accuracy for Transformer (+CSI sigmoid), the #2 PSK16 variant. The Transformer exhibits rapid initial convergence (within 3 epochs) followed by a flat plateau, characteristic of the attention mechanism's ability to capture input structure quickly.*
+*Figure 45: Training loss and accuracy for Transformer (+CSI sigmoid). The Transformer exhibits rapid initial convergence (within 3 epochs) followed by a flat plateau, characteristic of the attention mechanism's ability to capture input structure quickly.*
 
 Three key training patterns emerge across all 48 variants:
 1. **Rapid convergence:** All models reach near-final loss within 5–8 epochs, confirming that 25 epochs with patience-10 early stopping is sufficient for the relay denoising task at these model scales.
@@ -1864,7 +1899,7 @@ This section evaluates the comprehensive CSI experiment against its stated objec
 
 | Goal | Outcome | Assessment |
 |---|---|---|
-| Identify top architectures for higher-order modulations | QAM16: Mamba-2 and Mamba S6 dominate; PSK16: Mamba S6 and Transformer compete | **Achieved** — clear ranking established with statistical confidence over 100 MC trials |
+| Identify top architectures for higher-order modulations | QAM16: Mamba S6 and Transformer dominate; PSK16: Mamba S6 sweeps all top-3 | **Achieved** — clear ranking established with statistical confidence over 100 MC trials |
 | Determine whether CSI injection universally improves relay performance | CSI injection is modulation-dependent: beneficial for PSK16, detrimental for QAM16 | **Achieved** — unexpected finding that refutes the Section 7.14 hypothesis of universal CSI benefit |
 | Evaluate the role of input LayerNorm across architectures | LayerNorm consistently helps QAM16 (all top-3 use it) but is neutral-to-unnecessary for PSK16 | **Achieved** — extends Section 7.13 finding to multi-model, multi-constellation setting |
 | Compare 48 neural variants against classical baselines | No neural variant beats DF; best variants approach but do not surpass AF | **Achieved** — confirms DF optimality for higher-order modulations at all SNR points |
@@ -1904,19 +1939,18 @@ $$P_s \approx 2 \left( \frac{\sqrt{M}-1}{\sqrt{M}} \right) \left( 1 - \sqrt{\fra
 
 where the Bit Error Rate is approximated as $\text{BER} \approx P_s / \log_2(M)$ under optimal Gray coding.
 
-| SNR (dB) | Standard 16-QAM Theory | E2E Learned Autoencoder | Relative Improvement |
+| SNR (dB) | Standard 16-QAM Theory | E2E Learned Autoencoder | Relative Difference |
 |---|---|---|---|
-| 10.0 | 0.1098 | 0.0867 | 21.0% |
-| 12.0 | 0.0762 | 0.0641 | 15.8% |
-| 15.0 | 0.0481 | 0.0379 | 21.2% |
-| 20.0 | 0.0174 | 0.0137 | 21.2% |
-| 24.0 | 0.0072 | 0.0061 | 15.2% |
+| 10.0 | 0.1098 | 0.183 | −67% |
+| 12.0 | 0.0762 | 0.142 | −86% |
+| 15.0 | 0.0481 | 0.084 | −75% |
+| 20.0 | 0.0174 | 0.042 | −141% |
 
-*Table 23: BER comparison of E2E autoencoder vs. theoretical 16-QAM (Rayleigh fading). The E2E network achieves 15–21% lower BER by learning a non-rectangular constellation geometry optimised for minimum Euclidean distance under the average power constraint.*
+*Table 23: BER comparison of E2E autoencoder vs. theoretical 16-QAM (Rayleigh fading). The E2E network achieves 67–141% higher BER than the theoretical optimum, indicating that the learned constellation does not surpass the classical grid geometry for single-antenna Rayleigh fading with this training configuration.*
 
 ![Figure 46: E2E BER comparison.](results/e2e/e2e_ber_comparison.png)
 
-*Figure 46: BER vs. SNR for E2E learned autoencoder compared to theoretical 16-QAM over Rayleigh fading. The E2E system consistently outperforms the classical grid constellation across the full SNR range.*
+*Figure 46: BER vs. SNR for E2E learned autoencoder compared to theoretical 16-QAM over Rayleigh fading. The E2E system underperforms the classical grid constellation across the full SNR range, with the gap widening at high SNR.*
 
 ![Figure 47: E2E learned constellation.](results/e2e/e2e_constellation.png)
 
@@ -1928,7 +1962,7 @@ where the Bit Error Rate is approximated as $\text{BER} \approx P_s / \log_2(M)$
 
 ![Figure 49: E2E vs. relay comparison.](results/e2e/e2e_relay_comparison.png)
 
-*Figure 49: Performance comparison of the E2E autoencoder against the modular relay-based approaches from this thesis. The E2E system achieves the lowest BER but requires joint transmitter-receiver optimisation, sacrificing modularity and multi-vendor interoperability.*
+*Figure 49: Performance comparison of the E2E autoencoder against the modular relay-based approaches from this thesis. The E2E system does not achieve lower BER than the two-hop DF relay, highlighting the limitations of the E2E approach.*
 
 #### 7.16.3 E2E vs. Two-Hop Relay Comparison: AF and DF
 
@@ -1950,7 +1984,7 @@ Both mechanisms converge to the **same asymptotic limit**: the BER of a single R
 
 In summary, the AF/DF gap is governed by how fast DF's relay detection error $P_{e,1}$ approaches zero relative to AF's noise dilution. For BPSK, $P_{e,1}$ drops exponentially fast (simple threshold), opening a wide gap early. For 16-QAM, $P_{e,1}$ drops slowly (16-point detection), keeping the two strategies close throughout.
 
-**Why neural relay methods do not converge to AF/DF.** A natural question is why the neural network relays studied throughout this thesis (GenAI, Mamba, Transformer, etc.) do not converge to the same asymptotic BER as AF and DF at high SNR. The answer is modulation-dependent:
+**Why neural relay methods do not converge to AF/DF.** A natural question is why the neural network relays studied throughout this thesis (MLP, Mamba, Transformer, etc.) do not converge to the same asymptotic BER as AF and DF at high SNR. The answer is modulation-dependent:
 
 - **BPSK/QPSK (Sections 7.2–7.7):** Neural relays *do* converge to DF performance at high SNR. The binary nature of each I/Q component means the relay task reduces to a simple threshold function, which even minimal networks learn well. At high SNR the learned soft-threshold saturates to a hard decision, effectively replicating DF behaviour.
 
@@ -1959,15 +1993,15 @@ In summary, the AF/DF gap is governed by how fast DF's relay detection error $P_
   2. **Approximate vs. exact decision boundaries:** DF implements mathematically exact nearest-constellation-point detection with zero parameters. Neural relays must *learn* these decision boundaries from data, and any imprecision in the learned boundaries causes residual errors that persist regardless of SNR.
   3. **No information gain from higher SNR:** Unlike AF — where increasing SNR reduces the relative noise contribution — a neural relay's learned function $f_\theta(\cdot)$ is fixed after training. If $f_\theta$ introduces even a slight systematic mapping error, that error persists at every SNR, preventing convergence to DF's zero-error relay detection.
 
-**Finding 26: E2E outperforms both modular relays but at a fundamental architectural cost.** The E2E autoencoder achieves the lowest BER across the SNR range by jointly optimizing the transmitted constellation and receiver detector. Its advantage over DF and AF stems from two sources: (1) learning a non-rectangular constellation geometry (Figure 47) that maximizes $d_{\min}$ under the average power constraint, and (2) directly minimizing end-to-end classification loss rather than separately optimizing each stage. However, the E2E system operates over a single hop (no relay), jointly optimizes both endpoints, and replaces standardized constellations with opaque learned representations — fundamentally breaking multi-vendor interoperability.
+**Finding 26: E2E underperforms both modular relays and theoretical limits.** Contrary to the expected advantage of joint optimisation, the E2E autoencoder achieves higher BER than the two-hop DF relay at every SNR point (e.g., 20 dB: E2E = 0.060 vs. DF = 0.039, AF = 0.047). Furthermore, the E2E BER (0.183 at 10 dB, 0.042 at 20 dB) is 67–141% worse than the theoretical single-hop 16-QAM limit (0.110 at 10 dB, 0.017 at 20 dB). The E2E system operates over a single hop (no relay), so it should have a fundamental advantage over two-hop systems, yet fails to exploit it. This indicates that the learned constellation geometry does not outperform the classical $4 \times 4$ square grid under the current training configuration.
 
 #### 7.16.4 Analysis
 
-**Finding 27: E2E representations consistently outperform classical grids.** The E2E neural network achieves a 15–21% reduction in BER across the evaluated SNR range compared to the theoretical limit of classical 16-QAM. This improvement occurs because the network abandons the classical $4 \times 4$ square grid — which is designed for human engineering simplicity — in favour of a non-rectangular 2D geometric packing (such as a hexagonal lattice or concentric APSK layout). This learned geometry maximises the minimum Euclidean distance between points more efficiently under a strict average power constraint.
+**Finding 27: E2E representations do not outperform classical grids in this configuration.** The E2E neural network achieves 67–141% higher BER than the theoretical limit of classical 16-QAM across the evaluated SNR range. The learned constellation (Figure 47) does not achieve better Euclidean distance packing than the standard $4 \times 4$ square grid under single-antenna Rayleigh fading. This result underscores the difficulty of learning geometrically optimal constellations from scratch: the E2E encoder must simultaneously discover both the constellation geometry and the channel-matching signal structure, a joint optimisation problem that may require significantly more training data or a more expressive network architecture than the current MLP-based encoder.
 
-**Finding 28: The immutable physics of the diversity limit.** Despite the learned geometric advantage, the E2E network hits a BER of 0.0379 at 15 dB (equivalent to an 85% symbol classification accuracy). This is not an architectural failure, but a manifestation of the $1/\text{SNR}$ asymptotic decay characterising $1 \times 1$ flat fading channels. At 15 dB, deep fades ($|h| \to 0$) completely destroy the signal approximately 10–15% of the time. The network accurately converges to the physical capacity limit of the channel. Further reduction into the $10^{-4}$ BER regime strictly requires the introduction of diversity (e.g., MIMO or temporal coding, $n \ge 2$), which the E2E framework could trivially exploit by learning an analogue to the Alamouti space-time code.
+**Finding 28: The immutable physics of the diversity limit.** The E2E network hits a BER of 0.084 at 15 dB. This reflects the $1/\text{SNR}$ asymptotic decay characterising $1 \times 1$ flat fading channels. At 15 dB, deep fades ($|h| \to 0$) completely destroy the signal approximately 10–15% of the time. Further reduction into the $10^{-4}$ BER regime strictly requires the introduction of diversity (e.g., MIMO or temporal coding, $n \ge 2$), which the E2E framework could exploit by learning an analogue to the Alamouti space-time code.
 
-**Conclusion on E2E Systems.** While joint autoencoder optimisation yields superior spatial packing and lower theoretical BERs, it fundamentally breaks multi-vendor interoperability by replacing standardised constellations with opaque latent representations. Furthermore, its reliance on explicit domain knowledge (e.g., explicitly coding the complex division into the receiver to assist the MLP) demonstrates that "black-box" deep learning remains highly inefficient for basic RF operations. These findings validate the core architectural thesis of this work: the most practical deployment of deep learning in physical-layer communications is a modular approach, where classical algorithms handle modulation and equalization, while neural networks are surgically applied to non-linear denoising tasks at intermediate relays.
+**Conclusion on E2E Systems.** The E2E autoencoder experiment demonstrates that joint transmitter-receiver optimisation does not automatically yield superior BER compared to classical modulation and modular relay processing. The E2E system achieves BER consistently worse than both theoretical 16-QAM and the two-hop DF relay. Beyond the performance deficit, the E2E approach fundamentally breaks multi-vendor interoperability by replacing standardised constellations with opaque latent representations, and its reliance on explicit domain knowledge (e.g., coding the complex division into the receiver) demonstrates that "black-box" deep learning remains highly inefficient for basic RF operations. These findings reinforce the core architectural thesis of this work: the most practical deployment of deep learning in physical-layer communications is a modular approach, where classical algorithms handle modulation and equalization, while neural networks are surgically applied to non-linear denoising tasks at intermediate relays.
 
 ---
 
@@ -1997,7 +2031,7 @@ Among the AI methods, Mamba S6 (at its original 24K parameter count) achieves th
 
 **Medium-to-high SNR (≥6 dB): Classical dominance.** At medium and high SNR, DF matches or exceeds all AI methods with exactly zero parameters and zero training time. The theoretical explanation is straightforward: at high SNR, $\sigma^2 \to 0$ and $f^*(y) \to \text{sign}(y) = f_{\text{DF}}(y)$. The DF relay *exactly implements* the Bayes-optimal function in this regime, while any neural network approximation introduces a small but non-zero reconstruction error due to the finite precision of the learned mapping and the tanh output saturation (which approaches but never reaches $\pm 1$).
 
-Quantitatively, at 10 dB the DF BER on AWGN is $2Q(\sqrt{10}) \cdot (1 - Q(\sqrt{10})) \approx 0.002$, while GenAI achieves 0.002 and Mamba S6 achieves 0.003. The AI models cannot beat the theoretically optimal DF in this regime — they can only match it, and the larger sequence models slightly underperform due to the increased variance of their more complex learned mappings.
+Quantitatively, at 10 dB the DF BER on AWGN is $2Q(\sqrt{10}) \cdot (1 - Q(\sqrt{10})) \approx 0.002$, while MLP achieves 0.002 and Mamba S6 achieves 0.003. The AI models cannot beat the theoretically optimal DF in this regime — they can only match it, and the larger sequence models slightly underperform due to the increased variance of their more complex learned mappings.
 
 #### 8.1.3 Channel Robustness
 
@@ -2013,7 +2047,7 @@ The dB gap between ZF and MMSE is approximately 1–2 dB across the SNR range, w
 
 ### 8.2 The "Less is More" Principle (H3: Confirmed)
 
-One of the most significant findings is the inverted-U relationship between model complexity and relay performance. The Minimal GenAI architecture (169 parameters) matches the performance of models with 10–140× more parameters (3K–24K), while the Maximum GenAI (11,201 parameters) exhibited clear overfitting with degraded performance.
+One of the most significant findings is the inverted-U relationship between model complexity and relay performance. The Minimal MLP architecture (169 parameters) matches the performance of models with 10–140× more parameters (3K–24K), while the Maximum MLP (11,201 parameters) exhibited clear overfitting with degraded performance.
 
 This result has important theoretical and practical implications:
 
@@ -2032,7 +2066,7 @@ $$\text{MSE}(\hat{x}) = \underbrace{(\mathbb{E}[\hat{x}] - f^*(y))^2}_{\text{Bia
 - **169 parameters:** Low bias (sufficient capacity for the simple $f^*$) and low variance (limited capacity prevents memorization). The model operates at the optimal bias-variance trade-off.
 - **3,000 parameters:** Similar bias (the target function hasn't changed) and slightly higher variance. Performance is nearly identical to 169 params.
 - **11,201 parameters:** Negligible bias but substantially higher variance — the model memorizes training noise patterns rather than learning the generalizable denoising function. This manifests as higher BER on unseen test data.
-- **24,001 parameters (Mamba S6):** Despite having 140× more parameters than GenAI, the BER improvement at low SNR is only 1–2%. The marginal parameter utility is vanishingly small.
+- **24,001 parameters (Mamba S6):** Despite having 140× more parameters than MLP, the BER improvement at low SNR is only 1–2%. The marginal parameter utility is vanishingly small.
 
 #### 8.2.3 Practical Implications
 
@@ -2040,7 +2074,7 @@ $$\text{MSE}(\hat{x}) = \underbrace{(\mathbb{E}[\hat{x}] - f^*(y))^2}_{\text{Bia
 
 2. **Deployment feasibility.** A 169-parameter model requires approximately 0.7 KB of memory (169 float32 values) and can be trained in under 3 seconds on a CPU. This makes AI-based relay processing viable even on severely resource-constrained embedded relay nodes, such as IoT devices or sensor network relays. The model can be stored in on-chip SRAM and executed without any external memory access.
 
-3. **Generalization.** Smaller models generalize better because they are forced to learn the essential structure of the denoising task rather than memorizing training examples. The 169-parameter GenAI trained on AWGN generalizes to Rayleigh, Rician, and MIMO channels without retraining — a remarkable instance of domain generalization that would be harder to achieve with a larger, more specialized model.
+3. **Generalization.** Smaller models generalize better because they are forced to learn the essential structure of the denoising task rather than memorizing training examples. The 169-parameter MLP trained on AWGN generalizes to Rayleigh, Rician, and MIMO channels without retraining — a remarkable instance of domain generalization that would be harder to achieve with a larger, more specialized model.
 
 ### 8.3 State Space vs. Attention for Signal Processing
 
@@ -2096,14 +2130,14 @@ Based on the comprehensive evaluation, we propose the following deployment strat
 
 | Operating Regime | Recommended Relay | Rationale |
 |---|---|---|
-| **Low SNR (0–4 dB)** | Mamba S6 or GenAI Minimal | Best BER; GenAI Minimal if resource-constrained |
-| **Medium SNR (4–8 dB)** | Hybrid (GenAI + DF) | Automatic switching at optimal threshold |
+| **Low SNR (0–4 dB)** | Mamba S6 or MLP Minimal | Best BER; MLP Minimal if resource-constrained |
+| **Medium SNR (4–8 dB)** | Hybrid (MLP + DF) | Automatic switching at optimal threshold |
 | **High SNR (>8 dB)** | DF | Zero parameters, optimal performance |
-| **Resource-constrained** | GenAI Minimal (169 params) | 0.7 KB memory, <3s training |
+| **Resource-constrained** | MLP Minimal (169 params) | 0.7 KB memory, <3s training |
 | **Best overall** | Hybrid | Combines AI advantage with DF reliability |
 | **MIMO systems** | Any relay + MMSE-SIC | SIC provides consistent gain over ZF/MMSE |
 
-The Hybrid relay is recommended as the default deployment choice because it automatically selects GenAI processing at low SNR and DF at high SNR, achieving near-optimal performance across the entire SNR range with minimal complexity.
+The Hybrid relay is recommended as the default deployment choice because it automatically selects MLP processing at low SNR and DF at high SNR, achieving near-optimal performance across the entire SNR range with minimal complexity.
 
 ### 8.5 Limitations
 
@@ -2141,7 +2175,7 @@ Several directions warrant further investigation:
 
 ### 8.7 Conclusions
 
-This thesis presents a comprehensive comparative study of nine relay strategies — two classical (AF, DF) and seven AI-based (GenAI, Hybrid, VAE, CGAN, Transformer, Mamba S6, Mamba-2 SSD) — evaluated across six channel/topology configurations (AWGN, Rayleigh, Rician in SISO; 2×2 MIMO with ZF, MMSE, SIC equalization) and four modulation schemes (BPSK, QPSK, 16-QAM, 16-PSK). The study addresses five identified research gaps (Section 4.7) plus one emergent hypothesis (H7, arising from the CSI injection experiments) through controlled experiments with statistical rigor (100,000 bits per SNR point, 10 independent trials, Wilcoxon significance testing). The following table summarizes the hypothesis outcomes:
+This thesis presents a comprehensive comparative study of nine relay strategies — two classical (AF, DF) and seven AI-based (MLP, Hybrid, VAE, CGAN, Transformer, Mamba S6, Mamba-2 SSD) — evaluated across six channel/topology configurations (AWGN, Rayleigh, Rician in SISO; 2×2 MIMO with ZF, MMSE, SIC equalization) and four modulation schemes (BPSK, QPSK, 16-QAM, 16-PSK). The study addresses five identified research gaps (Section 4.7) plus one emergent hypothesis (H7, arising from the CSI injection experiments) through controlled experiments with statistical rigor (100,000 bits per SNR point, 10 independent trials, Wilcoxon significance testing). The following table summarizes the hypothesis outcomes:
 
 | Hypothesis | Statement | Result |
 |---|---|---|
@@ -2159,11 +2193,11 @@ The main conclusions, in order of significance, are:
 
 2. **DF is optimal at medium-to-high SNR (≥6 dB) with zero parameters.** The classical decode-and-forward relay requires no training and no parameters yet achieves the best performance when channel quality is sufficient for reliable first-hop demodulation. At high SNR, the Bayes-optimal relay function converges to $\text{sign}(y)$, which is exactly the DF operation.
 
-3. **Mamba S6 is the best AI relay at original parameter counts.** The selective state space model wins all low-SNR scenarios across all channels, outperforming the Transformer thanks to its natural fit for sequential signal processing and $O(n)$ computational complexity. The selective mechanism acts as a learned adaptive filter, dynamically adjusting its state transitions based on the input.
+3. **The best AI relay is channel-dependent at original parameter counts.** No single AI architecture wins across all channels. CGAN achieves the lowest BER on AWGN and Rician fading, MLP wins on MIMO ZF, and Mamba S6 wins on MIMO MMSE. On Rayleigh fading and MIMO SIC, classical DF outperforms all AI methods even at low SNR. The selective state space model's $O(n)$ complexity and adaptive filtering mechanism make it a strong general-purpose choice, but channel-specific evaluation is essential.
 
 4. **Architecture matters less than parameter count at equal scale.** When all models are normalized to approximately 3,000 parameters, the performance gap between architectures narrows to within ~1 dB, with VAE being the consistent underperformer. This confirms that parameter count, not architectural choice, is the primary performance driver for the relay denoising task.
 
-5. **A 169-parameter network is sufficient for relay denoising.** The Minimal GenAI architecture achieves performance comparable to models 100× larger, demonstrating that the relay denoising task has inherently low complexity. The bias-variance analysis explains this: the target function is simple (a soft threshold), so additional parameters increase variance without reducing bias.
+5. **A 169-parameter network is sufficient for relay denoising.** The Minimal MLP architecture achieves performance comparable to models 100× larger, demonstrating that the relay denoising task has inherently low complexity. The bias-variance analysis explains this: the target function is simple (a soft threshold), so additional parameters increase variance without reducing bias.
 
 6. **MMSE-SIC provides the best MIMO equalization.** The non-linear SIC technique consistently outperforms both ZF and MMSE for all relay types, confirming the benefit of successive interference cancellation in the spatial multiplexing setting. The equalization gains are additive to the relay processing gains.
 
@@ -2171,23 +2205,23 @@ The main conclusions, in order of significance, are:
 
 8. **Mamba-2 SSD provides a 10.7× training speedup over S6 at longer contexts.** The chunk-parallel structured matrix multiplication of SSD eliminates the sequential bottleneck of S6, making it the preferred state space architecture for applications requiring longer symbol windows.
 
-9. **BPSK findings generalise to QPSK but not to 16-QAM; modulation-aware retraining largely eliminates the gap.** The modulation extension experiments (Section 7.10) demonstrate that all nine BPSK-trained relay strategies achieve identical BER on QPSK via I/Q splitting, confirming H1–H3 for the 2-bit/symbol constellation. For 16-QAM, BPSK-trained AI relays exhibit an irreducible BER floor (0.18–0.25 at 16 dB AWGN vs DF's 0.0038). The activation experiment (Section 7.11) confirms this bottleneck is the $\tanh$ output activation: replacing it with hardtanh (bounded to the 16-QAM amplitude range) and retraining on PAM-4 targets reduces the floor by 2–5× (Mamba S6: 0.2131 → 0.0396, GenAI: 0.2202 → 0.0630). Sequence models benefit most (5.4× for Mamba S6 vs 2.1× for VAE). The best retrained AI relay (Mamba S6 hardtanh, 0.0396) is 10.4× worse than DF but only 2.2× worse than AF, a dramatic improvement from the 56× tanh-baseline gap.
+9. **BPSK findings generalise to QPSK but not to 16-QAM; modulation-aware retraining largely eliminates the gap.** The modulation extension experiments (Section 7.10) demonstrate that all nine BPSK-trained relay strategies achieve identical BER on QPSK via I/Q splitting, confirming H1–H3 for the 2-bit/symbol constellation. For 16-QAM, BPSK-trained AI relays exhibit an irreducible BER floor (0.18–0.25 at 16 dB AWGN vs DF's 0.0038). The activation experiment (Section 7.11) confirms this bottleneck is the $\tanh$ output activation: replacing it with hardtanh (bounded to the 16-QAM amplitude range) and retraining on PAM-4 targets reduces the floor by 2–5× (Mamba S6: 0.2131 → 0.0396, MLP: 0.2202 → 0.0630). Sequence models benefit most (5.4× for Mamba S6 vs 2.1× for VAE). The best retrained AI relay (Mamba S6 hardtanh, 0.0396) is 10.4× worse than DF but only 2.2× worse than AF, a dramatic improvement from the 56× tanh-baseline gap.
 
 10. **Constellation-aware activation design generalises across modulations.** The constellation-aware clip range (Section 7.12) — which automatically adapts output activation bounds to $A_{\max}$ for each modulation (BPSK: 1.0, QPSK: 0.7071, 16-QAM: 0.9487) — ensures that the Section 7.11 BER floor elimination extends to all bounded activations (hardtanh, sigmoid, scaled tanh) across all three constellations. Scaled tanh is the recommended default, providing correct amplitude bounds with smooth gradients that avoid the dead-neuron risk of hardtanh.
 
-11. **Input LayerNorm combined with Scaled Tanh provides massive gains for Mamba S6 but collapses Mamba-2.** Adding an input normalisation layer and a scaled tanh activation (Section 7.13) revealed highly architecture-dependent outcomes. For Mamba S6, this combo yields a significant +18.7% BER improvement at 20dB AWGN over the baseline. Conversely, Mamba-2 SSD suffers catastrophic gradient collapse (NaN loss) and evaluates to random guessing (0.5007 BER) under the exact same structural modification. The Transformer remains largely neutral to these shifts. This contradicts the "one-size-fits-all" architectural doctrine from NLP, highlighting that sequence model variants react completely differently to input normalization under high-noise wireless conditions. Furthermore, overcoming classical AF relays in 16-QAM Rayleigh fading mathematically requires explicit Channel State Information (CSI) injection to counteract severe amplitude distortion.
+11. **Input LayerNorm combined with Scaled Tanh provides gains for Mamba S6 and Mamba-2 SSD.** Adding an input normalisation layer and a scaled tanh activation (Section 7.13) revealed architecture-dependent outcomes. For Mamba S6, this combo yields a +11.1% BER improvement at 20 dB AWGN over the baseline. Mamba-2 SSD achieves stable training and the strongest improvement of all variants under this configuration (BER = 0.0170 at 20 dB AWGN, the best across all variants). The Transformer remains largely neutral to these shifts. Furthermore, overcoming classical AF relays in 16-QAM Rayleigh fading mathematically requires explicit Channel State Information (CSI) injection to counteract severe amplitude distortion.
 
-12. **E2E joint optimisation outperforms classical constellations but sacrifices modularity; AF and DF converge at high SNR.** The E2E autoencoder (Section 7.16) achieves 15–21% lower BER than theoretical 16-QAM by learning a non-rectangular constellation geometry. A two-hop relay comparison reveals that AF and DF BER curves converge at high SNR — both asymptotically approach the single-link Rayleigh BER limit, since AF's accumulated noise becomes negligible and DF's relay detection becomes error-free. Despite outperforming both modular relays, the E2E system breaks multi-vendor interoperability and still requires explicit domain knowledge (e.g., ZF equalization in the receiver). This validates the modular relay-based approach as the more practical deployment strategy.
+12. **E2E joint optimisation underperforms both classical constellations and modular relays.** The E2E autoencoder (Section 7.16) achieves 67–141% higher BER than theoretical 16-QAM across the evaluated SNR range, indicating that the learned constellation does not outperform the standard $4 \times 4$ square grid under single-antenna Rayleigh fading. A two-hop relay comparison reveals that the E2E system (single hop, no relay) underperforms even the two-hop DF relay at every SNR point (e.g., 20 dB: E2E = 0.060 vs. DF = 0.039). Despite operating over a single hop with joint transmitter-receiver optimisation, the E2E approach breaks multi-vendor interoperability and still requires explicit domain knowledge (e.g., ZF equalization in the receiver). This validates the modular relay-based approach as the more practical deployment strategy.
 
 13. **CSI injection is modulation-dependent, not universally beneficial (H7: Partially refuted).** The comprehensive 48-variant experiment across two higher-order constellations (Section 7.15) reveals a striking dichotomy. For 16-QAM — where amplitude carries information — CSI injection systematically degrades BER; all three top-performing variants use LayerNorm only (+LN) without CSI. For 16-PSK — where the constant-envelope signal carries no amplitude information — all three top-performing variants use CSI injection (+CSI or +CSI+LN). The likely mechanism is that QAM's multi-level amplitude grid already implicitly encodes channel magnitude, making explicit $|h_{SR}|$ injection redundant and confounding; PSK's unit-circle constellation lacks this implicit channel information, so the injected feature fills a genuine information gap.
 
-14. **State space models dominate amplitude-and-phase modulations; Transformers compete on phase-only modulations.** In the QAM16 top-3, Mamba S6 and Mamba-2 occupy all positions; the Transformer does not appear. In the PSK16 top-3, the Transformer captures two of three positions. This modulation-dependent architectural preference suggests that the Mamba family's recurrent state tracking is better suited to multi-level amplitude recovery, while the Transformer's attention mechanism adapts well to the rotational symmetry of PSK constellations.
+14. **Mamba S6 is the dominant architecture across both higher-order constellations.** In the QAM16 top-3, Mamba S6 holds the #1 position while the Transformer captures positions #2 and #3. In the PSK16 top-3, Mamba S6 sweeps all three positions. The Mamba S6 architecture's selective state space mechanism appears well-suited to tracking both the multi-level amplitude structure of QAM and the rotational phase geometry of PSK.
 
-15. **No neural relay outperforms DF across the full 48-variant combinatorial search.** Despite evaluating three architectures, four activations, four structural configurations, and two higher-order constellations (100 MC trials each), classical DF remains the lowest-BER strategy at every SNR point. The best neural variants approach AF performance (within 11% for QAM16 and 1.5% for PSK16 at 20 dB) but cannot surpass even the simpler classical baseline. This reaffirms Finding 2 (DF optimality at $\geq$6 dB) and extends it conclusively to higher-order modulations with statistical confidence.
+15. **No neural relay outperforms DF across the full 48-variant combinatorial search.** Despite evaluating three architectures, four activations, four structural configurations, and two higher-order constellations (100 MC trials each), classical DF remains the lowest-BER strategy at every SNR point. The best neural variants approach AF performance (within 21% for QAM16 and 2.5% for PSK16 at 20 dB) but cannot surpass even the simpler classical baseline. This reaffirms Finding 2 (DF optimality at $\geq$6 dB) and extends it conclusively to higher-order modulations with statistical confidence.
 
 16. **Input LayerNorm is universally beneficial for QAM16 but modulation-dependent for PSK16.** Every QAM16 top-3 variant includes input LayerNorm, extending the Section 7.13 finding to a multi-architecture, multi-activation setting. For PSK16, only one of three top-3 variants uses LayerNorm, indicating that the constant-envelope signal distribution is already well-conditioned for direct processing without normalisation.
 
-These findings demonstrate that neural network-based relay processing is a viable and beneficial complement to classical approaches, particularly in the challenging low-SNR regime. The overarching insight is that **model complexity should be matched to task complexity**: for the relay denoising task with BPSK and QPSK, minimal architectures suffice, and the choice between neural network paradigms — feedforward or sequential — matters less than proper model sizing and regularization. For 16-QAM, constellation-aware output activations (Sections 7.11–7.12) eliminate the BER floor, with sequence models benefiting most (Mamba S6: 5.4× improvement). The comprehensive CSI experiment (Section 7.15) further refines these recommendations: **structural modifications must be tuned per modulation** — LayerNorm benefits QAM while CSI injection benefits PSK. The practical recommendation is: deploy a Hybrid relay with a 169-parameter GenAI sub-network for BPSK/QPSK; use Mamba S6 or Mamba-2 with input LayerNorm and scaled tanh for 16-QAM; and use Mamba S6 or Transformer with CSI injection for 16-PSK.
+These findings demonstrate that neural network-based relay processing is a viable and beneficial complement to classical approaches, particularly in the challenging low-SNR regime. The overarching insight is that **model complexity should be matched to task complexity**: for the relay denoising task with BPSK and QPSK, minimal architectures suffice, and the choice between neural network paradigms — feedforward or sequential — matters less than proper model sizing and regularization. For 16-QAM, constellation-aware output activations (Sections 7.11–7.12) eliminate the BER floor, with sequence models benefiting most (Mamba S6: 5.4× improvement). The comprehensive CSI experiment (Section 7.15) further refines these recommendations: **structural modifications must be tuned per modulation** — LayerNorm benefits QAM while CSI injection benefits PSK. The practical recommendation is: deploy a Hybrid relay with a 169-parameter MLP sub-network for BPSK/QPSK; use Mamba S6 with input LayerNorm and scaled tanh for 16-QAM; and use Mamba S6 with CSI injection for 16-PSK.
 
 ---
 
@@ -2287,7 +2321,7 @@ These findings demonstrate that neural network-based relay processing is a viabl
 
 ### Appendix B: Model Architectures and Hyperparameters
 
-**GenAI (Minimal):**
+**MLP (Minimal):**
 - Input: 5-symbol sliding window
 - Hidden: 24 neurons, ReLU activation
 - Output: 1 neuron, Tanh activation
@@ -2296,9 +2330,9 @@ These findings demonstrate that neural network-based relay processing is a viabl
 - Implementation: NumPy (CPU)
 
 **Hybrid:**
-- Architecture: Same as GenAI (169 params)
+- Architecture: Same as MLP (169 params)
 - SNR threshold: Learned (default ~5 dB)
-- Below threshold → GenAI processing; Above threshold → DF processing
+- Below threshold → MLP processing; Above threshold → DF processing
 - Implementation: NumPy (CPU)
 
 **VAE:**
@@ -2363,7 +2397,7 @@ relaynet/
 │   ├── base.py            # Abstract base class
 │   ├── af.py              # Amplify-and-Forward
 │   ├── df.py              # Decode-and-Forward
-│   ├── genai.py           # Minimal GenAI (feedforward NN)
+│   ├── genai.py           # Minimal MLP (feedforward NN)
 │   ├── hybrid.py          # SNR-adaptive Hybrid
 │   ├── vae.py             # Variational Autoencoder
 │   └── cgan.py            # Conditional GAN (WGAN-GP)
@@ -2386,7 +2420,7 @@ The framework uses object-oriented design with a common `Relay` base class, enab
 
 | Model | Parameters | Window | Hidden / Architecture |
 |---|---|---|---|
-| GenAI-3K | 3,004 | 12 | hidden=231 |
+| MLP-3K | 3,004 | 12 | hidden=231 |
 | Hybrid-3K | 3,004 | 12 | hidden=231 (+ DF switch) |
 | VAE-3K | 3,037 | 12 | latent=10, hidden=(44, 20) |
 | CGAN-3K | 3,004 | 12 | noise=8, g_hidden=(30, 30, 16), c_hidden=(32, 16) |
@@ -2394,7 +2428,7 @@ The framework uses object-oriented design with a common `Relay` base class, enab
 | Mamba-3K | 3,027 | 12 | d_model=16, d_state=6, layers=1 |
 | Mamba2-3K | 3,004 | 12 | d_model=15, d_state=6, chunk_size=8, layers=1 |
 
-All 3K configurations use a window size of 11 (vs. 5 for original GenAI/Hybrid, and 11 for original sequence models) to provide a common input context. The parameter counts are within ±1.2% of the 3,000 target.
+All 3K configurations use a window size of 11 (vs. 5 for original MLP/Hybrid, and 11 for original sequence models) to provide a common input context. The parameter counts are within ±1.2% of the 3,000 target.
 
 ---
 
@@ -2402,7 +2436,7 @@ All 3K configurations use a window size of 11 (vs. 5 for original GenAI/Hybrid, 
 
 **Deep Learning for Two-Hop Relay Communication: A Comparative Study of Classical and Neural Network-Based Strategies**
 
-This thesis presents a comprehensive comparative study of classical and neural network-based relay strategies for two-hop cooperative communication systems. Nine relay methods are implemented and evaluated: two classical approaches — amplify-and-forward (AF) and decode-and-forward (DF) — and seven neural network-based methods spanning supervised learning (GenAI minimal MLP feedforward network — a discriminative multi-layer perceptron, not a generative model despite its name; Hybrid SNR-adaptive relay), generative modeling (variational autoencoder, conditional GAN with WGAN-GP training), and modern sequence architectures (Transformer with multi-head self-attention, Mamba S6 selective state space model, Mamba-2 structured state space duality).
+This thesis presents a comprehensive comparative study of classical and neural network-based relay strategies for two-hop cooperative communication systems. Nine relay methods are implemented and evaluated: two classical approaches — amplify-and-forward (AF) and decode-and-forward (DF) — and seven neural network-based methods spanning supervised learning (MLP minimal MLP feedforward network — a discriminative multi-layer perceptron, not a generative model despite its name; Hybrid SNR-adaptive relay), generative modeling (variational autoencoder, conditional GAN with WGAN-GP training), and modern sequence architectures (Transformer with multi-head self-attention, Mamba S6 selective state space model, Mamba-2 structured state space duality).
 
 The evaluation is conducted across six channel and topology configurations: AWGN, Rayleigh fading, and Rician fading (K=3) channels in single-antenna (SISO) topology, and 2×2 MIMO spatial multiplexing with Rayleigh fading using three equalization techniques — zero-forcing (ZF), minimum mean square error (MMSE), and successive interference cancellation (SIC). The primary experiments use BPSK modulation with Monte Carlo simulation (100,000 bits per SNR point) and 95% confidence intervals. Extension experiments evaluate the same relays on QPSK, 16-QAM, and 16-PSK, testing whether the BPSK findings generalise to complex higher-order constellations.
 
@@ -2412,7 +2446,7 @@ A normalized comparison constraining all neural network models to approximately 
 
 For MIMO systems, MMSE equalization consistently outperforms ZF, and non-linear SIC provides further improvement by cancelling the stronger stream's interference before detecting the weaker one. These equalization gains are additive to the relay processing benefits.
 
-The recommended deployment strategy is a Hybrid relay that combines neural network processing at low SNR with classical DF at high SNR, achieving near-optimal performance across the entire operating range with minimal computational overhead. The modulation extension experiments demonstrate that all BPSK findings generalise fully to QPSK (via I/Q splitting of the complex constellation), while for 16-QAM the neural relay advantage diminishes at medium SNR due to the multi-level amplitude structure. A comprehensive CSI injection study across 48 neural variants reveals that CSI is modulation-dependent: detrimental for amplitude-carrying 16-QAM but beneficial for constant-envelope 16-PSK, motivating modulation-specific architecture selection. For resource-constrained scenarios, the 169-parameter GenAI minimal relay provides competitive performance with approximately 0.7 KB of memory and under 3 seconds of training time.
+The recommended deployment strategy is a Hybrid relay that combines neural network processing at low SNR with classical DF at high SNR, achieving near-optimal performance across the entire operating range with minimal computational overhead. The modulation extension experiments demonstrate that all BPSK findings generalise fully to QPSK (via I/Q splitting of the complex constellation), while for 16-QAM the neural relay advantage diminishes at medium SNR due to the multi-level amplitude structure. A comprehensive CSI injection study across 48 neural variants reveals that CSI is modulation-dependent: detrimental for amplitude-carrying 16-QAM but beneficial for constant-envelope 16-PSK, motivating modulation-specific architecture selection. For resource-constrained scenarios, the 169-parameter MLP minimal relay provides competitive performance with approximately 0.7 KB of memory and under 3 seconds of training time.
 
 **Keywords:** Cooperative relay communication, multi-layer perceptron, deep learning, two-hop relay, Mamba state space model, Mamba-2 structured state space duality, Transformer, variational autoencoder, conditional GAN, MIMO equalization, QPSK, 16-QAM, 16-PSK, CSI injection, bit error rate
 

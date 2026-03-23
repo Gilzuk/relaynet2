@@ -2,7 +2,7 @@
 
 Wraps a pre-trained E2E transmitter/receiver pair as a :class:`Relay`
 so it can be plugged into the ``relaynet`` simulation pipeline alongside
-AF, DF, GenAI, VAE, CGAN, Transformer, and Mamba relays.
+AF, DF, MLP, VAE, CGAN, Transformer, and Mamba relays.
 
 The relay processes received signals by:
 1. Quantising each I/Q sample to the nearest learned constellation point

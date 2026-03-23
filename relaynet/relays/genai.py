@@ -1,4 +1,4 @@
-"""Minimal GenAI relay (169-parameter neural network, architecture 5→24→1)."""
+"""Minimal MLP relay (169-parameter neural network, architecture 5→24→1)."""
 
 import numpy as np
 
@@ -72,7 +72,7 @@ def _build_torch_tinynn(input_size, hidden_size, device, output_activation="tanh
 
 
 class MinimalGenAIRelay(Relay):
-    """Minimal GenAI relay using a tiny (169-parameter) neural network.
+    """Minimal MLP (dual-layer perceptron) relay with 169 parameters.
 
     Default architecture: window_size=5, hidden=24, output=1  → 5*24+24+24*1+1 = 169 params.
     Uses only NumPy — no external ML framework dependency.

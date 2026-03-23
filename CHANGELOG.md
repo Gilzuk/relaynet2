@@ -464,7 +464,7 @@ def process(self, received_signal):
     raise NotImplementedError("Subclasses must implement process()")
 ```
 
-**Why Abstract**: Enables easy addition of new relay types (DF, GenAI, etc.)
+**Why Abstract**: Enables easy addition of new relay types (DF, MLP, etc.)
 
 #### Added Class: `AmplifyAndForwardRelay`
 
@@ -514,7 +514,7 @@ def receive(self, received_signal):
 **Why Base Relay Class**:
 - Defines common interface for all relay strategies
 - Enables polymorphism (can swap relay types easily)
-- Prepares for GenAI relay implementation in Phase 2
+- Prepares for MLP relay implementation in Phase 2
 
 **Why Power Normalization in AF Relay**:
 - Standard practice in relay communications
@@ -528,7 +528,7 @@ def receive(self, received_signal):
 - Checkpoint 04: Can now simulate complete two-hop transmission
 - Checkpoint 04: Source → Channel → Relay → Channel → Destination
 - Checkpoint 05: Performance evaluation of AF relay
-- Phase 2: Easy replacement of AF relay with GenAI relay
+- Phase 2: Easy replacement of AF relay with MLP relay
 
 **Integration Points**:
 - Source uses `bpsk_modulate()` from CP-02
@@ -618,7 +618,7 @@ def receive(self, received_signal):
 **Future Extensions**:
 - Decode-and-Forward (DF) relay
 - Compress-and-Forward (CF) relay
-- GenAI-based relay (Phase 2)
+- MLP-based relay (Phase 2)
 - Multi-antenna relay (MIMO)
 - Cooperative relay strategies
 
@@ -841,7 +841,7 @@ git checkout checkpoint-XX
 - Automated testing reports
 
 ### Phase 2 Considerations
-- How to track GenAI model changes
+- How to track MLP model changes
 - Performance comparison logging
 - Hyperparameter tuning history
 

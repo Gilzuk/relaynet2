@@ -16,7 +16,7 @@ Key design choices
   approximation).
 - Multi-trial BER evaluation with 95 % confidence intervals.
 - Constellation quality metrics: d_min, PAPR, centroid.
-- Comparative two-hop relay benchmark against AF / DF / GenAI.
+- Comparative two-hop relay benchmark against AF / DF / MLP.
 
 Usage
 ─────
@@ -662,7 +662,7 @@ def plot_ber_with_ci(snr_values, mean_ber, ber_trials, *,
 
 def run_relay_comparison(results_dir, snr_range, num_bits=5000,
                          num_trials=5, seed=42):
-    """Benchmark E2E relay against AF, DF, and GenAI via two-hop simulation.
+    """Benchmark E2E relay against AF, DF, and MLP via two-hop simulation.
 
     Uses the project's existing ``run_monte_carlo`` pipeline so results
     are directly comparable with the master BER chart.

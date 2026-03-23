@@ -40,8 +40,8 @@ This project implements and compares **8 relay strategies** (2 classical + 6 AI-
 |--------|------|-------------|-----------|
 | AF | Classical | Amplify-and-Forward | 0 |
 | **DF** | Classical | Decode-and-Forward | 0 |
-| **GenAI (Minimal)** | Supervised | Feedforward NN | 169 |
-| **Hybrid** | SNR-Adaptive | GenAI + DF switching | 169 |
+| **MLP (Minimal)** | Supervised | Feedforward NN | 169 |
+| **Hybrid** | SNR-Adaptive | MLP + DF switching | 169 |
 | **VAE** | Generative | Variational Autoencoder | 1,777 |
 | **CGAN** | Adversarial | Conditional GAN (WGAN-GP) | 2,946 |
 | **Transformer** | Attention | Multi-head Self-Attention | 17,697 |
@@ -147,8 +147,8 @@ SIC outperforms linear MMSE because the second stream sees no inter-stream inter
 
 ### AI-Based Relays
 
-- **GenAI (Minimal):** A compact 2-layer feedforward neural network (window_size=5, hidden=24). Uses a sliding window to process each bit with its neighbors. Only 169 parameters.
-- **Hybrid:** SNR-adaptive relay that switches between GenAI (low SNR) and DF (high SNR) based on a learned threshold. Combines the best of both worlds.
+- **MLP (Minimal):** A compact 2-layer feedforward neural network (window_size=5, hidden=24). Uses a sliding window to process each bit with its neighbors. Only 169 parameters.
+- **Hybrid:** SNR-adaptive relay that switches between MLP (low SNR) and DF (high SNR) based on a learned threshold. Combines the best of both worlds.
 - **VAE (Variational Autoencoder):** Probabilistic generative model that learns a latent representation of the clean signal. Encoder maps to a latent space; decoder reconstructs the signal.
 - **CGAN (Conditional GAN):** Wasserstein GAN with gradient penalty. The generator learns to denoise conditioned on the noisy input; the critic provides adversarial training signal.
 - **Transformer:** Multi-head self-attention over a sliding window of symbols. Captures global dependencies with O(n²) complexity. Architecture: d_model=32, heads=4, layers=2.
@@ -170,7 +170,7 @@ SIC outperforms linear MMSE because the second stream sees no inter-stream inter
     Topology:  SISO (1×1)  │  2×2 MIMO (spatial multiplexing)
     Channels:  AWGN  │  Rayleigh  │  Rician K=3
     Equalizers (MIMO): ZF  │  MMSE  │  SIC
-    Relays:    AF │ DF │ GenAI │ Hybrid │ VAE │ CGAN │ Transformer │ Mamba S6
+    Relays:    AF │ DF │ MLP │ Hybrid │ VAE │ CGAN │ Transformer │ Mamba S6
 ```
 
 Each relay strategy is evaluated across all 6 configurations (3 SISO channels + 3 MIMO equalization methods) using Monte Carlo simulation with 95% confidence intervals (10 trials × 10,000 bits per SNR point).
@@ -181,7 +181,7 @@ Each relay strategy is evaluated across all 6 configurations (3 SISO channels + 
 
 ### Original Models (varying parameter counts)
 
-1. **Mamba S6 is the best AI method** — wins all low-SNR scenarios across all channels
+1. **The best AI relay is channel-dependent** — CGAN wins AWGN/Rician, MLP wins MIMO ZF, Mamba S6 wins MIMO MMSE; DF wins Rayleigh/SIC even at low SNR
 2. **State space models beat attention** for signal processing (O(n) vs O(n²))
 3. **DF dominates at medium/high SNR** (≥6 dB) — no training required
 4. **Hybrid relay** provides the best practical trade-off: AI at low SNR, DF at high SNR
@@ -191,13 +191,12 @@ Each relay strategy is evaluated across all 6 configurations (3 SISO channels + 
 
 ### Normalized 3K Comparison (equal parameter budgets)
 
-When all 6 AI models are constrained to ≈3,000 parameters:
+When all 7 AI models are constrained to ≈3,000 parameters:
 
-1. **Mamba S6 and Transformer converge in performance** — the architecture gap narrows at small scale
-2. **GenAI/Hybrid remain competitive** — simple feedforward networks match sequence models at equal param budgets
-3. **VAE consistently underperforms** — probabilistic overhead hurts at small scale
+1. **All architectures converge in performance** — the architecture gap narrows at small scale; DF remains the strongest baseline on most channels
+2. **MLP/Hybrid remain competitive** — simple feedforward networks match sequence models at equal param budgets
+3. **VAE consistently underperforms** — probabilistic overhead hurts at all scales
 4. **Architecture matters less than expected** — at 3K params, all models are within ~1 dB of each other
-5. **CGAN matches Transformer/Mamba** on most channels despite fundamentally different training
 
 ---
 
@@ -205,16 +204,16 @@ When all 6 AI models are constrained to ≈3,000 parameters:
 
 ### AWGN Channel (0–20 dB)
 
-| SNR (dB) | AF | DF | GenAI | Hybrid | VAE | CGAN | Transformer | Mamba S6 |
-|----------|----|----|-------|--------|-----|------|-------------|----------|
-| 0 | 0.480 | 0.265 | 0.259 | 0.259 | 0.261 | 0.265 | 0.259 | **0.255** |
-| 2 | 0.420 | 0.186 | 0.180 | 0.180 | 0.181 | 0.185 | 0.181 | **0.176** |
-| 4 | 0.360 | 0.104 | 0.103 | 0.103 | 0.104 | 0.105 | 0.104 | **0.102** |
-| 6 | 0.290 | **0.045** | 0.046 | 0.046 | 0.046 | 0.046 | 0.046 | 0.046 |
-| 8 | 0.210 | **0.012** | 0.013 | 0.013 | 0.013 | 0.012 | 0.013 | 0.014 |
-| 10 | 0.140 | **0.002** | 0.002 | 0.002 | 0.002 | 0.002 | 0.002 | 0.003 |
+| SNR (dB) | AF | DF | MLP (169p) | Hybrid | VAE | CGAN | Transformer | Mamba S6 | Mamba-2 SSD |
+|----------|----|----|-------|--------|-----|------|-------------|----------|-------------|
+| 0 | 0.291 | 0.268 | 0.264 | 0.262 | 0.376 | **0.261** | 0.267 | 0.269 | 0.270 |
+| 4 | 0.154 | 0.112 | 0.112 | 0.113 | 0.330 | **0.111** | 0.114 | 0.111 | **0.111** |
+| 8 | 0.044 | **0.010** | 0.015 | **0.010** | 0.291 | 0.013 | 0.014 | **0.010** | 0.012 |
+| 12 | 0.0027 | **1.67e-04** | **1.67e-04** | **1.67e-04** | 0.269 | 3.33e-04 | 3.33e-04 | **1.67e-04** | **1.67e-04** |
+| 16 | **0** | **0** | **0** | **0** | 0.258 | **0** | **0** | **0** | **0** |
+| 20 | **0** | **0** | **0** | **0** | 0.250 | **0** | **0** | **0** | **0** |
 
-> At 6+ dB, DF (0 parameters) matches or beats all AI methods. AI excels only at low SNR (0–4 dB).
+> At 8+ dB, DF (0 parameters) matches or beats all AI methods. CGAN achieves the best AI performance at low SNR (0–4 dB) on AWGN.
 
 ### Results Plots
 
@@ -238,7 +237,7 @@ To enable a fair **apples-to-apples** comparison, all 6 AI models were scaled to
 
 | Model | Parameters | Configuration |
 |-------|-----------|---------------|
-| GenAI-3K | 3,004 | window=11, hidden=231 |
+| MLP-3K | 3,004 | window=11, hidden=231 |
 | Hybrid-3K | 3,004 | window=11, hidden=231 (+ DF switching) |
 | VAE-3K | 3,037 | window=11, latent=10, hidden=(44, 20) |
 | CGAN-3K | 3,004 | window=11, noise=8, g_hidden=(30, 30, 16), c_hidden=(32, 16) |
@@ -249,7 +248,7 @@ To enable a fair **apples-to-apples** comparison, all 6 AI models were scaled to
 
 #### AWGN
 
-| SNR (dB) | GenAI-3K | Hybrid-3K | VAE-3K | CGAN-3K | Transformer-3K | Mamba-3K |
+| SNR (dB) | MLP-3K | Hybrid-3K | VAE-3K | CGAN-3K | Transformer-3K | Mamba-3K |
 |----------|----------|-----------|--------|---------|----------------|----------|
 | 0 | 2.65e-1 | 2.65e-1 | 2.67e-1 | 2.69e-1 | **2.61e-1** | 2.60e-1 |
 | 10 | 2.68e-3 | 1.44e-3 | 9.48e-3 | 2.00e-3 | 1.88e-3 | **1.84e-3** |
@@ -257,7 +256,7 @@ To enable a fair **apples-to-apples** comparison, all 6 AI models were scaled to
 
 #### Rayleigh Fading
 
-| SNR (dB) | GenAI-3K | Hybrid-3K | VAE-3K | CGAN-3K | Transformer-3K | Mamba-3K |
+| SNR (dB) | MLP-3K | Hybrid-3K | VAE-3K | CGAN-3K | Transformer-3K | Mamba-3K |
 |----------|----------|-----------|--------|---------|----------------|----------|
 | 0 | 2.59e-1 | 2.58e-1 | 2.70e-1 | 2.54e-1 | 2.50e-1 | **2.49e-1** |
 | 10 | 4.87e-2 | 4.84e-2 | 5.60e-2 | 4.74e-2 | 4.65e-2 | **4.64e-2** |
@@ -265,7 +264,7 @@ To enable a fair **apples-to-apples** comparison, all 6 AI models were scaled to
 
 #### Rician (K=3)
 
-| SNR (dB) | GenAI-3K | Hybrid-3K | VAE-3K | CGAN-3K | Transformer-3K | Mamba-3K |
+| SNR (dB) | MLP-3K | Hybrid-3K | VAE-3K | CGAN-3K | Transformer-3K | Mamba-3K |
 |----------|----------|-----------|--------|---------|----------------|----------|
 | 0 | 2.05e-1 | 2.05e-1 | 2.18e-1 | 2.05e-1 | 2.00e-1 | **2.00e-1** |
 | 10 | 1.54e-2 | 1.47e-2 | 1.98e-2 | 1.48e-2 | **1.45e-2** | 1.46e-2 |
@@ -273,7 +272,7 @@ To enable a fair **apples-to-apples** comparison, all 6 AI models were scaled to
 
 #### 2×2 MIMO (Rayleigh) – ZF Equalization
 
-| SNR (dB) | GenAI-3K | Hybrid-3K | VAE-3K | CGAN-3K | Transformer-3K | Mamba-3K |
+| SNR (dB) | MLP-3K | Hybrid-3K | VAE-3K | CGAN-3K | Transformer-3K | Mamba-3K |
 |----------|----------|-----------|--------|---------|----------------|----------|
 | 0 | 2.52e-1 | 2.52e-1 | 2.64e-1 | 2.52e-1 | 2.47e-1 | **2.45e-1** |
 | 10 | 4.82e-2 | 4.80e-2 | 5.55e-2 | 4.67e-2 | 4.64e-2 | **4.64e-2** |
@@ -281,7 +280,7 @@ To enable a fair **apples-to-apples** comparison, all 6 AI models were scaled to
 
 #### 2×2 MIMO (Rayleigh) – MMSE Equalization
 
-| SNR (dB) | GenAI-3K | Hybrid-3K | VAE-3K | CGAN-3K | Transformer-3K | Mamba-3K |
+| SNR (dB) | MLP-3K | Hybrid-3K | VAE-3K | CGAN-3K | Transformer-3K | Mamba-3K |
 |----------|----------|-----------|--------|---------|----------------|----------|
 | 0 | 1.65e-1 | 1.65e-1 | 1.79e-1 | 1.63e-1 | **1.62e-1** | 1.64e-1 |
 | 10 | 2.68e-2 | 2.51e-2 | 3.37e-2 | 2.54e-2 | 2.56e-2 | 2.60e-2 |
@@ -325,7 +324,7 @@ Complexity: O(n²) — quadratic in sequence length
 Original: d_model=32, heads=4, layers=2 → **17,697 params**
 3K: d_model=18, heads=2, layers=1 → **3,007 params**
 
-### GenAI (Minimal Feedforward)
+### MLP (Minimal Feedforward)
 
 ```
 Input:   window of noisy symbols (size 5 or 11)
@@ -364,7 +363,7 @@ Original: g_hidden=(32, 32, 16), c_hidden=(32, 16), noise=8 → **2,946 params**
 ```python
 def process(signal, snr_db):
     if snr_db < threshold:
-        return genai_relay.process(signal)   # AI for low SNR
+        return mlp_relay.process(signal)   # AI for low SNR
     else:
         return df_relay.process(signal)      # Classical for high SNR
 ```
@@ -385,7 +384,7 @@ relaynet2/
 │   ├── relays/
 │   │   ├── af.py                         # Amplify-and-Forward
 │   │   ├── df.py                         # Decode-and-Forward
-│   │   ├── genai.py                      # Minimal GenAI (feedforward NN)
+│   │   ├── genai.py                      # Minimal MLP (feedforward NN)
 │   │   ├── hybrid.py                     # SNR-adaptive Hybrid relay
 │   │   ├── vae.py                        # Variational Autoencoder relay
 │   │   ├── cgan.py                       # Conditional GAN relay (WGAN-GP)
@@ -406,12 +405,12 @@ relaynet2/
 │   ├── checkpoint_05_plotting.py         # BER plotting
 │   ├── checkpoint_06_decode_forward.py   # DF relay
 │   ├── checkpoint_07_comparative_plot.py # AF vs DF comparison
-│   ├── checkpoint_08_genai_relay.py      # GenAI relay
+│   ├── checkpoint_08_genai_relay.py      # MLP relay
 │   ├── checkpoint_09_final_comparison.py # 3-way comparison
 │   ├── checkpoint_10_rl_relay.py         # RL (Q-Learning) relay
-│   ├── checkpoint_11_enhanced_training.py# Enhanced GenAI
-│   ├── checkpoint_12_maximum_training.py # Maximum GenAI
-│   ├── checkpoint_13_minimal_complexity.py # Minimal 169-param GenAI
+│   ├── checkpoint_11_enhanced_training.py# Enhanced MLP
+│   ├── checkpoint_12_maximum_training.py # Maximum MLP
+│   ├── checkpoint_13_minimal_complexity.py # Minimal 169-param MLP
 │   ├── checkpoint_14_complexity_comparison_plot.py
 │   ├── checkpoint_15_vae_relay.py        # VAE relay
 │   ├── checkpoint_16_cgan_pytorch.py     # CGAN relay (PyTorch)
@@ -547,11 +546,11 @@ Tests cover:
 | 05 | Plotting | BER visualization |
 | 06 | DF Relay | Classical baseline |
 | 07 | AF vs DF | DF >> AF |
-| 08 | GenAI Relay | First AI relay |
-| 09 | 3-way Comparison | GenAI beats AF |
+| 08 | MLP Relay | First AI relay |
+| 09 | 3-way Comparison | MLP beats AF |
 | 10 | RL Relay | Q-Learning approach |
-| 11 | Enhanced GenAI | Better training |
-| 12 | Maximum GenAI | Overfitting found |
+| 11 | Enhanced MLP | Better training |
+| 12 | Maximum MLP | Overfitting found |
 | 13 | **Minimal (169p)** | **Best parameter efficiency** |
 | 14 | Complexity Plot | Params vs performance |
 | 15 | VAE Relay | Probabilistic generative model |
@@ -559,8 +558,8 @@ Tests cover:
 | 17 | 4-way Comparison | DF/Minimal/VAE/CGAN |
 | 18 | Transformer | Multi-head attention relay |
 | 19 | Transformer vs DF | Attention-based comparison |
-| 20 | **Mamba S6** | **Best AI method (low SNR)** |
-| 21 | Full Comparison | All 8 methods compared |
+| 20 | **Mamba S6** | **Selective state space relay** |
+| 21 | Full Comparison | All 9 methods compared |
 | 22 | Master BER Charts | Final visualization + **3K normalized comparison** |
 
 ---

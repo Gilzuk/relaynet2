@@ -119,7 +119,7 @@ BASELINE_STYLE = {
 }
 
 RELAY_STYLE = {
-    "GenAI (169p)":   {"color": PALETTE[0],  "marker": "^"},
+    "MLP (169p)":     {"color": PALETTE[0],  "marker": "^"},
     "Hybrid":         {"color": PALETTE[1],  "marker": "D"},
     "VAE":            {"color": PALETTE[2],  "marker": "v"},
     "CGAN (WGAN-GP)": {"color": PALETTE[3],  "marker": "P"},
@@ -197,28 +197,159 @@ def _style_for(name, idx=0):
             "marker": MARKERS[idx % len(MARKERS)], "ls": "-"}
 
 
+def _apply_jitter(ber_arrays):
+    """Apply small multiplicative jitter to overlapping BER curves (rule 5).
+
+    When two curves share the same BER value at a given SNR point,
+    apply ×1.03 / ×0.97 offsets so they remain visually separable.
+    """
+    names = list(ber_arrays.keys())
+    jittered = {n: np.array(b, dtype=float) for n, b in ber_arrays.items()}
+    for i in range(len(names)):
+        for j in range(i + 1, len(names)):
+            a, b = jittered[names[i]], jittered[names[j]]
+            overlap = (a > 0) & (b > 0) & (np.abs(a - b) / np.maximum(a, 1e-15) < 0.005)
+            if np.any(overlap):
+                jittered[names[i]][overlap] *= 1.03
+                jittered[names[j]][overlap] *= 0.97
+    return jittered
+
+
+def _add_congestion_inset(ax, snr, ber_dict, style_infos):
+    """Zoom into the high-SNR region where BER differences matter (rules 2, 15).
+
+    Shows the last ~40 % of the SNR range in a zoomed inset so the reader
+    can distinguish relay performance at the operating points that matter.
+    """
+    ber_arrays = [np.asarray(b, dtype=float) for b in ber_dict.values()]
+    if len(ber_arrays) < 3:
+        return
+    snr = np.asarray(snr)
+    n = len(snr)
+
+    # Take roughly the upper 40 % of SNR points (at least 3)
+    lo_idx = max(0, n - max(3, int(n * 0.4)))
+    hi_idx = n - 1
+    snr_lo, snr_hi = snr[lo_idx], snr[hi_idx]
+
+    # BER limits: envelope of all positive values in that range
+    vals = []
+    for b in ber_arrays:
+        for si in range(lo_idx, hi_idx + 1):
+            if b[si] > 0:
+                vals.append(b[si])
+    if not vals:
+        return  # all zeros in high-SNR region — nothing to zoom
+    ber_lo = min(vals) * 0.3
+    ber_hi = max(vals) * 3.0
+
+    from mpl_toolkits.axes_grid1.inset_locator import inset_axes
+    axins = inset_axes(ax, width="35%", height="35%", loc="center right",
+                       borderpad=2)
+    for name, sinfo in style_infos.items():
+        ber = np.asarray(ber_dict[name], dtype=float)
+        ber_plot = np.where(ber > 0, ber, 1e-10)
+        axins.semilogy(snr, ber_plot, marker=sinfo["marker"],
+                       color=sinfo["color"], linewidth=sinfo.get("lw", 1.3),
+                       markersize=4, linestyle=sinfo.get("ls", "-"),
+                       alpha=sinfo.get("alpha", 0.9))
+    axins.set_xlim(snr_lo - 0.5, snr_hi + 0.5)
+    axins.set_ylim(ber_lo, ber_hi)
+    axins.grid(True, which="both", linestyle="--", alpha=0.2, linewidth=0.3)
+    axins.tick_params(labelsize=8)
+    ax.indicate_inset_zoom(axins, edgecolor="grey", alpha=0.5)
+
+
+def _add_annotations(ax, snr, ber_dict, style_infos):
+    """Auto-annotate key crossover points and congested leaders (rules 4, 16).
+
+    Finds SNR points where the best neural relay overtakes DF (crossover)
+    and labels the winner at the lowest-BER SNR point.
+    """
+    snr = np.asarray(snr)
+    names = list(ber_dict.keys())
+    ber_arrays = {n: np.asarray(b, dtype=float) for n, b in ber_dict.items()}
+
+    # --- Rule 16: annotate crossover where best AI relay beats DF ---
+    if "DF" in ber_arrays:
+        df_ber = ber_arrays["DF"]
+        ai_names = [n for n in names if n not in ("AF", "DF")]
+        for ai in ai_names:
+            ai_ber = ber_arrays[ai]
+            # Find first SNR where AI < DF (crossover)
+            better = (ai_ber > 0) & (df_ber > 0) & (ai_ber < df_ber * 0.95)
+            if not np.any(better):
+                continue
+            cross_idx = int(np.argmax(better))
+            x_cross = snr[cross_idx]
+            y_cross = ai_ber[cross_idx]
+            if y_cross <= 0:
+                continue
+            color = style_infos.get(ai, {}).get("color", "black")
+            ax.annotate(
+                f"{ai} < DF",
+                xy=(x_cross, y_cross),
+                xytext=(x_cross + 1.5, y_cross * 3),
+                fontsize=8, color=color, fontweight="bold",
+                arrowprops=dict(arrowstyle="->", color=color,
+                                lw=0.8, connectionstyle="arc3,rad=0.2"),
+                bbox=dict(boxstyle="round,pad=0.2", fc="white",
+                          ec=color, alpha=0.7, lw=0.5),
+            )
+            break  # only annotate the first AI crossover
+
+    # --- Rule 4: leader lines at lowest-BER point for winner ---
+    ai_names = [n for n in names if n not in ("AF", "DF")]
+    if not ai_names:
+        return
+    last_idx = len(snr) - 1
+    # Find winner at the highest SNR
+    best_name, best_ber = None, 1.0
+    for n in ai_names:
+        b = ber_arrays[n][last_idx]
+        if 0 < b < best_ber:
+            best_name, best_ber = n, b
+    if best_name and best_ber > 0 and best_ber < 0.1:
+        color = style_infos.get(best_name, {}).get("color", "black")
+        ax.annotate(
+            f"Best: {best_name}\nBER={best_ber:.2e}",
+            xy=(snr[last_idx], best_ber),
+            xytext=(snr[last_idx] - 3, best_ber * 8),
+            fontsize=8, color=color,
+            arrowprops=dict(arrowstyle="->", color=color, lw=0.8),
+            bbox=dict(boxstyle="round,pad=0.2", fc="white",
+                      ec=color, alpha=0.7, lw=0.5),
+        )
+
+
 def plot_ber_chart(snr, ber_dict, ci_dict=None, title="", save_path=None,
-                   ylim_bottom=None, extra_styles=None):
+                   ylim_bottom=None, extra_styles=None, show_inset=True,
+                   show_annotations=True):
     """Publication-quality BER vs SNR chart.
 
     Follows CHART_GUIDELINES.md rules 1–16, 22.
     """
     if not _HAS_MPL:
         return
-    fig, ax = plt.subplots(figsize=(8, 5))
+    fig, ax = plt.subplots(figsize=(10, 5.5))
     snr = np.asarray(snr)
 
+    # Apply curve jitter for overlapping values (rule 5)
+    jittered = _apply_jitter(ber_dict)
+
     style_map = extra_styles or {}
+    style_infos = {}
     for idx, (name, ber) in enumerate(ber_dict.items()):
-        ber = np.asarray(ber, dtype=float)
+        ber_j = jittered[name]
         st = style_map.get(name, _style_for(name, idx))
         color = st.get("color", PALETTE[idx % len(PALETTE)])
         marker = st.get("marker", MARKERS[idx % len(MARKERS)])
         ls = st.get("ls", "-")
         lw = st.get("lw", 1.3)
         alpha = st.get("alpha", 0.9)
-        # Curve jitter for overlapping values (rule 5)
-        ber_plot = np.where(ber > 0, ber, 1e-10)
+        style_infos[name] = {"color": color, "marker": marker, "ls": ls,
+                             "lw": lw, "alpha": alpha}
+        ber_plot = np.where(ber_j > 0, ber_j, 1e-10)
         ax.semilogy(snr, ber_plot, marker=marker, color=color,
                      linewidth=lw, markersize=6, label=name,
                      linestyle=ls, alpha=alpha)
@@ -238,8 +369,25 @@ def plot_ber_chart(snr, ber_dict, ci_dict=None, title="", save_path=None,
     ax.set_xlabel("SNR (dB)", fontsize=14)
     ax.set_ylabel("Bit Error Rate (BER)", fontsize=14)
     ax.set_title(title, fontsize=16)
-    ax.legend(fontsize=10, loc="best", framealpha=0.9)
+    # Legend outside plot area (rule 3), readable font size (rule 11)
+    ax.legend(fontsize=12, loc="upper left", bbox_to_anchor=(1.02, 1),
+              borderaxespad=0, framealpha=0.9)
     ax.tick_params(labelsize=12)
+
+    # Annotations: crossover & winner leaders (rules 4, 16)
+    if show_annotations and len(ber_dict) >= 3:
+        try:
+            _add_annotations(ax, snr, ber_dict, style_infos)
+        except Exception:
+            pass
+
+    # Zoomed inset for congested regions (rules 2, 15)
+    if show_inset and len(ber_dict) >= 3:
+        try:
+            _add_congestion_inset(ax, snr, ber_dict, style_infos)
+        except Exception:
+            pass  # inset is optional enhancement
+
     plt.tight_layout()
 
     if save_path:
@@ -272,6 +420,217 @@ def plot_top3_chart(snr, results_dict, title="", save_path=None):
                 ci_dict[name] = (results_dict[name]["ci_lower"],
                                  results_dict[name]["ci_upper"])
     plot_ber_chart(snr, ber_dict, ci_dict, title=title, save_path=save_path)
+
+
+def print_ber_summary_table(snr, results_dict, key_snrs=None, title=""):
+    """Print BER summary table at key SNR points with deltas (rule 18).
+
+    Parameters
+    ----------
+    snr : array-like
+    results_dict : dict
+        ``{name: {"ber_mean": [...]}}`` or ``{name: [...]}``
+    key_snrs : list of float, optional
+        SNR points to tabulate. Defaults to ~25% and ~75% of range.
+    title : str
+    """
+    snr = np.asarray(snr, dtype=float)
+    if key_snrs is None:
+        lo_idx = len(snr) // 4
+        hi_idx = 3 * len(snr) // 4
+        key_snrs = [snr[lo_idx], snr[hi_idx]]
+
+    # Normalise: accept both {name: array} and {name: {"ber_mean": array}}
+    ber_map = {}
+    for n, v in results_dict.items():
+        if isinstance(v, dict):
+            ber_map[n] = np.asarray(v.get("ber_mean", v.get("ber", [])), dtype=float)
+        else:
+            ber_map[n] = np.asarray(v, dtype=float)
+
+    names = list(ber_map.keys())
+    if not names:
+        return
+
+    header = f"{'Relay':<22}" + "".join(f"  {'BER @'+str(int(s))+'dB':>14}" for s in key_snrs)
+    sep = "-" * len(header)
+
+    if title:
+        print(f"\n  {title}")
+    print(f"  {sep}")
+    print(f"  {header}")
+    print(f"  {sep}")
+
+    for name in names:
+        ber = ber_map[name]
+        row = f"  {name:<22}"
+        for s in key_snrs:
+            idx = int(np.argmin(np.abs(snr - s)))
+            val = ber[idx] if idx < len(ber) else float("nan")
+            if val > 0:
+                row += f"  {val:>14.4e}"
+            else:
+                row += f"  {'0':>14}"
+        print(row)
+    print(f"  {sep}")
+
+    # Delta from best AI at each key SNR
+    ai_names = [n for n in names if n not in ("AF", "DF")]
+    if len(ai_names) >= 2:
+        print(f"  {'Δ from best AI':<22}", end="")
+        for s in key_snrs:
+            idx = int(np.argmin(np.abs(snr - s)))
+            ai_vals = [(n, ber_map[n][idx]) for n in ai_names
+                       if idx < len(ber_map[n]) and ber_map[n][idx] > 0]
+            if ai_vals:
+                best = min(ai_vals, key=lambda x: x[1])
+                print(f"  {best[0]:>14}", end="")
+            else:
+                print(f"  {'—':>14}", end="")
+        print()
+
+
+def plot_summary_heatmap(snr, multi_results, title="", save_path=None):
+    """Aggregation heatmap: avg BER across channels per relay (rule 19).
+
+    Parameters
+    ----------
+    snr : array-like
+    multi_results : dict
+        ``{channel_name: {relay_name: {"ber_mean": [...]}}}``
+    title : str
+    save_path : str, optional
+    """
+    if not _HAS_MPL:
+        return
+
+    channels = list(multi_results.keys())
+    # Collect all relay names
+    all_relays = []
+    for ch_res in multi_results.values():
+        for rn in ch_res:
+            if rn not in all_relays:
+                all_relays.append(rn)
+
+    snr = np.asarray(snr)
+    half = len(snr) // 2
+
+    # Build matrix: avg BER over upper-half SNRs for each (relay, channel)
+    matrix = np.full((len(all_relays), len(channels)), np.nan)
+    for ci, ch in enumerate(channels):
+        for ri, rn in enumerate(all_relays):
+            if rn in multi_results[ch]:
+                rd = multi_results[ch][rn]
+                ber = np.asarray(rd["ber_mean"] if isinstance(rd, dict) else rd,
+                                 dtype=float)
+                avg = float(np.mean(ber[half:]))
+                matrix[ri, ci] = avg if avg > 0 else np.nan
+
+    fig, ax = plt.subplots(figsize=(max(8, len(channels) * 1.5),
+                                     max(5, len(all_relays) * 0.6)))
+    # Log-scale colors for BER
+    with np.errstate(divide="ignore", invalid="ignore"):
+        log_matrix = np.log10(np.where(matrix > 0, matrix, np.nan))
+
+    im = ax.imshow(log_matrix, aspect="auto", cmap="RdYlGn_r")
+    ax.set_xticks(range(len(channels)))
+    ax.set_xticklabels(channels, fontsize=11, rotation=30, ha="right")
+    ax.set_yticks(range(len(all_relays)))
+    ax.set_yticklabels(all_relays, fontsize=11)
+    ax.set_title(title or "Avg BER (upper-half SNR) — log₁₀ scale", fontsize=14)
+
+    # Annotate cells with BER values
+    for ri in range(len(all_relays)):
+        for ci in range(len(channels)):
+            val = matrix[ri, ci]
+            if not np.isnan(val):
+                txt = f"{val:.1e}"
+                ax.text(ci, ri, txt, ha="center", va="center", fontsize=8,
+                        color="white" if log_matrix[ri, ci] < -2 else "black")
+
+    cbar = fig.colorbar(im, ax=ax, shrink=0.8, pad=0.02)
+    cbar.set_label("log₁₀(BER)", fontsize=11)
+    plt.tight_layout()
+
+    if save_path:
+        os.makedirs(os.path.dirname(os.path.abspath(save_path)), exist_ok=True)
+        plt.savefig(save_path, dpi=150, bbox_inches="tight")
+        print(f"  Heatmap → {save_path}")
+    plt.close(fig)
+
+
+def plot_achievement_chart(snr, results_dict, title="", save_path=None):
+    """Achievement chart: winner highlighted, others faded (rule 20).
+
+    Ranks relays by average BER over the upper half of the SNR range,
+    highlights the winner in bold color, and fades the rest.
+    """
+    if not _HAS_MPL:
+        return
+
+    snr = np.asarray(snr)
+    half = len(snr) // 2
+    names = list(results_dict.keys())
+    ai_names = [n for n in names if n not in ("AF", "DF")]
+    if not ai_names:
+        return
+
+    # Rank by avg BER over upper-half SNRs
+    ranked = []
+    for n in ai_names:
+        rd = results_dict[n]
+        ber = np.asarray(rd["ber_mean"] if isinstance(rd, dict) else rd,
+                         dtype=float)
+        avg = float(np.mean(ber[half:]))
+        ranked.append((n, avg))
+    ranked.sort(key=lambda x: x[1])
+    winner = ranked[0][0]
+
+    fig, ax = plt.subplots(figsize=(10, 5.5))
+
+    style_infos = {}
+    for idx, name in enumerate(names):
+        rd = results_dict[name]
+        ber = np.asarray(rd["ber_mean"] if isinstance(rd, dict) else rd,
+                         dtype=float)
+        ber_plot = np.where(ber > 0, ber, 1e-10)
+        st = _style_for(name, idx)
+        is_winner = (name == winner)
+        is_baseline = (name in ("AF", "DF"))
+
+        lw = 2.0 if is_winner else (1.0 if is_baseline else 0.7)
+        alpha = 1.0 if is_winner else (0.6 if is_baseline else 0.25)
+        color = st.get("color", PALETTE[idx % len(PALETTE)])
+
+        ax.semilogy(snr, ber_plot,
+                     marker=st.get("marker", MARKERS[idx % len(MARKERS)]),
+                     color=color, linewidth=lw, markersize=6 if is_winner else 4,
+                     label=f"★ {name}" if is_winner else name,
+                     linestyle=st.get("ls", "-"), alpha=alpha)
+
+    # Y-axis
+    all_ber = np.concatenate([
+        np.asarray(
+            rd["ber_mean"] if isinstance(rd, dict) else rd, dtype=float)
+        for rd in results_dict.values()])
+    min_ber = all_ber[all_ber > 0].min() if np.any(all_ber > 0) else 1e-6
+    bottom = 10 ** (np.floor(np.log10(min_ber)) - 1)
+    ax.set_ylim(bottom=max(bottom, 1e-8), top=1)
+
+    ax.grid(True, which="both", linestyle="--", alpha=0.3, linewidth=0.5)
+    ax.set_xlabel("SNR (dB)", fontsize=14)
+    ax.set_ylabel("Bit Error Rate (BER)", fontsize=14)
+    ax.set_title(title or f"Achievement — Winner: {winner}", fontsize=16)
+    ax.legend(fontsize=12, loc="upper left", bbox_to_anchor=(1.02, 1),
+              borderaxespad=0, framealpha=0.9)
+    ax.tick_params(labelsize=12)
+
+    plt.tight_layout()
+    if save_path:
+        os.makedirs(os.path.dirname(os.path.abspath(save_path)), exist_ok=True)
+        plt.savefig(save_path, dpi=150, bbox_inches="tight")
+        print(f"  Achievement → {save_path}")
+    plt.close(fig)
 
 
 # ════════════════════════════════════════════════════════════════════
@@ -322,7 +681,7 @@ def build_base_relays(gpu=False, activation="tanh", clip_range=None,
     relays = {
         "AF": AmplifyAndForwardRelay(),
         "DF": DecodeAndForwardRelay(),
-        "GenAI (169p)": MinimalGenAIRelay(
+        "MLP (169p)": MinimalGenAIRelay(
             window_size=5, hidden_size=24, prefer_gpu=False,
             output_activation=activation, clip_range=clip_range),
         "Hybrid": HybridRelay(
@@ -372,7 +731,7 @@ def train_base_relays(relays, args, modulation="bpsk"):
         t0 = perf_counter()
         kw = {"seed": args.seed}
 
-        if name == "GenAI (169p)":
+        if name == "MLP (169p)":
             relay.train(training_snrs=[5, 10, 15], num_samples=samples,
                         epochs=epochs, **kw)
         elif name == "Hybrid":
@@ -1333,6 +1692,268 @@ EXPERIMENTS = {
 _RELAY_COMPARISON_SECTIONS = {"7.2", "7.3", "7.4", "7.5", "7.6", "7.7"}
 
 
+# ════════════════════════════════════════════════════════════════════
+# Chart regeneration from existing JSON (no re-running experiments)
+# ════════════════════════════════════════════════════════════════════
+
+def _regen_from_json(json_path, out_dir, tag, title_prefix, extra_styles=None):
+    """Regenerate BER chart + top-3 + achievement + summary table from one JSON."""
+    data = load_results_json(json_path)
+    snr = np.array(data["snr_range"])
+    results = data["results"]
+
+    ber_dict = {n: np.array(r["ber_mean"]) for n, r in results.items()}
+    ci_dict = {}
+    for n, r in results.items():
+        if "ci_lower" in r and "ci_upper" in r:
+            ci_dict[n] = (np.array(r["ci_lower"]), np.array(r["ci_upper"]))
+
+    # Main BER chart (rules 1-16)
+    plot_ber_chart(
+        snr, ber_dict, ci_dict if ci_dict else None,
+        title=f"{title_prefix} ({tag})",
+        save_path=os.path.join(out_dir, f"{tag}_ci.png"),
+        extra_styles=extra_styles,
+    )
+
+    # Top-3 chart (rule 22) — only when AF/DF baselines exist
+    if "AF" in results or "DF" in results:
+        results_for_top3 = {}
+        for n, r in results.items():
+            results_for_top3[n] = {"ber_mean": np.array(r["ber_mean"])}
+            if "ci_lower" in r:
+                results_for_top3[n]["ci_lower"] = np.array(r["ci_lower"])
+                results_for_top3[n]["ci_upper"] = np.array(r["ci_upper"])
+        plot_top3_chart(
+            snr, results_for_top3,
+            title=f"Top-3 — {title_prefix}",
+            save_path=os.path.join(out_dir, f"{tag}_top3.png"),
+        )
+
+    # Achievement chart (rule 20)
+    ai_count = sum(1 for n in results if n not in ("AF", "DF"))
+    if ai_count >= 2:
+        plot_achievement_chart(
+            snr, results,
+            title=f"Achievement — {title_prefix}",
+            save_path=os.path.join(out_dir, f"{tag}_achievement.png"),
+        )
+
+    # BER summary table (rule 18)
+    print_ber_summary_table(snr, results, title=f"{title_prefix}")
+
+
+def regenerate_all_charts(args):
+    """Regenerate every chart from existing JSON results (no training)."""
+    results_dir = args.results_dir
+    count = 0
+
+    # ── §7.1 Channel analysis ──
+    j = os.path.join(results_dir, "channel_analysis", "channel_analysis.json")
+    if os.path.exists(j):
+        print("\n── §7.1 Channel Analysis ──")
+        data = load_results_json(j)
+        snr = np.array(data["snr_range"])
+        out = os.path.join(results_dir, "channel_analysis")
+        ber_dict = {n: np.array(r["ber_mean"]) for n, r in data["results"].items()}
+        plot_ber_chart(snr, ber_dict, title="Channel Analysis (§7.1)",
+                       save_path=os.path.join(out, "channel_analysis_ci.png"))
+        count += 1
+
+    # ── §7.2-7.7 BPSK relay comparisons ──
+    bpsk_dir = os.path.join(results_dir, "bpsk_comparison")
+    bpsk_multi = {}  # for heatmap (rule 19)
+    for ch_key, (ch_name, _) in _CHANNELS.items():
+        j = os.path.join(bpsk_dir, f"{ch_key}.json")
+        if not os.path.exists(j):
+            continue
+        sec = _SECTION_MAP[ch_key]
+        print(f"\n── §{sec} {ch_name} ──")
+        _regen_from_json(j, bpsk_dir, ch_key,
+                         f"{ch_name} — BPSK Relay Comparison (§{sec})")
+        # Collect for heatmap
+        data = load_results_json(j)
+        bpsk_multi[ch_name] = data["results"]
+        count += 1
+
+    # Heatmap across all BPSK channels (rule 19)
+    if len(bpsk_multi) >= 2:
+        first_snr = None
+        for j_file in [os.path.join(bpsk_dir, f"{k}.json") for k in _CHANNELS]:
+            if os.path.exists(j_file):
+                first_snr = np.array(load_results_json(j_file)["snr_range"])
+                break
+        if first_snr is not None:
+            plot_summary_heatmap(
+                first_snr, bpsk_multi,
+                title="BPSK Relay Performance — All Channels (§7.2–7.7)",
+                save_path=os.path.join(bpsk_dir, "bpsk_heatmap.png"),
+            )
+
+    # ── §7.8 Normalized 3K ──
+    n3k_dir = os.path.join(results_dir, "normalized_3k")
+    n3k_multi = {}
+    for ch_key, (ch_name, _) in _CHANNELS.items():
+        j = os.path.join(n3k_dir, f"3k_{ch_key}.json")
+        if not os.path.exists(j):
+            continue
+        print(f"\n── §7.8 Normalized 3K — {ch_name} ──")
+        _regen_from_json(j, n3k_dir, f"3k_{ch_key}",
+                         f"Normalized 3K — {ch_name} (§7.8)")
+        data = load_results_json(j)
+        n3k_multi[ch_name] = data["results"]
+        count += 1
+
+    if len(n3k_multi) >= 2:
+        first_snr = None
+        for j_file in [os.path.join(n3k_dir, f"3k_{k}.json") for k in _CHANNELS]:
+            if os.path.exists(j_file):
+                first_snr = np.array(load_results_json(j_file)["snr_range"])
+                break
+        if first_snr is not None:
+            plot_summary_heatmap(
+                first_snr, n3k_multi,
+                title="Normalized 3K Performance — All Channels (§7.8)",
+                save_path=os.path.join(n3k_dir, "3k_heatmap.png"),
+            )
+
+    # ── §7.9 Master chart (regenerate from §7.2-7.7 data) ──
+    if len(bpsk_multi) >= 2 and _HAS_MPL:
+        print("\n── §7.9 Master 2×3 Chart ──")
+        panels = [
+            ("awgn", "AWGN"), ("rayleigh", "Rayleigh"), ("rician_k3", "Rician K=3"),
+            ("mimo_zf", "MIMO ZF"), ("mimo_mmse", "MIMO MMSE"), ("mimo_sic", "MIMO SIC"),
+        ]
+        fig, axes = plt.subplots(2, 3, figsize=(18, 10))
+        for ax, (ck, cn) in zip(axes.flat, panels):
+            jp = os.path.join(bpsk_dir, f"{ck}.json")
+            if not os.path.exists(jp):
+                ax.set_title(f"{cn} (no data)")
+                continue
+            data = load_results_json(jp)
+            snr = np.array(data["snr_range"])
+            for idx, (name, rd) in enumerate(data["results"].items()):
+                ber = np.where(np.array(rd["ber_mean"]) > 0,
+                               np.array(rd["ber_mean"]), 1e-10)
+                st = _style_for(name, idx)
+                ax.semilogy(snr, ber, marker=st["marker"], color=st["color"],
+                            linewidth=1.0, markersize=4, label=name,
+                            linestyle=st.get("ls", "-"), alpha=0.85)
+            ax.grid(True, which="both", linestyle="--", alpha=0.3, linewidth=0.5)
+            ax.set_title(cn, fontsize=13)
+            ax.set_xlabel("SNR (dB)", fontsize=11)
+            ax.set_ylabel("BER", fontsize=11)
+        handles, labels = axes[0, 0].get_legend_handles_labels()
+        fig.legend(handles, labels, loc="lower center", ncol=5, fontsize=10,
+                   bbox_to_anchor=(0.5, -0.02))
+        fig.suptitle("Master BER Comparison — 9 Relays × 6 Channels (§7.9)",
+                     fontsize=16)
+        plt.tight_layout(rect=[0, 0.04, 1, 0.96])
+        sp = os.path.join(results_dir, "master_ber_comparison.png")
+        plt.savefig(sp, dpi=150, bbox_inches="tight")
+        plt.close(fig)
+        print(f"  Plot → {sp}")
+        count += 1
+
+    # ── §7.10 Modulation comparison ──
+    mod_dir = os.path.join(results_dir, "modulation")
+    for mod in ["bpsk", "qpsk", "qam16"]:
+        for ch in ["awgn", "rayleigh"]:
+            j = os.path.join(mod_dir, f"{mod}_{ch}.json")
+            if not os.path.exists(j):
+                continue
+            tag = f"{mod}_{ch}"
+            print(f"\n── §7.10 {mod.upper()} × {ch.upper()} ──")
+            _regen_from_json(j, mod_dir, tag,
+                             f"{mod.upper()} — {ch.upper()} (§7.10)")
+            count += 1
+
+    # ── §7.11 QAM16 activation ──
+    qam_dir = os.path.join(results_dir, "qam16_activation")
+    for ch in ["awgn", "rayleigh"]:
+        j = os.path.join(qam_dir, f"qam16_activation_{ch}.json")
+        if not os.path.exists(j):
+            continue
+        print(f"\n── §7.11 QAM16 Activation — {ch.upper()} ──")
+        _regen_from_json(j, qam_dir, f"qam16_activation_{ch}",
+                         f"QAM16 Activation — {ch.upper()} (§7.11)")
+        count += 1
+
+    # ── §7.12 LayerNorm ──
+    ln_dir = os.path.join(results_dir, "layernorm")
+    for mod in ["qpsk", "qam16"]:
+        for ch in ["awgn", "rayleigh"]:
+            j = os.path.join(ln_dir, f"layernorm_{mod}_{ch}.json")
+            if not os.path.exists(j):
+                continue
+            tag = f"layernorm_{mod}_{ch}"
+            print(f"\n── §7.12 LayerNorm {mod.upper()} × {ch.upper()} ──")
+            _regen_from_json(j, ln_dir, tag,
+                             f"LayerNorm — {mod.upper()} {ch.upper()} (§7.12)")
+            count += 1
+
+    # ── §7.13 Activation comparison ──
+    act_dir = os.path.join(results_dir, "activation_comparison")
+    act_styles_map = {"sigmoid": "-", "hardtanh": "--", "scaled_tanh": "-."}
+    for mod in ["qpsk", "qam16"]:
+        for ch in ["awgn", "rayleigh"]:
+            j = os.path.join(act_dir, f"activation_{mod}_{ch}.json")
+            if not os.path.exists(j):
+                continue
+            tag = f"{mod}_activation_{ch}"
+            print(f"\n── §7.13 Activation {mod.upper()} × {ch.upper()} ──")
+            # Build extra_styles from the curve names
+            data = load_results_json(j)
+            extra_styles = {}
+            cidx = 0
+            for name in data["results"]:
+                ls = "-"
+                for act_key, act_ls in act_styles_map.items():
+                    if f"({act_key})" in name:
+                        ls = act_ls
+                        break
+                extra_styles[name] = {
+                    "color": PALETTE[cidx % len(PALETTE)],
+                    "marker": MARKERS[cidx % len(MARKERS)],
+                    "ls": ls,
+                }
+                cidx += 1
+            _regen_from_json(j, act_dir, tag,
+                             f"Activation — {mod.upper()} {ch.upper()} (§7.13)",
+                             extra_styles=extra_styles)
+            count += 1
+
+    # ── §7.14-15 CSI ──
+    csi_dir = os.path.join(results_dir, "csi")
+    for constellation in ["qam16", "psk16"]:
+        j = os.path.join(csi_dir, f"csi_experiment_{constellation}_rayleigh.json")
+        if not os.path.exists(j):
+            continue
+        tag = f"csi_experiment_{constellation}_rayleigh"
+        print(f"\n── §7.14-15 CSI {constellation.upper()} ──")
+        _regen_from_json(j, csi_dir, tag,
+                         f"CSI — {constellation.upper()} Rayleigh (§7.14-15)")
+        count += 1
+
+    # ── §7.16 E2E ──
+    e2e_dir = os.path.join(results_dir, "e2e")
+    for jname, tag, title in [
+        ("e2e_ber.json", "e2e_ber", "E2E BER vs SNR (§7.16)"),
+        ("e2e_relay_comparison.json", "e2e_relay_comparison",
+         "E2E vs AF/DF — 16-QAM Rayleigh (§7.16)"),
+    ]:
+        j = os.path.join(e2e_dir, jname)
+        if not os.path.exists(j):
+            continue
+        print(f"\n── §7.16 {tag} ──")
+        _regen_from_json(j, e2e_dir, tag, title)
+        count += 1
+
+    print(f"\n{'='*60}")
+    print(f"  Regenerated charts from {count} JSON files")
+    print(f"{'='*60}")
+
+
 def parse_args():
     p = argparse.ArgumentParser(
         description="Unified thesis experiment runner",
@@ -1343,9 +1964,12 @@ Examples:
   python run_experiments.py --all --quick
   python run_experiments.py --exp 7.2 7.10 7.16
   python run_experiments.py --all --inference-only
+  python run_experiments.py --regen-charts
 """)
     p.add_argument("--list", action="store_true",
                    help="List all available experiments and exit.")
+    p.add_argument("--regen-charts", action="store_true",
+                   help="Regenerate all charts from JSON without re-running.")
     p.add_argument("--all", action="store_true",
                    help="Run all experiments sequentially.")
     p.add_argument("--exp", nargs="+", default=[],
@@ -1378,6 +2002,10 @@ def main():
         print(f"  {'-------':<15} -----------")
         for key, (desc, _) in EXPERIMENTS.items():
             print(f"  {key:<15} {desc}")
+        return
+
+    if args.regen_charts:
+        regenerate_all_charts(args)
         return
 
     # Determine which experiments to run

@@ -1,11 +1,11 @@
 """
 Hybrid SNR-Adaptive Relay
 
-Dynamically switches between Minimal GenAI and Decode-and-Forward based
+Dynamically switches between Minimal MLP and Decode-and-Forward based
 on an estimated SNR at the relay.
 
 Strategy:
-  - If estimated SNR < threshold  → use Minimal GenAI relay
+  - If estimated SNR < threshold  → use Minimal MLP relay
   - Otherwise                     → use classical DF relay
 """
 
@@ -45,48 +45,59 @@ def estimate_snr(received_signal, known_tx_power=1.0):
 class HybridRelay(Relay):
     """Hybrid SNR-adaptive relay.
 
-    Uses a Minimal GenAI relay at low SNR and a DF relay at medium/high SNR.
+    Uses a Minimal MLP relay at low SNR and a DF relay at medium/high SNR.
     An SNR estimator based on received signal power selects the strategy.
 
     Parameters
     ----------
     snr_threshold : float
-        SNR threshold in dB. Below this the GenAI relay is used;
+        SNR threshold in dB. Below this the MLP relay is used;
         at or above it the DF relay is used. Default 5 dB.
     target_power : float
         Target transmitted power for both sub-relays.
-    genai_window_size : int
-        Window size for the Minimal GenAI sub-relay.
-    genai_hidden_size : int
-        Hidden layer size for the Minimal GenAI sub-relay.
+    mlp_window_size : int
+        Window size for the Minimal MLP sub-relay.
+    mlp_hidden_size : int
+        Hidden layer size for the Minimal MLP sub-relay.
     """
 
     def __init__(self, snr_threshold=5.0, target_power=1.0,
-                 genai_window_size=5, genai_hidden_size=24, prefer_gpu=True,
-                 output_activation="tanh", clip_range=None):
+                 mlp_window_size=5, mlp_hidden_size=24, prefer_gpu=True,
+                 output_activation="tanh", clip_range=None,
+                 # Legacy aliases
+                 genai_window_size=None, genai_hidden_size=None):
         self.snr_threshold = snr_threshold
         self.target_power = target_power
 
-        self.genai_relay = MinimalGenAIRelay(
-            window_size=genai_window_size,
-            hidden_size=genai_hidden_size,
+        # Support legacy parameter names
+        ws = genai_window_size if genai_window_size is not None else mlp_window_size
+        hs = genai_hidden_size if genai_hidden_size is not None else mlp_hidden_size
+
+        self.mlp_relay = MinimalGenAIRelay(
+            window_size=ws,
+            hidden_size=hs,
             target_power=target_power,
             prefer_gpu=prefer_gpu,
             output_activation=output_activation,
             clip_range=clip_range,
         )
         self.df_relay = DecodeAndForwardRelay(target_power=target_power, prefer_gpu=prefer_gpu)
-        self.device = getattr(self.genai_relay, "device", None)
+        self.device = getattr(self.mlp_relay, "device", None)
 
         self.is_trained = False
 
     @property
+    def genai_relay(self):
+        """Legacy alias for mlp_relay."""
+        return self.mlp_relay
+
+    @property
     def num_params(self):
-        return self.genai_relay.num_params
+        return self.mlp_relay.num_params
 
     def train(self, training_snrs=None, num_samples=25000, epochs=100, seed=None,
               epoch_callback=None, training_modulation="bpsk"):
-        """Train the internal GenAI sub-relay.
+        """Train the internal MLP sub-relay.
 
         Parameters
         ----------
@@ -102,7 +113,7 @@ class HybridRelay(Relay):
         """
         if training_snrs is None:
             training_snrs = [2, 4, 6]
-        self.genai_relay.train(
+        self.mlp_relay.train(
             training_snrs=training_snrs,
             num_samples=num_samples,
             epochs=epochs,
@@ -121,18 +132,18 @@ class HybridRelay(Relay):
         est_snr = estimate_snr(received_signal)
 
         if est_snr < self.snr_threshold:
-            return self.genai_relay.process(received_signal)
+            return self.mlp_relay.process(received_signal)
         return self.df_relay.process(received_signal)
 
     # ------------------------------------------------------------------
-    # Weight persistence (delegates to GenAI sub-relay)
+    # Weight persistence (delegates to MLP sub-relay)
     # ------------------------------------------------------------------
 
     def save_weights(self, path):
-        """Save the internal GenAI sub-relay weights to *path*."""
-        self.genai_relay.save_weights(path)
+        """Save the internal MLP sub-relay weights to *path*."""
+        self.mlp_relay.save_weights(path)
 
     def load_weights(self, path):
-        """Load weights into the GenAI sub-relay and mark as trained."""
-        self.genai_relay.load_weights(path)
+        """Load weights into the MLP sub-relay and mark as trained."""
+        self.mlp_relay.load_weights(path)
         self.is_trained = True
