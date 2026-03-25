@@ -4,9 +4,9 @@
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.6+-red.svg)](https://pytorch.org)
 [![CUDA](https://img.shields.io/badge/CUDA-12.4-green.svg)](https://developer.nvidia.com/cuda-toolkit)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Tests](https://img.shields.io/badge/Tests-66%20passed-brightgreen.svg)](#testing)
+[![Tests](https://img.shields.io/badge/Tests-126%20passed-brightgreen.svg)](#testing)
 
-A comprehensive framework for comparing **classical and AI-based relay strategies** in two-hop cooperative communication across **3 channel types** (AWGN, Rayleigh fading, Rician fading) and **2 antenna topologies** (SISO, 2×2 MIMO with ZF/MMSE/SIC equalization).
+A comprehensive framework for comparing **classical and AI-based relay strategies** in two-hop cooperative communication across **3 channel types** (AWGN, Rayleigh fading, Rician fading), **2 antenna topologies** (SISO, 2×2 MIMO with ZF/MMSE/SIC equalization), and **4 modulation schemes** (BPSK, QPSK, 16-QAM, 16-PSK).
 
 ---
 
@@ -18,6 +18,7 @@ A comprehensive framework for comparing **classical and AI-based relay strategie
 - [Relay Strategies](#relay-strategies)
 - [Architecture](#architecture)
 - [Key Findings](#key-findings)
+- [Recent Experiments Summary](#recent-experiments-summary)
 - [BER Results — Original Models](#ber-results--original-models)
 - [Normalized 3K-Parameter Comparison](#normalized-3k-parameter-comparison)
 - [AI Model Architectures](#ai-model-architectures)
@@ -32,7 +33,7 @@ A comprehensive framework for comparing **classical and AI-based relay strategie
 
 ## Overview
 
-This project implements and compares **8 relay strategies** (2 classical + 6 AI-based) across **3 channel types** (AWGN, Rayleigh, Rician) and **2 antenna topologies** (SISO, 2×2 MIMO) to evaluate the potential of generative AI and modern sequence models for cooperative relay communication.
+This project implements and compares **9 relay strategies** (2 classical + 7 AI-based) across **3 channel types** (AWGN, Rayleigh, Rician), **2 antenna topologies** (SISO, 2×2 MIMO), and **4 modulation schemes** (BPSK, QPSK, 16-QAM, 16-PSK) to evaluate the potential of generative AI and modern sequence models for cooperative relay communication.
 
 ### Relay Methods
 
@@ -46,6 +47,7 @@ This project implements and compares **8 relay strategies** (2 classical + 6 AI-
 | **CGAN** | Adversarial | Conditional GAN (WGAN-GP) | 2,946 |
 | **Transformer** | Attention | Multi-head Self-Attention | 17,697 |
 | **Mamba S6** | State Space | Selective State Space Model | 24,001 |
+| **Mamba-2 SSD** | State Space | Structured State Space Duality | 26,179 |
 
 ### Channel Types
 
@@ -561,6 +563,57 @@ Tests cover:
 | 20 | **Mamba S6** | **Selective state space relay** |
 | 21 | Full Comparison | All 9 methods compared |
 | 22 | Master BER Charts | Final visualization + **3K normalized comparison** |
+
+---
+
+## Recent Experiments Summary
+
+Beyond the primary BPSK comparison, the following experiments extend the evaluation to higher-order modulations, activation engineering, and alternative classification formulations.
+
+### Modulation Extension (BPSK → QPSK → 16-QAM)
+
+- **QPSK**: All BPSK findings generalise fully via I/Q splitting — BER curves are identical to BPSK across all 9 relays.
+- **16-QAM**: BPSK-trained relays exhibit an irreducible BER floor (~0.18–0.25 at 16 dB) due to `tanh` compressing the 4-level PAM amplitudes.
+
+### Activation Engineering (Sections 7.11–7.12)
+
+| Activation | Description | Best 16-QAM BER @ 16 dB |
+|---|---|---|
+| `tanh` (baseline) | Saturates at ±1, compresses PAM-4 | 0.2065 (Mamba-2) |
+| `hardtanh` | Clips at ±A_max | 0.0396 (Mamba S6) |
+| `scaled_tanh` | A_max · tanh(x) | 0.0441 (Mamba-2) |
+
+Replacing `tanh` and retraining on PAM-4 targets reduces the BER floor by **2–5×**, with sequence models benefiting most.
+
+### 16-Class 2D Classification (Section 7.17) — Key Breakthrough
+
+**Problem**: Per-axis I/Q splitting classifies 4 levels independently per axis, producing a structural BER floor of ~0.0081 at 20 dB.
+
+**Solution**: Treat the relay as a **joint 2D classifier** over all 16 QAM constellation points. The model receives (y_I, y_Q) and outputs 16 logits.
+
+| Relay | 4-cls BER @ 20 dB | 16-cls BER @ 20 dB | Improvement |
+|---|---|---|---|
+| MLP | 0.00811 | **0.00002** | 405× |
+| VAE | — | **0.00000** | — |
+| Transformer | 0.00810 | **0.00001** | 810× |
+| Mamba S6 | 0.00810 | **0.00009** | 90× |
+| Mamba-2 SSD | 0.00811 | **0.00197** | 4.1× |
+| DF (classical) | 0.00000 | — | — |
+
+**Key finding**: The top-3 16-class variants (VAE, Transformer, MLP) **match classical DF** at 20 dB — the first time neural relays achieve near-zero BER on 16-QAM. The structural floor is an artefact of I/Q splitting, not a fundamental limitation of neural architectures.
+
+### CSI Injection & Comprehensive Study (Sections 7.14–7.15)
+
+48 neural variants (3 architectures × 4 activations × 4 configurations) evaluated on 16-QAM and 16-PSK under Rayleigh fading:
+
+- **16-QAM**: CSI injection *degrades* performance; best variants use LayerNorm only (+LN)
+- **16-PSK**: CSI injection *improves* performance; best variants use +CSI or +CSI+LN
+- **Mamba S6** dominates both constellations (all top-3 for PSK16; #1 for QAM16)
+- No neural variant beats DF at any SNR point across all 48 configurations
+
+### End-to-End Autoencoder (Section 7.16)
+
+A jointly optimised transmitter-receiver autoencoder (no relay) achieves 67–141% *higher* BER than classical 16-QAM theory, validating the modular relay-based approach over E2E learning.
 
 ---
 
