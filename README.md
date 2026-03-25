@@ -5,6 +5,7 @@
 [![CUDA](https://img.shields.io/badge/CUDA-12.4-green.svg)](https://developer.nvidia.com/cuda-toolkit)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Tests](https://img.shields.io/badge/Tests-126%20passed-brightgreen.svg)](#testing)
+[![Experiments](https://img.shields.io/badge/Experiments-18-blue.svg)](#recent-experiments-summary)
 
 A comprehensive framework for comparing **classical and AI-based relay strategies** in two-hop cooperative communication across **3 channel types** (AWGN, Rayleigh fading, Rician fading), **2 antenna topologies** (SISO, 2×2 MIMO with ZF/MMSE/SIC equalization), and **4 modulation schemes** (BPSK, QPSK, 16-QAM, 16-PSK).
 
@@ -435,20 +436,29 @@ relaynet2/
 │   ├── test_simulation.py                # Monte Carlo runner tests
 │   └── test_statistics.py                # CI & significance tests
 │
-├── results/                          # Generated BER plots (23 files)
-│   ├── awgn_comparison_ci.png
-│   ├── fading_comparison.png
-│   ├── rician_comparison_ci.png
-│   ├── mimo_2x2_comparison_ci.png
-│   ├── mimo_2x2_mmse_comparison_ci.png
-│   ├── normalized_3k_awgn.png
-│   ├── normalized_3k_rayleigh.png
-│   ├── normalized_3k_rician_k3.png
-│   ├── normalized_3k_2x2_mimo_zf.png
-│   ├── normalized_3k_2x2_mimo_mmse.png
-│   ├── normalized_3k_all_channels.png    # Consolidated 2×3 grid
+├── results/                          # Generated BER plots, JSON, charts
+│   ├── bpsk_comparison/                  # §7.2–7.7 BPSK relay comparisons
+│   ├── normalized_3k/                    # §7.8 equal-parameter comparison
+│   ├── modulation/                       # §7.10 BPSK→QPSK→QAM16
+│   ├── qam16_activation/                 # §7.11 activation study
+│   ├── layernorm/                        # §7.12 LayerNorm study
+│   ├── classify_vs_regress/              # §7.13 classification formulation
+│   ├── classify_activations/             # §7.13 activation sweep
+│   ├── classify_closing_gap/             # §7.13 closing the DF gap
+│   ├── csi/                              # §7.14–7.15 CSI injection
+│   ├── e2e/                              # §7.16 end-to-end autoencoder
+│   ├── all_relays_16class/               # §7.17 16-class 2D (all 7 archs)
+│   ├── classify_16class/                 # §7.17 MLP 16-class variants
+│   ├── channel_analysis/                 # §7.1 channel model analysis
+│   ├── activation_comparison/            # legacy activation comparison
+│   ├── logs/                             # experiment failure logs
 │   └── ...
 │
+├── run_experiments.py                # Unified experiment runner (18 experiments)
+├── make.ps1                          # PowerShell build script (Windows)
+├── Makefile                          # GNU Make build script (Linux/macOS)
+├── EXPERIMENT_GUIDELINES.md          # Developer guide for experiments
+├── CHART_GUIDELINES.md               # Publication chart rules (22 rules)
 ├── README.md
 ├── TECHNICAL_REPORT.md               # Mathematical details
 ├── MAMBA_FINAL_REPORT.md             # Mamba S6 analysis
@@ -473,22 +483,50 @@ For GPU-accelerated MIMO channels (optional):
 pip install torch --index-url https://download.pytorch.org/whl/cu124
 ```
 
-### Run the Full Comparison Pipeline
+### Run Experiments (Unified Runner)
+
+All 18 experiments are managed through `run_experiments.py`:
 
 ```bash
-# All channels, all relays (including Transformer + Mamba), plus normalized 3K comparison
-python scripts/run_full_comparison.py --include-sequence-models --include-normalized
+# List all available experiments
+python run_experiments.py --list
 
-# Quick mode (lower fidelity, faster)
-python scripts/run_full_comparison.py --include-sequence-models --include-normalized --quick
+# Run all experiments (quick mode — reduced samples/epochs)
+python run_experiments.py --quick
+
+# Run a specific experiment
+python run_experiments.py --exp 7.17 --quick
+
+# Force retrain (ignore cached checkpoints)
+python run_experiments.py --exp 7.2 --retrain
+
+# Regenerate all charts from saved JSON (no retraining)
+python run_experiments.py --regen-charts
 ```
 
-### Generate Normalized 3K Plots Only
+### Build Script (PowerShell)
+
+A `make.ps1` script provides shorthand targets:
+
+```powershell
+.\make.ps1 help            # Show all targets
+.\make.ps1 list            # List experiments
+.\make.ps1 quick           # Run all experiments (quick)
+.\make.ps1 exp -s 7.17     # Run specific experiment
+.\make.ps1 retrain -s 7.2  # Force retrain
+.\make.ps1 charts          # Regenerate charts from JSON
+.\make.ps1 clean           # Clean all generated outputs
+```
+
+A GNU `Makefile` is also included for Linux/macOS.
+
+### Legacy Comparison Scripts
 
 ```bash
-python scripts/plot_normalized_3k.py
+# Full pipeline: train + evaluate all (legacy)
+python scripts/run_full_comparison.py --include-sequence-models --include-normalized
 
-# High-fidelity mode (more samples, more trials)
+# Standalone 3K comparison plots
 python scripts/plot_normalized_3k.py --full
 ```
 
@@ -521,11 +559,11 @@ results = run_monte_carlo(relay, snr_range=range(0, 21, 2),
 
 ## Testing
 
-All 60 tests pass:
+All 126 tests pass:
 
 ```bash
 python -m pytest tests/ -q
-# 60 passed in ~7s
+# 126 passed in ~28s
 ```
 
 Tests cover:
@@ -568,14 +606,34 @@ Tests cover:
 
 ## Recent Experiments Summary
 
-Beyond the primary BPSK comparison, the following experiments extend the evaluation to higher-order modulations, activation engineering, and alternative classification formulations.
+All experiments are managed through the unified `run_experiments.py` runner (18 experiments, §7.1–§7.17 + constellation diagrams). Every experiment supports `--quick` mode, saves `.pt` checkpoints, exports `.json` for chart regeneration, and logs failures automatically.
 
-### Modulation Extension (BPSK → QPSK → 16-QAM)
+| Section | Experiment | Results Directory |
+|---------|-----------|-------------------|
+| §7.1 | Channel Model Analysis | `results/channel_analysis/` |
+| §7.2 | BPSK AWGN Relay Comparison | `results/bpsk_comparison/` |
+| §7.3 | BPSK Rayleigh Relay Comparison | `results/bpsk_comparison/` |
+| §7.4 | BPSK Rician K=3 | `results/bpsk_comparison/` |
+| §7.5 | 2×2 MIMO ZF | `results/bpsk_comparison/` |
+| §7.6 | 2×2 MIMO MMSE | `results/bpsk_comparison/` |
+| §7.7 | 2×2 MIMO SIC | `results/bpsk_comparison/` |
+| §7.8 | Normalized 3K Comparison | `results/normalized_3k/` |
+| §7.9 | Master 2×3 Chart | `results/bpsk_comparison/` |
+| §7.10 | Modulation Comparison (BPSK → QPSK → QAM16) | `results/modulation/` |
+| §7.11 | QAM16 Activation Study | `results/qam16_activation/` |
+| §7.12 | LayerNorm Study | `results/layernorm/` |
+| §7.13 | Classification vs Regression + Activations + Closing Gap | `results/classify_vs_regress/`, `results/classify_activations/`, `results/classify_closing_gap/` |
+| §7.14 | CSI Injection | `results/csi/` |
+| §7.15 | Multi-Architecture CSI | `results/csi/` |
+| §7.16 | End-to-End Autoencoder | `results/e2e/` |
+| §7.17 | 16-Class 2D QAM16 (all 7 architectures) | `results/all_relays_16class/` |
+
+### Modulation Extension — §7.10 (BPSK → QPSK → 16-QAM)
 
 - **QPSK**: All BPSK findings generalise fully via I/Q splitting — BER curves are identical to BPSK across all 9 relays.
 - **16-QAM**: BPSK-trained relays exhibit an irreducible BER floor (~0.18–0.25 at 16 dB) due to `tanh` compressing the 4-level PAM amplitudes.
 
-### Activation Engineering (Sections 7.11–7.12)
+### Activation Engineering — §7.11–§7.12
 
 | Activation | Description | Best 16-QAM BER @ 16 dB |
 |---|---|---|
@@ -585,24 +643,15 @@ Beyond the primary BPSK comparison, the following experiments extend the evaluat
 
 Replacing `tanh` and retraining on PAM-4 targets reduces the BER floor by **2–5×**, with sequence models benefiting most.
 
-### 16-Class 2D Classification (Section 7.17) — Key Breakthrough
+### Classification vs Regression — §7.13
 
-**Problem**: Per-axis I/Q splitting classifies 4 levels independently per axis, producing a structural BER floor of ~0.0081 at 20 dB.
+Three sub-studies explore the classification formulation for 16-QAM relaying:
 
-**Solution**: Treat the relay as a **joint 2D classifier** over all 16 QAM constellation points. The model receives (y_I, y_Q) and outputs 16 logits.
+- **Classify vs Regress**: Classification MLP (4-class) achieves ~1.3× lower BER than regression MLP at 20 dB
+- **Activation Sweep**: 8 hidden/output activation combinations; H:Sigmoid wins overall, O:Sigmoid is the only catastrophic failure
+- **Closing the DF Gap**: 6 progressive enhancements (window, SNR range, hidden size) reduce the classification gap to DF from 8.1× to 1.0× at 20 dB
 
-| Relay | 4-cls BER @ 20 dB | 16-cls BER @ 20 dB | Improvement |
-|---|---|---|---|
-| MLP | 0.00811 | **0.00002** | 405× |
-| VAE | — | **0.00000** | — |
-| Transformer | 0.00810 | **0.00001** | 810× |
-| Mamba S6 | 0.00810 | **0.00009** | 90× |
-| Mamba-2 SSD | 0.00811 | **0.00197** | 4.1× |
-| DF (classical) | 0.00000 | — | — |
-
-**Key finding**: The top-3 16-class variants (VAE, Transformer, MLP) **match classical DF** at 20 dB — the first time neural relays achieve near-zero BER on 16-QAM. The structural floor is an artefact of I/Q splitting, not a fundamental limitation of neural architectures.
-
-### CSI Injection & Comprehensive Study (Sections 7.14–7.15)
+### CSI Injection & Comprehensive Study — §7.14–§7.15
 
 48 neural variants (3 architectures × 4 activations × 4 configurations) evaluated on 16-QAM and 16-PSK under Rayleigh fading:
 
@@ -611,9 +660,28 @@ Replacing `tanh` and retraining on PAM-4 targets reduces the BER floor by **2–
 - **Mamba S6** dominates both constellations (all top-3 for PSK16; #1 for QAM16)
 - No neural variant beats DF at any SNR point across all 48 configurations
 
-### End-to-End Autoencoder (Section 7.16)
+### End-to-End Autoencoder — §7.16
 
 A jointly optimised transmitter-receiver autoencoder (no relay) achieves 67–141% *higher* BER than classical 16-QAM theory, validating the modular relay-based approach over E2E learning.
+
+### 16-Class 2D Classification — §7.17 (Key Breakthrough)
+
+**Problem**: Per-axis I/Q splitting classifies 4 levels independently per axis, producing a structural BER floor of ~0.0081 at 20 dB.
+
+**Solution**: Treat the relay as a **joint 2D classifier** over all 16 QAM constellation points. The model receives (y_I, y_Q) and outputs 16 logits. All 7 relay architectures tested in both 4-class and 16-class modes (14 variants total).
+
+| Relay | 4-cls BER @ 20 dB | 16-cls BER @ 20 dB | Improvement |
+|---|---|---|---|
+| MLP (472p) | 0.00811 | **0.00002** | 405× |
+| VAE (2,112p) | 0.00810 | **0.00000** | ∞ |
+| CGAN (3,361p) | 0.35340 | 0.28370 | 1.2× |
+| Hybrid (472p) | 0.00811 | **0.00000** | ∞ |
+| Transformer (17,984p) | 0.00810 | **0.00001** | 810× |
+| Mamba S6 (24,288p) | 0.00810 | **0.00009** | 90× |
+| Mamba-2 SSD (26,466p) | 0.00811 | **0.00197** | 4.1× |
+| DF (classical) | 0.00000 | — | — |
+
+**Key finding**: The top-3 16-class variants (Hybrid, VAE, MLP) **match classical DF** at 20 dB — the first time neural relays achieve near-zero BER on 16-QAM. The structural floor is an artefact of I/Q splitting, not a fundamental limitation of neural architectures. CGAN remains the poorest performer; Mamba-2 lags behind its S6 predecessor.
 
 ---
 
