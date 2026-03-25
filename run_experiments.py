@@ -22,9 +22,11 @@ Usage examples
 
 import argparse
 import json
+import logging
 import math
 import os
 import sys
+import traceback
 from datetime import datetime
 from time import perf_counter
 
@@ -94,6 +96,57 @@ except Exception:
     _HAS_E2E = False
 
 from scipy import special  # for erfc / Q-function in channel analysis
+
+# ════════════════════════════════════════════════════════════════════
+# Logging
+# ════════════════════════════════════════════════════════════════════
+
+def setup_logging(results_dir):
+    """Configure file + console logging for experiment runs."""
+    log_dir = os.path.join(results_dir, "logs")
+    os.makedirs(log_dir, exist_ok=True)
+    log_file = os.path.join(
+        log_dir,
+        f"experiments_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log",
+    )
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s [%(levelname)s] %(message)s",
+        handlers=[
+            logging.FileHandler(log_file, encoding="utf-8"),
+            logging.StreamHandler(sys.stdout),
+        ],
+    )
+    return log_file
+
+
+def run_experiment_safe(name, func, args):
+    """Run an experiment with failure logging.  Returns True on success."""
+    logger = logging.getLogger("experiments")
+    logger.info("START  %s", name)
+    t0 = perf_counter()
+    try:
+        func(args)
+        elapsed = perf_counter() - t0
+        logger.info("DONE   %s  (%.1fs)", name, elapsed)
+        return True
+    except Exception:
+        elapsed = perf_counter() - t0
+        tb = traceback.format_exc()
+        logger.error("FAILED %s after %.1fs\n%s", name, elapsed, tb)
+        # Also persist failure to a JSON sidecar
+        fail_dir = os.path.join(args.results_dir, "logs")
+        os.makedirs(fail_dir, exist_ok=True)
+        fail_path = os.path.join(
+            fail_dir,
+            f"fail_{name.replace(' ', '_')}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
+        )
+        with open(fail_path, "w") as f:
+            json.dump({"experiment": name, "error": tb,
+                       "elapsed_s": round(elapsed, 2),
+                       "timestamp": datetime.now().isoformat()}, f, indent=2)
+        print(f"  [FAILED] {name} — see {fail_path}")
+        return False
 
 # ════════════════════════════════════════════════════════════════════
 # Chart guidelines palette (30 colours, colorblind-safe)
@@ -651,17 +704,29 @@ class WeightManager:
         return os.path.join(d, f"{safe}.pt")
 
     def save(self, name, relay, subdir=None):
+        """Save relay weights to .pt checkpoint."""
         if hasattr(relay, "save_weights"):
             p = self._path(name, subdir)
             relay.save_weights(p)
-            print(f"    Weights → {p}")
+            print(f"    Checkpoint → {p}")
+        # Also save via state_dict for torch-based relays
+        elif hasattr(relay, "state_dict"):
+            import torch
+            p = self._path(name, subdir)
+            torch.save(relay.state_dict(), p)
+            print(f"    Checkpoint → {p}")
 
     def load(self, name, relay, subdir=None):
         p = self._path(name, subdir)
         if os.path.exists(p) and hasattr(relay, "load_weights"):
             relay.load_weights(p)
+            print(f"    Loaded checkpoint ← {p}")
             return True
         return False
+
+    def checkpoint_exists(self, name, subdir=None):
+        """Check if a checkpoint file exists."""
+        return os.path.exists(self._path(name, subdir))
 
     def save_metadata(self, meta, subdir=None):
         d = os.path.join(self.base_dir, subdir) if subdir else self.base_dir
@@ -935,6 +1000,10 @@ def exp_7_2_to_7_7_relay_comparison(args):
         for name, relay in relays.items():
             wm.load(name, relay)
     else:
+        for name, relay in relays.items():
+            if not args.retrain and wm.load(name, relay):
+                print(f"  Loaded cached {name} (use --retrain to force)")
+                continue
         train_base_relays(relays, args, modulation="bpsk")
         for name, relay in relays.items():
             wm.save(name, relay)
@@ -1664,6 +1733,313 @@ def exp_constellations(args):
     print(f"  Constellation diagrams → {out}/constellation_diagrams.png")
 
 
+# ── §7.17  16-Class 2D QAM16 Classification ───────────────────────
+
+_16CLS_VARIANTS = [
+    # (name, relay_class, relay_kwargs, train_kwargs)
+    # ── MLP ──
+    ("MLP 4-cls", "genai", dict(
+        window_size=5, hidden_size=24, classify=True, training_modulation="qam16",
+        prefer_gpu=False,
+    ), dict(num_samples=50_000, epochs=100)),
+    ("MLP 16-cls", "genai", dict(
+        window_size=1, hidden_size=24, classify_2d=True, training_modulation="qam16",
+        prefer_gpu=False,
+    ), dict(num_samples=50_000, epochs=200)),
+    # ── VAE ──
+    ("VAE 4-cls", "vae", dict(
+        window_size=7, latent_size=8, beta=0.1, hidden_sizes=(32, 16),
+        classify=True, training_modulation="qam16", prefer_gpu=False,
+    ), dict(num_samples=50_000, epochs=100)),
+    ("VAE 16-cls", "vae", dict(
+        window_size=1, latent_size=8, beta=0.1, hidden_sizes=(32, 16),
+        classify_2d=True, training_modulation="qam16", prefer_gpu=False,
+    ), dict(num_samples=50_000, epochs=200)),
+    # ── CGAN ──
+    ("CGAN 4-cls", "cgan", dict(
+        window_size=7, noise_size=8, lambda_gp=10, lambda_l1=20, n_critic=3,
+        g_hidden_sizes=(32, 16), c_hidden_sizes=(32, 16),
+        classify=True, training_modulation="qam16", prefer_gpu=False,
+    ), dict(num_samples=20_000, epochs=80)),
+    ("CGAN 16-cls", "cgan", dict(
+        window_size=1, noise_size=8, lambda_gp=10, lambda_l1=20, n_critic=3,
+        g_hidden_sizes=(32, 16), c_hidden_sizes=(32, 16),
+        classify_2d=True, training_modulation="qam16", prefer_gpu=False,
+    ), dict(num_samples=20_000, epochs=80)),
+    # ── Hybrid ──
+    ("Hybrid 4-cls", "hybrid", dict(
+        snr_threshold=5.0, mlp_window_size=5, mlp_hidden_size=24,
+        classify=True, training_modulation="qam16", prefer_gpu=False,
+    ), dict(num_samples=30_000, epochs=100)),
+    ("Hybrid 16-cls", "hybrid", dict(
+        snr_threshold=5.0, mlp_window_size=1, mlp_hidden_size=24,
+        classify_2d=True, training_modulation="qam16", prefer_gpu=False,
+    ), dict(num_samples=30_000, epochs=200)),
+    # ── Transformer ──
+    ("Transformer 4-cls", "transformer", dict(
+        window_size=5, d_model=32, num_layers=2,
+        classify=True, training_modulation="qam16",
+    ), dict(num_samples=50_000, epochs=100)),
+    ("Transformer 16-cls", "transformer", dict(
+        window_size=5, d_model=32, num_layers=2,
+        classify_2d=True, training_modulation="qam16",
+    ), dict(num_samples=50_000, epochs=200)),
+    # ── Mamba S6 ──
+    ("Mamba-S6 4-cls", "mamba_s6", dict(
+        window_size=5, d_model=32, d_state=16, num_layers=2,
+        classify=True, training_modulation="qam16",
+    ), dict(num_samples=50_000, epochs=100)),
+    ("Mamba-S6 16-cls", "mamba_s6", dict(
+        window_size=5, d_model=32, d_state=16, num_layers=2,
+        classify_2d=True, training_modulation="qam16",
+    ), dict(num_samples=50_000, epochs=200)),
+    # ── Mamba2 SSD ──
+    ("Mamba2 4-cls", "mamba2", dict(
+        window_size=5, d_model=32, d_state=16, num_layers=2,
+        classify=True, training_modulation="qam16",
+    ), dict(num_samples=50_000, epochs=100)),
+    ("Mamba2 16-cls", "mamba2", dict(
+        window_size=5, d_model=32, d_state=16, num_layers=2,
+        classify_2d=True, training_modulation="qam16",
+    ), dict(num_samples=50_000, epochs=200)),
+]
+
+
+def _build_16cls_relay(tag, rkw, gpu):
+    """Instantiate a relay by tag for the 16-class experiment."""
+    rkw = dict(rkw)  # copy
+    if tag in ("transformer", "mamba_s6", "mamba2"):
+        rkw["prefer_gpu"] = gpu
+    if tag == "genai":
+        return MinimalGenAIRelay(**rkw)
+    if tag == "vae":
+        return VAERelay(**rkw)
+    if tag == "cgan":
+        return CGANRelay(**rkw)
+    if tag == "hybrid":
+        return HybridRelay(**rkw)
+    if tag == "transformer" and _HAS_SEQ:
+        return TransformerRelayWrapper(**rkw)
+    if tag == "mamba_s6" and _HAS_SEQ:
+        return MambaRelayWrapper(**rkw)
+    if tag == "mamba2" and _HAS_SEQ:
+        return Mamba2RelayWrapper(**rkw)
+    return None
+
+
+def exp_7_17_16class_2d(args):
+    """§7.17 16-Class 2D QAM16 classification vs 4-class per-axis."""
+    print("\n══ §7.17 16-Class 2D QAM16 Classification ══")
+    wm = WeightManager(args.weights_dir, args.seed)
+    snr_range = np.arange(args.snr_min, args.snr_max + 1, args.snr_step)
+    out = os.path.join(args.results_dir, "all_relays_16class")
+    os.makedirs(out, exist_ok=True)
+
+    training_snrs = [5, 10, 15, 20, 25]
+    modulation = "qam16"
+
+    # Quick-mode reductions
+    if args.quick:
+        quick_samples_factor = 0.1
+        quick_epoch_factor = 0.2
+    else:
+        quick_samples_factor = 1.0
+        quick_epoch_factor = 1.0
+
+    all_results = {}
+
+    for vname, relay_tag, rkw, tkw in _16CLS_VARIANTS:
+        print(f"\n  {vname}")
+        relay = _build_16cls_relay(relay_tag, rkw, args.gpu)
+        if relay is None:
+            print(f"    [SKIP] {relay_tag} not available")
+            continue
+
+        subdir = "16class"
+        if not args.inference_only:
+            # Check cache
+            if not args.retrain and wm.load(vname, relay, subdir=subdir):
+                print(f"    Using cached weights (--retrain to force)")
+            else:
+                t0 = perf_counter()
+                samples = int(tkw["num_samples"] * quick_samples_factor)
+                epochs = max(5, int(tkw["epochs"] * quick_epoch_factor))
+                print(f"    Training ({samples} samples, {epochs} epochs) …",
+                      end=" ", flush=True)
+                # Sequence model wrappers don't accept seed=
+                is_seq = relay_tag in ("transformer", "mamba_s6", "mamba2")
+                train_kw = dict(
+                    training_snrs=training_snrs,
+                    num_samples=samples,
+                    epochs=epochs,
+                    training_modulation=modulation,
+                )
+                if not is_seq:
+                    train_kw["seed"] = args.seed
+                relay.train(**train_kw)
+                print(f"done ({perf_counter() - t0:.1f}s)")
+                wm.save(vname, relay, subdir=subdir)
+        else:
+            wm.load(vname, relay, subdir=subdir)
+
+        # Evaluate
+        print(f"    Evaluating BER …", end=" ", flush=True)
+        t0 = perf_counter()
+        snrs, bers, trials = run_monte_carlo(
+            relay, snr_range,
+            num_bits_per_trial=args.bits_per_trial,
+            num_trials=args.num_trials,
+            modulation=modulation,
+        )
+        ci_lo, ci_hi = compute_confidence_interval(trials)
+        all_results[vname] = {
+            "ber_mean": bers,
+            "ber_trials": trials,
+            "ci_lower": ci_lo,
+            "ci_upper": ci_hi,
+            "params": getattr(relay, "num_params", 0),
+        }
+        print(f"done ({perf_counter() - t0:.1f}s)  "
+              f"BER@{int(snr_range[-1])}dB={bers[-1]:.6f}")
+
+    # Baselines
+    print("  Computing AF & DF baselines …")
+    for bname, relay in [("AF", AmplifyAndForwardRelay()),
+                          ("DF", DecodeAndForwardRelay())]:
+        _, bers, trials = run_monte_carlo(
+            relay, snr_range,
+            num_bits_per_trial=args.bits_per_trial,
+            num_trials=args.num_trials,
+            modulation=modulation,
+        )
+        ci_lo, ci_hi = compute_confidence_interval(trials)
+        all_results[bname] = {
+            "ber_mean": bers, "ber_trials": trials,
+            "ci_lower": ci_lo, "ci_upper": ci_hi,
+        }
+        print(f"    {bname} BER@{int(snr_range[-1])}dB = {bers[-1]:.6f}")
+
+    # ── Save JSON ──
+    save_results_json(
+        os.path.join(out, "all_relays_16class.json"),
+        snr_range, all_results,
+        meta={"experiment": "7.17", "modulation": modulation,
+              "description": "16-class 2D vs 4-class per-axis QAM16"},
+    )
+
+    # ── Save metadata ──
+    wm.save_metadata({
+        "experiment": "7.17",
+        "seed": args.seed,
+        "date": datetime.now().isoformat(),
+        "modulation": modulation,
+        "quick": args.quick,
+        "variants": [v[0] for v in _16CLS_VARIANTS],
+    }, subdir="16class")
+
+    # ── Charts ──
+    if not _HAS_MPL:
+        print(f"  §7.17 complete → {out}/")
+        return
+
+    # Style map for 16-class experiment
+    _16CLS_COLORS = {
+        "MLP 4-cls": "#D55E00", "MLP 16-cls": "#E69F00",
+        "VAE 4-cls": "#56B4E9", "VAE 16-cls": "#0072B2",
+        "CGAN 4-cls": "#CC79A7", "CGAN 16-cls": "#882255",
+        "Hybrid 4-cls": "#009E73", "Hybrid 16-cls": "#44AA99",
+        "Transformer 4-cls": "#F0E442", "Transformer 16-cls": "#B8860B",
+        "Mamba-S6 4-cls": "#7570B3", "Mamba-S6 16-cls": "#4B0082",
+        "Mamba2 4-cls": "#E7298A", "Mamba2 16-cls": "#A50026",
+        "AF": "#888888", "DF": "#333333",
+    }
+    _16CLS_MARKERS = {
+        "MLP 4-cls": "o", "MLP 16-cls": "s",
+        "VAE 4-cls": "^", "VAE 16-cls": "v",
+        "CGAN 4-cls": "D", "CGAN 16-cls": "d",
+        "Hybrid 4-cls": "p", "Hybrid 16-cls": "h",
+        "Transformer 4-cls": "P", "Transformer 16-cls": "X",
+        "Mamba-S6 4-cls": "*", "Mamba-S6 16-cls": "H",
+        "Mamba2 4-cls": "8", "Mamba2 16-cls": "1",
+        "AF": "<", "DF": ">",
+    }
+    extra_styles = {}
+    for name in all_results:
+        color = _16CLS_COLORS.get(name, PALETTE[0])
+        marker = _16CLS_MARKERS.get(name, "o")
+        ls = "--" if "4-cls" in name else (":" if name in ("AF", "DF") else "-")
+        extra_styles[name] = {"color": color, "marker": marker, "ls": ls}
+
+    ber_dict = {n: r["ber_mean"] for n, r in all_results.items()}
+    ci_dict = {n: (r["ci_lower"], r["ci_upper"]) for n, r in all_results.items()}
+
+    # Main BER chart
+    plot_ber_chart(
+        snr_range, ber_dict, ci_dict,
+        title="16-Class 2D vs 4-Class per-Axis — QAM16 (§7.17)",
+        save_path=os.path.join(out, "ber_16class_ci.png"),
+        extra_styles=extra_styles,
+    )
+    # Top-3
+    plot_top3_chart(
+        snr_range, all_results,
+        title="Top-3 — 16-Class QAM16 (§7.17)",
+        save_path=os.path.join(out, "ber_16class_top3.png"),
+    )
+    # Achievement
+    plot_achievement_chart(
+        snr_range, all_results,
+        title="Achievement — 16-Class QAM16 (§7.17)",
+        save_path=os.path.join(out, "ber_16class_achievement.png"),
+    )
+    # BER summary table
+    print_ber_summary_table(snr_range, all_results,
+                            title="§7.17 16-Class 2D QAM16")
+
+    # Grouped bar chart: 4-cls vs 16-cls at highest SNR
+    architectures = ["MLP", "VAE", "CGAN", "Hybrid",
+                     "Transformer", "Mamba-S6", "Mamba2"]
+    snr_last_idx = len(snr_range) - 1
+    ber_4 = []
+    ber_16 = []
+    valid_archs = []
+    for arch in architectures:
+        n4 = f"{arch} 4-cls"
+        n16 = f"{arch} 16-cls"
+        if n4 in all_results and n16 in all_results:
+            ber_4.append(all_results[n4]["ber_mean"][snr_last_idx])
+            ber_16.append(all_results[n16]["ber_mean"][snr_last_idx])
+            valid_archs.append(arch)
+
+    if valid_archs:
+        fig, ax = plt.subplots(figsize=(10, 5))
+        x = np.arange(len(valid_archs))
+        w = 0.3
+        ax.bar(x - w / 2, ber_4, w, label="4-class per-axis",
+               color="#D55E00", edgecolor="black", linewidth=0.5, alpha=0.8)
+        ax.bar(x + w / 2, ber_16, w, label="16-class 2D",
+               color="#0072B2", edgecolor="black", linewidth=0.5, alpha=0.8)
+        if "DF" in all_results:
+            df_ber = all_results["DF"]["ber_mean"][snr_last_idx]
+            ax.axhline(y=df_ber, color="#333333", linewidth=1.5, linestyle="--",
+                       label=f"DF = {df_ber:.5f}")
+        ax.set_xticks(x)
+        ax.set_xticklabels(valid_archs, fontsize=12)
+        ax.set_ylabel(f"BER @ {int(snr_range[-1])} dB", fontsize=14)
+        ax.set_title("BER @ 20 dB — 4-Class vs 16-Class per Architecture",
+                      fontsize=14)
+        ax.legend(fontsize=11, loc="upper right")
+        ax.grid(True, axis="y", linewidth=0.4, alpha=0.4)
+        plt.tight_layout()
+        plt.savefig(os.path.join(out, "ber_16class_bar.png"),
+                    dpi=150, bbox_inches="tight")
+        plt.close(fig)
+        print(f"  Bar chart → {out}/ber_16class_bar.png")
+
+    print(f"  §7.17 complete → {out}/")
+
+
+
 # ════════════════════════════════════════════════════════════════════
 # Experiment registry
 # ════════════════════════════════════════════════════════════════════
@@ -1685,6 +2061,7 @@ EXPERIMENTS = {
     "7.14": ("CSI Injection",                       exp_7_14_csi_injection),
     "7.15": ("Multi-Architecture CSI",              exp_7_15_multi_csi),
     "7.16": ("E2E Autoencoder",                     exp_7_16_e2e),
+    "7.17": ("16-Class 2D QAM16",                   exp_7_17_16class_2d),
     "constellations": ("Constellation Diagrams",    exp_constellations),
 }
 
@@ -1949,6 +2326,44 @@ def regenerate_all_charts(args):
         _regen_from_json(j, e2e_dir, tag, title)
         count += 1
 
+    # ── §7.17 16-Class 2D QAM16 ──
+    cls16_dir = os.path.join(results_dir, "all_relays_16class")
+    j = os.path.join(cls16_dir, "all_relays_16class.json")
+    if os.path.exists(j):
+        print(f"\n── §7.17 16-Class 2D QAM16 ──")
+        # Custom styles for 16-class experiment
+        _16cls_colors = {
+            "MLP 4-cls": "#D55E00", "MLP 16-cls": "#E69F00",
+            "VAE 4-cls": "#56B4E9", "VAE 16-cls": "#0072B2",
+            "CGAN 4-cls": "#CC79A7", "CGAN 16-cls": "#882255",
+            "Hybrid 4-cls": "#009E73", "Hybrid 16-cls": "#44AA99",
+            "Transformer 4-cls": "#F0E442", "Transformer 16-cls": "#B8860B",
+            "Mamba-S6 4-cls": "#7570B3", "Mamba-S6 16-cls": "#4B0082",
+            "Mamba2 4-cls": "#E7298A", "Mamba2 16-cls": "#A50026",
+            "AF": "#888888", "DF": "#333333",
+        }
+        _16cls_markers = {
+            "MLP 4-cls": "o", "MLP 16-cls": "s",
+            "VAE 4-cls": "^", "VAE 16-cls": "v",
+            "CGAN 4-cls": "D", "CGAN 16-cls": "d",
+            "Hybrid 4-cls": "p", "Hybrid 16-cls": "h",
+            "Transformer 4-cls": "P", "Transformer 16-cls": "X",
+            "Mamba-S6 4-cls": "*", "Mamba-S6 16-cls": "H",
+            "Mamba2 4-cls": "8", "Mamba2 16-cls": "1",
+            "AF": "<", "DF": ">",
+        }
+        data = load_results_json(j)
+        extra_styles = {}
+        for name in data["results"]:
+            c = _16cls_colors.get(name, PALETTE[0])
+            m = _16cls_markers.get(name, "o")
+            ls = "--" if "4-cls" in name else (":" if name in ("AF", "DF") else "-")
+            extra_styles[name] = {"color": c, "marker": m, "ls": ls}
+        _regen_from_json(j, cls16_dir, "ber_16class",
+                         "16-Class 2D vs 4-Class — QAM16 (§7.17)",
+                         extra_styles=extra_styles)
+        count += 1
+
     print(f"\n{'='*60}")
     print(f"  Regenerated charts from {count} JSON files")
     print(f"{'='*60}")
@@ -1981,6 +2396,8 @@ Examples:
     p.add_argument("--seed", type=int, default=42)
     p.add_argument("--inference-only", action="store_true",
                    help="Skip training; load saved weights.")
+    p.add_argument("--retrain", action="store_true",
+                   help="Force retraining even if cached weights exist.")
     p.add_argument("--weights-dir", type=str, default="weights",
                    help="Directory for weight storage.")
     p.add_argument("--results-dir", type=str, default="results",
@@ -2025,15 +2442,26 @@ def main():
         if args.num_trials == 10:
             args.num_trials = 3
 
+    # Ensure --retrain attribute exists
+    if not hasattr(args, "retrain"):
+        args.retrain = False
+
+    # Setup logging
+    log_file = setup_logging(args.results_dir)
+
     print(f"\n{'='*60}")
     print(f"  Thesis Experiment Runner")
     print(f"  Experiments: {', '.join(to_run)}")
     print(f"  Quick: {args.quick}  |  GPU: {args.gpu}  |  Seed: {args.seed}")
+    print(f"  Retrain: {args.retrain}  |  Inference-only: {args.inference_only}")
     print(f"  Results → {args.results_dir}/  |  Weights → {args.weights_dir}/")
+    print(f"  Log → {log_file}")
     print(f"{'='*60}")
 
     t_start = perf_counter()
     ran_relay_comparison = False
+    succeeded = []
+    failed = []
 
     for exp_key in to_run:
         if exp_key not in EXPERIMENTS:
@@ -2046,12 +2474,17 @@ def main():
                 continue
             ran_relay_comparison = True
 
-        _, func = EXPERIMENTS[exp_key]
-        func(args)
+        desc, func = EXPERIMENTS[exp_key]
+        ok = run_experiment_safe(f"§{exp_key} {desc}", func, args)
+        (succeeded if ok else failed).append(exp_key)
 
     elapsed = perf_counter() - t_start
     print(f"\n{'='*60}")
     print(f"  All experiments completed in {elapsed:.1f}s")
+    print(f"  Succeeded: {len(succeeded)}  |  Failed: {len(failed)}")
+    if failed:
+        print(f"  Failed experiments: {', '.join(failed)}")
+        print(f"  See {args.results_dir}/logs/ for details")
     print(f"{'='*60}")
 
 
