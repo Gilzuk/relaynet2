@@ -64,10 +64,14 @@ class HybridRelay(Relay):
     def __init__(self, snr_threshold=5.0, target_power=1.0,
                  mlp_window_size=5, mlp_hidden_size=24, prefer_gpu=True,
                  output_activation="tanh", clip_range=None,
+                 classify=False, training_modulation="bpsk",
+                 classify_2d=False,
                  # Legacy aliases
                  genai_window_size=None, genai_hidden_size=None):
         self.snr_threshold = snr_threshold
         self.target_power = target_power
+        self.classify_2d = classify_2d
+        self._training_modulation = training_modulation
 
         # Support legacy parameter names
         ws = genai_window_size if genai_window_size is not None else mlp_window_size
@@ -80,6 +84,9 @@ class HybridRelay(Relay):
             prefer_gpu=prefer_gpu,
             output_activation=output_activation,
             clip_range=clip_range,
+            classify=classify,
+            training_modulation=training_modulation,
+            classify_2d=classify_2d,
         )
         self.df_relay = DecodeAndForwardRelay(target_power=target_power, prefer_gpu=prefer_gpu)
         self.device = getattr(self.mlp_relay, "device", None)
@@ -133,6 +140,34 @@ class HybridRelay(Relay):
 
         if est_snr < self.snr_threshold:
             return self.mlp_relay.process(received_signal)
+
+        # DF path — modulation-aware
+        if self.classify_2d and np.iscomplexobj(received_signal):
+            # QAM16 2D: nearest-constellation-point detection on complex signal
+            norm = np.sqrt(10.0)
+            levels = np.array([-3.0, -1.0, 1.0, 3.0])
+            I = received_signal.real * norm
+            Q = received_signal.imag * norm
+            I_idx = np.argmin(np.abs(I[:, None] - levels[None, :]), axis=1)
+            Q_idx = np.argmin(np.abs(Q[:, None] - levels[None, :]), axis=1)
+            clean = (levels[I_idx] + 1j * levels[Q_idx]) / norm
+            pwr = np.mean(np.abs(clean) ** 2)
+            if pwr > 0:
+                clean = clean * np.sqrt(self.target_power / pwr)
+            return clean
+
+        if self._training_modulation == "qam16":
+            # QAM16 per-axis: 4-level quantisation on real I or Q component
+            norm = np.sqrt(10.0)
+            levels = np.array([-3.0, -1.0, 1.0, 3.0])
+            scaled = received_signal * norm
+            idx = np.argmin(np.abs(scaled[:, None] - levels[None, :]), axis=1)
+            clean = levels[idx] / norm
+            pwr = np.mean(clean ** 2)
+            if pwr > 0:
+                clean = clean * np.sqrt(self.target_power / pwr)
+            return clean
+
         return self.df_relay.process(received_signal)
 
     # ------------------------------------------------------------------

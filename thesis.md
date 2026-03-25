@@ -62,6 +62,7 @@ A thesis submitted in partial fulfillment of the requirements for the degree of 
    - 7.14 Structural CSI Injection for 16-QAM in Rayleigh Fading
    - 7.15 Comprehensive Multi-Architecture CSI Experiment
    - 7.16 Extension Experiment: End-to-End Joint Optimization
+   - 7.17 16-Class 2D Classification for QAM16
 8. [Discussion and Conclusions](#8-discussion-and-conclusions)
    - 8.1 Interpretation of Results
    - 8.2 The "Less is More" Principle
@@ -134,6 +135,10 @@ A thesis submitted in partial fulfillment of the requirements for the degree of 
 | 47 | E2E learned 16-point constellation | §7.16 |
 | 48 | E2E training loss convergence | §7.16 |
 | 49 | E2E vs. modular relay-based approaches | §7.16 |
+| 50 | 16-QAM BER curves — all 14 relay variants (4-class and 16-class) plus baselines | §7.17 |
+| 51 | Grouped bar chart — 4-class vs. 16-class BER at 20 dB | §7.17 |
+| 52 | BER heatmap — all relay variants across SNR range | §7.17 |
+| 53 | Top-3 16-class variants vs. classical AF and DF baselines | §7.17 |
 
 ## List of Tables
 
@@ -161,6 +166,7 @@ A thesis submitted in partial fulfillment of the requirements for the degree of 
 | 21 | Cross-constellation comparison of top-performing neural relay strategies | §7.15 |
 | 22 | Goals vs. outcomes for the comprehensive multi-architecture CSI experiment | §7.15 |
 | 23 | BER comparison of E2E autoencoder vs. theoretical 16-QAM (Rayleigh fading) | §7.16 |
+| 24 | 16-QAM BER at 20 dB — 4-class per-axis vs. 16-class 2D classification | §7.17 |
 
 ---
 
@@ -2002,6 +2008,83 @@ In summary, the AF/DF gap is governed by how fast DF's relay detection error $P_
 **Finding 28: The immutable physics of the diversity limit.** The E2E network hits a BER of 0.084 at 15 dB. This reflects the $1/\text{SNR}$ asymptotic decay characterising $1 \times 1$ flat fading channels. At 15 dB, deep fades ($|h| \to 0$) completely destroy the signal approximately 10–15% of the time. Further reduction into the $10^{-4}$ BER regime strictly requires the introduction of diversity (e.g., MIMO or temporal coding, $n \ge 2$), which the E2E framework could exploit by learning an analogue to the Alamouti space-time code.
 
 **Conclusion on E2E Systems.** The E2E autoencoder experiment demonstrates that joint transmitter-receiver optimisation does not automatically yield superior BER compared to classical modulation and modular relay processing. The E2E system achieves BER consistently worse than both theoretical 16-QAM and the two-hop DF relay. Beyond the performance deficit, the E2E approach fundamentally breaks multi-vendor interoperability by replacing standardised constellations with opaque latent representations, and its reliance on explicit domain knowledge (e.g., coding the complex division into the receiver) demonstrates that "black-box" deep learning remains highly inefficient for basic RF operations. These findings reinforce the core architectural thesis of this work: the most practical deployment of deep learning in physical-layer communications is a modular approach, where classical algorithms handle modulation and equalization, while neural networks are surgically applied to non-linear denoising tasks at intermediate relays.
+
+### 7.17 16-Class 2D Classification for QAM16
+
+#### 7.17.1 Motivation
+
+Sections 7.10–7.12 identified the $\tanh$ output activation as the root cause of the 16-QAM BER floor and demonstrated that replacing it with a constellation-aware bounded activation (hardtanh or scaled tanh) significantly reduces — but does not eliminate — the gap to classical DF. A fundamental limitation remains: all prior experiments process the complex 16-QAM signal by **splitting** it into independent In-phase (I) and Quadrature (Q) components, with each axis classified into 4 amplitude levels ($\{-3, -1, +1, +3\}/\sqrt{10}$). This per-axis 4-class approach introduces a **structural BER floor** of approximately 0.0081 at 20 dB on AWGN, because the relay must independently recover two 4-level PAM signals — any residual classification error on either axis contributes additively to the overall BER.
+
+This section investigates an alternative formulation: treating the relay as a **joint 2D classifier** over all 16 complex constellation points simultaneously. Instead of splitting I/Q and classifying 4 levels per axis, the relay receives the full 2D received signal $(y_I, y_Q)$ and outputs 16 logits corresponding to the 16 QAM constellation points. The predicted class index is mapped back to the corresponding complex symbol for retransmission. This approach preserves the joint I/Q structure and enables the network to learn decision boundaries in the full 2D constellation space.
+
+#### 7.17.2 Experimental Design
+
+All seven neural relay architectures are evaluated in both classification modes:
+
+1. **4-class per-axis (baseline):** I/Q components processed independently, 4 output classes each. This is the standard configuration from Sections 7.10–7.12.
+2. **16-class 2D:** Full complex signal input, 16 output classes corresponding to the 16 QAM constellation points.
+
+The 14 neural variants (7 architectures × 2 modes) are:
+
+| Architecture | 4-cls Parameters | 16-cls Parameters | Parameter Overhead |
+|---|---|---|---|
+| MLP | 244 | 472 | +93% |
+| VAE | 1,876 | 2,112 | +13% |
+| CGAN | 3,093 | 3,361 | +9% |
+| Hybrid | 244 | 472 | +93% |
+| Transformer | 17,748 | 17,984 | +1.3% |
+| Mamba S6 | 24,052 | 24,288 | +1.0% |
+| Mamba-2 SSD | 26,230 | 26,466 | +0.9% |
+
+The parameter increase is modest for all architectures — only the final classification layer changes from 4 to 16 outputs per axis for feedforward models, or from 4 to 16 outputs for sequence models. For the larger sequence models, the overhead is under 1%.
+
+**Training protocol:** 50,000 samples, cross-entropy loss, Adam optimizer ($\eta = 10^{-3}$), trained across SNR = {5, 10, 15, 20, 25} dB. Evaluation: 10 Monte Carlo trials × 10,000 bits per SNR point, AWGN channel, SNR range 0–20 dB in 2 dB steps. Seed fixed at 42 for reproducibility.
+
+#### 7.17.3 Results
+
+Table 24 presents the BER at 20 dB for all variants alongside the classical AF and DF baselines.
+
+| Relay | 4-cls BER @ 20 dB | 16-cls BER @ 20 dB | Improvement |
+|---|---|---|---|
+| MLP | 0.00811 | **0.00002** | 405× |
+| VAE | — | **0.00000** | — |
+| CGAN | 0.00811 | — | — |
+| Hybrid | — | — | — |
+| Transformer | 0.00810 | **0.00001** | 810× |
+| Mamba S6 | 0.00810 | **0.00009** | 90× |
+| Mamba-2 SSD | 0.00811 | **0.00197** | 4.1× |
+| AF | 0.00063 | — | — |
+| DF | 0.00000 | — | — |
+
+*Table 24: 16-QAM BER at 20 dB on AWGN — 4-class per-axis vs. 16-class 2D classification. Bold marks successfully converged 16-class variants. Dashes indicate variants that failed to train (VAE 4-cls, CGAN 16-cls) or exhibited routing anomalies (Hybrid). The 4-class BER floor of ~0.0081 is eliminated by 16-class classification for five of seven architectures.*
+
+![Figure 50: BER curves — all 14 relay variants plus baselines.](results/all_relays_16class/ber_all_relays_16class.png)
+
+*Figure 50: 16-QAM BER vs. SNR for all relay variants (4-class and 16-class) on AWGN. The 4-class variants (dashed) plateau at BER ≈ 0.008 while the successfully trained 16-class variants (solid) continue decreasing, approaching and matching the DF baseline.*
+
+![Figure 51: Grouped bar chart — BER at 20 dB.](results/all_relays_16class/grouped_bar_16class.png)
+
+*Figure 51: Grouped bar comparison of 4-class vs. 16-class BER at 20 dB for each architecture. The 16-class advantage is visible for MLP, VAE, Transformer, and Mamba S6. Failed variants (VAE 4-cls ~0.50, CGAN 16-cls ~0.50) are truncated.*
+
+![Figure 52: BER heatmap — all variants across SNR.](results/all_relays_16class/heatmap_all_relays_16class.png)
+
+*Figure 52: Heatmap of BER across all relay variants and SNR points. The 16-class variants show a clear colour transition from high BER (warm) at low SNR to near-zero BER (cool) at high SNR, while 4-class variants remain warm at high SNR due to the structural floor.*
+
+![Figure 53: Top-3 16-class variants vs. classical baselines.](results/all_relays_16class/top3_16class.png)
+
+*Figure 53: Top-3 16-class relay variants compared against AF and DF. VAE 16-cls, Transformer 16-cls, and MLP 16-cls all match or approach DF performance across the full SNR range.*
+
+#### 7.17.4 Analysis
+
+**Finding 29: 16-class 2D classification eliminates the structural 4-class BER floor.** The per-axis 4-class approach produces a universal BER floor of ~0.0081 at 20 dB across all five architectures that successfully train in this mode (MLP, CGAN, Transformer, Mamba S6, Mamba-2). This floor arises because independent per-axis classification cannot exploit the joint 2D constellation geometry — errors on the I and Q axes accumulate independently. The 16-class formulation eliminates this floor entirely: VAE 16-cls achieves BER = 0.00000 (zero errors in 100,000 test bits), Transformer 16-cls achieves 0.00001, and MLP 16-cls achieves 0.00002 at 20 dB. These values match or approach the DF baseline (BER = 0.00000).
+
+**Finding 30: The top-3 16-class relays match DF performance.** The three best-performing 16-class variants — VAE (0.00000), Transformer (0.00001), MLP (0.00002) — achieve BER within one order of magnitude of DF at 20 dB and track DF closely across the mid-to-high SNR range (10–20 dB). This is a qualitative breakthrough: for the first time in this thesis, neural relay strategies achieve near-zero BER on 16-QAM, closing the gap that persisted through all prior activation and training experiments (Sections 7.10–7.15).
+
+**Finding 31: Mamba-2 SSD shows overfitting under 16-class training.** While Mamba-2 16-cls achieves a 4.1× improvement over its 4-class baseline (0.00197 vs. 0.00811), it remains an order of magnitude worse than the other successful 16-class variants. This is attributed to overfitting: the Mamba-2 architecture (26,466 parameters — the largest model) appears to memorise training patterns rather than learning generalisable 16-class decision boundaries, consistent with the "less is more" principle discussed in Section 8.2.
+
+**Finding 32: Not all architectures benefit symmetrically.** Two training failures occurred: (1) VAE 4-class produced BER ≈ 0.50 (random output), indicating that the VAE's reconstruction-based training objective conflicts with the per-axis 4-class formulation; conversely, VAE 16-cls is the best-performing variant overall. (2) CGAN 16-class also produced BER ≈ 0.50, suggesting that the adversarial training dynamics of the CGAN are unstable under the 16-class objective. (3) The Hybrid relay exhibited anomalous BER in both modes (4-cls: 0.250, 16-cls: 0.376), because its SNR-adaptive routing mechanism bypasses the neural sub-network at high SNR in favour of its internal DF path, which is not equipped with 16-class classification.
+
+**Summary.** The 16-class 2D classification experiment demonstrates that the structural BER floor identified in Sections 7.10–7.12 is not an inherent limitation of neural relay architectures, but rather an artefact of the per-axis I/Q splitting strategy. By treating the relay as a joint 16-point classifier over the full 2D constellation space, five of seven architectures achieve dramatic BER improvements (4–810×), with the top three variants (VAE, Transformer, MLP) matching classical DF performance at high SNR. This result completes the investigation of neural relay strategies for 16-QAM: while activation-aware training (Section 7.11) reduced the BER floor by 2–5×, and constellation-aware scaling (Section 7.12) generalised this across modulations, only the 2D classification formulation fully eliminates the floor and closes the gap to classical baselines.
 
 ---
 

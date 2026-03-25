@@ -50,6 +50,8 @@ from relaynet.nodes import Source, Destination
 from relaynet.relays.base import Relay
 
 from relaynet.utils.activations import make_torch_activation, generate_training_targets
+from relaynet.utils.activations import get_num_classes, get_constellation_levels, symbols_to_class_indices
+from relaynet.utils.activations import generate_training_targets_2d, get_constellation_2d
 
 
 # ======================================================================
@@ -288,11 +290,13 @@ class Mamba2Relay(nn.Module):
 
     def __init__(self, window_size=11, d_model=32, d_state=16,
                  num_layers=2, chunk_size=8, output_activation="tanh",
-                 use_input_norm=False, clip_range=None, in_channels=1):
+                 use_input_norm=False, clip_range=None, in_channels=1,
+                 num_classes=1):
         super().__init__()
         self.window_size = window_size
         self.d_model = d_model
         self.use_input_norm = use_input_norm
+        self.num_classes = num_classes
 
         self.input_proj = nn.Linear(in_channels, d_model)
 
@@ -306,13 +310,22 @@ class Mamba2Relay(nn.Module):
             for _ in range(num_layers)
         ])
 
-        self.output_proj = nn.Sequential(
-            nn.LayerNorm(d_model),
-            nn.Linear(d_model, d_model // 2),
-            nn.SiLU(),
-            nn.Linear(d_model // 2, 1),
-            make_torch_activation(output_activation, clip_range=clip_range),
-        )
+        out_dim = num_classes if num_classes > 1 else 1
+        if num_classes > 1:
+            self.output_proj = nn.Sequential(
+                nn.LayerNorm(d_model),
+                nn.Linear(d_model, d_model // 2),
+                nn.SiLU(),
+                nn.Linear(d_model // 2, out_dim),
+            )
+        else:
+            self.output_proj = nn.Sequential(
+                nn.LayerNorm(d_model),
+                nn.Linear(d_model, d_model // 2),
+                nn.SiLU(),
+                nn.Linear(d_model // 2, 1),
+                make_torch_activation(output_activation, clip_range=clip_range),
+            )
 
         self.apply(self._init_weights)
 
@@ -341,7 +354,10 @@ class Mamba2Relay(nn.Module):
             x = block(x)
         center = self.window_size // 2
         x = x[:, center, :]              # -> (B, d_model)
-        return self.output_proj(x) + x_raw[:, center, 0:1]
+        out = self.output_proj(x)
+        if self.num_classes <= 1:
+            return out + x_raw[:, center, 0:1]
+        return out
 
 
 # ======================================================================
@@ -355,13 +371,33 @@ class Mamba2RelayWrapper(Relay):
     def __init__(self, target_power=1.0, window_size=11, d_model=32,
                  d_state=16, num_layers=2, chunk_size=8, prefer_gpu=False,
                  output_activation="tanh", use_input_norm=False, clip_range=None,
-                 in_channels=1):
+                 in_channels=1, classify=False, training_modulation="bpsk",
+                 classify_2d=False):
         self.target_power = target_power
         self.window_size = window_size
         self.output_activation = output_activation
         self.use_input_norm = use_input_norm
         self.clip_range = clip_range
         self.in_channels = in_channels
+        self.classify = classify
+        self.classify_2d = classify_2d
+        self._training_modulation = training_modulation
+
+        if classify_2d:
+            self.classify = True
+            self.num_classes = 16
+            self._constellation_2d = get_constellation_2d("qam16")
+            self._constellation_levels_np = None
+            in_channels = 2
+            self.in_channels = in_channels
+        elif classify:
+            self.num_classes = get_num_classes(training_modulation)
+            self._constellation_levels_np = get_constellation_levels(training_modulation)
+            self._constellation_2d = None
+        else:
+            self.num_classes = 1
+            self._constellation_levels_np = None
+            self._constellation_2d = None
 
         if prefer_gpu:
             if torch.cuda.is_available():
@@ -383,6 +419,7 @@ class Mamba2RelayWrapper(Relay):
             use_input_norm=use_input_norm,
             clip_range=clip_range,
             in_channels=in_channels,
+            num_classes=self.num_classes,
         ).to(self.device)
 
         self.is_trained = False
@@ -401,7 +438,11 @@ class Mamba2RelayWrapper(Relay):
                 X_batch = X[i:i+batch_size]
                 y_batch = y_true[i:i+batch_size]
                 output = self.model(X_batch)
-                correct += (torch.sign(output) == torch.sign(y_batch)).sum().item()
+                if self.classify and self.num_classes > 1:
+                    predicted = output.argmax(dim=-1)
+                    correct += (predicted == y_batch.squeeze(-1)).sum().item()
+                else:
+                    correct += (torch.sign(output) == torch.sign(y_batch)).sum().item()
                 total += y_batch.numel()
         return correct / total if total > 0 else 0.0
 
@@ -438,39 +479,64 @@ class Mamba2RelayWrapper(Relay):
         X_all, y_all = [], []
 
         in_channels = self.model.input_proj.in_features
-        return_csi = (in_channels > 1)
 
-        for snr in training_snrs:
-            rng_seed = (42 + int(snr)) if seed is None else (seed + int(snr))
-            if return_csi:
-                clean, noisy, h_csi = generate_training_targets(
-                    samples_per_snr, snr,
-                    training_modulation=training_modulation,
-                    seed=rng_seed,
-                    use_rayleigh=use_rayleigh,
-                    return_csi=True
-                )
-                features = np.column_stack([noisy, np.abs(h_csi)])
-            else:
-                clean, noisy = generate_training_targets(
-                    samples_per_snr, snr,
-                    training_modulation=training_modulation,
-                    seed=rng_seed,
-                    use_rayleigh=use_rayleigh,
-                    return_csi=False
-                )
-                features = noisy.reshape(-1, 1)
-
+        if self.classify_2d:
+            y_cls_all = []
             half = self.window_size // 2
-            for i in range(half, len(noisy) - half):
-                window = features[i - half: i + half + 1]
-                X_all.append(window)
-                y_all.append(clean[i])
+            for snr in training_snrs:
+                rng_seed = (42 + int(snr)) if seed is None else (seed + int(snr))
+                _clean, noisy_c, labels = generate_training_targets_2d(
+                    samples_per_snr, snr, seed=rng_seed,
+                )
+                rx_I = np.pad(noisy_c.real, half, mode="edge")
+                rx_Q = np.pad(noisy_c.imag, half, mode="edge")
+                for i in range(half, len(noisy_c) + half):
+                    i_win = rx_I[i - half: i + half + 1]
+                    q_win = rx_Q[i - half: i + half + 1]
+                    X_all.append(np.column_stack([i_win, q_win]))
+                    y_cls_all.append(labels[i - half])
+            X_full = torch.FloatTensor(np.array(X_all)).to(self.device)
+            y_full = torch.LongTensor(np.array(y_cls_all)).to(self.device)
+            use_ce = True
+        else:
+            return_csi = (in_channels > 1)
 
-        X_full = torch.FloatTensor(np.array(X_all)).to(self.device)
-        y_full = torch.FloatTensor(np.array(y_all).reshape(-1, 1)).to(self.device)
+            for snr in training_snrs:
+                rng_seed = (42 + int(snr)) if seed is None else (seed + int(snr))
+                if return_csi:
+                    clean, noisy, h_csi = generate_training_targets(
+                        samples_per_snr, snr,
+                        training_modulation=training_modulation,
+                        seed=rng_seed,
+                        use_rayleigh=use_rayleigh,
+                        return_csi=True
+                    )
+                    features = np.column_stack([noisy, np.abs(h_csi)])
+                else:
+                    clean, noisy = generate_training_targets(
+                        samples_per_snr, snr,
+                        training_modulation=training_modulation,
+                        seed=rng_seed,
+                        use_rayleigh=use_rayleigh,
+                        return_csi=False
+                    )
+                    features = noisy.reshape(-1, 1)
 
-        # Train / validation split
+                half = self.window_size // 2
+                for i in range(half, len(noisy) - half):
+                    window = features[i - half: i + half + 1]
+                    X_all.append(window)
+                    y_all.append(clean[i])
+
+            X_full = torch.FloatTensor(np.array(X_all)).to(self.device)
+            y_clean = np.array(y_all)
+
+            use_ce = self.classify and self.num_classes > 1
+            if use_ce:
+                y_cls = symbols_to_class_indices(y_clean, training_modulation)
+                y_full = torch.LongTensor(y_cls).to(self.device)
+            else:
+                y_full = torch.FloatTensor(y_clean.reshape(-1, 1)).to(self.device)
         n_total = len(X_full)
         n_val = max(1, int(n_total * val_split))
         perm = torch.randperm(n_total)
@@ -481,7 +547,7 @@ class Mamba2RelayWrapper(Relay):
         print(f"  Training data: {len(X_train):,} train, {len(X_val):,} val samples")
 
         optimizer = optim.Adam(self.model.parameters(), lr=lr)
-        criterion = nn.MSELoss()
+        criterion = nn.CrossEntropyLoss() if use_ce else nn.MSELoss()
 
         batch_size = 64
         best_loss = float("inf")
@@ -561,6 +627,26 @@ class Mamba2RelayWrapper(Relay):
 
         self.model.eval()
 
+        # --- classify_2d: complex signal path ---
+        if self.classify_2d and np.iscomplexobj(received_signal):
+            n = len(received_signal)
+            half = self.window_size // 2
+            rx_I = np.pad(received_signal.real, half, mode="edge")
+            rx_Q = np.pad(received_signal.imag, half, mode="edge")
+            windows = np.zeros((n, self.window_size, 2), dtype=np.float32)
+            for i in range(n):
+                windows[i, :, 0] = rx_I[i: i + self.window_size]
+                windows[i, :, 1] = rx_Q[i: i + self.window_size]
+            with torch.no_grad():
+                inp = torch.as_tensor(windows, dtype=torch.float32, device=self.device)
+                out = self.model(inp)
+                indices = out.argmax(dim=-1).cpu().numpy()
+            processed = self._constellation_2d[indices]
+            current_power = np.mean(np.abs(processed) ** 2)
+            if current_power > 0:
+                return processed * np.sqrt(self.target_power / current_power)
+            return processed
+
         # Unpack CSI if provided
         if isinstance(received_signal, tuple):
             if self.in_channels == 1:
@@ -592,7 +678,12 @@ class Mamba2RelayWrapper(Relay):
             inp = torch.as_tensor(
                 windows, dtype=torch.float32, device=self.device,
             )
-            processed = self.model(inp).cpu().numpy().flatten()
+            out = self.model(inp)
+            if self.classify and self.num_classes > 1:
+                indices = out.argmax(dim=-1).cpu().numpy()
+                processed = self._constellation_levels_np[indices]
+            else:
+                processed = out.cpu().numpy().flatten()
 
         current_power = np.mean(np.abs(processed) ** 2)
         if current_power > 0:

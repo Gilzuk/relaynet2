@@ -19,7 +19,9 @@ from relaynet.channels.awgn import awgn_channel
 from relaynet.utils.torch_compat import get_preferred_device, to_numpy
 from relaynet.utils.activations import (
     apply_activation, activation_derivative, make_torch_activation,
-    generate_training_targets,
+    generate_training_targets, generate_training_targets_2d,
+    get_num_classes, get_constellation_levels, symbols_to_class_indices,
+    get_constellation_2d, complex_symbols_to_2d_class_indices,
 )
 
 
@@ -31,16 +33,18 @@ class _GenNP:
     """Small generator network (NumPy)."""
 
     def __init__(self, window_size=7, noise_size=8, output_activation="tanh",
-                 clip_range=None):
+                 clip_range=None, num_classes=1):
         inp = window_size + noise_size
+        self.num_classes = num_classes
+        out_dim = num_classes if num_classes > 1 else 1
         self.W1 = np.random.randn(inp, 32) * np.sqrt(2 / inp)
         self.b1 = np.zeros(32)
         self.W2 = np.random.randn(32, 32) * np.sqrt(2 / 32)
         self.b2 = np.zeros(32)
         self.W3 = np.random.randn(32, 16) * np.sqrt(2 / 32)
         self.b3 = np.zeros(16)
-        self.W4 = np.random.randn(16, 1) * 0.1
-        self.b4 = np.zeros(1)
+        self.W4 = np.random.randn(16, out_dim) * 0.1
+        self.b4 = np.zeros(out_dim)
         self.output_activation = output_activation
         self.clip_range = clip_range
 
@@ -51,7 +55,10 @@ class _GenNP:
         self._h2 = np.maximum(0.2 * (self._h1 @ self.W2 + self.b2), self._h1 @ self.W2 + self.b2)
         self._h3 = np.maximum(0.2 * (self._h2 @ self.W3 + self.b3), self._h2 @ self.W3 + self.b3)
         z_out = self._h3 @ self.W4 + self.b4
-        out = apply_activation(z_out, self.output_activation, clip_range=self.clip_range)
+        if self.num_classes > 1:
+            out = z_out  # raw logits
+        else:
+            out = apply_activation(z_out, self.output_activation, clip_range=self.clip_range)
         self._out = out
         self._z_out = z_out
         return out
@@ -86,11 +93,17 @@ class _CritNP:
 def _build_torch_cgan(window_size, noise_size, lambda_gp, lambda_l1, n_critic,
                       device, g_hidden_sizes=(32, 32, 16),
                       c_hidden_sizes=(32, 16), output_activation="tanh",
-                      clip_range=None):
+                      clip_range=None, num_classes=1,
+                      training_modulation="bpsk",
+                      constellation_levels_np=None,
+                      classify_2d=False):
     """Return a PyTorch-based CGAN relay trainer (dict of objects)."""
     import torch
     import torch.nn as nn
     import torch.optim as optim
+    import torch.nn.functional as F
+
+    out_dim = num_classes if num_classes > 1 else 1
 
     class Generator(nn.Module):
         def __init__(self):
@@ -100,7 +113,10 @@ def _build_torch_cgan(window_size, noise_size, lambda_gp, lambda_l1, n_critic,
             for h in g_hidden_sizes:
                 layers.extend([nn.Linear(in_dim, h), nn.LeakyReLU(0.2)])
                 in_dim = h
-            layers.extend([nn.Linear(in_dim, 1), make_torch_activation(output_activation, clip_range=clip_range)])
+            if num_classes > 1:
+                layers.append(nn.Linear(in_dim, out_dim))
+            else:
+                layers.extend([nn.Linear(in_dim, 1), make_torch_activation(output_activation, clip_range=clip_range)])
             self.net = nn.Sequential(*layers)
             for m in self.modules():
                 if isinstance(m, nn.Linear):
@@ -115,7 +131,7 @@ def _build_torch_cgan(window_size, noise_size, lambda_gp, lambda_l1, n_critic,
         def __init__(self):
             super().__init__()
             layers = []
-            in_dim = 1 + window_size
+            in_dim = out_dim + window_size
             for h in c_hidden_sizes:
                 layers.extend([
                     nn.utils.spectral_norm(nn.Linear(in_dim, h)),
@@ -154,6 +170,46 @@ def _build_torch_cgan(window_size, noise_size, lambda_gp, lambda_l1, n_critic,
         X_t = torch.as_tensor(X_batch, dtype=torch.float32, device=device)
         y_t = torch.as_tensor(y_batch, dtype=torch.float32, device=device)
 
+        if num_classes > 1:
+            # Convert targets to class indices + one-hot for Critic
+            if classify_2d:
+                # y_batch already contains integer class labels (0..15)
+                y_idx = torch.as_tensor(
+                    y_batch.flatten().astype(int), dtype=torch.long, device=device,
+                )
+            else:
+                y_idx = torch.as_tensor(
+                    symbols_to_class_indices(y_batch.flatten(), training_modulation),
+                    dtype=torch.long, device=device,
+                )
+            y_onehot = F.one_hot(y_idx, num_classes).float()
+
+            # --- Critic steps ---
+            for _ in range(n_critic):
+                noise = torch.randn(X_t.size(0), noise_size, device=device)
+                fake_logits = G(X_t, noise).detach()
+                fake_prob = F.softmax(fake_logits, dim=-1)
+                loss_C = (
+                    -C(y_onehot, X_t).mean()
+                    + C(fake_prob, X_t).mean()
+                    + lambda_gp * gradient_penalty(y_onehot, fake_prob, X_t)
+                )
+                opt_C.zero_grad()
+                loss_C.backward()
+                opt_C.step()
+
+            # --- Generator step ---
+            noise = torch.randn(X_t.size(0), noise_size, device=device)
+            fake_logits = G(X_t, noise)
+            fake_prob = F.softmax(fake_logits, dim=-1)
+            ce_loss = F.cross_entropy(fake_logits, y_idx)
+            loss_G = -C(fake_prob, X_t).mean() + lambda_l1 * ce_loss
+            opt_G.zero_grad()
+            loss_G.backward()
+            opt_G.step()
+            return loss_G.item()
+
+        # --- Original regression path ---
         # --- Critic steps ---
         for _ in range(n_critic):
             noise = torch.randn(X_t.size(0), noise_size, device=device)
@@ -182,12 +238,10 @@ def _build_torch_cgan(window_size, noise_size, lambda_gp, lambda_l1, n_critic,
         with torch.no_grad():
             x_t = torch.as_tensor(window_np, dtype=torch.float32, device=device)
             noise = torch.zeros(x_t.size(0), noise_size, device=device)
-            # Avoid calling Tensor.numpy(): some torch builds (compiled against
-            # NumPy 1.x) can raise "RuntimeError: Numpy is not available" when
-            # used with NumPy 2.x. Converting via Python lists avoids the
-            # torch↔numpy bridge.
             out = G(x_t, noise)
         G.train()
+        if num_classes > 1:
+            return to_numpy(out, dtype=float)  # (N, num_classes) logits
         return to_numpy(out.flatten(), dtype=float)
 
     return {"train_step": train_step, "infer": infer,
@@ -208,7 +262,9 @@ class CGANRelay(Relay):
     def __init__(self, window_size=7, noise_size=8, target_power=1.0,
                  lambda_gp=10, lambda_l1=20, n_critic=5, prefer_gpu=True,
                  g_hidden_sizes=(32, 32, 16), c_hidden_sizes=(32, 16),
-                 output_activation="tanh", clip_range=None):
+                 output_activation="tanh", clip_range=None,
+                 classify=False, training_modulation="bpsk",
+                 classify_2d=False):
         self.window_size = window_size
         self.noise_size = noise_size
         self.target_power = target_power
@@ -219,33 +275,60 @@ class CGANRelay(Relay):
         self.c_hidden_sizes = c_hidden_sizes
         self.output_activation = output_activation
         self.clip_range = clip_range
+        self.classify = classify
+        self.classify_2d = classify_2d
+        self._training_modulation = training_modulation
         self.is_trained = False
         self.device = get_preferred_device(prefer_gpu=prefer_gpu)
+
+        if classify_2d:
+            self.classify = True
+            self.num_classes = 16
+            self._constellation_2d = get_constellation_2d("qam16")
+            self._constellation_levels_np = None
+        elif classify:
+            self.num_classes = get_num_classes(training_modulation)
+            self._constellation_levels_np = get_constellation_levels(training_modulation)
+            self._constellation_2d = None
+        else:
+            self.num_classes = 1
+            self._constellation_levels_np = None
+            self._constellation_2d = None
+
+        input_window = 2 * window_size if classify_2d else window_size
 
         self._use_torch = False
         try:
             import torch  # noqa: F401
             self._use_torch = True
             self._torch_model = _build_torch_cgan(
-                window_size, noise_size, lambda_gp, lambda_l1, n_critic,
+                input_window, noise_size, lambda_gp, lambda_l1, n_critic,
                 self.device, g_hidden_sizes, c_hidden_sizes,
                 output_activation=output_activation,
                 clip_range=clip_range,
+                num_classes=self.num_classes,
+                training_modulation=training_modulation,
+                constellation_levels_np=self._constellation_levels_np,
+                classify_2d=classify_2d,
             )
         except ImportError:
-            self._gen = _GenNP(window_size, noise_size, output_activation=output_activation,
-                               clip_range=clip_range)
-            self._crit = _CritNP(window_size)
+            if classify_2d:
+                raise RuntimeError("classify_2d requires PyTorch")
+            self._gen = _GenNP(input_window, noise_size, output_activation=output_activation,
+                               clip_range=clip_range, num_classes=self.num_classes)
+            self._crit = _CritNP(input_window)
 
     @property
     def num_params(self):
-        g_in = self.window_size + self.noise_size
+        out_dim = self.num_classes if self.num_classes > 1 else 1
+        input_window = 2 * self.window_size if self.classify_2d else self.window_size
+        g_in = input_window + self.noise_size
         g = 0
         for h in self.g_hidden_sizes:
             g += g_in * h + h
             g_in = h
-        g += g_in * 1 + 1  # output layer
-        c_in = 1 + self.window_size
+        g += g_in * out_dim + out_dim  # output layer
+        c_in = out_dim + input_window
         c = 0
         for h in self.c_hidden_sizes:
             c += c_in * h + h
@@ -278,18 +361,33 @@ class CGANRelay(Relay):
         samples_per_snr = num_samples // len(training_snrs)
         X_all, y_all = [], []
 
-        for snr in training_snrs:
-            clean, noisy = generate_training_targets(
-                samples_per_snr, snr,
-                training_modulation=training_modulation,
-                seed=42 + int(snr),
-            )
-            for i in range(pad, len(noisy) - pad):
-                X_all.append(noisy[i - pad: i + pad + 1])
-                y_all.append(clean[i])
+        if self.classify_2d:
+            for snr in training_snrs:
+                _clean, noisy_c, labels = generate_training_targets_2d(
+                    samples_per_snr, snr, seed=42 + int(snr),
+                )
+                rx_I = np.pad(noisy_c.real, pad, mode="edge")
+                rx_Q = np.pad(noisy_c.imag, pad, mode="edge")
+                for i in range(pad, len(noisy_c) + pad):
+                    i_win = rx_I[i - pad: i + pad + 1]
+                    q_win = rx_Q[i - pad: i + pad + 1]
+                    X_all.append(np.concatenate([i_win, q_win]))
+                    y_all.append(labels[i - pad])  # 16-class integer label
+            X = np.array(X_all, dtype=np.float32)
+            y = np.array(y_all, dtype=np.float32).reshape(-1, 1)
+        else:
+            for snr in training_snrs:
+                clean, noisy = generate_training_targets(
+                    samples_per_snr, snr,
+                    training_modulation=training_modulation,
+                    seed=42 + int(snr),
+                )
+                for i in range(pad, len(noisy) - pad):
+                    X_all.append(noisy[i - pad: i + pad + 1])
+                    y_all.append(clean[i])
 
-        X = np.array(X_all)
-        y = np.array(y_all).reshape(-1, 1)
+            X = np.array(X_all)
+            y = np.array(y_all).reshape(-1, 1)
 
         batch_size = 64
         if self._use_torch:
@@ -327,6 +425,34 @@ class CGANRelay(Relay):
         if not self.is_trained:
             return received_signal
 
+        # ── 16-class 2D mode: handle complex signal directly ──
+        if self.classify_2d and np.iscomplexobj(received_signal):
+            pad = self.window_size // 2
+            n = len(received_signal)
+            rx_I = np.pad(received_signal.real, pad, mode="edge")
+            rx_Q = np.pad(received_signal.imag, pad, mode="edge")
+            windows = np.array([
+                np.concatenate([
+                    rx_I[i - pad: i + pad + 1],
+                    rx_Q[i - pad: i + pad + 1],
+                ])
+                for i in range(pad, n + pad)
+            ], dtype=np.float32)
+
+            if self._use_torch:
+                out_raw = self._torch_model["infer"](windows)
+            else:
+                noise = np.zeros((n, self.noise_size))
+                out_raw = self._gen.forward(windows, noise)
+
+            indices = np.argmax(np.asarray(out_raw).reshape(-1, self.num_classes), axis=-1)
+            processed = self._constellation_2d[indices]  # complex
+            pwr = np.mean(np.abs(processed) ** 2)
+            if pwr > 0:
+                processed = processed * np.sqrt(self.target_power / pwr)
+            return processed
+
+        # ── Standard per-axis mode ──
         pad = self.window_size // 2
         padded = np.pad(received_signal, pad, mode="edge")
         n = len(received_signal)
@@ -334,10 +460,16 @@ class CGANRelay(Relay):
         windows = np.array([padded[i: i + self.window_size] for i in range(n)])
 
         if self._use_torch:
-            processed = self._torch_model["infer"](windows)
+            out_raw = self._torch_model["infer"](windows)
         else:
             noise = np.zeros((n, self.noise_size))
-            processed = self._gen.forward(windows, noise).flatten()
+            out_raw = self._gen.forward(windows, noise)
+
+        if self.classify and self.num_classes > 1:
+            indices = np.argmax(np.asarray(out_raw).reshape(-1, self.num_classes), axis=-1)
+            processed = self._constellation_levels_np[indices]
+        else:
+            processed = np.asarray(out_raw).flatten()
 
         pwr = np.mean(np.abs(processed) ** 2)
         if pwr > 0:
