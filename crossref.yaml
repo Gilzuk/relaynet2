@@ -1,0 +1,13 @@
+eqnos-cleveref: true
+eqnos-plus-name: "Eq."
+eqnos-star-name: "Equation"
+eqnos-number-by-section: false
+figureTitle: "Figure"
+tableTitle: "Table"
+figPrefix: "Fig."
+eqPrefix: "Eq."
+tblPrefix: "Table"
+secPrefix: "Section"
+autoSectionLabels: true
+linkReferences: true
+nameInLink: true

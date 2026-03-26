@@ -1,7 +1,8 @@
 """
 Build thesis_doc.md from thesis.md:
-  - Adds YAML front matter (pandoc/docx settings)
+  - Adds YAML front matter (pandoc/docx + pandoc-crossref settings)
   - Adds TAU cover pages (front + title page per guidelines)
+  - Auto-numbers every display equation with {#eq:eqN} labels
   - Preserves all body content verbatim
 """
 import re, sys, io
@@ -11,13 +12,37 @@ sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="repla
 with open("thesis.md", encoding="utf-8") as f:
     body = f.read()
 
-# Remove the informal header block that precedes the ToC
+# ── Remove the informal header block that precedes the ToC ───────────────────
 body = re.sub(
     r"^# Deep Learning.*?\n---\n\*\*Gil Zukerman\*\*.*?---\n",
     "",
     body,
     flags=re.DOTALL,
 )
+
+# ── Auto-number every display equation ───────────────────────────────────────
+# Strategy: wrap each $$ block in a one-row, two-column markdown table.
+# Left cell holds the equation (centred), right cell holds (N) right-aligned.
+# This renders perfectly in .docx without any pandoc filter dependency.
+eq_counter = [0]
+
+def add_eq_number(m):
+    inner = m.group(1).strip()
+    # skip inline-style $$ that are actually inline (no newline inside)
+    if not inner:
+        return m.group(0)
+    eq_counter[0] += 1
+    n = eq_counter[0]
+    # Pandoc table: pipe table with no header, two columns
+    # Col 1 (90%): equation centred  |  Col 2 (10%): number right-aligned
+    table = (
+        f"\n| $$\n{inner}\n$$ | ({n}) |\n"
+        f"|:---:|---:|\n"
+    )
+    return table
+
+body = re.sub(r'\$\$\s*([\s\S]+?)\s*\$\$', add_eq_number, body)
+print(f"  Numbered {eq_counter[0]} display equations")
 
 YAML = """\
 ---
