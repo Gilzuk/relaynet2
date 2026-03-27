@@ -1,50 +1,43 @@
-"""Replace both LR mermaid diagrams with a TB subgraph version that gives
-each node full width so text is not cramped."""
+"""Replace both mermaid diagrams with a compact two-row LR layout:
+  Row 1 (TX path): Source -> BPSK -> Hop1 Channel -> Relay
+  Row 2 (RX path): Relay -> Hop2 MIMO Channel -> Equalizer -> Destination
+Same node size as original single-row LR, but split across two lines."""
 import re, sys, io
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
 
 NEW_DIAGRAM = """\
 ```mermaid
-flowchart TB
-    SRC([\"**Source**\\ntx bits\"])
+flowchart LR
+    %% ── TX path (top row) ──────────────────────────────────────
+    SRC(["Source\ntx bits"])
+    MOD["BPSK\nMod"]
+    CH1["Hop 1 Channel\nAWGN/Rayleigh/Rician"]
+    REL["Relay\nNeural Net"]
 
-    subgraph HOP1 [\" Hop 1 \"]
-        direction TB
-        MOD[\"**BPSK Modulator**\"]
-        CH1[\"**Channel**\\nAWGN / Rayleigh / Rician\"]
-        MOD --> CH1
-    end
+    %% ── RX path (bottom row) ───────────────────────────────────
+    REL2["Relay\nout x_R"]
+    CH2["Hop 2 MIMO\ny=Hx_R+n"]
+    EQ["Equalizer\nZF/MMSE/SIC"]
+    DST(["Destination\nrx bits"])
 
-    subgraph RELAY_BOX [\" Relay Node \"]
-        direction TB
-        REL[\"**Neural Net Relay**\\ndenoise Hop 1 noise\"]
-    end
+    %% ── TX row connections ─────────────────────────────────────
+    SRC --> MOD --> CH1 -->|"noisy y_R"| REL
 
-    subgraph HOP2 [\" Hop 2 — 2x2 MIMO \"]
-        direction TB
-        CH2[\"**MIMO Channel**\\n4 Rayleigh links\\ny = H·x_R + n\\nH = h11 h12 / h21 h22\"]
-        EQ[\"**Equalizer**\\nZF / MMSE / SIC\\ncancel inter-stream interference\"]
-        CH2 --> EQ
-    end
+    %% ── drop from TX row to RX row ────────────────────────────
+    REL -->|"clean x_R"| REL2
 
-    DST([\"**Destination**\\nrecovered bits\"])
+    %% ── RX row connections ─────────────────────────────────────
+    REL2 --> CH2 --> EQ --> DST
 
-    SRC        --> HOP1
-    HOP1       -->|\"noisy y_R\"| RELAY_BOX
-    RELAY_BOX  -->|\"clean x_R\"| HOP2
-    HOP2       --> DST
-
-    style SRC        fill:#4A90D9,color:#fff,stroke:#2c5f8a
-    style DST        fill:#4A90D9,color:#fff,stroke:#2c5f8a
-    style MOD        fill:#7B68EE,color:#fff,stroke:#4a3fa0
-    style CH1        fill:#E8A838,color:#fff,stroke:#b07820
-    style REL        fill:#2ECC71,color:#fff,stroke:#1a8a4a
-    style CH2        fill:#E8A838,color:#fff,stroke:#b07820
-    style EQ         fill:#9B59B6,color:#fff,stroke:#6c3483
-    style HOP1       fill:#fff8ee,stroke:#E8A838,stroke-width:2px
-    style RELAY_BOX  fill:#f0fff4,stroke:#2ECC71,stroke-width:2px
-    style HOP2       fill:#fff8ee,stroke:#E8A838,stroke-width:2px
+    style SRC  fill:#4A90D9,color:#fff,stroke:#2c5f8a
+    style DST  fill:#4A90D9,color:#fff,stroke:#2c5f8a
+    style MOD  fill:#7B68EE,color:#fff,stroke:#4a3fa0
+    style CH1  fill:#E8A838,color:#fff,stroke:#b07820
+    style REL  fill:#2ECC71,color:#fff,stroke:#1a8a4a
+    style REL2 fill:#2ECC71,color:#fff,stroke:#1a8a4a
+    style CH2  fill:#E8A838,color:#fff,stroke:#b07820
+    style EQ   fill:#9B59B6,color:#fff,stroke:#6c3483
 ```"""
 
 with open("thesis.md", encoding="utf-8") as f:
