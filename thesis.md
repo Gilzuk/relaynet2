@@ -656,29 +656,45 @@ These delimitations are chosen to enable a clean comparison of relay processing 
 The system under study is a two-hop relay network with a single relay node:
 
 ```mermaid
-flowchart LR
-    SRC["**Source**\ntx bits"]
-    BPSK["**BPSK**\nModulator"]
-    CH1["**Hop 1 Channel**\nAWGN / Rayleigh / Rician"]
-    RELAY["**Relay**\nNeural Net\ndenoise"]
-    CH2["**Hop 2 Channel**\n2x2 MIMO Rayleigh\ny = H·x_R + n\nH = h11 h12 / h21 h22"]
-    EQ["**Equalizer**\nZF / MMSE / SIC\nseparate streams"]
-    DST["**Destination**\nrecovered bits"]
+flowchart TB
+    SRC(["**Source**\ntx bits"])
 
-    SRC --> BPSK
-    BPSK --> CH1
-    CH1 -->|"Hop 1"| RELAY
-    RELAY -->|"Hop 2"| CH2
-    CH2 --> EQ
-    EQ --> DST
+    subgraph HOP1 [" Hop 1 "]
+        direction TB
+        MOD["**BPSK Modulator**"]
+        CH1["**Channel**\nAWGN / Rayleigh / Rician"]
+        MOD --> CH1
+    end
 
-    style SRC   fill:#fff,color:#0,stroke:#0
-    style BPSK  fill:#fff,color:#0,stroke:#0
-    style CH1   fill:#fff,color:#0,stroke:#0
-    style RELAY fill:#fff,color:#0,stroke:#0
-    style CH2   fill:#fff,color:#0,stroke:#0
-    style EQ    fill:#fff,color:#0,stroke:#0
-    style DST   fill:#fff,color:#0,stroke:#0
+    subgraph RELAY_BOX [" Relay Node "]
+        direction TB
+        REL["**Neural Net Relay**\ndenoise Hop 1 noise"]
+    end
+
+    subgraph HOP2 [" Hop 2 — 2x2 MIMO "]
+        direction TB
+        CH2["**MIMO Channel**\n4 Rayleigh links\ny = H·x_R + n\nH = h11 h12 / h21 h22"]
+        EQ["**Equalizer**\nZF / MMSE / SIC\ncancel inter-stream interference"]
+        CH2 --> EQ
+    end
+
+    DST(["**Destination**\nrecovered bits"])
+
+    SRC        --> HOP1
+    HOP1       -->|"noisy y_R"| RELAY_BOX
+    RELAY_BOX  -->|"clean x_R"| HOP2
+    HOP2       --> DST
+
+    style SRC        fill:#4A90D9,color:#fff,stroke:#2c5f8a
+    style DST        fill:#4A90D9,color:#fff,stroke:#2c5f8a
+    style MOD        fill:#7B68EE,color:#fff,stroke:#4a3fa0
+    style CH1        fill:#E8A838,color:#fff,stroke:#b07820
+    style REL        fill:#2ECC71,color:#fff,stroke:#1a8a4a
+    style CH2        fill:#E8A838,color:#fff,stroke:#b07820
+    style EQ         fill:#9B59B6,color:#fff,stroke:#6c3483
+    style HOP1       fill:#fff8ee,stroke:#E8A838,stroke-width:2px
+    style RELAY_BOX  fill:#f0fff4,stroke:#2ECC71,stroke-width:2px
+    style HOP2       fill:#fff8ee,stroke:#E8A838,stroke-width:2px
 ```
 
 **Figure: Two-hop relay system model.** Source bits are BPSK-modulated, passed through Hop 1 (SISO channel), processed by the relay (classical or neural), then transmitted over Hop 2 (2×2 MIMO Rayleigh channel) and equalized at the destination.
@@ -708,29 +724,45 @@ An important distinction in this work is the separation of three independent sig
 These three components combine in the following end-to-end signal flow:
 
 ```mermaid
-flowchart LR
+flowchart TB
     SRC(["**Source**\ntx bits"])
-    MOD["**BPSK**\nModulator"]
-    CH1["**Hop 1 Channel**\nAWGN / Rayleigh / Rician"]
-    REL["**Relay**\nNeural Net\ndenoise Hop 1 noise"]
-    CH2["**Hop 2 Channel**\n2x2 MIMO · 4 Rayleigh links\ny = H·x_R + n\nH = &#91;h₁₁ h₁₂&#93; / &#91;h₂₁ h₂₂&#93;"]
-    EQ["**Equalizer**\nZF / MMSE / SIC\ncancel inter-stream interference"]
+
+    subgraph HOP1 [" Hop 1 "]
+        direction TB
+        MOD["**BPSK Modulator**"]
+        CH1["**Channel**\nAWGN / Rayleigh / Rician"]
+        MOD --> CH1
+    end
+
+    subgraph RELAY_BOX [" Relay Node "]
+        direction TB
+        REL["**Neural Net Relay**\ndenoise Hop 1 noise"]
+    end
+
+    subgraph HOP2 [" Hop 2 — 2x2 MIMO "]
+        direction TB
+        CH2["**MIMO Channel**\n4 Rayleigh links\ny = H·x_R + n\nH = h11 h12 / h21 h22"]
+        EQ["**Equalizer**\nZF / MMSE / SIC\ncancel inter-stream interference"]
+        CH2 --> EQ
+    end
+
     DST(["**Destination**\nrecovered bits"])
 
-    SRC --> MOD
-    MOD -->|"tx symbol x"| CH1
-    CH1 -->|"Hop 1\nnoisy y_R"| REL
-    REL -->|"Hop 2\nclean x_R"| CH2
-    CH2 -->|"mixed streams\ny = Hx_R + n"| EQ
-    EQ --> DST
+    SRC        --> HOP1
+    HOP1       -->|"noisy y_R"| RELAY_BOX
+    RELAY_BOX  -->|"clean x_R"| HOP2
+    HOP2       --> DST
 
-    style SRC  fill:#4A90D9,color:#fff,stroke:#2c5f8a,rx:20
-    style DST  fill:#4A90D9,color:#fff,stroke:#2c5f8a,rx:20
-    style MOD  fill:#7B68EE,color:#fff,stroke:#4a3fa0
-    style CH1  fill:#E8A838,color:#fff,stroke:#b07820
-    style REL  fill:#2ECC71,color:#fff,stroke:#1a8a4a
-    style CH2  fill:#E8A838,color:#fff,stroke:#b07820
-    style EQ   fill:#9B59B6,color:#fff,stroke:#6c3483
+    style SRC        fill:#4A90D9,color:#fff,stroke:#2c5f8a
+    style DST        fill:#4A90D9,color:#fff,stroke:#2c5f8a
+    style MOD        fill:#7B68EE,color:#fff,stroke:#4a3fa0
+    style CH1        fill:#E8A838,color:#fff,stroke:#b07820
+    style REL        fill:#2ECC71,color:#fff,stroke:#1a8a4a
+    style CH2        fill:#E8A838,color:#fff,stroke:#b07820
+    style EQ         fill:#9B59B6,color:#fff,stroke:#6c3483
+    style HOP1       fill:#fff8ee,stroke:#E8A838,stroke-width:2px
+    style RELAY_BOX  fill:#f0fff4,stroke:#2ECC71,stroke-width:2px
+    style HOP2       fill:#fff8ee,stroke:#E8A838,stroke-width:2px
 ```
 
 **Figure 1 — End-to-end two-hop relay signal flow.** The relay's neural network solves a *denoising* problem (Hop 1 noise removal); the MIMO equalizer solves an *interference cancellation* problem (Hop 2 stream separation). The two stages are independent and their gains are additive.
