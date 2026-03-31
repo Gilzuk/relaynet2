@@ -198,6 +198,12 @@
 %% ── Pandoc 3.x compatibility ─────────────────────────────────
 \newcommand{\pandocbounded}[1]{#1}
 
+
+%% ── Chapter-based numbering ─────────────────────────────────────────────────
+\counterwithin{figure}{chapter}
+\counterwithin{table}{chapter}
+\counterwithin{equation}{chapter}
+
 \begin{document}
 
 %% ── Title Page ───────────────────────────────────────────────
@@ -889,7 +895,7 @@ This integral is evaluated numerically. The resulting BER falls between the AWGN
 
 \subsection{Fading Coefficient Distributions}\label{sec:fading-coefficient-distributions}
 
-The statistical behavior of the fading coefficient \(|h|\) determines the severity of fading for each channel model. Figure 4 shows the probability density function (PDF) and cumulative distribution function (CDF) of \(|h|\) for Rayleigh and Rician fading with various K-factors.
+The statistical behavior of the fading coefficient \(|h|\) determines the severity of fading for each channel model. Figure~\ref{fig:fig4} shows the probability density function (PDF) and cumulative distribution function (CDF) of \(|h|\) for Rayleigh and Rician fading with various K-factors.
 
 \textbf{Key observations from the fading PDFs:}
 
@@ -1533,7 +1539,7 @@ The advantage of QPSK is doubled throughput for the same BER and per-bit energy.
 
 \subsection{16-QAM --- Gray-Coded Quadrature Amplitude Modulation}\label{sec:qam-gray-coded-quadrature-amplitude-modulation}
 
-16-QAM maps groups of four bits \((b_0, b_1, b_2, b_3)\) to one of 16 complex constellation points arranged on a \(4 \times 4\) rectangular grid (Figure 8c). Each axis (I and Q) uses independent Gray-coded PAM-4 mapping:
+16-QAM maps groups of four bits \((b_0, b_1, b_2, b_3)\) to one of 16 complex constellation points arranged on a \(4 \times 4\) rectangular grid (Figure~\ref{fig:fig8}c). Each axis (I and Q) uses independent Gray-coded PAM-4 mapping:
 
 \begin{equation}\protect\phantomsection\label{eq:qam16-mapping}{I = \frac{L(b_0, b_1)}{\sqrt{10}}, \quad Q = \frac{L(b_2, b_3)}{\sqrt{10}}, \quad x = I + jQ
 }\end{equation} \par{\small\textit{Source: [21, Ch. 5, Eq. 5-2-60]}}
@@ -1569,7 +1575,7 @@ At the same \(E_b/N_0\), 16-QAM has a higher BER than BPSK or QPSK due to the re
 
 \subsection{Constellation Diagram Summary}\label{sec:constellation-diagram-summary}
 
-Figure 8 presents the constellation diagrams for all four modulation schemes used in this thesis. The progression from BPSK (2 points on the real axis) through QPSK (4 points on the unit circle) to 16-QAM (16 points on a rectangular grid) and 16-PSK (16 points on the unit circle) illustrates the fundamental trade-off between spectral efficiency and noise robustness: (Equation~\ref{eq:psk16-ber}) higher-order constellations pack more bits per symbol but reduce the minimum Euclidean distance between points, increasing the BER at a given SNR.
+Figure~\ref{fig:fig8} presents the constellation diagrams for all four modulation schemes used in this thesis. The progression from BPSK (2 points on the real axis) through QPSK (4 points on the unit circle) to 16-QAM (16 points on a rectangular grid) and 16-PSK (16 points on the unit circle) illustrates the fundamental trade-off between spectral efficiency and noise robustness: (Equation~\ref{eq:psk16-ber}) higher-order constellations pack more bits per symbol but reduce the minimum Euclidean distance between points, increasing the BER at a given SNR.
 
 \begin{figure}[H]
 \centering
@@ -1580,7 +1586,7 @@ Figure 8 presents the constellation diagrams for all four modulation schemes use
 
 \subsection{16-PSK --- Gray-Coded Phase-Shift Keying}\label{sec:psk-gray-coded-phase-shift-keying}
 
-16-PSK maps groups of four bits to one of 16 complex constellation points uniformly spaced on the unit circle (Figure 8d). Unlike 16-QAM, which modulates both amplitude and phase, 16-PSK uses \textbf{constant-envelope} transmission --- all symbols have identical magnitude (\(|x| = 1\)) and differ only in phase:
+16-PSK maps groups of four bits to one of 16 complex constellation points uniformly spaced on the unit circle (Figure~\ref{fig:fig8}d). Unlike 16-QAM, which modulates both amplitude and phase, 16-PSK uses \textbf{constant-envelope} transmission --- all symbols have identical magnitude (\(|x| = 1\)) and differ only in phase:
 
 \begin{equation}\protect\phantomsection\label{eq:psk16-mapping}{x_k = e^{j \theta_k}, \quad \theta_k = \frac{2\pi k}{16}, \quad k = 0, 1, \ldots, 15
 }\end{equation} \par{\small\textit{Source: [21, Ch. 5, Eq. 5-2-1]}}
