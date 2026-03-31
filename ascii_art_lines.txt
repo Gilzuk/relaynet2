@@ -1,0 +1,28 @@
+﻿L 279: **Slot 1 (Source ΓåÆ Relay):**
+L 282: **Slot 2 (Relay ΓåÆ Destination):**
+L 742: | Component | Problem Solved | Location | Input ΓåÆ Output |
+L 744: | Neural network relay | Remove **noise** from Hop 1 | Relay node | Noisy signal ΓåÆ clean estimate |
+L 745: | MIMO equalizer | Remove **inter-stream interference** | Destination | Mixed streams ΓåÆ separated symbols |
+L 982: - **Mamba S6:** Selective state space model with input-dependent state transitions. Architecture: $d_{\text{model}}=32$, $d_{\text{state}}=16$, 2 Mamba blocks with residual connections. Total: 24,001 parameters. Each block applies: LayerNorm ΓåÆ expand ($32 \to 64$) ΓåÆ split to Conv1D/SiLU/S6 main branch and SiLU gate ΓåÆ contract ($64 \to 32$) ΓåÆ residual. Trained for 100 epochs with Adam optimizer ($\text{lr}=10^{-3}$).
+L 988: - **Mamba2 (SSD):** Structured State Space Duality model that replaces the sequential S6 recurrence with a chunk-parallel structured matrix multiply. Architecture: $d_{\text{model}}=32$, $d_{\text{state}}=16$, chunk size 8, 2 Mamba-2 blocks with SiLU gating and residual connections. Total: 26,179 parameters. Each block applies: LayerNorm ΓåÆ parallel gate/SSD branches ΓåÆ SiLU gate ΓåÆ contract ($64 \to 32$) ΓåÆ residual. The SSD layer builds a lower-triangular causal kernel $M$ per chunk and applies it via batched matmul, with inter-chunk state passing for continuity. Trained for 100 epochs with Adam optimizer ($\text{lr}=10^{-3}$) and gradient clipping ($\|\nabla\| \le 1$).
+L1093: | MLP-3K | 3,004 | Increased window (5ΓåÆ11) and hidden (24ΓåÆ231) |
+L1095: | VAE-3K | 3,037 | Increased window (7ΓåÆ11), adjusted latent/hidden |
+L1096: | CGAN-3K | 3,004 | Increased window (7ΓåÆ11), adjusted hidden layers |
+L1097: | Transformer-3K | 3,007 | Reduced d_model (32ΓåÆ18), heads (4ΓåÆ2), layers (2ΓåÆ1) |
+L1098: | Mamba-3K | 3,027 | Reduced d_model (32ΓåÆ16), d_state (16ΓåÆ6), layers (2ΓåÆ1) |
+L1099: | Mamba2-3K | 3,004 | Reduced d_model (32ΓåÆ15), d_state (16ΓåÆ6), layers (2ΓåÆ1) |
+L1507: - **VAE** (1,777 parameters) trains in 22 s on CPU. Despite 10├ù more parameters than MLP, its encoderΓÇôdecoder architecture processes each sample in a single forward/backward pass. The moderate hidden sizes (32ΓåÆ16ΓåÆ8ΓåÆ16ΓåÆ32) keep per-batch computation small.
+L1646: **Finding 8: Replacing tanh eliminates the 16-QAM BER floor.** Both the linear and hardtanh activations break through the ~0.22 BER floor that all AI relays exhibited in Section 4.10. The improvement factors (tanh ΓåÆ best variant) at 16 dB AWGN are: Mamba S6 5.4├ù, Transformer 4.7├ù, Mamba-2 4.7├ù, MLP 3.5├ù, CGAN 2.9├ù, VAE 2.1├ù. This confirms the hypothesis from Section 4.10 that the bottleneck is the activation function, not model capacity.
+L2472: - Below threshold ΓåÆ MLP processing; Above threshold ΓåÆ DF processing
+L2476: - Encoder: 7 ΓåÆ 32 (ReLU) ΓåÆ 16 (ReLU) ΓåÆ ╬╝(8), log ╧â┬▓(8)
+L2477: - Decoder: 8 ΓåÆ 16 (ReLU) ΓåÆ 32 (ReLU) ΓåÆ 1 (Tanh)
+L2483: - Generator: (7+8) ΓåÆ 32 (LeakyReLU) ΓåÆ 32 (LeakyReLU) ΓåÆ 16 (LeakyReLU) ΓåÆ 1 (Tanh)
+L2484: - Critic: (1+7) ΓåÆ 32 (LeakyReLU) ΓåÆ 16 (LeakyReLU) ΓåÆ 1
+L2490: - Input projection: 1 ΓåÆ 32
+L2493: - Output projection: 32 ΓåÆ 1 (Tanh)
+L2499: - Input projection: 1 ΓåÆ 32
+L2500: - Mamba blocks: 2 layers, each: LayerNorm ΓåÆ expand (32ΓåÆ64) ΓåÆ S6 (d_state=16) ΓåÆ contract (64ΓåÆ32) ΓåÆ residual
+L2502: - Output projection: 32 ΓåÆ 1 (Tanh)
+L2509: - Input projection: 1 ΓåÆ 32
+L2510: - Mamba-2 blocks: 2 layers, each: LayerNorm ΓåÆ parallel branches (SiLU gate ΓêÑ SSD layer) ΓåÆ gated output ΓåÆ contract (64ΓåÆ32) ΓåÆ residual
+L2515: - Output projection: 32 ΓåÆ 16 (SiLU) ΓåÆ 1 (Tanh)

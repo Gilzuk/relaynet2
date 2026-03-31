@@ -1,0 +1,30 @@
+﻿flowchart LR
+    SRC["**Source**\ntx bits"]
+    BPSK["**BPSK**\nModulator"]
+    CH1["**Hop 1 Channel**\nAWGN / Rayleigh / Rician"]
+    RELAY["**Relay**\nNeural Net\ndenoise"]
+    CH2["**Hop 2 Channel**\n2x2 MIMO Rayleigh\ny = H┬╖x_R + n\nH = h11 h12 / h21 h22"]
+    EQ["**Equalizer**\nZF / MMSE / SIC\nseparate streams"]
+    DST["**Destination**\nrecovered bits"]
+
+    SRC --> BPSK
+    BPSK --> CH1
+    CH1 -->|"Hop 1"| RELAY
+    RELAY -->|"Hop 2"| CH2
+    CH2 --> EQ
+    EQ --> DST
+
+    style SRC   fill:#fff,color:#0,stroke:#0
+    style BPSK  fill:#fff,color:#0,stroke:#0
+    style CH1   fill:#fff,color:#0,stroke:#0
+    style RELAY fill:#fff,color:#0,stroke:#0
+    style CH2   fill:#fff,color:#0,stroke:#0
+    style EQ    fill:#fff,color:#0,stroke:#0
+    style DST   fill:#fff,color:#0,stroke:#0
+```
+
+**Figure: Two-hop relay system model.** Source bits are BPSK-modulated, passed through Hop 1 (SISO channel), processed by the relay (classical or neural), then transmitted over Hop 2 (2├ù2 MIMO Rayleigh channel) and equalized at the destination.
+
+$$\text{Source} \xrightarrow{\text{Hop 1}} \text{Relay} \xrightarrow{\text{Hop 2}} \text{Destination}$$
+
+**Modulation.** Four modulation schemes are supported. The primary experiments use Binary Phase-Shift Keying (BPSK): bits $b \in \{0, 1\}$ are mapped to real symbols $x = 1 - 2b \in \{-1, +1\}$. Extensions to Quadrature Phase-Shift Keying (QPSK), 16-point Quadrature Amplitude Modulation (16-QAM), and 16-point Phase-Shift Keying (16-PSK) are evaluated in Sections 7.10 and 7.15 to test whether the BPSK findings generalise to complex constellations. QPSK maps pairs of bits to complex symbols on the unit circle (2 bits/symbol); 16-QAM maps groups of four bits to a $4 \times 4$ Gray-coded grid (4 bits/symbol); 16-PSK maps groups of four bits t

@@ -1,0 +1,26 @@
+﻿=== CODE BLOCK at line 710 ===
+``
+                          Hop 1                              Hop 2 (2├ù2 MIMO)
+                     ΓöîΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÉ                    ΓöîΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÉ
+                     Γöé  Channel:   Γöé                    Γöé  4 Rayleigh links:   Γöé
+  Source ΓöÇΓöÇBPSKΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöé  AWGN /     ΓöéΓöÇΓöÇΓöÇΓåÆ Relay ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓåÆΓöé  y = H┬╖x_R + n       ΓöéΓöÇΓöÇΓöÇΓåÆ Destination
+  (tx bits)          Γöé  Rayleigh / Γöé     Γöé              Γöé                      Γöé     Γöé
+                     Γöé  Rician     Γöé     Γöé Neural Net   Γöé  H = [h11 h12]       Γöé     Γöé Equalizer
+                     ΓööΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÿ     Γöé (denoise)    Γöé      [h21 h22]    
+
+=== CODE BLOCK at line 2524 ===
+``
+relaynet/
+Γö£ΓöÇΓöÇ channels/          # Channel models
+Γöé   Γö£ΓöÇΓöÇ awgn.py            # AWGN channel
+Γöé   Γö£ΓöÇΓöÇ fading.py          # Rayleigh & Rician fading
+Γöé   ΓööΓöÇΓöÇ mimo.py            # 2├ù2 MIMO + ZF/MMSE/SIC equalization
+Γö£ΓöÇΓöÇ modulation/
+Γöé   Γö£ΓöÇΓöÇ bpsk.py            # BPSK modulate/demodulate
+Γöé   Γö£ΓöÇΓöÇ qpsk.py            # QPSK Gray-coded modulate/demodulate
+Γöé   Γö£ΓöÇΓöÇ qam.py             # 16-QAM Gray-coded modulate/demodulate
+Γöé   ΓööΓöÇΓöÇ psk.py             # 16-PSK modulate/demodulate
+Γö£ΓöÇΓöÇ relays/            # Relay strategies
+Γöé   Γö£ΓöÇΓöÇ base.py            # Abstract base class
+Γöé   Γö£ΓöÇΓöÇ af.py              # Amplify-
+

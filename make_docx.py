@@ -26,6 +26,7 @@ cmd = [
     "--toc",
     "--toc-depth=3",
     "--number-sections",
+    "--number-offset=0",
     "--mathml",
 ]
 

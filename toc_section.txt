@@ -1,0 +1,46 @@
+﻿## Table of Contents
+
+1. [List of Abbreviations](#1-list-of-abbreviations)
+2. [Abstract (Hebrew)](#2-abstract-hebrew)
+3. [Keywords](#3-keywords)
+4. [Introduction and Literature Review](#4-introduction-and-literature-review)
+   - 4.1 Cooperative Relay Communication
+   - 4.2 Classical Relay Strategies
+   - 4.3 Machine Learning in Wireless Communication
+   - 4.4 Generative Models for Signal Processing
+   - 4.5 Sequence Models: Transformers and State Space Models
+   - 4.6 MIMO Systems and Equalization
+   - 4.7 Research Gap and Motivation
+5. [Research Objectives](#5-research-objectives)
+6. [Methods](#6-methods)
+   - 6.1 System Model
+     - 6.1.1 MIMO Topology with Neural Network Relay and Equalization
+   - 6.2 Channel Models
+     - 6.2.1 AWGN Channel ΓÇö Theoretical Analysis
+     - 6.2.2 Rayleigh Fading Channel ΓÇö Theoretical Analysis
+     - 6.2.3 Rician Fading Channel ΓÇö Theoretical Analysis
+     - 6.2.4 Fading Coefficient Distributions
+     - 6.2.5 2├ù2 MIMO Channel ΓÇö Theoretical Analysis
+     - 6.2.6 Channel Model Validation (Simulative)
+   - 6.3 Relay Strategies
+   - 6.4 MIMO Equalization Techniques
+   - 6.5 Simulation Framework
+   - 6.6 Normalized Parameter Comparison
+   - 6.7 Modulation Schemes
+     - 6.7.1 BPSK
+     - 6.7.2 QPSK ΓÇö Gray-Coded Quadrature Phase-Shift Keying
+     - 6.7.3 16-QAM ΓÇö Gray-Coded Quadrature Amplitude Modulation
+     - 6.7.4 16-PSK ΓÇö Gray-Coded Phase-Shift Keying
+     - 6.7.5 Constellation Diagram Summary
+     - 6.7.6 I/Q Splitting for AI Relay Processing of Complex Constellations
+     - 6.7.7 2D Joint Classification as an Alternative to I/Q Splitting
+7. [Results](#7-results)
+   - 7.1 Channel Model Validation
+   - 7.2 AWGN Channel ΓÇö Relay Comparison
+   - 7.3 Rayleigh Fading Channel ΓÇö Relay Comparison
+   - 7.4 Rician Fading Channel ΓÇö Relay Comparison
+   - 7.5 2├ù2 MIMO with ZF Equalization
+   - 7.6 2├ù2 MIMO with MMSE Equalization
+   - 7.7 2├ù2 MIMO with SIC Equalization
+   - 7.8 Normalized 3K-Parameter Comparison
+   - 7.9 ComplexityΓÇôPerformance Trad

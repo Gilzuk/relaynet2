@@ -1,0 +1,136 @@
+﻿=== HEADING PARAGRAPHS (style + text) ===
+  [Heading 2] 1	Deep Learning for Two-Hop Relay Communication: A Comparative Study of Classica
+  [Heading 2] 2	Deep Learning for Two-Hop Relay Communication: A Comparative Study of Classica
+  [Heading 2] Table of Contents
+  [Heading 2] List of Figures
+  [Heading 2] List of Tables
+  [Heading 2] List of Abbreviations
+  [Heading 2] Abstract (Hebrew)
+  [Heading 2] Keywords
+  [Heading 2] 3	Introduction and Literature Review
+  [Heading 3] 3.1	Cooperative Relay Communication
+  [Heading 4] 3.1.1	Information-Theoretic Foundations
+  [Heading 4] 3.1.2	Two-Hop Relay Model
+  [Heading 4] 3.1.3	Cooperative Diversity and Practical Relevance
+  [Heading 3] 3.2	Classical Relay Strategies
+  [Heading 3] 3.3	Machine Learning in Wireless Communication
+  [Heading 4] 3.3.1	Theoretical Basis: Universal Approximation and Denoising
+  [Heading 4] 3.3.2	Prior Work in Deep Learning for Physical-Layer Processing
+  [Heading 4] 3.3.3	Neural Network Relay Processing
+  [Heading 3] 3.4	Generative Models for Signal Processing
+  [Heading 4] 3.4.1	Variational Autoencoders
+  [Heading 4] 3.4.2	Conditional Generative Adversarial Networks
+  [Heading 4] 3.4.3	Generative vs.┬áDiscriminative Paradigms for Relay Processing
+  [Heading 3] 3.5	Sequence Models: Transformers and State Space Models
+  [Heading 4] 3.5.1	Transformers and the Attention Mechanism
+  [Heading 4] 3.5.2	Structured State Space Models
+  [Heading 4] 3.5.3	Mamba: Selective State Spaces
+  [Heading 4] 3.5.4	Mamba-2: Structured State Space Duality
+  [Heading 4] 3.5.5	State Space Models for Signal Processing
+  [Heading 3] 3.6	MIMO Systems and Equalization
+  [Heading 4] 3.6.1	System Model
+  [Heading 4] 3.6.2	Equalization Methods
+  [Heading 4] 3.6.3	MIMO with Relay Processing
+  [Heading 3] 3.7	Research Gap and Motivation
+  [Heading 2] 4	Research Objectives
+  [Heading 3] 4.1	Main Objective
+  [Heading 3] 4.2	Research Hypotheses
+  [Heading 3] 4.3	Specific Objectives
+  [Heading 3] 4.4	Scope and Delimitations
+  [Heading 2] 5	Methods
+  [Heading 3] 5.1	System Model
+  [Heading 4] 5.1.1	MIMO Topology with Neural Network Relay and Equalization
+  [Heading 3] 5.2	Channel Models
+  [Heading 4] 5.2.1	AWGN Channel ΓÇö Theoretical Analysis
+  [Heading 4] 5.2.2	Rayleigh Fading Channel ΓÇö Theoretical Analysis
+  [Heading 4] 5.2.3	Rician Fading Channel ΓÇö Theoretical Analysis
+  [Heading 4] 5.2.4	Fading Coefficient Distributions
+  [Heading 4] 5.2.5	2├ù2 MIMO Channel ΓÇö Theoretical Analysis
+  [Heading 4] 5.2.6	Channel Model Validation (Simulative)
+  [Heading 3] 5.3	Relay Strategies
+  [Heading 3] 5.4	MIMO Equalization Techniques
+  [Heading 3] 5.5	Simulation Framework
+  [Heading 4] 5.5.1	Monte Carlo BER Estimation
+  [Heading 4] 5.5.2	Statistical Significance Testing
+  [Heading 4] 5.5.3	Training Protocol
+  [Heading 4] 5.5.4	Reproducibility and Weight Management
+  [Heading 3] 5.6	Normalized Parameter Comparison
+  [Heading 3] 5.7	Modulation Schemes
+  [Heading 4] 5.7.1	BPSK
+  [Heading 4] 5.7.2	QPSK ΓÇö Gray-Coded Quadrature Phase-Shift Keying
+  [Heading 4] 5.7.3	16-QAM ΓÇö Gray-Coded Quadrature Amplitude Modulation
+  [Heading 4] 5.7.4	Constellation Diagram Summary
+  [Heading 4] 5.7.5	16-PSK ΓÇö Gray-Coded Phase-Shift Keying
+  [Heading 4] 5.7.6	I/Q Splitting for AI Relay Processing of Complex Constellations
+  [Heading 4] 5.7.7	2D Joint Classification as an Alternative to I/Q Splitting
+  [Heading 2] 6	Results
+  [Heading 3] 6.1	Channel Model Validation
+  [Heading 3] 6.2	AWGN Channel ΓÇö Relay Comparison
+  [Heading 3] 6.3	Rayleigh Fading Channel
+  [Heading 3] 6.4	Rician Fading Channel (K=3)
+  [Heading 3] 6.5	2├ù2 MIMO with ZF Equalization
+  [Heading 3] 6.6	2├ù2 MIMO with MMSE Equalization
+  [Heading 3] 6.7	2├ù2 MIMO with SIC Equalization
+  [Heading 3] 6.8	Normalized 3K-Parameter Comparison
+  [Heading 3] 6.9	ComplexityΓÇôPerformance Trade-off
+  [Heading 3] 6.10	Modulation Comparison: BPSK vs.┬áQPSK vs.┬á16-QAM
+  [Heading 3] 6.11	16-QAM Activation Experiment: Modulation-Aware Training
+  [Heading 4] 6.11.1	Experimental Design
+  [Heading 4] 6.11.2	Results
+  [Heading 4] 6.11.3	Analysis
+  [Heading 3] 6.12	Constellation-Aware Activation Study
+  [Heading 4] 6.12.1	Constellation-Aware Clip Range
+  [Heading 4] 6.12.2	Activation Functions Compared
+  [Heading 4] 6.12.3	Experimental Design
+  [Heading 4] 6.12.4	Results
+  [Heading 4] 6.12.5	Analysis
+  [Heading 3] 6.13	Input Layer Normalization and Scaled Tanh Experiment
+  [Heading 4] 6.13.1	Experimental Design
+  [Heading 4] 6.13.2	Training Results
+  [Heading 4] 6.13.3	Results
+  [Heading 4] 6.13.4	Analysis
+  [Heading 3] 6.14	Structural CSI Injection for 16-QAM in Rayleigh Fading
+  [Heading 3] 6.15	Motivation
+  [Heading 3] 6.16	Experimental Design
+  [Heading 3] 6.17	Results and Analysis
+  [Heading 3] 6.18	Comprehensive Multi-Architecture CSI Experiment
+  [Heading 3] 6.19	Motivation
+  [Heading 3] 6.20	Experimental Design
+  [Heading 3] 6.21	Results: 16-QAM in Rayleigh Fading
+  [Heading 3] 6.22	Results: 16-PSK in Rayleigh Fading
+  [Heading 3] 6.23	Cross-Constellation Analysis
+  [Heading 3] 6.24	Training Convergence Examples
+  [Heading 3] 6.25	Experiment Goals vs.┬áOutcomes
+  [Heading 3] 6.26	Extension Experiment: End-to-End Joint Optimization
+  [Heading 4] 6.26.1	System Formulation
+  [Heading 4] 6.26.2	Results: E2E vs.┬áClassical Theoretical Limits
+  [Heading 4] 6.26.3	E2E vs.┬áTwo-Hop Relay Comparison: AF and DF
+  [Heading 4] 6.26.4	Analysis
+  [Heading 3] 6.27	16-Class 2D Classification for QAM16
+  [Heading 4] 6.27.1	Motivation
+  [Heading 4] 6.27.2	Experimental Design
+  [Heading 4] 6.27.3	Results
+  [Heading 4] 6.27.4	Analysis
+  [Heading 2] 7	Discussion and Conclusions
+  [Heading 3] 7.1	Interpretation of Results
+  [Heading 4] 7.1.1	Selective Low-SNR Advantage of Neural Relays (H1: Partially Confirmed)
+  [Heading 4] 7.1.2	Classical Dominance at High SNR (H2: Confirmed)
+  [Heading 4] 7.1.3	Channel Robustness
+  [Heading 4] 7.1.4	MIMO Equalization Hierarchy (H6: Confirmed)
+  [Heading 3] 7.2	The ΓÇ£Less is MoreΓÇ¥ Principle (H3: Confirmed)
+  [Heading 4] 7.2.1	Information-Theoretic Perspective
+  [Heading 4] 7.2.2	Bias-Variance Analysis
+  [Heading 4] 7.2.3	Practical Implications
+  [Heading 3] 7.3	State Space vs.┬áAttention for Signal Processing
+  [Heading 4] 7.3.1	Context-Length Benchmark: Validating the Crossover Hypothesis
+  [Heading 3] 7.4	Practical Deployment Recommendations
+  [Heading 3] 7.5	Limitations
+  [Heading 3] 7.6	Future Work
+  [Heading 3] 7.7	Conclusions
+  [Heading 2] 8	References
+  [Heading 2] 9	Appendices
+  [Heading 3] 9.1	Appendix A: Mathematical Notation
+  [Heading 3] 9.2	Appendix B: Model Architectures and Hyperparameters
+  [Heading 3] 9.3	Appendix C: Software Architecture
+  [Heading 3] 9.4	Appendix D: Normalized 3K-Parameter Configurations
+  [Heading 2] Abstract (English)

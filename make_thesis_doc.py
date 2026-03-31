@@ -71,92 +71,82 @@ link-citations: true
 """
 
 # TAU cover page 1 (front cover — no supervisor)
-COVER_FRONT = """\
----
-
-**TEL AVIV UNIVERSITY**
-
-**THE IBY AND ALADAR FLEISCHMAN FACULTY OF ENGINEERING**
-
-**School of Electrical Engineering**
-
----
-
-&nbsp;
-
-&nbsp;
-
-## Deep Learning for Two-Hop Relay Communication: A Comparative Study of Classical and Neural Network-Based Strategies
-
-&nbsp;
-
-Thesis submitted toward the degree of **Master of Science in Electrical and Electronic Engineering** in Tel-Aviv University
-
-&nbsp;
-
-by
-
-&nbsp;
-
-**Gil Zukerman**
-
-&nbsp;
-
-&nbsp;
-
-**2026**
-
----
-
-\\newpage
-
-"""
+COVER_FRONT = (
+    "---\n"
+    "\n"
+    "**TEL AVIV UNIVERSITY**\n"
+    "\n"
+    "**THE IBY AND ALADAR FLEISCHMAN FACULTY OF ENGINEERING**\n"
+    "\n"
+    "**School of Electrical Engineering**\n"
+    "\n"
+    "---\n"
+    "\n"
+    "&nbsp;\n"
+    "\n"
+    "## Deep Learning for Two-Hop Relay Communication: A Comparative Study of Classical and Neural Network-Based Strategies {.unnumbered}\n"
+    "\n"
+    "&nbsp;\n"
+    "\n"
+    "Thesis submitted toward the degree of **Master of Science in Electrical and Electronic Engineering** in Tel-Aviv University\n"
+    "\n"
+    "&nbsp;\n"
+    "\n"
+    "by\n"
+    "\n"
+    "**Gil Zukerman**\n"
+    "\n"
+    "&nbsp;\n"
+    "\n"
+    "**2026**\n"
+    "\n"
+    "---\n"
+    "\n"
+    "\\newpage\n"
+    "\n"
+)
 
 # TAU cover page 2 (title page — with supervisor)
-COVER_TITLE = """\
----
-
-**TEL AVIV UNIVERSITY**
-
-**THE IBY AND ALADAR FLEISCHMAN FACULTY OF ENGINEERING**
-
-**School of Electrical Engineering**
-
----
-
-&nbsp;
-
-&nbsp;
-
-## Deep Learning for Two-Hop Relay Communication: A Comparative Study of Classical and Neural Network-Based Strategies
-
-&nbsp;
-
-Thesis submitted toward the degree of **Master of Science in Electrical and Electronic Engineering** in Tel-Aviv University
-
-&nbsp;
-
-by
-
-&nbsp;
-
-**Gil Zukerman**
-
-&nbsp;
-
-This research work was carried out at Tel-Aviv University
-in the School of Electrical Engineering, Faculty of Engineering,
-under the supervision of **[Supervisor Name]**
-
-&nbsp;
-
-**2026**
-
----
-
-\\newpage
-
-"""
+COVER_TITLE = (
+    "---\n"
+    "\n"
+    "**TEL AVIV UNIVERSITY**\n"
+    "\n"
+    "**THE IBY AND ALADAR FLEISCHMAN FACULTY OF ENGINEERING**\n"
+    "\n"
+    "**School of Electrical Engineering**\n"
+    "\n"
+    "---\n"
+    "\n"
+    "&nbsp;\n"
+    "\n"
+    "## Deep Learning for Two-Hop Relay Communication: A Comparative Study of Classical and Neural Network-Based Strategies {.unnumbered}\n"
+    "\n"
+    "&nbsp;\n"
+    "\n"
+    "Thesis submitted toward the degree of **Master of Science in Electrical and Electronic Engineering** in Tel-Aviv University\n"
+    "\n"
+    "&nbsp;\n"
+    "\n"
+    "by\n"
+    "\n"
+    "**Gil Zukerman**\n"
+    "\n"
+    "&nbsp;\n"
+    "\n"
+    "This research work was carried out at Tel-Aviv University\n"
+    "in the School of Electrical Engineering, Faculty of Engineering,\n"
+    "under the supervision of **[Supervisor Name]**\n"
+    "\n"
+    "&nbsp;\n"
+    "\n"
+    "**2026**\n"
+    "\n"
+    "---\n"
+    "\n"
+    "\\newpage\n"
+    "\n"
+)
 
 out = YAML + COVER_FRONT + COVER_TITLE + body
 
