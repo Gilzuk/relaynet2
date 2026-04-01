@@ -297,8 +297,8 @@ def _add_congestion_inset(ax, snr, ber_dict, style_infos):
     ber_hi = max(vals) * 3.0
 
     from mpl_toolkits.axes_grid1.inset_locator import inset_axes
-    axins = inset_axes(ax, width="35%", height="35%", loc="center right",
-                       borderpad=2)
+    axins = inset_axes(ax, width="30%", height="28%", loc="upper right",
+                       borderpad=1.2)
     for name, sinfo in style_infos.items():
         ber = np.asarray(ber_dict[name], dtype=float)
         ber_plot = np.where(ber > 0, ber, 1e-10)
