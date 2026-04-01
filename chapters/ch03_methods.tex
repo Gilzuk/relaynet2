@@ -4,33 +4,32 @@
 
 The system under study is a two-hop relay network with a single relay node:
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{flowchart LR}
-\NormalTok{    SRC["**Source**\textbackslash{}ntx bits"]}
-\NormalTok{    BPSK["**BPSK**\textbackslash{}nModulator"]}
-\NormalTok{    CH1["**Hop 1 Channel**\textbackslash{}nAWGN / Rayleigh / Rician"]}
-\NormalTok{    RELAY["**Relay**\textbackslash{}nNeural Net\textbackslash{}ndenoise"]}
-\NormalTok{    CH2["**Hop 2 Channel**\textbackslash{}n2x2 MIMO Rayleigh\textbackslash{}ny = H·x\_R + n\textbackslash{}nH = h11 h12 / h21 h22"]}
-\NormalTok{    EQ["**Equalizer**\textbackslash{}nZF / MMSE / SIC\textbackslash{}nseparate streams"]}
-\NormalTok{    DST["**Destination**\textbackslash{}nrecovered bits"]}
 
-\NormalTok{    SRC {-}{-}\textgreater{} BPSK}
-\NormalTok{    BPSK {-}{-}\textgreater{} CH1}
-\NormalTok{    CH1 {-}{-}\textgreater{}|"Hop 1"| RELAY}
-\NormalTok{    RELAY {-}{-}\textgreater{}|"Hop 2"| CH2}
-\NormalTok{    CH2 {-}{-}\textgreater{} EQ}
-\NormalTok{    EQ {-}{-}\textgreater{} DST}
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  node distance=0.5cm and 0.4cm,
+  box/.style={rectangle, draw, rounded corners=3pt, minimum width=1.7cm,
+              minimum height=0.85cm, align=center, font=\small},
+  arr/.style={->, thick, >=stealth}
+]
+\node[box] (src)   {Source\\tx bits};
+\node[box, right=1.2cm of src]  (mod)   {BPSK\\Mod.};
+\node[box, right=1.2cm of mod]  (ch1)   {Hop 1\\Channel};
+\node[box, right=1.2cm of ch1]  (relay) {Relay\\Neural Net};
+\node[box, right=1.2cm of relay](ch2)   {Hop 2\\Channel};
+\node[box, right=1.2cm of ch2]  (dst)   {Dest.\\bits};
+\draw[arr] (src) -- (mod);
+\draw[arr] (mod) -- (ch1);
+\draw[arr] (ch1) -- node[above,font=\tiny]{Hop 1} (relay);
+\draw[arr] (relay) -- node[above,font=\tiny]{Hop 2} (ch2);
+\draw[arr] (ch2) -- (dst);
+\end{tikzpicture}
+\caption{Two-hop relay system model: source transmits through two channels
+         with a neural network relay in between.}
+\label{fig:relay-system-simple}
+\end{figure}
 
-\NormalTok{    style SRC   fill:\#fff,color:\#0,stroke:\#0}
-\NormalTok{    style BPSK  fill:\#fff,color:\#0,stroke:\#0}
-\NormalTok{    style CH1   fill:\#fff,color:\#0,stroke:\#0}
-\NormalTok{    style RELAY fill:\#fff,color:\#0,stroke:\#0}
-\NormalTok{    style CH2   fill:\#fff,color:\#0,stroke:\#0}
-\NormalTok{    style EQ    fill:\#fff,color:\#0,stroke:\#0}
-\NormalTok{    style DST   fill:\#fff,color:\#0,stroke:\#0}
-\end{Highlighting}
-\end{Shaded}
 
 \textbf{Figure: Two-hop relay system model.} Source bits are BPSK-modulated, passed through Hop 1 (SISO channel), processed by the relay (classical or neural), then transmitted over Hop 2 (2×2 MIMO Rayleigh channel) and equalized at the destination.
 
@@ -68,33 +67,44 @@ An important distinction in this work is the separation of three independent sig
 
 These three components combine in the following end-to-end signal flow:
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{flowchart LR}
-\NormalTok{    SRC(["**Source**\textbackslash{}ntx bits"])}
-\NormalTok{    MOD["**BPSK**\textbackslash{}nModulator"]}
-\NormalTok{    CH1["**Hop 1 Channel**\textbackslash{}nAWGN / Rayleigh / Rician"]}
-\NormalTok{    REL["**Relay**\textbackslash{}nNeural Net\textbackslash{}ndenoise Hop 1 noise"]}
-\NormalTok{    CH2["**Hop 2 Channel**\textbackslash{}n2x2 MIMO · 4 Rayleigh links\textbackslash{}ny = H·x\_R + n\textbackslash{}nH = \&\#91;h₁₁ h₁₂\&\#93; / \&\#91;h₂₁ h₂₂\&\#93;"]}
-\NormalTok{    EQ["**Equalizer**\textbackslash{}nZF / MMSE / SIC\textbackslash{}ncancel inter{-}stream interference"]}
-\NormalTok{    DST(["**Destination**\textbackslash{}nrecovered bits"])}
 
-\NormalTok{    SRC {-}{-}\textgreater{} MOD}
-\NormalTok{    MOD {-}{-}\textgreater{}|"tx symbol x"| CH1}
-\NormalTok{    CH1 {-}{-}\textgreater{}|"Hop 1\textbackslash{}nnoisy y\_R"| REL}
-\NormalTok{    REL {-}{-}\textgreater{}|"Hop 2\textbackslash{}nclean x\_R"| CH2}
-\NormalTok{    CH2 {-}{-}\textgreater{}|"mixed streams\textbackslash{}ny = Hx\_R + n"| EQ}
-\NormalTok{    EQ {-}{-}\textgreater{} DST}
+\begin{figure}[H]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+  node distance=0.5cm and 0.3cm,
+  src/.style={ellipse, draw, fill=blue!20, minimum width=1.5cm,
+              minimum height=0.8cm, align=center, font=\small},
+  box/.style={rectangle, draw, rounded corners=3pt, minimum width=1.7cm,
+              minimum height=0.85cm, align=center, font=\small},
+  ch/.style={rectangle, draw, fill=orange!20, rounded corners=3pt,
+             minimum width=2.1cm, minimum height=0.85cm, align=center, font=\small},
+  rel/.style={rectangle, draw, fill=green!20, rounded corners=3pt,
+              minimum width=1.7cm, minimum height=0.85cm, align=center, font=\small},
+  eq/.style={rectangle, draw, fill=purple!20, rounded corners=3pt,
+             minimum width=1.7cm, minimum height=0.85cm, align=center, font=\small},
+  arr/.style={->, thick, >=stealth}
+]
+\node[src] (src)   {Source\\tx bits};
+\node[box,  right=1.1cm of src]  (mod)   {BPSK\\Mod.};
+\node[ch,   right=1.1cm of mod]  (ch1)   {Hop 1 Ch.\\AWGN/Ray./Ric.};
+\node[rel,  right=1.1cm of ch1]  (relay) {Relay\\Neural Net};
+\node[ch,   right=1.1cm of relay](ch2)   {Hop 2 Ch.\\$2{\times}2$ MIMO};
+\node[eq,   right=1.1cm of ch2]  (eq)    {Equalizer\\ZF/MMSE/SIC};
+\node[src,  right=1.1cm of eq]   (dst)   {Dest.\\bits};
+\draw[arr] (src)   -- node[above,font=\tiny]{bits} (mod);
+\draw[arr] (mod)   -- node[above,font=\tiny]{$x$} (ch1);
+\draw[arr] (ch1)   -- node[above,font=\tiny]{$y_R$} (relay);
+\draw[arr] (relay) -- node[above,font=\tiny]{$\hat{x}_R$} (ch2);
+\draw[arr] (ch2)   -- node[above,font=\tiny]{$\mathbf{y}$} (eq);
+\draw[arr] (eq)    -- node[above,font=\tiny]{bits} (dst);
+\end{tikzpicture}}
+\caption{Detailed two-hop relay system model with MIMO Hop 2 channel and
+         equalizer. The relay neural network denoises the Hop 1 received signal
+         before retransmission.}
+\label{fig:relay-system-detailed}
+\end{figure}
 
-\NormalTok{    style SRC  fill:\#4A90D9,color:\#fff,stroke:\#2c5f8a,rx:20}
-\NormalTok{    style DST  fill:\#4A90D9,color:\#fff,stroke:\#2c5f8a,rx:20}
-\NormalTok{    style MOD  fill:\#7B68EE,color:\#fff,stroke:\#4a3fa0}
-\NormalTok{    style CH1  fill:\#E8A838,color:\#fff,stroke:\#b07820}
-\NormalTok{    style REL  fill:\#2ECC71,color:\#fff,stroke:\#1a8a4a}
-\NormalTok{    style CH2  fill:\#E8A838,color:\#fff,stroke:\#b07820}
-\NormalTok{    style EQ   fill:\#9B59B6,color:\#fff,stroke:\#6c3483}
-\end{Highlighting}
-\end{Shaded}
 
 \textbf{Figure 1 --- End-to-end two-hop relay signal flow.} The relay's neural network solves a \emph{denoising} problem (Hop 1 noise removal); the MIMO equalizer solves an \emph{interference cancellation} problem (Hop 2 stream separation). The two stages are independent and their gains are additive.
 
