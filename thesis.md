@@ -406,9 +406,7 @@ $$\text{GP} = \mathbb{E}_{\hat{\mathbf{x}} \sim p_{\hat{\mathbf{x}}}}\left[\left
 
 where $\hat{\mathbf{x}} = \epsilon \mathbf{x}_{\text{real}} + (1-\epsilon) \mathbf{x}_{\text{fake}}$ with $\epsilon \sim \text{Uniform}(0, 1)$. The full WGAN-GP training objectives used in this thesis are:
 
-$$\mathcal{L}_G = -\mathbb{E}[D(G(\mathbf{y}, \mathbf{z}), \mathbf{y})] + \lambda_{\text{L1}} \|\hat{\mathbf{x}} - \mathbf{x}\|_1$$
-
-$$\mathcal{L}_D = \mathbb{E}[D(G(\mathbf{y}, \mathbf{z}), \mathbf{y})] - \mathbb{E}[D(\mathbf{x}, \mathbf{y})] + \lambda_{\text{GP}} \cdot \text{GP}$$
+$$\mathcal{L}_G = -\mathbb{E}[D(G(\mathbf{y}, \mathbf{z}), \mathbf{y})] + \lambda_{\text{L1}} \|\hat{\mathbf{x}} - \mathbf{x}\|_1\mathcal{L}_D = \mathbb{E}[D(G(\mathbf{y}, \mathbf{z}), \mathbf{y})] - \mathbb{E}[D(\mathbf{x}, \mathbf{y})] + \lambda_{\text{GP}} \cdot \text{GP}$$
 
 The L1 reconstruction loss in the generator objective serves a dual purpose: it provides a strong pixel-level reconstruction signal (complementing the adversarial signal which provides a distributional match), and it prevents **mode collapse** (the generator converging to a single output regardless of input). For relay denoising, the L1 term dominates at $\lambda_{\text{L1}} = 100$, making the CGAN behave primarily as a supervised denoiser with an adversarial regularizer that encourages outputs to lie on the manifold of clean signals.
 
@@ -485,7 +483,10 @@ $$y_i = \sum_{j \leq i} \mathbf{C}_i^\top \left(\prod_{k=j+1}^{i} \bar{\mathbf{A
 
 Defining the **SSM matrix** $M \in \mathbb{R}^{n \times n}$ with entries:
 
-$$M_{ij} = \begin{cases} \mathbf{C}_i^\top \bar{\mathbf{A}}_{j+1:i} \mathbf{B}_j & i \geq j \\ 0 & i < j \end{cases}$$
+$$
+M_{ij} = \begin{cases} \mathbf{C}_i^\top \bar{\mathbf{A}}_{j+1:i} \mathbf{B}_j & i \geq j \\ 0 & i < j \end{cases}
+$$
+
 
 the output is $\mathbf{y} = M \cdot (\mathbf{B} \odot \mathbf{u})$. The matrix $M$ is lower-triangular (causal) and **semi-separable** (each entry factors as an outer product of left and right vectors with a diagonal product in between). This algebraic structure enables efficient chunk-parallel computation:
 
@@ -745,10 +746,14 @@ The neural network processes a sliding window of received samples and outputs a 
 
 **The MIMO topology** applies to Hop 2, where the relay retransmits using 2 TX antennas and the destination has 2 RX antennas. Each of the 4 TX–RX antenna pairs experiences an independent Rayleigh fading channel ($H_{ij} \sim \mathcal{CN}(0,1)$), creating **inter-stream interference**:
 
-$$\begin{aligned}
+
+$$
+\begin{aligned}
 y_1 &= h_{11} x_{R,1} + h_{12} x_{R,2} + n_1 \\
 y_2 &= h_{21} x_{R,1} + h_{22} x_{R,2} + n_2
-\end{aligned}$$
+\end{aligned}
+$$
+
 
 Each RX antenna sees a **mixture** of both transmitted streams — this mixing is the inter-stream interference that the equalizer must undo.
 
@@ -1149,10 +1154,9 @@ The average symbol energy is $E_s = 1$. Hard-decision demodulation recovers the 
 
 Quadrature Phase-Shift Keying maps pairs of bits $(b_0, b_1)$ to complex symbols:
 
-$$\begin{equation}
-\protect\phantomsection\label{eq:qpsk-mapping}{x = \frac{(1 - 2b_0) + j(1 - 2b_1)}{\sqrt{2}}
-}
-\end{equation}$$
+
+x = \frac{(1 - 2b_0) + j(1 - 2b_1)}{\sqrt{2}}
+
 
 *Source: \[21, Ch. 4, Eq. 4-3-30\]*
 
@@ -1174,10 +1178,9 @@ Demodulation applies independent sign decisions on each component: $\hat{b}_0 = 
 
 **Theoretical QPSK BER.** For uncoded QPSK over an AWGN channel, the BER per bit equals the BPSK BER at the same $E_b/N_0$ because each I/Q component carries an independent BPSK stream:
 
-$$\begin{equation}
-\protect\phantomsection\label{eq:qpsk-ber}{P_b^{\text{QPSK}} = Q\!\left(\sqrt{\frac{2E_b}{N_0}}\right) = P_b^{\text{BPSK}}
-}
-\end{equation}$$
+
+P_b^{\text{QPSK}} = Q\!\left(\sqrt{\frac{2E_b}{N_0}}\right) = P_b^{\text{BPSK}}
+
 
 *Source: \[21, Ch. 4, Eq. 4-3-31\]*
 
@@ -1187,10 +1190,9 @@ The advantage of QPSK is doubled throughput for the same BER and per-bit energy.
 
 16-QAM maps groups of four bits $(b_0, b_1, b_2, b_3)$ to one of 16 complex constellation points arranged on a $4 \times 4$ rectangular grid (Figure [1.3](#fig:fig8){reference-type="ref" reference="fig:fig8"}c). Each axis (I and Q) uses independent Gray-coded PAM-4 mapping:
 
-$$\begin{equation}
-\protect\phantomsection\label{eq:qam16-mapping}{I = \frac{L(b_0, b_1)}{\sqrt{10}}, \quad Q = \frac{L(b_2, b_3)}{\sqrt{10}}, \quad x = I + jQ
-}
-\end{equation}$$
+
+I = \frac{L(b_0, b_1)}{\sqrt{10}}, \quad Q = \frac{L(b_2, b_3)}{\sqrt{10}}, \quad x = I + jQ
+
 
 *Source: \[21, Ch. 5, Eq. 5-2-60\]*
 
@@ -1212,10 +1214,9 @@ Demodulation quantises each received component to the nearest PAM-4 level using 
 
 **Theoretical 16-QAM BER.** The approximate BER for 16-QAM over AWGN is: (Equation [\[eq:qam16-ber\]](#eq:qam16-ber){reference-type="ref" reference="eq:qam16-ber"})
 
-$$\begin{equation}
-\protect\phantomsection\label{eq:qam16-ber}{P_b^{\text{16-QAM}} \approx \frac{3}{8} \operatorname{erfc}\!\left(\sqrt{\frac{2E_b}{5N_0}}\right)
-}
-\end{equation}$$
+
+P_b^{\text{16-QAM}} \approx \frac{3}{8} \operatorname{erfc}\!\left(\sqrt{\frac{2E_b}{5N_0}}\right)
+
 
 *Source: \[21, Ch. 5, Eq. 5-2-79\]*
 
@@ -1234,10 +1235,9 @@ Figure [1.3](#fig:fig8){reference-type="ref" reference="fig:fig8"} presents the
 
 16-PSK maps groups of four bits to one of 16 complex constellation points uniformly spaced on the unit circle (Figure [1.3](#fig:fig8){reference-type="ref" reference="fig:fig8"}d). Unlike 16-QAM, which modulates both amplitude and phase, 16-PSK uses **constant-envelope** transmission --- all symbols have identical magnitude ($|x| = 1$) and differ only in phase:
 
-$$\begin{equation}
-\protect\phantomsection\label{eq:psk16-mapping}{x_k = e^{j \theta_k}, \quad \theta_k = \frac{2\pi k}{16}, \quad k = 0, 1, \ldots, 15
-}
-\end{equation}$$
+
+x_k = e^{j \theta_k}, \quad \theta_k = \frac{2\pi k}{16}, \quad k = 0, 1, \ldots, 15
+
 
 *Source: \[21, Ch. 5, Eq. 5-2-1\]*
 
@@ -1245,10 +1245,9 @@ The 16 constellation points are assigned 4-bit Gray-coded labels such that adjac
 
 **Demodulation.** Hard-decision demodulation computes the phase of the received symbol and assigns it to the nearest constellation point:
 
-$$\begin{equation}
-\protect\phantomsection\label{eq:psk16-decision}{\hat{k} = \arg\min_{k \in \{0,\ldots,15\}} \left| \angle \hat{x} - \theta_k \right|
-}
-\end{equation}$$
+
+\hat{k} = \arg\min_{k \in \{0,\ldots,15\}} \left| \angle \hat{x} - \theta_k \right|
+
 
 *Source: \[21, Ch. 5\]*
 
@@ -1256,10 +1255,9 @@ The recovered bits are obtained from the inverse Gray mapping of $\hat{k}$. The 
 
 **Theoretical 16-PSK BER.** The approximate BER for Gray-coded 16-PSK over AWGN is:
 
-$$\begin{equation}
-\protect\phantomsection\label{eq:psk16-ber}{P_b^{\text{16-PSK}} \approx \frac{1}{4} \operatorname{erfc}\!\left(\sqrt{\frac{E_b}{N_0}} \sin\!\left(\frac{\pi}{16}\right)\right)
-}
-\end{equation}$$
+
+P_b^{\text{16-PSK}} \approx \frac{1}{4} \operatorname{erfc}\!\left(\sqrt{\frac{E_b}{N_0}} \sin\!\left(\frac{\pi}{16}\right)\right)
+
 
 *Source: \[21, Ch. 5, Eq. 5-2-22\]*
 
@@ -1271,10 +1269,9 @@ At the same $E_b/N_0$, 16-PSK has a higher BER than 16-QAM because the minimum E
 
 A key methodological challenge is that the AI relay architectures (MLP, Hybrid, VAE, CGAN, Transformer, Mamba) are trained on real-valued BPSK signals and use real-valued weights. To process complex QPSK, 16-QAM, and 16-PSK signals without retraining, we employ **I/Q splitting**: the complex received signal is separated into its in-phase (I) and quadrature (Q) components, each component is processed independently through the real-valued relay, and the outputs are recombined:
 
-$$\begin{equation}
-\protect\phantomsection\label{eq:iq-splitting}{\hat{x}_R = f_\theta(\text{Re}(y_R)) + j \cdot f_\theta(\text{Im}(y_R))
-}
-\end{equation}$$
+
+\hat{x}_R = f_\theta(\text{Re}(y_R)) + j \cdot f_\theta(\text{Im}(y_R))
+
 
 **Justification.** For rectangular constellations (QPSK, QAM), the I and Q components carry independent information and are corrupted by independent noise. Therefore, processing them separately through the same denoising function is equivalent to joint processing under the assumption that the relay function $f_\theta$ operates independently on each dimension --- which is the case for all architectures in this study.
 
@@ -1310,10 +1307,9 @@ The I/Q splitting approach (Section 3.7.6) treats each axis of the complex const
 
 An alternative formulation treats the relay as a **joint 2D classifier** over all $M$ constellation points simultaneously. Instead of splitting the complex signal and classifying 4 levels per axis, the relay receives the full 2D input $(y_I, y_Q)$ and outputs $M$ logits --- one per constellation point. The predicted class index $\hat{k} = \arg\max_k \, z_k$ is mapped back to the corresponding complex symbol $s_{\hat{k}}$ for retransmission:
 
-$$\begin{equation}
-\protect\phantomsection\label{eq:joint-classification}{\hat{x}_R = s_{\hat{k}}, \quad \hat{k} = \arg\max_{k \in \{1, \dots, M\}} \, f_\theta(y_I, y_Q)_k
-}
-\end{equation}$$
+
+\hat{x}_R = s_{\hat{k}}, \quad \hat{k} = \arg\max_{k \in \{1, \dots, M\}} \, f_\theta(y_I, y_Q)_k
+
 
 where $f_\theta : \mathbb{R}^2 \to \mathbb{R}^M$ is the neural relay network with $M$ output logits trained using cross-entropy loss against the true constellation index.
 
@@ -2976,10 +2972,9 @@ The experimental results reveal several consistent patterns across all six chann
 
 **Low SNR (0--4 dB): selective AI advantage.** At low SNR, AI-based relays often outperform AF and, on selected channels, can also outperform DF; however, this advantage is not universal across all channels or all neural architectures. The theoretical explanation lies in the structure of the Bayes-optimal relay function. For a single received sample with BPSK transmission over AWGN:
 
-$$\begin{equation}
-\protect\phantomsection\label{eq:optimal-denoiser-relay}{f^*(y) = \mathbb{E}[x | y] = \tanh\left(\frac{y}{\sigma^2}\right)
-}
-\end{equation}$$
+
+f^*(y) = \mathbb{E}[x | y] = \tanh\left(\frac{y}{\sigma^2}\right)
+
 
 *Source: \[23, Ch. 5\]*
 
@@ -3027,10 +3022,9 @@ The minimum description length (MDL) principle suggests that the optimal model c
 
 The bias-variance decomposition provides a quantitative framework:
 
-$$\begin{equation}
-\protect\phantomsection\label{eq:bias-variance-relay}{\text{MSE}(\hat{x}) = \underbrace{(\mathbb{E}[\hat{x}] - f^*(y))^2}_{\text{Bias}^2} + \underbrace{\mathbb{E}[(\hat{x} - \mathbb{E}[\hat{x}])^2]}_{\text{Variance}} + \underbrace{\sigma^2_{\text{irred}}}_{\text{Noise floor}}
-}
-\end{equation}$$
+
+\text{MSE}(\hat{x}) = \underbrace{(\mathbb{E}[\hat{x}] - f^*(y))^2}_{\text{Bias}^2} + \underbrace{\mathbb{E}[(\hat{x} - \mathbb{E}[\hat{x}])^2]}_{\text{Variance}} + \underbrace{\sigma^2_{\text{irred}}}_{\text{Noise floor}}
+
 
 *Source: \[23, Ch. 5, Eq. 5.18\]*
 
