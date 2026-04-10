@@ -6,7 +6,7 @@ To systematically evaluate and compare classical and AI-based relay strategies f
 
 \section{Research Hypotheses}\label{sec:research-hypotheses}
 
-Based on the theoretical analysis in Section 4, this thesis tests the following hypotheses:
+Based on the theoretical analysis in Chapter~\ref{sec:experiments}, this thesis tests the following hypotheses:
 
 \textbf{H1 (Selective AI advantage at low SNR).} Some AI-based relay strategies achieve lower BER than AF and, on selected channels, lower BER than DF at low SNR (0--4 dB), where the non-linear denoising learned by the neural network may provide an advantage over AF's noise amplification and DF's hard-decision errors.
 
@@ -18,7 +18,7 @@ Based on the theoretical analysis in Section 4, this thesis tests the following 
 
 \textbf{H3 (Inverted-U complexity curve).} There exists an optimal model size for relay denoising beyond which performance degrades due to overfitting. Specifically, models with $\sim$(100–200 parameters achieve performance comparable to models with 10–100$)\times$ more parameters.
 
-\emph{Rationale:} The bias-variance analysis (Section 1.3.1) predicts that the low-complexity target function \(f^*\) requires minimal model capacity. Excess capacity increases variance without reducing bias.
+\emph{Rationale:} The bias-variance analysis (Section~\ref{sec:theoretical-basis-universal-approximation-and-denoising}) predicts that the low-complexity target function \(f^*\) requires minimal model capacity. Excess capacity increases variance without reducing bias.
 
 \textbf{H4 (Architecture convergence at equal scale).} When all AI models are normalized to the same parameter count ($\sim$3,000), the performance differences between architectures narrow significantly, indicating that parameter count is a more important factor than architectural choice.
 
@@ -55,7 +55,7 @@ The following delimitations define the scope of this study:
 \begin{itemize}
 \tightlist
 \item
-  \textbf{Modulation:} Primary experiments use BPSK. Extension experiments with QPSK and 16-QAM are presented in Section 4.10, and 16-PSK in Section 4.15, to evaluate hypothesis generalisability; however, 64-QAM and higher-order constellations are deferred to future work.
+  \textbf{Modulation:} Primary experiments use BPSK. Extension experiments with QPSK and 16-QAM are presented in Section~\ref{sec:higher-order-modulation-scalability-constellation-aware-training}, and 16-PSK in Section~\ref{sec:input-normalization-and-csi-injection}, to evaluate hypothesis generalisability; however, 64-QAM and higher-order constellations are deferred to future work.
 \item
   \textbf{Channel knowledge:} Perfect CSI is assumed at the receiver. Channel estimation errors are not modeled.
 \item

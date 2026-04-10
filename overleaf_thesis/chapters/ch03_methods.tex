@@ -36,7 +36,7 @@ The system under study is a two-hop relay network with a single relay node:
 \begin{equation}\protect\phantomsection\label{eq:two-hop-system}{\text{Source} \xrightarrow{\text{Hop 1}} \text{Relay} \xrightarrow{\text{Hop 2}} \text{Destination}
 }\end{equation}
 
-\textbf{Modulation.} Four modulation schemes are supported. The primary experiments use Binary Phase-Shift Keying (BPSK): bits \(b \in \{0, 1\}\) are mapped to real symbols \(x = 1 - 2b \in \{-1, +1\}\). Extensions to Quadrature Phase-Shift Keying (QPSK), 16-point Quadrature Amplitude Modulation (16-QAM), and 16-point Phase-Shift Keying (16-PSK) are evaluated in Sections 7.10 and 7.15 to test whether the BPSK findings generalise to complex constellations. QPSK maps pairs of bits to complex symbols on the unit circle (2 bits/symbol); 16-QAM maps groups of four bits to a \(4 \times 4\) Gray-coded grid (4 bits/symbol); 16-PSK maps groups of four bits to 16 equally spaced points on the unit circle (4 bits/symbol). Full modulation details are given in Section 3.7.
+\textbf{Modulation.} Four modulation schemes are supported. The primary experiments use Binary Phase-Shift Keying (BPSK): bits \(b \in \{0, 1\}\) are mapped to real symbols \(x = 1 - 2b \in \{-1, +1\}\). Extensions to Quadrature Phase-Shift Keying (QPSK), 16-point Quadrature Amplitude Modulation (16-QAM), and 16-point Phase-Shift Keying (16-PSK) are evaluated in Sections 7.10 and 7.15 to test whether the BPSK findings generalise to complex constellations. QPSK maps pairs of bits to complex symbols on the unit circle (2 bits/symbol); 16-QAM maps groups of four bits to a \(4 \times 4\) Gray-coded grid (4 bits/symbol); 16-PSK maps groups of four bits to 16 equally spaced points on the unit circle (4 bits/symbol). Full modulation details are given in Section~\ref{sec:modulation-schemes}.
 
 \textbf{Hop Model.} Each hop applies a channel function followed by optional equalization: (Equation~\ref{eq:qpsk-mapping})
 
@@ -106,7 +106,7 @@ These three components combine in the following end-to-end signal flow:
 \end{figure}
 
 
-\textbf{Figure 1 --- End-to-end two-hop relay signal flow.} The relay's neural network solves a \emph{denoising} problem (Hop 1 noise removal); the MIMO equalizer solves an \emph{interference cancellation} problem (Hop 2 stream separation). The two stages are independent and their gains are additive.
+\textbf{Figure~\ref{fig:relay-system-detailed} --- End-to-end two-hop relay signal flow.} The relay's neural network solves a \emph{denoising} problem (Hop 1 noise removal); the MIMO equalizer solves an \emph{interference cancellation} problem (Hop 2 stream separation). The two stages are independent and their gains are additive.
 
 \textbf{The relay's neural network} operates on Hop 1 and solves a \textbf{denoising} problem. Each antenna at the relay receives:
 
@@ -175,7 +175,7 @@ The three equalizer options trade off complexity for performance:
   \textbf{SIC}: Detects the strongest stream first via MMSE, cancels its contribution, then detects the remaining stream interference-free. This \textbf{non-linear} technique eliminates interference sequentially.
 \end{itemize}
 
-The gains from better relay processing and better equalization are \textbf{additive and independent}: a better relay (e.g., Mamba S6 vs.~AF) reduces the noise entering Hop 2, while a better equalizer (e.g., SIC vs.~ZF) more effectively separates the spatially multiplexed streams. Combining the best relay with the best equalizer yields the lowest overall BER, as confirmed by the results in Section 7.
+The gains from better relay processing and better equalization are \textbf{additive and independent}: a better relay (e.g., Mamba S6 vs.~AF) reduces the noise entering Hop 2, while a better equalizer (e.g., SIC vs.~ZF) more effectively separates the spatially multiplexed streams. Combining the best relay with the best equalizer yields the lowest overall BER, as confirmed by the results in Chapter~\ref{sec:experiments}.
 
 This architecture reflects practical 5G NR relay deployments, where the relay node performs baseband processing (potentially AI-assisted) and the destination's MIMO receiver applies standard equalization algorithms independently.
 
@@ -187,7 +187,7 @@ Nine relay strategies were implemented, spanning four learning paradigms. The se
 
 \begin{itemize}
 \item
-  \textbf{AF:} Amplifies with gain \(G = \sqrt{P_{\text{target}} / \mathbb{E}[|y_R|^2]}\). AF serves as the lower baseline: it performs no intelligent processing and simply rescales the received signal, preserving both signal and noise. Its theoretical BER is given in Section 3.2.1.
+  \textbf{AF:} Amplifies with gain \(G = \sqrt{P_{\text{target}} / \mathbb{E}[|y_R|^2]}\). AF serves as the lower baseline: it performs no intelligent processing and simply rescales the received signal, preserving both signal and noise. Its theoretical BER is given in Section~\ref{sec:awgn-channel-theoretical-analysis}.
 \item
   \textbf{DF:} Demodulates, recovers bits, re-modulates clean BPSK symbols. DF serves as the upper classical baseline: it performs the maximum possible classical processing (full signal regeneration). At high SNR, DF approaches error-free relay operation. Its theoretical BER follows the error-composition formula \(P_e^{\text{DF}} = 2P_e(1-P_e)\).
 \end{itemize}
@@ -313,7 +313,7 @@ All AI relays are trained \textbf{once} at the beginning of each experiment usin
 
 The multi-SNR training protocol is critical: training at a single SNR would produce a model that performs well at that SNR but poorly at others (overfitting to a specific noise level). By training at three representative SNR values spanning the low-to-moderate range, the network learns a robust denoising function that generalizes across operating conditions. The SNR values 5, 10, 15 dB were chosen to cover the regime where AI relays provide the most benefit (low-to-medium SNR).
 
-\textbf{Impact of sparse SNR training grid.} Because models are trained at only three SNR points (\(\{5,10,15\}\) dB) but evaluated over eleven points (\(0\) to \(20\) dB, step \(2\)), performance reflects two regimes: (i) \textbf{interpolation} within the trained span (approximately \(4\)--\(16\) dB), where BER is generally stable, and (ii) \textbf{extrapolation} at the edges (\(0\)--\(2\) dB and \(18\)--\(20\) dB), where mild degradation may occur due to noise-statistics mismatch. In the present results, this sparse-grid effect is secondary for BPSK/QPSK (ranking remains consistent across SNR), while the dominant degradation on 16-QAM arises from modulation/activation mismatch (Section 4.10). Section 4.11 confirms this by reducing the 16-QAM BER floor by \(2\)--\(5\times\) using modulation-aware retraining with linear/hardtanh outputs, despite keeping the same three-point SNR training grid.
+\textbf{Impact of sparse SNR training grid.} Because models are trained at only three SNR points (\(\{5,10,15\}\) dB) but evaluated over eleven points (\(0\) to \(20\) dB, step \(2\)), performance reflects two regimes: (i) \textbf{interpolation} within the trained span (approximately \(4\)--\(16\) dB), where BER is generally stable, and (ii) \textbf{extrapolation} at the edges (\(0\)--\(2\) dB and \(18\)--\(20\) dB), where mild degradation may occur due to noise-statistics mismatch. In the present results, this sparse-grid effect is secondary for BPSK/QPSK (ranking remains consistent across SNR), while the dominant degradation on 16-QAM arises from modulation/activation mismatch (Section~\ref{sec:higher-order-modulation-scalability-constellation-aware-training}). Section~\ref{sec:higher-order-modulation-scalability-constellation-aware-training} confirms this by reducing the 16-QAM BER floor by \(2\)--\(5\times\) using modulation-aware retraining with linear/hardtanh outputs, despite keeping the same three-point SNR training grid.
 
 \textbf{Training method (what is trained, where it is trained).} Training is performed \textbf{offline} before BER sweeps. Only the seven AI relays are optimized (MLP, Hybrid's MLP sub-network, VAE, CGAN, Transformer, Mamba S6, Mamba-2 SSD); AF and DF are analytical baselines and have no trainable parameters. Training data are synthetically generated source/channel pairs under the multi-SNR protocol, with model-specific losses (MSE for supervised relays, ELBO for VAE, WGAN-GP + L1 for CGAN, Adam-based supervised loss for sequence models). Compute placement follows implementation: NumPy models (MLP/Hybrid) train on CPU, while PyTorch models train on CPU or CUDA depending on device availability/configuration. After training, weights are checkpointed and reused across all SNR evaluations; BER curves are then produced in \textbf{inference-only} mode without further parameter updates.
 
@@ -381,7 +381,7 @@ This normalization isolates the effect of architectural choice from the confound
 
 \section{Modulation Schemes}\label{sec:modulation-schemes}
 
-The primary experiments in Sections 7.1--7.9 use BPSK modulation to isolate the relay processing comparison from modulation complexity. To test whether the BPSK findings generalise to higher-order constellations, Section 4.10 extends the evaluation to QPSK and 16-QAM, while Section 4.15 further extends to 16-PSK. This section defines the four modulation schemes and the I/Q splitting technique that enables real-valued AI relays to process complex-valued signals.
+The primary experiments in Sections 7.1--7.9 use BPSK modulation to isolate the relay processing comparison from modulation complexity. To test whether the BPSK findings generalise to higher-order constellations, Section~\ref{sec:higher-order-modulation-scalability-constellation-aware-training} extends the evaluation to QPSK and 16-QAM, while Section~\ref{sec:input-normalization-and-csi-injection} further extends to 16-PSK. This section defines the four modulation schemes and the I/Q splitting technique that enables real-valued AI relays to process complex-valued signals.
 
 \subsection{BPSK}\label{sec:bpsk}
 
@@ -498,7 +498,7 @@ The recovered bits are obtained from the inverse Gray mapping of \(\hat{k}\). Th
 
 At the same \(E_b/N_0\), 16-PSK has a higher BER than 16-QAM because the minimum Euclidean distance between adjacent symbols on the unit circle (\(d_{\min} = 2\sin(\pi/16) \approx 0.39\)) is smaller than the minimum distance in the 16-QAM grid (\(d_{\min} = 2/\sqrt{10} \approx 0.63\)). The advantage of 16-PSK is its constant-envelope property, which is important for non-linear power amplifiers.
 
-\textbf{Relevance to CSI injection.} The constant-envelope property has a critical implication for neural relay design (explored in Section 4.15): since all 16-PSK symbols have unit magnitude, the received signal amplitude carries no modulation information --- only channel fading information. This makes CSI injection (\(|h_{SR}|\)) particularly valuable for PSK, unlike QAM where the amplitude already encodes both modulation and channel effects.
+\textbf{Relevance to CSI injection.} The constant-envelope property has a critical implication for neural relay design (explored in Section~\ref{sec:input-normalization-and-csi-injection}): since all 16-PSK symbols have unit magnitude, the received signal amplitude carries no modulation information --- only channel fading information. This makes CSI injection (\(|h_{SR}|\)) particularly valuable for PSK, unlike QAM where the amplitude already encodes both modulation and channel effects.
 
 \subsection{I/Q Splitting for AI Relay Processing of Complex Constellations}\label{sec:iq-splitting-for-ai-relay-processing-of-complex-constellations}
 
@@ -545,11 +545,11 @@ Rationale
 
 \textbf{Limitation for 16-QAM with AI relays.} For 16-QAM, each I/Q component takes four amplitude levels (\(\{-3, -1, +1, +3\}/\sqrt{10}\)) rather than the binary \(\{\pm 1\}\) of BPSK. The BPSK-trained relays, which use \(\tanh\) activations bounded in \([-1, +1]\), may not faithfully reproduce the multi-level structure. This provides a natural test of generalisation: if AI relays degrade significantly on 16-QAM but not on QPSK, it indicates that the BPSK training generalises to binary-per-component signals (QPSK) but not to multi-level signals (16-QAM). Such a finding would motivate modulation-specific relay training.
 
-\textbf{Limitation for 16-PSK with AI relays.} The I/Q splitting assumption of component independence does not hold for PSK constellations, where the I and Q components of each symbol are coupled through the phase constraint \(I^2 + Q^2 = 1\). For 16-PSK, the CSI-injection experiments (Section 4.15) therefore train dedicated models on the full complex signal rather than relying on BPSK-pretrained I/Q splitting.
+\textbf{Limitation for 16-PSK with AI relays.} The I/Q splitting assumption of component independence does not hold for PSK constellations, where the I and Q components of each symbol are coupled through the phase constraint \(I^2 + Q^2 = 1\). For 16-PSK, the CSI-injection experiments (Section~\ref{sec:input-normalization-and-csi-injection}) therefore train dedicated models on the full complex signal rather than relying on BPSK-pretrained I/Q splitting.
 
 \subsection{2D Joint Classification as an Alternative to I/Q Splitting}\label{sec:d-joint-classification-as-an-alternative-to-iq-splitting}
 
-The I/Q splitting approach (Section 3.7.6) treats each axis of the complex constellation independently, classifying each component into \(\sqrt{M}\) amplitude levels. For 16-QAM this yields two independent 4-class problems. While valid under the assumption of I/Q independence, this formulation introduces a \textbf{structural limitation}: (Equation~\ref{eq:joint-classification}) classification errors on the I and Q axes accumulate independently, producing a BER floor that cannot be reduced regardless of model capacity.
+The I/Q splitting approach (Section~\ref{sec:iq-splitting-for-ai-relay-processing-of-complex-constellations}) treats each axis of the complex constellation independently, classifying each component into \(\sqrt{M}\) amplitude levels. For 16-QAM this yields two independent 4-class problems. While valid under the assumption of I/Q independence, this formulation introduces a \textbf{structural limitation}: (Equation~\ref{eq:joint-classification}) classification errors on the I and Q axes accumulate independently, producing a BER floor that cannot be reduced regardless of model capacity.
 
 An alternative formulation treats the relay as a \textbf{joint 2D classifier} over all \(M\) constellation points simultaneously. Instead of splitting the complex signal and classifying 4 levels per axis, the relay receives the full 2D input \((y_I, y_Q)\) and outputs \(M\) logits --- one per constellation point. The predicted class index \(\hat{k} = \arg\max_k \, z_k\) is mapped back to the corresponding complex symbol \(s_{\hat{k}}\) for retransmission:
 
@@ -560,7 +560,7 @@ where \(f_\theta : \mathbb{R}^2 \to \mathbb{R}^M\) is the neural relay network w
 
 \textbf{Advantages over I/Q splitting:} - \textbf{Joint decision boundaries.} The network learns decision regions in the full 2D constellation space, capturing the Voronoi structure of the constellation rather than axis-aligned partitions. - \textbf{No structural BER floor.} Because the classifier selects among all \(M\) points jointly, there is no independent per-axis error accumulation (Equation~\ref{eq:iq-splitting}). - \textbf{Minimal parameter overhead.} Only the final classification layer changes --- from \(\sqrt{M}\) to \(M\) outputs --- adding negligible parameters to the larger architectures (\textless{} 1\% for Transformer, Mamba S6, Mamba-2).
 
-\textbf{Trade-off.} The 2D classifier requires training on 16-QAM data (it cannot reuse BPSK-pretrained weights), and the number of output classes grows as \(M\) rather than \(\sqrt{M}\), which may affect convergence for very high-order constellations. For 16-QAM (\(M = 16\)), this trade-off is favourable. The experimental evaluation is presented in Section 4.17.
+\textbf{Trade-off.} The 2D classifier requires training on 16-QAM data (it cannot reuse BPSK-pretrained weights), and the number of output classes grows as \(M\) rather than \(\sqrt{M}\), which may affect convergence for very high-order constellations. For 16-QAM (\(M = 16\)), this trade-off is favourable. The experimental evaluation is presented in Section~\ref{sec:class-2d-classification-for-qam16}.
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 

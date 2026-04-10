@@ -16,10 +16,10 @@ The experiments chapter walks through the goals, trials, and conclusions from ea
 \centering
 \centering
 \pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/channel_theoretical_awgn.png}}
-\caption{Figure 1: AWGN Channel --- Theoretical vs.~Simulative BER. Single-hop, two-hop AF, and two-hop DF: closed-form theory (solid lines) versus Monte Carlo simulation (markers with 95\% CI). Theory and simulation match within the confidence interval at all SNR points.}
+\caption{AWGN Channel --- Theoretical vs.~Simulative BER. Single-hop, two-hop AF, and two-hop DF: closed-form theory (solid lines) versus Monte Carlo simulation (markers with 95\% CI). Theory and simulation match within the confidence interval at all SNR points.}
 \end{figure}
 
-\emph{Figure 1 --- End-to-end two-hop relay signal flow.}
+
 
 \begin{figure}[H]
 \centering
@@ -1113,7 +1113,7 @@ Mamba S6 & 0.2585 & 0.0021 & 0.2560 & 0.0028 & 0.3894 & 0.2016 & 0.1935 \\
 Mamba2 (SSD) & 0.2593 & 0.0023 & 0.2566 & 0.0034 & 0.3903 & 0.2032 & 0.1890 \\
 \end{longtable}
 
-Table 15 shows the BER at 16 dB for all relays across the three activation variants and both channel types.
+Table~\ref{tbl:table15} shows the BER at 16 dB for all relays across the three activation variants and both channel types.
 
 \begin{longtable}[]{@{}
   >{\raggedright\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1429}}
@@ -1174,7 +1174,7 @@ AF & 0.0180 & --- & --- & 0.1009 & --- & --- \\
 DF & 0.0038 & --- & --- & 0.0828 & --- & --- \\
 \end{longtable}
 
-Table 16 summarises the 16-QAM and 20dB AWGN improvements for the sequence models.
+Table~\ref{tbl:table16} summarises the 16-QAM and 20dB AWGN improvements for the sequence models.
 
 \begin{longtable}[]{@{}
   >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.2000}}
@@ -1239,7 +1239,7 @@ Mamba S6 (+CSI + LN)
 \centering
 \centering
 \pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/modulation/qpsk_awgn_ci.png}}
-\caption{QPSK on AWGN --- BER curves closely match the BPSK baseline (Figure 21), confirming I/Q splitting validity.}\label{fig:fig23}
+\caption{QPSK on AWGN --- BER curves closely match the BPSK baseline (Figure~\ref{fig:fig21}), confirming I/Q splitting validity.}\label{fig:fig23}
 \end{figure}
 
 \begin{figure}[H]
@@ -1316,7 +1316,7 @@ Mamba S6 (+CSI + LN)
 \centering
 \centering
 \pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/activation_comparison/qam16_activation_awgn.png}}
-\caption{16-QAM constellation-aware activation comparison (AWGN). All three bounded activations eliminate the tanh BER floor from Section 4.10, with scaled tanh and hardtanh closely matched.}\label{fig:fig34}
+\caption{16-QAM constellation-aware activation comparison (AWGN). All three bounded activations eliminate the tanh BER floor from Section~\ref{sec:higher-order-modulation-scalability-constellation-aware-training}, with scaled tanh and hardtanh closely matched.}\label{fig:fig34}
 \end{figure}
 
 \begin{figure}[H]
@@ -1506,8 +1506,8 @@ Assessment
 \bottomrule\noalign{}
 \endlastfoot
 Identify top architectures for higher-order modulations & QAM16: Mamba S6 and Transformer dominate; PSK16: Mamba S6 sweeps all top-3 & \textbf{Achieved} --- clear ranking established with statistical confidence over 100 MC trials \\
-Determine whether CSI injection universally improves relay performance & CSI injection is modulation-dependent: beneficial for PSK16, detrimental for QAM16 & \textbf{Achieved} --- unexpected finding that refutes the Section 4.14 hypothesis of universal CSI benefit \\
-Evaluate the role of input LayerNorm across architectures & LayerNorm consistently helps QAM16 (all top-3 use it) but is neutral-to-unnecessary for PSK16 & \textbf{Achieved} --- extends Section 4.13 finding to multi-model, multi-constellation setting \\
+Determine whether CSI injection universally improves relay performance & CSI injection is modulation-dependent: beneficial for PSK16, detrimental for QAM16 & \textbf{Achieved} --- unexpected finding that refutes the Section~\ref{sec:input-normalization-and-csi-injection} hypothesis of universal CSI benefit \\
+Evaluate the role of input LayerNorm across architectures & LayerNorm consistently helps QAM16 (all top-3 use it) but is neutral-to-unnecessary for PSK16 & \textbf{Achieved} --- extends Section~\ref{sec:input-normalization-and-csi-injection} finding to multi-model, multi-constellation setting \\
 Compare 48 neural variants against classical baselines & No neural variant beats DF; best variants approach but do not surpass AF & \textbf{Achieved} --- confirms DF optimality for higher-order modulations at all SNR points \\
 Establish reproducible JSON-backed experiment infrastructure & Full per-trial BER data, 95\% CI bounds, and metadata saved to JSON; automated top-3 chart generation & \\
 \end{longtable}
@@ -1611,7 +1611,7 @@ Relative Difference
 
 \subsection{Results Tables}\label{sec:results-tables-5}
 
-Table 24 presents the BER at 20 dB for all variants alongside the classical AF and DF baselines.
+Table~\ref{tbl:table24} presents the BER at 20 dB for all variants alongside the classical AF and DF baselines.
 
 \begin{longtable}[]{@{}llll@{}}
 \caption{BER at 20 dB for all relay variants: 4-class (I/Q split) vs.~16-class (joint 2D) classification for 16-QAM.}\label{tbl:table24}\tabularnewline
