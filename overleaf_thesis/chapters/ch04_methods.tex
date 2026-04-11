@@ -1,0 +1,566 @@
+\chapter{Methods}\label{sec:methods}
+
+\section{System Model}\label{sec:system-model-1}
+
+The system under study is a two-hop relay network with a single relay node:
+
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  node distance=0.5cm and 0.4cm,
+  box/.style={rectangle, draw, rounded corners=3pt, minimum width=1.7cm,
+              minimum height=0.85cm, align=center, font=\small},
+  arr/.style={->, thick, >=stealth}
+]
+\node[box] (src)   {Source\\tx bits};
+\node[box, right=1.2cm of src]  (mod)   {BPSK\\Mod.};
+\node[box, right=1.2cm of mod]  (ch1)   {Hop 1\\Channel};
+\node[box, right=1.2cm of ch1]  (relay) {Relay\\Neural Net};
+\node[box, right=1.2cm of relay](ch2)   {Hop 2\\Channel};
+\node[box, right=1.2cm of ch2]  (dst)   {Dest.\\bits};
+\draw[arr] (src) -- (mod);
+\draw[arr] (mod) -- (ch1);
+\draw[arr] (ch1) -- node[above,font=\tiny]{Hop 1} (relay);
+\draw[arr] (relay) -- node[above,font=\tiny]{Hop 2} (ch2);
+\draw[arr] (ch2) -- (dst);
+\end{tikzpicture}
+\caption{Two-hop relay system model: source transmits through two channels
+         with a neural network relay in between.}
+\label{fig:relay-system-simple}
+\end{figure}
+
+
+\textbf{Figure: Two-hop relay system model.} Source bits are BPSK-modulated, passed through Hop 1 (SISO channel), processed by the relay (classical or neural), then transmitted over Hop 2 (2×2 MIMO Rayleigh channel) and equalized at the destination.
+
+\begin{equation}\protect\phantomsection\label{eq:two-hop-system}{\text{Source} \xrightarrow{\text{Hop 1}} \text{Relay} \xrightarrow{\text{Hop 2}} \text{Destination}
+}\end{equation}
+
+\textbf{Modulation.} Four modulation schemes are supported. The primary experiments use Binary Phase-Shift Keying (BPSK): bits \(b \in \{0, 1\}\) are mapped to real symbols \(x = 1 - 2b \in \{-1, +1\}\). Extensions to Quadrature Phase-Shift Keying (QPSK), 16-point Quadrature Amplitude Modulation (16-QAM), and 16-point Phase-Shift Keying (16-PSK) are evaluated in Sections 7.10 and 7.15 to test whether the BPSK findings generalise to complex constellations. QPSK maps pairs of bits to complex symbols on the unit circle (2 bits/symbol); 16-QAM maps groups of four bits to a \(4 \times 4\) Gray-coded grid (4 bits/symbol); 16-PSK maps groups of four bits to 16 equally spaced points on the unit circle (4 bits/symbol). Full modulation details are given in Section~\ref{sec:modulation-schemes}.
+
+\textbf{Hop Model.} Each hop applies a channel function followed by optional equalization:
+
+\[y = h(x, \text{SNR}) + n
+\]
+
+where \(h(\cdot)\) depends on the specific channel type (AWGN, fading, or MIMO).
+
+\textbf{Power Normalization.} All relay strategies normalize their output power to ensure fair comparison:
+
+\begin{equation}\protect\phantomsection\label{eq:power-normalization}{x_R \leftarrow x_R \cdot \sqrt{\frac{P_{\text{target}}}{P_{\text{current}}}}
+}\end{equation} \par{\small\textit{Source: [1, Eq. 1]}}
+
+\subsection{MIMO Topology with Neural Network Relay and Equalization}\label{sec:mimo-topology-with-neural-network-relay-and-equalization}
+
+An important distinction in this work is the separation of three independent signal-processing functions that operate at different stages of the relay pipeline and solve fundamentally different problems:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Channel type} (AWGN, Rayleigh, Rician) --- defines the physical propagation environment on each link.
+\item
+  \textbf{Neural network relay} --- denoises the signal at the intermediate relay node after Hop 1.
+\item
+  \textbf{MIMO equalizer} (ZF, MMSE, SIC) --- separates spatially multiplexed streams at the destination after Hop 2.
+\end{enumerate}
+
+These three components combine in the following end-to-end signal flow:
+
+
+\begin{figure}[H]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+  node distance=0.5cm and 0.3cm,
+  src/.style={ellipse, draw, fill=blue!20, minimum width=1.5cm,
+              minimum height=0.8cm, align=center, font=\small},
+  box/.style={rectangle, draw, rounded corners=3pt, minimum width=1.7cm,
+              minimum height=0.85cm, align=center, font=\small},
+  ch/.style={rectangle, draw, fill=orange!20, rounded corners=3pt,
+             minimum width=2.1cm, minimum height=0.85cm, align=center, font=\small},
+  rel/.style={rectangle, draw, fill=green!20, rounded corners=3pt,
+              minimum width=1.7cm, minimum height=0.85cm, align=center, font=\small},
+  eq/.style={rectangle, draw, fill=purple!20, rounded corners=3pt,
+             minimum width=1.7cm, minimum height=0.85cm, align=center, font=\small},
+  arr/.style={->, thick, >=stealth}
+]
+\node[src] (src)   {Source\\tx bits};
+\node[box,  right=1.1cm of src]  (mod)   {BPSK\\Mod.};
+\node[ch,   right=1.1cm of mod]  (ch1)   {Hop 1 Ch.\\AWGN/Ray./Ric.};
+\node[rel,  right=1.1cm of ch1]  (relay) {Relay\\Neural Net};
+\node[ch,   right=1.1cm of relay](ch2)   {Hop 2 Ch.\\$2{\times}2$ MIMO};
+\node[eq,   right=1.1cm of ch2]  (eq)    {Equalizer\\ZF/MMSE/SIC};
+\node[src,  right=1.1cm of eq]   (dst)   {Dest.\\bits};
+\draw[arr] (src)   -- node[above,font=\tiny]{bits} (mod);
+\draw[arr] (mod)   -- node[above,font=\tiny]{$x$} (ch1);
+\draw[arr] (ch1)   -- node[above,font=\tiny]{$y_R$} (relay);
+\draw[arr] (relay) -- node[above,font=\tiny]{$\hat{x}_R$} (ch2);
+\draw[arr] (ch2)   -- node[above,font=\tiny]{$\mathbf{y}$} (eq);
+\draw[arr] (eq)    -- node[above,font=\tiny]{bits} (dst);
+\end{tikzpicture}}
+\caption{Detailed two-hop relay system model with MIMO Hop 2 channel and
+         equalizer. The relay neural network denoises the Hop 1 received signal
+         before retransmission.}
+\label{fig:relay-system-detailed}
+\end{figure}
+
+
+\textbf{Figure~\ref{fig:relay-system-detailed} --- End-to-end two-hop relay signal flow.} The relay's neural network solves a \emph{denoising} problem (Hop 1 noise removal); the MIMO equalizer solves an \emph{interference cancellation} problem (Hop 2 stream separation). The two stages are independent and their gains are additive.
+
+\textbf{The relay's neural network} operates on Hop 1 and solves a \textbf{denoising} problem. Each antenna at the relay receives:
+
+\begin{equation}\protect\phantomsection\label{eq:relay-received-siso}{y_R = x + n_1, \quad n_1 \sim \mathcal{N}(0, \sigma^2)
+}\end{equation}
+
+The neural network processes a sliding window of received samples and outputs a cleaner estimate \(\hat{x}_R = f_\theta(y_{R,i-w:i+w})\). This is purely a noise-removal task --- there is no inter-stream interference at this stage.
+
+\textbf{The MIMO topology} applies to Hop 2, where the relay retransmits using 2 TX antennas and the destination has 2 RX antennas. Each of the 4 TX--RX antenna pairs experiences an independent Rayleigh fading channel (\(H_{ij} \sim \mathcal{CN}(0,1)\)), creating \textbf{inter-stream interference}:
+
+\begin{equation}\protect\phantomsection\label{eq:mimo-interference}{\begin{aligned}
+y_1 &= h_{11} x_{R,1} + h_{12} x_{R,2} + n_1 \\
+y_2 &= h_{21} x_{R,1} + h_{22} x_{R,2} + n_2
+\end{aligned}
+}\end{equation} \par{\small\textit{Source: [19, Ch. 7.2]}}
+
+Each RX antenna sees a \textbf{mixture} of both transmitted streams --- this mixing is the inter-stream interference that the equalizer must undo.
+
+\textbf{The equalizer} at the destination solves an \textbf{interference cancellation} problem, not a denoising problem:
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}@{}}
+\caption{MIMO system components, the problem each solves, and their input/output mapping.}\label{tbl:table27}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Component
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Problem Solved
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Location
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Input → Output
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Component
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Problem Solved
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Location
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Input → Output
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Neural network relay & Remove \textbf{noise} from Hop 1 & Relay node & Noisy signal → clean estimate \\
+MIMO equalizer & Remove \textbf{inter-stream interference} & Destination & Mixed streams → separated symbols \\
+\end{longtable}
+
+The three equalizer options trade off complexity for performance:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{ZF} (\(\hat{\mathbf{x}} = \mathbf{H}^{-1}\mathbf{y}\)): Inverts \(\mathbf{H}\) exactly --- removes all interference but \textbf{amplifies noise}.
+\item
+  \textbf{MMSE} (\(\hat{\mathbf{x}} = (\mathbf{H}^H\mathbf{H} + \sigma^2\mathbf{I})^{-1}\mathbf{H}^H\mathbf{y}\)): Adds regularization \(\sigma^2\mathbf{I}\) --- \textbf{trades residual interference for less noise amplification}.
+\item
+  \textbf{SIC}: Detects the strongest stream first via MMSE, cancels its contribution, then detects the remaining stream interference-free. This \textbf{non-linear} technique eliminates interference sequentially.
+\end{itemize}
+
+The gains from better relay processing and better equalization are \textbf{additive and independent}: a better relay (e.g., Mamba S6 vs.~AF) reduces the noise entering Hop 2, while a better equalizer (e.g., SIC vs.~ZF) more effectively separates the spatially multiplexed streams. Combining the best relay with the best equalizer yields the lowest overall BER, as confirmed by the results in Chapter~\ref{sec:experiments}.
+
+This architecture reflects practical 5G NR relay deployments, where the relay node performs baseband processing (potentially AI-assisted) and the destination's MIMO receiver applies standard equalization algorithms independently.
+
+\section{Relay Strategies}\label{sec:relay-strategies}
+
+Nine relay strategies were implemented, spanning four learning paradigms. The selection of these nine strategies is designed to systematically explore the relay design space along three axes: (i) the degree of processing (from no learning to deep generative models), (ii) the type of inductive bias (feedforward, recurrent, attention, generative), and (iii) the model capacity (from 0 to 26K parameters). This section describes each strategy's architecture, training procedure, and the design rationale motivating each choice.
+
+\textbf{Classical (0 parameters):}
+
+\begin{itemize}
+\item
+  \textbf{AF:} Amplifies with gain \(G = \sqrt{P_{\text{target}} / \mathbb{E}[|y_R|^2]}\). AF serves as the lower baseline: it performs no intelligent processing and simply rescales the received signal, preserving both signal and noise. Its theoretical BER is given in Section~\ref{sec:awgn-channel-theoretical-analysis}.
+\item
+  \textbf{DF:} Demodulates, recovers bits, re-modulates clean BPSK symbols. DF serves as the upper classical baseline: it performs the maximum possible classical processing (full signal regeneration). At high SNR, DF approaches error-free relay operation. Its theoretical BER follows the error-composition formula \(P_e^{\text{DF}} = 2P_e(1-P_e)\).
+\end{itemize}
+
+\textbf{Supervised Learning:}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{MLP (Minimal):} A two-layer feedforward neural network (multi-layer perceptron, MLP) with 169 parameters:
+\end{itemize}
+
+\begin{equation}\protect\phantomsection\label{eq:mlp-relay}{\mathbf{h} = \text{ReLU}(\mathbf{W}_1 \mathbf{w} + \mathbf{b}_1), \quad \hat{x} = \tanh(\mathbf{W}_2 \mathbf{h} + \mathbf{b}_2)
+}\end{equation} \par{\small\textit{Source: [23, Ch. 6]}}
+
+where \(\mathbf{w} \in \mathbb{R}^5\) is a sliding window of received symbols (\(w=2\) neighbors on each side), and the hidden layer has 24 neurons. Parameters: \((5 \times 24 + 24) + (24 \times 1 + 1) = 169\).
+
+\begin{quote}
+\textbf{Architecture note.} The MLP relay is a standard discriminative dual-layer perceptron trained with supervised learning (MSE loss on input--output pairs). In contrast, the generative models in this study are the VAE (§6.3, Generative Models) and CGAN, which learn to \emph{sample from} or \emph{approximate} the data distribution. The MLP relay simply learns a deterministic mapping \(f: \mathbb{R}^5 \to [-1,+1]\) from a noisy observation window to a denoised symbol estimate --- a classical regression task.
+\end{quote}
+
+\emph{Design rationale:} The tanh output activation naturally constrains the output to \([-1, +1]\), matching the BPSK symbol range. The ReLU hidden layer provides the non-linearity needed to approximate the Bayes-optimal soft threshold \(\tanh(y/\sigma^2)\). With 24 hidden neurons and a 5-dimensional input, the network has approximately 34 parameters per input dimension --- sufficient for the low-complexity denoising task while avoiding overfitting. He initialization is used for ReLU layers to maintain proper gradient flow.
+
+Training uses MSE loss with multi-SNR training data (SNRs 5, 10, 15 dB), 25,000 samples, and 100 epochs with a learning rate of 0.01.
+
+\begin{itemize}
+\item
+  \textbf{Hybrid:} SNR-adaptive relay that switches between MLP (low SNR) and DF (high SNR) based on a learned threshold. Combines the AI advantage at low SNR with the zero-error classical approach at high SNR. Same 169 parameters as MLP.
+
+  \emph{Design rationale:} The Hybrid relay is motivated by the observation (confirmed empirically) that AI relays outperform DF only at low SNR, while DF is optimal at high SNR. By introducing a switching threshold, the Hybrid relay automatically selects the better strategy for each operating condition. The threshold is determined empirically from the training data by finding the SNR at which MLP and DF BER curves cross. This approach requires no additional parameters beyond those of the MLP sub-network.
+
+  Training points at the relay node: SNR = \textbf{5, 10, 15 dB} (same trained MLP sub-network as the Minimal MLP relay).
+\end{itemize}
+
+\textbf{Generative Models:}
+
+\begin{itemize}
+\item
+  \textbf{VAE:} Probabilistic relay with encoder \(q_\phi(\mathbf{z}|\mathbf{x})\) mapping to a latent space and decoder \(p_\theta(\mathbf{x}|\mathbf{z})\) reconstructing the signal. Architecture: encoder \((7 \to 32 \to 16 \to \mu, \sigma^2(8))\), decoder \((8 \to 16 \to 32 \to 1)\). Total: 1,777 parameters. Trained with \(\beta\)-VAE loss (\(\beta=0.1\)) for 100 epochs.
+
+  Training points at the relay node: SNR = \textbf{5, 10, 15 dB}.
+
+  \emph{Design rationale:} The low \(\beta = 0.1\) prioritizes reconstruction quality over latent space regularization, appropriate for a task where accurate signal recovery is paramount. The 8-dimensional latent space provides sufficient representational capacity for the BPSK signal manifold while maintaining a tractable KL divergence. The encoder window of 7 symbols provides local context.
+\item
+  \textbf{CGAN (WGAN-GP):} Adversarial relay with a generator conditioned on the noisy signal and a critic providing the training signal. Generator: \((7+8 \to 32 \to 32 \to 16 \to 1)\), Critic: \((1+7 \to 32 \to 16 \to 1)\). Total: 2,946 parameters. Trained with Wasserstein loss, gradient penalty (\(\lambda=10\)), and L1 reconstruction loss (\(\lambda_{\text{L1}}=100\)) for 200 epochs.
+
+  Training points at the relay node: SNR = \textbf{5, 10, 15 dB}.
+
+  \emph{Design rationale:} The high \(\lambda_{\text{L1}} = 100\) ensures that the generator is primarily supervised by the reconstruction loss, with the adversarial term acting as a regularizer that encourages outputs to lie on the clean signal manifold. The noise vector \(\mathbf{z} \in \mathbb{R}^8\) provides the stochastic input needed by the GAN framework. The 5:1 critic-to-generator update ratio follows the WGAN-GP recommendation for stable critic training. The doubled epoch count (200 vs.~100) compensates for the slower per-step convergence of adversarial training.
+\end{itemize}
+
+\textbf{Sequence Models:}
+
+\begin{itemize}
+\item
+  \textbf{Transformer:} Multi-head self-attention over a window of 11 symbols. Architecture: \(d_{\text{model}}=32\), 4 attention heads, 2 encoder layers, feedforward dimension 128. Total: 17,697 parameters. Trained for 100 epochs with Adam optimizer (\(\text{lr}=10^{-3}\)).
+
+  Training points at the relay node: SNR = \textbf{5, 10, 15 dB}.
+
+  \emph{Design rationale:} The Transformer is included as the dominant sequence architecture in modern deep learning. The 11-symbol window provides the same temporal context as the S6/SSD models. With \(d_{\text{model}} = 32\) and 4 heads, each head operates in an 8-dimensional subspace, which is sufficient for capturing the local noise structure. The feedforward dimension of 128 (\(4 \times d_{\text{model}}\)) follows the standard Transformer expansion ratio.
+\item
+  \textbf{Mamba S6:} Selective state space model with input-dependent state transitions. Architecture: \(d_{\text{model}}=32\), \(d_{\text{state}}=16\), 2 Mamba blocks with residual connections. Total: 24,001 parameters. Each block applies: LayerNorm → expand (\(32 \to 64\)) → split to Conv1D/SiLU/S6 main branch and SiLU gate → contract (\(64 \to 32\)) → residual. Trained for 100 epochs with Adam optimizer (\(\text{lr}=10^{-3}\)).
+
+  Training points at the relay node: SNR = \textbf{5, 10, 15 dB}.
+
+  \emph{Design rationale:} The expand factor of 2 (\(32 \to 64\)) doubles the internal dimension during the S6 scan, providing richer state dynamics. The state dimension \(N = 16\) means each S6 layer implements a 16th-order adaptive filter --- substantially more expressive than classical Wiener or matched filters. LayerNorm and residual connections prevent gradient degradation across layers. The SiLU gating provides multiplicative interactions that help the model learn sharp decision boundaries.
+\item
+  \textbf{Mamba2 (SSD):} Structured State Space Duality model that replaces the sequential S6 recurrence with a chunk-parallel structured matrix multiply. Architecture: \(d_{\text{model}}=32\), \(d_{\text{state}}=16\), chunk size 8, 2 Mamba-2 blocks with SiLU gating and residual connections. Total: 26,179 parameters. Each block applies: LayerNorm → parallel gate/SSD branches → SiLU gate → contract (\(64 \to 32\)) → residual. The SSD layer builds a lower-triangular causal kernel \(M\) per chunk and applies it via batched matmul, with inter-chunk state passing for continuity. Trained for 100 epochs with Adam optimizer (\(\text{lr}=10^{-3}\)) and gradient clipping (\(\|\nabla\| \le 1\)).
+
+  Training points at the relay node: SNR = \textbf{5, 10, 15 dB}.
+
+  \emph{Design rationale:} The chunk size of 8 is chosen to balance parallelism (larger chunks = fewer sequential inter-chunk passes) against memory cost (the \(L \times L\) SSM matrix scales quadratically with chunk size). At the 11-symbol window, this yields 2 chunks (8 + 3), with a single inter-chunk state pass. Gradient clipping at norm 1.0 prevents the exponential blowup of gradients through the cumulative matrix products in the SSD computation. The S4D-style initialization \(A_{\text{log}} = \log(1, 2, \dots, N)\) provides geometrically spaced decay rates, enabling the model to simultaneously capture short-range and medium-range dependencies.
+\end{itemize}
+
+\section{Simulation Framework}\label{sec:simulation-framework}
+
+\subsection{Monte Carlo BER Estimation}\label{sec:monte-carlo-ber-estimation}
+
+BER is estimated through Monte Carlo simulation, which provides an unbiased estimate of the true BER at each SNR point. The simulation parameters are:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Bits per trial:} 10,000
+\item
+  \textbf{Trials per SNR:} 10 (independent random seeds)
+\item
+  \textbf{Total bits per SNR point:} 100,000
+\item
+  \textbf{SNR range:} 0 to 20 dB (step: 2 dB), yielding 11 evaluation points
+\item
+  \textbf{Random seed control:} Each trial uses a unique seed for bit generation and noise realization
+\end{itemize}
+
+\textbf{BER Computation:}
+
+\begin{equation}\protect\phantomsection\label{eq:ber-estimate}{\hat{P}_e = \frac{1}{N}\sum_{i=1}^{N} \mathbb{1}(b_i \neq \hat{b}_i)
+}\end{equation} \par{\small\textit{Source: [21, Ch. 14]}}
+
+where \(\mathbb{1}(\cdot)\) is the indicator function and \(N = 10{,}000\) is the number of bits per trial. By the central limit theorem, for large \(N\) and moderate BER (say \(P_e \geq 10^{-3}\)), the per-trial BER estimate is approximately normally distributed with variance \(P_e(1-P_e)/N\).
+
+\textbf{Confidence Intervals.} The 95\% confidence interval is computed from the \(M = 10\) independent trial estimates as:
+
+\begin{equation}\protect\phantomsection\label{eq:confidence-interval}{\text{CI}_{95\%} = \bar{P}_e \pm t_{0.025, M-1} \cdot \frac{s}{\sqrt{M}}
+}\end{equation} \par{\small\textit{Source: Standard statistics}}
+
+where \(\bar{P}_e\) is the sample mean BER across trials, \(s\) is the sample standard deviation, and \(t_{0.025, 9} = 2.262\) is the critical value of the Student's \(t\)-distribution with 9 degrees of freedom. At low BER (\(\hat{P}_e \lesssim 10^{-4}\)), the normal approximation may become unreliable due to the small number of observed errors; however, in this regime the relay methods converge and the relative ranking is stable.
+
+\textbf{BER resolution.} With \(N \cdot M = 100{,}000\) total bits per SNR point, the minimum detectable BER is approximately \(1/N = 10^{-4}\) per trial, or \(10^{-5}\) for the aggregate. BER values below this threshold are reported as 0.
+
+\subsection{Statistical Significance Testing}\label{sec:statistical-significance-testing}
+
+Differences between relay methods are assessed using the \textbf{Wilcoxon signed-rank test}, a non-parametric paired test. For each pair of relay strategies \((A, B)\) at each SNR point, the test compares the \(M = 10\) paired BER observations:
+
+\begin{equation}\protect\phantomsection\label{eq:wilcoxon-test}{H_0: \text{median}(P_{e,A} - P_{e,B}) = 0 \quad \text{vs.} \quad H_1: \text{median}(P_{e,A} - P_{e,B}) \neq 0
+}\end{equation} \par{\small\textit{Source: Standard statistics}}
+
+The Wilcoxon test is preferred over the parametric paired \(t\)-test for two reasons: (i) BER distributions are bounded (\([0, 0.5]\)) and potentially skewed, violating the normality assumption, and (ii) the test is robust to outlier trials. The significance level is set at \(\alpha = 0.05\).
+
+\subsection{Training Protocol}\label{sec:training-protocol}
+
+All AI relays are trained \textbf{once} at the beginning of each experiment using: - \textbf{Multi-SNR training data:} Signals generated at SNR = 5, 10, 15 dB in equal proportions - \textbf{Training samples:} 25,000 (supervised), 20,000 (generative), 10,000 (sequence models) - \textbf{Single training per channel:} The same trained model is evaluated across all SNR points
+
+The multi-SNR training protocol is critical: training at a single SNR would produce a model that performs well at that SNR but poorly at others (overfitting to a specific noise level). By training at three representative SNR values spanning the low-to-moderate range, the network learns a robust denoising function that generalizes across operating conditions. The SNR values 5, 10, 15 dB were chosen to cover the regime where AI relays provide the most benefit (low-to-medium SNR).
+
+\textbf{Impact of sparse SNR training grid.} Because models are trained at only three SNR points (\(\{5,10,15\}\) dB) but evaluated over eleven points (\(0\) to \(20\) dB, step \(2\)), performance reflects two regimes: (i) \textbf{interpolation} within the trained span (approximately \(4\)--\(16\) dB), where BER is generally stable, and (ii) \textbf{extrapolation} at the edges (\(0\)--\(2\) dB and \(18\)--\(20\) dB), where mild degradation may occur due to noise-statistics mismatch. In the present results, this sparse-grid effect is secondary for BPSK/QPSK (ranking remains consistent across SNR), while the dominant degradation on 16-QAM arises from modulation/activation mismatch (Section~\ref{sec:higher-order-modulation-scalability-constellation-aware-training}). Section~\ref{sec:higher-order-modulation-scalability-constellation-aware-training} confirms this by reducing the 16-QAM BER floor by \(2\)--\(5\times\) using modulation-aware retraining with linear/hardtanh outputs, despite keeping the same three-point SNR training grid.
+
+\textbf{Training method (what is trained, where it is trained).} Training is performed \textbf{offline} before BER sweeps. Only the seven AI relays are optimized (MLP, Hybrid's MLP sub-network, VAE, CGAN, Transformer, Mamba S6, Mamba-2 SSD); AF and DF are analytical baselines and have no trainable parameters. Training data are synthetically generated source/channel pairs under the multi-SNR protocol, with model-specific losses (MSE for supervised relays, ELBO for VAE, WGAN-GP + L1 for CGAN, Adam-based supervised loss for sequence models). Compute placement follows implementation: NumPy models (MLP/Hybrid) train on CPU, while PyTorch models train on CPU or CUDA depending on device availability/configuration. After training, weights are checkpointed and reused across all SNR evaluations; BER curves are then produced in \textbf{inference-only} mode without further parameter updates.
+
+\textbf{Weight initialization.} He initialization {[}32{]} is used for all layers with ReLU activation (\(W \sim \mathcal{N}(0, 2/n_{\text{in}})\)), while Xavier initialization is used for layers with tanh activation (\(W \sim \mathcal{N}(0, 1/n_{\text{in}})\)). These initialization schemes maintain proper gradient magnitude through the network layers, preventing both vanishing and exploding gradients during training.
+
+\textbf{Optimizer settings.} All PyTorch-based models use the Adam optimizer with \(\beta_1 = 0.9\), \(\beta_2 = 0.999\), \(\epsilon = 10^{-8}\) (defaults). The MLP and Hybrid relays use a simple SGD implementation in NumPy with constant learning rate \(\eta = 0.01\).
+
+\subsection{Reproducibility and Weight Management}\label{sec:reproducibility-and-weight-management}
+
+All experiments use controlled random seeds at both the source (bit generation) and noise (per-trial seeding) levels to ensure reproducible results. Specifically, for seed \(s\) and trial \(t\), the random state is initialized as \(\text{seed}(s \cdot 1000 + t)\), ensuring that each trial is independent while the overall experiment is deterministic.
+
+A \textbf{weight checkpoint system} saves trained model parameters to disk after training completes, enabling experiment resumption without retraining. This is particularly important for the CGAN (2-hour training time) and sequence models (24--37 minutes). The checkpoint system supports: - Automatic save after training with architecture metadata - Resume from saved weights with architecture validation - Seed-specific weight directories (e.g., \texttt{trained\_weights/seed\_42/})
+
+The framework includes 126 automated tests (pytest) covering all modules: channels, modulation (BPSK, QPSK, 16-QAM, 16-PSK), relay strategies, simulation, statistics, and weight management, with 100\% pass rate.
+
+\section{Normalized Parameter Comparison}\label{sec:normalized-parameter-comparison}
+
+A fundamental confound in comparing AI architectures is that different models have vastly different parameter counts: from 169 (MLP) to 26,179 (Mamba-2 SSD) --- a ratio of 155:1. Performance differences between these models could reflect either (a) the superiority of one architecture's inductive bias, or (b) the simple advantage of having more learnable parameters. To disentangle these two effects, all seven AI models were scaled to approximately 3,000 parameters, providing a controlled comparison where model capacity is held constant.
+
+\textbf{Choice of target parameter count.} The target of \textasciitilde3,000 parameters was chosen as a compromise: it is large enough that all architectures can express a reasonable denoising function (avoiding underfitting), yet small enough that the normalization represents a meaningful reduction for the larger models (Transformer: 5.9× reduction, Mamba S6: 7.9×, Mamba-2: 8.7×). The MLP model is scaled \textbf{up} from 169 to 3,004 parameters, testing whether additional capacity benefits the simple feedforward architecture.
+
+\textbf{Scaling methodology.} Each architecture's hyperparameters were adjusted to reach the target while preserving its essential structure:
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
+\caption{Normalized 3K-parameter model configurations: parameter count and scaling method for each architecture.}\label{tbl:table28}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Model
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Parameters
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Scaling Method
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Model
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Parameters
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Scaling Method
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+MLP-3K & 3,004 & Increased window (5→11) and hidden (24→231) \\
+Hybrid-3K & 3,004 & Same as MLP-3K + DF switching \\
+VAE-3K & 3,037 & Increased window (7→11), adjusted latent/hidden \\
+CGAN-3K & 3,004 & Increased window (7→11), adjusted hidden layers \\
+Transformer-3K & 3,007 & Reduced d\_model (32→18), heads (4→2), layers (2→1) \\
+Mamba-3K & 3,027 & Reduced d\_model (32→16), d\_state (16→6), layers (2→1) \\
+Mamba2-3K & 3,004 & Reduced d\_model (32→15), d\_state (16→6), layers (2→1) \\
+\end{longtable}
+
+\textbf{Parameter counting convention.} All learnable parameters are counted, including biases, normalization parameters (LayerNorm gain/bias), and projection matrices. Non-learnable buffers (e.g., positional encoding tables, fixed \(\mathbf{A}\) matrices) are excluded. The counts are verified programmatically via \texttt{sum(p.numel()\ for\ p\ in\ model.parameters()\ if\ p.requires\_grad)}.
+
+\textbf{Unified input window.} All 3K models use a window size of 11 (vs.~5 for original MLP/Hybrid, and 7 for original VAE/CGAN), providing a common input context. This ensures that differences in performance reflect architectural inductive biases rather than differences in the amount of input information available.
+
+This normalization isolates the effect of architectural choice from the confound of parameter count, providing insights into which inductive biases are most beneficial for the relay denoising task. If performance converges at equal parameter budgets, the conclusion is that parameter count --- not architecture --- is the dominant factor. If significant gaps persist, the conclusion is that architectural inductive biases provide meaningful advantages beyond raw capacity.
+
+\section{Modulation Schemes}\label{sec:modulation-schemes}
+
+The primary experiments in Sections 7.1--7.9 use BPSK modulation to isolate the relay processing comparison from modulation complexity. To test whether the BPSK findings generalise to higher-order constellations, Section~\ref{sec:higher-order-modulation-scalability-constellation-aware-training} extends the evaluation to QPSK and 16-QAM, while Section~\ref{sec:input-normalization-and-csi-injection} further extends to 16-PSK. This section defines the four modulation schemes and the I/Q splitting technique that enables real-valued AI relays to process complex-valued signals.
+
+\subsection{BPSK}\label{sec:bpsk}
+
+Binary Phase-Shift Keying maps a single bit to a real-valued symbol:
+
+\[x = 1 - 2b, \quad b \in \{0, 1\} \implies x \in \{-1, +1\}
+\]
+
+The average symbol energy is \(E_s = 1\). Hard-decision demodulation recovers the bit as \(\hat{b} = \mathbb{1}(\text{Re}(\hat{x}) < 0)\). Since \(x \in \mathbb{R}\), the relay operates on real signals and all relay architectures can process the signal directly.
+
+\subsection{QPSK --- Gray-Coded Quadrature Phase-Shift Keying}\label{sec:qpsk-gray-coded-quadrature-phase-shift-keying}
+
+Quadrature Phase-Shift Keying maps pairs of bits \((b_0, b_1)\) to complex symbols:
+
+\begin{equation}\protect\phantomsection\label{eq:qpsk-mapping}{x = \frac{(1 - 2b_0) + j(1 - 2b_1)}{\sqrt{2}}
+}\end{equation} \par{\small\textit{Source: [21, Ch. 4, Eq. 4-3-30]}}
+
+yielding four constellation points at \(\{(\pm 1 \pm j)/\sqrt{2}\}\) with unit average power (\(E_s = 1\)). The Gray coding ensures that adjacent constellation points differ by exactly one bit:
+
+\begin{longtable}[]{@{}lll@{}}
+\caption{QPSK Gray-coded symbol mapping: bit pairs to complex symbols.}\label{tbl:table29}\tabularnewline
+\toprule\noalign{}
+Bit pair \((b_0, b_1)\) & Symbol & Quadrant \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+Bit pair \((b_0, b_1)\) & Symbol & Quadrant \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+00 & \((+1+j)/\sqrt{2}\) & I \\
+01 & \((+1-j)/\sqrt{2}\) & IV \\
+11 & \((-1-j)/\sqrt{2}\) & III \\
+10 & \((-1+j)/\sqrt{2}\) & II \\
+\end{longtable}
+
+Demodulation applies independent sign decisions on each component: \(\hat{b}_0 = \mathbb{1}(\text{Re}(\hat{x}) < 0)\) and \(\hat{b}_1 = \mathbb{1}(\text{Im}(\hat{x}) < 0)\). The spectral efficiency is 2 bits/symbol, double that of BPSK.
+
+\textbf{Theoretical QPSK BER.} For uncoded QPSK over an AWGN channel, the BER per bit equals the BPSK BER at the same \(E_b/N_0\) because each I/Q component carries an independent BPSK stream:
+
+\begin{equation}\protect\phantomsection\label{eq:qpsk-ber}{P_b^{\text{QPSK}} = Q\!\left(\sqrt{\frac{2E_b}{N_0}}\right) = P_b^{\text{BPSK}}
+}\end{equation} \par{\small\textit{Source: [21, Ch. 4, Eq. 4-3-31]}}
+
+The advantage of QPSK is doubled throughput for the same BER and per-bit energy.
+
+\subsection{16-QAM --- Gray-Coded Quadrature Amplitude Modulation}\label{sec:qam-gray-coded-quadrature-amplitude-modulation}
+
+16-QAM maps groups of four bits \((b_0, b_1, b_2, b_3)\) to one of 16 complex constellation points arranged on a \(4 \times 4\) rectangular grid (Figure~\ref{fig:fig8}c). Each axis (I and Q) uses independent Gray-coded PAM-4 mapping:
+
+\begin{equation}\protect\phantomsection\label{eq:qam16-mapping}{I = \frac{L(b_0, b_1)}{\sqrt{10}}, \quad Q = \frac{L(b_2, b_3)}{\sqrt{10}}, \quad x = I + jQ
+}\end{equation} \par{\small\textit{Source: [21, Ch. 5, Eq. 5-2-60]}}
+
+where \(L(\cdot)\) maps bit pairs to PAM-4 levels using Gray coding:
+
+\begin{longtable}[]{@{}llll@{}}
+\caption{16-QAM PAM-4 Gray-coded level mapping for in-phase and quadrature components.}\label{tbl:table30}\tabularnewline
+\toprule\noalign{}
+Bit pair & Level & Bit pair & Level \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+Bit pair & Level & Bit pair & Level \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+00 & \(+3\) & 11 & \(-1\) \\
+01 & \(+1\) & 10 & \(-3\) \\
+\end{longtable}
+
+The normalization factor \(\sqrt{10}\) ensures unit average symbol power: \(E[|x|^2] = \frac{2 \cdot (9+1+1+9)}{4 \cdot 10} = 1\). Adjacent constellation points differ by one bit (Gray property), minimizing the BER for a given symbol error rate.
+
+Demodulation quantises each received component to the nearest PAM-4 level using decision boundaries at \(\{-2, 0, +2\}/\sqrt{10}\) and maps back to bits via the inverse Gray table. The spectral efficiency is 4 bits/symbol.
+
+\textbf{Theoretical 16-QAM BER.} The approximate BER for 16-QAM over AWGN is:
+
+\begin{equation}\protect\phantomsection\label{eq:qam16-ber}{P_b^{\text{16-QAM}} \approx \frac{3}{8} \operatorname{erfc}\!\left(\sqrt{\frac{2E_b}{5N_0}}\right)
+}\end{equation} \par{\small\textit{Source: [21, Ch. 5, Eq. 5-2-79]}}
+
+At the same \(E_b/N_0\), 16-QAM has a higher BER than BPSK or QPSK due to the reduced Euclidean distance between constellation points. The trade-off is 4× throughput improvement.
+
+\subsection{Constellation Diagram Summary}\label{sec:constellation-diagram-summary}
+
+Figure~\ref{fig:fig8} presents the constellation diagrams for all four modulation schemes used in this thesis. The progression from BPSK (2 points on the real axis) through QPSK (4 points on the unit circle) to 16-QAM (16 points on a rectangular grid) and 16-PSK (16 points on the unit circle) illustrates the fundamental trade-off between spectral efficiency and noise robustness: higher-order constellations pack more bits per symbol but reduce the minimum Euclidean distance between points, increasing the BER at a given SNR.
+
+\begin{figure}[H]
+\centering
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/modulation/constellation_diagrams.png}}
+\caption{Constellation diagrams. (a) BPSK: 2 real-valued symbols at \(\pm 1\). (b) QPSK: 4 Gray-coded symbols on the unit circle. (c) 16-QAM: 16 Gray-coded symbols on a \(4 \times 4\) rectangular grid with decision boundaries (dotted lines). (d) 16-PSK: 16 Gray-coded symbols uniformly spaced on the unit circle. All constellations are normalised to unit average power.}\label{fig:fig8}
+\end{figure}
+
+\subsection{16-PSK --- Gray-Coded Phase-Shift Keying}\label{sec:psk-gray-coded-phase-shift-keying}
+
+16-PSK maps groups of four bits to one of 16 complex constellation points uniformly spaced on the unit circle (Figure~\ref{fig:fig8}d). Unlike 16-QAM, which modulates both amplitude and phase, 16-PSK uses \textbf{constant-envelope} transmission --- all symbols have identical magnitude (\(|x| = 1\)) and differ only in phase:
+
+\begin{equation}\protect\phantomsection\label{eq:psk16-mapping}{x_k = e^{j \theta_k}, \quad \theta_k = \frac{2\pi k}{16}, \quad k = 0, 1, \ldots, 15
+}\end{equation} \par{\small\textit{Source: [21, Ch. 5, Eq. 5-2-1]}}
+
+The 16 constellation points are assigned 4-bit Gray-coded labels such that adjacent points on the circle differ by exactly one bit, minimising the BER for a given symbol error rate. The average symbol energy is \(E_s = E[|x|^2] = 1\) (unit circle).
+
+\textbf{Demodulation.} Hard-decision demodulation computes the phase of the received symbol and assigns it to the nearest constellation point:
+
+\begin{equation}\protect\phantomsection\label{eq:psk16-decision}{\hat{k} = \arg\min_{k \in \{0,\ldots,15\}} \left| \angle \hat{x} - \theta_k \right|
+}\end{equation} \par{\small\textit{Source: [21, Ch. 5]}}
+
+The recovered bits are obtained from the inverse Gray mapping of \(\hat{k}\). The spectral efficiency is 4 bits/symbol, identical to 16-QAM.
+
+\textbf{Theoretical 16-PSK BER.} The approximate BER for Gray-coded 16-PSK over AWGN is:
+
+\begin{equation}\protect\phantomsection\label{eq:psk16-ber}{P_b^{\text{16-PSK}} \approx \frac{1}{4} \operatorname{erfc}\!\left(\sqrt{\frac{E_b}{N_0}} \sin\!\left(\frac{\pi}{16}\right)\right)
+}\end{equation} \par{\small\textit{Source: [21, Ch. 5, Eq. 5-2-22]}}
+
+At the same \(E_b/N_0\), 16-PSK has a higher BER than 16-QAM because the minimum Euclidean distance between adjacent symbols on the unit circle (\(d_{\min} = 2\sin(\pi/16) \approx 0.39\)) is smaller than the minimum distance in the 16-QAM grid (\(d_{\min} = 2/\sqrt{10} \approx 0.63\)). The advantage of 16-PSK is its constant-envelope property, which is important for non-linear power amplifiers.
+
+\textbf{Relevance to CSI injection.} The constant-envelope property has a critical implication for neural relay design (explored in Section~\ref{sec:input-normalization-and-csi-injection}): since all 16-PSK symbols have unit magnitude, the received signal amplitude carries no modulation information --- only channel fading information. This makes CSI injection (\(|h_{SR}|\)) particularly valuable for PSK, unlike QAM where the amplitude already encodes both modulation and channel effects.
+
+\subsection{I/Q Splitting for AI Relay Processing of Complex Constellations}\label{sec:iq-splitting-for-ai-relay-processing-of-complex-constellations}
+
+A key methodological challenge is that the AI relay architectures (MLP, Hybrid, VAE, CGAN, Transformer, Mamba) are trained on real-valued BPSK signals and use real-valued weights. To process complex QPSK, 16-QAM, and 16-PSK signals without retraining, we employ \textbf{I/Q splitting}: the complex received signal is separated into its in-phase (I) and quadrature (Q) components, each component is processed independently through the real-valued relay, and the outputs are recombined:
+
+\begin{equation}\protect\phantomsection\label{eq:iq-splitting}{\hat{x}_R = f_\theta(\text{Re}(y_R)) + j \cdot f_\theta(\text{Im}(y_R))
+}\end{equation}
+
+\textbf{Justification.} For rectangular constellations (QPSK, QAM), the I and Q components carry independent information and are corrupted by independent noise. Therefore, processing them separately through the same denoising function is equivalent to joint processing under the assumption that the relay function \(f_\theta\) operates independently on each dimension --- which is the case for all architectures in this study.
+
+\textbf{Relay-specific handling:}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
+\caption{Relay-specific complex signal handling strategies and rationale.}\label{tbl:table31}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Relay type
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Complex signal processing
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Rationale
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Relay type
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Complex signal processing
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Rationale
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\textbf{AF} & Amplifies complex signal directly & Power normalization (\(\|y\|^2\)) is valid for complex vectors \\
+\textbf{DF} & Nearest constellation point detection & Modulation-aware: sign decision for QPSK; PAM-4 quantisation for 16-QAM; phase quantisation for 16-PSK \\
+\textbf{AI relays} & I/Q splitting (process Re and Im separately) & Real-valued networks; independence of I/Q in rectangular constellations \\
+\end{longtable}
+
+\textbf{Limitation for 16-QAM with AI relays.} For 16-QAM, each I/Q component takes four amplitude levels (\(\{-3, -1, +1, +3\}/\sqrt{10}\)) rather than the binary \(\{\pm 1\}\) of BPSK. The BPSK-trained relays, which use \(\tanh\) activations bounded in \([-1, +1]\), may not faithfully reproduce the multi-level structure. This provides a natural test of generalisation: if AI relays degrade significantly on 16-QAM but not on QPSK, it indicates that the BPSK training generalises to binary-per-component signals (QPSK) but not to multi-level signals (16-QAM). Such a finding would motivate modulation-specific relay training.
+
+\textbf{Limitation for 16-PSK with AI relays.} The I/Q splitting assumption of component independence does not hold for PSK constellations, where the I and Q components of each symbol are coupled through the phase constraint \(I^2 + Q^2 = 1\). For 16-PSK, the CSI-injection experiments (Section~\ref{sec:input-normalization-and-csi-injection}) therefore train dedicated models on the full complex signal rather than relying on BPSK-pretrained I/Q splitting.
+
+\subsection{2D Joint Classification as an Alternative to I/Q Splitting}\label{sec:d-joint-classification-as-an-alternative-to-iq-splitting}
+
+The I/Q splitting approach (Section~\ref{sec:iq-splitting-for-ai-relay-processing-of-complex-constellations}) treats each axis of the complex constellation independently, classifying each component into \(\sqrt{M}\) amplitude levels. For 16-QAM this yields two independent 4-class problems. While valid under the assumption of I/Q independence, this formulation introduces a \textbf{structural limitation}: classification errors on the I and Q axes accumulate independently, producing a BER floor that cannot be reduced regardless of model capacity.
+
+An alternative formulation treats the relay as a \textbf{joint 2D classifier} over all \(M\) constellation points simultaneously. Instead of splitting the complex signal and classifying 4 levels per axis, the relay receives the full 2D input \((y_I, y_Q)\) and outputs \(M\) logits --- one per constellation point. The predicted class index \(\hat{k} = \arg\max_k \, z_k\) is mapped back to the corresponding complex symbol \(s_{\hat{k}}\) for retransmission:
+
+\begin{equation}\protect\phantomsection\label{eq:joint-classification}{\hat{x}_R = s_{\hat{k}}, \quad \hat{k} = \arg\max_{k \in \{1, \dots, M\}} \, f_\theta(y_I, y_Q)_k
+}\end{equation}
+
+where \(f_\theta : \mathbb{R}^2 \to \mathbb{R}^M\) is the neural relay network with \(M\) output logits trained using cross-entropy loss against the true constellation index.
+
+\textbf{Advantages over I/Q splitting:} - \textbf{Joint decision boundaries.} The network learns decision regions in the full 2D constellation space, capturing the Voronoi structure of the constellation rather than axis-aligned partitions. - \textbf{No structural BER floor.} Because the classifier selects among all \(M\) points jointly, there is no independent per-axis error accumulation. - \textbf{Minimal parameter overhead.} Only the final classification layer changes --- from \(\sqrt{M}\) to \(M\) outputs --- adding negligible parameters to the larger architectures (\textless{} 1\% for Transformer, Mamba S6, Mamba-2).
+
+\textbf{Trade-off.} The 2D classifier requires training on 16-QAM data (it cannot reuse BPSK-pretrained weights), and the number of output classes grows as \(M\) rather than \(\sqrt{M}\), which may affect convergence for very high-order constellations. For 16-QAM (\(M = 16\)), this trade-off is favourable. The experimental evaluation is presented in Section~\ref{sec:class-2d-classification-for-qam16}.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+

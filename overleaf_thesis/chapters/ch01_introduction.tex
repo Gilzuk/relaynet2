@@ -1,4 +1,4 @@
-\chapter{Introduction and Literature Review}\label{sec:introduction-and-literature-review}
+\chapter{Introduction}\label{sec:introduction}
 
 \section{Cooperative Relay Communication}\label{sec:cooperative-relay-communication}
 
@@ -8,7 +8,7 @@ Cooperative relay communication is a fundamental technique in modern wireless ne
 
 The three-terminal relay channel consists of a source \(S\), a relay \(R\), and a destination \(D\). The capacity of this channel depends critically on the relay processing strategy \(f(\cdot)\) and the channel statistics. Cover and El Gamal {[}3{]} established two fundamental capacity bounds:
 
-\textbf{Cut-set upper bound.} The capacity of any relay channel is bounded by: (Equation~\ref{eq:relay-capacity-bound})
+\textbf{Cut-set upper bound.} The capacity of any relay channel is bounded by:
 
 \begin{equation}\protect\phantomsection\label{eq:relay-capacity-bound}{C \leq \max_{p(x, x_R)} \min\left\{I(X, X_R; Y_D), \; I(X; Y_R, Y_D | X_R)\right\}
 }\end{equation} \par{\small\textit{Source: [3, Thm. 1], [4, Ch. 16]}}
@@ -22,7 +22,7 @@ where the first term represents the maximum rate at which the destination can re
 
 This rate is achievable using block Markov encoding and backward decoding. The first term is the relay's decoding constraint (it must fully decode the source), and the second is the destination's decoding rate. DF achieves the cut-set bound when the source-relay link is stronger than the relay-destination link, making it capacity-optimal for near-source relays.
 
-For the degraded relay channel --- where the relay's observation is a degraded version of the destination's, or vice versa --- Cover and El Gamal showed that the DF bound coincides with the cut-set bound, establishing the exact capacity. In the Gaussian case with equal per-hop SNR \(\gamma\), the two-hop DF capacity is: (Equation~\ref{eq:df-capacity})
+For the degraded relay channel --- where the relay's observation is a degraded version of the destination's, or vice versa --- Cover and El Gamal showed that the DF bound coincides with the cut-set bound, establishing the exact capacity. In the Gaussian case with equal per-hop SNR \(\gamma\), the two-hop DF capacity is:
 
 \begin{equation}\protect\phantomsection\label{eq:df-gaussian-capacity}{C_{\text{DF}}^{\text{Gaussian}} = \frac{1}{2}\log_2\left(1 + \gamma\right)
 }\end{equation} \par{\small\textit{Source: [1, Eq. 7], [3]}}
@@ -53,12 +53,12 @@ The fundamental question that motivates this thesis is: can a learned relay func
 
 \section{Classical Relay Strategies}\label{sec:classical-relay-strategies}
 
-\textbf{Amplify-and-Forward (AF).} The AF relay amplifies the received signal by a gain factor \(G\) that normalizes the output power: (Equation~\ref{eq:af-gain})
+\textbf{Amplify-and-Forward (AF).} The AF relay amplifies the received signal by a gain factor \(G\) that normalizes the output power:
 
 \begin{equation}\protect\phantomsection\label{eq:af-gain}{G = \sqrt{\frac{P_{\text{target}}}{\mathbb{E}[|y_R|^2]}}
 }\end{equation} \par{\small\textit{Source: [1, Eq. 1]}}
 
-The end-to-end SNR for AF relay is: (Equation~\ref{eq:af-snr})
+The end-to-end SNR for AF relay is:
 
 \begin{equation}\protect\phantomsection\label{eq:af-snr}{\text{SNR}_{\text{eff}}^{\text{AF}} = \frac{\text{SNR}_1 \cdot \text{SNR}_2}{\text{SNR}_1 + \text{SNR}_2 + 1}
 }\end{equation} \par{\small\textit{Source: [1, Eq. 2]}}
@@ -70,7 +70,7 @@ This expression reveals a fundamental limitation: even when one hop has high SNR
 \begin{equation}\protect\phantomsection\label{eq:df-demod-remod}{\hat{b}_R = \text{demod}(y_R), \quad x_R = \text{mod}(\hat{b}_R)
 }\end{equation} \par{\small\textit{Source: [1, Sec. III]}}
 
-The end-to-end BER for DF is: (Equation~\ref{eq:df-ber-hops})
+The end-to-end BER for DF is:
 
 \begin{equation}\protect\phantomsection\label{eq:df-ber-hops}{P_e^{\text{DF}} = P_{e,1} + (1 - P_{e,1}) \cdot P_{e,2}
 }\end{equation} \par{\small\textit{Source: [1, Eq. 9], [21, Ch. 14]}}
@@ -79,224 +79,11 @@ where \(P_{e,1}\) and \(P_{e,2}\) are the BER of the first and second hops, resp
 
 \textbf{Other Classical Relay Techniques.} Beyond AF and DF, several additional cooperative relay strategies have been proposed in the literature. \textbf{Compress-and-Forward (CF)} has the relay quantize and compress the received signal using Wyner-Ziv source coding, then forward the compressed representation to the destination, which exploits its own direct-link observation as side information to decode {[}3{]}, {[}4{]}. \textbf{Compute-and-Forward (CoF)} leverages lattice codes to allow relays to decode \emph{linear combinations} of transmitted messages rather than individual codewords; the destination then solves a system of linear equations to recover the original messages {[}5{]}. \textbf{Estimate-and-Forward (EF)} computes an MMSE estimate of the transmitted signal at the relay and forwards the soft estimate, avoiding the hard-decision errors of DF while providing a more structured output than AF. \textbf{Selective and incremental relaying} are hybrid protocols: in selective relaying the relay forwards only when it can decode correctly, while in incremental relaying the relay transmits only when the destination signals (via a feedback link) that the direct transmission has failed {[}1{]}. \textbf{Two-way relaying with network coding} allows both endpoints to transmit simultaneously to the relay, which combines the received signals (e.g., via XOR or lattice coding) and broadcasts the result back, effectively doubling spectral efficiency {[}6{]}. \textbf{Filter-and-Forward (FF)} applies a linear filter (e.g., matched filter or Wiener filter) at the relay before forwarding, providing a structured intermediate between AF's simple scaling and DF's full regeneration.
 
-AF and DF represent the two canonical extremes of the relay processing spectrum: (Equation~\ref{eq:mmse-equalizer}) AF performs minimal processing (linear scaling) while DF performs maximal classical processing (full regeneration). The other techniques --- CF, EF, CoF --- occupy intermediate points along this spectrum. In this thesis, the AI-based relay strategies are designed to \emph{learn} the optimal relay processing function from data, potentially discovering strategies that subsume or outperform these fixed classical schemes. The focus on AF and DF as classical baselines is therefore deliberate: they bracket the classical design space and provide clear lower and upper bounds against which the learned strategies can be evaluated. These additional relay strategies are reviewed for completeness; they are not simulated in this thesis because the studied system assumes a two-hop link without a direct source--destination path.
-
-\section{Machine Learning in Wireless Communication}\label{sec:machine-learning-in-wireless-communication}
-
-The application of machine learning to physical-layer wireless communication has gained significant momentum in recent years, driven by the ability of neural networks to learn complex non-linear mappings directly from data. Deep learning has been applied to channel estimation {[}7{]}, signal detection {[}8{]}, autoencoder-based end-to-end communication {[}9{]}, and resource allocation {[}10{]}. These approaches learn complex mappings from data, potentially outperforming hand-crafted algorithms in scenarios where analytical solutions are intractable or suboptimal.
-
-\subsection{Theoretical Basis: Universal Approximation and Denoising}\label{sec:theoretical-basis-universal-approximation-and-denoising}
-
-The theoretical justification for applying neural networks to relay signal processing rests on two pillars. First, the \textbf{universal approximation theorem} {[}23{]} guarantees that a feedforward network with a single hidden layer and a non-linear activation function can approximate any continuous function on a compact domain to arbitrary accuracy, given sufficient width. For relay denoising, the target function maps noisy observations to clean transmitted symbols:
-
-\begin{equation}\protect\phantomsection\label{eq:optimal-denoiser}{f^*: \mathbb{R}^{2w+1} \to [-1, 1], \quad f^*(y_{i-w}, \dots, y_{i+w}) = \mathbb{E}[x_i \mid y_{i-w}, \dots, y_{i+w}]
-}\end{equation} \par{\small\textit{Source: [23, Ch. 5]}}
-
-This conditional expectation \(f^*\) is the Bayes-optimal denoiser --- it minimizes the mean squared error (MSE) over all possible estimators. For BPSK symbols corrupted by AWGN, \(f^*\) reduces to the posterior mean:
-
-\begin{equation}\protect\phantomsection\label{eq:optimal-denoiser-awgn}{f^*(y) = \tanh\left(\frac{y}{\sigma^2}\right)
-}\end{equation} \par{\small\textit{Source: [23, Ch. 5]}}
-
-which is a smooth sigmoid-like function that approaches the hard-decision signum function as \(\sigma^2 \to 0\) (high SNR). A neural network with a single hidden layer and tanh output can represent this function exactly, explaining why even a 169-parameter network suffices for this task.
-
-Second, the \textbf{bias-variance decomposition} provides a framework for understanding model complexity:
-
-\begin{equation}\protect\phantomsection\label{eq:bias-variance-decomp}{\mathbb{E}[(\hat{x} - x)^2] = \text{Bias}^2(\hat{x}) + \text{Var}(\hat{x}) + \sigma^2_{\text{irreducible}}
-}\end{equation} \par{\small\textit{Source: [23, Ch. 5, Eq. 5.18]}}
-
-The irreducible noise \(\sigma^2_{\text{irreducible}}\) represents the minimum achievable MSE, determined by the channel noise. Increasing model complexity (more parameters) reduces bias but increases variance. For the relay denoising task, the target function \(f^*\) is simple (essentially a soft threshold), so the bias term is already small for modest networks. Adding parameters beyond this point primarily increases variance (overfitting), explaining the inverted-U relationship between model size and BER observed in this thesis.
-
-\subsection{Prior Work in Deep Learning for Physical-Layer Processing}\label{sec:prior-work-in-deep-learning-for-physical-layer-processing}
-
-Ye et al.~{[}7{]} demonstrated that deep neural networks can jointly perform channel estimation and signal detection in OFDM systems, achieving near-optimal performance with lower complexity than separate estimation and detection stages. Their key insight was that the DNN implicitly learns the channel's statistical structure, eliminating the need for explicit pilot-based estimation.
-
-Samuel et al.~{[}8{]} proposed DetNet, an unfolded projected gradient descent network for MIMO detection. By unrolling iterative optimization into a fixed number of neural network layers, DetNet achieves near-maximum-likelihood detection performance with \(O(N_t^2)\) complexity instead of the exponential complexity of exhaustive ML search. This demonstrates the power of incorporating domain knowledge (the iterative structure of the detection problem) into the network architecture.
-
-Dorner et al.~{[}9{]} proposed treating the entire communication system --- modulator, channel, and demodulator --- as an autoencoder, trained end-to-end to minimize bit error rate. This approach jointly optimizes all components, potentially discovering novel modulation and coding schemes that outperform separately designed modules. The autoencoder paradigm is conceptually related to the relay processing task: (Equation~\ref{eq:mamba-selective}) both involve learning an encoder-decoder pair that maps through a noisy channel.
-
-Sun et al.~{[}10{]} applied deep learning to the NP-hard problem of resource allocation in interference networks, demonstrating that a DNN can learn near-optimal power control policies orders of magnitude faster than conventional iterative algorithms.
-
-\subsection{Neural Network Relay Processing}\label{sec:neural-network-relay-processing}
-
-For relay processing specifically, a supervised learning approach trains a neural network \(f_\theta\) to minimize: (Equation~\ref{eq:optimal-denoiser})
-
-\begin{equation}\protect\phantomsection\label{eq:mse-loss}{\mathcal{L}(\theta) = \frac{1}{N} \sum_{i=1}^{N} (\hat{x}_i - x_i)^2, \quad \hat{x}_i = f_\theta(y_{i-w:i+w})
-}\end{equation} \par{\small\textit{Source: [23, Ch. 5]}}
-
-where \(\hat{x}_i = f_\theta(y_{i-w:i+w})\) is the network output based on a sliding window of \(2w+1\) received symbols, and \(x_i\) is the clean transmitted symbol. This window-based approach provides temporal context that enables the network to exploit statistical dependencies in the noise-corrupted signal.
-
-The sliding window formulation is motivated by the observation that adjacent received symbols share common noise statistics and channel conditions. While AWGN noise is i.i.d. across symbols (making the window unnecessary for a single-symbol estimator), the window provides the network with a local context that helps it learn a more robust decision boundary --- effectively performing a form of implicit averaging that reduces variance. For fading channels, where adjacent symbols may experience correlated fading, the window becomes even more valuable.
-
-\textbf{Multi-SNR training} is a key design choice: by training on data generated at multiple SNR levels (5, 10, 15 dB in this thesis), the network learns a denoising function that generalizes across operating conditions rather than specializing to a single noise level. This is analogous to training a robust estimator that operates well across a range of noise variances, a concept related to minimax estimation in statistical decision theory.
-
-A critical question in applying neural networks to relay processing is the relationship between model complexity and performance. Prior work has generally assumed that larger models yield better performance, but this assumption has not been rigorously tested in the relay communication context. The bias-variance framework predicts that for a low-complexity target function like relay denoising, performance should plateau or degrade beyond a modest model size --- a prediction that this thesis confirms empirically. Understanding this relationship is essential for practical deployment, where relay nodes may have limited computational resources.
-
-\section{Generative Models for Signal Processing}\label{sec:generative-models-for-signal-processing}
-
-Generative models offer an alternative paradigm for relay signal processing. Rather than directly learning a denoising function (discriminative approach), generative models learn the distribution of clean signals \(p(\mathbf{x})\) and use this knowledge to reconstruct the transmitted signal from noisy observations via Bayes' rule: \(p(\mathbf{x} | \mathbf{y}) \propto p(\mathbf{y} | \mathbf{x}) p(\mathbf{x})\). The generative approach is theoretically appealing because it separates the modeling of the signal prior from the noise model, potentially enabling better generalization to unseen noise conditions.
-
-\subsection{Variational Autoencoders}\label{sec:variational-autoencoders}
-
-\textbf{Variational Autoencoders (VAEs)} {[}11{]} learn a latent representation by maximizing the evidence lower bound (ELBO). The generative model posits that data \(\mathbf{x}\) is generated from a latent variable \(\mathbf{z} \sim p(\mathbf{z}) = \mathcal{N}(\mathbf{0}, \mathbf{I})\) through a decoder \(p_\theta(\mathbf{x} | \mathbf{z})\). Since the true posterior \(p(\mathbf{z} | \mathbf{x})\) is intractable, an encoder network \(q_\phi(\mathbf{z} | \mathbf{x})\) approximates it. The ELBO objective is derived from the log-evidence decomposition: (Equation~\ref{eq:vae-elbo})
-
-\begin{equation}\protect\phantomsection\label{eq:vae-elbo}{\log p_\theta(\mathbf{x}) = \underbrace{\mathbb{E}_{q_\phi}\left[\log \frac{p_\theta(\mathbf{x}, \mathbf{z})}{q_\phi(\mathbf{z} | \mathbf{x})}\right]}_{\text{ELBO}(\theta, \phi; \mathbf{x})} + \underbrace{D_{KL}(q_\phi(\mathbf{z} | \mathbf{x}) \| p_\theta(\mathbf{z} | \mathbf{x}))}_{\geq 0}
-}\end{equation} \par{\small\textit{Source: [11, Eq. 2]}}
-
-Since the KL divergence is non-negative, the ELBO is a lower bound on the log-evidence. Maximizing the ELBO simultaneously trains the encoder to approximate the true posterior and the decoder to reconstruct the data. The ELBO decomposes into a reconstruction term and a regularization term:
-
-\begin{equation}\protect\phantomsection\label{eq:vae-loss}{\mathcal{L}_{\text{VAE}} = \underbrace{\mathbb{E}_{q_\phi(\mathbf{z}|\mathbf{x})}[\log p_\theta(\mathbf{x}|\mathbf{z})]}_{\text{Reconstruction quality}} - \underbrace{\beta \cdot D_{KL}(q_\phi(\mathbf{z}|\mathbf{x}) \| p(\mathbf{z}))}_{\text{Latent space regularity}}
-}\end{equation} \par{\small\textit{Source: [11, Eq. 3]}}
-
-The reconstruction term encourages the decoder to accurately reproduce the input from the latent code, while the KL term regularizes the latent space to be close to the standard Gaussian prior \(p(\mathbf{z})\). The \(\beta\) parameter (\(\beta\)-VAE) {[}31{]} controls the trade-off between reconstruction quality and latent space smoothness: (Equation~\ref{eq:mse-loss}) \(\beta < 1\) prioritizes reconstruction (beneficial for the relay task where accurate signal recovery is paramount), while \(\beta > 1\) encourages disentangled latent representations.
-
-The \textbf{reparameterization trick} enables gradient-based optimization through the stochastic sampling layer: instead of sampling \(\mathbf{z} \sim q_\phi(\mathbf{z} | \mathbf{x}) = \mathcal{N}(\boldsymbol{\mu}, \text{diag}(\boldsymbol{\sigma}^2))\), the sample is expressed as \(\mathbf{z} = \boldsymbol{\mu} + \boldsymbol{\sigma} \odot \boldsymbol{\epsilon}\) where \(\boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \mathbf{I})\). This moves the stochasticity outside the computational graph, allowing backpropagation through the encoder.
-
-For relay signal processing, the VAE learns a compressed latent representation of the clean signal manifold. During inference, the noisy received signal is encoded into the latent space, and the decoder maps it back to a denoised estimate. The regularized latent space provides implicit denoising: noisy inputs that map to regions far from the learned signal manifold are pulled back toward high-probability regions during decoding. However, the stochastic sampling introduces additional variance into the estimate, which can be harmful for the deterministic BPSK denoising task --- a trade-off that manifests as the consistent VAE underperformance observed in this thesis.
-
-\subsection{Conditional Generative Adversarial Networks}\label{sec:conditional-generative-adversarial-networks}
-
-\textbf{Conditional GANs (CGANs)} {[}12{]} learn signal denoising through adversarial training, building on the foundational GAN framework {[}14{]}. The original GAN formulates generative modeling as a two-player minimax game between a generator \(G\) and a discriminator \(D\): (Equation~\ref{eq:gan-minimax})
-
-\begin{equation}\protect\phantomsection\label{eq:gan-minimax}{\min_G \max_D \; \mathbb{E}_{\mathbf{x} \sim p_{\text{data}}}[\log D(\mathbf{x})] + \mathbb{E}_{\mathbf{z} \sim p_z}[\log(1 - D(G(\mathbf{z})))]
-}\end{equation} \par{\small\textit{Source: [14, Eq. 1]}}
-
-At the Nash equilibrium, \(G\) generates samples indistinguishable from real data and \(D\) outputs 1/2 everywhere. The conditional variant conditions both \(G\) and \(D\) on auxiliary information (the noisy signal \(\mathbf{y}\)), enabling the generator to learn a noise-conditioned mapping.
-
-A fundamental challenge with the original GAN objective is \textbf{training instability}: the Jensen-Shannon divergence that the discriminator implicitly estimates can produce vanishing gradients when the generator distribution and data distribution have disjoint supports (which is common early in training). The \textbf{Wasserstein GAN (WGAN)} addresses this by replacing the JS divergence with the Earth Mover (Wasserstein-1) distance: (Equation~\ref{eq:wasserstein-distance})
-
-\begin{equation}\protect\phantomsection\label{eq:wasserstein-distance}{W(p_{\text{data}}, p_G) = \inf_{\gamma \in \Pi(p_{\text{data}}, p_G)} \mathbb{E}_{(\mathbf{x}, \mathbf{y}) \sim \gamma}[\|\mathbf{x} - \mathbf{y}\|]
-}\end{equation} \par{\small\textit{Source: [13, Eq. 1]}}
-
-The Wasserstein distance provides meaningful gradients even when distributions do not overlap, enabling stable training. By the Kantorovich-Rubinstein duality, the Wasserstein distance can be computed via a supremum over 1-Lipschitz functions, which the critic network approximates. The \textbf{gradient penalty (GP)} formulation {[}13{]} enforces the Lipschitz constraint softly by penalizing the gradient norm of the critic at interpolated points: (Equation~\ref{eq:gradient-penalty})
-
-\begin{equation}\protect\phantomsection\label{eq:gradient-penalty}{\text{GP} = \mathbb{E}_{\hat{\mathbf{x}} \sim p_{\hat{\mathbf{x}}}}\left[\left(\|\nabla_{\hat{\mathbf{x}}} D(\hat{\mathbf{x}})\|_2 - 1\right)^2\right]
-}\end{equation} \par{\small\textit{Source: [13, Eq. 3]}}
-
-where \(\hat{\mathbf{x}} = \epsilon \mathbf{x}_{\text{real}} + (1-\epsilon) \mathbf{x}_{\text{fake}}\) with \(\epsilon \sim \text{Uniform}(0, 1)\). The full WGAN-GP training objectives used in this thesis are:
-
-\begin{equation}\protect\phantomsection\label{eq:wgan-gen-loss}{\mathcal{L}_G = -\mathbb{E}[D(G(\mathbf{y}, \mathbf{z}), \mathbf{y})] + \lambda_{\text{L1}} \|\hat{\mathbf{x}} - \mathbf{x}\|_1
-}\end{equation} \par{\small\textit{Source: [13, Eq. 2]}}
-
-\begin{equation}\protect\phantomsection\label{eq:wgan-disc-loss}{\mathcal{L}_D = \mathbb{E}[D(G(\mathbf{y}, \mathbf{z}), \mathbf{y})] - \mathbb{E}[D(\mathbf{x}, \mathbf{y})] + \lambda_{\text{GP}} \cdot \text{GP}
-}\end{equation} \par{\small\textit{Source: [13, Eq. 2]}}
-
-The L1 reconstruction loss in the generator objective serves a dual purpose: it provides a strong pixel-level reconstruction signal (complementing the adversarial signal which provides a distributional match), and it prevents \textbf{mode collapse} (the generator converging to a single output regardless of input). For relay denoising, the L1 term dominates at \(\lambda_{\text{L1}} = 100\), making the CGAN behave primarily as a supervised denoiser with an adversarial regularizer that encourages outputs to lie on the manifold of clean signals.
-
-\subsection{Generative vs.~Discriminative Paradigms for Relay Processing}\label{sec:generative-vs.-discriminative-paradigms-for-relay-processing}
-
-The application of generative models to relay processing has not been extensively studied. The key question is whether the generative inductive bias --- learning the data distribution rather than just the input-output mapping --- provides any advantage for the relay denoising task. For BPSK, the clean signal distribution is trivially simple (a discrete distribution on \(\{-1, +1\}\)), suggesting that the generative overhead may not be justified. This thesis provides the first systematic comparison of VAE and CGAN-based relay processing against classical and supervised learning methods, and the results confirm that the generative paradigm provides no significant advantage (and, in the case of VAE, a consistent disadvantage) for this particular task.
-
-\section{Sequence Models: Transformers and State Space Models}\label{sec:sequence-models-transformers-and-state-space-models}
-
-Recent advances in sequence modeling have produced two competing paradigms with distinct computational properties and inductive biases. Both have achieved state-of-the-art results in natural language processing, but their relative merits for physical-layer signal processing --- where sequences are real-valued temporal signals rather than discrete tokens --- have not been previously investigated.
-
-\subsection{Transformers and the Attention Mechanism}\label{sec:transformers-and-the-attention-mechanism}
-
-\textbf{Transformers} {[}15{]} use multi-head self-attention to capture global dependencies in sequences. The core attention mechanism computes a weighted combination of value vectors, where the weights are derived from the compatibility of query and key vectors:
-
-\begin{equation}\protect\phantomsection\label{eq:attention}{\text{Attention}(\mathbf{Q}, \mathbf{K}, \mathbf{V}) = \text{softmax}\left(\frac{\mathbf{Q}\mathbf{K}^T}{\sqrt{d_k}}\right)\mathbf{V}
-}\end{equation} \par{\small\textit{Source: [15, Eq. 1]}}
-
-where \(\mathbf{Q}, \mathbf{K} \in \mathbb{R}^{n \times d_k}\) and \(\mathbf{V} \in \mathbb{R}^{n \times d_v}\) are obtained from the input via learned linear projections \(W^Q, W^K, W^V\). The scaling factor \(1/\sqrt{d_k}\) prevents the dot products from growing too large in magnitude, which would push the softmax into saturation regions with vanishing gradients.
-
-\textbf{Multi-head attention} extends this by running \(h\) parallel attention heads, each with independent projections, and concatenating their outputs: (Equation~\ref{eq:multihead-attention})
-
-\begin{equation}\protect\phantomsection\label{eq:multihead-attention}{\text{MultiHead}(\mathbf{X}) = \text{Concat}(\text{head}_1, \dots, \text{head}_h) W^O, \quad \text{head}_i = \text{Attention}(\mathbf{X} W_i^Q, \mathbf{X} W_i^K, \mathbf{X} W_i^V)
-}\end{equation} \par{\small\textit{Source: [15, Eq. 2]}}
-
-Each head can attend to different aspects of the input: for signal processing, one head might focus on the immediate neighbors (local denoising) while another captures longer-range patterns. The total parameter count for multi-head attention is \(3 d_{\text{model}}^2 + d_{\text{model}}^2 = 4 d_{\text{model}}^2\) (for \(Q, K, V\) projections plus the output projection).
-
-The attention matrix \(\mathbf{A} = \text{softmax}(\mathbf{Q}\mathbf{K}^T / \sqrt{d_k}) \in \mathbb{R}^{n \times n}\) computes pairwise interactions between all \(n\) positions, yielding \(O(n^2)\) time and memory complexity. For the 11-symbol relay window used in this thesis, this is negligible (\(11^2 = 121\) entries). However, the quadratic cost becomes prohibitive for longer sequences (e.g., \(n = 1000\) symbols), motivating linear-time alternatives.
-
-\textbf{Positional encoding} is necessary because the attention mechanism is permutation-equivariant (it treats input positions symmetrically). This thesis uses sinusoidal positional encoding: (Equation~\ref{eq:positional-encoding})
-
-\begin{equation}\protect\phantomsection\label{eq:positional-encoding}{PE_{(pos, 2k)} = \sin(pos / 10000^{2k/d}), \quad PE_{(pos, 2k+1)} = \cos(pos / 10000^{2k/d})
-}\end{equation} \par{\small\textit{Source: [15, Sec. 3.5]}}
-
-which injects position information into the embeddings, enabling the model to distinguish between symbols at different positions in the window.
-
-\subsection{Structured State Space Models}\label{sec:structured-state-space-models}
-
-Structured state space models (SSMs) {[}17{]} are a class of sequence models derived from continuous-time linear dynamical systems. The continuous-time SSM maps an input signal \(u(t) \in \mathbb{R}\) to an output \(y(t) \in \mathbb{R}\) through a latent state \(\mathbf{x}(t) \in \mathbb{R}^N\):
-
-\begin{equation}\protect\phantomsection\label{eq:ssm-continuous}{\dot{\mathbf{x}}(t) = \mathbf{A}\mathbf{x}(t) + \mathbf{B}u(t), \quad y(t) = \mathbf{C}\mathbf{x}(t) + Du(t)
-}\end{equation} \par{\small\textit{Source: [17, Eq. 1]}}
-
-where \(\mathbf{A} \in \mathbb{R}^{N \times N}\) governs the state dynamics, \(\mathbf{B} \in \mathbb{R}^{N \times 1}\) controls input injection, \(\mathbf{C} \in \mathbb{R}^{1 \times N}\) is the output projection, and \(D \in \mathbb{R}\) is the feedthrough. The connection to classical signal processing is immediate: this is a linear time-invariant (LTI) filter, and the state space dimension \(N\) determines the order of the filter (number of poles/zeros in the transfer function).
-
-To process discrete-time sequences, the continuous SSM is \textbf{discretized} using a step size \(\Delta > 0\). Applying the zero-order hold (ZOH) discretization: (Equation~\ref{eq:af-gain})
-
-\begin{equation}\protect\phantomsection\label{eq:ssm-zoh}{\bar{\mathbf{A}} = \exp(\Delta \mathbf{A}), \quad \bar{\mathbf{B}} = (\Delta \mathbf{A})^{-1}(\exp(\Delta \mathbf{A}) - \mathbf{I}) \cdot \Delta \mathbf{B} \approx \Delta \mathbf{B}
-}\end{equation} \par{\small\textit{Source: [17, Eq. 2]}}
-
-yields the discrete recurrence: (Equation~\ref{eq:ssm-discrete})
-
-\begin{equation}\protect\phantomsection\label{eq:ssm-discrete}{\mathbf{x}_k = \bar{\mathbf{A}} \mathbf{x}_{k-1} + \bar{\mathbf{B}} u_k, \quad y_k = \mathbf{C} \mathbf{x}_k + D u_k
-}\end{equation} \par{\small\textit{Source: [17, Eq. 3]}}
-
-The \textbf{HiPPO (High-order Polynomial Projection Operators)} framework provides a principled initialization for \(\mathbf{A}\): the HiPPO-LegS matrix is designed so that the state \(\mathbf{x}_k\) stores a compressed representation of the input history as coefficients of a Legendre polynomial expansion. This initialization enables long-range memory without the vanishing gradient problems of standard RNNs.
-
-The S4 model {[}17{]} introduced the key insight that structured (diagonal or low-rank) parameterizations of \(\mathbf{A}\) enable efficient computation. With a diagonal \(\mathbf{A} = \text{diag}(a_1, \dots, a_N)\), the recurrence decouples into \(N\) independent scalar recurrences, each computable in \(O(n)\) time. The total cost is \(O(nN)\) for a length-\(n\) sequence with state dimension \(N\) --- linear in sequence length.
-
-\subsection{Mamba: Selective State Spaces}\label{sec:mamba-selective-state-spaces}
-
-\textbf{Mamba} {[}16{]} extends the SSM framework by making the parameters \textbf{input-dependent} (selective), transforming the LTI system into a linear time-varying (LTV) system:
-
-\begin{equation}\protect\phantomsection\label{eq:mamba-selective}{\Delta_k = \text{softplus}(W_\Delta u_k + b_\Delta), \quad \mathbf{B}_k = W_B u_k, \quad \mathbf{C}_k = W_C u_k
-}\end{equation} \par{\small\textit{Source: [16, Eq. 4]}}
-
-where \(W_\Delta, W_B, W_C\) are learned projection matrices. The selectivity mechanism allows the model to dynamically control which inputs are stored in the state and which are forgotten:
-
-\begin{itemize}
-\tightlist
-\item
-  A \textbf{large \(\Delta_k\)} (triggered by a relevant input) makes \(\bar{\mathbf{A}}_k = \exp(\Delta_k \mathbf{A}) \approx \mathbf{0}\), which resets the state and allows the new input to dominate via \(\bar{\mathbf{B}}_k \approx \Delta_k \mathbf{B}_k\).
-\item
-  A \textbf{small \(\Delta_k\)} (triggered by irrelevant or noisy input) makes \(\bar{\mathbf{A}}_k \approx \mathbf{I}\), preserving the current state and ignoring the input.
-\end{itemize}
-
-For relay signal processing, this selective mechanism is particularly well-suited: the model can learn to attend to the actual signal component of each received sample while suppressing the noise component, effectively implementing an \textbf{adaptive filter} whose coefficients are conditioned on the input. This is a more general form of the Wiener filter, which is the optimal LTI denoiser but cannot adapt its coefficients on a per-sample basis.
-
-The Mamba architecture wraps the selective S6 layer in a gated architecture: the input is projected to \(2 \times d_{\text{inner}}\) channels (expand factor 2), and split into two branches. The main branch passes through a causal 1D convolution (Conv1D) to mix local temporal context, followed by a SiLU activation and the S6 selective scan. The second branch acts as a SiLU gate. The two branches are then multiplicatively merged and contracted back to \(d_{\text{model}}\). This gating mechanism provides a multiplicative interaction that helps the model learn sharp non-linear decision boundaries.
-
-\subsection{Mamba-2: Structured State Space Duality}\label{sec:mamba-2-structured-state-space-duality}
-
-\textbf{Mamba-2 (SSD)} {[}18{]} reformulates the selective state space model through an algebraic duality between linear recurrences and structured matrix multiplications. The key theoretical insight is that the SSM output can be expressed as:
-
-\begin{equation}\protect\phantomsection\label{eq:mamba-ssd-output}{y_i = \sum_{j \leq i} \mathbf{C}_i^\top \left(\prod_{k=j+1}^{i} \bar{\mathbf{A}}_k\right) \mathbf{B}_j u_j
-}\end{equation} \par{\small\textit{Source: [18, Eq. 2]}}
-
-Defining the \textbf{SSM matrix} \(M \in \mathbb{R}^{n \times n}\) with entries:
-
-\begin{equation}\protect\phantomsection\label{eq:mamba-ssd-matrix}{M_{ij} = \begin{cases} \mathbf{C}_i^\top \bar{\mathbf{A}}_{j+1:i} \mathbf{B}_j & i \geq j \\ 0 & i < j \end{cases}
-}\end{equation} \par{\small\textit{Source: [18, Eq. 3]}}
-
-the output is \(\mathbf{y} = M \cdot (\mathbf{B} \odot \mathbf{u})\). The matrix \(M\) is lower-triangular (causal) and \textbf{semi-separable} (each entry factors as an outer product of left and right vectors with a diagonal product in between). This algebraic structure enables efficient chunk-parallel computation:
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  \textbf{Divide} the sequence into chunks of length \(L\).
-\item
-  \textbf{Within each chunk}, build the \(L \times L\) local SSM matrix and compute the output via a single batched matrix multiply.
-\item
-  \textbf{Between chunks}, propagate the state once per chunk (rather than once per time step).
-\end{enumerate}
-
-The per-chunk cost is \(O(L^2 N)\) for matrix construction and \(O(L^2 d)\) for the matrix-vector product, where \(N\) is the state dimension and \(d\) is the model dimension. With \(n/L\) chunks, the total cost is \(O(n \cdot L \cdot N + n \cdot L \cdot d)\), which for small \(L\) (e.g., \(L = 8\) or \(L = 32\)) is effectively \(O(n)\) with a favorable constant. The critical advantage over S6 is that the intra-chunk computation is \textbf{fully parallel} --- a batched matmul rather than a sequential scan --- making it much faster on GPUs where parallelism is cheap and sequential operations incur kernel-launch overhead.
-
-The ``duality'' in the name refers to the equivalence between the recurrent view (state propagation) and the matrix view (structured matmul): the same computation can be expressed either way, and the implementation can choose whichever is more efficient for the hardware and sequence length. This thesis demonstrates this duality empirically: at \(n = 11\), the recurrent S6 view is faster; at \(n = 255\), the matrix SSD view dominates.
-
-\subsection{State Space Models for Signal Processing}\label{sec:state-space-models-for-signal-processing}
-
-The application of state space models to physical-layer signal processing is largely unexplored. Classical signal processing relies extensively on LTI state space models (Kalman filters, Wiener filters), and the SSM framework provides a natural neural extension of these classical tools. The connection is direct: a trained SSM with fixed (input-independent) parameters implements a learnable linear filter, while the selective Mamba variant implements a learnable \emph{adaptive} filter. For the relay denoising task, this means Mamba can potentially learn the optimal filter structure from data, without requiring manual specification of filter order, cutoff frequencies, or adaptation algorithms.
-
-This thesis presents the first comparison of Mamba S6, Mamba-2 (SSD), and Transformers for relay communication, demonstrating that state space models are well suited to this domain and that the SSD formulation of Mamba-2 yields significant speed advantages at longer context lengths.
+AF and DF represent the two canonical extremes of the relay processing spectrum: AF performs minimal processing (linear scaling) while DF performs maximal classical processing (full regeneration). The other techniques --- CF, EF, CoF --- occupy intermediate points along this spectrum. In this thesis, the AI-based relay strategies are designed to \emph{learn} the optimal relay processing function from data, potentially discovering strategies that subsume or outperform these fixed classical schemes. The focus on AF and DF as classical baselines is therefore deliberate: they bracket the classical design space and provide clear lower and upper bounds against which the learned strategies can be evaluated. These additional relay strategies are reviewed for completeness; they are not simulated in this thesis because the studied system assumes a two-hop link without a direct source--destination path.
 
 \section{MIMO Systems and Equalization}\label{sec:mimo-systems-and-equalization}
 
-Multiple-input multiple-output (MIMO) systems employ multiple antennas at both transmitter and receiver to exploit spatial multiplexing and diversity gains {[}19{]}. The theoretical foundation was established by Telatar {[}26{]} and Foschini {[}27{]}, who independently showed that the ergodic capacity of an \(N_t \times N_r\) MIMO channel with independent Rayleigh fading scales as: (Equation~\ref{eq:af-gain})
+Multiple-input multiple-output (MIMO) systems employ multiple antennas at both transmitter and receiver to exploit spatial multiplexing and diversity gains {[}19{]}. The theoretical foundation was established by Telatar {[}26{]} and Foschini {[}27{]}, who independently showed that the ergodic capacity of an \(N_t \times N_r\) MIMO channel with independent Rayleigh fading scales as:
 
 \begin{equation}\protect\phantomsection\label{eq:mimo-capacity}{C = \mathbb{E}\left[\log_2 \det\left(\mathbf{I}_{N_r} + \frac{\text{SNR}}{N_t}\mathbf{H}\mathbf{H}^H\right)\right]
 }\end{equation} \par{\small\textit{Source: [26, Eq. 1], [27, Eq. 1]}}
@@ -318,12 +105,12 @@ The fundamental trade-off in MIMO systems is between spatial multiplexing gain (
 
 Equalization at the receiver aims to recover \(\mathbf{x}\) from \(\mathbf{y}\) in the presence of inter-stream interference. Three methods of increasing sophistication are employed in this thesis:
 
-\textbf{Zero-Forcing (ZF).} The ZF equalizer applies the pseudo-inverse of the channel: (Equation~\ref{eq:zf-equalizer})
+\textbf{Zero-Forcing (ZF).} The ZF equalizer applies the pseudo-inverse of the channel:
 
 \begin{equation}\protect\phantomsection\label{eq:zf-equalizer}{\hat{\mathbf{x}}_{\text{ZF}} = (\mathbf{H}^H\mathbf{H})^{-1}\mathbf{H}^H\mathbf{y} = \mathbf{x} + (\mathbf{H}^H\mathbf{H})^{-1}\mathbf{H}^H\mathbf{n}
 }\end{equation} \par{\small\textit{Source: [19, Ch. 7.2], [29]}}
 
-This completely eliminates inter-stream interference but amplifies noise. The post-equalization SNR for stream \(k\) is: (Equation~\ref{eq:zf-snr})
+This completely eliminates inter-stream interference but amplifies noise. The post-equalization SNR for stream \(k\) is:
 
 \begin{equation}\protect\phantomsection\label{eq:zf-snr}{\text{SNR}_k^{\text{ZF}} = \frac{\text{SNR}}{[(\mathbf{H}^H\mathbf{H})^{-1}]_{kk}}
 }\end{equation} \par{\small\textit{Source: [19, Ch. 7.2], [29]}}
@@ -335,7 +122,7 @@ When \(\mathbf{H}\) is ill-conditioned (i.e., its singular values are disparate)
 \begin{equation}\protect\phantomsection\label{eq:mmse-equalizer}{\hat{\mathbf{x}}_{\text{MMSE}} = (\mathbf{H}^H\mathbf{H} + \sigma^2\mathbf{I})^{-1}\mathbf{H}^H\mathbf{y}
 }\end{equation} \par{\small\textit{Source: [19, Ch. 7.2], [29]}}
 
-The regularization term \(\sigma^2\mathbf{I}\) prevents noise amplification by biasing the estimate toward zero when the channel is weak. The post-equalization SINR for stream \(k\) is: (Equation~\ref{eq:af-gain})
+The regularization term \(\sigma^2\mathbf{I}\) prevents noise amplification by biasing the estimate toward zero when the channel is weak. The post-equalization SINR for stream \(k\) is:
 
 \begin{equation}\protect\phantomsection\label{eq:mmse-sinr}{\text{SINR}_k^{\text{MMSE}} = \frac{1}{[(\mathbf{H}^H\mathbf{H} + \sigma^2\mathbf{I})^{-1}]_{kk}} - 1
 }\end{equation} \par{\small\textit{Source: [19, Ch. 7.2], [29]}}
@@ -428,14 +215,14 @@ This section presents the theoretical BER analysis for each channel model used i
 
 \subsection{AWGN Channel --- Theoretical Analysis}\label{sec:awgn-channel-theoretical-analysis}
 
-The AWGN channel adds zero-mean Gaussian noise to the transmitted signal: (Equation~\ref{eq:awgn-channel})
+The AWGN channel adds zero-mean Gaussian noise to the transmitted signal:
 
 \begin{equation}\protect\phantomsection\label{eq:awgn-channel}{y = x + n, \quad n \sim \mathcal{N}(0, \sigma^2), \quad \sigma^2 = \frac{P_s}{\text{SNR}_{\text{linear}}}
 }\end{equation} \par{\small\textit{Source: [21, Ch. 4]}}
 
 where \(P_s = \mathbb{E}[|x|^2] = 1\) for unit-power BPSK symbols. The noise variance is inversely proportional to the linear SNR.
 
-\textbf{Single-hop BER.} For BPSK \(\pm 1\) symbols and real-valued AWGN with variance \(\sigma^2 = 1/\text{SNR}\), an error occurs when the noise pushes the received sample past the decision boundary at the origin. The theoretical BER is: (Equation~\ref{eq:awgn-ber})
+\textbf{Single-hop BER.} For BPSK \(\pm 1\) symbols and real-valued AWGN with variance \(\sigma^2 = 1/\text{SNR}\), an error occurs when the noise pushes the received sample past the decision boundary at the origin. The theoretical BER is:
 
 \begin{equation}\protect\phantomsection\label{eq:awgn-ber}{P_e^{\text{AWGN}} = Q\!\left(\frac{1}{\sigma}\right) = Q\left(\sqrt{\text{SNR}}\right) = \frac{1}{2}\,\text{erfc}\!\left(\sqrt{\frac{\text{SNR}}{2}}\right)
 }\end{equation} \par{\small\textit{Source: [21, Ch. 4, Eq. 4-3-13]}}
@@ -483,7 +270,7 @@ The fading coefficient \(h\) is a circularly-symmetric complex Gaussian random v
 
 with \(\mathbb{E}[|h|^2] = 1\) (unit average power). The instantaneous SNR after equalization (\(\hat{x} = y/h\)) becomes \(\gamma_h = |h|^2 \cdot \text{SNR}\), which is exponentially distributed.
 
-\textbf{Single-hop BER.} Averaging the conditional BER \(P_e(\gamma_h) = Q(\sqrt{2\gamma_h})\) over the exponential distribution of \(\gamma_h\) yields the closed-form {[}21, Eq. 14-4-15{]} (Equation~\ref{eq:rayleigh-ber}):
+\textbf{Single-hop BER.} Averaging the conditional BER \(P_e(\gamma_h) = Q(\sqrt{2\gamma_h})\) over the exponential distribution of \(\gamma_h\) yields the closed-form {[}21, Eq. 14-4-15{]}:
 
 \begin{equation}\protect\phantomsection\label{eq:rayleigh-ber}{P_e^{\text{Rayleigh}} = \frac{1}{2}\left(1 - \sqrt{\frac{\bar{\gamma}}{1 + \bar{\gamma}}}\right)
 }\end{equation} \par{\small\textit{Source: [21, Eq. 14-4-15]}}
@@ -514,7 +301,7 @@ The Rician fading channel models environments with a dominant line-of-sight (LOS
 \begin{equation}\protect\phantomsection\label{eq:rician-channel}{h = \sqrt{\frac{K}{K+1}} e^{j\theta} + \sqrt{\frac{1}{K+1}} h_{\text{scatter}}, \quad h_{\text{scatter}} \sim \mathcal{CN}(0, 1)
 }\end{equation} \par{\small\textit{Source: [22, Ch. 2]}}
 
-The K-factor is the ratio of LOS power to scatter power. The fading amplitude \(|h|\) follows a Rician distribution: (Equation~\ref{eq:af-gain})
+The K-factor is the ratio of LOS power to scatter power. The fading amplitude \(|h|\) follows a Rician distribution:
 
 \begin{equation}\protect\phantomsection\label{eq:rician-pdf}{f_{|h|}(r) = \frac{r}{\sigma^2} \exp\left(-\frac{r^2 + \nu^2}{2\sigma^2}\right) I_0\left(\frac{r\nu}{\sigma^2}\right)
 }\end{equation} \par{\small\textit{Source: [22, Ch. 2, Eq. 2.6]}}
@@ -523,7 +310,7 @@ where \(\nu = \sqrt{K/(K+1)}\) is the LOS amplitude, \(\sigma^2 = 1/(2(K+1))\) i
 
 \textbf{Special cases.} When \(K = 0\), the LOS component vanishes and the Rician channel degenerates to Rayleigh. As \(K \to \infty\), the channel approaches AWGN (no fading). Thus the Rician model interpolates between the two extreme cases, with \(K=3\) (used in this study) representing a moderate LOS environment.
 
-\textbf{Single-hop BER.} The average BER for BPSK over a Rician channel is obtained via the moment-generating function (MGF) approach {[}22{]}: (Equation~\ref{eq:af-gain})
+\textbf{Single-hop BER.} The average BER for BPSK over a Rician channel is obtained via the moment-generating function (MGF) approach {[}22{]}:
 
 \begin{equation}\protect\phantomsection\label{eq:rician-ber-mgf}{P_e^{\text{Rician}} = \frac{1}{\pi} \int_0^{\pi/2} M_{\gamma}\left(\frac{-1}{\sin^2\theta}\right) d\theta
 }\end{equation} \par{\small\textit{Source: [22, Ch. 8, Eq. 8.98]}}
