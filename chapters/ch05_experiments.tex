@@ -16,7 +16,7 @@ The experiments chapter walks through the goals, trials, and conclusions from ea
 \centering
 \centering
 \pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/channel_theoretical_awgn.png}}
-\caption{AWGN Channel --- Theoretical vs.~Simulative BER. Single-hop, two-hop AF, and two-hop DF: closed-form theory (solid lines) versus Monte Carlo simulation (markers with 95\% CI). Theory and simulation match within the confidence interval at all SNR points.}
+\caption{AWGN Channel --- Theoretical vs.~Simulative BER. Single-hop, two-hop AF, and two-hop DF: closed-form theory (solid lines) versus Monte Carlo simulation (markers with 95\% CI). Theory and simulation match within the confidence interval at all SNR points.}\label{fig:fig1}
 \end{figure}
 
 
@@ -25,42 +25,42 @@ The experiments chapter walks through the goals, trials, and conclusions from ea
 \centering
 \centering
 \pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/channel_theoretical_rayleigh.png}}
-\caption{Rayleigh fading --- theory vs.~simulation for single-hop and two-hop DF. The characteristic \(1/\text{SNR}\) slope (compared to the steeper exponential AWGN curve) is clearly visible.}
+\caption{Rayleigh fading --- theory vs.~simulation for single-hop and two-hop DF. The characteristic \(1/\text{SNR}\) slope (compared to the steeper exponential AWGN curve) is clearly visible.}\label{fig:fig2}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \centering
 \pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/channel_theoretical_rician.png}}
-\caption{Rician fading (K=3) --- theory vs.~simulation for single-hop and two-hop DF.}
+\caption{Rician fading (K=3) --- theory vs.~simulation for single-hop and two-hop DF.}\label{fig:fig3}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \centering
 \pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/channel_fading_pdf.png}}
-\caption{Left --- PDF of \(|h|\) for Rayleigh and Rician (\(K=1, 3, 10\)). Right --- CDF (outage probability). Rayleigh has the highest deep-fade probability at any threshold.}
+\caption{Left --- PDF of \(|h|\) for Rayleigh and Rician (\(K=1, 3, 10\)). Right --- CDF (outage probability). Rayleigh has the highest deep-fade probability at any threshold.}\label{fig:fig4}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \centering
 \pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/mimo_equalizer_comparison.png}}
-\caption{2Ã—2 MIMO Rayleigh --- single-hop BER with ZF, MMSE, and SIC equalization. Theoretical approximations (solid/dashed lines) overlaid with Monte Carlo simulation (markers with 95\% CI). MMSE provides \textasciitilde1--2 dB gain over ZF; SIC provides an additional \textasciitilde0.5--1 dB gain.}
+\caption{2Ã—2 MIMO Rayleigh --- single-hop BER with ZF, MMSE, and SIC equalization. Theoretical approximations (solid/dashed lines) overlaid with Monte Carlo simulation (markers with 95\% CI). MMSE provides \textasciitilde1--2 dB gain over ZF; SIC provides an additional \textasciitilde0.5--1 dB gain.}\label{fig:fig5}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \centering
 \pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/channel_analysis_summary.png}}
-\caption{Consolidated 2Ã—3 grid of all channel model validations. Top row: (a) AWGN, (b) Rayleigh, (c) Rician K=3 --- theory (blue) vs.~simulation (red). Bottom row: (d) all SISO channels compared, (e) fading PDFs, (f) MIMO equalizer comparison.}
+\caption{Consolidated 2Ã—3 grid of all channel model validations. Top row: (a) AWGN, (b) Rayleigh, (c) Rician K=3 --- theory (blue) vs.~simulation (red). Bottom row: (d) all SISO channels compared, (e) fading PDFs, (f) MIMO equalizer comparison.}\label{fig:fig6}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \centering
 \pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/channel_comparison_all.png}}
-\caption{Single-hop BPSK BER for all three SISO channel models. AWGN provides the best BER (no fading), Rician K=3 is intermediate, and Rayleigh is the most challenging. The SNR penalty for Rayleigh relative to AWGN exceeds 15 dB at \(\text{BER} = 10^{-3}\), motivating the use of diversity techniques such as MIMO.}
+\caption{Single-hop BPSK BER for all three SISO channel models. AWGN provides the best BER (no fading), Rician K=3 is intermediate, and Rayleigh is the most challenging. The SNR penalty for Rayleigh relative to AWGN exceeds 15 dB at \(\text{BER} = 10^{-3}\), motivating the use of diversity techniques such as MIMO.}\label{fig:fig7}
 \end{figure}
 
 \section{SISO BPSK Performance (Baseline Relay Comparison)}\label{sec:siso-bpsk-performance-baseline-relay-comparison}
