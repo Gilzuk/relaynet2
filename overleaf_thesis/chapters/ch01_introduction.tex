@@ -249,12 +249,6 @@ With equal hops (\(P_{e,1} = P_{e,2} = P_e^{\text{AWGN}}\)), this becomes \(P_e^
 
 where \(\gamma = \text{SNR}\) is the per-hop SNR. The resulting BER is \(P_e^{\text{AF}} = Q\left(\sqrt{\text{SNR}_{\text{eff}}}\right)\) (same real-noise convention as the single-hop case). At high SNR, \(\text{SNR}_{\text{eff}} \approx \gamma/2\), confirming the well-known 3 dB penalty of AF relaying.
 
-\begin{figure}[H]
-\centering
-\centering
-\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/channel_theoretical_awgn.png}}
-\caption{AWGN channel --- theoretical BER (solid lines) vs.~Monte Carlo simulation (markers with 95\% CI) for single-hop, two-hop AF, and two-hop DF.}\label{fig:fig1}
-\end{figure}
 
 \subsection{Rayleigh Fading Channel --- Theoretical Analysis}\label{sec:rayleigh-fading-channel-theoretical-analysis}
 
@@ -287,12 +281,6 @@ This \(1/\text{SNR}\) decay is fundamentally slower than the exponential decay o
 \begin{equation}\protect\phantomsection\label{eq:df-ber-rayleigh}{P_e^{\text{DF,Rayleigh}} = 2P_e^{\text{Rayleigh}}(1 - P_e^{\text{Rayleigh}})
 }\end{equation} \par{\small\textit{Source: [1, Eq. 9]}}
 
-\begin{figure}[H]
-\centering
-\centering
-\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/channel_theoretical_rayleigh.png}}
-\caption{Rayleigh fading --- theory vs.~simulation for single-hop and two-hop DF. The characteristic \(1/\text{SNR}\) slope (compared to the steeper exponential AWGN curve) is clearly visible.}\label{fig:fig2}
-\end{figure}
 
 \subsection{Rician Fading Channel --- Theoretical Analysis}\label{sec:rician-fading-channel-theoretical-analysis}
 
@@ -324,12 +312,6 @@ This integral is evaluated numerically. The resulting BER falls between the AWGN
 
 \textbf{Two-hop DF BER.} As with other channels, \(P_e^{\text{DF,Rician}} = 2P_e^{\text{Rician}}(1 - P_e^{\text{Rician}})\).
 
-\begin{figure}[H]
-\centering
-\centering
-\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/channel_theoretical_rician.png}}
-\caption{Rician fading (K=3) --- theory vs.~simulation for single-hop and two-hop DF.}\label{fig:fig3}
-\end{figure}
 
 \subsection{Fading Coefficient Distributions}\label{sec:fading-coefficient-distributions}
 
@@ -351,12 +333,6 @@ The statistical behavior of the fading coefficient \(|h|\) determines the severi
 
 The CDF plot directly shows the \textbf{outage probability} \(P(|h| \leq x)\): for a given threshold \(x\), the CDF value gives the probability that the fading amplitude falls below that threshold. Rayleigh has the highest outage probability at any threshold, confirming its role as the worst-case fading model.
 
-\begin{figure}[H]
-\centering
-\centering
-\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/channel_fading_pdf.png}}
-\caption{Left --- PDF of \(|h|\) for Rayleigh and Rician (\(K=1, 3, 10\)). Right --- CDF (outage probability). Rayleigh has the highest deep-fade probability at any threshold.}\label{fig:fig4}
-\end{figure}
 
 \subsection{2×2 MIMO Channel --- Theoretical Analysis}\label{sec:mimo-channel-theoretical-analysis}
 
@@ -383,103 +359,7 @@ The MMSE gain over ZF is most significant at low SNR (where the regularization t
 
 \textbf{SIC equalization.} The MMSE-SIC (V-BLAST) receiver detects the stronger stream first via MMSE, makes a hard decision, cancels its contribution, and detects the remaining stream interference-free. When the first decision is correct (which is the common case, since the stronger stream has higher SINR), the second stream sees no inter-stream interference, effectively achieving the single-stream MMSE bound. The improvement over linear MMSE comes from eliminating the interference term for the second stream.
 
-\begin{figure}[H]
-\centering
-\centering
-\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/mimo_equalizer_comparison.png}}
-\caption{2×2 MIMO Rayleigh --- single-hop BER with ZF, MMSE, and SIC equalization. Theoretical approximations (solid/dashed lines) overlaid with Monte Carlo simulation (markers with 95\% CI). MMSE provides \textasciitilde1--2 dB gain over ZF; SIC provides an additional \textasciitilde0.5--1 dB gain.}\label{fig:fig5}
-\end{figure}
 
-\subsection{Channel Model Validation (Simulative)}\label{sec:channel-model-validation-simulative}
-
-Before evaluating relay strategies, we validate the simulation framework by comparing Monte Carlo results against the closed-form theoretical BER expressions derived above. For each channel model, 20 independent trials of 50,000 bits per trial are run at each SNR point (0--20 dB, step 2 dB), yielding 1,000,000 total bits per SNR point and tight 95\% confidence intervals.
-
-\textbf{Validation results:}
-
-\begin{itemize}
-\tightlist
-\item
-  \textbf{AWGN:} Simulation matches theory within 95\% CI at all 11 SNR points for single-hop, two-hop AF, and two-hop DF configurations.
-\item
-  \textbf{Rayleigh:} Simulation confirms the theoretical \(1/(4\bar{\gamma})\) high-SNR slope and matches the closed-form BER within CI bounds.
-\item
-  \textbf{Rician K=3:} MGF-based theoretical BER matches simulation, with the curve falling between AWGN and Rayleigh as expected.
-\item
-  \textbf{MIMO ZF:} Simulated per-stream BER matches the Rayleigh SISO theoretical prediction, confirming unity diversity order.
-\item
-  \textbf{MIMO MMSE:} Simulated BER shows consistent improvement over ZF, matching the effective-SNR approximation.
-\item
-  \textbf{MIMO SIC:} Simulated BER demonstrates the expected gain over linear MMSE.
-\end{itemize}
-
-\begin{figure}[H]
-\centering
-\centering
-\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/channel_analysis_summary.png}}
-\caption{Consolidated 2×3 grid of all channel model validations. Top row: (a) AWGN, (b) Rayleigh, (c) Rician K=3 --- theory (blue) vs.~simulation (red). Bottom row: (d) all SISO channels compared, (e) fading PDFs, (f) MIMO equalizer comparison.}\label{fig:fig6}
-\end{figure}
-
-\begin{figure}[H]
-\centering
-\centering
-\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/channel_comparison_all.png}}
-\caption{Single-hop BPSK BER for all three SISO channel models. AWGN provides the best BER (no fading), Rician K=3 is intermediate, and Rayleigh is the most challenging. The SNR penalty for Rayleigh relative to AWGN exceeds 15 dB at \(\text{BER} = 10^{-3}\), motivating the use of diversity techniques such as MIMO.}\label{fig:fig7}
-\end{figure}
-
-Table A summarizes the theoretical SNR required to achieve a target BER of \(10^{-3}\) on each channel (single-hop BPSK):
-
-\begin{longtable}[]{@{}llll@{}}
-\caption{Theoretical SNR required to achieve BER = \(10^{-3}\) and diversity order for each channel model.}\label{tbl:table26}\tabularnewline
-\toprule\noalign{}
-Channel & SNR for BER = \(10^{-3}\) & Diversity Order & High-SNR Slope \\
-\midrule\noalign{}
-\endfirsthead
-\toprule\noalign{}
-Channel & SNR for BER = \(10^{-3}\) & Diversity Order & High-SNR Slope \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-AWGN & \textasciitilde9.8 dB & --- (no fading) & Exponential \\
-Rician K=3 & \textasciitilde15 dB & --- (Rician) & Between AWGN and Rayleigh \\
-Rayleigh & \textasciitilde24 dB & 1 & \(1/(4\bar{\gamma})\) \\
-2×2 MIMO ZF & \textasciitilde24 dB & 1 (per stream) & \(1/(4\bar{\gamma})\) \\
-2×2 MIMO MMSE & \textasciitilde22 dB & \textgreater1 (effective) & Improved \\
-2×2 MIMO SIC & \textasciitilde20 dB & \textgreater1 (effective) & Best among equalizers \\
-\end{longtable}
-
-\section{Theoretical Foundations: MIMO Equalization}\label{sec:theoretical-foundations-mimo-equalization}
-
-Three equalization methods were implemented for the 2×2 MIMO topology:
-
-\textbf{Zero-Forcing (ZF):} \begin{equation}\protect\phantomsection\label{eq:zf-equalizer-methods}{\hat{\mathbf{x}}_{\text{ZF}} = (\mathbf{H}^H\mathbf{H})^{-1}\mathbf{H}^H\mathbf{y} = \mathbf{H}^{-1}\mathbf{y}
-}\end{equation} \par{\small\textit{Source: [19, Ch. 7.2]}}
-
-ZF completely removes inter-stream interference but amplifies noise when \(\mathbf{H}\) is poorly conditioned.
-
-\textbf{MMSE:} \begin{equation}\protect\phantomsection\label{eq:mmse-equalizer-methods}{\hat{\mathbf{x}}_{\text{MMSE}} = (\mathbf{H}^H\mathbf{H} + \sigma^2\mathbf{I})^{-1}\mathbf{H}^H\mathbf{y}
-}\end{equation} \par{\small\textit{Source: [19, Ch. 7.2]}}
-
-MMSE adds a noise-variance regularization term that prevents excessive noise amplification, trading residual interference for better noise performance.
-
-\textbf{MMSE-SIC (V-BLAST):}
-
-The SIC equalizer decodes streams sequentially in order of post-detection SINR:
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  \textbf{Ordering:} Compute MMSE post-detection SINR for each stream; select the stream with highest SINR first.
-\item
-  \textbf{Detection:} Apply MMSE equalization to the selected stream and make a hard decision.
-\item
-  \textbf{Cancellation:} Subtract the detected stream's contribution: \(\mathbf{y}' = \mathbf{y} - \mathbf{h}_{\text{first}} \hat{x}_{\text{first}}\).
-\item
-  \textbf{Final Detection:} Estimate the remaining stream interference-free via MRC: \(\hat{x}_{\text{second}} = \text{Re}(\mathbf{h}_{\text{second}}^H \mathbf{y}') / \|\mathbf{h}_{\text{second}}\|^2\).
-\end{enumerate}
-
-SIC outperforms linear MMSE because the second stream sees no inter-stream interference after cancellation. The cost is potential error propagation from incorrect first-stream decisions.
-
-All MIMO operations are implemented using vectorized PyTorch batched \texttt{torch.linalg.solve} for GPU acceleration, achieving \textgreater100× speedup over per-symbol Python loops.
+\subsection{Channel Model Validation}
+The analytical error probability models described above have been rigorously validated against the Monte Carlo simulation framework developed for this thesis. Detailed comparisons between the theoretical bounds and empirical bit error rates for single-hop transmission, along with their comprehensive discussion, are deferred to the experimental results in Chapter~\ref{sec:experiments} (Section~\ref{sec:channel-model-validation}).
 

@@ -40,8 +40,7 @@ The system under study is a two-hop relay network with a single relay node:
 
 \textbf{Hop Model.} Each hop applies a channel function followed by optional equalization:
 
-\[y = h(x, \text{SNR}) + n
-\]
+The received signal follows the channel models defined in Chapter~\ref{sec:introduction}.
 
 where \(h(\cdot)\) depends on the specific channel type (AWGN, fading, or MIMO).
 
@@ -110,8 +109,7 @@ These three components combine in the following end-to-end signal flow:
 
 \textbf{The relay's neural network} operates on Hop 1 and solves a \textbf{denoising} problem. Each antenna at the relay receives:
 
-\begin{equation}\protect\phantomsection\label{eq:relay-received-siso}{y_R = x + n_1, \quad n_1 \sim \mathcal{N}(0, \sigma^2)
-}\end{equation}
+The signal received at the relay is defined as in Chapter~\ref{sec:introduction}.
 
 The neural network processes a sliding window of received samples and outputs a cleaner estimate \(\hat{x}_R = f_\theta(y_{R,i-w:i+w})\). This is purely a noise-removal task --- there is no inter-stream interference at this stage.
 
@@ -387,8 +385,7 @@ The primary experiments in Sections 7.1--7.9 use BPSK modulation to isolate the 
 
 Binary Phase-Shift Keying maps a single bit to a real-valued symbol:
 
-\[x = 1 - 2b, \quad b \in \{0, 1\} \implies x \in \{-1, +1\}
-\]
+The baseband symbol \(x\) maps bits \(b \in \{0, 1\}\) to \(x \in \{-1, +1\}\).
 
 The average symbol energy is \(E_s = 1\). Hard-decision demodulation recovers the bit as \(\hat{b} = \mathbb{1}(\text{Re}(\hat{x}) < 0)\). Since \(x \in \mathbb{R}\), the relay operates on real signals and all relay architectures can process the signal directly.
 
@@ -459,8 +456,7 @@ Demodulation quantises each received component to the nearest PAM-4 level using 
 
 \textbf{Theoretical 16-QAM BER.} The approximate BER for 16-QAM over AWGN is:
 
-\begin{equation}\protect\phantomsection\label{eq:qam16-ber}{P_b^{\text{16-QAM}} \approx \frac{3}{8} \operatorname{erfc}\!\left(\sqrt{\frac{2E_b}{5N_0}}\right)
-}\end{equation} \par{\small\textit{Source: [21, Ch. 5, Eq. 5-2-79]}}
+The theoretical error probability is provided in standard digital communication texts. \par{\small\textit{Source: [21, Ch. 5, Eq. 5-2-79]}}
 
 At the same \(E_b/N_0\), 16-QAM has a higher BER than BPSK or QPSK due to the reduced Euclidean distance between constellation points. The trade-off is 4× throughput improvement.
 
