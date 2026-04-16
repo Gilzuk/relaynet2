@@ -1,4 +1,4 @@
-## 7. Results
+sa## 7. Results
 
 All results are obtained from Monte Carlo simulations with 10 trials × 10,000 bits per SNR point (100,000 total bits per SNR point). Confidence intervals at 95% are shown in all plots. Bold values indicate the best performance at each SNR point.
 

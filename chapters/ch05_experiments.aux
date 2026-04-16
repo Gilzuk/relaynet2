@@ -9,461 +9,170 @@
 \@writefile{toc}{\contentsline {section}{\numberline {5.1}Channel Model Validation}{47}{section.5.1}\protected@file@percent }
 \newlabel{sec:channel-model-validation}{{5.1}{47}{Channel Model Validation}{section.5.1}{}}
 \newlabel{sec:channel-model-validation@cref}{{[section][1][5]5.1}{[1][47][]47}{}{}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.1.1}Results Figures}{48}{subsection.5.1.1}\protected@file@percent }
-\newlabel{sec:results-figures}{{5.1.1}{48}{Results Figures}{subsection.5.1.1}{}}
-\newlabel{sec:results-figures@cref}{{[subsection][1][5,1]5.1.1}{[1][47][]48}{}{}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.1}{\ignorespaces \xpg@aux {}{english}\ignorespaces AWGN Channel --- Theoretical vs.~Simulative BER. Single-hop, two-hop AF, and two-hop DF: closed-form theory (solid lines) versus Monte Carlo simulation (markers with 95\% CI). Theory and simulation match within the confidence interval at all SNR points.}}{48}{figure.caption.75}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {5.2}{\ignorespaces \xpg@aux {}{english}\ignorespaces Rayleigh fading --- theory vs.~simulation for single-hop and two-hop DF. The characteristic \(1/\text  {SNR}\) slope (compared to the steeper exponential AWGN curve) is clearly visible.}}{49}{figure.caption.76}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {5.3}{\ignorespaces \xpg@aux {}{english}\ignorespaces Rician fading (K=3) --- theory vs.~simulation for single-hop and two-hop DF.}}{49}{figure.caption.77}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {5.4}{\ignorespaces \xpg@aux {}{english}\ignorespaces Left --- PDF of \(|h|\) for Rayleigh and Rician (\(K=1, 3, 10\)). Right --- CDF (outage probability). Rayleigh has the highest deep-fade probability at any threshold.}}{50}{figure.caption.78}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {5.5}{\ignorespaces \xpg@aux {}{english}\ignorespaces 2Ã—2 MIMO Rayleigh --- single-hop BER with ZF, MMSE, and SIC equalization. Theoretical approximations (solid/dashed lines) overlaid with Monte Carlo simulation (markers with 95\% CI). MMSE provides \textasciitilde 1--2 dB gain over ZF; SIC provides an additional \textasciitilde 0.5--1 dB gain.}}{50}{figure.caption.79}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {5.6}{\ignorespaces \xpg@aux {}{english}\ignorespaces Consolidated 2Ã—3 grid of all channel model validations. Top row: (a) AWGN, (b) Rayleigh, (c) Rician K=3 --- theory (blue) vs.~simulation (red). Bottom row: (d) all SISO channels compared, (e) fading PDFs, (f) MIMO equalizer comparison.}}{51}{figure.caption.80}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {5.7}{\ignorespaces \xpg@aux {}{english}\ignorespaces Single-hop BPSK BER for all three SISO channel models. AWGN provides the best BER (no fading), Rician K=3 is intermediate, and Rayleigh is the most challenging. The SNR penalty for Rayleigh relative to AWGN exceeds 15 dB at \(\text  {BER} = 10^{-3}\), motivating the use of diversity techniques such as MIMO.}}{52}{figure.caption.81}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {5.2}SISO BPSK Performance (Baseline Relay Comparison)}{52}{section.5.2}\protected@file@percent }
-\newlabel{sec:siso-bpsk-performance-baseline-relay-comparison}{{5.2}{52}{SISO BPSK Performance (Baseline Relay Comparison)}{section.5.2}{}}
-\newlabel{sec:siso-bpsk-performance-baseline-relay-comparison@cref}{{[section][2][5]5.2}{[1][52][]52}{}{}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.2.1}Results Tables}{52}{subsection.5.2.1}\protected@file@percent }
-\newlabel{sec:results-tables}{{5.2.1}{52}{Results Tables}{subsection.5.2.1}{}}
-\newlabel{sec:results-tables@cref}{{[subsection][1][5,2]5.2.1}{[1][52][]52}{}{}{}}
-\gdef \LT@vii {\LT@entry 
-    {1}{37.88107pt}\LT@entry 
-    {1}{43.88107pt}\LT@entry 
-    {1}{43.88107pt}\LT@entry 
-    {1}{43.88107pt}\LT@entry 
-    {1}{43.88107pt}\LT@entry 
-    {1}{43.88107pt}\LT@entry 
-    {1}{43.88107pt}\LT@entry 
-    {1}{43.88107pt}\LT@entry 
-    {1}{43.88107pt}\LT@entry 
-    {1}{37.88107pt}}
-\gdef \LT@viii {\LT@entry 
-    {1}{37.88107pt}\LT@entry 
-    {1}{43.88107pt}\LT@entry 
-    {1}{43.88107pt}\LT@entry 
-    {1}{43.88107pt}\LT@entry 
-    {1}{43.88107pt}\LT@entry 
-    {1}{43.88107pt}\LT@entry 
-    {1}{43.88107pt}\LT@entry 
-    {1}{43.88107pt}\LT@entry 
-    {1}{43.88107pt}\LT@entry 
-    {1}{37.88107pt}}
-\gdef \LT@ix {\LT@entry 
-    {1}{37.88107pt}\LT@entry 
-    {1}{43.88107pt}\LT@entry 
-    {1}{43.88107pt}\LT@entry 
-    {1}{43.88107pt}\LT@entry 
-    {1}{43.88107pt}\LT@entry 
-    {1}{43.88107pt}\LT@entry 
-    {1}{43.88107pt}\LT@entry 
-    {1}{43.88107pt}\LT@entry 
-    {1}{43.88107pt}\LT@entry 
-    {1}{37.88107pt}}
-\@writefile{lot}{\contentsline {table}{\numberline {5.1}{\ignorespaces BER comparison of all nine relay strategies on the AWGN channel.}}{53}{table.5.1}\protected@file@percent }
-\newlabel{tbl:table1}{{5.1}{53}{BER comparison of all nine relay strategies on the AWGN channel}{table.5.1}{}}
-\newlabel{tbl:table1@cref}{{[table][1][5]5.1}{[1][52][]53}{}{}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {5.2}{\ignorespaces BER comparison on the Rayleigh fading channel (SISO).}}{53}{table.5.2}\protected@file@percent }
-\newlabel{tbl:table2}{{5.2}{53}{BER comparison on the Rayleigh fading channel (SISO)}{table.5.2}{}}
-\newlabel{tbl:table2@cref}{{[table][2][5]5.2}{[1][53][]53}{}{}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {5.3}{\ignorespaces BER comparison on the Rician fading channel with K-factor = 3.}}{53}{table.5.3}\protected@file@percent }
-\newlabel{tbl:table3}{{5.3}{53}{BER comparison on the Rician fading channel with K-factor = 3}{table.5.3}{}}
-\newlabel{tbl:table3@cref}{{[table][3][5]5.3}{[1][53][]53}{}{}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.2.2}Results Figures}{54}{subsection.5.2.2}\protected@file@percent }
-\newlabel{sec:results-figures-1}{{5.2.2}{54}{Results Figures}{subsection.5.2.2}{}}
-\newlabel{sec:results-figures-1@cref}{{[subsection][2][5,2]5.2.2}{[1][53][]54}{}{}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.8}{\ignorespaces \xpg@aux {}{english}\ignorespaces AWGN channel --- BER vs.~SNR for all nine relay strategies with 95\% CI. AI relays outperform classical methods at low SNR; DF dominates at medium-to-high SNR.}}{54}{figure.caption.82}\protected@file@percent }
-\newlabel{fig:fig9}{{5.8}{54}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces AWGN channel --- BER vs.~SNR for all nine relay strategies with 95\% CI. AI relays outperform classical methods at low SNR; DF dominates at medium-to-high SNR}{figure.caption.82}{}}
-\newlabel{fig:fig9@cref}{{[figure][8][5]5.8}{[1][53][]54}{}{}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.9}{\ignorespaces \xpg@aux {}{english}\ignorespaces Rayleigh fading --- BER vs.~SNR for all nine relay strategies with 95\% CI.}}{54}{figure.caption.83}\protected@file@percent }
-\newlabel{fig:fig10}{{5.9}{54}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces Rayleigh fading --- BER vs.~SNR for all nine relay strategies with 95\% CI}{figure.caption.83}{}}
-\newlabel{fig:fig10@cref}{{[figure][9][5]5.9}{[1][54][]54}{}{}{}}
-\gdef \LT@x {\LT@entry 
-    {1}{37.88107pt}\LT@entry 
-    {1}{43.88107pt}\LT@entry 
-    {1}{43.88107pt}\LT@entry 
-    {1}{43.88107pt}\LT@entry 
-    {1}{43.88107pt}\LT@entry 
-    {1}{43.88107pt}\LT@entry 
-    {1}{43.88107pt}\LT@entry 
-    {1}{43.88107pt}\LT@entry 
-    {1}{43.88107pt}\LT@entry 
-    {1}{37.88107pt}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.10}{\ignorespaces \xpg@aux {}{english}\ignorespaces Rician fading (K=3) --- BER vs.~SNR for all nine relay strategies with 95\% CI.}}{55}{figure.caption.84}\protected@file@percent }
-\newlabel{fig:fig11}{{5.10}{55}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces Rician fading (K=3) --- BER vs.~SNR for all nine relay strategies with 95\% CI}{figure.caption.84}{}}
-\newlabel{fig:fig11@cref}{{[figure][10][5]5.10}{[1][54][]55}{}{}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {5.3}MIMO 2x2 BPSK Performance}{55}{section.5.3}\protected@file@percent }
-\newlabel{sec:mimo-2x2-bpsk-performance}{{5.3}{55}{MIMO 2x2 BPSK Performance}{section.5.3}{}}
-\newlabel{sec:mimo-2x2-bpsk-performance@cref}{{[section][3][5]5.3}{[1][55][]55}{}{}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.3.1}Results Tables}{55}{subsection.5.3.1}\protected@file@percent }
-\newlabel{sec:results-tables-1}{{5.3.1}{55}{Results Tables}{subsection.5.3.1}{}}
-\newlabel{sec:results-tables-1@cref}{{[subsection][1][5,3]5.3.1}{[1][55][]55}{}{}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {5.4}{\ignorespaces BER comparison on 2Ã—2 MIMO Rayleigh channel with ZF equalization.}}{55}{table.5.4}\protected@file@percent }
-\newlabel{tbl:table4}{{5.4}{55}{BER comparison on 2Ã—2 MIMO Rayleigh channel with ZF equalization}{table.5.4}{}}
-\newlabel{tbl:table4@cref}{{[table][4][5]5.4}{[1][55][]55}{}{}{}}
-\gdef \LT@xi {\LT@entry 
-    {1}{37.88107pt}\LT@entry 
-    {1}{43.88107pt}\LT@entry 
-    {1}{43.88107pt}\LT@entry 
-    {1}{43.88107pt}\LT@entry 
-    {1}{43.88107pt}\LT@entry 
-    {1}{43.88107pt}\LT@entry 
-    {1}{43.88107pt}\LT@entry 
-    {1}{43.88107pt}\LT@entry 
-    {1}{43.88107pt}\LT@entry 
-    {1}{37.88107pt}}
-\gdef \LT@xii {\LT@entry 
-    {1}{37.88107pt}\LT@entry 
-    {1}{43.88107pt}\LT@entry 
-    {1}{43.88107pt}\LT@entry 
-    {1}{43.88107pt}\LT@entry 
-    {1}{43.88107pt}\LT@entry 
-    {1}{43.88107pt}\LT@entry 
-    {1}{43.88107pt}\LT@entry 
-    {1}{43.88107pt}\LT@entry 
-    {1}{43.88107pt}\LT@entry 
-    {1}{37.88107pt}}
-\@writefile{lot}{\contentsline {table}{\numberline {5.5}{\ignorespaces BER comparison on 2Ã—2 MIMO Rayleigh channel with MMSE equalization.}}{56}{table.5.5}\protected@file@percent }
-\newlabel{tbl:table5}{{5.5}{56}{BER comparison on 2Ã—2 MIMO Rayleigh channel with MMSE equalization}{table.5.5}{}}
-\newlabel{tbl:table5@cref}{{[table][5][5]5.5}{[1][56][]56}{}{}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {5.6}{\ignorespaces BER comparison on 2Ã—2 MIMO Rayleigh channel with MMSE-SIC equalization.}}{56}{table.5.6}\protected@file@percent }
-\newlabel{tbl:table6}{{5.6}{56}{BER comparison on 2Ã—2 MIMO Rayleigh channel with MMSE-SIC equalization}{table.5.6}{}}
-\newlabel{tbl:table6@cref}{{[table][6][5]5.6}{[1][56][]56}{}{}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.3.2}Results Figures}{57}{subsection.5.3.2}\protected@file@percent }
-\newlabel{sec:results-figures-2}{{5.3.2}{57}{Results Figures}{subsection.5.3.2}{}}
-\newlabel{sec:results-figures-2@cref}{{[subsection][2][5,3]5.3.2}{[1][56][]57}{}{}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.11}{\ignorespaces \xpg@aux {}{english}\ignorespaces 2Ã—2 MIMO with ZF equalization --- BER vs.~SNR for all nine relay strategies with 95\% CI.}}{57}{figure.caption.85}\protected@file@percent }
-\newlabel{fig:fig12}{{5.11}{57}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces 2Ã—2 MIMO with ZF equalization --- BER vs.~SNR for all nine relay strategies with 95\% CI}{figure.caption.85}{}}
-\newlabel{fig:fig12@cref}{{[figure][11][5]5.11}{[1][56][]57}{}{}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.12}{\ignorespaces \xpg@aux {}{english}\ignorespaces 2Ã—2 MIMO with MMSE equalization --- BER vs.~SNR for all nine relay strategies with 95\% CI.}}{57}{figure.caption.86}\protected@file@percent }
-\newlabel{fig:fig13}{{5.12}{57}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces 2Ã—2 MIMO with MMSE equalization --- BER vs.~SNR for all nine relay strategies with 95\% CI}{figure.caption.86}{}}
-\newlabel{fig:fig13@cref}{{[figure][12][5]5.12}{[1][57][]57}{}{}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.13}{\ignorespaces \xpg@aux {}{english}\ignorespaces 2Ã—2 MIMO with MMSE-SIC equalization --- BER vs.~SNR for all nine relay strategies with 95\% CI.}}{58}{figure.caption.87}\protected@file@percent }
-\newlabel{fig:fig14}{{5.13}{58}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces 2Ã—2 MIMO with MMSE-SIC equalization --- BER vs.~SNR for all nine relay strategies with 95\% CI}{figure.caption.87}{}}
-\newlabel{fig:fig14@cref}{{[figure][13][5]5.13}{[1][57][]58}{}{}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {5.4}Parameter Normalization \& Complexity Trade-off}{58}{section.5.4}\protected@file@percent }
-\newlabel{sec:parameter-normalization-complexity-trade-off}{{5.4}{58}{Parameter Normalization \& Complexity Trade-off}{section.5.4}{}}
-\newlabel{sec:parameter-normalization-complexity-trade-off@cref}{{[section][4][5]5.4}{[1][58][]58}{}{}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.4.1}Results Tables}{58}{subsection.5.4.1}\protected@file@percent }
-\newlabel{sec:results-tables-2}{{5.4.1}{58}{Results Tables}{subsection.5.4.1}{}}
-\newlabel{sec:results-tables-2@cref}{{[subsection][1][5,4]5.4.1}{[1][58][]58}{}{}{}}
-\gdef \LT@xiii {\LT@entry 
-    {1}{42.75066pt}\LT@entry 
-    {1}{48.75066pt}\LT@entry 
-    {1}{48.75066pt}\LT@entry 
-    {1}{48.75066pt}\LT@entry 
-    {1}{48.75066pt}\LT@entry 
-    {1}{48.75066pt}\LT@entry 
-    {1}{48.75066pt}\LT@entry 
-    {1}{48.75066pt}\LT@entry 
-    {1}{42.75066pt}}
-\gdef \LT@xiv {\LT@entry 
-    {1}{42.75066pt}\LT@entry 
-    {1}{48.75066pt}\LT@entry 
-    {1}{48.75066pt}\LT@entry 
-    {1}{48.75066pt}\LT@entry 
-    {1}{48.75066pt}\LT@entry 
-    {1}{48.75066pt}\LT@entry 
-    {1}{48.75066pt}\LT@entry 
-    {1}{48.75066pt}\LT@entry 
-    {1}{42.75066pt}}
-\gdef \LT@xv {\LT@entry 
-    {1}{42.75066pt}\LT@entry 
-    {1}{48.75066pt}\LT@entry 
-    {1}{48.75066pt}\LT@entry 
-    {1}{48.75066pt}\LT@entry 
-    {1}{48.75066pt}\LT@entry 
-    {1}{48.75066pt}\LT@entry 
-    {1}{48.75066pt}\LT@entry 
-    {1}{48.75066pt}\LT@entry 
-    {1}{42.75066pt}}
-\gdef \LT@xvi {\LT@entry 
-    {1}{42.75066pt}\LT@entry 
-    {1}{48.75066pt}\LT@entry 
-    {1}{48.75066pt}\LT@entry 
-    {1}{48.75066pt}\LT@entry 
-    {1}{48.75066pt}\LT@entry 
-    {1}{48.75066pt}\LT@entry 
-    {1}{48.75066pt}\LT@entry 
-    {1}{48.75066pt}\LT@entry 
-    {1}{42.75066pt}}
-\@writefile{lot}{\contentsline {table}{\numberline {5.7}{\ignorespaces Normalized 3K BER results --- AWGN channel.}}{59}{table.5.7}\protected@file@percent }
-\newlabel{tbl:table7}{{5.7}{59}{Normalized 3K BER results --- AWGN channel}{table.5.7}{}}
-\newlabel{tbl:table7@cref}{{[table][7][5]5.7}{[1][58][]59}{}{}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {5.8}{\ignorespaces Normalized 3K BER results --- Rayleigh fading channel.}}{59}{table.5.8}\protected@file@percent }
-\newlabel{tbl:table8}{{5.8}{59}{Normalized 3K BER results --- Rayleigh fading channel}{table.5.8}{}}
-\newlabel{tbl:table8@cref}{{[table][8][5]5.8}{[1][59][]59}{}{}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {5.9}{\ignorespaces Normalized 3K BER results --- Rician K=3 fading channel.}}{59}{table.5.9}\protected@file@percent }
-\newlabel{tbl:table9}{{5.9}{59}{Normalized 3K BER results --- Rician K=3 fading channel}{table.5.9}{}}
-\newlabel{tbl:table9@cref}{{[table][9][5]5.9}{[1][59][]59}{}{}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {5.10}{\ignorespaces Normalized 3K BER results --- 2Ã—2 MIMO ZF.}}{59}{table.5.10}\protected@file@percent }
-\newlabel{tbl:table10}{{5.10}{59}{Normalized 3K BER results --- 2Ã—2 MIMO ZF}{table.5.10}{}}
-\newlabel{tbl:table10@cref}{{[table][10][5]5.10}{[1][59][]59}{}{}{}}
-\gdef \LT@xvii {\LT@entry 
-    {1}{42.75066pt}\LT@entry 
-    {1}{48.75066pt}\LT@entry 
-    {1}{48.75066pt}\LT@entry 
-    {1}{48.75066pt}\LT@entry 
-    {1}{48.75066pt}\LT@entry 
-    {1}{48.75066pt}\LT@entry 
-    {1}{48.75066pt}\LT@entry 
-    {1}{48.75066pt}\LT@entry 
-    {1}{42.75066pt}}
-\gdef \LT@xviii {\LT@entry 
-    {1}{42.75066pt}\LT@entry 
-    {1}{48.75066pt}\LT@entry 
-    {1}{48.75066pt}\LT@entry 
-    {1}{48.75066pt}\LT@entry 
-    {1}{48.75066pt}\LT@entry 
-    {1}{48.75066pt}\LT@entry 
-    {1}{48.75066pt}\LT@entry 
-    {1}{48.75066pt}\LT@entry 
-    {1}{42.75066pt}}
-\gdef \LT@xix {\LT@entry 
-    {1}{67.14494pt}\LT@entry 
-    {1}{73.14494pt}\LT@entry 
-    {1}{73.14494pt}\LT@entry 
-    {1}{73.14494pt}\LT@entry 
-    {1}{73.14494pt}\LT@entry 
-    {1}{67.14494pt}}
-\@writefile{lot}{\contentsline {table}{\numberline {5.11}{\ignorespaces Normalized 3K BER results --- 2Ã—2 MIMO MMSE.}}{60}{table.5.11}\protected@file@percent }
-\newlabel{tbl:table11}{{5.11}{60}{Normalized 3K BER results --- 2Ã—2 MIMO MMSE}{table.5.11}{}}
-\newlabel{tbl:table11@cref}{{[table][11][5]5.11}{[1][60][]60}{}{}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {5.12}{\ignorespaces Normalized 3K BER results --- 2Ã—2 MIMO SIC.}}{60}{table.5.12}\protected@file@percent }
-\newlabel{tbl:table12}{{5.12}{60}{Normalized 3K BER results --- 2Ã—2 MIMO SIC}{table.5.12}{}}
-\newlabel{tbl:table12@cref}{{[table][12][5]5.12}{[1][60][]60}{}{}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {5.13}{\ignorespaces Model complexity and timing comparison (experiment-specific training settings; Monte Carlo evaluation over 11 SNR points Ã— 10 trials Ã— 10,000 bits). All inference uses batched window extraction and a single forward pass per signal block.}}{60}{table.5.13}\protected@file@percent }
-\newlabel{tbl:table13}{{5.13}{60}{Model complexity and timing comparison (experiment-specific training settings; Monte Carlo evaluation over 11 SNR points Ã— 10 trials Ã— 10,000 bits). All inference uses batched window extraction and a single forward pass per signal block}{table.5.13}{}}
-\newlabel{tbl:table13@cref}{{[table][13][5]5.13}{[1][60][]60}{}{}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.4.2}Results Figures}{61}{subsection.5.4.2}\protected@file@percent }
-\newlabel{sec:results-figures-3}{{5.4.2}{61}{Results Figures}{subsection.5.4.2}{}}
-\newlabel{sec:results-figures-3@cref}{{[subsection][2][5,4]5.4.2}{[1][61][]61}{}{}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.14}{\ignorespaces \xpg@aux {}{english}\ignorespaces Normalized 3K-parameter comparison across all channels. At equal parameter budgets, all architectures converge to similar BER, with VAE being the consistent underperformer.}}{61}{figure.caption.88}\protected@file@percent }
-\newlabel{fig:fig15}{{5.14}{61}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces Normalized 3K-parameter comparison across all channels. At equal parameter budgets, all architectures converge to similar BER, with VAE being the consistent underperformer}{figure.caption.88}{}}
-\newlabel{fig:fig15@cref}{{[figure][14][5]5.14}{[1][61][]61}{}{}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.15}{\ignorespaces \xpg@aux {}{english}\ignorespaces Normalized 3K-parameter BER comparison on AWGN. Mamba-3K and Transformer-3K produce nearly identical BER, eliminating the gap seen at original parameter counts.}}{62}{figure.caption.89}\protected@file@percent }
-\newlabel{fig:fig16}{{5.15}{62}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces Normalized 3K-parameter BER comparison on AWGN. Mamba-3K and Transformer-3K produce nearly identical BER, eliminating the gap seen at original parameter counts}{figure.caption.89}{}}
-\newlabel{fig:fig16@cref}{{[figure][15][5]5.15}{[1][61][]62}{}{}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.16}{\ignorespaces \xpg@aux {}{english}\ignorespaces Normalized 3K-parameter BER comparison on Rayleigh fading.}}{62}{figure.caption.90}\protected@file@percent }
-\newlabel{fig:fig17}{{5.16}{62}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces Normalized 3K-parameter BER comparison on Rayleigh fading}{figure.caption.90}{}}
-\newlabel{fig:fig17@cref}{{[figure][16][5]5.16}{[1][62][]62}{}{}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.17}{\ignorespaces \xpg@aux {}{english}\ignorespaces Normalized 3K-parameter BER comparison on Rician fading (K=3).}}{63}{figure.caption.91}\protected@file@percent }
-\newlabel{fig:fig18}{{5.17}{63}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces Normalized 3K-parameter BER comparison on Rician fading (K=3)}{figure.caption.91}{}}
-\newlabel{fig:fig18@cref}{{[figure][17][5]5.17}{[1][62][]63}{}{}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.18}{\ignorespaces \xpg@aux {}{english}\ignorespaces Complexity--performance trade-off. Training time vs.~parameter count vs.~BER improvement over DF at low SNR. The Minimal MLP (169 params) achieves the best efficiency.}}{63}{figure.caption.92}\protected@file@percent }
-\newlabel{fig:fig19}{{5.18}{63}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces Complexity--performance trade-off. Training time vs.~parameter count vs.~BER improvement over DF at low SNR. The Minimal MLP (169 params) achieves the best efficiency}{figure.caption.92}{}}
-\newlabel{fig:fig19@cref}{{[figure][18][5]5.18}{[1][63][]63}{}{}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.19}{\ignorespaces \xpg@aux {}{english}\ignorespaces Master BER comparison --- consolidated view of all nine relay strategies across all six channel/topology configurations.}}{64}{figure.caption.93}\protected@file@percent }
-\newlabel{fig:fig20}{{5.19}{64}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces Master BER comparison --- consolidated view of all nine relay strategies across all six channel/topology configurations}{figure.caption.93}{}}
-\newlabel{fig:fig20@cref}{{[figure][19][5]5.19}{[1][63][]64}{}{}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {5.5}Higher-Order Modulation Scalability (Constellation-Aware Training)}{64}{section.5.5}\protected@file@percent }
-\newlabel{sec:higher-order-modulation-scalability-constellation-aware-training}{{5.5}{64}{Higher-Order Modulation Scalability (Constellation-Aware Training)}{section.5.5}{}}
-\newlabel{sec:higher-order-modulation-scalability-constellation-aware-training@cref}{{[section][5][5]5.5}{[1][64][]64}{}{}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.5.1}Results Tables}{64}{subsection.5.5.1}\protected@file@percent }
-\newlabel{sec:results-tables-3}{{5.5.1}{64}{Results Tables}{subsection.5.5.1}{}}
-\newlabel{sec:results-tables-3@cref}{{[subsection][1][5,5]5.5.1}{[1][64][]64}{}{}{}}
-\gdef \LT@xx {\LT@entry 
-    {1}{48.8489pt}\LT@entry 
-    {1}{54.8489pt}\LT@entry 
-    {1}{54.8489pt}\LT@entry 
-    {1}{54.8489pt}\LT@entry 
-    {1}{54.8489pt}\LT@entry 
-    {1}{54.8489pt}\LT@entry 
-    {1}{54.8489pt}\LT@entry 
-    {1}{48.8489pt}}
-\gdef \LT@xxi {\LT@entry 
-    {1}{56.69917pt}\LT@entry 
-    {1}{62.69917pt}\LT@entry 
-    {1}{62.69917pt}\LT@entry 
-    {1}{62.69917pt}\LT@entry 
-    {1}{62.69917pt}\LT@entry 
-    {1}{62.69917pt}\LT@entry 
-    {1}{56.69917pt}}
-\@writefile{lot}{\contentsline {table}{\numberline {5.14}{\ignorespaces BER comparison across modulations at selected SNR points (AWGN channel). All nine relay strategies.}}{65}{table.5.14}\protected@file@percent }
-\newlabel{tbl:table14}{{5.14}{65}{BER comparison across modulations at selected SNR points (AWGN channel). All nine relay strategies}{table.5.14}{}}
-\newlabel{tbl:table14@cref}{{[table][14][5]5.14}{[1][64][]65}{}{}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {5.15}{\ignorespaces BER at 16 dB for all relay variants across activation functions and modulations (AWGN and Rayleigh).}}{65}{table.5.15}\protected@file@percent }
-\newlabel{tbl:table15}{{5.15}{65}{BER at 16 dB for all relay variants across activation functions and modulations (AWGN and Rayleigh)}{table.5.15}{}}
-\newlabel{tbl:table15@cref}{{[table][15][5]5.15}{[1][65][]65}{}{}{}}
-\gdef \LT@xxii {\LT@entry 
-    {1}{81.75711pt}\LT@entry 
-    {1}{87.75711pt}\LT@entry 
-    {1}{87.75711pt}\LT@entry 
-    {1}{87.75711pt}\LT@entry 
-    {1}{81.75711pt}}
-\@writefile{lot}{\contentsline {table}{\numberline {5.16}{\ignorespaces 16-QAM BER improvements at 20 dB for sequence models with and without CSI injection and layer normalisation (AWGN).}}{66}{table.5.16}\protected@file@percent }
-\newlabel{tbl:table16}{{5.16}{66}{16-QAM BER improvements at 20 dB for sequence models with and without CSI injection and layer normalisation (AWGN)}{table.5.16}{}}
-\newlabel{tbl:table16@cref}{{[table][16][5]5.16}{[1][66][]66}{}{}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.5.2}Results Figures}{66}{subsection.5.5.2}\protected@file@percent }
-\newlabel{sec:results-figures-4}{{5.5.2}{66}{Results Figures}{subsection.5.5.2}{}}
-\newlabel{sec:results-figures-4@cref}{{[subsection][2][5,5]5.5.2}{[1][66][]66}{}{}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.20}{\ignorespaces \xpg@aux {}{english}\ignorespaces BPSK on AWGN --- all relay strategies with 95\% CI (baseline for modulation comparison).}}{66}{figure.caption.94}\protected@file@percent }
-\newlabel{fig:fig21}{{5.20}{66}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces BPSK on AWGN --- all relay strategies with 95\% CI (baseline for modulation comparison)}{figure.caption.94}{}}
-\newlabel{fig:fig21@cref}{{[figure][20][5]5.20}{[1][66][]66}{}{}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.21}{\ignorespaces \xpg@aux {}{english}\ignorespaces BPSK on Rayleigh fading --- all relay strategies with 95\% CI.}}{67}{figure.caption.95}\protected@file@percent }
-\newlabel{fig:fig22}{{5.21}{67}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces BPSK on Rayleigh fading --- all relay strategies with 95\% CI}{figure.caption.95}{}}
-\newlabel{fig:fig22@cref}{{[figure][21][5]5.21}{[1][66][]67}{}{}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.22}{\ignorespaces \xpg@aux {}{english}\ignorespaces QPSK on AWGN --- BER curves closely match the BPSK baseline (Figure~\ref {fig:fig21}), confirming I/Q splitting validity.}}{67}{figure.caption.96}\protected@file@percent }
-\newlabel{fig:fig23}{{5.22}{67}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces QPSK on AWGN --- BER curves closely match the BPSK baseline (Figure~\ref {fig:fig21}), confirming I/Q splitting validity}{figure.caption.96}{}}
-\newlabel{fig:fig23@cref}{{[figure][22][5]5.22}{[1][67][]67}{}{}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.23}{\ignorespaces \xpg@aux {}{english}\ignorespaces QPSK on Rayleigh fading --- same relative ordering as BPSK, confirming hypothesis generalisability.}}{68}{figure.caption.97}\protected@file@percent }
-\newlabel{fig:fig24}{{5.23}{68}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces QPSK on Rayleigh fading --- same relative ordering as BPSK, confirming hypothesis generalisability}{figure.caption.97}{}}
-\newlabel{fig:fig24@cref}{{[figure][23][5]5.23}{[1][67][]68}{}{}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.24}{\ignorespaces \xpg@aux {}{english}\ignorespaces 16-QAM on AWGN --- AI relays hit a BER floor near 0.22 at medium-high SNR due to \(\tanh \) compression of multi-level signals; AF outperforms DF at low SNR (Y}}{68}{figure.caption.98}\protected@file@percent }
-\newlabel{fig:fig25}{{5.24}{68}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces 16-QAM on AWGN --- AI relays hit a BER floor near 0.22 at medium-high SNR due to \(\tanh \) compression of multi-level signals; AF outperforms DF at low SNR (Y}{figure.caption.98}{}}
-\newlabel{fig:fig25@cref}{{[figure][24][5]5.24}{[1][68][]68}{}{}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.25}{\ignorespaces \xpg@aux {}{english}\ignorespaces 16-QAM on Rayleigh fading --- wider BER gap between modulations under fading; all AI relays significantly worse than DF at every SNR point (N}}{69}{figure.caption.99}\protected@file@percent }
-\newlabel{fig:fig26}{{5.25}{69}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces 16-QAM on Rayleigh fading --- wider BER gap between modulations under fading; all AI relays significantly worse than DF at every SNR point (N}{figure.caption.99}{}}
-\newlabel{fig:fig26@cref}{{[figure][25][5]5.25}{[1][68][]69}{}{}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.26}{\ignorespaces \xpg@aux {}{english}\ignorespaces Combined modulation comparison (AWGN) --- all nine relays across BPSK (solid), QPSK (dashed, overlapping BPSK), and 16-QAM (dotted). The BPSK/QPSK overlap confirms I/Q splitting equivalence. The 16-QAM dotted curves reveal the AI relay BER floor: all AI relays plateau near 0.18--0.25 while DF and AF continue decreasing.}}{69}{figure.caption.100}\protected@file@percent }
-\newlabel{fig:fig27}{{5.26}{69}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces Combined modulation comparison (AWGN) --- all nine relays across BPSK (solid), QPSK (dashed, overlapping BPSK), and 16-QAM (dotted). The BPSK/QPSK overlap confirms I/Q splitting equivalence. The 16-QAM dotted curves reveal the AI relay BER floor: all AI relays plateau near 0.18--0.25 while DF and AF continue decreasing}{figure.caption.100}{}}
-\newlabel{fig:fig27@cref}{{[figure][26][5]5.26}{[1][69][]69}{}{}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.27}{\ignorespaces \xpg@aux {}{english}\ignorespaces 16-QAM activation experiment (AWGN) --- dashed lines = tanh/BPSK baseline, solid = linear/QAM16, dotted = hardtanh/QAM16. Replacing tanh and retraining on QAM16 eliminates the BER floor for all AI relays except Hybrid. Sequence models (Transformer, Mamba S6, Mamba-2) benefit most, narrowing the gap to DF from \textasciitilde 56Ã— to \textasciitilde 10Ã—.}}{70}{figure.caption.101}\protected@file@percent }
-\newlabel{fig:fig28}{{5.27}{70}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces 16-QAM activation experiment (AWGN) --- dashed lines = tanh/BPSK baseline, solid = linear/QAM16, dotted = hardtanh/QAM16. Replacing tanh and retraining on QAM16 eliminates the BER floor for all AI relays except Hybrid. Sequence models (Transformer, Mamba S6, Mamba-2) benefit most, narrowing the gap to DF from \textasciitilde 56Ã— to \textasciitilde 10Ã—}{figure.caption.101}{}}
-\newlabel{fig:fig28@cref}{{[figure][27][5]5.27}{[1][69][]70}{}{}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.28}{\ignorespaces \xpg@aux {}{english}\ignorespaces 16-QAM activation experiment (Rayleigh fading) --- same trend under fading. The improvement is significant but the gap to DF/AF remains larger than on AWGN, consistent with fading amplifying modulation-order differences (Finding 6).}}{71}{figure.caption.102}\protected@file@percent }
-\newlabel{fig:fig29}{{5.28}{71}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces 16-QAM activation experiment (Rayleigh fading) --- same trend under fading. The improvement is significant but the gap to DF/AF remains larger than on AWGN, consistent with fading amplifying modulation-order differences (Finding 6)}{figure.caption.102}{}}
-\newlabel{fig:fig29@cref}{{[figure][28][5]5.28}{[1][70][]71}{}{}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.29}{\ignorespaces \xpg@aux {}{english}\ignorespaces BPSK constellation-aware activation comparison (AWGN). With \(A_{\max } = 1.0\), scaled tanh reduces to standard tanh. All three bounded activations achieve equivalent BER, confirming that BPSK is insensitive to activation choice.}}{72}{figure.caption.103}\protected@file@percent }
-\newlabel{fig:fig30}{{5.29}{72}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces BPSK constellation-aware activation comparison (AWGN). With \(A_{\max } = 1.0\), scaled tanh reduces to standard tanh. All three bounded activations achieve equivalent BER, confirming that BPSK is insensitive to activation choice}{figure.caption.103}{}}
-\newlabel{fig:fig30@cref}{{[figure][29][5]5.29}{[1][71][]72}{}{}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.30}{\ignorespaces \xpg@aux {}{english}\ignorespaces BPSK constellation-aware activation comparison (Rayleigh fading). Same pattern under fading --- activation choice has negligible effect on BPSK BER.}}{73}{figure.caption.104}\protected@file@percent }
-\newlabel{fig:fig31}{{5.30}{73}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces BPSK constellation-aware activation comparison (Rayleigh fading). Same pattern under fading --- activation choice has negligible effect on BPSK BER}{figure.caption.104}{}}
-\newlabel{fig:fig31@cref}{{[figure][30][5]5.30}{[1][72][]73}{}{}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.31}{\ignorespaces \xpg@aux {}{english}\ignorespaces QPSK constellation-aware activation comparison (AWGN). With \(A_{\max } = 0.7071\), the tighter clip range matches the binary I/Q components exactly. Sigmoid provides marginally lower BER for the Transformer relay at low SNR.}}{74}{figure.caption.105}\protected@file@percent }
-\newlabel{fig:fig32}{{5.31}{74}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces QPSK constellation-aware activation comparison (AWGN). With \(A_{\max } = 0.7071\), the tighter clip range matches the binary I/Q components exactly. Sigmoid provides marginally lower BER for the Transformer relay at low SNR}{figure.caption.105}{}}
-\newlabel{fig:fig32@cref}{{[figure][31][5]5.31}{[1][73][]74}{}{}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.32}{\ignorespaces \xpg@aux {}{english}\ignorespaces QPSK constellation-aware activation comparison (Rayleigh fading). Similar trends under fading. The three activations remain closely matched for most relays.}}{75}{figure.caption.106}\protected@file@percent }
-\newlabel{fig:fig33}{{5.32}{75}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces QPSK constellation-aware activation comparison (Rayleigh fading). Similar trends under fading. The three activations remain closely matched for most relays}{figure.caption.106}{}}
-\newlabel{fig:fig33@cref}{{[figure][32][5]5.32}{[1][74][]75}{}{}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.33}{\ignorespaces \xpg@aux {}{english}\ignorespaces 16-QAM constellation-aware activation comparison (AWGN). All three bounded activations eliminate the tanh BER floor from Section~\ref {sec:higher-order-modulation-scalability-constellation-aware-training}, with scaled tanh and hardtanh closely matched.}}{76}{figure.caption.107}\protected@file@percent }
-\newlabel{fig:fig34}{{5.33}{76}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces 16-QAM constellation-aware activation comparison (AWGN). All three bounded activations eliminate the tanh BER floor from Section~\ref {sec:higher-order-modulation-scalability-constellation-aware-training}, with scaled tanh and hardtanh closely matched}{figure.caption.107}{}}
-\newlabel{fig:fig34@cref}{{[figure][33][5]5.33}{[1][75][]76}{}{}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.34}{\ignorespaces \xpg@aux {}{english}\ignorespaces 16-QAM constellation-aware activation comparison (Rayleigh fading). The BER floor elimination persists under fading. Sequence models benefit most from the constellation-aware bounds.}}{77}{figure.caption.108}\protected@file@percent }
-\newlabel{fig:fig35}{{5.34}{77}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces 16-QAM constellation-aware activation comparison (Rayleigh fading). The BER floor elimination persists under fading. Sequence models benefit most from the constellation-aware bounds}{figure.caption.108}{}}
-\newlabel{fig:fig35@cref}{{[figure][34][5]5.34}{[1][76][]77}{}{}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.35}{\ignorespaces \xpg@aux {}{english}\ignorespaces Comparison of activation function shapes (left) and their derivatives (right) for \(A_{\max } = 0.9487\) (16-QAM). Hardtanh has a sharp transition at the clip bounds; sigmoid and scaled tanh provide smooth saturation with non-zero gradients throughout.}}{78}{figure.caption.109}\protected@file@percent }
-\newlabel{fig:fig36}{{5.35}{78}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces Comparison of activation function shapes (left) and their derivatives (right) for \(A_{\max } = 0.9487\) (16-QAM). Hardtanh has a sharp transition at the clip bounds; sigmoid and scaled tanh provide smooth saturation with non-zero gradients throughout}{figure.caption.109}{}}
-\newlabel{fig:fig36@cref}{{[figure][35][5]5.35}{[1][77][]78}{}{}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {5.6}Input Normalization and CSI Injection}{78}{section.5.6}\protected@file@percent }
-\newlabel{sec:input-normalization-and-csi-injection}{{5.6}{78}{Input Normalization and CSI Injection}{section.5.6}{}}
-\newlabel{sec:input-normalization-and-csi-injection@cref}{{[section][6][5]5.6}{[1][78][]78}{}{}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.6.1}Results Tables}{78}{subsection.5.6.1}\protected@file@percent }
-\newlabel{sec:results-tables-4}{{5.6.1}{78}{Results Tables}{subsection.5.6.1}{}}
-\newlabel{sec:results-tables-4@cref}{{[subsection][1][5,6]5.6.1}{[1][78][]78}{}{}{}}
-\gdef \LT@xxiii {\LT@entry 
-    {1}{67.14494pt}\LT@entry 
-    {1}{73.14494pt}\LT@entry 
-    {1}{73.14494pt}\LT@entry 
-    {1}{73.14494pt}\LT@entry 
-    {1}{73.14494pt}\LT@entry 
-    {1}{67.14494pt}}
-\gdef \LT@xxiv {\LT@entry 
-    {1}{67.14494pt}\LT@entry 
-    {1}{73.14494pt}\LT@entry 
-    {1}{73.14494pt}\LT@entry 
-    {1}{73.14494pt}\LT@entry 
-    {1}{73.14494pt}\LT@entry 
-    {1}{67.14494pt}}
-\gdef \LT@xxv {\LT@entry 
-    {1}{140.24944pt}\LT@entry 
-    {1}{146.24944pt}\LT@entry 
-    {1}{140.24944pt}}
-\@writefile{lot}{\contentsline {table}{\numberline {5.17}{\ignorespaces Sample BER values comparing blind spatial tracking vs.~explicit Channel State injection for 16-QAM in Rayleigh fading.}}{79}{table.5.17}\protected@file@percent }
-\newlabel{tbl:table18}{{5.17}{79}{Sample BER values comparing blind spatial tracking vs.~explicit Channel State injection for 16-QAM in Rayleigh fading}{table.5.17}{}}
-\newlabel{tbl:table18@cref}{{[table][17][5]5.17}{[1][78][]79}{}{}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {5.18}{\ignorespaces BER at selected SNR points for the top-3 neural relays and classical baselines (16-QAM, Rayleigh fading, 100 MC trials). The best neural variant (Mamba S6 +LN tanh) comes within 21\% of AF at 20 dB but does not surpass it.}}{79}{table.5.18}\protected@file@percent }
-\newlabel{tbl:table19}{{5.18}{79}{BER at selected SNR points for the top-3 neural relays and classical baselines (16-QAM, Rayleigh fading, 100 MC trials). The best neural variant (Mamba S6 +LN tanh) comes within 21\% of AF at 20 dB but does not surpass it}{table.5.18}{}}
-\newlabel{tbl:table19@cref}{{[table][18][5]5.18}{[1][79][]79}{}{}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {5.19}{\ignorespaces BER at selected SNR points for the top-3 neural relays and classical baselines (16-PSK, Rayleigh fading, 100 MC trials). The best neural variants track AF closely at high SNR, with the gap narrowing to 2.5\% at 20 dB.}}{79}{table.5.19}\protected@file@percent }
-\newlabel{tbl:table20}{{5.19}{79}{BER at selected SNR points for the top-3 neural relays and classical baselines (16-PSK, Rayleigh fading, 100 MC trials). The best neural variants track AF closely at high SNR, with the gap narrowing to 2.5\% at 20 dB}{table.5.19}{}}
-\newlabel{tbl:table20@cref}{{[table][19][5]5.19}{[1][79][]79}{}{}{}}
-\gdef \LT@xxvi {\LT@entry 
-    {1}{140.24944pt}\LT@entry 
-    {1}{146.24944pt}\LT@entry 
-    {1}{140.24944pt}}
-\gdef \LT@xxvii {\LT@entry 
-    {1}{103.69783pt}\LT@entry 
-    {1}{109.69783pt}\LT@entry 
-    {1}{109.69783pt}\LT@entry 
-    {1}{103.69783pt}}
-\@writefile{lot}{\contentsline {table}{\numberline {5.20}{\ignorespaces Cross-constellation comparison of top-performing neural relay strategies.}}{80}{table.5.20}\protected@file@percent }
-\newlabel{tbl:table21}{{5.20}{80}{Cross-constellation comparison of top-performing neural relay strategies}{table.5.20}{}}
-\newlabel{tbl:table21@cref}{{[table][20][5]5.20}{[1][80][]80}{}{}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {5.21}{\ignorespaces Goals vs.~outcomes for the comprehensive multi-architecture CSI experiment.}}{80}{table.5.21}\protected@file@percent }
-\newlabel{tbl:table22}{{5.21}{80}{Goals vs.~outcomes for the comprehensive multi-architecture CSI experiment}{table.5.21}{}}
-\newlabel{tbl:table22@cref}{{[table][21][5]5.21}{[1][80][]80}{}{}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.6.2}Results Figures}{81}{subsection.5.6.2}\protected@file@percent }
-\newlabel{sec:results-figures-5}{{5.6.2}{81}{Results Figures}{subsection.5.6.2}{}}
-\newlabel{sec:results-figures-5@cref}{{[subsection][2][5,6]5.6.2}{[1][81][]81}{}{}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.36}{\ignorespaces \xpg@aux {}{english}\ignorespaces 16-QAM Rayleigh fading --- BER vs.~SNR for all 48 neural relay variants and two classical baselines (AF, DF) with 95\% confidence intervals. The plot reveals a dense cluster of neural variants between the AF and DF curves, with the best variants approaching AF performance at high SNR.}}{81}{figure.caption.110}\protected@file@percent }
-\newlabel{fig:fig39}{{5.36}{81}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces 16-QAM Rayleigh fading --- BER vs.~SNR for all 48 neural relay variants and two classical baselines (AF, DF) with 95\% confidence intervals. The plot reveals a dense cluster of neural variants between the AF and DF curves, with the best variants approaching AF performance at high SNR}{figure.caption.110}{}}
-\newlabel{fig:fig39@cref}{{[figure][36][5]5.36}{[1][81][]81}{}{}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.37}{\ignorespaces \xpg@aux {}{english}\ignorespaces Top-3 neural relay architectures compared against AF and DF for 16-QAM in Rayleigh fading. All three best-performing variants use input LayerNorm (+LN) without CSI injection.}}{82}{figure.caption.111}\protected@file@percent }
-\newlabel{fig:fig40}{{5.37}{82}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces Top-3 neural relay architectures compared against AF and DF for 16-QAM in Rayleigh fading. All three best-performing variants use input LayerNorm (+LN) without CSI injection}{figure.caption.111}{}}
-\newlabel{fig:fig40@cref}{{[figure][37][5]5.37}{[1][81][]82}{}{}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.38}{\ignorespaces \xpg@aux {}{english}\ignorespaces 16-PSK Rayleigh fading --- BER vs.~SNR for all 48 neural relay variants and two classical baselines. The neural variants form a tighter cluster than QAM16, reflecting the constant-envelope nature of PSK which reduces the amplitude-aliasing challenge.}}{83}{figure.caption.112}\protected@file@percent }
-\newlabel{fig:fig41}{{5.38}{83}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces 16-PSK Rayleigh fading --- BER vs.~SNR for all 48 neural relay variants and two classical baselines. The neural variants form a tighter cluster than QAM16, reflecting the constant-envelope nature of PSK which reduces the amplitude-aliasing challenge}{figure.caption.112}{}}
-\newlabel{fig:fig41@cref}{{[figure][38][5]5.38}{[1][82][]83}{}{}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.39}{\ignorespaces \xpg@aux {}{english}\ignorespaces Top-3 neural relay architectures compared against AF and DF for 16-PSK in Rayleigh fading. In contrast to QAM16, all three best-performing PSK16 variants use CSI injection (+CSI or +CSI+LN).}}{84}{figure.caption.113}\protected@file@percent }
-\newlabel{fig:fig42}{{5.39}{84}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces Top-3 neural relay architectures compared against AF and DF for 16-PSK in Rayleigh fading. In contrast to QAM16, all three best-performing PSK16 variants use CSI injection (+CSI or +CSI+LN)}{figure.caption.113}{}}
-\newlabel{fig:fig42@cref}{{[figure][39][5]5.39}{[1][83][]84}{}{}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.40}{\ignorespaces \xpg@aux {}{english}\ignorespaces Training loss (MSE) and accuracy for Mamba-2 (+LN scaled\_tanh). The model converges within approximately 5 epochs and stabilises, with validation accuracy closely tracking training accuracy --- indicating minimal overfitting.}}{84}{figure.caption.114}\protected@file@percent }
-\newlabel{fig:fig43}{{5.40}{84}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces Training loss (MSE) and accuracy for Mamba-2 (+LN scaled\_tanh). The model converges within approximately 5 epochs and stabilises, with validation accuracy closely tracking training accuracy --- indicating minimal overfitting}{figure.caption.114}{}}
-\newlabel{fig:fig43@cref}{{[figure][40][5]5.40}{[1][84][]84}{}{}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.41}{\ignorespaces \xpg@aux {}{english}\ignorespaces Training loss and accuracy for Mamba S6 (+CSI tanh). The CSI-augmented input produces a smooth, monotonic training convergence, with the additional channel-state feature providing clear gradient signal for the optimizer.}}{85}{figure.caption.115}\protected@file@percent }
-\newlabel{fig:fig44}{{5.41}{85}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces Training loss and accuracy for Mamba S6 (+CSI tanh). The CSI-augmented input produces a smooth, monotonic training convergence, with the additional channel-state feature providing clear gradient signal for the optimizer}{figure.caption.115}{}}
-\newlabel{fig:fig44@cref}{{[figure][41][5]5.41}{[1][84][]85}{}{}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.42}{\ignorespaces \xpg@aux {}{english}\ignorespaces Training loss and accuracy for Transformer (+CSI sigmoid). The Transformer exhibits rapid initial convergence (within 3 epochs) followed by a flat plateau, characteristic of the attention mechanism's ability to capture input structure quickly.}}{85}{figure.caption.116}\protected@file@percent }
-\newlabel{fig:fig45}{{5.42}{85}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces Training loss and accuracy for Transformer (+CSI sigmoid). The Transformer exhibits rapid initial convergence (within 3 epochs) followed by a flat plateau, characteristic of the attention mechanism's ability to capture input structure quickly}{figure.caption.116}{}}
-\newlabel{fig:fig45@cref}{{[figure][42][5]5.42}{[1][85][]85}{}{}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {5.7}16-Class 2D Classification for QAM16}{85}{section.5.7}\protected@file@percent }
-\newlabel{sec:class-2d-classification-for-qam16}{{5.7}{85}{16-Class 2D Classification for QAM16}{section.5.7}{}}
-\newlabel{sec:class-2d-classification-for-qam16@cref}{{[section][7][5]5.7}{[1][85][]85}{}{}{}}
-\gdef \LT@xxviii {\LT@entry 
-    {4}{77.66603pt}\LT@entry 
-    {1}{107.71877pt}\LT@entry 
-    {1}{113.71877pt}\LT@entry 
-    {1}{70.6465pt}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.7.1}Results Tables}{86}{subsection.5.7.1}\protected@file@percent }
-\newlabel{sec:results-tables-5}{{5.7.1}{86}{Results Tables}{subsection.5.7.1}{}}
-\newlabel{sec:results-tables-5@cref}{{[subsection][1][5,7]5.7.1}{[1][85][]86}{}{}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {5.22}{\ignorespaces BER at 20 dB for all relay variants: 4-class (I/Q split) vs.~16-class (joint 2D) classification for 16-QAM.}}{86}{table.5.22}\protected@file@percent }
-\newlabel{tbl:table24}{{5.22}{86}{BER at 20 dB for all relay variants: 4-class (I/Q split) vs.~16-class (joint 2D) classification for 16-QAM}{table.5.22}{}}
-\newlabel{tbl:table24@cref}{{[table][22][5]5.22}{[1][85][]86}{}{}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.7.2}Results Figures}{86}{subsection.5.7.2}\protected@file@percent }
-\newlabel{sec:results-figures-6}{{5.7.2}{86}{Results Figures}{subsection.5.7.2}{}}
-\newlabel{sec:results-figures-6@cref}{{[subsection][2][5,7]5.7.2}{[1][86][]86}{}{}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.43}{\ignorespaces \xpg@aux {}{english}\ignorespaces 16-QAM BER vs.~SNR for all relay variants (4-class and 16-class) on AWGN. The 4-class variants (dashed) plateau at BER â‰ˆ 0.008 while the successfully trained 16-class variants (solid) continue decreasing, approaching and matching the DF baseline.}}{86}{figure.caption.117}\protected@file@percent }
-\newlabel{fig:fig50}{{5.43}{86}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces 16-QAM BER vs.~SNR for all relay variants (4-class and 16-class) on AWGN. The 4-class variants (dashed) plateau at BER â‰ˆ 0.008 while the successfully trained 16-class variants (solid) continue decreasing, approaching and matching the DF baseline}{figure.caption.117}{}}
-\newlabel{fig:fig50@cref}{{[figure][43][5]5.43}{[1][86][]86}{}{}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.44}{\ignorespaces \xpg@aux {}{english}\ignorespaces Grouped bar comparison of 4-class vs.~16-class BER at 20 dB for each architecture. The 16-class advantage is visible for MLP, VAE, Transformer, and Mamba S6. Failed variants (VAE 4-cls \textasciitilde 0.50, CGAN 16-cls \textasciitilde 0.50) are truncated.}}{87}{figure.caption.118}\protected@file@percent }
-\newlabel{fig:fig51}{{5.44}{87}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces Grouped bar comparison of 4-class vs.~16-class BER at 20 dB for each architecture. The 16-class advantage is visible for MLP, VAE, Transformer, and Mamba S6. Failed variants (VAE 4-cls \textasciitilde 0.50, CGAN 16-cls \textasciitilde 0.50) are truncated}{figure.caption.118}{}}
-\newlabel{fig:fig51@cref}{{[figure][44][5]5.44}{[1][86][]87}{}{}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.45}{\ignorespaces \xpg@aux {}{english}\ignorespaces Heatmap of BER across all relay variants and SNR points. The 16-class variants show a clear colour transition from high BER (warm) at low SNR to near-zero BER (cool) at high SNR, while 4-class variants remain warm at high SNR due to the structural floor.}}{87}{figure.caption.119}\protected@file@percent }
-\newlabel{fig:fig52}{{5.45}{87}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces Heatmap of BER across all relay variants and SNR points. The 16-class variants show a clear colour transition from high BER (warm) at low SNR to near-zero BER (cool) at high SNR, while 4-class variants remain warm at high SNR due to the structural floor}{figure.caption.119}{}}
-\newlabel{fig:fig52@cref}{{[figure][45][5]5.45}{[1][87][]87}{}{}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.46}{\ignorespaces \xpg@aux {}{english}\ignorespaces Top-3 16-class relay variants compared against AF and DF. VAE 16-cls, Transformer 16-cls, and MLP 16-cls all match or approach DF performance across the full SNR range.}}{88}{figure.caption.120}\protected@file@percent }
-\newlabel{fig:fig53}{{5.46}{88}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces Top-3 16-class relay variants compared against AF and DF. VAE 16-cls, Transformer 16-cls, and MLP 16-cls all match or approach DF performance across the full SNR range}{figure.caption.120}{}}
-\newlabel{fig:fig53@cref}{{[figure][46][5]5.46}{[1][87][]88}{}{}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {5.8}End-to-End Joint Optimization}{88}{section.5.8}\protected@file@percent }
-\newlabel{sec:end-to-end-joint-optimization}{{5.8}{88}{End-to-End Joint Optimization}{section.5.8}{}}
-\newlabel{sec:end-to-end-joint-optimization@cref}{{[section][8][5]5.8}{[1][88][]88}{}{}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.8.1}Results Figures}{89}{subsection.5.8.1}\protected@file@percent }
-\newlabel{sec:results-figures-7}{{5.8.1}{89}{Results Figures}{subsection.5.8.1}{}}
-\newlabel{sec:results-figures-7@cref}{{[subsection][1][5,8]5.8.1}{[1][88][]89}{}{}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.47}{\ignorespaces \xpg@aux {}{english}\ignorespaces BER vs.~SNR for E2E learned autoencoder compared to theoretical 16-QAM over Rayleigh fading. The E2E system underperforms the classical grid constellation across the full SNR range, with the gap widening at high SNR.}}{89}{figure.caption.121}\protected@file@percent }
-\newlabel{fig:fig46}{{5.47}{89}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces BER vs.~SNR for E2E learned autoencoder compared to theoretical 16-QAM over Rayleigh fading. The E2E system underperforms the classical grid constellation across the full SNR range, with the gap widening at high SNR}{figure.caption.121}{}}
-\newlabel{fig:fig46@cref}{{[figure][47][5]5.47}{[1][88][]89}{}{}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.48}{\ignorespaces \xpg@aux {}{english}\ignorespaces Learned 16-point constellation of the E2E autoencoder. The network discovers a non-rectangular geometry (resembling a hexagonal lattice or concentric APSK layout) that maximises minimum Euclidean distance under the average power constraint, unlike the classical \(4 \times 4\) square grid.}}{89}{figure.caption.122}\protected@file@percent }
-\newlabel{fig:fig47}{{5.48}{89}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces Learned 16-point constellation of the E2E autoencoder. The network discovers a non-rectangular geometry (resembling a hexagonal lattice or concentric APSK layout) that maximises minimum Euclidean distance under the average power constraint, unlike the classical \(4 \times 4\) square grid}{figure.caption.122}{}}
-\newlabel{fig:fig47@cref}{{[figure][48][5]5.48}{[1][89][]89}{}{}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.49}{\ignorespaces \xpg@aux {}{english}\ignorespaces Training loss (cross-entropy) convergence of the E2E autoencoder. The model converges within approximately 200 epochs.}}{90}{figure.caption.123}\protected@file@percent }
-\newlabel{fig:fig48}{{5.49}{90}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces Training loss (cross-entropy) convergence of the E2E autoencoder. The model converges within approximately 200 epochs}{figure.caption.123}{}}
-\newlabel{fig:fig48@cref}{{[figure][49][5]5.49}{[1][89][]90}{}{}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.50}{\ignorespaces \xpg@aux {}{english}\ignorespaces Performance comparison of the E2E autoencoder against the modular relay-based approaches from this thesis. The E2E system does not achieve lower BER than the two-hop DF relay, highlighting the limitations of the E2E approach.}}{90}{figure.caption.124}\protected@file@percent }
-\newlabel{fig:fig49}{{5.50}{90}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces Performance comparison of the E2E autoencoder against the modular relay-based approaches from this thesis. The E2E system does not achieve lower BER than the two-hop DF relay, highlighting the limitations of the E2E approach}{figure.caption.124}{}}
-\newlabel{fig:fig49@cref}{{[figure][50][5]5.50}{[1][90][]90}{}{}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5.2}SISO BPSK Performance (Baseline Relay Comparison)}{47}{section.5.2}\protected@file@percent }
+\newlabel{sec:siso-bpsk-performance-baseline-relay-comparison}{{5.2}{47}{SISO BPSK Performance (Baseline Relay Comparison)}{section.5.2}{}}
+\newlabel{sec:siso-bpsk-performance-baseline-relay-comparison@cref}{{[section][2][5]5.2}{[1][47][]47}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2.1}Results Tables}{47}{subsection.5.2.1}\protected@file@percent }
+\newlabel{sec:results-tables}{{5.2.1}{47}{Results Tables}{subsection.5.2.1}{}}
+\newlabel{sec:results-tables@cref}{{[subsection][1][5,2]5.2.1}{[1][47][]47}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2.2}Results Figures}{48}{subsection.5.2.2}\protected@file@percent }
+\newlabel{sec:results-figures-1}{{5.2.2}{48}{Results Figures}{subsection.5.2.2}{}}
+\newlabel{sec:results-figures-1@cref}{{[subsection][2][5,2]5.2.2}{[1][47][]48}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.1}{\ignorespaces \xpg@aux {}{english}\ignorespaces AWGN channel --- BER vs.~SNR for all nine relay strategies with 95\% CI. AI relays outperform classical methods at low SNR; DF dominates at medium-to-high SNR.}}{48}{figure.caption.75}\protected@file@percent }
+\newlabel{fig:fig9}{{5.1}{48}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces AWGN channel --- BER vs.~SNR for all nine relay strategies with 95\% CI. AI relays outperform classical methods at low SNR; DF dominates at medium-to-high SNR}{figure.caption.75}{}}
+\newlabel{fig:fig9@cref}{{[figure][1][5]5.1}{[1][47][]48}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.2}{\ignorespaces \xpg@aux {}{english}\ignorespaces Rayleigh fading --- BER vs.~SNR for all nine relay strategies with 95\% CI.}}{48}{figure.caption.76}\protected@file@percent }
+\newlabel{fig:fig10}{{5.2}{48}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces Rayleigh fading --- BER vs.~SNR for all nine relay strategies with 95\% CI}{figure.caption.76}{}}
+\newlabel{fig:fig10@cref}{{[figure][2][5]5.2}{[1][48][]48}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.3}{\ignorespaces \xpg@aux {}{english}\ignorespaces Rician fading (K=3) --- BER vs.~SNR for all nine relay strategies with 95\% CI.}}{49}{figure.caption.77}\protected@file@percent }
+\newlabel{fig:fig11}{{5.3}{49}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces Rician fading (K=3) --- BER vs.~SNR for all nine relay strategies with 95\% CI}{figure.caption.77}{}}
+\newlabel{fig:fig11@cref}{{[figure][3][5]5.3}{[1][48][]49}{}{}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5.3}MIMO 2x2 BPSK Performance}{49}{section.5.3}\protected@file@percent }
+\newlabel{sec:mimo-2x2-bpsk-performance}{{5.3}{49}{MIMO 2x2 BPSK Performance}{section.5.3}{}}
+\newlabel{sec:mimo-2x2-bpsk-performance@cref}{{[section][3][5]5.3}{[1][49][]49}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3.1}Results Tables}{49}{subsection.5.3.1}\protected@file@percent }
+\newlabel{sec:results-tables-1}{{5.3.1}{49}{Results Tables}{subsection.5.3.1}{}}
+\newlabel{sec:results-tables-1@cref}{{[subsection][1][5,3]5.3.1}{[1][49][]49}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3.2}Results Figures}{50}{subsection.5.3.2}\protected@file@percent }
+\newlabel{sec:results-figures-2}{{5.3.2}{50}{Results Figures}{subsection.5.3.2}{}}
+\newlabel{sec:results-figures-2@cref}{{[subsection][2][5,3]5.3.2}{[1][49][]50}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.4}{\ignorespaces \xpg@aux {}{english}\ignorespaces 2Ã—2 MIMO with ZF equalization --- BER vs.~SNR for all nine relay strategies with 95\% CI.}}{50}{figure.caption.78}\protected@file@percent }
+\newlabel{fig:fig12}{{5.4}{50}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces 2Ã—2 MIMO with ZF equalization --- BER vs.~SNR for all nine relay strategies with 95\% CI}{figure.caption.78}{}}
+\newlabel{fig:fig12@cref}{{[figure][4][5]5.4}{[1][49][]50}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.5}{\ignorespaces \xpg@aux {}{english}\ignorespaces 2Ã—2 MIMO with MMSE equalization --- BER vs.~SNR for all nine relay strategies with 95\% CI.}}{50}{figure.caption.79}\protected@file@percent }
+\newlabel{fig:fig13}{{5.5}{50}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces 2Ã—2 MIMO with MMSE equalization --- BER vs.~SNR for all nine relay strategies with 95\% CI}{figure.caption.79}{}}
+\newlabel{fig:fig13@cref}{{[figure][5][5]5.5}{[1][50][]50}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.6}{\ignorespaces \xpg@aux {}{english}\ignorespaces 2Ã—2 MIMO with MMSE-SIC equalization --- BER vs.~SNR for all nine relay strategies with 95\% CI.}}{51}{figure.caption.80}\protected@file@percent }
+\newlabel{fig:fig14}{{5.6}{51}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces 2Ã—2 MIMO with MMSE-SIC equalization --- BER vs.~SNR for all nine relay strategies with 95\% CI}{figure.caption.80}{}}
+\newlabel{fig:fig14@cref}{{[figure][6][5]5.6}{[1][50][]51}{}{}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5.4}Parameter Normalization \& Complexity Trade-off}{51}{section.5.4}\protected@file@percent }
+\newlabel{sec:parameter-normalization-complexity-trade-off}{{5.4}{51}{Parameter Normalization \& Complexity Trade-off}{section.5.4}{}}
+\newlabel{sec:parameter-normalization-complexity-trade-off@cref}{{[section][4][5]5.4}{[1][51][]51}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.4.1}Results Tables}{51}{subsection.5.4.1}\protected@file@percent }
+\newlabel{sec:results-tables-2}{{5.4.1}{51}{Results Tables}{subsection.5.4.1}{}}
+\newlabel{sec:results-tables-2@cref}{{[subsection][1][5,4]5.4.1}{[1][51][]51}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.4.2}Results Figures}{52}{subsection.5.4.2}\protected@file@percent }
+\newlabel{sec:results-figures-3}{{5.4.2}{52}{Results Figures}{subsection.5.4.2}{}}
+\newlabel{sec:results-figures-3@cref}{{[subsection][2][5,4]5.4.2}{[1][52][]52}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.7}{\ignorespaces \xpg@aux {}{english}\ignorespaces Normalized 3K-parameter comparison across all channels. At equal parameter budgets, all architectures converge to similar BER, with VAE being the consistent underperformer.}}{52}{figure.caption.81}\protected@file@percent }
+\newlabel{fig:fig15}{{5.7}{52}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces Normalized 3K-parameter comparison across all channels. At equal parameter budgets, all architectures converge to similar BER, with VAE being the consistent underperformer}{figure.caption.81}{}}
+\newlabel{fig:fig15@cref}{{[figure][7][5]5.7}{[1][52][]52}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.8}{\ignorespaces \xpg@aux {}{english}\ignorespaces Normalized 3K-parameter BER comparison on AWGN. Mamba-3K and Transformer-3K produce nearly identical BER, eliminating the gap seen at original parameter counts.}}{53}{figure.caption.82}\protected@file@percent }
+\newlabel{fig:fig16}{{5.8}{53}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces Normalized 3K-parameter BER comparison on AWGN. Mamba-3K and Transformer-3K produce nearly identical BER, eliminating the gap seen at original parameter counts}{figure.caption.82}{}}
+\newlabel{fig:fig16@cref}{{[figure][8][5]5.8}{[1][52][]53}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.9}{\ignorespaces \xpg@aux {}{english}\ignorespaces Normalized 3K-parameter BER comparison on Rayleigh fading.}}{53}{figure.caption.83}\protected@file@percent }
+\newlabel{fig:fig17}{{5.9}{53}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces Normalized 3K-parameter BER comparison on Rayleigh fading}{figure.caption.83}{}}
+\newlabel{fig:fig17@cref}{{[figure][9][5]5.9}{[1][53][]53}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.10}{\ignorespaces \xpg@aux {}{english}\ignorespaces Normalized 3K-parameter BER comparison on Rician fading (K=3).}}{54}{figure.caption.84}\protected@file@percent }
+\newlabel{fig:fig18}{{5.10}{54}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces Normalized 3K-parameter BER comparison on Rician fading (K=3)}{figure.caption.84}{}}
+\newlabel{fig:fig18@cref}{{[figure][10][5]5.10}{[1][53][]54}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.11}{\ignorespaces \xpg@aux {}{english}\ignorespaces Complexity--performance trade-off. Training time vs.~parameter count vs.~BER improvement over DF at low SNR. The Minimal MLP (169 params) achieves the best efficiency.}}{54}{figure.caption.85}\protected@file@percent }
+\newlabel{fig:fig19}{{5.11}{54}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces Complexity--performance trade-off. Training time vs.~parameter count vs.~BER improvement over DF at low SNR. The Minimal MLP (169 params) achieves the best efficiency}{figure.caption.85}{}}
+\newlabel{fig:fig19@cref}{{[figure][11][5]5.11}{[1][54][]54}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.12}{\ignorespaces \xpg@aux {}{english}\ignorespaces Master BER comparison --- consolidated view of all nine relay strategies across all six channel/topology configurations.}}{55}{figure.caption.86}\protected@file@percent }
+\newlabel{fig:fig20}{{5.12}{55}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces Master BER comparison --- consolidated view of all nine relay strategies across all six channel/topology configurations}{figure.caption.86}{}}
+\newlabel{fig:fig20@cref}{{[figure][12][5]5.12}{[1][54][]55}{}{}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5.5}Higher-Order Modulation Scalability (Constellation-Aware Training)}{55}{section.5.5}\protected@file@percent }
+\newlabel{sec:higher-order-modulation-scalability-constellation-aware-training}{{5.5}{55}{Higher-Order Modulation Scalability (Constellation-Aware Training)}{section.5.5}{}}
+\newlabel{sec:higher-order-modulation-scalability-constellation-aware-training@cref}{{[section][5][5]5.5}{[1][55][]55}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.5.1}Results Tables}{55}{subsection.5.5.1}\protected@file@percent }
+\newlabel{sec:results-tables-3}{{5.5.1}{55}{Results Tables}{subsection.5.5.1}{}}
+\newlabel{sec:results-tables-3@cref}{{[subsection][1][5,5]5.5.1}{[1][55][]55}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.5.2}Results Figures}{56}{subsection.5.5.2}\protected@file@percent }
+\newlabel{sec:results-figures-4}{{5.5.2}{56}{Results Figures}{subsection.5.5.2}{}}
+\newlabel{sec:results-figures-4@cref}{{[subsection][2][5,5]5.5.2}{[1][56][]56}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.13}{\ignorespaces \xpg@aux {}{english}\ignorespaces BPSK on AWGN --- all relay strategies with 95\% CI (baseline for modulation comparison).}}{56}{figure.caption.87}\protected@file@percent }
+\newlabel{fig:fig21}{{5.13}{56}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces BPSK on AWGN --- all relay strategies with 95\% CI (baseline for modulation comparison)}{figure.caption.87}{}}
+\newlabel{fig:fig21@cref}{{[figure][13][5]5.13}{[1][56][]56}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.14}{\ignorespaces \xpg@aux {}{english}\ignorespaces BPSK on Rayleigh fading --- all relay strategies with 95\% CI.}}{57}{figure.caption.88}\protected@file@percent }
+\newlabel{fig:fig22}{{5.14}{57}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces BPSK on Rayleigh fading --- all relay strategies with 95\% CI}{figure.caption.88}{}}
+\newlabel{fig:fig22@cref}{{[figure][14][5]5.14}{[1][56][]57}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.15}{\ignorespaces \xpg@aux {}{english}\ignorespaces QPSK on AWGN --- BER curves closely match the BPSK baseline (Figure~\ref {fig:fig21}), confirming I/Q splitting validity.}}{57}{figure.caption.89}\protected@file@percent }
+\newlabel{fig:fig23}{{5.15}{57}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces QPSK on AWGN --- BER curves closely match the BPSK baseline (Figure~\ref {fig:fig21}), confirming I/Q splitting validity}{figure.caption.89}{}}
+\newlabel{fig:fig23@cref}{{[figure][15][5]5.15}{[1][57][]57}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.16}{\ignorespaces \xpg@aux {}{english}\ignorespaces QPSK on Rayleigh fading --- same relative ordering as BPSK, confirming hypothesis generalisability.}}{58}{figure.caption.90}\protected@file@percent }
+\newlabel{fig:fig24}{{5.16}{58}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces QPSK on Rayleigh fading --- same relative ordering as BPSK, confirming hypothesis generalisability}{figure.caption.90}{}}
+\newlabel{fig:fig24@cref}{{[figure][16][5]5.16}{[1][57][]58}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.17}{\ignorespaces \xpg@aux {}{english}\ignorespaces 16-QAM on AWGN --- AI relays hit a BER floor near 0.22 at medium-high SNR due to \(\tanh \) compression of multi-level signals; AF outperforms DF at low SNR (Y}}{58}{figure.caption.91}\protected@file@percent }
+\newlabel{fig:fig25}{{5.17}{58}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces 16-QAM on AWGN --- AI relays hit a BER floor near 0.22 at medium-high SNR due to \(\tanh \) compression of multi-level signals; AF outperforms DF at low SNR (Y}{figure.caption.91}{}}
+\newlabel{fig:fig25@cref}{{[figure][17][5]5.17}{[1][58][]58}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.18}{\ignorespaces \xpg@aux {}{english}\ignorespaces 16-QAM on Rayleigh fading --- wider BER gap between modulations under fading; all AI relays significantly worse than DF at every SNR point (N}}{59}{figure.caption.92}\protected@file@percent }
+\newlabel{fig:fig26}{{5.18}{59}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces 16-QAM on Rayleigh fading --- wider BER gap between modulations under fading; all AI relays significantly worse than DF at every SNR point (N}{figure.caption.92}{}}
+\newlabel{fig:fig26@cref}{{[figure][18][5]5.18}{[1][58][]59}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.19}{\ignorespaces \xpg@aux {}{english}\ignorespaces Combined modulation comparison (AWGN) --- all nine relays across BPSK (solid), QPSK (dashed, overlapping BPSK), and 16-QAM (dotted). The BPSK/QPSK overlap confirms I/Q splitting equivalence. The 16-QAM dotted curves reveal the AI relay BER floor: all AI relays plateau near 0.18--0.25 while DF and AF continue decreasing.}}{59}{figure.caption.93}\protected@file@percent }
+\newlabel{fig:fig27}{{5.19}{59}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces Combined modulation comparison (AWGN) --- all nine relays across BPSK (solid), QPSK (dashed, overlapping BPSK), and 16-QAM (dotted). The BPSK/QPSK overlap confirms I/Q splitting equivalence. The 16-QAM dotted curves reveal the AI relay BER floor: all AI relays plateau near 0.18--0.25 while DF and AF continue decreasing}{figure.caption.93}{}}
+\newlabel{fig:fig27@cref}{{[figure][19][5]5.19}{[1][59][]59}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.20}{\ignorespaces \xpg@aux {}{english}\ignorespaces 16-QAM activation experiment (AWGN) --- dashed lines = tanh/BPSK baseline, solid = linear/QAM16, dotted = hardtanh/QAM16. Replacing tanh and retraining on QAM16 eliminates the BER floor for all AI relays except Hybrid. Sequence models (Transformer, Mamba S6, Mamba-2) benefit most, narrowing the gap to DF from \textasciitilde 56Ã— to \textasciitilde 10Ã—.}}{60}{figure.caption.94}\protected@file@percent }
+\newlabel{fig:fig28}{{5.20}{60}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces 16-QAM activation experiment (AWGN) --- dashed lines = tanh/BPSK baseline, solid = linear/QAM16, dotted = hardtanh/QAM16. Replacing tanh and retraining on QAM16 eliminates the BER floor for all AI relays except Hybrid. Sequence models (Transformer, Mamba S6, Mamba-2) benefit most, narrowing the gap to DF from \textasciitilde 56Ã— to \textasciitilde 10Ã—}{figure.caption.94}{}}
+\newlabel{fig:fig28@cref}{{[figure][20][5]5.20}{[1][59][]60}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.21}{\ignorespaces \xpg@aux {}{english}\ignorespaces 16-QAM activation experiment (Rayleigh fading) --- same trend under fading. The improvement is significant but the gap to DF/AF remains larger than on AWGN, consistent with fading amplifying modulation-order differences (Finding 6).}}{61}{figure.caption.95}\protected@file@percent }
+\newlabel{fig:fig29}{{5.21}{61}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces 16-QAM activation experiment (Rayleigh fading) --- same trend under fading. The improvement is significant but the gap to DF/AF remains larger than on AWGN, consistent with fading amplifying modulation-order differences (Finding 6)}{figure.caption.95}{}}
+\newlabel{fig:fig29@cref}{{[figure][21][5]5.21}{[1][60][]61}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.22}{\ignorespaces \xpg@aux {}{english}\ignorespaces BPSK constellation-aware activation comparison (AWGN). With \(A_{\max } = 1.0\), scaled tanh reduces to standard tanh. All three bounded activations achieve equivalent BER, confirming that BPSK is insensitive to activation choice.}}{62}{figure.caption.96}\protected@file@percent }
+\newlabel{fig:fig30}{{5.22}{62}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces BPSK constellation-aware activation comparison (AWGN). With \(A_{\max } = 1.0\), scaled tanh reduces to standard tanh. All three bounded activations achieve equivalent BER, confirming that BPSK is insensitive to activation choice}{figure.caption.96}{}}
+\newlabel{fig:fig30@cref}{{[figure][22][5]5.22}{[1][61][]62}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.23}{\ignorespaces \xpg@aux {}{english}\ignorespaces BPSK constellation-aware activation comparison (Rayleigh fading). Same pattern under fading --- activation choice has negligible effect on BPSK BER.}}{63}{figure.caption.97}\protected@file@percent }
+\newlabel{fig:fig31}{{5.23}{63}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces BPSK constellation-aware activation comparison (Rayleigh fading). Same pattern under fading --- activation choice has negligible effect on BPSK BER}{figure.caption.97}{}}
+\newlabel{fig:fig31@cref}{{[figure][23][5]5.23}{[1][62][]63}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.24}{\ignorespaces \xpg@aux {}{english}\ignorespaces QPSK constellation-aware activation comparison (AWGN). With \(A_{\max } = 0.7071\), the tighter clip range matches the binary I/Q components exactly. Sigmoid provides marginally lower BER for the Transformer relay at low SNR.}}{64}{figure.caption.98}\protected@file@percent }
+\newlabel{fig:fig32}{{5.24}{64}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces QPSK constellation-aware activation comparison (AWGN). With \(A_{\max } = 0.7071\), the tighter clip range matches the binary I/Q components exactly. Sigmoid provides marginally lower BER for the Transformer relay at low SNR}{figure.caption.98}{}}
+\newlabel{fig:fig32@cref}{{[figure][24][5]5.24}{[1][63][]64}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.25}{\ignorespaces \xpg@aux {}{english}\ignorespaces QPSK constellation-aware activation comparison (Rayleigh fading). Similar trends under fading. The three activations remain closely matched for most relays.}}{65}{figure.caption.99}\protected@file@percent }
+\newlabel{fig:fig33}{{5.25}{65}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces QPSK constellation-aware activation comparison (Rayleigh fading). Similar trends under fading. The three activations remain closely matched for most relays}{figure.caption.99}{}}
+\newlabel{fig:fig33@cref}{{[figure][25][5]5.25}{[1][64][]65}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.26}{\ignorespaces \xpg@aux {}{english}\ignorespaces 16-QAM constellation-aware activation comparison (AWGN). All three bounded activations eliminate the tanh BER floor from Section~\ref {sec:higher-order-modulation-scalability-constellation-aware-training}, with scaled tanh and hardtanh closely matched.}}{66}{figure.caption.100}\protected@file@percent }
+\newlabel{fig:fig34}{{5.26}{66}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces 16-QAM constellation-aware activation comparison (AWGN). All three bounded activations eliminate the tanh BER floor from Section~\ref {sec:higher-order-modulation-scalability-constellation-aware-training}, with scaled tanh and hardtanh closely matched}{figure.caption.100}{}}
+\newlabel{fig:fig34@cref}{{[figure][26][5]5.26}{[1][65][]66}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.27}{\ignorespaces \xpg@aux {}{english}\ignorespaces 16-QAM constellation-aware activation comparison (Rayleigh fading). The BER floor elimination persists under fading. Sequence models benefit most from the constellation-aware bounds.}}{67}{figure.caption.101}\protected@file@percent }
+\newlabel{fig:fig35}{{5.27}{67}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces 16-QAM constellation-aware activation comparison (Rayleigh fading). The BER floor elimination persists under fading. Sequence models benefit most from the constellation-aware bounds}{figure.caption.101}{}}
+\newlabel{fig:fig35@cref}{{[figure][27][5]5.27}{[1][66][]67}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.28}{\ignorespaces \xpg@aux {}{english}\ignorespaces Comparison of activation function shapes (left) and their derivatives (right) for \(A_{\max } = 0.9487\) (16-QAM). Hardtanh has a sharp transition at the clip bounds; sigmoid and scaled tanh provide smooth saturation with non-zero gradients throughout.}}{68}{figure.caption.102}\protected@file@percent }
+\newlabel{fig:fig36}{{5.28}{68}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces Comparison of activation function shapes (left) and their derivatives (right) for \(A_{\max } = 0.9487\) (16-QAM). Hardtanh has a sharp transition at the clip bounds; sigmoid and scaled tanh provide smooth saturation with non-zero gradients throughout}{figure.caption.102}{}}
+\newlabel{fig:fig36@cref}{{[figure][28][5]5.28}{[1][67][]68}{}{}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5.6}Input Normalization and CSI Injection}{68}{section.5.6}\protected@file@percent }
+\newlabel{sec:input-normalization-and-csi-injection}{{5.6}{68}{Input Normalization and CSI Injection}{section.5.6}{}}
+\newlabel{sec:input-normalization-and-csi-injection@cref}{{[section][6][5]5.6}{[1][68][]68}{}{}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5.7}16-Class 2D Classification for QAM16}{68}{section.5.7}\protected@file@percent }
+\newlabel{sec:class-2d-classification-for-qam16}{{5.7}{68}{16-Class 2D Classification for QAM16}{section.5.7}{}}
+\newlabel{sec:class-2d-classification-for-qam16@cref}{{[section][7][5]5.7}{[1][68][]68}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.7.1}Results Tables}{69}{subsection.5.7.1}\protected@file@percent }
+\newlabel{sec:results-tables-5}{{5.7.1}{69}{Results Tables}{subsection.5.7.1}{}}
+\newlabel{sec:results-tables-5@cref}{{[subsection][1][5,7]5.7.1}{[1][69][]69}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.7.2}Results Figures}{69}{subsection.5.7.2}\protected@file@percent }
+\newlabel{sec:results-figures-6}{{5.7.2}{69}{Results Figures}{subsection.5.7.2}{}}
+\newlabel{sec:results-figures-6@cref}{{[subsection][2][5,7]5.7.2}{[1][69][]69}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.29}{\ignorespaces \xpg@aux {}{english}\ignorespaces 16-QAM BER vs.~SNR for all relay variants (4-class and 16-class) on AWGN. The 4-class variants (dashed) plateau at BER â‰ˆ 0.008 while the successfully trained 16-class variants (solid) continue decreasing, approaching and matching the DF baseline.}}{69}{figure.caption.103}\protected@file@percent }
+\newlabel{fig:fig50}{{5.29}{69}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces 16-QAM BER vs.~SNR for all relay variants (4-class and 16-class) on AWGN. The 4-class variants (dashed) plateau at BER â‰ˆ 0.008 while the successfully trained 16-class variants (solid) continue decreasing, approaching and matching the DF baseline}{figure.caption.103}{}}
+\newlabel{fig:fig50@cref}{{[figure][29][5]5.29}{[1][69][]69}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.30}{\ignorespaces \xpg@aux {}{english}\ignorespaces Grouped bar comparison of 4-class vs.~16-class BER at 20 dB for each architecture. The 16-class advantage is visible for MLP, VAE, Transformer, and Mamba S6. Failed variants (VAE 4-cls \textasciitilde 0.50, CGAN 16-cls \textasciitilde 0.50) are truncated.}}{70}{figure.caption.104}\protected@file@percent }
+\newlabel{fig:fig51}{{5.30}{70}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces Grouped bar comparison of 4-class vs.~16-class BER at 20 dB for each architecture. The 16-class advantage is visible for MLP, VAE, Transformer, and Mamba S6. Failed variants (VAE 4-cls \textasciitilde 0.50, CGAN 16-cls \textasciitilde 0.50) are truncated}{figure.caption.104}{}}
+\newlabel{fig:fig51@cref}{{[figure][30][5]5.30}{[1][69][]70}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.31}{\ignorespaces \xpg@aux {}{english}\ignorespaces Heatmap of BER across all relay variants and SNR points. The 16-class variants show a clear colour transition from high BER (warm) at low SNR to near-zero BER (cool) at high SNR, while 4-class variants remain warm at high SNR due to the structural floor.}}{70}{figure.caption.105}\protected@file@percent }
+\newlabel{fig:fig52}{{5.31}{70}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces Heatmap of BER across all relay variants and SNR points. The 16-class variants show a clear colour transition from high BER (warm) at low SNR to near-zero BER (cool) at high SNR, while 4-class variants remain warm at high SNR due to the structural floor}{figure.caption.105}{}}
+\newlabel{fig:fig52@cref}{{[figure][31][5]5.31}{[1][70][]70}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.32}{\ignorespaces \xpg@aux {}{english}\ignorespaces Top-3 16-class relay variants compared against AF and DF. VAE 16-cls, Transformer 16-cls, and MLP 16-cls all match or approach DF performance across the full SNR range.}}{71}{figure.caption.106}\protected@file@percent }
+\newlabel{fig:fig53}{{5.32}{71}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces Top-3 16-class relay variants compared against AF and DF. VAE 16-cls, Transformer 16-cls, and MLP 16-cls all match or approach DF performance across the full SNR range}{figure.caption.106}{}}
+\newlabel{fig:fig53@cref}{{[figure][32][5]5.32}{[1][70][]71}{}{}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5.8}End-to-End Joint Optimization}{71}{section.5.8}\protected@file@percent }
+\newlabel{sec:end-to-end-joint-optimization}{{5.8}{71}{End-to-End Joint Optimization}{section.5.8}{}}
+\newlabel{sec:end-to-end-joint-optimization@cref}{{[section][8][5]5.8}{[1][71][]71}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.8.1}Results Figures}{72}{subsection.5.8.1}\protected@file@percent }
+\newlabel{sec:results-figures-7}{{5.8.1}{72}{Results Figures}{subsection.5.8.1}{}}
+\newlabel{sec:results-figures-7@cref}{{[subsection][1][5,8]5.8.1}{[1][71][]72}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.33}{\ignorespaces \xpg@aux {}{english}\ignorespaces BER vs.~SNR for E2E learned autoencoder compared to theoretical 16-QAM over Rayleigh fading. The E2E system underperforms the classical grid constellation across the full SNR range, with the gap widening at high SNR.}}{72}{figure.caption.107}\protected@file@percent }
+\newlabel{fig:fig46}{{5.33}{72}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces BER vs.~SNR for E2E learned autoencoder compared to theoretical 16-QAM over Rayleigh fading. The E2E system underperforms the classical grid constellation across the full SNR range, with the gap widening at high SNR}{figure.caption.107}{}}
+\newlabel{fig:fig46@cref}{{[figure][33][5]5.33}{[1][71][]72}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.34}{\ignorespaces \xpg@aux {}{english}\ignorespaces Learned 16-point constellation of the E2E autoencoder. The network discovers a non-rectangular geometry (resembling a hexagonal lattice or concentric APSK layout) that maximises minimum Euclidean distance under the average power constraint, unlike the classical \(4 \times 4\) square grid.}}{72}{figure.caption.108}\protected@file@percent }
+\newlabel{fig:fig47}{{5.34}{72}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces Learned 16-point constellation of the E2E autoencoder. The network discovers a non-rectangular geometry (resembling a hexagonal lattice or concentric APSK layout) that maximises minimum Euclidean distance under the average power constraint, unlike the classical \(4 \times 4\) square grid}{figure.caption.108}{}}
+\newlabel{fig:fig47@cref}{{[figure][34][5]5.34}{[1][72][]72}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.35}{\ignorespaces \xpg@aux {}{english}\ignorespaces Training loss (cross-entropy) convergence of the E2E autoencoder. The model converges within approximately 200 epochs.}}{73}{figure.caption.109}\protected@file@percent }
+\newlabel{fig:fig48}{{5.35}{73}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces Training loss (cross-entropy) convergence of the E2E autoencoder. The model converges within approximately 200 epochs}{figure.caption.109}{}}
+\newlabel{fig:fig48@cref}{{[figure][35][5]5.35}{[1][72][]73}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.36}{\ignorespaces \xpg@aux {}{english}\ignorespaces Performance comparison of the E2E autoencoder against the modular relay-based approaches from this thesis. The E2E system does not achieve lower BER than the two-hop DF relay, highlighting the limitations of the E2E approach.}}{73}{figure.caption.110}\protected@file@percent }
+\newlabel{fig:fig49}{{5.36}{73}{\texorpdfstring {\xpg@aux {\xpg@current@opts }{\languagename }}{}\ignorespaces Performance comparison of the E2E autoencoder against the modular relay-based approaches from this thesis. The E2E system does not achieve lower BER than the two-hop DF relay, highlighting the limitations of the E2E approach}{figure.caption.110}{}}
+\newlabel{fig:fig49@cref}{{[figure][36][5]5.36}{[1][73][]73}{}{}{}}
 \@setckpt{chapters/ch05_experiments}{
-\setcounter{page}{91}
+\setcounter{page}{74}
 \setcounter{equation}{0}
 \setcounter{enumi}{3}
 \setcounter{enumii}{0}
@@ -478,11 +187,11 @@
 \setcounter{subsubsection}{0}
 \setcounter{paragraph}{0}
 \setcounter{subparagraph}{0}
-\setcounter{figure}{50}
-\setcounter{table}{22}
+\setcounter{figure}{36}
+\setcounter{table}{0}
 \setcounter{footdir@label}{0}
 \setcounter{parentequation}{0}
-\setcounter{LT@tables}{28}
+\setcounter{LT@tables}{6}
 \setcounter{LT@chunks}{4}
 \setcounter{nlinenum}{0}
 \setcounter{float@type}{8}
@@ -496,7 +205,7 @@
 \setcounter{Item}{15}
 \setcounter{Hfootnote}{0}
 \setcounter{Hy@AnnotLevel}{0}
-\setcounter{bookmark@seq@number}{84}
+\setcounter{bookmark@seq@number}{81}
 \setcounter{NAT@ctr}{0}
 \setcounter{lstnumber}{1}
 \setcounter{theorem}{0}
