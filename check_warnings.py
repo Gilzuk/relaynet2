@@ -22,4 +22,3 @@ for o in overfull:
     try:
         print(o.strip() + '\n')
     except UnicodeEncodeError:
-        print(o.encode('ascii', errors='replace').decode('ascii').strip() + '\n')
