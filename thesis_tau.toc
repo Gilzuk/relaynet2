@@ -98,17 +98,17 @@
 \contentsline {section}{\numberline {6.7}Conclusions}{83}{section.6.7}%
 \contentsline {chapter}{Equation Reference}{88}{chapter*.113}%
 \contentsline {chapter}{\numberline {7}References}{91}{chapter.7}%
-\contentsline {chapter}{\numberline {8}Appendices}{94}{chapter.8}%
-\contentsline {section}{\numberline {8.1}Appendix A: Mathematical Notation}{94}{section.8.1}%
-\contentsline {section}{\numberline {8.2}Appendix B: Model Architectures and Hyperparameters}{94}{section.8.2}%
-\contentsline {section}{\numberline {8.3}Appendix C: Software Architecture}{95}{section.8.3}%
-\contentsline {section}{\numberline {8.4}Appendix D: Normalized 3K-Parameter Configurations}{97}{section.8.4}%
-\contentsline {chapter}{\numberline {9}Channel Model Validation Charts}{98}{chapter.9}%
-\contentsline {subsection}{\numberline {9.0.1}Results Figures}{99}{subsection.9.0.1}%
-\contentsline {chapter}{\numberline {10}Detailed Experimental Tables}{104}{chapter.10}%
-\contentsline {chapter}{\numberline {11}48-Variant Neural Relay Experiments (CSI \& Normalization)}{111}{chapter.11}%
-\contentsline {section}{\numberline {11.1}Results Tables}{111}{section.11.1}%
-\contentsline {section}{\numberline {11.2}Results Figures}{114}{section.11.2}%
-\contentsline {chapter}{Abstract (Hebrew)}{119}{chapter*.129}%
+\contentsline {chapter}{\numberline {8}Appendices}{95}{chapter.8}%
+\contentsline {section}{\numberline {8.1}Appendix A: Mathematical Notation}{95}{section.8.1}%
+\contentsline {section}{\numberline {8.2}Appendix B: Model Architectures and Hyperparameters}{95}{section.8.2}%
+\contentsline {section}{\numberline {8.3}Appendix C: Software Architecture}{96}{section.8.3}%
+\contentsline {section}{\numberline {8.4}Appendix D: Normalized 3K-Parameter Configurations}{98}{section.8.4}%
+\contentsline {chapter}{\numberline {9}Channel Model Validation Charts}{99}{chapter.9}%
+\contentsline {subsection}{\numberline {9.0.1}Results Figures}{100}{subsection.9.0.1}%
+\contentsline {chapter}{\numberline {10}Detailed Experimental Tables}{105}{chapter.10}%
+\contentsline {chapter}{\numberline {11}48-Variant Neural Relay Experiments (CSI \& Normalization)}{112}{chapter.11}%
+\contentsline {section}{\numberline {11.1}Results Tables}{112}{section.11.1}%
+\contentsline {section}{\numberline {11.2}Results Figures}{115}{section.11.2}%
+\contentsline {chapter}{Abstract (Hebrew)}{120}{chapter*.130}%
 \xpg@aux {}{hebrew}
 \xpg@aux {}{english}
