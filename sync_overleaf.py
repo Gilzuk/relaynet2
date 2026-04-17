@@ -32,6 +32,11 @@ with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zf:
     zf.write('hebrewcal.sty', 'hebrewcal.sty')
     print('Added: hebrewcal.sty')
 
+    # Add references.bib
+    if os.path.exists('references.bib'):
+        zf.write('references.bib', 'references.bib')
+        print('Added: references.bib')
+
     # Add all chapter .tex files
     for f in sorted(glob.glob('chapters/*.tex')):
         arcname = f.replace('\\', '/')

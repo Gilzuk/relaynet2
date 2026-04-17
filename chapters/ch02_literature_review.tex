@@ -2,11 +2,11 @@
 
 \section{Machine Learning in Wireless Communication}\label{sec:machine-learning-in-wireless-communication}
 
-The application of machine learning to physical-layer wireless communication has gained significant momentum in recent years, driven by the ability of neural networks to learn complex non-linear mappings directly from data. Deep learning has been applied to channel estimation {[}7{]}, signal detection {[}8{]}, autoencoder-based end-to-end communication {[}9{]}, and resource allocation {[}10{]}. These approaches learn complex mappings from data, potentially outperforming hand-crafted algorithms in scenarios where analytical solutions are intractable or suboptimal.
+The application of machine learning to physical-layer wireless communication has gained significant momentum in recent years, driven by the ability of neural networks to learn complex non-linear mappings directly from data. Deep learning has been applied to channel estimation \cite{ye2018power}, signal detection \cite{samuel2019learning}, autoencoder-based end-to-end communication \cite{dorner2018deep}, and resource allocation \cite{sun2018learning}. These approaches learn complex mappings from data, potentially outperforming hand-crafted algorithms in scenarios where analytical solutions are intractable or suboptimal.
 
 \subsection{Theoretical Basis: Universal Approximation and Denoising}\label{sec:theoretical-basis-universal-approximation-and-denoising}
 
-The theoretical justification for applying neural networks to relay signal processing rests on two pillars. First, the \textbf{universal approximation theorem} {[}23{]} guarantees that a feedforward network with a single hidden layer and a non-linear activation function can approximate any continuous function on a compact domain to arbitrary accuracy, given sufficient width. For relay denoising, the target function maps noisy observations to clean transmitted symbols:
+The theoretical justification for applying neural networks to relay signal processing rests on two pillars. First, the \textbf{universal approximation theorem} \cite{goodfellow2016deep} guarantees that a feedforward network with a single hidden layer and a non-linear activation function can approximate any continuous function on a compact domain to arbitrary accuracy, given sufficient width. For relay denoising, the target function maps noisy observations to clean transmitted symbols:
 
 \begin{equation}\protect\phantomsection\label{eq:optimal-denoiser}{f^*: \mathbb{R}^{2w+1} \to [-1, 1], \quad f^*(y_{i-w}, \dots, y_{i+w}) = \mathbb{E}[x_i \mid y_{i-w}, \dots, y_{i+w}]
 }\end{equation} \par{\small\textit{Source: [23, Ch. 5]}}
@@ -27,13 +27,13 @@ The irreducible noise \(\sigma^2_{\text{irreducible}}\) represents the minimum a
 
 \subsection{Prior Work in Deep Learning for Physical-Layer Processing}\label{sec:prior-work-in-deep-learning-for-physical-layer-processing}
 
-Ye et al.~{[}7{]} demonstrated that deep neural networks can jointly perform channel estimation and signal detection in OFDM systems, achieving near-optimal performance with lower complexity than separate estimation and detection stages. Their key insight was that the DNN implicitly learns the channel's statistical structure, eliminating the need for explicit pilot-based estimation.
+Ye et al.~\cite{ye2018power} demonstrated that deep neural networks can jointly perform channel estimation and signal detection in OFDM systems, achieving near-optimal performance with lower complexity than separate estimation and detection stages. Their key insight was that the DNN implicitly learns the channel's statistical structure, eliminating the need for explicit pilot-based estimation.
 
-Samuel et al.~{[}8{]} proposed DetNet, an unfolded projected gradient descent network for MIMO detection. By unrolling iterative optimization into a fixed number of neural network layers, DetNet achieves near-maximum-likelihood detection performance with \(O(N_t^2)\) complexity instead of the exponential complexity of exhaustive ML search. This demonstrates the power of incorporating domain knowledge (the iterative structure of the detection problem) into the network architecture.
+Samuel et al.~\cite{samuel2019learning} proposed DetNet, an unfolded projected gradient descent network for MIMO detection. By unrolling iterative optimization into a fixed number of neural network layers, DetNet achieves near-maximum-likelihood detection performance with \(O(N_t^2)\) complexity instead of the exponential complexity of exhaustive ML search. This demonstrates the power of incorporating domain knowledge (the iterative structure of the detection problem) into the network architecture.
 
-Dorner et al.~{[}9{]} proposed treating the entire communication system --- modulator, channel, and demodulator --- as an autoencoder, trained end-to-end to minimize bit error rate. This approach jointly optimizes all components, potentially discovering novel modulation and coding schemes that outperform separately designed modules. The autoencoder paradigm is conceptually related to the relay processing task: both involve learning an encoder-decoder pair that maps through a noisy channel.
+Dorner et al.~\cite{dorner2018deep} proposed treating the entire communication system --- modulator, channel, and demodulator --- as an autoencoder, trained end-to-end to minimize bit error rate. This approach jointly optimizes all components, potentially discovering novel modulation and coding schemes that outperform separately designed modules. The autoencoder paradigm is conceptually related to the relay processing task: both involve learning an encoder-decoder pair that maps through a noisy channel.
 
-Sun et al.~{[}10{]} applied deep learning to the NP-hard problem of resource allocation in interference networks, demonstrating that a DNN can learn near-optimal power control policies orders of magnitude faster than conventional iterative algorithms.
+Sun et al.~\cite{sun2018learning} applied deep learning to the NP-hard problem of resource allocation in interference networks, demonstrating that a DNN can learn near-optimal power control policies orders of magnitude faster than conventional iterative algorithms.
 
 
 \subsection{Deep Neural Networks for Physical Layer Design}
@@ -64,7 +64,7 @@ Generative models offer an alternative paradigm for relay signal processing. Rat
 
 \subsection{Variational Autoencoders}\label{sec:variational-autoencoders}
 
-\textbf{Variational Autoencoders (VAEs)} {[}11{]} learn a latent representation by maximizing the evidence lower bound (ELBO). The generative model posits that data \(\mathbf{x}\) is generated from a latent variable \(\mathbf{z} \sim p(\mathbf{z}) = \mathcal{N}(\mathbf{0}, \mathbf{I})\) through a decoder \(p_\theta(\mathbf{x} | \mathbf{z})\). Since the true posterior \(p(\mathbf{z} | \mathbf{x})\) is intractable, an encoder network \(q_\phi(\mathbf{z} | \mathbf{x})\) approximates it. The ELBO objective is derived from the log-evidence decomposition:
+\textbf{Variational Autoencoders (VAEs)} \cite{kingma2014auto} learn a latent representation by maximizing the evidence lower bound (ELBO). The generative model posits that data \(\mathbf{x}\) is generated from a latent variable \(\mathbf{z} \sim p(\mathbf{z}) = \mathcal{N}(\mathbf{0}, \mathbf{I})\) through a decoder \(p_\theta(\mathbf{x} | \mathbf{z})\). Since the true posterior \(p(\mathbf{z} | \mathbf{x})\) is intractable, an encoder network \(q_\phi(\mathbf{z} | \mathbf{x})\) approximates it. The ELBO objective is derived from the log-evidence decomposition:
 
 \begin{equation}\protect\phantomsection\label{eq:vae-elbo}{\log p_\theta(\mathbf{x}) = \underbrace{\mathbb{E}_{q_\phi}\left[\log \frac{p_\theta(\mathbf{x}, \mathbf{z})}{q_\phi(\mathbf{z} | \mathbf{x})}\right]}_{\text{ELBO}(\theta, \phi; \mathbf{x})} + \underbrace{D_{KL}(q_\phi(\mathbf{z} | \mathbf{x}) \| p_\theta(\mathbf{z} | \mathbf{x}))}_{\geq 0}
 }\end{equation} \par{\small\textit{Source: [11, Eq. 2]}}
@@ -74,7 +74,7 @@ Since the KL divergence is non-negative, the ELBO is a lower bound on the log-ev
 \begin{equation}\protect\phantomsection\label{eq:vae-loss}{\mathcal{L}_{\text{VAE}} = \underbrace{\mathbb{E}_{q_\phi(\mathbf{z}|\mathbf{x})}[\log p_\theta(\mathbf{x}|\mathbf{z})]}_{\text{Reconstruction quality}} - \underbrace{\beta \cdot D_{KL}(q_\phi(\mathbf{z}|\mathbf{x}) \| p(\mathbf{z}))}_{\text{Latent space regularity}}
 }\end{equation} \par{\small\textit{Source: [11, Eq. 3]}}
 
-The reconstruction term encourages the decoder to accurately reproduce the input from the latent code, while the KL term regularizes the latent space to be close to the standard Gaussian prior \(p(\mathbf{z})\). The \(\beta\) parameter (\(\beta\)-VAE) {[}31{]} controls the trade-off between reconstruction quality and latent space smoothness: \(\beta < 1\) prioritizes reconstruction (beneficial for the relay task where accurate signal recovery is paramount), while \(\beta > 1\) encourages disentangled latent representations.
+The reconstruction term encourages the decoder to accurately reproduce the input from the latent code, while the KL term regularizes the latent space to be close to the standard Gaussian prior \(p(\mathbf{z})\). The \(\beta\) parameter (\(\beta\)-VAE) \cite{higgins2017beta} controls the trade-off between reconstruction quality and latent space smoothness: \(\beta < 1\) prioritizes reconstruction (beneficial for the relay task where accurate signal recovery is paramount), while \(\beta > 1\) encourages disentangled latent representations.
 
 The \textbf{reparameterization trick} enables gradient-based optimization through the stochastic sampling layer: instead of sampling \(\mathbf{z} \sim q_\phi(\mathbf{z} | \mathbf{x}) = \mathcal{N}(\boldsymbol{\mu}, \text{diag}(\boldsymbol{\sigma}^2))\), the sample is expressed as \(\mathbf{z} = \boldsymbol{\mu} + \boldsymbol{\sigma} \odot \boldsymbol{\epsilon}\) where \(\boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \mathbf{I})\). This moves the stochasticity outside the computational graph, allowing backpropagation through the encoder.
 
@@ -82,7 +82,7 @@ For relay signal processing, the VAE learns a compressed latent representation o
 
 \subsection{Conditional Generative Adversarial Networks}\label{sec:conditional-generative-adversarial-networks}
 
-\textbf{Conditional GANs (CGANs)} {[}12{]} learn signal denoising through adversarial training, building on the foundational GAN framework {[}14{]}. The original GAN formulates generative modeling as a two-player minimax game between a generator \(G\) and a discriminator \(D\):
+\textbf{Conditional GANs (CGANs)} \cite{mirza2014conditional} learn signal denoising through adversarial training, building on the foundational GAN framework \cite{goodfellow2014generative}. The original GAN formulates generative modeling as a two-player minimax game between a generator \(G\) and a discriminator \(D\):
 
 \begin{equation}\protect\phantomsection\label{eq:gan-minimax}{\min_G \max_D \; \mathbb{E}_{\mathbf{x} \sim p_{\text{data}}}[\log D(\mathbf{x})] + \mathbb{E}_{\mathbf{z} \sim p_z}[\log(1 - D(G(\mathbf{z})))]
 }\end{equation} \par{\small\textit{Source: [14, Eq. 1]}}
@@ -94,7 +94,7 @@ A fundamental challenge with the original GAN objective is \textbf{training inst
 \begin{equation}\protect\phantomsection\label{eq:wasserstein-distance}{W(p_{\text{data}}, p_G) = \inf_{\gamma \in \Pi(p_{\text{data}}, p_G)} \mathbb{E}_{(\mathbf{x}, \mathbf{y}) \sim \gamma}[\|\mathbf{x} - \mathbf{y}\|]
 }\end{equation} \par{\small\textit{Source: [13, Eq. 1]}}
 
-The Wasserstein distance provides meaningful gradients even when distributions do not overlap, enabling stable training. By the Kantorovich-Rubinstein duality, the Wasserstein distance can be computed via a supremum over 1-Lipschitz functions, which the critic network approximates. The \textbf{gradient penalty (GP)} formulation {[}13{]} enforces the Lipschitz constraint softly by penalizing the gradient norm of the critic at interpolated points:
+The Wasserstein distance provides meaningful gradients even when distributions do not overlap, enabling stable training. By the Kantorovich-Rubinstein duality, the Wasserstein distance can be computed via a supremum over 1-Lipschitz functions, which the critic network approximates. The \textbf{gradient penalty (GP)} formulation \cite{gulrajani2017improved} enforces the Lipschitz constraint softly by penalizing the gradient norm of the critic at interpolated points:
 
 \begin{equation}\protect\phantomsection\label{eq:gradient-penalty}{\text{GP} = \mathbb{E}_{\hat{\mathbf{x}} \sim p_{\hat{\mathbf{x}}}}\left[\left(\|\nabla_{\hat{\mathbf{x}}} D(\hat{\mathbf{x}})\|_2 - 1\right)^2\right]
 }\end{equation} \par{\small\textit{Source: [13, Eq. 3]}}
@@ -119,7 +119,7 @@ Recent advances in sequence modeling have produced two competing paradigms with 
 
 \subsection{Transformers and the Attention Mechanism}\label{sec:transformers-and-the-attention-mechanism}
 
-\textbf{Transformers} {[}15{]} use multi-head self-attention to capture global dependencies in sequences. The core attention mechanism computes a weighted combination of value vectors, where the weights are derived from the compatibility of query and key vectors:
+\textbf{Transformers} \cite{vaswani2017attention} use multi-head self-attention to capture global dependencies in sequences. The core attention mechanism computes a weighted combination of value vectors, where the weights are derived from the compatibility of query and key vectors:
 
 \begin{equation}\protect\phantomsection\label{eq:attention}{\text{Attention}(\mathbf{Q}, \mathbf{K}, \mathbf{V}) = \text{softmax}\left(\frac{\mathbf{Q}\mathbf{K}^T}{\sqrt{d_k}}\right)\mathbf{V}
 }\end{equation} \par{\small\textit{Source: [15, Eq. 1]}}
@@ -144,7 +144,7 @@ which injects position information into the embeddings, enabling the model to di
 
 \subsection{Structured State Space Models}\label{sec:structured-state-space-models}
 
-Structured state space models (SSMs) {[}17{]} are a class of sequence models derived from continuous-time linear dynamical systems. The continuous-time SSM maps an input signal \(u(t) \in \mathbb{R}\) to an output \(y(t) \in \mathbb{R}\) through a latent state \(\mathbf{x}(t) \in \mathbb{R}^N\):
+Structured state space models (SSMs) \cite{gu2022efficiently} are a class of sequence models derived from continuous-time linear dynamical systems. The continuous-time SSM maps an input signal \(u(t) \in \mathbb{R}\) to an output \(y(t) \in \mathbb{R}\) through a latent state \(\mathbf{x}(t) \in \mathbb{R}^N\):
 
 \begin{equation}\protect\phantomsection\label{eq:ssm-continuous}{\dot{\mathbf{x}}(t) = \mathbf{A}\mathbf{x}(t) + \mathbf{B}u(t), \quad y(t) = \mathbf{C}\mathbf{x}(t) + Du(t)
 }\end{equation} \par{\small\textit{Source: [17, Eq. 1]}}
@@ -163,11 +163,11 @@ yields the discrete recurrence:
 
 The \textbf{HiPPO (High-order Polynomial Projection Operators)} framework provides a principled initialization for \(\mathbf{A}\): the HiPPO-LegS matrix is designed so that the state \(\mathbf{x}_k\) stores a compressed representation of the input history as coefficients of a Legendre polynomial expansion. This initialization enables long-range memory without the vanishing gradient problems of standard RNNs.
 
-The S4 model {[}17{]} introduced the key insight that structured (diagonal or low-rank) parameterizations of \(\mathbf{A}\) enable efficient computation. With a diagonal \(\mathbf{A} = \text{diag}(a_1, \dots, a_N)\), the recurrence decouples into \(N\) independent scalar recurrences, each computable in \(O(n)\) time. The total cost is \(O(nN)\) for a length-\(n\) sequence with state dimension \(N\) --- linear in sequence length.
+The S4 model \cite{gu2022efficiently} introduced the key insight that structured (diagonal or low-rank) parameterizations of \(\mathbf{A}\) enable efficient computation. With a diagonal \(\mathbf{A} = \text{diag}(a_1, \dots, a_N)\), the recurrence decouples into \(N\) independent scalar recurrences, each computable in \(O(n)\) time. The total cost is \(O(nN)\) for a length-\(n\) sequence with state dimension \(N\) --- linear in sequence length.
 
 \subsection{Mamba: Selective State Spaces}\label{sec:mamba-selective-state-spaces}
 
-\textbf{Mamba} {[}16{]} extends the SSM framework by making the parameters \textbf{input-dependent} (selective), transforming the LTI system into a linear time-varying (LTV) system:
+\textbf{Mamba} \cite{gu2024mamba} extends the SSM framework by making the parameters \textbf{input-dependent} (selective), transforming the LTI system into a linear time-varying (LTV) system:
 
 \begin{equation}\protect\phantomsection\label{eq:mamba-selective}{\Delta_k = \text{softplus}(W_\Delta u_k + b_\Delta), \quad \mathbf{B}_k = W_B u_k, \quad \mathbf{C}_k = W_C u_k
 }\end{equation} \par{\small\textit{Source: [16, Eq. 4]}}
@@ -188,7 +188,7 @@ The Mamba architecture wraps the selective S6 layer in a gated architecture: the
 
 \subsection{Mamba-2: Structured State Space Duality}\label{sec:mamba-2-structured-state-space-duality}
 
-\textbf{Mamba-2 (SSD)} {[}18{]} reformulates the selective state space model through an algebraic duality between linear recurrences and structured matrix multiplications. The key theoretical insight is that the SSM output can be expressed as:
+\textbf{Mamba-2 (SSD)} \cite{dao2024transformers} reformulates the selective state space model through an algebraic duality between linear recurrences and structured matrix multiplications. The key theoretical insight is that the SSM output can be expressed as:
 
 \begin{equation}\protect\phantomsection\label{eq:mamba-ssd-output}{y_i = \sum_{j \leq i} \mathbf{C}_i^\top \left(\prod_{k=j+1}^{i} \bar{\mathbf{A}}_k\right) \mathbf{B}_j u_j
 }\end{equation} \par{\small\textit{Source: [18, Eq. 2]}}

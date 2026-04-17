@@ -34,7 +34,7 @@ Symbol & Description \\
 
 \section{Appendix B: Model Architectures and Hyperparameters}\label{sec:appendix-b-model-architectures-and-hyperparameters}
 
-\textbf{MLP (Minimal):} - Input: 5-symbol sliding window - Hidden: 24 neurons, ReLU activation - Output: 1 neuron, Tanh activation - Parameters: 169 - Training: MSE loss, lr=0.01, 100 epochs, 25K samples at SNR={[}5, 10, 15{]} dB - Implementation: NumPy (CPU)
+\textbf{MLP (Minimal):} - Input: 5-symbol sliding window - Hidden: 24 neurons, ReLU activation - Output: 1 neuron, Tanh activation - Parameters: 169 - Training: MSE loss, lr=0.01, 100 epochs, 25K samples at SNR=\cite{nazer2011compute, sun2018learning, vaswani2017attention} dB - Implementation: NumPy (CPU)
 
 \textbf{Hybrid:} - Architecture: Same as MLP (169 params) - SNR threshold: Learned (default \textasciitilde5 dB) - Below threshold → MLP processing; Above threshold → DF processing - Implementation: NumPy (CPU)
 

@@ -1,11 +1,12 @@
 import re
 import os
+import sys
 
 if not os.path.exists('thesis_tau.log'):
     print('Log file not found.')
-    exit(1)
+    sys.exit(1)
 
-with open('thesis_tau.log', 'r', encoding='utf-8') as f:
+with open('thesis_tau.log', 'r', encoding='utf-8', errors='replace') as f:
     text = f.read()
 
 warnings = re.findall(r'LaTeX Warning:.*?(?=\n\n|\n[A-Z]|\Z)', text, re.DOTALL)
@@ -18,4 +19,7 @@ for w in warnings:
 
 print(f'--- Overfull hboxes ({len(overfull)}) ---')
 for o in overfull:
-    print(o.strip() + '\n')
+    try:
+        print(o.strip() + '\n')
+    except UnicodeEncodeError:
+        print(o.encode('ascii', errors='replace').decode('ascii').strip() + '\n')
