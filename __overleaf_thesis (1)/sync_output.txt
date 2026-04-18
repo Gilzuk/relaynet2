@@ -1,2 +1,0 @@
-Line 28: <img src="https://raw.githubusercontent.com/overleaf-workshop/Overleaf-Workshop/master/docs/assets/demo03-synctex.gif" height=400px/>
-Line 30: - SyncTeX and Reverse SyncTeX

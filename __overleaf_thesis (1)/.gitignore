@@ -1,0 +1,27 @@
+# Ignore Python scripts and text files generated during sync/dev
+*.py
+*.txt
+*.md
+*.pyc
+__pycache__/
+
+# Ignore LaTeX compilation artifacts
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.synctex(busy)
+
+# Make sure to keep the actual source files
+!main.tex
+!references.bib
+!hebrewcal.sty
+!chapters/*.tex
+!results/*.png
