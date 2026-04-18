@@ -51,4 +51,3 @@
   "overleaf-workshop.compileOnSave.enabled": true,
   "overleaf-workshop.compileOutputFolderName": "output",
   "overleaf-workshop.formatWithLineBreak.enabled": false
-}

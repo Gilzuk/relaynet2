@@ -1,0 +1,80 @@
+\chapter{Experiments}\label{chap:experiments}
+
+\section{Experiments summary}\label{sec:experiments-summary}
+
+This chapter presents a structured evaluation of classical and neural relay strategies under progressively more challenging communication scenarios. 
+To improve clarity and avoid repetition, all experimental configurations are first summarised in a single table.
+Detailed numerical results, tables, and figures are provided exclusively in the appendices.
+Each experiment subsection below therefore focuses solely on the key conclusions.
+
+\begin{longtable}{p{0.6cm} p{2.2cm} p{2.1cm} p{3.6cm} p{3.9cm}}
+\caption{Summary of experimental configurations (results reported in appendices)}
+\label{tab:experiment-summary}\\
+\hline
+\textbf{Exp.} &
+\textbf{Topology} &
+\textbf{Modulation} &
+\textbf{Channel / Equalization} &
+\textbf{Focus} \\
+\hline
+\endfirsthead
+
+\hline
+\textbf{Exp.} &
+\textbf{Topology} &
+\textbf{Modulation} &
+\textbf{Channel / Equalization} &
+\textbf{Focus} \\
+\hline
+\endhead
+
+E1 & SISO & BPSK &
+AWGN, Rayleigh, Rician &
+Channel model validation \\
+\hline
+
+E2 & SISO & BPSK &
+AWGN, Rayleigh, Rician &
+Baseline relay comparison \\
+\hline
+
+E3 & MIMO $2\times2$ & BPSK &
+Rayleigh + ZF / MMSE / SIC &
+Relay vs.\ MIMO equalization \\
+\hline
+
+E4 & SISO, MIMO $2\times2$ & BPSK &
+AWGN, Rayleigh, Rician + EQs &
+Parameter normalization \\
+\hline
+
+E5 & SISO & QPSK, 16-QAM &
+AWGN, Rayleigh &
+Higher-order modulation \\
+\hline
+
+E6 & SISO & 16-QAM &
+AWGN &
+CSI injection, input normalization \\
+\hline
+
+E7 & SISO & 16-QAM &
+AWGN &
+Joint 2D (16-class) classification \\
+\hline
+
+E8 & SISO & Learned ($M=16$) &
+Rayleigh + ZF &
+End-to-end autoencoder \\
+
+\hline
+\end{longtable}
+
+\input{chapters/ch05_experiments/ex1}
+\input{chapters/ch05_experiments/ex2}
+\input{chapters/ch05_experiments/ex3}
+\input{chapters/ch05_experiments/ex4}
+\input{chapters/ch05_experiments/ex5}
+\input{chapters/ch05_experiments/ex6}
+\input{chapters/ch05_experiments/ex7}
+\input{chapters/ch05_experiments/ex8}

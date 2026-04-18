@@ -1,39 +1,36 @@
 """
-Copy updated files from overleaf_thesis/ to __overleaf_thesis (1)/
+Copy updated files from local project to __overleaf_thesis (1)/
 Preserves the .overleaf metadata folder (Overleaf Workshop sync data).
 """
 import os, shutil, glob, re
 
-src = 'overleaf_thesis'
 dst = '__overleaf_thesis (1)'
 
-print(f'Copying from {src}/ to {dst}/')
+print(f'Copying from local project to {dst}/')
 
 # 1. Copy main.tex
-shutil.copy(os.path.join(src, 'main.tex'), os.path.join(dst, 'main.tex'))
+shutil.copy('thesis_tau.tex', os.path.join(dst, 'main.tex'))
 print('Copied: main.tex')
 
 # 2. Copy hebrewcal.sty
-shutil.copy(os.path.join(src, 'hebrewcal.sty'), os.path.join(dst, 'hebrewcal.sty'))
+shutil.copy('hebrewcal.sty', os.path.join(dst, 'hebrewcal.sty'))
 print('Copied: hebrewcal.sty')
 
-# 3. Copy references.bib (if it exists in src)
-if os.path.exists(os.path.join(src, 'references.bib')):
-    shutil.copy(os.path.join(src, 'references.bib'), os.path.join(dst, 'references.bib'))
+# 3. Copy references.bib
+if os.path.exists('references.bib'):
+    shutil.copy('references.bib', os.path.join(dst, 'references.bib'))
     print('Copied: references.bib')
 
 # 4. Copy all chapter .tex files
-src_chapters = os.path.join(src, 'chapters')
 dst_chapters = os.path.join(dst, 'chapters')
 os.makedirs(dst_chapters, exist_ok=True)
 
-for f in sorted(glob.glob(os.path.join(src_chapters, '*.tex'))):
+for f in sorted(glob.glob('chapters/*.tex')):
     fname = os.path.basename(f)
     shutil.copy(f, os.path.join(dst_chapters, fname))
     print(f'Copied: chapters/{fname}')
 
 # 5. Copy results/ folder (only referenced figures)
-# Find all figures referenced in the .tex files
 referenced = set()
 for f in glob.glob('chapters/*.tex'):
     with open(f, 'r', encoding='utf-8') as file:
