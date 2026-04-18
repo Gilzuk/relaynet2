@@ -45,5 +45,10 @@
   ],
   "files.associations": {
     "*.tex": "latex"
-  }
+  },
+
+  // ── Overleaf Workshop Settings ────────────────────────────
+  "overleaf-workshop.compileOnSave.enabled": true,
+  "overleaf-workshop.compileOutputFolderName": "output",
+  "overleaf-workshop.formatWithLineBreak.enabled": false
 }
