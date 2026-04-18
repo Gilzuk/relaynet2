@@ -11,21 +11,21 @@ The three-terminal relay channel consists of a source \(S\), a relay \(R\), and 
 \textbf{Cut-set upper bound.} The capacity of any relay channel is bounded by:
 
 \begin{equation}\protect\phantomsection\label{eq:relay-capacity-bound}{C \leq \max_{p(x, x_R)} \min\left\{I(X, X_R; Y_D), \; I(X; Y_R, Y_D | X_R)\right\}
-}\end{equation} \par{\small\textit{Source: [3, Thm. 1], [4, Ch. 16]}}
+}\end{equation}\par{\small\textit{Source: \cite{cover1979capacity, elgamal2011network}}}
 
 where the first term represents the maximum rate at which the destination can receive information from both the source and relay jointly (the broadcast cut), and the second term represents the maximum rate at which the source can communicate to both the relay and destination (the multiple-access cut). The capacity is limited by the weaker of these two cuts, establishing a fundamental bottleneck principle for relay communication.
 
 \textbf{DF achievability bound.} Under decode-and-forward, the relay fully decodes the source message and cooperates with the source to transmit a common message to the destination:
 
 \begin{equation}\protect\phantomsection\label{eq:df-capacity}{C_{\text{DF}} = \max_{p(x, x_R)} \min\left\{I(X; Y_R | X_R), \; I(X, X_R; Y_D)\right\}
-}\end{equation} \par{\small\textit{Source: [3, Thm. 1]}}
+}\end{equation} \par{\small\textit{Source: \cite{cover1979capacity}}}
 
 This rate is achievable using block Markov encoding and backward decoding. The first term is the relay's decoding constraint (it must fully decode the source), and the second is the destination's decoding rate. DF achieves the cut-set bound when the source-relay link is stronger than the relay-destination link, making it capacity-optimal for near-source relays.
 
 For the degraded relay channel --- where the relay's observation is a degraded version of the destination's, or vice versa --- Cover and El Gamal showed that the DF bound coincides with the cut-set bound, establishing the exact capacity. In the Gaussian case with equal per-hop SNR \(\gamma\), the two-hop DF capacity is:
 
 \begin{equation}\protect\phantomsection\label{eq:df-gaussian-capacity}{C_{\text{DF}}^{\text{Gaussian}} = \frac{1}{2}\log_2\left(1 + \gamma\right)
-}\end{equation} \par{\small\textit{Source: [1, Eq. 7], [3]}}
+}\end{equation} \par{\small\textit{Source: \cite{laneman2004cooperative, cover1979capacity}}}
 
 which equals the single-hop capacity --- i.e., the relay incurs no rate penalty when the source-relay link is sufficiently strong.
 
@@ -34,10 +34,10 @@ which equals the single-hop capacity --- i.e., the relay incurs no rate penalty 
 In the half-duplex two-hop model studied in this thesis, the relay cannot transmit and receive simultaneously, and there is no direct source-destination link. The communication proceeds in two time slots:
 
 \textbf{Slot 1 (Source → Relay):} \begin{equation}\protect\phantomsection\label{eq:awgn-hop1}{y_R = x + n_1, \quad n_1 \sim \mathcal{N}(0, \sigma^2)
-}\end{equation} \par{\small\textit{Source: [1, Sec. II]}}
+}\end{equation} \par{\small\textit{Source: \cite{laneman2004cooperative}}}
 
 \textbf{Slot 2 (Relay → Destination):} \begin{equation}\protect\phantomsection\label{eq:awgn-hop2}{y_D = x_R + n_2, \quad n_2 \sim \mathcal{N}(0, \sigma^2)
-}\end{equation} \par{\small\textit{Source: [1, Sec. II]}}
+}\end{equation} \par{\small\textit{Source: \cite{laneman2004cooperative}}}
 
 where \(x \in \{-1, +1\}\) is the transmitted BPSK symbol, \(y_R\) is the signal received at the relay, \(x_R = f(y_R)\) is the relay's output after processing, and \(y_D\) is the signal received at the destination. The noise terms are independent and identically distributed with variance \(\sigma^2 = P_s / \text{SNR}\). The half-duplex constraint introduces a spectral efficiency penalty of factor 2 (since two time slots are needed per symbol), but this is a common assumption in practical relay standards and simplifies the analysis while remaining representative of many practical relay-processing scenarios.
 
@@ -56,24 +56,24 @@ The fundamental question that motivates this thesis is: can a learned relay func
 \textbf{Amplify-and-Forward (AF).} The AF relay amplifies the received signal by a gain factor \(G\) that normalizes the output power:
 
 \begin{equation}\protect\phantomsection\label{eq:af-gain}{G = \sqrt{\frac{P_{\text{target}}}{\mathbb{E}[|y_R|^2]}}
-}\end{equation} \par{\small\textit{Source: [1, Eq. 1]}}
+}\end{equation} \par{\small\textit{Source: \cite{laneman2004cooperative}}}
 
 The end-to-end SNR for AF relay is:
 
 \begin{equation}\protect\phantomsection\label{eq:af-snr}{\text{SNR}_{\text{eff}}^{\text{AF}} = \frac{\text{SNR}_1 \cdot \text{SNR}_2}{\text{SNR}_1 + \text{SNR}_2 + 1}
-}\end{equation} \par{\small\textit{Source: [1, Eq. 2]}}
+}\end{equation} \par{\small\textit{Source: \cite{laneman2004cooperative}}}
 
 This expression reveals a fundamental limitation: even when one hop has high SNR, the effective SNR is bottlenecked by the weaker hop. Moreover, the relay amplifies both signal and noise from the first hop, leading to noise accumulation at the destination.
 
 \textbf{Decode-and-Forward (DF).} The DF relay demodulates the received signal, recovers the transmitted bits, and re-modulates clean symbols:
 
 \begin{equation}\protect\phantomsection\label{eq:df-demod-remod}{\hat{b}_R = \text{demod}(y_R), \quad x_R = \text{mod}(\hat{b}_R)
-}\end{equation} \par{\small\textit{Source: [1, Sec. III]}}
+}\end{equation} \par{\small\textit{Source: \cite{laneman2004cooperative}}}
 
 The end-to-end BER for DF is:
 
 \begin{equation}\protect\phantomsection\label{eq:df-ber-hops}{P_e^{\text{DF}} = P_{e,1} + (1 - P_{e,1}) \cdot P_{e,2}
-}\end{equation} \par{\small\textit{Source: [1, Eq. 9], [21, Ch. 14]}}
+}\end{equation} \par{\small\textit{Source: \cite{laneman2004cooperative, proakis2008digital}}}
 
 where \(P_{e,1}\) and \(P_{e,2}\) are the BER of the first and second hops, respectively. For BPSK modulation over AWGN (real-valued noise with variance \(1/\text{SNR}\)), each hop's BER is \(P_e = Q\left(\sqrt{\text{SNR}}\right)\). DF provides clean regeneration at high SNR but suffers from error propagation when the first-hop BER is non-negligible.
 
@@ -86,7 +86,7 @@ AF and DF represent the two canonical extremes of the relay processing spectrum:
 Multiple-input multiple-output (MIMO) systems employ multiple antennas at both transmitter and receiver to exploit spatial multiplexing and diversity gains \cite{tse2005fundamentals}. The theoretical foundation was established by Telatar \cite{telatar1999capacity} and Foschini \cite{foschini1996layered}, who independently showed that the ergodic capacity of an \(N_t \times N_r\) MIMO channel with independent Rayleigh fading scales as:
 
 \begin{equation}\protect\phantomsection\label{eq:mimo-capacity}{C = \mathbb{E}\left[\log_2 \det\left(\mathbf{I}_{N_r} + \frac{\text{SNR}}{N_t}\mathbf{H}\mathbf{H}^H\right)\right]
-}\end{equation} \par{\small\textit{Source: [26, Eq. 1], [27, Eq. 1]}}
+}\end{equation} \par{\small\textit{Source: \cite{telatar1999capacity, foschini1996layered}}}
 
 For the \(2 \times 2\) system used in this thesis, this yields approximately \(C \approx 2\log_2(1 + \text{SNR}/2)\) at high SNR --- a doubling of the SISO capacity, achieved by transmitting independent data streams on each antenna.
 
@@ -95,7 +95,7 @@ For the \(2 \times 2\) system used in this thesis, this yields approximately \(C
 In a \(2 \times 2\) MIMO system, the received signal is:
 
 \begin{equation}\protect\phantomsection\label{eq:mimo-received}{\mathbf{y} = \mathbf{H}\mathbf{x} + \mathbf{n}
-}\end{equation} \par{\small\textit{Source: [19, Ch. 7.2]}}
+}\end{equation} \par{\small\textit{Source: \cite{tse2005fundamentals}}}
 
 where \(\mathbf{H} \in \mathbb{C}^{2 \times 2}\) is the channel matrix with \(H_{ij} \sim \mathcal{CN}(0, 1)\) (independent Rayleigh fading per link), \(\mathbf{x} \in \mathbb{C}^{2}\) is the transmitted symbol vector with \(\mathbb{E}[\mathbf{x}\mathbf{x}^H] = (P/N_t)\mathbf{I}\), and \(\mathbf{n} \sim \mathcal{CN}(\mathbf{0}, \sigma^2\mathbf{I})\) is noise. The per-antenna SNR is \(\text{SNR} = P/(N_t \sigma^2)\).
 
@@ -108,24 +108,24 @@ Equalization at the receiver aims to recover \(\mathbf{x}\) from \(\mathbf{y}\) 
 \textbf{Zero-Forcing (ZF).} The ZF equalizer applies the pseudo-inverse of the channel:
 
 \begin{equation}\protect\phantomsection\label{eq:zf-equalizer}{\hat{\mathbf{x}}_{\text{ZF}} = (\mathbf{H}^H\mathbf{H})^{-1}\mathbf{H}^H\mathbf{y} = \mathbf{x} + (\mathbf{H}^H\mathbf{H})^{-1}\mathbf{H}^H\mathbf{n}
-}\end{equation} \par{\small\textit{Source: [19, Ch. 7.2], [29]}}
+}\end{equation} \par{\small\textit{Source: \cite{tse2005fundamentals, tse1999linear}}}
 
 This completely eliminates inter-stream interference but amplifies noise. The post-equalization SNR for stream \(k\) is:
 
 \begin{equation}\protect\phantomsection\label{eq:zf-snr}{\text{SNR}_k^{\text{ZF}} = \frac{\text{SNR}}{[(\mathbf{H}^H\mathbf{H})^{-1}]_{kk}}
-}\end{equation} \par{\small\textit{Source: [19, Ch. 7.2], [29]}}
+}\end{equation} \par{\small\textit{Source: \cite{tse2005fundamentals, tse1999linear}}}
 
 When \(\mathbf{H}\) is ill-conditioned (i.e., its singular values are disparate), the diagonal elements of \((\mathbf{H}^H\mathbf{H})^{-1}\) become large, severely degrading performance. ZF achieves a diversity order of \(d = N_r - N_t + 1 = 1\) for the \(2 \times 2\) case \cite{tse2005fundamentals}, meaning it provides minimal diversity protection and its BER decays as \(1/\text{SNR}\).
 
 \textbf{Minimum Mean Square Error (MMSE).} The MMSE equalizer minimizes \(\mathbb{E}[\|\hat{\mathbf{x}} - \mathbf{x}\|^2]\), yielding the Wiener filter:
 
 \begin{equation}\protect\phantomsection\label{eq:mmse-equalizer}{\hat{\mathbf{x}}_{\text{MMSE}} = (\mathbf{H}^H\mathbf{H} + \sigma^2\mathbf{I})^{-1}\mathbf{H}^H\mathbf{y}
-}\end{equation} \par{\small\textit{Source: [19, Ch. 7.2], [29]}}
+}\end{equation} \par{\small\textit{Source: \cite{tse2005fundamentals, tse1999linear}}}
 
 The regularization term \(\sigma^2\mathbf{I}\) prevents noise amplification by biasing the estimate toward zero when the channel is weak. The post-equalization SINR for stream \(k\) is:
 
 \begin{equation}\protect\phantomsection\label{eq:mmse-sinr}{\text{SINR}_k^{\text{MMSE}} = \frac{1}{[(\mathbf{H}^H\mathbf{H} + \sigma^2\mathbf{I})^{-1}]_{kk}} - 1
-}\end{equation} \par{\small\textit{Source: [19, Ch. 7.2], [29]}}
+}\end{equation} \par{\small\textit{Source: \cite{tse2005fundamentals, tse1999linear}}}
 
 At low SNR, MMSE significantly outperforms ZF because it avoids noise amplification; at high SNR (\(\sigma^2 \to 0\)), the MMSE filter converges to the ZF solution. Crucially, MMSE achieves the same diversity order as ZF (\(d = 1\)) but with a superior coding gain, meaning it provides a constant SNR advantage across the entire operating range \cite{tse1999linear}.
 
@@ -218,14 +218,14 @@ This section presents the theoretical BER analysis for each channel model used i
 The AWGN channel adds zero-mean Gaussian noise to the transmitted signal:
 
 \begin{equation}\protect\phantomsection\label{eq:awgn-channel}{y = x + n, \quad n \sim \mathcal{N}(0, \sigma^2), \quad \sigma^2 = \frac{P_s}{\text{SNR}_{\text{linear}}}
-}\end{equation} \par{\small\textit{Source: [21, Ch. 4]}}
+}\end{equation} \par{\small\textit{Source: \cite{proakis2008digital}}}
 
 where \(P_s = \mathbb{E}[|x|^2] = 1\) for unit-power BPSK symbols. The noise variance is inversely proportional to the linear SNR.
 
 \textbf{Single-hop BER.} For BPSK \(\pm 1\) symbols and real-valued AWGN with variance \(\sigma^2 = 1/\text{SNR}\), an error occurs when the noise pushes the received sample past the decision boundary at the origin. The theoretical BER is:
 
 \begin{equation}\protect\phantomsection\label{eq:awgn-ber}{P_e^{\text{AWGN}} = Q\!\left(\frac{1}{\sigma}\right) = Q\left(\sqrt{\text{SNR}}\right) = \frac{1}{2}\,\text{erfc}\!\left(\sqrt{\frac{\text{SNR}}{2}}\right)
-}\end{equation} \par{\small\textit{Source: [21, Ch. 4, Eq. 4-3-13]}}
+}\end{equation} \par{\small\textit{Source: \cite{proakis2008digital}}}
 
 where \(Q(x) = \frac{1}{2}\text{erfc}(x/\sqrt{2})\) is the Gaussian Q-function and \(\text{SNR} = P_s / \sigma^2\) is the ratio of signal power to noise variance.
 
@@ -238,14 +238,14 @@ By contrast, the fading channels add \textbf{complex} Gaussian noise with total 
 \textbf{Two-hop DF BER.} For a decode-and-forward relay with equal-SNR hops, an error occurs at the destination if exactly one hop introduces an error:
 
 \begin{equation}\protect\phantomsection\label{eq:df-ber-awgn}{P_e^{\text{DF}} = P_{e,1} + P_{e,2} - 2P_{e,1}P_{e,2}
-}\end{equation} \par{\small\textit{Source: [1, Eq. 9]}}
+}\end{equation} \par{\small\textit{Source: \cite{laneman2004cooperative}}}
 
 With equal hops (\(P_{e,1} = P_{e,2} = P_e^{\text{AWGN}}\)), this becomes \(P_e^{\text{DF}} = 2P_e(1 - P_e)\). At high SNR, \(P_e \ll 1\) and \(P_e^{\text{DF}} \approx 2P_e\), i.e., the two-hop penalty is approximately a factor of 2 in BER.
 
 \textbf{Two-hop AF BER.} For amplify-and-forward with equal-SNR hops, the effective end-to-end SNR is:
 
 \begin{equation}\protect\phantomsection\label{eq:af-snr-eff}{\text{SNR}_{\text{eff}}^{\text{AF}} = \frac{\text{SNR}_1 \cdot \text{SNR}_2}{\text{SNR}_1 + \text{SNR}_2 + 1} = \frac{\gamma^2}{2\gamma + 1}
-}\end{equation} \par{\small\textit{Source: [1, Eq. 2]}}
+}\end{equation} \par{\small\textit{Source: \cite{laneman2004cooperative}}}
 
 where \(\gamma = \text{SNR}\) is the per-hop SNR. The resulting BER is \(P_e^{\text{AF}} = Q\left(\sqrt{\text{SNR}_{\text{eff}}}\right)\) (same real-noise convention as the single-hop case). At high SNR, \(\text{SNR}_{\text{eff}} \approx \gamma/2\), confirming the well-known 3 dB penalty of AF relaying.
 
@@ -255,31 +255,31 @@ where \(\gamma = \text{SNR}\) is the per-hop SNR. The resulting BER is \(P_e^{\t
 The Rayleigh fading channel models non-line-of-sight (NLOS) propagation where the signal undergoes multiplicative fading:
 
 \begin{equation}\protect\phantomsection\label{eq:rayleigh-channel}{y = hx + n, \quad h \sim \mathcal{CN}(0, 1), \quad n \sim \mathcal{CN}(0, \sigma^2)
-}\end{equation} \par{\small\textit{Source: [21, Ch. 14]}}
+}\end{equation} \par{\small\textit{Source: \cite{proakis2008digital}}}
 
 The fading coefficient \(h\) is a circularly-symmetric complex Gaussian random variable, so its magnitude \(|h|\) follows a Rayleigh distribution:
 
 \begin{equation}\protect\phantomsection\label{eq:rayleigh-pdf}{f_{|h|}(r) = 2r \cdot e^{-r^2}, \quad r \geq 0
-}\end{equation} \par{\small\textit{Source: [21, Ch. 14, Eq. 14-4-1]}}
+}\end{equation} \par{\small\textit{Source: \cite{proakis2008digital}}}
 
 with \(\mathbb{E}[|h|^2] = 1\) (unit average power). The instantaneous SNR after equalization (\(\hat{x} = y/h\)) becomes \(\gamma_h = |h|^2 \cdot \text{SNR}\), which is exponentially distributed.
 
 \textbf{Single-hop BER.} Averaging the conditional BER \(P_e(\gamma_h) = Q(\sqrt{2\gamma_h})\) over the exponential distribution of \(\gamma_h\) yields the closed-form {[}21, Eq. 14-4-15{]}:
 
 \begin{equation}\protect\phantomsection\label{eq:rayleigh-ber}{P_e^{\text{Rayleigh}} = \frac{1}{2}\left(1 - \sqrt{\frac{\bar{\gamma}}{1 + \bar{\gamma}}}\right)
-}\end{equation} \par{\small\textit{Source: [21, Eq. 14-4-15]}}
+}\end{equation} \par{\small\textit{Source: \cite{proakis2008digital}}}
 
 where \(\bar{\gamma} = \text{SNR}\) is the average SNR. At high SNR (\(\bar{\gamma} \gg 1\)):
 
 \begin{equation}\protect\phantomsection\label{eq:rayleigh-ber-approx}{P_e^{\text{Rayleigh}} \approx \frac{1}{4\bar{\gamma}}
-}\end{equation} \par{\small\textit{Source: [21, Ch. 14]}}
+}\end{equation} \par{\small\textit{Source: \cite{proakis2008digital}}}
 
 This \(1/\text{SNR}\) decay is fundamentally slower than the exponential decay of AWGN (\(Q(\sqrt{\gamma}) \sim e^{-\gamma/2}\)), explaining why Rayleigh fading is significantly more challenging. The channel is \textbf{diversity-limited}: deep fades (where \(|h| \approx 0\)) cause errors regardless of the average SNR. This is a primary motivation for MIMO systems, which exploit spatial diversity to combat fading.
 
 \textbf{Two-hop DF BER.} The two-hop DF relay over Rayleigh fading follows the same composition rule as AWGN:
 
 \begin{equation}\protect\phantomsection\label{eq:df-ber-rayleigh}{P_e^{\text{DF,Rayleigh}} = 2P_e^{\text{Rayleigh}}(1 - P_e^{\text{Rayleigh}})
-}\end{equation} \par{\small\textit{Source: [1, Eq. 9]}}
+}\end{equation} \par{\small\textit{Source: \cite{laneman2004cooperative}}}
 
 
 \subsection{Rician Fading Channel --- Theoretical Analysis}\label{sec:rician-fading-channel-theoretical-analysis}
@@ -287,12 +287,12 @@ This \(1/\text{SNR}\) decay is fundamentally slower than the exponential decay o
 The Rician fading channel models environments with a dominant line-of-sight (LOS) component alongside scattered multipath:
 
 \begin{equation}\protect\phantomsection\label{eq:rician-channel}{h = \sqrt{\frac{K}{K+1}} e^{j\theta} + \sqrt{\frac{1}{K+1}} h_{\text{scatter}}, \quad h_{\text{scatter}} \sim \mathcal{CN}(0, 1)
-}\end{equation} \par{\small\textit{Source: [22, Ch. 2]}}
+}\end{equation} \par{\small\textit{Source: \cite{simon2005digital}}}
 
 The K-factor is the ratio of LOS power to scatter power. The fading amplitude \(|h|\) follows a Rician distribution:
 
 \begin{equation}\protect\phantomsection\label{eq:rician-pdf}{f_{|h|}(r) = \frac{r}{\sigma^2} \exp\left(-\frac{r^2 + \nu^2}{2\sigma^2}\right) I_0\left(\frac{r\nu}{\sigma^2}\right)
-}\end{equation} \par{\small\textit{Source: [22, Ch. 2, Eq. 2.6]}}
+}\end{equation} \par{\small\textit{Source: \cite{simon2005digital}}}
 
 where \(\nu = \sqrt{K/(K+1)}\) is the LOS amplitude, \(\sigma^2 = 1/(2(K+1))\) is the scatter variance per component, and \(I_0(\cdot)\) is the modified Bessel function of the first kind, order zero.
 
@@ -301,12 +301,12 @@ where \(\nu = \sqrt{K/(K+1)}\) is the LOS amplitude, \(\sigma^2 = 1/(2(K+1))\) i
 \textbf{Single-hop BER.} The average BER for BPSK over a Rician channel is obtained via the moment-generating function (MGF) approach \cite{simon2005digital}:
 
 \begin{equation}\protect\phantomsection\label{eq:rician-ber-mgf}{P_e^{\text{Rician}} = \frac{1}{\pi} \int_0^{\pi/2} M_{\gamma}\left(\frac{-1}{\sin^2\theta}\right) d\theta
-}\end{equation} \par{\small\textit{Source: [22, Ch. 8, Eq. 8.98]}}
+}\end{equation} \par{\small\textit{Source: \cite{simon2005digital}}}
 
 where the MGF of the instantaneous SNR \(\gamma\) under Rician fading is:
 
 \begin{equation}\protect\phantomsection\label{eq:rician-mgf}{M_{\gamma}(s) = \frac{1+K}{1+K - s\bar{\gamma}} \cdot \exp\left(\frac{Ks\bar{\gamma}}{1+K-s\bar{\gamma}}\right)
-}\end{equation} \par{\small\textit{Source: [22, Ch. 8, Eq. 8.99]}}
+}\end{equation} \par{\small\textit{Source: \cite{simon2005digital}}}
 
 This integral is evaluated numerically. The resulting BER falls between the AWGN and Rayleigh curves, with the position determined by the K-factor.
 
@@ -339,21 +339,21 @@ The CDF plot directly shows the \textbf{outage probability} \(P(|h| \leq x)\): f
 The 2×2 MIMO spatial multiplexing system transmits two independent BPSK streams simultaneously:
 
 \begin{equation}\protect\phantomsection\label{eq:mimo-received-2x2}{\mathbf{y} = \mathbf{H}\mathbf{x} + \mathbf{n}, \quad \mathbf{H} \in \mathbb{C}^{2 \times 2}, \quad H_{ij} \sim \mathcal{CN}(0, 1), \quad \mathbf{n} \sim \mathcal{CN}(\mathbf{0}, \sigma^2\mathbf{I})
-}\end{equation} \par{\small\textit{Source: [19, Ch. 7.2]}}
+}\end{equation} \par{\small\textit{Source: \cite{tse2005fundamentals}}}
 
 The theoretical per-stream BER depends on the equalization technique:
 
 \textbf{ZF equalization.} After ZF equalization (\(\hat{\mathbf{x}} = \mathbf{H}^{-1}\mathbf{y}\)), the effective noise on stream \(k\) has variance \(\sigma^2 [\mathbf{H}^{-1}(\mathbf{H}^{-1})^H]_{kk}\). For a 2×2 system with i.i.d. Rayleigh fading, each post-ZF stream sees an effective diversity order of \(n_R - n_T + 1 = 1\), identical to SISO Rayleigh. Therefore:
 
 \begin{equation}\protect\phantomsection\label{eq:zf-ber-mimo}{P_e^{\text{ZF}} \approx \frac{1}{2}\left(1 - \sqrt{\frac{\bar{\gamma}}{1 + \bar{\gamma}}}\right)
-}\end{equation} \par{\small\textit{Source: [19, Ch. 7.2], [28]}}
+}\end{equation} \par{\small\textit{Source: \cite{tse2005fundamentals, zheng2003diversity}}}
 
 This is the same expression as SISO Rayleigh --- ZF spatial multiplexing provides no diversity gain for a square (\(n_T = n_R\)) system.
 
 \textbf{MMSE equalization.} The MMSE filter \(\mathbf{W} = (\mathbf{H}^H\mathbf{H} + \sigma^2\mathbf{I})^{-1}\mathbf{H}^H\) provides a noise-regularized estimate. The post-MMSE SINR exceeds the post-ZF SNR because the regularization prevents extreme noise amplification when \(\mathbf{H}\) is ill-conditioned. The exact BER analysis requires integration over the joint distribution of post-MMSE SINRs, which does not admit a simple closed form for 2×2 systems. An effective SNR approximation yields:
 
 \begin{equation}\protect\phantomsection\label{eq:mmse-ber-mimo}{P_e^{\text{MMSE}} \approx \frac{1}{2}\left(1 - \sqrt{\frac{\gamma_{\text{eff}}}{1 + \gamma_{\text{eff}}}}\right), \quad \gamma_{\text{eff}} \approx \bar{\gamma} \cdot \left(1 + \frac{1}{\bar{\gamma} + 1}\right)
-}\end{equation} \par{\small\textit{Source: [19, Ch. 7.2], [29]}}
+}\end{equation} \par{\small\textit{Source: \cite{tse2005fundamentals, tse1999linear}}}
 
 The MMSE gain over ZF is most significant at low SNR (where the regularization term dominates) and diminishes at high SNR (where \(\sigma^2 \to 0\) and MMSE converges to ZF).
 
