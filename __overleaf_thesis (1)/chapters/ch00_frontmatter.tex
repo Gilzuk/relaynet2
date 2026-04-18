@@ -7,15 +7,27 @@
 
 \textbf{Deep Learning for Two-Hop Relay Communication: A Comparative Study of Classical and Neural Network-Based Strategies}
 
-This thesis presents a comparative study of classical and neural network-based relay strategies for two-hop cooperative communication. Nine relay methods are evaluated: two classical approaches : amplify-and-forward (AF) and decode-and-forward (DF) : and seven neural methods spanning supervised learning (MLP, Hybrid SNR-adaptive relay), generative modeling (VAE, conditional GAN with WGAN-GP), and sequence architectures (Transformer, Mamba S6 selective state space model, Mamba-2 structured state space duality).
+This thesis presents a comparative study of classical and neural network-based relay strategies for two-hop cooperative communication. Nine relay methods are evaluated: two classical approaches --- amplify-and-forward (AF) and decode-and-forward (DF) --- and seven neural methods spanning supervised learning (MLP, Hybrid SNR-adaptive relay), generative modeling (VAE, conditional GAN with WGAN-GP), and sequence architectures (Transformer, Mamba S6 selective state space model, Mamba-2 structured state space duality).
 
-Evaluation covers six channel configurations: AWGN, Rayleigh fading, and Rician fading (K=3) in SISO topology, and 2×2 MIMO with Rayleigh fading under three equalization techniques : zero-forcing (ZF), minimum mean square error (MMSE), and successive interference cancellation (SIC). Primary experiments use BPSK modulation with Monte Carlo simulation (100,000 bits per SNR point, 95\% confidence intervals). Extension experiments cover QPSK, 16-QAM, and 16-PSK.
+Evaluation covers six channel configurations: AWGN, Rayleigh fading, and Rician fading (K=3) in SISO topology, and 2×2 MIMO with Rayleigh fading under three equalization techniques --- zero-forcing (ZF), minimum mean square error (MMSE), and successive interference cancellation (SIC). Primary experiments use BPSK modulation with Monte Carlo simulation (100,000 bits per SNR point, 95\% confidence intervals). Extension experiments cover QPSK, 16-QAM, and 16-PSK.
 
-Key findings are as follows. Neural network relays show selective low-SNR gains (0--4 dB), most clearly on AWGN and Rician channels and in some MIMO configurations, but this advantage is not universal across all channels or architectures. Classical DF dominates at medium-to-high SNR (≥6 dB) with zero parameters. A complexity study reveals an inverted-U relationship between model size and performance: a minimal 169-parameter network matches models 100× larger, while an 11,201-parameter model overfits. A normalized 3,000-parameter comparison shows the performance gap between architectures narrows at equal scale, with VAE as the consistent underperformer : indicating that parameter count, not architecture, is the primary driver for this task. Mamba-2 SSD trains 35\% faster than Mamba S6 with comparable BER, exploiting parallel chunk computation. For MIMO, MMSE outperforms ZF and SIC provides further gains through interference cancellation.
+Key findings are as follows. Neural network relays show selective low-SNR gains (0--4 dB), most clearly on AWGN and Rician channels and in some MIMO configurations, but this advantage is not universal across all channels or architectures. Classical DF dominates at medium-to-high SNR (≥6 dB) with zero parameters. A complexity study reveals an inverted-U relationship between model size and performance: a minimal 169-parameter network matches models 100× larger, while an 11,201-parameter model overfits. A normalized 3,000-parameter comparison shows the performance gap between architectures narrows at equal scale, with VAE as the consistent underperformer --- indicating that parameter count, not architecture, is the primary driver for this task. Mamba-2 SSD trains 35\% faster than Mamba S6 with comparable BER, exploiting parallel chunk computation. For MIMO, MMSE outperforms ZF and SIC provides further gains through interference cancellation.
 
 The recommended deployment is a Hybrid relay combining neural processing at low SNR with DF at high SNR, achieving near-optimal performance with minimal overhead (169 parameters, \textasciitilde0.7 KB, under 3 seconds training). For higher-order modulations, a \textbf{joint 2D classifier} over all 16 constellation points eliminates the structural BER floor imposed by per-axis I/Q splitting: the top three 16-class variants (VAE, Transformer, MLP) reach near-zero BER at 20 dB, matching DF for the first time. A CSI injection study across 48 neural variants reveals modulation-dependence: CSI is detrimental for amplitude-carrying 16-QAM but beneficial for constant-envelope 16-PSK.
 
 \textbf{Keywords:} Cooperative relay communication, deep learning, two-hop relay, MLP, Mamba S6, Mamba-2, Transformer, VAE, conditional GAN, MIMO equalization, 16-QAM, 16-PSK, CSI injection, bit error rate
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+% \begin{flushright}
+% \begin{otherlanguage}{hebrew}
+% \textbf{ארכיטקטורות למידה עמוקה לתקשורת ממסר דו-קפיצתית: מחקר השוואתי של אסטרטגיות ממסר קלאסיות ומבוססות רשתות נוירונים}
+% גיל צוקרמן
+% חיבור זה הוגש כמילוי חלקי של הדרישות לקבלת תואר מגיסטר למדעים (M.Sc.)
+% בית הספר להנדסת חשמל — אוניברסיטת תל אביב
+% 2026
+% \end{otherlanguage}
+% \end{flushright}
 
 \clearpage
 
@@ -26,7 +38,8 @@ The recommended deployment is a Hybrid relay combining neural processing at low 
 \addcontentsline{toc}{chapter}{Acknowledgments}
 \markboth{Acknowledgments}{Acknowledgments}
 
-I would like to dedicate this work to my wife \textit{Shelly Ines Zukerman Lavy} for supporting my graduate studies.I also would like to thank my supervisors \textit{Dr. Anatoly Khina} and \textit{Assoc. Prof.  Raja Giriys} at Tel Aviv University for their guidance and support throughout this research. 
+I would like to dedicate this work to my wife Shelly Ines Zukeman Lavy for supporting my graduate studies
+I also would like to thank my supervisors Dr. Anatoly Khina and Assoc. Prof.  Raja Giriys at Tel Aviv University for their guidance and support throughout this research. 
 This work was conducted in the School of Electrical and electronic Engineering, Tel Aviv University.
 
 
