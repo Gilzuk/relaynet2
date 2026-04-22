@@ -1,0 +1,21 @@
+Figures: 50
+Longtables: 24
+Includegraphics: 50
+File size: 109990 chars
+Lines > 500 chars: 4
+First few: [229, 493, 577, 1776]
+
+Duplicate labels: 11
+  sec:experiments: 2 times
+  sec:experiment-overview: 2 times
+  tbl:master-config: 2 times
+  sec:channel-model-validation: 2 times
+  sec:siso-bpsk-performance-baseline-relay-comparison: 2 times
+  sec:mimo-2x2-bpsk-performance: 2 times
+  sec:parameter-normalization-complexity-trade-off: 2 times
+  sec:higher-order-modulation-scalability-constellation-aware-training: 2 times
+  sec:input-normalization-and-csi-injection: 2 times
+  sec:class-2d-classification-for-qam16: 2 times
+  sec:end-to-end-joint-optimization: 2 times
+
+Missing image files: 0

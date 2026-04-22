@@ -1,0 +1,33 @@
+sec:experiments: lines [27, 291]
+  Line 27: \chapter{Experiments}\label{sec:experiments}
+  Line 291: \chapter{Experiments}\label{sec:experiments}
+sec:experiment-overview: lines [37, 301]
+  Line 37: \section{Experiment Overview}\label{sec:experiment-overview}
+  Line 301: \section{Experiment Overview}\label{sec:experiment-overview}
+tbl:master-config: lines [49, 313]
+  Line 49: \label{tbl:master-config}
+  Line 313: \label{tbl:master-config}
+sec:channel-model-validation: lines [77, 341]
+  Line 77: \section{E1: Channel Model Validation}\label{sec:channel-model-validation}
+  Line 341: \section{E1: Channel Model Validation}\label{sec:channel-model-validation}
+sec:siso-bpsk-performance-baseline-relay-comparison: lines [100, 364]
+  Line 100: \section{E2: SISO BPSK Performance (Baseline Relay Comparison)}\label{sec:siso-bpsk-performance-baseline-relay-comparison}
+  Line 364: \section{E2: SISO BPSK Performance (Baseline Relay Comparison)}\label{sec:siso-bpsk-performance-baseline-relay-comparison}
+sec:mimo-2x2-bpsk-performance: lines [126, 390]
+  Line 126: \section{E3: MIMO 2$\times$2 BPSK Performance}\label{sec:mimo-2x2-bpsk-performance}
+  Line 390: \section{E3: MIMO 2$\times$2 BPSK Performance}\label{sec:mimo-2x2-bpsk-performance}
+sec:parameter-normalization-complexity-trade-off: lines [152, 416]
+  Line 152: \section{E4: Parameter Normalization \& Complexity Trade-off}\label{sec:parameter-normalization-complexity-trade-off}
+  Line 416: \section{E4: Parameter Normalization \& Complexity Trade-off}\label{sec:parameter-normalization-complexity-trade-off}
+sec:higher-order-modulation-scalability-constellation-aware-training: lines [180, 444]
+  Line 180: \section{E5: Higher-Order Modulation Scalability (Constellation-Aware Training)}\label{sec:higher-order-modulation-scalability-constellation-aware-training}
+  Line 444: \section{E5: Higher-Order Modulation Scalability (Constellation-Aware Training)}\label{sec:higher-order-modulation-scalability-constellation-aware-training}
+sec:input-normalization-and-csi-injection: lines [212, 476]
+  Line 212: \section{E6: Input Normalization and CSI Injection}\label{sec:input-normalization-and-csi-injection}
+  Line 476: \section{E6: Input Normalization and CSI Injection}\label{sec:input-normalization-and-csi-injection}
+sec:class-2d-classification-for-qam16: lines [236, 500]
+  Line 236: \section{E7: 16-Class 2D Classification for QAM16}\label{sec:class-2d-classification-for-qam16}
+  Line 500: \section{E7: 16-Class 2D Classification for QAM16}\label{sec:class-2d-classification-for-qam16}
+sec:end-to-end-joint-optimization: lines [264, 528]
+  Line 264: \section{E8: End-to-End Joint Optimization}\label{sec:end-to-end-joint-optimization}
+  Line 528: \section{E8: End-to-End Joint Optimization}\label{sec:end-to-end-joint-optimization}

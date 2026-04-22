@@ -1,0 +1,60 @@
+Total lines: 2360
+Lines 1-35:
+1: \chapter{Appendices}\label{sec:appendices}
+2: 
+3: \section{Appendix A: Mathematical Notation}\label{sec:appendix-a-mathematical-notation}
+4: 
+5: {\def\LTcaptype{table} % do not increment counter
+6: \begin{longtable}[]{@{}ll@{}}
+7: \toprule\noalign{}
+8: Symbol & Description \\
+9: \midrule\noalign{}
+10: \endhead
+11: \bottomrule\noalign{}
+12: \endlastfoot
+13: \(b\) & Binary bit (\(\in \{0, 1\}\)) \\
+14: \(x\) & Modulated BPSK symbol (\(\in \{-1, +1\}\)) \\
+15: \(y\) & Received signal \\
+16: \(n\) & Noise sample \\
+17: \(h\) & Fading coefficient \\
+18: \(\sigma^2\) & Noise variance \\
+19: \(\text{SNR}\) & Signal-to-Noise Ratio (linear) \\
+20: \(G\) & AF amplification gain \\
+21: \(\mathbf{H}\) & MIMO channel matrix (\(\in \mathbb{C}^{2 \times 2}\)) \\
+22: \(\mathbf{W}\) & Neural network weight matrix \\%% ============================================================
+23: %% Chapter 5: Experiments
+24: %% Structure: Master config table + conclusion-only sections
+25: %% All figures and tables are in Appendix (ch09_appendices.tex)
+26: %% ============================================================
+27: \chapter{Experiments}\label{sec:experiments}
+28: 
+29: This chapter presents the experimental evaluation of nine relay strategies across eight
+30: systematic experiments. Each experiment is described by its goal, configuration, and
+31: conclusion only. All supporting figures and numerical tables are consolidated in
+32: Appendix~\ref{chap:app-experiments} to maintain narrative clarity.
+33: 
+34: %% ============================================================
+35: %% Master Configuration Table
+
+Lines 280-300:
+280: the modular two-hop DF relay across all SNR points (67--141\,\% higher BER).
+281: The network fails to discover a constellation geometry that surpasses the classical
+282: square grid under single-antenna Rayleigh fading, demonstrating that black-box deep
+283: learning is inefficient compared to modular designs that leverage classical signal
+284: processing for modulation and equalization.
+285: BER curves, learned constellation, and training loss are in Appendix~\ref{sec:app-e8}
+286: (Figures~\ref{fig:fig46}--\ref{fig:fig49}).%% ============================================================
+287: %% Chapter 5: Experiments
+288: %% Structure: Master config table + conclusion-only sections
+289: %% All figures and tables are in Appendix (ch09_appendices.tex)
+290: %% ============================================================
+291: \chapter{Experiments}\label{sec:experiments}
+292: 
+293: This chapter presents the experimental evaluation of nine relay strategies across eight
+294: systematic experiments. Each experiment is described by its goal, configuration, and
+295: conclusion only. All supporting figures and numerical tables are consolidated in
+296: Appendix~\ref{chap:app-experiments} to maintain narrative clarity.
+297: 
+298: %% ============================================================
+299: %% Master Configuration Table
+300: %% ============================================================

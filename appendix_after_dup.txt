@@ -1,0 +1,46 @@
+Total lines: 2360
+Lines 525-545:
+525: %% ============================================================
+526: %% E8: End-to-End Optimization
+527: %% ============================================================
+528: \section{E8: End-to-End Joint Optimization}\label{sec:end-to-end-joint-optimization}
+529: 
+530: \textbf{Goal.}
+531: Compare the modular neural relay approach against a fully joint transmitter--receiver
+532: autoencoder.
+533: 
+534: \textbf{Configuration.}
+535: Topology: SISO.
+536: Modulation: learned latent space ($M{=}16$, power-constrained).
+537: Channel: Rayleigh.
+538: Equalizer: ZF (receiver side).
+539: NN architecture: MLP autoencoder (encoder/decoder).
+540: Special case: end-to-end (E2E) optimization.
+541: 
+542: \textbf{Conclusion.}
+543: The E2E autoencoder underperforms both the theoretical limits of classical 16-QAM and
+544: the modular two-hop DF relay across all SNR points (67--141\,\% higher BER).
+545: The network fails to discover a constellation geometry that surpasses the classical
+
+Lines 540-560:
+540: Special case: end-to-end (E2E) optimization.
+541: 
+542: \textbf{Conclusion.}
+543: The E2E autoencoder underperforms both the theoretical limits of classical 16-QAM and
+544: the modular two-hop DF relay across all SNR points (67--141\,\% higher BER).
+545: The network fails to discover a constellation geometry that surpasses the classical
+546: square grid under single-antenna Rayleigh fading, demonstrating that black-box deep
+547: learning is inefficient compared to modular designs that leverage classical signal
+548: processing for modulation and equalization.
+549: BER curves, learned constellation, and training loss are in Appendix~\ref{sec:app-e8}
+550: (Figures~\ref{fig:fig46}--\ref{fig:fig49}).
+551: \(\mathbf{b}\) & Bias vector \\
+552: \(P_e\) & Bit error rate \\
+553: \(Q(\cdot)\) & Gaussian Q-function \\
+554: \(K\) & Rician K-factor \\
+555: \(\beta\) & VAE KL weight \\
+556: \(\lambda\) & Regularization parameter \\
+557: \(\eta\) & Learning rate \\
+558: \(\Delta\) & State space discretization step \\
+559: \(\mathbf{A}, \mathbf{B}, \mathbf{C}, D\) & State space model matrices \\
+560: \end{longtable}
