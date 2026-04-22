@@ -19,7 +19,535 @@ Symbol & Description \\
 \(\text{SNR}\) & Signal-to-Noise Ratio (linear) \\
 \(G\) & AF amplification gain \\
 \(\mathbf{H}\) & MIMO channel matrix (\(\in \mathbb{C}^{2 \times 2}\)) \\
-\(\mathbf{W}\) & Neural network weight matrix \\
+\(\mathbf{W}\) & Neural network weight matrix \\%% ============================================================
+%% Chapter 5: Experiments
+%% Structure: Master config table + conclusion-only sections
+%% All figures and tables are in Appendix (ch09_appendices.tex)
+%% ============================================================
+\chapter{Experiments}\label{sec:experiments}
+
+This chapter presents the experimental evaluation of nine relay strategies across eight
+systematic experiments. Each experiment is described by its goal, configuration, and
+conclusion only. All supporting figures and numerical tables are consolidated in
+Appendix~\ref{chap:app-experiments} to maintain narrative clarity.
+
+%% ============================================================
+%% Master Configuration Table
+%% ============================================================
+\section{Experiment Overview}\label{sec:experiment-overview}
+
+Table~\ref{tbl:master-config} summarises the configuration space explored across all
+eight experiments. Each row defines the topology, modulation, channel, equalizer, and
+neural-network settings used; outcomes are reported in the per-experiment sections below
+and detailed in Appendix~\ref{chap:app-experiments}.
+
+\begin{table}[H]
+\centering
+\caption{Master experiment configuration table. All nine relay strategies
+(AF, DF, MLP, Hybrid, VAE, CGAN, Transformer, Mamba~S6, Mamba-2~SSD) are evaluated
+unless otherwise noted. ``CA'' = Constellation-Aware; ``E2E'' = End-to-End.}
+\label{tbl:master-config}
+\small
+\begin{tabular}{@{}p{0.04\linewidth}p{0.18\linewidth}p{0.10\linewidth}p{0.12\linewidth}p{0.12\linewidth}p{0.10\linewidth}p{0.22\linewidth}@{}}
+\toprule
+\textbf{E\#} & \textbf{Experiment} & \textbf{Topology} & \textbf{Modulation} & \textbf{Channel} & \textbf{Equalizer} & \textbf{Special Setting} \\
+\midrule
+E1 & Channel Model Validation & SISO, MIMO 2$\times$2 & BPSK & AWGN, Rayleigh, Rician & None / ZF / MMSE / SIC & Theory vs.\ simulation \\
+\midrule
+E2 & SISO BPSK Baseline & SISO & BPSK & AWGN, Rayleigh, Rician & None & Activation: \texttt{tanh} \\
+\midrule
+E3 & MIMO 2$\times$2 BPSK & MIMO 2$\times$2 & BPSK & Rayleigh & ZF, MMSE, SIC & Activation: \texttt{tanh} \\
+\midrule
+E4 & Parameter Normalization & SISO, MIMO 2$\times$2 & BPSK & AWGN, Rayleigh, Rician, MIMO & None / ZF / MMSE / SIC & $\sim$3\,K normalised params \\
+\midrule
+E5 & Higher-Order Modulation & SISO & QPSK, 16-QAM & AWGN, Rayleigh & None & CA activations: \texttt{tanh}, \texttt{hardtanh}, scaled \texttt{tanh}, scaled sigmoid \\
+\midrule
+E6 & CSI Injection \& LayerNorm & SISO & 16-QAM, 16-PSK & Rayleigh & None & 48 variants: Baseline / CSI / LN / CSI+LN \\
+\midrule
+E7 & 16-Class 2D Classification & SISO & 16-QAM & AWGN & None & Joint 2D softmax (16-class) \\
+\midrule
+E8 & End-to-End Optimization & SISO & Learned ($M{=}16$) & Rayleigh & ZF (receiver) & MLP autoencoder (E2E) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+%% ============================================================
+%% E1: Channel Model Validation
+%% ============================================================
+\section{E1: Channel Model Validation}\label{sec:channel-model-validation}
+
+\textbf{Goal.}
+Validate the simulation framework against closed-form theoretical BER expressions to
+ensure baseline accuracy before evaluating AI relays.
+
+\textbf{Configuration.}
+Topology: SISO and MIMO 2$\times$2.
+Modulation: BPSK.
+Channels: AWGN, Rayleigh, Rician ($K{=}3$).
+Equalizers (MIMO only): ZF, MMSE, SIC.
+Demodulation: hard decision.
+
+\textbf{Conclusion.}
+Monte Carlo simulations match theoretical predictions within the 95\,\% confidence
+interval at all SNR points for every channel and equalizer combination.
+The simulation framework is validated and used as the ground truth for all subsequent
+experiments.
+Full validation charts are provided in Appendix~\ref{sec:app-e1}.
+
+%% ============================================================
+%% E2: SISO BPSK Baseline
+%% ============================================================
+\section{E2: SISO BPSK Performance (Baseline Relay Comparison)}\label{sec:siso-bpsk-performance-baseline-relay-comparison}
+
+\textbf{Goal.}
+Evaluate baseline classical and AI-based relay strategies on single-antenna
+configurations across different fading environments.
+
+\textbf{Configuration.}
+Topology: SISO.
+Modulation: BPSK.
+Channels: AWGN, Rayleigh, Rician ($K{=}3$).
+Equalizers: none.
+NN architectures: MLP, Hybrid, VAE, CGAN, Transformer, Mamba~S6, Mamba-2~SSD.
+Activation: \texttt{tanh}.
+
+\textbf{Conclusion.}
+AI relays selectively outperform AF and, on AWGN and Rician channels, DF at low SNR
+(0--4\,dB).
+Under Rayleigh fading, classical DF dominates even at low SNR.
+Across all channels, DF remains dominant at medium-to-high SNR ($\geq 6$\,dB),
+matching or exceeding all AI methods with zero parameters.
+BER curves and numerical tables are in Appendix~\ref{sec:app-e2}
+(Figures~\ref{fig:fig9}--\ref{fig:fig11}).
+
+%% ============================================================
+%% E3: MIMO 2x2 BPSK
+%% ============================================================
+\section{E3: MIMO 2$\times$2 BPSK Performance}\label{sec:mimo-2x2-bpsk-performance}
+
+\textbf{Goal.}
+Evaluate relay strategies under spatial multiplexing and various interference
+cancellation techniques.
+
+\textbf{Configuration.}
+Topology: MIMO 2$\times$2.
+Modulation: BPSK.
+Channel: Rayleigh.
+Equalizers: ZF, MMSE, SIC.
+NN architectures: all nine.
+Activation: \texttt{tanh}.
+
+\textbf{Conclusion.}
+The MIMO equalization hierarchy (ZF $<$ MMSE $<$ SIC) holds for all relay types.
+The AI advantage at low SNR is preserved under ZF and MMSE (Mamba~S6 achieves the
+lowest BER), but under SIC equalization, classical DF provides the lowest BER at all
+low-to-medium SNR points.
+Relay processing gains and MIMO equalization gains are additive.
+BER curves and numerical tables are in Appendix~\ref{sec:app-e3}
+(Figures~\ref{fig:fig12}--\ref{fig:fig14}).
+
+%% ============================================================
+%% E4: Parameter Normalization
+%% ============================================================
+\section{E4: Parameter Normalization \& Complexity Trade-off}\label{sec:parameter-normalization-complexity-trade-off}
+
+\textbf{Goal.}
+Isolate architectural inductive biases from parameter-count effects and characterise
+the complexity--performance trade-off for relay denoising.
+
+\textbf{Configuration.}
+Topology: SISO and MIMO 2$\times$2.
+Modulation: BPSK.
+Channels: AWGN, Rayleigh, Rician, MIMO (ZF, MMSE, SIC).
+NN architectures: all nine, normalised to $\sim$3\,000 parameters and at original
+sizes (169 to 26\,K).
+Activation: \texttt{tanh}.
+
+\textbf{Conclusion.}
+The relay denoising task exhibits an inverted-U complexity relationship: a minimal
+169-parameter MLP matches models 140$\times$ larger, while excessive parameters
+($>$11\,K) lead to overfitting.
+At a normalised scale of 3\,000 parameters, the performance gap between feedforward
+and sequence architectures narrows to $\sim$1\,\% BER, indicating that parameter
+count rather than architectural choice is the primary performance driver.
+Generative VAE is a consistent underperformer due to probabilistic overhead.
+BER curves, complexity charts, and numerical tables are in Appendix~\ref{sec:app-e4}
+(Figures~\ref{fig:fig15}--\ref{fig:fig20}).
+
+%% ============================================================
+%% E5: Higher-Order Modulation
+%% ============================================================
+\section{E5: Higher-Order Modulation Scalability (Constellation-Aware Training)}\label{sec:higher-order-modulation-scalability-constellation-aware-training}
+
+\textbf{Goal.}
+Evaluate the generalisability of BPSK-trained relays to complex constellations and
+resolve the multi-level amplitude bottleneck.
+
+\textbf{Configuration.}
+Topology: SISO.
+Modulations: QPSK, 16-QAM.
+Channels: AWGN, Rayleigh.
+Equalizers: none.
+NN architectures: all nine.
+Activations: \texttt{tanh}, linear, \texttt{hardtanh}, scaled \texttt{tanh}, scaled
+sigmoid.
+Special case: constellation-aware training.
+
+\textbf{Conclusion.}
+QPSK performance mirrors BPSK perfectly due to I/Q independence.
+On 16-QAM, standard \texttt{tanh} compression causes a severe, irreducible BER floor
+($\approx$0.22 at 16\,dB).
+Replacing \texttt{tanh} with constellation-aware bounded activations
+(\texttt{hardtanh}, scaled \texttt{tanh}) bounded to the precise signal amplitude
+($3/\sqrt{10}$) and retraining eliminates this floor.
+Sequence models benefit most, reducing their BER floor by 5$\times$, though a gap to
+classical DF persists due to per-axis error accumulation.
+BER curves, activation comparisons, and numerical tables are in
+Appendix~\ref{sec:app-e5}
+(Figures~\ref{fig:fig21}--\ref{fig:fig36}).
+
+%% ============================================================
+%% E6: CSI Injection & LayerNorm
+%% ============================================================
+\section{E6: Input Normalization and CSI Injection}\label{sec:input-normalization-and-csi-injection}
+
+\textbf{Goal.}
+Evaluate the impact of explicit Channel State Information (CSI) injection and Input
+Layer Normalization across 48 distinct neural relay configurations for 16-QAM and
+16-PSK.
+
+\textbf{Configuration.}
+Topology: SISO.
+Modulations: 16-QAM, 16-PSK.
+Channel: Rayleigh.
+Equalizers: none.
+NN architectures: Transformer, Mamba~S6, Mamba-2~SSD.
+Variants: Baseline / CSI / LayerNorm / CSI+LayerNorm $\times$ 4 activations
+$\times$ 3 architectures $\times$ 2 modulations = 48 configurations.
+
+\textbf{Conclusion.}
+A clear dichotomy emerges between the two modulation schemes. Explicit CSI injection significantly improves BER performance for phase-sensitive modulations (16-PSK) by enabling the network to compensate for channel-induced phase rotation in the Rayleigh fading channel. For amplitude-dependent modulations (16-QAM), the effect of CSI injection is architecture- and injection-method-dependent; in several configurations a performance degradation is observed empirically, the precise mechanism of which warrants further investigation. Input Layer Normalization consistently improves convergence and BER across the majority of tested configurations; however, its interaction with amplitude-sensitive modulations such as 16-QAM should be interpreted with caution, as normalization removes amplitude scale information that is intrinsic to QAM symbol detection.
+Appendix~\ref{chap:app-csi}
+(Figures~\ref{fig:fig39}--\ref{fig:fig45}).
+
+%% ============================================================
+%% E7: 16-Class 2D Classification
+%% ============================================================
+\section{E7: 16-Class 2D Classification for QAM16}\label{sec:class-2d-classification-for-qam16}
+
+\textbf{Goal.}
+Eliminate the structural BER floor imposed by per-axis I/Q splitting for 16-QAM by
+utilising full 2D decision boundaries.
+
+\textbf{Configuration.}
+Topology: SISO.
+Modulation: 16-QAM.
+Channel: AWGN.
+Equalizers: none.
+NN architectures: MLP, VAE, Transformer, Mamba~S6, Mamba-2~SSD.
+Activation: softmax (implicit via cross-entropy loss).
+Special case: joint 16-class 2D classification.
+
+\textbf{Conclusion.}
+Treating the relay as a joint 16-point classifier over the full 2D constellation space
+completely eliminates the structural 4-class BER floor.
+For the first time, neural variants (VAE, Transformer, MLP) matched classical DF
+performance at high SNR, achieving near-zero BER at 20\,dB.
+This proves the previous BER floor was an artefact of I/Q splitting, not a fundamental
+limitation of neural relays.
+BER curves, bar charts, and numerical tables are in Appendix~\ref{sec:app-e7}
+(Figures~\ref{fig:fig50}--\ref{fig:fig53}).
+
+%% ============================================================
+%% E8: End-to-End Optimization
+%% ============================================================
+\section{E8: End-to-End Joint Optimization}\label{sec:end-to-end-joint-optimization}
+
+\textbf{Goal.}
+Compare the modular neural relay approach against a fully joint transmitter--receiver
+autoencoder.
+
+\textbf{Configuration.}
+Topology: SISO.
+Modulation: learned latent space ($M{=}16$, power-constrained).
+Channel: Rayleigh.
+Equalizer: ZF (receiver side).
+NN architecture: MLP autoencoder (encoder/decoder).
+Special case: end-to-end (E2E) optimization.
+
+\textbf{Conclusion.}
+The E2E autoencoder underperforms both the theoretical limits of classical 16-QAM and
+the modular two-hop DF relay across all SNR points (67--141\,\% higher BER).
+The network fails to discover a constellation geometry that surpasses the classical
+square grid under single-antenna Rayleigh fading, demonstrating that black-box deep
+learning is inefficient compared to modular designs that leverage classical signal
+processing for modulation and equalization.
+BER curves, learned constellation, and training loss are in Appendix~\ref{sec:app-e8}
+(Figures~\ref{fig:fig46}--\ref{fig:fig49}).%% ============================================================
+%% Chapter 5: Experiments
+%% Structure: Master config table + conclusion-only sections
+%% All figures and tables are in Appendix (ch09_appendices.tex)
+%% ============================================================
+\chapter{Experiments}\label{sec:experiments}
+
+This chapter presents the experimental evaluation of nine relay strategies across eight
+systematic experiments. Each experiment is described by its goal, configuration, and
+conclusion only. All supporting figures and numerical tables are consolidated in
+Appendix~\ref{chap:app-experiments} to maintain narrative clarity.
+
+%% ============================================================
+%% Master Configuration Table
+%% ============================================================
+\section{Experiment Overview}\label{sec:experiment-overview}
+
+Table~\ref{tbl:master-config} summarises the configuration space explored across all
+eight experiments. Each row defines the topology, modulation, channel, equalizer, and
+neural-network settings used; outcomes are reported in the per-experiment sections below
+and detailed in Appendix~\ref{chap:app-experiments}.
+
+\begin{table}[H]
+\centering
+\caption{Master experiment configuration table. All nine relay strategies
+(AF, DF, MLP, Hybrid, VAE, CGAN, Transformer, Mamba~S6, Mamba-2~SSD) are evaluated
+unless otherwise noted. ``CA'' = Constellation-Aware; ``E2E'' = End-to-End.}
+\label{tbl:master-config}
+\small
+\begin{tabular}{@{}p{0.04\linewidth}p{0.18\linewidth}p{0.10\linewidth}p{0.12\linewidth}p{0.12\linewidth}p{0.10\linewidth}p{0.22\linewidth}@{}}
+\toprule
+\textbf{E\#} & \textbf{Experiment} & \textbf{Topology} & \textbf{Modulation} & \textbf{Channel} & \textbf{Equalizer} & \textbf{Special Setting} \\
+\midrule
+E1 & Channel Model Validation & SISO, MIMO 2$\times$2 & BPSK & AWGN, Rayleigh, Rician & None / ZF / MMSE / SIC & Theory vs.\ simulation \\
+\midrule
+E2 & SISO BPSK Baseline & SISO & BPSK & AWGN, Rayleigh, Rician & None & Activation: \texttt{tanh} \\
+\midrule
+E3 & MIMO 2$\times$2 BPSK & MIMO 2$\times$2 & BPSK & Rayleigh & ZF, MMSE, SIC & Activation: \texttt{tanh} \\
+\midrule
+E4 & Parameter Normalization & SISO, MIMO 2$\times$2 & BPSK & AWGN, Rayleigh, Rician, MIMO & None / ZF / MMSE / SIC & $\sim$3\,K normalised params \\
+\midrule
+E5 & Higher-Order Modulation & SISO & QPSK, 16-QAM & AWGN, Rayleigh & None & CA activations: \texttt{tanh}, \texttt{hardtanh}, scaled \texttt{tanh}, scaled sigmoid \\
+\midrule
+E6 & CSI Injection \& LayerNorm & SISO & 16-QAM, 16-PSK & Rayleigh & None & 48 variants: Baseline / CSI / LN / CSI+LN \\
+\midrule
+E7 & 16-Class 2D Classification & SISO & 16-QAM & AWGN & None & Joint 2D softmax (16-class) \\
+\midrule
+E8 & End-to-End Optimization & SISO & Learned ($M{=}16$) & Rayleigh & ZF (receiver) & MLP autoencoder (E2E) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+%% ============================================================
+%% E1: Channel Model Validation
+%% ============================================================
+\section{E1: Channel Model Validation}\label{sec:channel-model-validation}
+
+\textbf{Goal.}
+Validate the simulation framework against closed-form theoretical BER expressions to
+ensure baseline accuracy before evaluating AI relays.
+
+\textbf{Configuration.}
+Topology: SISO and MIMO 2$\times$2.
+Modulation: BPSK.
+Channels: AWGN, Rayleigh, Rician ($K{=}3$).
+Equalizers (MIMO only): ZF, MMSE, SIC.
+Demodulation: hard decision.
+
+\textbf{Conclusion.}
+Monte Carlo simulations match theoretical predictions within the 95\,\% confidence
+interval at all SNR points for every channel and equalizer combination.
+The simulation framework is validated and used as the ground truth for all subsequent
+experiments.
+Full validation charts are provided in Appendix~\ref{sec:app-e1}.
+
+%% ============================================================
+%% E2: SISO BPSK Baseline
+%% ============================================================
+\section{E2: SISO BPSK Performance (Baseline Relay Comparison)}\label{sec:siso-bpsk-performance-baseline-relay-comparison}
+
+\textbf{Goal.}
+Evaluate baseline classical and AI-based relay strategies on single-antenna
+configurations across different fading environments.
+
+\textbf{Configuration.}
+Topology: SISO.
+Modulation: BPSK.
+Channels: AWGN, Rayleigh, Rician ($K{=}3$).
+Equalizers: none.
+NN architectures: MLP, Hybrid, VAE, CGAN, Transformer, Mamba~S6, Mamba-2~SSD.
+Activation: \texttt{tanh}.
+
+\textbf{Conclusion.}
+AI relays selectively outperform AF and, on AWGN and Rician channels, DF at low SNR
+(0--4\,dB).
+Under Rayleigh fading, classical DF dominates even at low SNR.
+Across all channels, DF remains dominant at medium-to-high SNR ($\geq 6$\,dB),
+matching or exceeding all AI methods with zero parameters.
+BER curves and numerical tables are in Appendix~\ref{sec:app-e2}
+(Figures~\ref{fig:fig9}--\ref{fig:fig11}).
+
+%% ============================================================
+%% E3: MIMO 2x2 BPSK
+%% ============================================================
+\section{E3: MIMO 2$\times$2 BPSK Performance}\label{sec:mimo-2x2-bpsk-performance}
+
+\textbf{Goal.}
+Evaluate relay strategies under spatial multiplexing and various interference
+cancellation techniques.
+
+\textbf{Configuration.}
+Topology: MIMO 2$\times$2.
+Modulation: BPSK.
+Channel: Rayleigh.
+Equalizers: ZF, MMSE, SIC.
+NN architectures: all nine.
+Activation: \texttt{tanh}.
+
+\textbf{Conclusion.}
+The MIMO equalization hierarchy (ZF $<$ MMSE $<$ SIC) holds for all relay types.
+The AI advantage at low SNR is preserved under ZF and MMSE (Mamba~S6 achieves the
+lowest BER), but under SIC equalization, classical DF provides the lowest BER at all
+low-to-medium SNR points.
+Relay processing gains and MIMO equalization gains are additive.
+BER curves and numerical tables are in Appendix~\ref{sec:app-e3}
+(Figures~\ref{fig:fig12}--\ref{fig:fig14}).
+
+%% ============================================================
+%% E4: Parameter Normalization
+%% ============================================================
+\section{E4: Parameter Normalization \& Complexity Trade-off}\label{sec:parameter-normalization-complexity-trade-off}
+
+\textbf{Goal.}
+Isolate architectural inductive biases from parameter-count effects and characterise
+the complexity--performance trade-off for relay denoising.
+
+\textbf{Configuration.}
+Topology: SISO and MIMO 2$\times$2.
+Modulation: BPSK.
+Channels: AWGN, Rayleigh, Rician, MIMO (ZF, MMSE, SIC).
+NN architectures: all nine, normalised to $\sim$3\,000 parameters and at original
+sizes (169 to 26\,K).
+Activation: \texttt{tanh}.
+
+\textbf{Conclusion.}
+The relay denoising task exhibits an inverted-U complexity relationship: a minimal
+169-parameter MLP matches models 140$\times$ larger, while excessive parameters
+($>$11\,K) lead to overfitting.
+At a normalised scale of 3\,000 parameters, the performance gap between feedforward
+and sequence architectures narrows to $\sim$1\,\% BER, indicating that parameter
+count rather than architectural choice is the primary performance driver.
+Generative VAE is a consistent underperformer due to probabilistic overhead.
+BER curves, complexity charts, and numerical tables are in Appendix~\ref{sec:app-e4}
+(Figures~\ref{fig:fig15}--\ref{fig:fig20}).
+
+%% ============================================================
+%% E5: Higher-Order Modulation
+%% ============================================================
+\section{E5: Higher-Order Modulation Scalability (Constellation-Aware Training)}\label{sec:higher-order-modulation-scalability-constellation-aware-training}
+
+\textbf{Goal.}
+Evaluate the generalisability of BPSK-trained relays to complex constellations and
+resolve the multi-level amplitude bottleneck.
+
+\textbf{Configuration.}
+Topology: SISO.
+Modulations: QPSK, 16-QAM.
+Channels: AWGN, Rayleigh.
+Equalizers: none.
+NN architectures: all nine.
+Activations: \texttt{tanh}, linear, \texttt{hardtanh}, scaled \texttt{tanh}, scaled
+sigmoid.
+Special case: constellation-aware training.
+
+\textbf{Conclusion.}
+QPSK performance mirrors BPSK perfectly due to I/Q independence.
+On 16-QAM, standard \texttt{tanh} compression causes a severe, irreducible BER floor
+($\approx$0.22 at 16\,dB).
+Replacing \texttt{tanh} with constellation-aware bounded activations
+(\texttt{hardtanh}, scaled \texttt{tanh}) bounded to the precise signal amplitude
+($3/\sqrt{10}$) and retraining eliminates this floor.
+Sequence models benefit most, reducing their BER floor by 5$\times$, though a gap to
+classical DF persists due to per-axis error accumulation.
+BER curves, activation comparisons, and numerical tables are in
+Appendix~\ref{sec:app-e5}
+(Figures~\ref{fig:fig21}--\ref{fig:fig36}).
+
+%% ============================================================
+%% E6: CSI Injection & LayerNorm
+%% ============================================================
+\section{E6: Input Normalization and CSI Injection}\label{sec:input-normalization-and-csi-injection}
+
+\textbf{Goal.}
+Evaluate the impact of explicit Channel State Information (CSI) injection and Input
+Layer Normalization across 48 distinct neural relay configurations for 16-QAM and
+16-PSK.
+
+\textbf{Configuration.}
+Topology: SISO.
+Modulations: 16-QAM, 16-PSK.
+Channel: Rayleigh.
+Equalizers: none.
+NN architectures: Transformer, Mamba~S6, Mamba-2~SSD.
+Variants: Baseline / CSI / LayerNorm / CSI+LayerNorm $\times$ 4 activations
+$\times$ 3 architectures $\times$ 2 modulations = 48 configurations.
+
+\textbf{Conclusion.}
+A clear dichotomy emerges between the two modulation schemes. Explicit CSI injection significantly improves BER performance for phase-sensitive modulations (16-PSK) by enabling the network to compensate for channel-induced phase rotation in the Rayleigh fading channel. For amplitude-dependent modulations (16-QAM), the effect of CSI injection is architecture- and injection-method-dependent; in several configurations a performance degradation is observed empirically, the precise mechanism of which warrants further investigation. Input Layer Normalization consistently improves convergence and BER across the majority of tested configurations; however, its interaction with amplitude-sensitive modulations such as 16-QAM should be interpreted with caution, as normalization removes amplitude scale information that is intrinsic to QAM symbol detection.
+Appendix~\ref{chap:app-csi}
+(Figures~\ref{fig:fig39}--\ref{fig:fig45}).
+
+%% ============================================================
+%% E7: 16-Class 2D Classification
+%% ============================================================
+\section{E7: 16-Class 2D Classification for QAM16}\label{sec:class-2d-classification-for-qam16}
+
+\textbf{Goal.}
+Eliminate the structural BER floor imposed by per-axis I/Q splitting for 16-QAM by
+utilising full 2D decision boundaries.
+
+\textbf{Configuration.}
+Topology: SISO.
+Modulation: 16-QAM.
+Channel: AWGN.
+Equalizers: none.
+NN architectures: MLP, VAE, Transformer, Mamba~S6, Mamba-2~SSD.
+Activation: softmax (implicit via cross-entropy loss).
+Special case: joint 16-class 2D classification.
+
+\textbf{Conclusion.}
+Treating the relay as a joint 16-point classifier over the full 2D constellation space
+completely eliminates the structural 4-class BER floor.
+For the first time, neural variants (VAE, Transformer, MLP) matched classical DF
+performance at high SNR, achieving near-zero BER at 20\,dB.
+This proves the previous BER floor was an artefact of I/Q splitting, not a fundamental
+limitation of neural relays.
+BER curves, bar charts, and numerical tables are in Appendix~\ref{sec:app-e7}
+(Figures~\ref{fig:fig50}--\ref{fig:fig53}).
+
+%% ============================================================
+%% E8: End-to-End Optimization
+%% ============================================================
+\section{E8: End-to-End Joint Optimization}\label{sec:end-to-end-joint-optimization}
+
+\textbf{Goal.}
+Compare the modular neural relay approach against a fully joint transmitter--receiver
+autoencoder.
+
+\textbf{Configuration.}
+Topology: SISO.
+Modulation: learned latent space ($M{=}16$, power-constrained).
+Channel: Rayleigh.
+Equalizer: ZF (receiver side).
+NN architecture: MLP autoencoder (encoder/decoder).
+Special case: end-to-end (E2E) optimization.
+
+\textbf{Conclusion.}
+The E2E autoencoder underperforms both the theoretical limits of classical 16-QAM and
+the modular two-hop DF relay across all SNR points (67--141\,\% higher BER).
+The network fails to discover a constellation geometry that surpasses the classical
+square grid under single-antenna Rayleigh fading, demonstrating that black-box deep
+learning is inefficient compared to modular designs that leverage classical signal
+processing for modulation and equalization.
+BER curves, learned constellation, and training loss are in Appendix~\ref{sec:app-e8}
+(Figures~\ref{fig:fig46}--\ref{fig:fig49}).
 \(\mathbf{b}\) & Bias vector \\
 \(P_e\) & Bit error rate \\
 \(Q(\cdot)\) & Gaussian Q-function \\
