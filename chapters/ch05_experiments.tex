@@ -1,14 +1,15 @@
 %% ============================================================
 %% Chapter 5: Experiments
-%% Structure: Master config table + conclusion-only sections
-%% All figures and tables are in Appendix (ch09_appendices.tex)
+%% Structure: Master config table + one-figure-per-experiment sections
+%% Full numerical tables and all figures are in Appendix
 %% ============================================================
 \chapter{Experiments}\label{sec:experiments}
 
 This chapter presents the experimental evaluation of nine relay strategies across eight
-systematic experiments. Each experiment is described by its goal, configuration, and
-conclusion only. All supporting figures and numerical tables are consolidated in
-Appendix~\ref{chap:app-experiments} to maintain narrative clarity.
+systematic experiments. Each experiment is described by its goal, configuration,
+conclusion, and one representative figure that supports the key finding. Complete
+numerical tables and all supporting figures are consolidated in
+Appendix~\ref{chap:app-experiments}.
 
 %% ============================================================
 %% Master Configuration Table
@@ -72,6 +73,16 @@ experiments.
 Full validation charts are provided in Appendix~\ref{sec:app-e1}
 (Figures~\ref{fig:fig1}--\ref{fig:fig7}).
 
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.40\textheight,keepaspectratio]{results/channel_analysis_summary.png}}
+\caption{E1 --- Consolidated channel model validation: theory vs.\ simulation for
+AWGN, Rayleigh, and Rician channels (top row) and MIMO equalizer comparison (bottom
+row). All simulated curves fall within the 95\,\% confidence interval of the
+theoretical predictions, confirming framework accuracy.}
+
+\end{figure}
+
 %% ============================================================
 %% E2: SISO BPSK Baseline
 %% ============================================================
@@ -93,6 +104,15 @@ channels, DF remains dominant at medium-to-high SNR ($\geq 6$\,dB), matching or
 exceeding all AI methods with zero parameters.
 BER curves and numerical tables are in Appendix~\ref{sec:app-e2}
 (Figures~\ref{fig:fig9}--\ref{fig:fig11}).
+
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.40\textheight,keepaspectratio]{results/awgn_comparison_ci.png}}
+\caption{E2 --- SISO BPSK on AWGN: BER vs.\ SNR for all nine relay strategies with
+95\,\% CI. AI relays outperform AF and DF at low SNR (0--4\,dB); classical DF
+dominates at medium-to-high SNR ($\geq 6$\,dB).}
+
+\end{figure}
 
 %% ============================================================
 %% E3: MIMO 2x2 BPSK
@@ -117,6 +137,15 @@ low-to-medium SNR points. Relay processing gains and MIMO equalization gains are
 additive.
 BER curves and numerical tables are in Appendix~\ref{sec:app-e3}
 (Figures~\ref{fig:fig12}--\ref{fig:fig14}).
+
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.40\textheight,keepaspectratio]{results/mimo_equalizer_comparison.png}}
+\caption{E3 --- MIMO 2$\times$2 equalizer comparison: single-hop BER with ZF, MMSE,
+and SIC equalization. MMSE provides $\sim$1--2\,dB gain over ZF; SIC provides an
+additional $\sim$0.5--1\,dB gain. The equalization hierarchy holds for all relay types.}
+
+\end{figure}
 
 %% ============================================================
 %% E4: Parameter Normalisation
@@ -146,6 +175,16 @@ overhead.
 BER curves, complexity charts, and numerical tables are in Appendix~\ref{sec:app-e4}
 (Figures~\ref{fig:fig15}--\ref{fig:fig20}).
 
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.40\textheight,keepaspectratio]{results/normalized_3k_all_channels.png}}
+\caption{E4 --- Normalised 3K-parameter comparison across all channels. At equal
+parameter budgets, all architectures converge to similar BER, with VAE being the
+consistent underperformer. The gap between feedforward and sequence models narrows
+to $\sim$1\,\% BER.}
+
+\end{figure}
+
 %% ============================================================
 %% E5: Higher-Order Modulation
 %% ============================================================
@@ -173,6 +212,16 @@ per-axis error accumulation.
 BER curves, activation comparisons, and numerical tables are in
 Appendix~\ref{sec:app-e5}
 (Figures~\ref{fig:fig21}--\ref{fig:fig36}).
+
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.40\textheight,keepaspectratio]{results/modulation/combined_modulation_awgn.png}}
+\caption{E5 --- Combined modulation comparison on AWGN: all nine relays across BPSK
+(solid), QPSK (dashed, overlapping BPSK), and 16-QAM (dotted). The BPSK/QPSK overlap
+confirms I/Q splitting equivalence. The 16-QAM dotted curves reveal the AI relay BER
+floor ($\approx$0.18--0.25) that constellation-aware training eliminates.}
+
+\end{figure}
 
 %% ============================================================
 %% E6: CSI Injection & LayerNorm
@@ -202,6 +251,16 @@ The full 48-variant sweep, BER charts, and training curves are in
 Appendix~\ref{chap:app-csi}
 (Figures~\ref{fig:fig39}--\ref{fig:fig45}).
 
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.40\textheight,keepaspectratio]{results/csi/top3_qam16_rayleigh.png}}
+\caption{E6 --- Top-3 neural relay architectures for 16-QAM in Rayleigh fading. All
+three best-performing variants use Input LayerNorm (+LN) without CSI injection,
+confirming that LayerNorm is universally beneficial while CSI injection degrades
+amplitude-dependent modulations.}
+
+\end{figure}
+
 %% ============================================================
 %% E7: 16-Class 2D Classification
 %% ============================================================
@@ -226,6 +285,16 @@ achieving near-zero BER at 20\,dB. This proves the previous BER floor was an art
 of I/Q splitting, not a fundamental limitation of neural relays.
 BER curves, bar charts, and numerical tables are in Appendix~\ref{sec:app-e7}
 (Figures~\ref{fig:fig50}--\ref{fig:fig53}).
+
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.40\textheight,keepaspectratio]{results/all_relays_16class/ber_all_relays_16class.png}}
+\caption{E7 --- 16-QAM BER vs.\ SNR for all relay variants (4-class and 16-class) on
+AWGN. The 4-class variants (dashed) plateau at BER $\approx 0.008$ while the
+16-class variants (solid) continue decreasing, approaching and matching the DF
+baseline at 20\,dB.}
+
+\end{figure}
 
 %% ============================================================
 %% E8: End-to-End Optimisation
@@ -252,3 +321,13 @@ is inefficient compared to modular designs that leverage classical signal proces
 modulation and equalization.
 BER curves, learned constellation, and training loss are in Appendix~\ref{sec:app-e8}
 (Figures~\ref{fig:fig46}--\ref{fig:fig49}).
+
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.40\textheight,keepaspectratio]{results/e2e/e2e_relay_comparison.png}}
+\caption{E8 --- Performance comparison of the E2E autoencoder against the modular
+relay-based approaches. The E2E system does not achieve lower BER than the two-hop
+DF relay at any SNR point, demonstrating the superiority of modular design over
+black-box end-to-end optimisation.}
+
+\end{figure}
