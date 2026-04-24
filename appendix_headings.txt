@@ -1,0 +1,22 @@
+Appendices
+Appendix A: Mathematical Notation
+Appendix B: Model Architectures and Hyperparameters
+Appendix C: Software Architecture
+Appendix D: Normalized 3K-Parameter Configurations
+Channel Model Validation Charts
+Results Figures
+Detailed Experimental Tables
+48-Variant Neural Relay Experiments (CSI \& Normalization)
+Results Tables
+Results Figures
+Experimental Results
+E1: Channel Model Validation
+E2: SISO BPSK Performance (Baseline Relay Comparison)
+E3: MIMO 2$\times$2 BPSK Performance
+E4: Parameter Normalisation \& Complexity Trade-off
+E5: Higher-Order Modulation Scalability (Constellation-Aware Training)
+E6: Input Normalisation and CSI Injection
+E7: 16-Class 2D Classification for QAM16
+E8: End-to-End Joint Optimisation
+
+Total lines: 1832
