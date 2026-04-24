@@ -47,7 +47,7 @@ where \(h(\cdot)\) depends on the specific channel type (AWGN, fading, or MIMO).
 \textbf{Power Normalization.} All relay strategies normalize their output power to ensure fair comparison:
 
 \begin{equation}\protect\phantomsection\label{eq:power-normalization}{x_R \leftarrow x_R \cdot \sqrt{\frac{P_{\text{target}}}{P_{\text{current}}}}
-}\end{equation} \par{\small\textit{Source: [1, Eq. 1]}}
+}\end{equation} 
 
 \subsection{MIMO Topology with Neural Network Relay and Equalization}\label{sec:mimo-topology-with-neural-network-relay-and-equalization}
 
@@ -119,7 +119,7 @@ The neural network processes a sliding window of received samples and outputs a 
 y_1 &= h_{11} x_{R,1} + h_{12} x_{R,2} + n_1 \\
 y_2 &= h_{21} x_{R,1} + h_{22} x_{R,2} + n_2
 \end{aligned}
-}\end{equation} \par{\small\textit{Source: [19, Ch. 7.2]}}
+}\end{equation} \cite{tse2005fundamentals}
 
 Each RX antenna sees a \textbf{mixture} of both transmitted streams --- this mixing is the inter-stream interference that the equalizer must undo.
 
@@ -199,7 +199,7 @@ Nine relay strategies were implemented, spanning four learning paradigms. The se
 \end{itemize}
 
 \begin{equation}\protect\phantomsection\label{eq:mlp-relay}{\mathbf{h} = \text{ReLU}(\mathbf{W}_1 \mathbf{w} + \mathbf{b}_1), \quad \hat{x} = \tanh(\mathbf{W}_2 \mathbf{h} + \mathbf{b}_2)
-}\end{equation} \par{\small\textit{Source: [23, Ch. 6]}}
+}\end{equation} \cite{goodfellow2016deep}
 
 where \(\mathbf{w} \in \mathbb{R}^5\) is a sliding window of received symbols (\(w=2\) neighbors on each side), and the hidden layer has 24 neurons. Parameters: \((5 \times 24 + 24) + (24 \times 1 + 1) = 169\).
 
@@ -283,14 +283,14 @@ BER is estimated through Monte Carlo simulation, which provides an unbiased esti
 \textbf{BER Computation:}
 
 \begin{equation}\protect\phantomsection\label{eq:ber-estimate}{\hat{P}_e = \frac{1}{N}\sum_{i=1}^{N} \mathbb{1}(b_i \neq \hat{b}_i)
-}\end{equation} \par{\small\textit{Source: [21, Ch. 14]}}
+}\end{equation} \cite{proakis2008digital}
 
 where \(\mathbb{1}(\cdot)\) is the indicator function and \(N = 10{,}000\) is the number of bits per trial. By the central limit theorem, for large \(N\) and moderate BER (say \(P_e \geq 10^{-3}\)), the per-trial BER estimate is approximately normally distributed with variance \(P_e(1-P_e)/N\).
 
 \textbf{Confidence Intervals.} The 95\% confidence interval is computed from the \(M = 10\) independent trial estimates as:
 
 \begin{equation}\protect\phantomsection\label{eq:confidence-interval}{\text{CI}_{95\%} = \bar{P}_e \pm t_{0.025, M-1} \cdot \frac{s}{\sqrt{M}}
-}\end{equation} \par{\small\textit{Source: Standard statistics}}
+}\end{equation} 
 
 where \(\bar{P}_e\) is the sample mean BER across trials, \(s\) is the sample standard deviation, and \(t_{0.025, 9} = 2.262\) is the critical value of the Student's \(t\)-distribution with 9 degrees of freedom. At low BER (\(\hat{P}_e \lesssim 10^{-4}\)), the normal approximation may become unreliable due to the small number of observed errors; however, in this regime the relay methods converge and the relative ranking is stable.
 
@@ -301,7 +301,7 @@ where \(\bar{P}_e\) is the sample mean BER across trials, \(s\) is the sample st
 Differences between relay methods are assessed using the \textbf{Wilcoxon signed-rank test}, a non-parametric paired test. For each pair of relay strategies \((A, B)\) at each SNR point, the test compares the \(M = 10\) paired BER observations:
 
 \begin{equation}\protect\phantomsection\label{eq:wilcoxon-test}{H_0: \text{median}(P_{e,A} - P_{e,B}) = 0 \quad \text{vs.} \quad H_1: \text{median}(P_{e,A} - P_{e,B}) \neq 0
-}\end{equation} \par{\small\textit{Source: Standard statistics}}
+}\end{equation} 
 
 The Wilcoxon test is preferred over the parametric paired \(t\)-test for two reasons: (i) BER distributions are bounded (\([0, 0.5]\)) and potentially skewed, violating the normality assumption, and (ii) the test is robust to outlier trials. The significance level is set at \(\alpha = 0.05\).
 
@@ -383,7 +383,7 @@ The primary experiments in Sections 7.1--7.9 use BPSK modulation to isolate the 
 
 \subsection{BPSK}\label{sec:bpsk}
 
-Binary Phase-Shift Keying maps a single bit to a real-valued symbol:
+Binary Phase-Shift Keying maps a single bit to a real-valued symbol:~\cite{sklar2001digital}
 
 The baseband symbol \(x\) maps bits \(b \in \{0, 1\}\) to \(x \in \{-1, +1\}\).
 
@@ -394,7 +394,7 @@ The average symbol energy is \(E_s = 1\). Hard-decision demodulation recovers th
 Quadrature Phase-Shift Keying maps pairs of bits \((b_0, b_1)\) to complex symbols:
 
 \begin{equation}\protect\phantomsection\label{eq:qpsk-mapping}{x = \frac{(1 - 2b_0) + j(1 - 2b_1)}{\sqrt{2}}
-}\end{equation} \par{\small\textit{Source: [21, Ch. 4, Eq. 4-3-30]}}
+}\end{equation} \cite{proakis2008digital}
 
 yielding four constellation points at \(\{(\pm 1 \pm j)/\sqrt{2}\}\) with unit average power (\(E_s = 1\)). The Gray coding ensures that adjacent constellation points differ by exactly one bit:
 
@@ -421,7 +421,7 @@ Demodulation applies independent sign decisions on each component: \(\hat{b}_0 =
 \textbf{Theoretical QPSK BER.} For uncoded QPSK over an AWGN channel, the BER per bit equals the BPSK BER at the same \(E_b/N_0\) because each I/Q component carries an independent BPSK stream:
 
 \begin{equation}\protect\phantomsection\label{eq:qpsk-ber}{P_b^{\text{QPSK}} = Q\!\left(\sqrt{\frac{2E_b}{N_0}}\right) = P_b^{\text{BPSK}}
-}\end{equation} \par{\small\textit{Source: [21, Ch. 4, Eq. 4-3-31]}}
+}\end{equation} \cite{proakis2008digital}
 
 The advantage of QPSK is doubled throughput for the same BER and per-bit energy.
 
@@ -430,7 +430,7 @@ The advantage of QPSK is doubled throughput for the same BER and per-bit energy.
 16-QAM maps groups of four bits \((b_0, b_1, b_2, b_3)\) to one of 16 complex constellation points arranged on a \(4 \times 4\) rectangular grid (Figure~\ref{fig:fig8}c). Each axis (I and Q) uses independent Gray-coded PAM-4 mapping:
 
 \begin{equation}\protect\phantomsection\label{eq:qam16-mapping}{I = \frac{L(b_0, b_1)}{\sqrt{10}}, \quad Q = \frac{L(b_2, b_3)}{\sqrt{10}}, \quad x = I + jQ
-}\end{equation} \par{\small\textit{Source: [21, Ch. 5, Eq. 5-2-60]}}
+}\end{equation} \cite{proakis2008digital}
 
 where \(L(\cdot)\) maps bit pairs to PAM-4 levels using Gray coding:
 
@@ -456,7 +456,7 @@ Demodulation quantises each received component to the nearest PAM-4 level using 
 
 \textbf{Theoretical 16-QAM BER.} The approximate BER for 16-QAM over AWGN is:
 
-The theoretical error probability is provided in standard digital communication texts. \par{\small\textit{Source: [21, Ch. 5, Eq. 5-2-79]}}
+The theoretical error probability is provided in standard digital communication texts. \cite{proakis2008digital}
 
 At the same \(E_b/N_0\), 16-QAM has a higher BER than BPSK or QPSK due to the reduced Euclidean distance between constellation points. The trade-off is 4× throughput improvement.
 
@@ -476,21 +476,21 @@ Figure~\ref{fig:fig8} presents the constellation diagrams for all four modulatio
 16-PSK maps groups of four bits to one of 16 complex constellation points uniformly spaced on the unit circle (Figure~\ref{fig:fig8}d). Unlike 16-QAM, which modulates both amplitude and phase, 16-PSK uses \textbf{constant-envelope} transmission --- all symbols have identical magnitude (\(|x| = 1\)) and differ only in phase:
 
 \begin{equation}\protect\phantomsection\label{eq:psk16-mapping}{x_k = e^{j \theta_k}, \quad \theta_k = \frac{2\pi k}{16}, \quad k = 0, 1, \ldots, 15
-}\end{equation} \par{\small\textit{Source: [21, Ch. 5, Eq. 5-2-1]}}
+}\end{equation} \cite{proakis2008digital}
 
 The 16 constellation points are assigned 4-bit Gray-coded labels such that adjacent points on the circle differ by exactly one bit, minimising the BER for a given symbol error rate. The average symbol energy is \(E_s = E[|x|^2] = 1\) (unit circle).
 
 \textbf{Demodulation.} Hard-decision demodulation computes the phase of the received symbol and assigns it to the nearest constellation point:
 
 \begin{equation}\protect\phantomsection\label{eq:psk16-decision}{\hat{k} = \arg\min_{k \in \{0,\ldots,15\}} \left| \angle \hat{x} - \theta_k \right|
-}\end{equation} \par{\small\textit{Source: [21, Ch. 5]}}
+}\end{equation} \cite{proakis2008digital}
 
 The recovered bits are obtained from the inverse Gray mapping of \(\hat{k}\). The spectral efficiency is 4 bits/symbol, identical to 16-QAM.
 
 \textbf{Theoretical 16-PSK BER.} The approximate BER for Gray-coded 16-PSK over AWGN is:
 
 \begin{equation}\protect\phantomsection\label{eq:psk16-ber}{P_b^{\text{16-PSK}} \approx \frac{1}{4} \operatorname{erfc}\!\left(\sqrt{\frac{E_b}{N_0}} \sin\!\left(\frac{\pi}{16}\right)\right)
-}\end{equation} \par{\small\textit{Source: [21, Ch. 5, Eq. 5-2-22]}}
+}\end{equation} \cite{proakis2008digital}
 
 At the same \(E_b/N_0\), 16-PSK has a higher BER than 16-QAM because the minimum Euclidean distance between adjacent symbols on the unit circle (\(d_{\min} = 2\sin(\pi/16) \approx 0.39\)) is smaller than the minimum distance in the 16-QAM grid (\(d_{\min} = 2/\sqrt{10} \approx 0.63\)). The advantage of 16-PSK is its constant-envelope property, which is important for non-linear power amplifiers.
 
