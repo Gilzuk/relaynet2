@@ -54,7 +54,7 @@
 \contentsline {section}{\numberline {4.4}Normalized Parameter Comparison}{39}{section.4.4}%
 \contentsline {section}{\numberline {4.5}Modulation Schemes}{40}{section.4.5}%
 \contentsline {subsection}{\numberline {4.5.1}BPSK}{40}{subsection.4.5.1}%
-\contentsline {subsection}{\numberline {4.5.2}QPSK --- Gray-Coded Quadrature Phase-Shift Keying}{41}{subsection.4.5.2}%
+\contentsline {subsection}{\numberline {4.5.2}QPSK --- Gray-Coded Quadrature Phase-Shift Keying}{40}{subsection.4.5.2}%
 \contentsline {subsection}{\numberline {4.5.3}16-QAM --- Gray-Coded Quadrature Amplitude Modulation}{41}{subsection.4.5.3}%
 \contentsline {subsection}{\numberline {4.5.4}Constellation Diagram Summary}{42}{subsection.4.5.4}%
 \contentsline {subsection}{\numberline {4.5.5}16-PSK --- Gray-Coded Phase-Shift Keying}{43}{subsection.4.5.5}%

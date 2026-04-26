@@ -163,4 +163,8 @@ K.~He, X.~Zhang, S.~Ren, and J.~Sun, ``Delving deep into rectifiers: Surpassing
   human-level performance on {ImageNet} classification,'' in \emph{Proc. IEEE
   Int. Conf. Comput. Vision (ICCV)}, 2015, pp. 1026--1034.
 
+\bibitem{sklar2001digital}
+B.~Sklar, \emph{Digital Communications: Fundamentals and Applications},
+  2nd~ed.\hskip 1em plus 0.5em minus 0.4em\relax Prentice Hall, 2001.
+
 \end{thebibliography}
