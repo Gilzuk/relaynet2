@@ -2,7 +2,11 @@
 
 \section{System Model}\label{sec:system-model-1}
 
-The system under study is a two-hop relay network with a single relay node:
+The system under study is the two-hop relay network introduced in Section~\ref{sec:two-hop-relay-model}: a \textbf{half-duplex}, two-hop link with a single relay and \textbf{no direct source--destination path}. \emph{Half-duplex} means that, at every channel use, the relay is either receiving from the source or transmitting to the destination, but not both. Without loss of generality, the relay operation therefore splits in time into a \textbf{listening phase} (Hop~1: the relay collects $y_R[\cdot]$) and a \textbf{transmission phase} (Hop~2: the relay emits $x_R[\cdot]$). At time index $i$, the listening phase produces $y_R[i] = h_1\!\left(x[i]\right) + n_1[i]$ and the transmission phase produces $\mathbf{y}[i] = \mathbf{H}\,\mathbf{x}_R[i] + \mathbf{n}[i]$ at the destination, where $\mathbf{H}\in\mathbb{C}^{2\times 2}$ is the i.i.d.\ Rayleigh fast-fading channel of Hop~2 (a fresh realization per channel use). The relay's neural network output is computed during the transmission phase from a window of listening-phase observations:
+\[
+x_R[i] \;=\; f_\theta\!\left(y_R[i-w:i+w]\right),
+\]
+where $w$ is the half-window size of the relay (memoryless for the classical AF/DF baselines, $w>0$ for the AI relays). For the explicit diagram of the end-to-end signal flow see below.
 
 
 \begin{figure}[H]
@@ -38,11 +42,7 @@ The system under study is a two-hop relay network with a single relay node:
 
 \textbf{Modulation.} Four modulation schemes are supported. The primary experiments use Binary Phase-Shift Keying (BPSK): bits \(b \in \{0, 1\}\) are mapped to real symbols \(x = 1 - 2b \in \{-1, +1\}\). Extensions to Quadrature Phase-Shift Keying (QPSK), 16-point Quadrature Amplitude Modulation (16-QAM), and 16-point Phase-Shift Keying (16-PSK) are evaluated in Sections 7.10 and 7.15 to test whether the BPSK findings generalise to complex constellations. QPSK maps pairs of bits to complex symbols on the unit circle (2 bits/symbol); 16-QAM maps groups of four bits to a \(4 \times 4\) Gray-coded grid (4 bits/symbol); 16-PSK maps groups of four bits to 16 equally spaced points on the unit circle (4 bits/symbol). Full modulation details are given in Section~\ref{sec:modulation-schemes}.
 
-\textbf{Hop Model.} Each hop applies a channel function followed by optional equalization:
-
-The received signal follows the channel models defined in Chapter~\ref{sec:introduction}.
-
-where \(h(\cdot)\) depends on the specific channel type (AWGN, fading, or MIMO).
+\textbf{Hop Model.} Each hop applies a channel function followed by optional equalization. With the time index made explicit, the listening phase (Hop~1) gives $y_R[i] = h_1\!\left(x[i]\right) + n_1[i]$ for SISO channels (AWGN, Rayleigh, or Rician), and the transmission phase (Hop~2) gives $\mathbf{y}[i] = \mathbf{H}\,\mathbf{x}_R[i] + \mathbf{n}[i]$ for the $2\times 2$ MIMO Rayleigh fast-fading channel; the destination then applies a linear or non-linear equalizer (ZF, MMSE, or SIC) to recover the symbol estimates. The detailed channel models are those defined in Chapter~\ref{sec:introduction}, where $h_1(\cdot)$ depends on the SISO Hop-1 channel type (AWGN, Rayleigh, or Rician) and $\mathbf{H}$ is the per-use Hop-2 MIMO matrix.
 
 \textbf{Power Normalization.} All relay strategies normalize their output power to ensure fair comparison:
 
@@ -107,11 +107,7 @@ These three components combine in the following end-to-end signal flow:
 
 \textbf{Figure~\ref{fig:relay-system-detailed} --- End-to-end two-hop relay signal flow.} The relay's neural network solves a \emph{denoising} problem (Hop 1 noise removal); the MIMO equalizer solves an \emph{interference cancellation} problem (Hop 2 stream separation). The two stages are independent and their gains are additive.
 
-\textbf{The relay's neural network} operates on Hop 1 and solves a \textbf{denoising} problem. Each antenna at the relay receives:
-
-The signal received at the relay is defined as in Chapter~\ref{sec:introduction}.
-
-The neural network processes a sliding window of received samples and outputs a cleaner estimate \(\hat{x}_R = f_\theta(y_{R,i-w:i+w})\). This is purely a noise-removal task --- there is no inter-stream interference at this stage.
+\textbf{The relay's neural network} operates on Hop~1 (during the listening phase) and solves a \textbf{denoising} problem. The signal received at the relay is the time-indexed Hop~1 model from Chapter~\ref{sec:introduction}, $y_R[i] = h_1\!\left(x[i]\right) + n_1[i]$. The neural network processes a sliding window of received samples and outputs a cleaner estimate $\hat{x}_R[i] = f_\theta\!\left(y_R[i-w:i+w]\right)$, which is then power-normalised and re-emitted during the transmission phase as $x_R[i]$. This is purely a noise-removal task --- there is no inter-stream interference at this stage; inter-stream interference only arises on Hop~2.
 
 \textbf{The MIMO topology} applies to Hop 2, where the relay retransmits using 2 TX antennas and the destination has 2 RX antennas. Each of the 4 TX--RX antenna pairs experiences an independent Rayleigh fading channel (\(H_{ij} \sim \mathcal{CN}(0,1)\)), creating \textbf{inter-stream interference}:
 
