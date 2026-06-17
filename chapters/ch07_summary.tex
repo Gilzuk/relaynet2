@@ -1,0 +1,17 @@
+\chapter {Summary}
+\noindent
+This work examined classical and neural network–based relay strategies for \textit{two-hop cooperative communication} using a unified simulation framework. The objective was to analyze performance–complexity tradeoffs and determine when learning-based relays provide practical advantages over analytically derived methods.
+The study showed the followings:
+\begin{enumerate}
+    \item Neural relays can yield selective performance improvements at low signal-to-noise ratio (SNR), particularly in scenarios with limited channel distortion or partial line-of-sight conditions.
+    \item However, classical \textit{decode-and-forward (DF)} consistently outperformed neural approaches at \textbf{medium-to-high SNR} while requiring no trainable parameters, highlighting the continued optimality of classical relay processing in this regime. 
+    \item A systematic complexity analysis demonstrated that performance \textbf{does not improve monotonically with model size}. 
+    \item A \textbf{minimal neural relay} achieved performance comparable to significantly larger models, while intermediate-sized networks exhibited overfitting. 
+    \item When neural relays were evaluated under equal parameter budgets, architectural differences largely vanished, indicating that \textbf{model capacity}, rather than architectural class, dominates performance for this task.
+    \item Sequence-based neural relays  such as \textttt{Structured state-space} models achieved comparable error performance with improved training efficiency. 
+    \item In multiple-input multiple-output (MIMO) settings, receiver-side processing remained a critical factor, with minimum mean square error (MMSE) equalization and successive interference-cancellation (SIC) providing gains largely independent of the relay type.
+    \item From a deployment perspective, a \texttt{hybrid relay} combining neural processing at low SNR with DF at high SNR emerged as the \textbf{most effective strategy}, achieving near-optimal performance with \textbf{minimal overhead}. 
+    \item For higher-order modulation, joint constellation-level classification eliminated structural error floors, while channel state information (CSI) was found to be modulation-dependent in its effectiveness.    
+\end{enumerate}
+
+Overall, the results indicate that learning-based relays are best used as targeted enhancements rather than universal replacements, with simplicity, parameter efficiency, and hybrid design as key principles for practical cooperative relay systems.

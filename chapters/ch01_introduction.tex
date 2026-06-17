@@ -1,0 +1,15 @@
+\AK{Abstract is missing.}
+
+\AK{There are compilation errors. Would be good to resolve them.}
+
+\chapter{Introduction}\label{sec:introduction}
+
+Relay communication is a key technique in contemporary wireless systems that uses intermediate nodes between a source and a destination to extend coverage, enhance reliability, and boost throughput. Classical relay strategies such as amplify-and-forward (\texttt{AF}) and decode-and-forward (\texttt{DF}) have been extensively analyzed and are widely used as baseline protocols; in several canonical relay-channel models, \texttt{DF} (and related forwarding schemes) can achieve capacity or approach fundamental limits, particularly in the high-SNR regime \cite{CoverGamal1979RelayChannel,ElGamalKim2011NetworkIT,Laneman2004CooperativeDiversity,RankovWittneben2007HalfDuplexRelay,Nosratinia2004CooperativeCommunication}.
+
+Recent advances in machine learning have motivated the application of neural networks to physical-layer communication problems, including detection, decoding, and end-to-end system optimization. Neural models can approximate nonlinear mappings that are analytically intractable and may offer advantages in low-SNR or non-ideal regimes. 
+
+This motivates the central question of this thesis: \emph{under what conditions can neural network–based relays improve upon or complement classical relay strategies in two-hop cooperative communication?} 
+
+This thesis presents a systematic comparative study of classical and neural relay strategies within a unified simulation framework. Nine relay methods are evaluated: Two classical relay strategies (\texttt{AF} and \texttt{DF}) and seven neural relays spanning supervised learning (\texttt{MLP}, SNR-adaptive \texttt{hybrid} relay), generative modeling (variational autoencoder \texttt{VAE} and conditional GAN with \texttt{WGAN-GP}), and sequence-based architectures (\texttt{Transformer}, \texttt{Mamba-S6}, and \texttt{Mamba-SSD}  with structured state space duality). 
+
+The main objective of this thesis is not to propose a new relay design, but to quantify \textit{performance Vs. complexity} tradeoffs and identify regimes where learning-based relays are effective, as Existing studies typically focus on a limited set of architectures or channel models, making it difficult to disentangle the effects of model structure, parameter count, and channel conditions.
