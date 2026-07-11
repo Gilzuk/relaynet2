@@ -8,7 +8,8 @@ relaynet/
 │   ├── af.py           AmplifyAndForwardRelay
 │   ├── df.py            DecodeAndForwardRelay (hard-decision)
 │   ├── mlp.py            MLPRelay              (E6 port: general windowed neural relay)
-│   ├── viterbi.py         ViterbiMLSERelay      (E6 port: MLSE for ISI channels)
+│   ├── viterbi.py         ViterbiMLSERelay (BPSK), ViterbiMLSEQPSKRelay (QPSK, 4-symbol
+│   │                       Gray-coded trellis) — both MLSE for ISI channels
 │   ├── e2e.py, vae.py, cgan.py, hybrid.py, rl.py, genai.py   (other thesis chapters' architectures)
 ├── channels/
 │   ├── awgn.py, fading.py, mimo.py
@@ -26,7 +27,7 @@ relaynet/
 - **Channel interface**: a channel is callable as `channel(signal, snr_db) -> noisy_signal`, and is a class so it can hold internal RNG/seed state (`ISIChannel(seed=...)`, etc.).
 - **SNR convention**: γ = 1/σ² = 10^(SNR_dB/10); noise_power = signal_power / 10^(SNR_dB/10). Verified identical between standalone E6 scripts and `relaynet` — no rescaling anywhere. Any new channel MUST follow this exact convention.
 - **Windowed neural relays**: `MLPRelay(input_size, hidden_size, output_size, window_size, seed)`. If `window_size` is set, `.process()` auto-extracts sliding windows via `np.lib.stride_tricks.sliding_window_view` with `pad_size = window_size // 2` zero-padding on both sides. For complex signals, windows are extracted manually (I and Q concatenated) and passed to `.fwd()` directly — see `extract_windows()` in `e6_flat_ported.py`.
-- **Viterbi relay**: `ViterbiMLSERelay(channel_taps=...)` for genie CSI, or LS-estimation variant — set `self.L` (channel length) BEFORE calling `_ls_estimate()` (this was a real bug, see `progress.md` Known Issues Fixed).
+- **Viterbi relay**: `ViterbiMLSERelay(channel_taps=...)` for genie CSI, or LS-estimation variant — set `self.L` (channel length) BEFORE calling `_ls_estimate()` (this was a real bug, see `progress.md` Known Issues Fixed). `ViterbiMLSEQPSKRelay` follows the identical trellis pattern generalized to base-M states (`itertools.product(range(M), repeat=L-1)` instead of binary digit unpacking) and complex branch metrics (`np.abs(y - exp_y)**2`); `process()` returns decoded complex constellation symbols rather than bits, consistent with `.process()` returning a forwarded signal, not decoded bits. If a 16-QAM version is ever needed, follow the same generalization (M=16, 256 states for L=3) — not built, explicitly deferred by user request.
 - **Hard vs soft decision relays** (added for the enhanced multi-architecture comparison): a "hard" DF relay quantizes to the nearest constellation point (`DecodeAndForwardRelay`, BPSK-only, or the modulation-aware `DFHardRelay` in `e6_sim_enhanced_multimod.py` which wraps `get_modulation_functions(modulation)`); a "soft" DF relay does power normalization only, no quantization (`DFSoftRelay`, same signature works for real or complex signals via `np.abs`). Neither hard/soft class is promoted into `relaynet/relays/` yet — kept local to the experiment scripts.
 - **Complex-signal channels** (`ComplexISIChannel`, `ComplexAWGNChannel` in `relaynet/channels/e6_channels.py`): same taps/SNR convention as their real-valued counterparts (`ISIChannel`) but add circularly-symmetric complex AWGN (`sigma * (randn + 1j*randn) / sqrt(2)`), required for QPSK/16-QAM where symbols are complex. `ComplexAWGNChannel` auto-detects real vs complex input, so it's safe to use as hop 2 for any modulation.
 
