@@ -10,6 +10,7 @@ from .cgan import CGANRelay
 from .hybrid import HybridRelay
 from .e2e import E2ERelay
 from .mlp import MLPRelay
+from .viterbi import ViterbiMLSERelay
 
 __all__ = [
     "Relay",
@@ -22,4 +23,5 @@ __all__ = [
     "HybridRelay",
     "E2ERelay",
     "MLPRelay",
+    "ViterbiMLSERelay",
 ]
