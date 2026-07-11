@@ -49,6 +49,101 @@ class ISIChannel:
         return isi_output + noise
 
 
+class ComplexISIChannel:
+    """Inter-Symbol Interference channel for complex baseband signals (QPSK/QAM).
+
+    Same physical model as :class:`ISIChannel` (real-valued unknown taps,
+    convolution, thesis SNR convention gamma = 1/sigma^2) but adds circularly
+    symmetric complex AWGN so it is correct for higher-order modulations
+    where the transmitted symbols themselves are complex.
+
+    Parameters
+    ----------
+    taps : array-like
+        Channel impulse response coefficients. Will be normalized to unit energy.
+    seed : int, optional
+        Random seed for reproducibility.
+    rng : numpy.random.Generator, optional
+        Random generator (overrides seed if provided).
+    """
+
+    def __init__(self, taps, seed=None, rng=None):
+        self.taps = np.asarray(taps, dtype=float)
+        self.taps /= np.linalg.norm(self.taps)
+        if rng is None:
+            self.rng = np.random.default_rng(seed)
+        else:
+            self.rng = rng
+
+    def __call__(self, signal, snr_db):
+        """Apply ISI channel and complex AWGN.
+
+        Parameters
+        ----------
+        signal : numpy.ndarray
+            Input signal (complex).
+        snr_db : float
+            SNR in dB (using thesis convention: gamma = 1/sigma^2).
+
+        Returns
+        -------
+        output : numpy.ndarray
+            Noisy channel output (complex).
+        """
+        isi_output = np.convolve(signal, self.taps)[:signal.size]
+
+        sigma = 10 ** (-snr_db / 20.0)
+        noise = sigma * (
+            self.rng.standard_normal(signal.size) +
+            1j * self.rng.standard_normal(signal.size)
+        ) / np.sqrt(2)
+
+        return isi_output + noise
+
+
+class ComplexAWGNChannel:
+    """Plain AWGN channel for complex baseband signals, thesis SNR convention.
+
+    Parameters
+    ----------
+    seed : int, optional
+        Random seed for reproducibility.
+    rng : numpy.random.Generator, optional
+        Random generator (overrides seed if provided).
+    """
+
+    def __init__(self, seed=None, rng=None):
+        if rng is None:
+            self.rng = np.random.default_rng(seed)
+        else:
+            self.rng = rng
+
+    def __call__(self, signal, snr_db):
+        """Add complex AWGN.
+
+        Parameters
+        ----------
+        signal : numpy.ndarray
+            Input signal (complex or real).
+        snr_db : float
+            SNR in dB (using thesis convention: gamma = 1/sigma^2).
+
+        Returns
+        -------
+        output : numpy.ndarray
+            Noisy channel output.
+        """
+        sigma = 10 ** (-snr_db / 20.0)
+        if np.iscomplexobj(signal):
+            noise = sigma * (
+                self.rng.standard_normal(signal.size) +
+                1j * self.rng.standard_normal(signal.size)
+            ) / np.sqrt(2)
+        else:
+            noise = sigma * self.rng.standard_normal(signal.size)
+        return signal + noise
+
+
 class NonlinearBiasChannel:
     """Nonlinear saturation with DC bias channel.
 

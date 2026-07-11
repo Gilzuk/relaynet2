@@ -15,7 +15,8 @@ Infrastructure landed as part of the above: `relaynet/relays/mlp.py`, `relaynet/
 ## Done ✅ (cont'd)
 
 - **`e6_sim_enhanced.py`** — multi-architecture relay comparison (AF, DF-Hard, DF-Soft, MLP-170, MLP-512, Viterbi-Genie), BPSK only, executed at full scale (5×50k). Confirmed DF-Hard is non-monotonic (ISI hard-decision error lock-in, rises 0.201→0.235 dB from 10→20dB SNR) while DF-Soft avoids it (tracks AF, 0.206 @20dB). AI relays ordered Viterbi-Genie ≤ MLP-512 ≲ MLP-170 at low/mid SNR, converge ~0.005 by 20dB. Chart + data in `/tmp/e6_sim_enhanced_comparison.png` / `.npy` (ephemeral — not committed to repo). See `activeContext.md` for full numbers.
-  - **Open item**: QPSK/QAM16 hard/soft DF comparison NOT run (missing `calculate_ber` in those modulation modules). Need to ask user whether to implement that or whether BPSK demonstration is sufficient.
+- **`e6_sim_enhanced_multimod.py`** — extends the classical AF/DF-Hard/DF-Soft comparison to QPSK and 16-QAM (BPSK included for continuity), same scenario (unknown ISI → AWGN), executed at full scale (5×50k). Required framework additions (now landed): `ComplexISIChannel` + `ComplexAWGNChannel` in `relaynet/channels/e6_channels.py`, modulation-aware `DFHardRelay`/`DFSoftRelay` local to the script. **Result: the DF-Hard non-monotonic lock-in vs DF-Soft robustness pattern generalizes to QPSK and 16-QAM** — same qualitative shape in all three modulations; 16-QAM sits at a higher overall BER floor (denser constellation, more fragile under ISI+noise), as expected. Chart + data in `/tmp/e6_sim_enhanced_multimod_comparison.png` / `.npy` (ephemeral).
+  - **Scoped out**: AI relays (MLP/Viterbi) for QPSK/16-QAM — `MLPRelay`'s single tanh output regresses one real value per window, correct for BPSK but not a valid target for 2- or 4-bit/symbol modulations without a multi-output redesign. Flagged to user as a separate, larger task if wanted.
 
 ## Not started ⏳
 
@@ -29,7 +30,7 @@ Infrastructure landed as part of the above: `relaynet/relays/mlp.py`, `relaynet/
 ## Known issues fixed this session
 1. `ViterbiMLSERelay`: `self.L` used before assignment ahead of `_ls_estimate()` call — fixed.
 2. `diff_detect()` in `e6_flat_ported.py`: returned array one element short — fixed by prepending boundary value `1.0`.
-3. `calculate_ber` missing for QPSK/QAM16 — worked around for `e6_sim_enhanced.py` by scoping to BPSK; not fixed at the framework level.
+3. QPSK/QAM16 support: `calculate_ber` turned out to already be modulation-agnostic (no fix needed there); the actual gap — no complex-aware ISI/AWGN channel, and `DecodeAndForwardRelay` hard-coded to BPSK — fixed via `ComplexISIChannel`/`ComplexAWGNChannel` + local modulation-aware DF relay classes. See `techContext.md` gotcha #3 and `e6_sim_enhanced_multimod.py`.
 
 ## Final deliverables (blocked on remaining ports above)
 1. Re-run all 7 experiments at project-standard scale (10 trials × 100k bits).

@@ -5,6 +5,8 @@ from .fading import rayleigh_fading_channel, rician_fading_channel
 from .mimo import mimo_2x2_channel, mimo_2x2_mmse_channel, mimo_2x2_sic_channel
 from .e6_channels import (
     ISIChannel,
+    ComplexISIChannel,
+    ComplexAWGNChannel,
     NonlinearBiasChannel,
     RayleighChannel,
     FlatPhaseChannel,
@@ -23,6 +25,8 @@ __all__ = [
     "mimo_2x2_mmse_channel",
     "mimo_2x2_sic_channel",
     "ISIChannel",
+    "ComplexISIChannel",
+    "ComplexAWGNChannel",
     "NonlinearBiasChannel",
     "RayleighChannel",
     "FlatPhaseChannel",
