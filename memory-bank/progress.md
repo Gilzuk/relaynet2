@@ -12,9 +12,10 @@ Branch: `claude/porting-md-file-l6xzsr`. Reference spec: `experiments-standalone
 
 Infrastructure landed as part of the above: `relaynet/relays/mlp.py`, `relaynet/relays/viterbi.py`, `relaynet/channels/e6_channels.py` (8 channel classes), `test_e6_core.py`.
 
-## In progress 🔶
+## Done ✅ (cont'd)
 
-- **`e6_sim_enhanced.py`** — multi-architecture relay comparison requested by user: 3 AI relays (MLP-170, MLP-512, Viterbi-Genie) + classical AF/DF with **both hard and soft decision variants** (`DecodeAndForwardRelay` = hard, new `DFSoftRelay` = soft/no-quantization). Committed to branch but **not yet executed** — no BER results or charts generated yet. Scoped to BPSK only (QPSK/QAM16 blocked, see `techContext.md` gotcha #3). Next action: run it (`python3 e6_sim_enhanced.py`), inspect `/tmp/e6_sim_enhanced_comparison.png`, verify: DF-soft vs DF-hard show expected differences, and MLP-170 < MLP-512 < Viterbi-Genie in BER (monotonic improvement with model capacity/CSI quality).
+- **`e6_sim_enhanced.py`** — multi-architecture relay comparison (AF, DF-Hard, DF-Soft, MLP-170, MLP-512, Viterbi-Genie), BPSK only, executed at full scale (5×50k). Confirmed DF-Hard is non-monotonic (ISI hard-decision error lock-in, rises 0.201→0.235 dB from 10→20dB SNR) while DF-Soft avoids it (tracks AF, 0.206 @20dB). AI relays ordered Viterbi-Genie ≤ MLP-512 ≲ MLP-170 at low/mid SNR, converge ~0.005 by 20dB. Chart + data in `/tmp/e6_sim_enhanced_comparison.png` / `.npy` (ephemeral — not committed to repo). See `activeContext.md` for full numbers.
+  - **Open item**: QPSK/QAM16 hard/soft DF comparison NOT run (missing `calculate_ber` in those modulation modules). Need to ask user whether to implement that or whether BPSK demonstration is sufficient.
 
 ## Not started ⏳
 

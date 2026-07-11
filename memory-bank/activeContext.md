@@ -2,6 +2,17 @@
 
 _Last updated: 2026-07-11_
 
+## Latest result (e6_sim_enhanced.py — EXECUTED)
+Full run completed (5 trials × 50k bits, SNR 0–20dB/2dB, BPSK only). Output: `/tmp/e6_sim_enhanced_comparison.png`, `/tmp/e6_sim_enhanced_results.npy`. **Note: `/tmp` does not persist — re-run if needed in a future session, or copy into the repo if these numbers should be kept.**
+
+Key findings:
+- AF/DF-Hard/DF-Soft all ISI-floor-limited (~0.19–0.24 BER), as expected.
+- **DF-Hard is non-monotonic**: improves to 0.201 @10dB then rises to 0.235 @20dB — hard decisions lock in ISI errors that then propagate. **DF-Soft does not show this** — tracks AF, keeps improving to 0.206 @20dB. This is the hard-vs-soft decision effect the user asked to demonstrate.
+- AI relays: Viterbi-Genie ≤ MLP-512 ≲ MLP-170 at low/mid SNR (e.g. 8dB: 0.0825 / 0.0956 / 0.0941), all converge to ~0.005 by 20dB. MLP-512 vs MLP-170 gap is small/within-noise at this trial count — not a strong capacity signal, would need more trials to sharpen.
+- All AI relays crush classical at high SNR (0.005 vs 0.20+).
+
+Caveat still open: **BPSK only** — QPSK/QAM16 hard/soft DF comparison not actually run (blocked on missing `calculate_ber` for those modulations, see techContext.md gotcha #3). Not yet resolved with the user whether that's needed.
+
 ## What's happening right now
 Working on `e6_sim_enhanced.py` — a multi-architecture BER comparison requested by the user on top of the already-verified E6 port. Request was:
 
