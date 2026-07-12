@@ -31,6 +31,17 @@ Full-scale run (5×50k, BPSK: AF/DF-Hard/DF-Soft/MLP-170/Viterbi-Genie; QPSK: AF
 
 Chart: `/tmp/e6_relay_comparison_symmetric.png` (2-panel BPSK/QPSK), data: `/tmp/e6_relay_comparison_symmetric_results.npy` (ephemeral).
 
+## Latest result: QPSK BER vs ISI tap count, L=3/4/5 (e6_viterbi_qpsk_tap_sweep.py — EXECUTED)
+User asked to extend the symmetric-hop experiment along a new axis: more ISI taps, QPSK, under the Rayleigh channel (i.e. `ComplexISIRayleighChannel` built in the prior round). Benchmarked trellis cost first: `ViterbiMLSEQPSKRelay` decode time scales ~4x per extra tap (L=3: 1.8s, L=4: 6.1s, L=5: 23.6s per 50k-symbol block; L=6 ~98s, not attempted). Capped the sweep at L∈{3,4,5}, dropped trials from 5→3 to keep runtime ~tractable (~20min total), taps = geometric decay `h_k = 0.7^k`, symmetric hops (same profile both hops, independent realizations), relays AF/DF-Hard/DF-Soft/Viterbi-Genie (QPSK).
+
+**Key finding — non-monotonic in L, not a straightforward "more memory = worse":**
+- AF/DF-Soft degrade monotonically with L (0.336→0.374, 0.337→0.375 @20dB) — expected, since fixed-unit-energy taps spread thinner across more taps shrinks the direct-tap fraction for any non-equalizing receiver.
+- **DF-Hard and Viterbi-Genie both hit their *best* BER at L=4, not L=3**: Viterbi-Genie floor @20dB goes 0.230 (L=3) → 0.172 (L=4) → 0.199 (L=5); DF-Hard goes 0.381 → 0.292 → 0.330. Confirmed real (CIs ±0.001–0.002, not noise).
+- **Working hypothesis, NOT confirmed**: two competing effects as L grows — genie-CSI Viterbi gets more ISI structure to exploit on hop 1 (pulls BER down) vs. hop 2 (never equalized by anything, plain hard-decision demod at destination) getting harder as its direct-tap energy fraction shrinks (pulls BER up). L=4 might be a sweet spot where the first effect still wins; by L=5 the second effect claws back. Told the user explicitly this is a hypothesis, not an established mechanism — flagged per the repo's scientific-integrity convention (report discrepancies plainly, don't assert unconfirmed mechanisms as fact).
+- Did NOT push to L=6+ (would need ~20+ min just for that one tap length at this trial count) — offered as a next step if the user wants to see whether the trend keeps oscillating or the L=5 uptick reverses again.
+
+Chart: `/tmp/e6_viterbi_qpsk_tap_sweep.png` (4 panels: L=3/4/5 individually + Viterbi-Genie-only overlay across L), data: `/tmp/e6_viterbi_qpsk_tap_sweep_results.npy` (ephemeral).
+
 ## Still explicitly scoped out (per user instruction / not yet requested)
 - **QAM16 Viterbi** — user said "no, viterbi only for qpsk". Do not build a 16-QAM trellis (256 states for L=3) unless asked.
 - **AI relays (MLP) for QPSK/16-QAM** — `MLPRelay` regresses a single real tanh output per window, valid for BPSK only; would need a multi-output/complex-output redesign. Not started.
