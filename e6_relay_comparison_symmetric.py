@@ -36,7 +36,7 @@ from e6_sim_enhanced_multimod import DFHardRelay, DFSoftRelay
 W = 11
 SNRS = np.arange(0, 21, 2)
 TRAIN_SNRS = [5, 10, 15]
-N_TRIALS, N_BITS = 5, 50_000
+N_TRIALS, N_BITS = 10, 100_000  # project-standard scale for thesis integration
 
 rng = np.random.default_rng(42)
 H_ISI = np.array([1.0, 0.7, 0.5])

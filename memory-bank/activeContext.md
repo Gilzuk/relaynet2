@@ -2,6 +2,24 @@
 
 _Last updated: 2026-07-12_
 
+## Latest: rescaled Tier-1 findings to project-standard scale (10×100k) — thesis integration EXPLICITLY DEFERRED
+Asked to review all QPSK/symmetric-hop findings from this thread and propose which are thesis-ready. Assessment: three "Tier 1" results were solid/mechanism-confirmed but only run at dev scale (5×50k) — (1) symmetric-hop relay comparison, (2) MLP-QPSK-classifier vs Viterbi-Genie (BER + latency), (3) worst/medium/ideal CSI pilot-tier comparison. User said "Do so" (rescale + integrate into thesis).
+
+**Before touching any thesis file**, investigated the actual `chapters/*.tex` structure and found a real structural blocker: **there is no existing "Chapter 7 / E6 unknown-channel/Viterbi" content anywhere in the compiled thesis.** Grepped all of `chapters/*.tex` for "Viterbi"/"ISI"/"unknown channel" — zero matches. The canonical "E6" in `chapters/ch05_experiments.tex` is a completely different, unrelated experiment (CSI Injection & LayerNorm for 16-QAM/16-PSK, part of the E1-E8 sequence) — a genuine naming collision with `PORTING.md`'s "Chapter 7 (E6)" terminology. `chapter7_experiments.md` (root-level) is a separate, differently-structured markdown doc (9 relay strategies incl. Transformer/Mamba/CGAN) that doesn't match our AF/DF/MLP/Viterbi E6-addendum work either. Appendix C (`ch09_appendices.tex`) does NOT contain the "all results come from relaynet" reproducibility claim `PORTING.md` paraphrases — it's a generic architecture description.
+
+**Surfaced this to the user via AskUserQuestion before proceeding** (per `.clinerules` plan-review requirement for thesis-side changes). User's answer: **"Rerun, don't update yet the results"** — i.e., proceed with the rescale, do NOT touch `chapters/*.tex` or make any thesis-placement decision right now.
+
+**Executed**: rescaled all three scripts to `N_TRIALS=10, N_BITS=100_000` (edited in place — the dev-scale 5×50k values are gone from these files now, only the rescaled numbers exist going forward) and ran all three in parallel background jobs. All qualitative findings replicated at the larger scale (DF-Hard still worst at high SNR under symmetric hops; MLP-QPSK still ~3% BER gap vs Viterbi-Genie; worst-case 5-pilot tier still has 5-40x wider CIs than medium/ideal even at 10 trials).
+
+**Caught a methodological artifact**: running the latency benchmark (`e6_mlp_qpsk_vs_viterbi.py`) concurrently with the other two background jobs inflated the measured MLP-QPSK latency 4x (39.42ms vs the true ~9ms) due to CPU contention, dropping the "Viterbi is Nx slower" ratio from ~180x to 42.5x in that run's output. Caught by comparing against the earlier isolated 5-trial measurement, then corrected via a clean re-measurement (repeats=7, no other jobs running): **183.1x**, consistent with the original isolated figure. Patched the saved `.npy`'s `lat_mlp`/`lat_vit` values with a `latency_note` explaining the correction — **do not trust the raw in-run latency print from that background job's stdout log; use the patched .npy or the note.**
+
+**Results persisted to the repo** (git-tracked, will NOT be lost on session restart, unlike everything in `/tmp` so far this session): `e6_qpsk_rescaled_results/` — 3 PNGs, 3 .npy files, and a README summarizing headline numbers and status. This is explicitly NOT inside `results/` (the thesis's canonical figures directory) since it is NOT yet thesis-integrated.
+
+**Not rescaled / still not thesis-ready**: the QPSK tap-count (L=3/4/5) non-monotonic anomaly — mechanism still unconfirmed, explicitly flagged in the review as not ready regardless of scale.
+
+## Immediate next step
+None pending — awaiting user direction on thesis placement (was deferred, not declined). When revisited: decide between (a) a new appendix section, (b) something else the user specifies. Do NOT default to editing `chapters/ch05_experiments.tex`'s existing "E6" section — that's the wrong, unrelated experiment.
+
 ## Latest result: QPSK Viterbi three-tier CSI comparison — worst/medium/ideal (e6_viterbi_qpsk_partial_csi.py — EXECUTED)
 User asked to compare partial CSI knowledge, not just ideal-vs-realistic-1% — explicitly wanted a worst case and a medium case too, and to revert to the "previous Monte Carlo setup" (N_TRIALS=5, the project's standard iteration scale used throughout most of this session, rather than the N=20 used for the genie-mechanism confirmation run).
 
