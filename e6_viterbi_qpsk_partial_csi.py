@@ -31,7 +31,7 @@ from e6_sim_enhanced_multimod import DFHardRelay, DFSoftRelay
 from e6_mlp_qpsk_vs_viterbi import train_mlp_qpsk, taps_for
 
 SNRS = np.arange(0, 21, 2)
-N_TRIALS, N_BITS = 5, 50_000
+N_TRIALS, N_BITS = 10, 100_000  # project-standard scale for thesis integration
 MODULATION = 'qpsk'
 L = 3
 E_H = np.sqrt(np.pi) / 2
