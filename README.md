@@ -4,9 +4,10 @@
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.6+-red.svg)](https://pytorch.org)
 [![CUDA](https://img.shields.io/badge/CUDA-12.4-green.svg)](https://developer.nvidia.com/cuda-toolkit)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Tests](https://img.shields.io/badge/Tests-66%20passed-brightgreen.svg)](#testing)
+[![Tests](https://img.shields.io/badge/Tests-126%20passed-brightgreen.svg)](#testing)
+[![Experiments](https://img.shields.io/badge/Experiments-18-blue.svg)](#recent-experiments-summary)
 
-A comprehensive framework for comparing **classical and AI-based relay strategies** in two-hop cooperative communication across **3 channel types** (AWGN, Rayleigh fading, Rician fading) and **2 antenna topologies** (SISO, 2×2 MIMO with ZF/MMSE/SIC equalization).
+A comprehensive framework for comparing **classical and AI-based relay strategies** in two-hop cooperative communication across **3 channel types** (AWGN, Rayleigh fading, Rician fading), **2 antenna topologies** (SISO, 2×2 MIMO with ZF/MMSE/SIC equalization), and **4 modulation schemes** (BPSK, QPSK, 16-QAM, 16-PSK).
 
 ---
 
@@ -18,6 +19,7 @@ A comprehensive framework for comparing **classical and AI-based relay strategie
 - [Relay Strategies](#relay-strategies)
 - [Architecture](#architecture)
 - [Key Findings](#key-findings)
+- [Recent Experiments Summary](#recent-experiments-summary)
 - [BER Results — Original Models](#ber-results--original-models)
 - [Normalized 3K-Parameter Comparison](#normalized-3k-parameter-comparison)
 - [AI Model Architectures](#ai-model-architectures)
@@ -32,7 +34,7 @@ A comprehensive framework for comparing **classical and AI-based relay strategie
 
 ## Overview
 
-This project implements and compares **8 relay strategies** (2 classical + 6 AI-based) across **3 channel types** (AWGN, Rayleigh, Rician) and **2 antenna topologies** (SISO, 2×2 MIMO) to evaluate the potential of generative AI and modern sequence models for cooperative relay communication.
+This project implements and compares **9 relay strategies** (2 classical + 7 AI-based) across **3 channel types** (AWGN, Rayleigh, Rician), **2 antenna topologies** (SISO, 2×2 MIMO), and **4 modulation schemes** (BPSK, QPSK, 16-QAM, 16-PSK) to evaluate the potential of generative AI and modern sequence models for cooperative relay communication.
 
 ### Relay Methods
 
@@ -40,12 +42,13 @@ This project implements and compares **8 relay strategies** (2 classical + 6 AI-
 |--------|------|-------------|-----------|
 | AF | Classical | Amplify-and-Forward | 0 |
 | **DF** | Classical | Decode-and-Forward | 0 |
-| **GenAI (Minimal)** | Supervised | Feedforward NN | 169 |
-| **Hybrid** | SNR-Adaptive | GenAI + DF switching | 169 |
+| **MLP (Minimal)** | Supervised | Feedforward NN | 169 |
+| **Hybrid** | SNR-Adaptive | MLP + DF switching | 169 |
 | **VAE** | Generative | Variational Autoencoder | 1,777 |
 | **CGAN** | Adversarial | Conditional GAN (WGAN-GP) | 2,946 |
 | **Transformer** | Attention | Multi-head Self-Attention | 17,697 |
 | **Mamba S6** | State Space | Selective State Space Model | 24,001 |
+| **Mamba-2 SSD** | State Space | Structured State Space Duality | 26,179 |
 
 ### Channel Types
 
@@ -147,8 +150,8 @@ SIC outperforms linear MMSE because the second stream sees no inter-stream inter
 
 ### AI-Based Relays
 
-- **GenAI (Minimal):** A compact 2-layer feedforward neural network (window_size=5, hidden=24). Uses a sliding window to process each bit with its neighbors. Only 169 parameters.
-- **Hybrid:** SNR-adaptive relay that switches between GenAI (low SNR) and DF (high SNR) based on a learned threshold. Combines the best of both worlds.
+- **MLP (Minimal):** A compact 2-layer feedforward neural network (window_size=5, hidden=24). Uses a sliding window to process each bit with its neighbors. Only 169 parameters.
+- **Hybrid:** SNR-adaptive relay that switches between MLP (low SNR) and DF (high SNR) based on a learned threshold. Combines the best of both worlds.
 - **VAE (Variational Autoencoder):** Probabilistic generative model that learns a latent representation of the clean signal. Encoder maps to a latent space; decoder reconstructs the signal.
 - **CGAN (Conditional GAN):** Wasserstein GAN with gradient penalty. The generator learns to denoise conditioned on the noisy input; the critic provides adversarial training signal.
 - **Transformer:** Multi-head self-attention over a sliding window of symbols. Captures global dependencies with O(n²) complexity. Architecture: d_model=32, heads=4, layers=2.
@@ -170,7 +173,7 @@ SIC outperforms linear MMSE because the second stream sees no inter-stream inter
     Topology:  SISO (1×1)  │  2×2 MIMO (spatial multiplexing)
     Channels:  AWGN  │  Rayleigh  │  Rician K=3
     Equalizers (MIMO): ZF  │  MMSE  │  SIC
-    Relays:    AF │ DF │ GenAI │ Hybrid │ VAE │ CGAN │ Transformer │ Mamba S6
+    Relays:    AF │ DF │ MLP │ Hybrid │ VAE │ CGAN │ Transformer │ Mamba S6
 ```
 
 Each relay strategy is evaluated across all 6 configurations (3 SISO channels + 3 MIMO equalization methods) using Monte Carlo simulation with 95% confidence intervals (10 trials × 10,000 bits per SNR point).
@@ -181,7 +184,7 @@ Each relay strategy is evaluated across all 6 configurations (3 SISO channels + 
 
 ### Original Models (varying parameter counts)
 
-1. **Mamba S6 is the best AI method** — wins all low-SNR scenarios across all channels
+1. **The best AI relay is channel-dependent** — CGAN wins AWGN/Rician, MLP wins MIMO ZF, Mamba S6 wins MIMO MMSE; DF wins Rayleigh/SIC even at low SNR
 2. **State space models beat attention** for signal processing (O(n) vs O(n²))
 3. **DF dominates at medium/high SNR** (≥6 dB) — no training required
 4. **Hybrid relay** provides the best practical trade-off: AI at low SNR, DF at high SNR
@@ -191,13 +194,12 @@ Each relay strategy is evaluated across all 6 configurations (3 SISO channels + 
 
 ### Normalized 3K Comparison (equal parameter budgets)
 
-When all 6 AI models are constrained to ≈3,000 parameters:
+When all 7 AI models are constrained to ≈3,000 parameters:
 
-1. **Mamba S6 and Transformer converge in performance** — the architecture gap narrows at small scale
-2. **GenAI/Hybrid remain competitive** — simple feedforward networks match sequence models at equal param budgets
-3. **VAE consistently underperforms** — probabilistic overhead hurts at small scale
+1. **All architectures converge in performance** — the architecture gap narrows at small scale; DF remains the strongest baseline on most channels
+2. **MLP/Hybrid remain competitive** — simple feedforward networks match sequence models at equal param budgets
+3. **VAE consistently underperforms** — probabilistic overhead hurts at all scales
 4. **Architecture matters less than expected** — at 3K params, all models are within ~1 dB of each other
-5. **CGAN matches Transformer/Mamba** on most channels despite fundamentally different training
 
 ---
 
@@ -205,16 +207,16 @@ When all 6 AI models are constrained to ≈3,000 parameters:
 
 ### AWGN Channel (0–20 dB)
 
-| SNR (dB) | AF | DF | GenAI | Hybrid | VAE | CGAN | Transformer | Mamba S6 |
-|----------|----|----|-------|--------|-----|------|-------------|----------|
-| 0 | 0.480 | 0.265 | 0.259 | 0.259 | 0.261 | 0.265 | 0.259 | **0.255** |
-| 2 | 0.420 | 0.186 | 0.180 | 0.180 | 0.181 | 0.185 | 0.181 | **0.176** |
-| 4 | 0.360 | 0.104 | 0.103 | 0.103 | 0.104 | 0.105 | 0.104 | **0.102** |
-| 6 | 0.290 | **0.045** | 0.046 | 0.046 | 0.046 | 0.046 | 0.046 | 0.046 |
-| 8 | 0.210 | **0.012** | 0.013 | 0.013 | 0.013 | 0.012 | 0.013 | 0.014 |
-| 10 | 0.140 | **0.002** | 0.002 | 0.002 | 0.002 | 0.002 | 0.002 | 0.003 |
+| SNR (dB) | AF | DF | MLP (169p) | Hybrid | VAE | CGAN | Transformer | Mamba S6 | Mamba-2 SSD |
+|----------|----|----|-------|--------|-----|------|-------------|----------|-------------|
+| 0 | 0.291 | 0.268 | 0.264 | 0.262 | 0.376 | **0.261** | 0.267 | 0.269 | 0.270 |
+| 4 | 0.154 | 0.112 | 0.112 | 0.113 | 0.330 | **0.111** | 0.114 | 0.111 | **0.111** |
+| 8 | 0.044 | **0.010** | 0.015 | **0.010** | 0.291 | 0.013 | 0.014 | **0.010** | 0.012 |
+| 12 | 0.0027 | **1.67e-04** | **1.67e-04** | **1.67e-04** | 0.269 | 3.33e-04 | 3.33e-04 | **1.67e-04** | **1.67e-04** |
+| 16 | **0** | **0** | **0** | **0** | 0.258 | **0** | **0** | **0** | **0** |
+| 20 | **0** | **0** | **0** | **0** | 0.250 | **0** | **0** | **0** | **0** |
 
-> At 6+ dB, DF (0 parameters) matches or beats all AI methods. AI excels only at low SNR (0–4 dB).
+> At 8+ dB, DF (0 parameters) matches or beats all AI methods. CGAN achieves the best AI performance at low SNR (0–4 dB) on AWGN.
 
 ### Results Plots
 
@@ -238,7 +240,7 @@ To enable a fair **apples-to-apples** comparison, all 6 AI models were scaled to
 
 | Model | Parameters | Configuration |
 |-------|-----------|---------------|
-| GenAI-3K | 3,004 | window=11, hidden=231 |
+| MLP-3K | 3,004 | window=11, hidden=231 |
 | Hybrid-3K | 3,004 | window=11, hidden=231 (+ DF switching) |
 | VAE-3K | 3,037 | window=11, latent=10, hidden=(44, 20) |
 | CGAN-3K | 3,004 | window=11, noise=8, g_hidden=(30, 30, 16), c_hidden=(32, 16) |
@@ -249,7 +251,7 @@ To enable a fair **apples-to-apples** comparison, all 6 AI models were scaled to
 
 #### AWGN
 
-| SNR (dB) | GenAI-3K | Hybrid-3K | VAE-3K | CGAN-3K | Transformer-3K | Mamba-3K |
+| SNR (dB) | MLP-3K | Hybrid-3K | VAE-3K | CGAN-3K | Transformer-3K | Mamba-3K |
 |----------|----------|-----------|--------|---------|----------------|----------|
 | 0 | 2.65e-1 | 2.65e-1 | 2.67e-1 | 2.69e-1 | **2.61e-1** | 2.60e-1 |
 | 10 | 2.68e-3 | 1.44e-3 | 9.48e-3 | 2.00e-3 | 1.88e-3 | **1.84e-3** |
@@ -257,7 +259,7 @@ To enable a fair **apples-to-apples** comparison, all 6 AI models were scaled to
 
 #### Rayleigh Fading
 
-| SNR (dB) | GenAI-3K | Hybrid-3K | VAE-3K | CGAN-3K | Transformer-3K | Mamba-3K |
+| SNR (dB) | MLP-3K | Hybrid-3K | VAE-3K | CGAN-3K | Transformer-3K | Mamba-3K |
 |----------|----------|-----------|--------|---------|----------------|----------|
 | 0 | 2.59e-1 | 2.58e-1 | 2.70e-1 | 2.54e-1 | 2.50e-1 | **2.49e-1** |
 | 10 | 4.87e-2 | 4.84e-2 | 5.60e-2 | 4.74e-2 | 4.65e-2 | **4.64e-2** |
@@ -265,7 +267,7 @@ To enable a fair **apples-to-apples** comparison, all 6 AI models were scaled to
 
 #### Rician (K=3)
 
-| SNR (dB) | GenAI-3K | Hybrid-3K | VAE-3K | CGAN-3K | Transformer-3K | Mamba-3K |
+| SNR (dB) | MLP-3K | Hybrid-3K | VAE-3K | CGAN-3K | Transformer-3K | Mamba-3K |
 |----------|----------|-----------|--------|---------|----------------|----------|
 | 0 | 2.05e-1 | 2.05e-1 | 2.18e-1 | 2.05e-1 | 2.00e-1 | **2.00e-1** |
 | 10 | 1.54e-2 | 1.47e-2 | 1.98e-2 | 1.48e-2 | **1.45e-2** | 1.46e-2 |
@@ -273,7 +275,7 @@ To enable a fair **apples-to-apples** comparison, all 6 AI models were scaled to
 
 #### 2×2 MIMO (Rayleigh) – ZF Equalization
 
-| SNR (dB) | GenAI-3K | Hybrid-3K | VAE-3K | CGAN-3K | Transformer-3K | Mamba-3K |
+| SNR (dB) | MLP-3K | Hybrid-3K | VAE-3K | CGAN-3K | Transformer-3K | Mamba-3K |
 |----------|----------|-----------|--------|---------|----------------|----------|
 | 0 | 2.52e-1 | 2.52e-1 | 2.64e-1 | 2.52e-1 | 2.47e-1 | **2.45e-1** |
 | 10 | 4.82e-2 | 4.80e-2 | 5.55e-2 | 4.67e-2 | 4.64e-2 | **4.64e-2** |
@@ -281,7 +283,7 @@ To enable a fair **apples-to-apples** comparison, all 6 AI models were scaled to
 
 #### 2×2 MIMO (Rayleigh) – MMSE Equalization
 
-| SNR (dB) | GenAI-3K | Hybrid-3K | VAE-3K | CGAN-3K | Transformer-3K | Mamba-3K |
+| SNR (dB) | MLP-3K | Hybrid-3K | VAE-3K | CGAN-3K | Transformer-3K | Mamba-3K |
 |----------|----------|-----------|--------|---------|----------------|----------|
 | 0 | 1.65e-1 | 1.65e-1 | 1.79e-1 | 1.63e-1 | **1.62e-1** | 1.64e-1 |
 | 10 | 2.68e-2 | 2.51e-2 | 3.37e-2 | 2.54e-2 | 2.56e-2 | 2.60e-2 |
@@ -325,7 +327,7 @@ Complexity: O(n²) — quadratic in sequence length
 Original: d_model=32, heads=4, layers=2 → **17,697 params**
 3K: d_model=18, heads=2, layers=1 → **3,007 params**
 
-### GenAI (Minimal Feedforward)
+### MLP (Minimal Feedforward)
 
 ```
 Input:   window of noisy symbols (size 5 or 11)
@@ -364,7 +366,7 @@ Original: g_hidden=(32, 32, 16), c_hidden=(32, 16), noise=8 → **2,946 params**
 ```python
 def process(signal, snr_db):
     if snr_db < threshold:
-        return genai_relay.process(signal)   # AI for low SNR
+        return mlp_relay.process(signal)   # AI for low SNR
     else:
         return df_relay.process(signal)      # Classical for high SNR
 ```
@@ -385,7 +387,7 @@ relaynet2/
 │   ├── relays/
 │   │   ├── af.py                         # Amplify-and-Forward
 │   │   ├── df.py                         # Decode-and-Forward
-│   │   ├── genai.py                      # Minimal GenAI (feedforward NN)
+│   │   ├── genai.py                      # Minimal MLP (feedforward NN)
 │   │   ├── hybrid.py                     # SNR-adaptive Hybrid relay
 │   │   ├── vae.py                        # Variational Autoencoder relay
 │   │   ├── cgan.py                       # Conditional GAN relay (WGAN-GP)
@@ -406,12 +408,12 @@ relaynet2/
 │   ├── checkpoint_05_plotting.py         # BER plotting
 │   ├── checkpoint_06_decode_forward.py   # DF relay
 │   ├── checkpoint_07_comparative_plot.py # AF vs DF comparison
-│   ├── checkpoint_08_genai_relay.py      # GenAI relay
+│   ├── checkpoint_08_genai_relay.py      # MLP relay
 │   ├── checkpoint_09_final_comparison.py # 3-way comparison
 │   ├── checkpoint_10_rl_relay.py         # RL (Q-Learning) relay
-│   ├── checkpoint_11_enhanced_training.py# Enhanced GenAI
-│   ├── checkpoint_12_maximum_training.py # Maximum GenAI
-│   ├── checkpoint_13_minimal_complexity.py # Minimal 169-param GenAI
+│   ├── checkpoint_11_enhanced_training.py# Enhanced MLP
+│   ├── checkpoint_12_maximum_training.py # Maximum MLP
+│   ├── checkpoint_13_minimal_complexity.py # Minimal 169-param MLP
 │   ├── checkpoint_14_complexity_comparison_plot.py
 │   ├── checkpoint_15_vae_relay.py        # VAE relay
 │   ├── checkpoint_16_cgan_pytorch.py     # CGAN relay (PyTorch)
@@ -434,20 +436,29 @@ relaynet2/
 │   ├── test_simulation.py                # Monte Carlo runner tests
 │   └── test_statistics.py                # CI & significance tests
 │
-├── results/                          # Generated BER plots (23 files)
-│   ├── awgn_comparison_ci.png
-│   ├── fading_comparison.png
-│   ├── rician_comparison_ci.png
-│   ├── mimo_2x2_comparison_ci.png
-│   ├── mimo_2x2_mmse_comparison_ci.png
-│   ├── normalized_3k_awgn.png
-│   ├── normalized_3k_rayleigh.png
-│   ├── normalized_3k_rician_k3.png
-│   ├── normalized_3k_2x2_mimo_zf.png
-│   ├── normalized_3k_2x2_mimo_mmse.png
-│   ├── normalized_3k_all_channels.png    # Consolidated 2×3 grid
+├── results/                          # Generated BER plots, JSON, charts
+│   ├── bpsk_comparison/                  # §7.2–7.7 BPSK relay comparisons
+│   ├── normalized_3k/                    # §7.8 equal-parameter comparison
+│   ├── modulation/                       # §7.10 BPSK→QPSK→QAM16
+│   ├── qam16_activation/                 # §7.11 activation study
+│   ├── layernorm/                        # §7.12 LayerNorm study
+│   ├── classify_vs_regress/              # §7.13 classification formulation
+│   ├── classify_activations/             # §7.13 activation sweep
+│   ├── classify_closing_gap/             # §7.13 closing the DF gap
+│   ├── csi/                              # §7.14–7.15 CSI injection
+│   ├── e2e/                              # §7.16 end-to-end autoencoder
+│   ├── all_relays_16class/               # §7.17 16-class 2D (all 7 archs)
+│   ├── classify_16class/                 # §7.17 MLP 16-class variants
+│   ├── channel_analysis/                 # §7.1 channel model analysis
+│   ├── activation_comparison/            # legacy activation comparison
+│   ├── logs/                             # experiment failure logs
 │   └── ...
 │
+├── run_experiments.py                # Unified experiment runner (18 experiments)
+├── make.ps1                          # PowerShell build script (Windows)
+├── Makefile                          # GNU Make build script (Linux/macOS)
+├── EXPERIMENT_GUIDELINES.md          # Developer guide for experiments
+├── CHART_GUIDELINES.md               # Publication chart rules (22 rules)
 ├── README.md
 ├── TECHNICAL_REPORT.md               # Mathematical details
 ├── MAMBA_FINAL_REPORT.md             # Mamba S6 analysis
@@ -472,22 +483,50 @@ For GPU-accelerated MIMO channels (optional):
 pip install torch --index-url https://download.pytorch.org/whl/cu124
 ```
 
-### Run the Full Comparison Pipeline
+### Run Experiments (Unified Runner)
+
+All 18 experiments are managed through `run_experiments.py`:
 
 ```bash
-# All channels, all relays (including Transformer + Mamba), plus normalized 3K comparison
-python scripts/run_full_comparison.py --include-sequence-models --include-normalized
+# List all available experiments
+python run_experiments.py --list
 
-# Quick mode (lower fidelity, faster)
-python scripts/run_full_comparison.py --include-sequence-models --include-normalized --quick
+# Run all experiments (quick mode — reduced samples/epochs)
+python run_experiments.py --quick
+
+# Run a specific experiment
+python run_experiments.py --exp 7.17 --quick
+
+# Force retrain (ignore cached checkpoints)
+python run_experiments.py --exp 7.2 --retrain
+
+# Regenerate all charts from saved JSON (no retraining)
+python run_experiments.py --regen-charts
 ```
 
-### Generate Normalized 3K Plots Only
+### Build Script (PowerShell)
+
+A `make.ps1` script provides shorthand targets:
+
+```powershell
+.\make.ps1 help            # Show all targets
+.\make.ps1 list            # List experiments
+.\make.ps1 quick           # Run all experiments (quick)
+.\make.ps1 exp -s 7.17     # Run specific experiment
+.\make.ps1 retrain -s 7.2  # Force retrain
+.\make.ps1 charts          # Regenerate charts from JSON
+.\make.ps1 clean           # Clean all generated outputs
+```
+
+A GNU `Makefile` is also included for Linux/macOS.
+
+### Legacy Comparison Scripts
 
 ```bash
-python scripts/plot_normalized_3k.py
+# Full pipeline: train + evaluate all (legacy)
+python scripts/run_full_comparison.py --include-sequence-models --include-normalized
 
-# High-fidelity mode (more samples, more trials)
+# Standalone 3K comparison plots
 python scripts/plot_normalized_3k.py --full
 ```
 
@@ -520,11 +559,11 @@ results = run_monte_carlo(relay, snr_range=range(0, 21, 2),
 
 ## Testing
 
-All 60 tests pass:
+All 126 tests pass:
 
 ```bash
 python -m pytest tests/ -q
-# 60 passed in ~7s
+# 126 passed in ~28s
 ```
 
 Tests cover:
@@ -547,11 +586,11 @@ Tests cover:
 | 05 | Plotting | BER visualization |
 | 06 | DF Relay | Classical baseline |
 | 07 | AF vs DF | DF >> AF |
-| 08 | GenAI Relay | First AI relay |
-| 09 | 3-way Comparison | GenAI beats AF |
+| 08 | MLP Relay | First AI relay |
+| 09 | 3-way Comparison | MLP beats AF |
 | 10 | RL Relay | Q-Learning approach |
-| 11 | Enhanced GenAI | Better training |
-| 12 | Maximum GenAI | Overfitting found |
+| 11 | Enhanced MLP | Better training |
+| 12 | Maximum MLP | Overfitting found |
 | 13 | **Minimal (169p)** | **Best parameter efficiency** |
 | 14 | Complexity Plot | Params vs performance |
 | 15 | VAE Relay | Probabilistic generative model |
@@ -559,9 +598,90 @@ Tests cover:
 | 17 | 4-way Comparison | DF/Minimal/VAE/CGAN |
 | 18 | Transformer | Multi-head attention relay |
 | 19 | Transformer vs DF | Attention-based comparison |
-| 20 | **Mamba S6** | **Best AI method (low SNR)** |
-| 21 | Full Comparison | All 8 methods compared |
+| 20 | **Mamba S6** | **Selective state space relay** |
+| 21 | Full Comparison | All 9 methods compared |
 | 22 | Master BER Charts | Final visualization + **3K normalized comparison** |
+
+---
+
+## Recent Experiments Summary
+
+All experiments are managed through the unified `run_experiments.py` runner (18 experiments, §7.1–§7.17 + constellation diagrams). Every experiment supports `--quick` mode, saves `.pt` checkpoints, exports `.json` for chart regeneration, and logs failures automatically.
+
+| Section | Experiment | Results Directory |
+|---------|-----------|-------------------|
+| §7.1 | Channel Model Analysis | `results/channel_analysis/` |
+| §7.2 | BPSK AWGN Relay Comparison | `results/bpsk_comparison/` |
+| §7.3 | BPSK Rayleigh Relay Comparison | `results/bpsk_comparison/` |
+| §7.4 | BPSK Rician K=3 | `results/bpsk_comparison/` |
+| §7.5 | 2×2 MIMO ZF | `results/bpsk_comparison/` |
+| §7.6 | 2×2 MIMO MMSE | `results/bpsk_comparison/` |
+| §7.7 | 2×2 MIMO SIC | `results/bpsk_comparison/` |
+| §7.8 | Normalized 3K Comparison | `results/normalized_3k/` |
+| §7.9 | Master 2×3 Chart | `results/bpsk_comparison/` |
+| §7.10 | Modulation Comparison (BPSK → QPSK → QAM16) | `results/modulation/` |
+| §7.11 | QAM16 Activation Study | `results/qam16_activation/` |
+| §7.12 | LayerNorm Study | `results/layernorm/` |
+| §7.13 | Classification vs Regression + Activations + Closing Gap | `results/classify_vs_regress/`, `results/classify_activations/`, `results/classify_closing_gap/` |
+| §7.14 | CSI Injection | `results/csi/` |
+| §7.15 | Multi-Architecture CSI | `results/csi/` |
+| §7.16 | End-to-End Autoencoder | `results/e2e/` |
+| §7.17 | 16-Class 2D QAM16 (all 7 architectures) | `results/all_relays_16class/` |
+
+### Modulation Extension — §7.10 (BPSK → QPSK → 16-QAM)
+
+- **QPSK**: All BPSK findings generalise fully via I/Q splitting — BER curves are identical to BPSK across all 9 relays.
+- **16-QAM**: BPSK-trained relays exhibit an irreducible BER floor (~0.18–0.25 at 16 dB) due to `tanh` compressing the 4-level PAM amplitudes.
+
+### Activation Engineering — §7.11–§7.12
+
+| Activation | Description | Best 16-QAM BER @ 16 dB |
+|---|---|---|
+| `tanh` (baseline) | Saturates at ±1, compresses PAM-4 | 0.2065 (Mamba-2) |
+| `hardtanh` | Clips at ±A_max | 0.0396 (Mamba S6) |
+| `scaled_tanh` | A_max · tanh(x) | 0.0441 (Mamba-2) |
+
+Replacing `tanh` and retraining on PAM-4 targets reduces the BER floor by **2–5×**, with sequence models benefiting most.
+
+### Classification vs Regression — §7.13
+
+Three sub-studies explore the classification formulation for 16-QAM relaying:
+
+- **Classify vs Regress**: Classification MLP (4-class) achieves ~1.3× lower BER than regression MLP at 20 dB
+- **Activation Sweep**: 8 hidden/output activation combinations; H:Sigmoid wins overall, O:Sigmoid is the only catastrophic failure
+- **Closing the DF Gap**: 6 progressive enhancements (window, SNR range, hidden size) reduce the classification gap to DF from 8.1× to 1.0× at 20 dB
+
+### CSI Injection & Comprehensive Study — §7.14–§7.15
+
+48 neural variants (3 architectures × 4 activations × 4 configurations) evaluated on 16-QAM and 16-PSK under Rayleigh fading:
+
+- **16-QAM**: CSI injection *degrades* performance; best variants use LayerNorm only (+LN)
+- **16-PSK**: CSI injection *improves* performance; best variants use +CSI or +CSI+LN
+- **Mamba S6** dominates both constellations (all top-3 for PSK16; #1 for QAM16)
+- No neural variant beats DF at any SNR point across all 48 configurations
+
+### End-to-End Autoencoder — §7.16
+
+A jointly optimised transmitter-receiver autoencoder (no relay) achieves 67–141% *higher* BER than classical 16-QAM theory, validating the modular relay-based approach over E2E learning.
+
+### 16-Class 2D Classification — §7.17 (Key Breakthrough)
+
+**Problem**: Per-axis I/Q splitting classifies 4 levels independently per axis, producing a structural BER floor of ~0.0081 at 20 dB.
+
+**Solution**: Treat the relay as a **joint 2D classifier** over all 16 QAM constellation points. The model receives (y_I, y_Q) and outputs 16 logits. All 7 relay architectures tested in both 4-class and 16-class modes (14 variants total).
+
+| Relay | 4-cls BER @ 20 dB | 16-cls BER @ 20 dB | Improvement |
+|---|---|---|---|
+| MLP (472p) | 0.00811 | **0.00002** | 405× |
+| VAE (2,112p) | 0.00810 | **0.00000** | ∞ |
+| CGAN (3,361p) | 0.35340 | 0.28370 | 1.2× |
+| Hybrid (472p) | 0.00811 | **0.00000** | ∞ |
+| Transformer (17,984p) | 0.00810 | **0.00001** | 810× |
+| Mamba S6 (24,288p) | 0.00810 | **0.00009** | 90× |
+| Mamba-2 SSD (26,466p) | 0.00811 | **0.00197** | 4.1× |
+| DF (classical) | 0.00000 | — | — |
+
+**Key finding**: The top-3 16-class variants (Hybrid, VAE, MLP) **match classical DF** at 20 dB — the first time neural relays achieve near-zero BER on 16-QAM. The structural floor is an artefact of I/Q splitting, not a fundamental limitation of neural architectures. CGAN remains the poorest performer; Mamba-2 lags behind its S6 predecessor.
 
 ---
 

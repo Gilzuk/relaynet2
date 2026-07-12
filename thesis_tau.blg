@@ -1,0 +1,84 @@
+This is BibTeX, Version 0.99e
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: thesis_tau.aux
+Reallocating 'name_of_file' (item size: 1) to 29 items.
+A level-1 auxiliary file: chapters/ch00_cover_page.aux
+Reallocating 'name_of_file' (item size: 1) to 29 items.
+A level-1 auxiliary file: chapters/ch00_front_page.aux
+Reallocating 'name_of_file' (item size: 1) to 30 items.
+A level-1 auxiliary file: chapters/ch00_frontmatter.aux
+Reallocating 'name_of_file' (item size: 1) to 31 items.
+A level-1 auxiliary file: chapters/ch01_introduction.aux
+Reallocating 'name_of_file' (item size: 1) to 36 items.
+A level-1 auxiliary file: chapters/ch02_literature_review.aux
+Reallocating 'name_of_file' (item size: 1) to 29 items.
+A level-1 auxiliary file: chapters/ch03_objectives.aux
+Reallocating 'name_of_file' (item size: 1) to 26 items.
+A level-1 auxiliary file: chapters/ch04_methods.aux
+Reallocating 'name_of_file' (item size: 1) to 30 items.
+A level-1 auxiliary file: chapters/ch05_experiments.aux
+Reallocating 'name_of_file' (item size: 1) to 29 items.
+A level-1 auxiliary file: chapters/ch06_discussion.aux
+Reallocating 'name_of_file' (item size: 1) to 31 items.
+A level-1 auxiliary file: chapters/ch07_equation_ref.aux
+Reallocating 'name_of_file' (item size: 1) to 29 items.
+A level-1 auxiliary file: chapters/ch08_references.aux
+Reallocating 'name_of_file' (item size: 1) to 9 items.
+The style file: IEEEtran.bst
+Reallocating 'name_of_file' (item size: 1) to 11 items.
+Reallocating 'name_of_file' (item size: 1) to 29 items.
+A level-1 auxiliary file: chapters/ch09_appendices.aux
+Reallocating 'name_of_file' (item size: 1) to 34 items.
+A level-1 auxiliary file: chapters/ch10_hebrew_abstract.aux
+Reallocating 'singl_function' (item size: 4) to 100 items.
+Reallocating 'singl_function' (item size: 4) to 100 items.
+Reallocating 'singl_function' (item size: 4) to 100 items.
+Reallocating 'wiz_functions' (item size: 4) to 6000 items.
+Reallocating 'singl_function' (item size: 4) to 100 items.
+Database file #1: references.bib
+-- IEEEtran.bst version 1.14 (2015/08/26) by Michael Shell.
+-- http://www.michaelshell.org/tex/ieeetran/bibtex/
+-- See the "IEEEtran_bst_HOWTO.pdf" manual for usage information.
+
+Done.
+You've used 31 entries,
+            4087 wiz_defined-function locations,
+            997 strings with 12141 characters,
+and the built_in function-call counts, 22688 in all, are:
+= -- 1800
+> -- 559
+< -- 194
++ -- 298
+- -- 96
+* -- 1079
+:= -- 3359
+add.period$ -- 62
+call.type$ -- 31
+change.case$ -- 28
+chr.to.int$ -- 441
+cite$ -- 31
+duplicate$ -- 1644
+empty$ -- 1873
+format.name$ -- 124
+if$ -- 5311
+int.to.chr$ -- 0
+int.to.str$ -- 31
+missing$ -- 283
+newline$ -- 116
+num.names$ -- 31
+pop$ -- 670
+preamble$ -- 1
+purify$ -- 0
+quote$ -- 2
+skip$ -- 1778
+stack$ -- 0
+substring$ -- 1016
+swap$ -- 1305
+text.length$ -- 47
+text.prefix$ -- 0
+top$ -- 5
+type$ -- 31
+warning$ -- 0
+while$ -- 98
+width$ -- 33
+write$ -- 311

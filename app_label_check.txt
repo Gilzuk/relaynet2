@@ -1,0 +1,12 @@
+First labels: ['chap:appendices', 'sec:appendix-a-mathematical-notation']
+First 300 chars:
+\chapter{Appendices}\label{chap:appendices}
+
+%% ── Appendix A: Mathematical Notation ───────────────────────
+\section{Mathematical Notation}\label{sec:appendix-a-mathematical-notation}
+
+{\def\LTcaptype{table} % do not increment counter
+\begin{longtable}[]{@{}ll@{}}
+\toprule\noalign{}
+Symbol & Descri
+chap:app-experiments NOT FOUND in file

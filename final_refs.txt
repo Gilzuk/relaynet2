@@ -1,0 +1,57 @@
+PDF idx: 129600
+XDV idx: -1
+Log length: 129646
+
+XeLaTeX runs: []
+
+Undefined refs (all): 46
+  chap:app-csi
+  chap:app-experiments
+  fig:fig1
+  fig:fig11
+  fig:fig12
+  fig:fig14
+  fig:fig15
+  fig:fig20
+  fig:fig21
+  fig:fig36
+  fig:fig39
+  fig:fig4
+  fig:fig45
+  fig:fig46
+  fig:fig49
+  fig:fig50
+  fig:fig53
+  fig:fig7
+  fig:fig8
+  fig:fig9
+  fig:relay-system-detailed
+  fig:sw-architecture
+  sec:app-e1
+  sec:app-e2
+  sec:app-e3
+  sec:app-e4
+  sec:app-e5
+  sec:app-e7
+  sec:app-e8
+  sec:awgn-channel-theoretical-analysis
+  sec:channel-model-validation
+  sec:channel-robustness
+  sec:class-2d-classification-for-qam16
+  sec:context-length-benchmark-validating-the-crossover
+-hypothesis
+  sec:end-to-end-joint-optimization
+  sec:experiments
+  sec:higher-order-modulation-scalability-constellation
+-aware-training
+  sec:input-normalization-and-csi-injection
+  sec:introduction
+  sec:iq-splitting-for-ai-relay-processing-of-complex-c
+onstellations
+  sec:modulation-schemes
+  sec:research-gap-and-motivation
+  sec:theoretical-basis-universal-approximation-and-den
+oising
+  tbl:arch-summary
+  tbl:master-config
+  tbl:table13

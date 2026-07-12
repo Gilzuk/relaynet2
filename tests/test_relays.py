@@ -65,7 +65,7 @@ class TestDFRelay:
         assert abs(np.mean(out ** 2) - 1.0) < 0.01
 
 
-class TestMinimalGenAIRelay:
+class TestMinimalMLPRelay:
     def test_untrained_passthrough(self, bpsk_signal):
         symbols, _ = bpsk_signal
         relay = MinimalGenAIRelay()
@@ -115,7 +115,7 @@ class TestHybridRelay:
         relay = HybridRelay()
         relay.train(training_snrs=[5], num_samples=500, epochs=2, seed=0)
         assert relay.is_trained
-        assert relay.genai_relay.is_trained
+        assert relay.mlp_relay.is_trained
 
 
 class TestVAERelay:
@@ -184,14 +184,14 @@ class TestMamba2Relay:
 class TestWeightSaveLoad:
     """Verify that trained relay weights survive a save→load round-trip."""
 
-    def test_genai_save_load(self, bpsk_signal, tmp_path):
+    def test_mlp_save_load(self, bpsk_signal, tmp_path):
         symbols, _ = bpsk_signal
         relay = MinimalGenAIRelay(window_size=5, hidden_size=24)
         relay.train(training_snrs=[10], num_samples=2000, epochs=5, seed=1)
         noisy = awgn_channel(symbols, 10)
         out_before = relay.process(noisy)
 
-        path = str(tmp_path / "genai.pt")
+        path = str(tmp_path / "mlp.pt")
         relay.save_weights(path)
 
         relay2 = MinimalGenAIRelay(window_size=5, hidden_size=24)
@@ -276,19 +276,19 @@ class TestWeightSaveLoad:
 
         relay = MinimalGenAIRelay(window_size=5, hidden_size=24)
         relay.train(training_snrs=[10], num_samples=2000, epochs=5, seed=42)
-        relays = {"GenAI (169p)": relay}
+        relays = {"MLP (169p)": relay}
         saved = mgr.save_all(relays, seed=42)
-        assert "GenAI (169p)" in saved
+        assert "MLP (169p)" in saved
         assert mgr.has_checkpoint(42)
         assert 42 in mgr.list_checkpoints()
 
         relay2 = MinimalGenAIRelay(window_size=5, hidden_size=24)
-        relays2 = {"GenAI (169p)": relay2}
+        relays2 = {"MLP (169p)": relay2}
         loaded, skipped = mgr.load_all(relays2, seed=42)
-        assert "GenAI (169p)" in loaded
+        assert "MLP (169p)" in loaded
         assert relay2.is_trained
 
         meta = mgr.get_metadata(42)
         assert meta is not None
         assert meta["seed"] == 42
-        assert "GenAI (169p)" in meta["relays"]
+        assert "MLP (169p)" in meta["relays"]

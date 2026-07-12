@@ -1,0 +1,99 @@
+\chapter*{Equation Reference}\label{sec:equation-reference}
+\addcontentsline{toc}{chapter}{Equation Reference}
+
+{\def\LTcaptype{table} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.2000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.2800}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.5200}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+No.
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Label
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Description
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+(1) & \texttt{relay-capacity-bound} & Relay channel capacity upper bound (Cut-Set theorem) \\
+(2) & \texttt{df-capacity} & Decode-and-Forward capacity \\
+(3) & \texttt{df-gaussian-capacity} & DF capacity for Gaussian two-hop channel \\
+(4) & \texttt{awgn-hop1} & Received signal at relay (AWGN, Hop 1) \\
+(5) & \texttt{awgn-hop2} & Received signal at destination (Hop 2) \\
+(6) & \texttt{af-gain} & AF amplification gain factor \\
+(7) & \texttt{af-snr} & AF effective end-to-end SNR \\
+(8) & \texttt{df-demod-remod} & DF demodulation and re-modulation \\
+(9) & \texttt{df-ber-hops} & DF end-to-end BER (two independent hops) \\
+(10) & \texttt{optimal-denoiser} & Optimal Bayesian denoiser (posterior mean) \\
+(11) & \texttt{optimal-denoiser-awgn} & Optimal denoiser for AWGN (tanh form) \\
+(12) & \texttt{bias-variance-decomp} & Bias-variance-irreducible decomposition \\
+(13) & \texttt{mse-loss} & MSE training loss for neural relay \\
+(14) & \texttt{vae-elbo} & VAE ELBO (evidence lower bound) \\
+(15) & \texttt{vae-loss} & VAE loss (reconstruction + KL regularization) \\
+(16) & \texttt{gan-minimax} & GAN minimax objective \\
+(17) & \texttt{wasserstein-distance} & Wasserstein-1 (Earth Mover) distance \\
+(18) & \texttt{gradient-penalty} & WGAN gradient penalty \\
+(19) & \texttt{wgan-gen-loss} & WGAN-GP generator loss \\
+(20) & \texttt{wgan-disc-loss} & WGAN-GP discriminator loss \\
+(21) & \texttt{attention} & Scaled dot-product attention \\
+(22) & \texttt{multihead-attention} & Multi-head attention \\
+(23) & \texttt{positional-encoding} & Sinusoidal positional encoding \\
+(24) & \texttt{ssm-continuous} & Continuous-time SSM (state space model) \\
+(25) & \texttt{ssm-zoh} & ZOH discretization of SSM \\
+(26) & \texttt{ssm-discrete} & Discrete SSM recurrence \\
+(27) & \texttt{mamba-selective} & Mamba S6 selective (input-dependent) parameters \\
+(28) & \texttt{mamba-ssd-output} & Mamba-2 SSD output as structured matrix-vector product \\
+(29) & \texttt{mamba-ssd-matrix} & Mamba-2 SSD semiseparable matrix \\
+(30) & \texttt{mimo-capacity} & MIMO ergodic capacity (Foschini-Telatar) \\
+(31) & \texttt{mimo-received} & 2×2 MIMO received signal model \\
+(32) & \texttt{zf-equalizer} & Zero-Forcing (ZF) equalizer \\
+(33) & \texttt{zf-snr} & ZF post-equalization SNR per stream \\
+(34) & \texttt{mmse-equalizer} & MMSE equalizer (Wiener filter) \\
+(35) & \texttt{mmse-sinr} & MMSE post-equalization SINR per stream \\
+(36) & \texttt{awgn-channel} & AWGN channel model \\
+(37) & \texttt{awgn-ber} & Theoretical BER for BPSK over AWGN \\
+(38) & \texttt{df-ber-awgn} & DF BER for BPSK over AWGN (two-hop) \\
+(39) & \texttt{af-snr-eff} & AF effective SNR (equal-SNR hops) \\
+(40) & \texttt{rayleigh-channel} & Rayleigh fading channel model \\
+(41) & \texttt{rayleigh-pdf} & Rayleigh fading amplitude PDF \\
+(42) & \texttt{rayleigh-ber} & Theoretical BER for BPSK over Rayleigh fading \\
+(43) & \texttt{rayleigh-ber-approx} & High-SNR approximation: Rayleigh BER ≈ 1/(4γ̄) \\
+(44) & \texttt{df-ber-rayleigh} & DF BER for BPSK over Rayleigh fading \\
+(45) & \texttt{rician-channel} & Rician fading channel model (LOS + scatter) \\
+(46) & \texttt{rician-pdf} & Rician fading amplitude PDF \\
+(47) & \texttt{rician-ber-mgf} & Rician BER via MGF approach \\
+(48) & \texttt{rician-mgf} & MGF of instantaneous SNR under Rician fading \\
+(49) & \texttt{mimo-received-2x2} & 2×2 MIMO received signal (Rayleigh) \\
+(50) & \texttt{zf-ber-mimo} & ZF BER approximation for 2×2 MIMO \\
+(51) & \texttt{mmse-ber-mimo} & MMSE BER approximation for 2×2 MIMO \\
+(52) & \texttt{zf-equalizer-methods} & ZF equalizer (Methods chapter) \\
+(53) & \texttt{mmse-equalizer-methods} & MMSE equalizer (Methods chapter) \\
+(54) & \texttt{two-hop-system} & Two-hop relay system diagram \\
+(55) & \texttt{channel-function} & Generic channel function \\
+(56) & \texttt{power-normalization} & Output power normalization \\
+(57) & \texttt{relay-received-siso} & SISO relay received signal \\
+(58) & \texttt{mimo-interference} & MIMO inter-stream interference model \\
+(59) & \texttt{mlp-relay} & MLP relay architecture \\
+(60) & \texttt{ber-estimate} & Monte Carlo BER estimator \\
+(61) & \texttt{confidence-interval} & 95\% confidence interval for BER \\
+(62) & \texttt{wilcoxon-test} & Wilcoxon signed-rank test hypothesis \\
+(63) & \texttt{bpsk-mapping} & BPSK symbol mapping \\
+(64) & \texttt{qpsk-mapping} & QPSK symbol mapping \\
+(65) & \texttt{qpsk-ber} & QPSK BER equals BPSK BER \\
+(66) & \texttt{qam16-mapping} & 16-QAM I/Q mapping (Gray-coded PAM-4) \\
+(67) & \texttt{qam16-ber} & Approximate BER for 16-QAM over AWGN \\
+(68) & \texttt{psk16-mapping} & 16-PSK constellation mapping \\
+(69) & \texttt{psk16-decision} & 16-PSK hard decision rule \\
+(70) & \texttt{psk16-ber} & Approximate BER for 16-PSK over AWGN \\
+(71) & \texttt{iq-splitting} & I/Q splitting for complex relay processing \\
+(72) & \texttt{joint-classification} & Joint 2D classification relay output \\
+(73) & \texttt{optimal-denoiser-relay} & Optimal relay denoiser (AWGN, tanh form) \\
+(74) & \texttt{bias-variance-relay} & Bias-variance decomposition for relay MSE \\
+\end{longtable}
+}
+
+\cleardoublepage
+\phantomsection

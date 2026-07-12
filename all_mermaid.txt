@@ -1,0 +1,19 @@
+﻿=== MERMAID BLOCK at line 658 ===
+`mermaid
+flowchart LR
+    SRC["**Source**\ntx bits"]
+    BPSK["**BPSK**\nModulator"]
+    CH1["**Hop 1 Channel**\nAWGN / Rayleigh / Rician"]
+    RELAY["**Relay**\nNeural Net\ndenoise"]
+    CH2["**Hop 2 Channel**\n2x2 MIMO Rayleigh\ny = H┬╖x_R + n\nH = h11 h12 / h21 h22"]
+    EQ["**Equalizer**\nZF / MM
+
+=== MERMAID BLOCK at line 710 ===
+`mermaid
+flowchart LR
+    SRC(["**Source**\ntx bits"])
+    MOD["**BPSK**\nModulator"]
+    CH1["**Hop 1 Channel**\nAWGN / Rayleigh / Rician"]
+    REL["**Relay**\nNeural Net\ndenoise Hop 1 noise"]
+    CH2["**Hop 2 Channel**\n2x2 MIMO ┬╖ 4 Rayleigh links\ny = H┬╖x_R + n\nH = &#91;hΓéüΓéü hΓéüΓéé&#93; / &#91;hΓééΓéü 
+

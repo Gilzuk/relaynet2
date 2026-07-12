@@ -8,31 +8,41 @@ from relaynet.channels.awgn import awgn_channel
 from relaynet.utils.torch_compat import can_use_gpu, get_preferred_device, get_torch_module, to_numpy
 from relaynet.utils.activations import (
     apply_activation, activation_derivative, make_torch_activation,
-    generate_training_targets,
+    generate_training_targets, generate_training_targets_2d,
+    get_num_classes, get_constellation_levels, symbols_to_class_indices,
+    get_constellation_2d, complex_symbols_to_2d_class_indices,
 )
 
 
 def _build_torch_vae(window_size, latent_size, beta, device, hidden_sizes=(32, 16),
-                     output_activation="tanh", clip_range=None):
+                     output_activation="tanh", clip_range=None, num_classes=1,
+                     input_dim=None):
     """Build a Torch VAE backend for optional GPU training/inference."""
     torch = get_torch_module()
     import torch.nn as nn
     import torch.optim as optim
 
+    if input_dim is None:
+        input_dim = window_size
     h1, h2 = hidden_sizes
-    out_act = make_torch_activation(output_activation, clip_range=clip_range)
+    out_dim = num_classes if num_classes > 1 else 1
+    if num_classes > 1:
+        out_act = nn.Identity()
+    else:
+        out_act = make_torch_activation(output_activation, clip_range=clip_range)
 
     class TorchVAE(nn.Module):
         def __init__(self):
             super().__init__()
-            self.enc1 = nn.Linear(window_size, h1)
+            self.enc1 = nn.Linear(input_dim, h1)
             self.enc2 = nn.Linear(h1, h2)
             self.mu = nn.Linear(h2, latent_size)
             self.logvar = nn.Linear(h2, latent_size)
             self.dec1 = nn.Linear(latent_size, h2)
             self.dec2 = nn.Linear(h2, h1)
-            self.out = nn.Linear(h1, 1)
+            self.out = nn.Linear(h1, out_dim)
             self._out_act = out_act
+            self._num_classes = num_classes
 
         def encode(self, x):
             h1 = torch.relu(self.enc1(x))
@@ -60,10 +70,14 @@ def _build_torch_vae(window_size, latent_size, beta, device, hidden_sizes=(32, 1
 
     def train_step(X_batch, y_batch):
         X_t = torch.as_tensor(X_batch, dtype=torch.float32, device=device)
-        y_t = torch.as_tensor(y_batch, dtype=torch.float32, device=device)
-        recon, mu, logvar = model(X_t)
-        recon_loss = torch.mean((recon - y_t) ** 2)
-        kl_loss = -0.5 * torch.mean(1 + logvar - mu.pow(2) - logvar.exp())
+        recon, mu_v, logvar = model(X_t)
+        kl_loss = -0.5 * torch.mean(1 + logvar - mu_v.pow(2) - logvar.exp())
+        if num_classes > 1:
+            y_t = torch.as_tensor(y_batch, dtype=torch.long, device=device).ravel()
+            recon_loss = nn.functional.cross_entropy(recon, y_t)
+        else:
+            y_t = torch.as_tensor(y_batch, dtype=torch.float32, device=device)
+            recon_loss = torch.mean((recon - y_t) ** 2)
         loss = recon_loss + beta * kl_loss
         optimizer.zero_grad()
         loss.backward()
@@ -74,6 +88,8 @@ def _build_torch_vae(window_size, latent_size, beta, device, hidden_sizes=(32, 1
         with torch.no_grad():
             X_t = torch.as_tensor(window_np, dtype=torch.float32, device=device)
             out = model.infer(X_t)
+        if num_classes > 1:
+            return to_numpy(out, dtype=float)  # return (N, num_classes) logits
         return to_numpy(out.flatten(), dtype=float)
 
     return {"train_step": train_step, "infer": infer, "model": model}
@@ -92,7 +108,8 @@ class VAERelay(Relay):
 
     def __init__(self, window_size=7, latent_size=8, beta=0.1, target_power=1.0,
                  prefer_gpu=True, hidden_sizes=(32, 16), output_activation="tanh",
-                 clip_range=None):
+                 clip_range=None, classify=False, training_modulation="bpsk",
+                 classify_2d=False):
         self.window_size = window_size
         self.latent_size = latent_size
         self.beta = beta
@@ -100,14 +117,39 @@ class VAERelay(Relay):
         self.hidden_sizes = hidden_sizes
         self.output_activation = output_activation
         self.clip_range = clip_range
+        self.classify = classify
+        self.classify_2d = classify_2d
+        self._training_modulation = training_modulation
         self.device = get_preferred_device(prefer_gpu=prefer_gpu)
         self._use_torch = can_use_gpu(self.device)
+        # Prefer PyTorch even on CPU when available (NumPy path has
+        # numerical issues with classification and larger networks).
+        if not self._use_torch:
+            torch_mod = get_torch_module()
+            if torch_mod is not None:
+                self.device = torch_mod.device("cpu")
+                self._use_torch = True
 
-        inp = window_size
+        if classify_2d:
+            self.classify = True
+            self.num_classes = 16
+            self._constellation_2d = get_constellation_2d("qam16")
+            self._constellation_levels_np = None
+        elif classify:
+            self.num_classes = get_num_classes(training_modulation)
+            self._constellation_levels_np = get_constellation_levels(training_modulation)
+            self._constellation_2d = None
+        else:
+            self.num_classes = 1
+            self._constellation_levels_np = None
+            self._constellation_2d = None
+
+        out_size = self.num_classes if self.num_classes > 1 else 1
+        inp = 2 * window_size if classify_2d else window_size
         h1, h2 = hidden_sizes
 
         # Encoder
-        self.W_e1 = np.random.randn(inp, h1) * np.sqrt(2 / inp)
+        self.W_e1 = np.random.randn(inp, h1) * np.sqrt(2 / max(inp, 1))
         self.b_e1 = np.zeros(h1)
         self.W_e2 = np.random.randn(h1, h2) * np.sqrt(2 / h1)
         self.b_e2 = np.zeros(h2)
@@ -121,19 +163,26 @@ class VAERelay(Relay):
         self.b_d1 = np.zeros(h2)
         self.W_d2 = np.random.randn(h2, h1) * np.sqrt(2 / h2)
         self.b_d2 = np.zeros(h1)
-        self.W_out = np.random.randn(h1, 1) * 0.1
-        self.b_out = np.zeros(1)
+        self.W_out = np.random.randn(h1, out_size) * 0.1
+        self.b_out = np.zeros(out_size)
 
-        self._torch_vae = _build_torch_vae(window_size, latent_size, beta, self.device, hidden_sizes, output_activation=output_activation, clip_range=clip_range) if self._use_torch else None
+        self._torch_vae = _build_torch_vae(
+            window_size, latent_size, beta, self.device, hidden_sizes,
+            output_activation=output_activation, clip_range=clip_range,
+            num_classes=self.num_classes,
+            input_dim=inp,
+        ) if self._use_torch else None
 
         self.is_trained = False
 
     @property
     def num_params(self):
         h1, h2 = self.hidden_sizes
-        ws, ls = self.window_size, self.latent_size
+        ws = 2 * self.window_size if self.classify_2d else self.window_size
+        ls = self.latent_size
+        out_size = self.num_classes if self.num_classes > 1 else 1
         enc = ws * h1 + h1 + h1 * h2 + h2 + h2 * ls + ls + h2 * ls + ls
-        dec = ls * h2 + h2 + h2 * h1 + h1 + h1 * 1 + 1
+        dec = ls * h2 + h2 + h2 * h1 + h1 + h1 * out_size + out_size
         return enc + dec
 
     def _encode(self, X):
@@ -146,11 +195,16 @@ class VAERelay(Relay):
     def _decode(self, z):
         d1 = np.maximum(0, z @ self.W_d1 + self.b_d1)
         d2 = np.maximum(0, d1 @ self.W_d2 + self.b_d2)
-        out = apply_activation(d2 @ self.W_out + self.b_out, self.output_activation, clip_range=self.clip_range)
+        raw = d2 @ self.W_out + self.b_out
+        if self.classify and self.num_classes > 1:
+            out = raw  # raw logits for classification
+        else:
+            out = apply_activation(raw, self.output_activation, clip_range=self.clip_range)
         return out, d1, d2
 
     def _forward(self, X):
         mu, lv, h1_e, h2_e = self._encode(X)
+        lv = np.clip(lv, -20, 20)
         std = np.exp(0.5 * lv)
         eps = np.random.randn(*mu.shape)
         z = mu + std * eps
@@ -182,7 +236,7 @@ class VAERelay(Relay):
 
         # KL grad w.r.t. mu and lv
         d_mu_kl = self.beta * mu / bs
-        d_lv_kl = self.beta * (-0.5 + 0.5 * np.exp(lv)) / bs
+        d_lv_kl = self.beta * (-0.5 + 0.5 * np.exp(np.clip(lv, -20, 20))) / bs
 
         # Reparameterisation
         d_mu = d_z + d_mu_kl
@@ -241,18 +295,40 @@ class VAERelay(Relay):
         samples_per_snr = num_samples // len(training_snrs)
         X_all, y_all = [], []
 
-        for snr in training_snrs:
-            clean, noisy = generate_training_targets(
-                samples_per_snr, snr,
-                training_modulation=training_modulation,
-                seed=42 + int(snr),
-            )
-            for i in range(pad, len(noisy) - pad):
-                X_all.append(noisy[i - pad: i + pad + 1])
-                y_all.append(clean[i])
+        if self.classify_2d:
+            y_cls_all = []
+            for snr in training_snrs:
+                _clean, noisy_c, labels = generate_training_targets_2d(
+                    samples_per_snr, snr, seed=42 + int(snr),
+                )
+                rx_I = np.pad(noisy_c.real, pad, mode="edge")
+                rx_Q = np.pad(noisy_c.imag, pad, mode="edge")
+                for i in range(pad, len(noisy_c) + pad):
+                    i_win = rx_I[i - pad: i + pad + 1]
+                    q_win = rx_Q[i - pad: i + pad + 1]
+                    X_all.append(np.concatenate([i_win, q_win]))
+                    y_cls_all.append(labels[i - pad])
+            X = np.array(X_all, dtype=np.float32)
+            y = None
+            y_cls = np.array(y_cls_all, dtype=np.int64)
+            use_ce = True
+        else:
+            for snr in training_snrs:
+                clean, noisy = generate_training_targets(
+                    samples_per_snr, snr,
+                    training_modulation=training_modulation,
+                    seed=42 + int(snr),
+                )
+                for i in range(pad, len(noisy) - pad):
+                    X_all.append(noisy[i - pad: i + pad + 1])
+                    y_all.append(clean[i])
 
-        X = np.array(X_all)
-        y = np.array(y_all).reshape(-1, 1)
+            X = np.array(X_all)
+            y = np.array(y_all).reshape(-1, 1)
+
+            use_ce = self.classify and self.num_classes > 1
+            if use_ce:
+                y_cls = symbols_to_class_indices(y.ravel(), training_modulation)
 
         batch_size = 64
         if self._use_torch:
@@ -260,7 +336,7 @@ class VAERelay(Relay):
                 idx = np.random.permutation(len(X))
                 for i in range(0, len(X), batch_size):
                     sl = idx[i: i + batch_size]
-                    self._torch_vae["train_step"](X[sl], y[sl])
+                    self._torch_vae["train_step"](X[sl], y_cls[sl] if use_ce else y[sl])
                 if epoch_callback:
                     epoch_callback(_ep, epochs)
         else:
@@ -283,6 +359,33 @@ class VAERelay(Relay):
         if not self.is_trained:
             return received_signal
 
+        # ── 16-class 2D mode: handle complex signal directly ──
+        if self.classify_2d and np.iscomplexobj(received_signal):
+            pad = self.window_size // 2
+            rx_I = np.pad(received_signal.real, pad, mode="edge")
+            rx_Q = np.pad(received_signal.imag, pad, mode="edge")
+            windows = np.array([
+                np.concatenate([
+                    rx_I[i - pad: i + pad + 1],
+                    rx_Q[i - pad: i + pad + 1],
+                ])
+                for i in range(pad, len(received_signal) + pad)
+            ], dtype=np.float32)
+
+            if self._use_torch:
+                out_raw = self._torch_vae["infer"](windows)
+                indices = np.argmax(out_raw.reshape(-1, self.num_classes), axis=-1)
+            else:
+                out_raw = self._infer(windows)
+                indices = np.argmax(out_raw, axis=-1)
+
+            processed = self._constellation_2d[indices]  # complex
+            pwr = np.mean(np.abs(processed) ** 2)
+            if pwr > 0:
+                processed = processed * np.sqrt(self.target_power / pwr)
+            return processed
+
+        # ── Standard per-axis mode ──
         pad = self.window_size // 2
         padded = np.pad(received_signal, pad, mode="edge")
         windows = np.array([
@@ -291,9 +394,20 @@ class VAERelay(Relay):
         ])
 
         if self._use_torch:
-            processed = self._torch_vae["infer"](windows)
+            out_raw = self._torch_vae["infer"](windows)
+            if self.classify and self.num_classes > 1:
+                # infer returns logits; do argmax + lookup
+                indices = np.argmax(out_raw.reshape(-1, self.num_classes), axis=-1)
+                processed = self._constellation_levels_np[indices]
+            else:
+                processed = out_raw
         else:
-            processed = self._infer(windows).flatten()
+            out_raw = self._infer(windows)
+            if self.classify and self.num_classes > 1:
+                indices = np.argmax(out_raw, axis=-1)
+                processed = self._constellation_levels_np[indices]
+            else:
+                processed = out_raw.flatten()
 
         pwr = np.mean(np.abs(processed) ** 2)
         if pwr > 0:

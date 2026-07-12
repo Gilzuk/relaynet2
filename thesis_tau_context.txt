@@ -1,0 +1,12 @@
+tives}
+\include{chapters/ch04_methods}
+\include{chapters/ch05_experiments}
+\include{chapters/ch06_discussion}
+\include{chapters/ch07_equation_ref}
+\include{chapters/ch08_references}
+\include{chapters/ch09_appendices}
+
+\backmatter
+\include{chapters/ch10_hebrew_abstract}
+
+\end{document}

@@ -1,0 +1,2492 @@
+#!/usr/bin/env python3
+"""
+run_experiments.py
+==================
+Unified experiment runner for the thesis:
+    "Neural Network-Based Relay Processing for Wireless Communications"
+
+Consolidates all 16 thesis experiments (§7.1–§7.16) into a single
+reproducible script.  Every experiment:
+  - Saves full BER results (mean, per-trial, 95 % CI) to JSON.
+  - Generates publication-quality charts following CHART_GUIDELINES.md.
+  - Loads / saves trained weights for later retrieval or re-running.
+
+Usage examples
+--------------
+    python run_experiments.py --list                # show available experiments
+    python run_experiments.py --all                 # run everything
+    python run_experiments.py --exp 7.2 7.3         # run specific sections
+    python run_experiments.py --exp 7.2 --quick     # fewer trials / epochs
+    python run_experiments.py --all --inference-only # plots from saved weights
+"""
+
+import argparse
+import json
+import logging
+import math
+import os
+import sys
+import traceback
+from datetime import datetime
+from time import perf_counter
+
+# Force UTF-8 on Windows
+for _s in (sys.stdout, sys.stderr):
+    if _s and hasattr(_s, "reconfigure"):
+        try:
+            _s.reconfigure(encoding="utf-8", errors="replace")
+        except Exception:
+            pass
+
+import numpy as np
+
+# ── project imports ─────────────────────────────────────────────────
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+from relaynet.relays.af import AmplifyAndForwardRelay
+from relaynet.relays.df import DecodeAndForwardRelay
+from relaynet.relays.genai import MinimalGenAIRelay
+from relaynet.relays.hybrid import HybridRelay
+from relaynet.relays.vae import VAERelay
+from relaynet.relays.cgan import CGANRelay
+from relaynet.simulation.runner import run_monte_carlo
+from relaynet.simulation.statistics import compute_confidence_interval
+from relaynet.channels.awgn import awgn_channel
+from relaynet.channels.fading import rayleigh_fading_channel, rician_fading_channel
+from relaynet.channels.mimo import (
+    mimo_2x2_channel,
+    mimo_2x2_mmse_channel,
+    mimo_2x2_sic_channel,
+)
+from relaynet.utils.activations import get_clip_range
+
+try:
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    _HAS_MPL = True
+except ImportError:
+    _HAS_MPL = False
+
+try:
+    from checkpoints.checkpoint_18_transformer_relay import TransformerRelayWrapper
+    from checkpoints.checkpoint_20_mamba_s6_relay import MambaRelayWrapper
+    from checkpoints.checkpoint_23_mamba2_relay import Mamba2RelayWrapper
+    _HAS_SEQ = True
+except Exception:
+    _HAS_SEQ = False
+
+try:
+    from checkpoints.checkpoint_22_normalized_3k import build_all_3k
+    _HAS_3K = True
+except Exception:
+    _HAS_3K = False
+
+try:
+    from checkpoints.checkpoint_24_e2e_transmitter import (
+        E2ETransmitter,
+        DifferentiableRayleighChannel,
+        E2EReceiver,
+        train_e2e,
+        evaluate_ber,
+        constellation_metrics,
+    )
+    _HAS_E2E = True
+except Exception:
+    _HAS_E2E = False
+
+from scipy import special  # for erfc / Q-function in channel analysis
+
+# ════════════════════════════════════════════════════════════════════
+# Logging
+# ════════════════════════════════════════════════════════════════════
+
+def setup_logging(results_dir):
+    """Configure file + console logging for experiment runs."""
+    log_dir = os.path.join(results_dir, "logs")
+    os.makedirs(log_dir, exist_ok=True)
+    log_file = os.path.join(
+        log_dir,
+        f"experiments_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log",
+    )
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s [%(levelname)s] %(message)s",
+        handlers=[
+            logging.FileHandler(log_file, encoding="utf-8"),
+            logging.StreamHandler(sys.stdout),
+        ],
+    )
+    return log_file
+
+
+def run_experiment_safe(name, func, args):
+    """Run an experiment with failure logging.  Returns True on success."""
+    logger = logging.getLogger("experiments")
+    logger.info("START  %s", name)
+    t0 = perf_counter()
+    try:
+        func(args)
+        elapsed = perf_counter() - t0
+        logger.info("DONE   %s  (%.1fs)", name, elapsed)
+        return True
+    except Exception:
+        elapsed = perf_counter() - t0
+        tb = traceback.format_exc()
+        logger.error("FAILED %s after %.1fs\n%s", name, elapsed, tb)
+        # Also persist failure to a JSON sidecar
+        fail_dir = os.path.join(args.results_dir, "logs")
+        os.makedirs(fail_dir, exist_ok=True)
+        fail_path = os.path.join(
+            fail_dir,
+            f"fail_{name.replace(' ', '_')}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
+        )
+        with open(fail_path, "w") as f:
+            json.dump({"experiment": name, "error": tb,
+                       "elapsed_s": round(elapsed, 2),
+                       "timestamp": datetime.now().isoformat()}, f, indent=2)
+        print(f"  [FAILED] {name} — see {fail_path}")
+        return False
+
+# ════════════════════════════════════════════════════════════════════
+# Chart guidelines palette (30 colours, colorblind-safe)
+# ════════════════════════════════════════════════════════════════════
+PALETTE = [
+    "#e6194b", "#3cb44b", "#4363d8", "#f58231", "#911eb4",
+    "#42d4f4", "#f032e6", "#bfef45", "#469990", "#dcbeff",
+    "#9a6324", "#800000", "#aaffc3", "#808000", "#000075",
+    "#e6beff", "#ffe119", "#fabebe", "#7f7f7f", "#a9a9a9",
+    "#008080", "#e41a1c", "#377eb8", "#ff7f00", "#984ea3",
+    "#00ced1", "#ff1493", "#228b22", "#8b4513", "#4b0082",
+]
+
+MARKERS = [
+    "o", "s", "^", "D", "v", "P", "X", "<", ">",
+    "h", "p", "*", "H", "d", "8", "+", "x",
+]
+
+# Fixed colour / marker for baselines
+BASELINE_STYLE = {
+    "AF":  {"color": "grey",  "marker": "o", "ls": "-"},
+    "DF":  {"color": "black", "marker": "s", "ls": "-"},
+}
+
+RELAY_STYLE = {
+    "MLP (169p)":     {"color": PALETTE[0],  "marker": "^"},
+    "Hybrid":         {"color": PALETTE[1],  "marker": "D"},
+    "VAE":            {"color": PALETTE[2],  "marker": "v"},
+    "CGAN (WGAN-GP)": {"color": PALETTE[3],  "marker": "P"},
+    "Transformer":    {"color": PALETTE[4],  "marker": "X"},
+    "Mamba S6":       {"color": PALETTE[5],  "marker": "<"},
+    "Mamba2 (SSD)":   {"color": PALETTE[6],  "marker": ">"},
+}
+
+
+# ════════════════════════════════════════════════════════════════════
+# JSON persistence helpers
+# ════════════════════════════════════════════════════════════════════
+
+def _to_serialisable(obj):
+    """Make numpy types JSON-safe."""
+    if isinstance(obj, np.ndarray):
+        return obj.tolist()
+    if isinstance(obj, (np.integer,)):
+        return int(obj)
+    if isinstance(obj, (np.floating,)):
+        return float(obj)
+    return obj
+
+
+def save_results_json(path, snr_range, results_dict, meta=None):
+    """Persist full experiment results to JSON.
+
+    Parameters
+    ----------
+    path : str
+    snr_range : array-like
+    results_dict : dict
+        ``{name: {"ber_mean": [...], "ber_trials": [[...]], "ci_lower": [...], "ci_upper": [...]}}``
+    meta : dict, optional
+        Extra metadata to include.
+    """
+    data = {
+        "created": datetime.now().isoformat(),
+        "snr_range": _to_serialisable(snr_range),
+        "results": {},
+    }
+    if meta:
+        data["meta"] = meta
+
+    for name, rd in results_dict.items():
+        entry = {}
+        for k, v in rd.items():
+            entry[k] = _to_serialisable(v)
+        data["results"][name] = entry
+
+    os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
+    with open(path, "w") as f:
+        json.dump(data, f, indent=2, default=_to_serialisable)
+    print(f"  JSON → {path}")
+
+
+def load_results_json(path):
+    """Load experiment results from JSON."""
+    with open(path) as f:
+        return json.load(f)
+
+
+# ════════════════════════════════════════════════════════════════════
+# Chart helpers (CHART_GUIDELINES.md compliant)
+# ════════════════════════════════════════════════════════════════════
+
+def _style_for(name, idx=0):
+    """Return colour / marker / linestyle for a curve name."""
+    if name in BASELINE_STYLE:
+        return BASELINE_STYLE[name]
+    if name in RELAY_STYLE:
+        return {**RELAY_STYLE[name], "ls": "-"}
+    # Fallback
+    return {"color": PALETTE[idx % len(PALETTE)],
+            "marker": MARKERS[idx % len(MARKERS)], "ls": "-"}
+
+
+def _apply_jitter(ber_arrays):
+    """Apply small multiplicative jitter to overlapping BER curves (rule 5).
+
+    When two curves share the same BER value at a given SNR point,
+    apply ×1.03 / ×0.97 offsets so they remain visually separable.
+    """
+    names = list(ber_arrays.keys())
+    jittered = {n: np.array(b, dtype=float) for n, b in ber_arrays.items()}
+    for i in range(len(names)):
+        for j in range(i + 1, len(names)):
+            a, b = jittered[names[i]], jittered[names[j]]
+            overlap = (a > 0) & (b > 0) & (np.abs(a - b) / np.maximum(a, 1e-15) < 0.005)
+            if np.any(overlap):
+                jittered[names[i]][overlap] *= 1.03
+                jittered[names[j]][overlap] *= 0.97
+    return jittered
+
+
+def _add_congestion_inset(ax, snr, ber_dict, style_infos):
+    """Zoom into the high-SNR region where BER differences matter (rules 2, 15).
+
+    Shows the last ~40 % of the SNR range in a zoomed inset so the reader
+    can distinguish relay performance at the operating points that matter.
+    """
+    ber_arrays = [np.asarray(b, dtype=float) for b in ber_dict.values()]
+    if len(ber_arrays) < 3:
+        return
+    snr = np.asarray(snr)
+    n = len(snr)
+
+    # Take roughly the upper 40 % of SNR points (at least 3)
+    lo_idx = max(0, n - max(3, int(n * 0.4)))
+    hi_idx = n - 1
+    snr_lo, snr_hi = snr[lo_idx], snr[hi_idx]
+
+    # BER limits: envelope of all positive values in that range
+    vals = []
+    for b in ber_arrays:
+        for si in range(lo_idx, hi_idx + 1):
+            if b[si] > 0:
+                vals.append(b[si])
+    if not vals:
+        return  # all zeros in high-SNR region — nothing to zoom
+    ber_lo = min(vals) * 0.3
+    ber_hi = max(vals) * 3.0
+
+    from mpl_toolkits.axes_grid1.inset_locator import inset_axes
+    axins = inset_axes(ax, width="30%", height="28%", loc="upper right",
+                       borderpad=1.2)
+    for name, sinfo in style_infos.items():
+        ber = np.asarray(ber_dict[name], dtype=float)
+        ber_plot = np.where(ber > 0, ber, 1e-10)
+        axins.semilogy(snr, ber_plot, marker=sinfo["marker"],
+                       color=sinfo["color"], linewidth=sinfo.get("lw", 1.3),
+                       markersize=4, linestyle=sinfo.get("ls", "-"),
+                       alpha=sinfo.get("alpha", 0.9))
+    axins.set_xlim(snr_lo - 0.5, snr_hi + 0.5)
+    axins.set_ylim(ber_lo, ber_hi)
+    axins.grid(True, which="both", linestyle="--", alpha=0.2, linewidth=0.3)
+    axins.tick_params(labelsize=8)
+    ax.indicate_inset_zoom(axins, edgecolor="grey", alpha=0.5)
+
+
+def _add_annotations(ax, snr, ber_dict, style_infos):
+    """Auto-annotate key crossover points and congested leaders (rules 4, 16).
+
+    Finds SNR points where the best neural relay overtakes DF (crossover)
+    and labels the winner at the lowest-BER SNR point.
+    """
+    snr = np.asarray(snr)
+    names = list(ber_dict.keys())
+    ber_arrays = {n: np.asarray(b, dtype=float) for n, b in ber_dict.items()}
+
+    # --- Rule 16: annotate crossover where best AI relay beats DF ---
+    if "DF" in ber_arrays:
+        df_ber = ber_arrays["DF"]
+        ai_names = [n for n in names if n not in ("AF", "DF")]
+        for ai in ai_names:
+            ai_ber = ber_arrays[ai]
+            # Find first SNR where AI < DF (crossover)
+            better = (ai_ber > 0) & (df_ber > 0) & (ai_ber < df_ber * 0.95)
+            if not np.any(better):
+                continue
+            cross_idx = int(np.argmax(better))
+            x_cross = snr[cross_idx]
+            y_cross = ai_ber[cross_idx]
+            if y_cross <= 0:
+                continue
+            color = style_infos.get(ai, {}).get("color", "black")
+            ax.annotate(
+                f"{ai} < DF",
+                xy=(x_cross, y_cross),
+                xytext=(x_cross + 1.5, y_cross * 3),
+                fontsize=8, color=color, fontweight="bold",
+                arrowprops=dict(arrowstyle="->", color=color,
+                                lw=0.8, connectionstyle="arc3,rad=0.2"),
+                bbox=dict(boxstyle="round,pad=0.2", fc="white",
+                          ec=color, alpha=0.7, lw=0.5),
+            )
+            break  # only annotate the first AI crossover
+
+    # --- Rule 4: leader lines at lowest-BER point for winner ---
+    ai_names = [n for n in names if n not in ("AF", "DF")]
+    if not ai_names:
+        return
+    last_idx = len(snr) - 1
+    # Find winner at the highest SNR
+    best_name, best_ber = None, 1.0
+    for n in ai_names:
+        b = ber_arrays[n][last_idx]
+        if 0 < b < best_ber:
+            best_name, best_ber = n, b
+    if best_name and best_ber > 0 and best_ber < 0.1:
+        color = style_infos.get(best_name, {}).get("color", "black")
+        ax.annotate(
+            f"Best: {best_name}\nBER={best_ber:.2e}",
+            xy=(snr[last_idx], best_ber),
+            xytext=(snr[last_idx] - 3, best_ber * 8),
+            fontsize=8, color=color,
+            arrowprops=dict(arrowstyle="->", color=color, lw=0.8),
+            bbox=dict(boxstyle="round,pad=0.2", fc="white",
+                      ec=color, alpha=0.7, lw=0.5),
+        )
+
+
+def plot_ber_chart(snr, ber_dict, ci_dict=None, title="", save_path=None,
+                   ylim_bottom=None, extra_styles=None, show_inset=True,
+                   show_annotations=True):
+    """Publication-quality BER vs SNR chart.
+
+    Follows CHART_GUIDELINES.md rules 1–16, 22.
+    """
+    if not _HAS_MPL:
+        return
+    fig, ax = plt.subplots(figsize=(10, 5.5))
+    snr = np.asarray(snr)
+
+    # Apply curve jitter for overlapping values (rule 5)
+    jittered = _apply_jitter(ber_dict)
+
+    style_map = extra_styles or {}
+    style_infos = {}
+    for idx, (name, ber) in enumerate(ber_dict.items()):
+        ber_j = jittered[name]
+        st = style_map.get(name, _style_for(name, idx))
+        color = st.get("color", PALETTE[idx % len(PALETTE)])
+        marker = st.get("marker", MARKERS[idx % len(MARKERS)])
+        ls = st.get("ls", "-")
+        lw = st.get("lw", 1.3)
+        alpha = st.get("alpha", 0.9)
+        style_infos[name] = {"color": color, "marker": marker, "ls": ls,
+                             "lw": lw, "alpha": alpha}
+        ber_plot = np.where(ber_j > 0, ber_j, 1e-10)
+        ax.semilogy(snr, ber_plot, marker=marker, color=color,
+                     linewidth=lw, markersize=6, label=name,
+                     linestyle=ls, alpha=alpha)
+        if ci_dict and name in ci_dict:
+            lo, hi = ci_dict[name]
+            lo = np.maximum(np.asarray(lo, dtype=float), 1e-10)
+            hi = np.asarray(hi, dtype=float)
+            ax.fill_between(snr, lo, hi, alpha=0.15, color=color)
+
+    # Y-axis: one decade below min nonzero BER (rule 6)
+    all_ber = np.concatenate([np.asarray(b, dtype=float) for b in ber_dict.values()])
+    min_ber = all_ber[all_ber > 0].min() if np.any(all_ber > 0) else 1e-6
+    bottom = ylim_bottom or 10 ** (np.floor(np.log10(min_ber)) - 1)
+    ax.set_ylim(bottom=max(bottom, 1e-8), top=1)
+
+    ax.grid(True, which="both", linestyle="--", alpha=0.3, linewidth=0.5)
+    ax.set_xlabel("SNR (dB)", fontsize=14)
+    ax.set_ylabel("Bit Error Rate (BER)", fontsize=14)
+    ax.set_title(title, fontsize=16)
+    # Legend outside plot area (rule 3), readable font size (rule 11)
+    ax.legend(fontsize=12, loc="upper left", bbox_to_anchor=(1.02, 1),
+              borderaxespad=0, framealpha=0.9)
+    ax.tick_params(labelsize=12)
+
+    # Annotations: crossover & winner leaders (rules 4, 16)
+    if show_annotations and len(ber_dict) >= 3:
+        try:
+            _add_annotations(ax, snr, ber_dict, style_infos)
+        except Exception:
+            pass
+
+    # Zoomed inset for congested regions (rules 2, 15)
+    if show_inset and len(ber_dict) >= 3:
+        try:
+            _add_congestion_inset(ax, snr, ber_dict, style_infos)
+        except Exception:
+            pass  # inset is optional enhancement
+
+    plt.tight_layout()
+
+    if save_path:
+        os.makedirs(os.path.dirname(os.path.abspath(save_path)), exist_ok=True)
+        plt.savefig(save_path, dpi=150, bbox_inches="tight")
+        print(f"  Plot → {save_path}")
+    plt.close(fig)
+
+
+def plot_top3_chart(snr, results_dict, title="", save_path=None):
+    """Top-3 neural relays + AF/DF baselines (rule 22)."""
+    if not _HAS_MPL:
+        return
+    half = len(snr) // 2
+    ranked = []
+    for name, rd in results_dict.items():
+        if name in ("AF", "DF"):
+            continue
+        avg_upper = float(np.mean(rd["ber_mean"][half:]))
+        ranked.append((name, avg_upper))
+    ranked.sort(key=lambda x: x[1])
+    top3 = [r[0] for r in ranked[:3]]
+
+    ber_dict = {}
+    ci_dict = {}
+    for name in ["AF", "DF"] + top3:
+        if name in results_dict:
+            ber_dict[name] = results_dict[name]["ber_mean"]
+            if "ci_lower" in results_dict[name]:
+                ci_dict[name] = (results_dict[name]["ci_lower"],
+                                 results_dict[name]["ci_upper"])
+    plot_ber_chart(snr, ber_dict, ci_dict, title=title, save_path=save_path)
+
+
+def print_ber_summary_table(snr, results_dict, key_snrs=None, title=""):
+    """Print BER summary table at key SNR points with deltas (rule 18).
+
+    Parameters
+    ----------
+    snr : array-like
+    results_dict : dict
+        ``{name: {"ber_mean": [...]}}`` or ``{name: [...]}``
+    key_snrs : list of float, optional
+        SNR points to tabulate. Defaults to ~25% and ~75% of range.
+    title : str
+    """
+    snr = np.asarray(snr, dtype=float)
+    if key_snrs is None:
+        lo_idx = len(snr) // 4
+        hi_idx = 3 * len(snr) // 4
+        key_snrs = [snr[lo_idx], snr[hi_idx]]
+
+    # Normalise: accept both {name: array} and {name: {"ber_mean": array}}
+    ber_map = {}
+    for n, v in results_dict.items():
+        if isinstance(v, dict):
+            ber_map[n] = np.asarray(v.get("ber_mean", v.get("ber", [])), dtype=float)
+        else:
+            ber_map[n] = np.asarray(v, dtype=float)
+
+    names = list(ber_map.keys())
+    if not names:
+        return
+
+    header = f"{'Relay':<22}" + "".join(f"  {'BER @'+str(int(s))+'dB':>14}" for s in key_snrs)
+    sep = "-" * len(header)
+
+    if title:
+        print(f"\n  {title}")
+    print(f"  {sep}")
+    print(f"  {header}")
+    print(f"  {sep}")
+
+    for name in names:
+        ber = ber_map[name]
+        row = f"  {name:<22}"
+        for s in key_snrs:
+            idx = int(np.argmin(np.abs(snr - s)))
+            val = ber[idx] if idx < len(ber) else float("nan")
+            if val > 0:
+                row += f"  {val:>14.4e}"
+            else:
+                row += f"  {'0':>14}"
+        print(row)
+    print(f"  {sep}")
+
+    # Delta from best AI at each key SNR
+    ai_names = [n for n in names if n not in ("AF", "DF")]
+    if len(ai_names) >= 2:
+        print(f"  {'Δ from best AI':<22}", end="")
+        for s in key_snrs:
+            idx = int(np.argmin(np.abs(snr - s)))
+            ai_vals = [(n, ber_map[n][idx]) for n in ai_names
+                       if idx < len(ber_map[n]) and ber_map[n][idx] > 0]
+            if ai_vals:
+                best = min(ai_vals, key=lambda x: x[1])
+                print(f"  {best[0]:>14}", end="")
+            else:
+                print(f"  {'—':>14}", end="")
+        print()
+
+
+def plot_summary_heatmap(snr, multi_results, title="", save_path=None):
+    """Aggregation heatmap: avg BER across channels per relay (rule 19).
+
+    Parameters
+    ----------
+    snr : array-like
+    multi_results : dict
+        ``{channel_name: {relay_name: {"ber_mean": [...]}}}``
+    title : str
+    save_path : str, optional
+    """
+    if not _HAS_MPL:
+        return
+
+    channels = list(multi_results.keys())
+    # Collect all relay names
+    all_relays = []
+    for ch_res in multi_results.values():
+        for rn in ch_res:
+            if rn not in all_relays:
+                all_relays.append(rn)
+
+    snr = np.asarray(snr)
+    half = len(snr) // 2
+
+    # Build matrix: avg BER over upper-half SNRs for each (relay, channel)
+    matrix = np.full((len(all_relays), len(channels)), np.nan)
+    for ci, ch in enumerate(channels):
+        for ri, rn in enumerate(all_relays):
+            if rn in multi_results[ch]:
+                rd = multi_results[ch][rn]
+                ber = np.asarray(rd["ber_mean"] if isinstance(rd, dict) else rd,
+                                 dtype=float)
+                avg = float(np.mean(ber[half:]))
+                matrix[ri, ci] = avg if avg > 0 else np.nan
+
+    fig, ax = plt.subplots(figsize=(max(8, len(channels) * 1.5),
+                                     max(5, len(all_relays) * 0.6)))
+    # Log-scale colors for BER
+    with np.errstate(divide="ignore", invalid="ignore"):
+        log_matrix = np.log10(np.where(matrix > 0, matrix, np.nan))
+
+    im = ax.imshow(log_matrix, aspect="auto", cmap="RdYlGn_r")
+    ax.set_xticks(range(len(channels)))
+    ax.set_xticklabels(channels, fontsize=11, rotation=30, ha="right")
+    ax.set_yticks(range(len(all_relays)))
+    ax.set_yticklabels(all_relays, fontsize=11)
+    ax.set_title(title or "Avg BER (upper-half SNR) — log₁₀ scale", fontsize=14)
+
+    # Annotate cells with BER values
+    for ri in range(len(all_relays)):
+        for ci in range(len(channels)):
+            val = matrix[ri, ci]
+            if not np.isnan(val):
+                txt = f"{val:.1e}"
+                ax.text(ci, ri, txt, ha="center", va="center", fontsize=8,
+                        color="white" if log_matrix[ri, ci] < -2 else "black")
+
+    cbar = fig.colorbar(im, ax=ax, shrink=0.8, pad=0.02)
+    cbar.set_label("log₁₀(BER)", fontsize=11)
+    plt.tight_layout()
+
+    if save_path:
+        os.makedirs(os.path.dirname(os.path.abspath(save_path)), exist_ok=True)
+        plt.savefig(save_path, dpi=150, bbox_inches="tight")
+        print(f"  Heatmap → {save_path}")
+    plt.close(fig)
+
+
+def plot_achievement_chart(snr, results_dict, title="", save_path=None):
+    """Achievement chart: winner highlighted, others faded (rule 20).
+
+    Ranks relays by average BER over the upper half of the SNR range,
+    highlights the winner in bold color, and fades the rest.
+    """
+    if not _HAS_MPL:
+        return
+
+    snr = np.asarray(snr)
+    half = len(snr) // 2
+    names = list(results_dict.keys())
+    ai_names = [n for n in names if n not in ("AF", "DF")]
+    if not ai_names:
+        return
+
+    # Rank by avg BER over upper-half SNRs
+    ranked = []
+    for n in ai_names:
+        rd = results_dict[n]
+        ber = np.asarray(rd["ber_mean"] if isinstance(rd, dict) else rd,
+                         dtype=float)
+        avg = float(np.mean(ber[half:]))
+        ranked.append((n, avg))
+    ranked.sort(key=lambda x: x[1])
+    winner = ranked[0][0]
+
+    fig, ax = plt.subplots(figsize=(10, 5.5))
+
+    style_infos = {}
+    for idx, name in enumerate(names):
+        rd = results_dict[name]
+        ber = np.asarray(rd["ber_mean"] if isinstance(rd, dict) else rd,
+                         dtype=float)
+        ber_plot = np.where(ber > 0, ber, 1e-10)
+        st = _style_for(name, idx)
+        is_winner = (name == winner)
+        is_baseline = (name in ("AF", "DF"))
+
+        lw = 2.0 if is_winner else (1.0 if is_baseline else 0.7)
+        alpha = 1.0 if is_winner else (0.6 if is_baseline else 0.25)
+        color = st.get("color", PALETTE[idx % len(PALETTE)])
+
+        ax.semilogy(snr, ber_plot,
+                     marker=st.get("marker", MARKERS[idx % len(MARKERS)]),
+                     color=color, linewidth=lw, markersize=6 if is_winner else 4,
+                     label=f"★ {name}" if is_winner else name,
+                     linestyle=st.get("ls", "-"), alpha=alpha)
+
+    # Y-axis
+    all_ber = np.concatenate([
+        np.asarray(
+            rd["ber_mean"] if isinstance(rd, dict) else rd, dtype=float)
+        for rd in results_dict.values()])
+    min_ber = all_ber[all_ber > 0].min() if np.any(all_ber > 0) else 1e-6
+    bottom = 10 ** (np.floor(np.log10(min_ber)) - 1)
+    ax.set_ylim(bottom=max(bottom, 1e-8), top=1)
+
+    ax.grid(True, which="both", linestyle="--", alpha=0.3, linewidth=0.5)
+    ax.set_xlabel("SNR (dB)", fontsize=14)
+    ax.set_ylabel("Bit Error Rate (BER)", fontsize=14)
+    ax.set_title(title or f"Achievement — Winner: {winner}", fontsize=16)
+    ax.legend(fontsize=12, loc="upper left", bbox_to_anchor=(1.02, 1),
+              borderaxespad=0, framealpha=0.9)
+    ax.tick_params(labelsize=12)
+
+    plt.tight_layout()
+    if save_path:
+        os.makedirs(os.path.dirname(os.path.abspath(save_path)), exist_ok=True)
+        plt.savefig(save_path, dpi=150, bbox_inches="tight")
+        print(f"  Achievement → {save_path}")
+    plt.close(fig)
+
+
+# ════════════════════════════════════════════════════════════════════
+# Weight management
+# ════════════════════════════════════════════════════════════════════
+
+class WeightManager:
+    """Save / load relay weights for reproducibility."""
+
+    def __init__(self, base_dir="weights", seed=42):
+        self.base_dir = os.path.join(base_dir, f"seed_{seed}")
+        os.makedirs(self.base_dir, exist_ok=True)
+
+    def _path(self, name, subdir=None):
+        safe = name.lower().replace(" ", "_").replace("(", "").replace(")", "")
+        d = os.path.join(self.base_dir, subdir) if subdir else self.base_dir
+        os.makedirs(d, exist_ok=True)
+        return os.path.join(d, f"{safe}.pt")
+
+    def save(self, name, relay, subdir=None):
+        """Save relay weights to .pt checkpoint."""
+        if hasattr(relay, "save_weights"):
+            p = self._path(name, subdir)
+            relay.save_weights(p)
+            print(f"    Checkpoint → {p}")
+        # Also save via state_dict for torch-based relays
+        elif hasattr(relay, "state_dict"):
+            import torch
+            p = self._path(name, subdir)
+            torch.save(relay.state_dict(), p)
+            print(f"    Checkpoint → {p}")
+
+    def load(self, name, relay, subdir=None):
+        p = self._path(name, subdir)
+        if os.path.exists(p) and hasattr(relay, "load_weights"):
+            relay.load_weights(p)
+            print(f"    Loaded checkpoint ← {p}")
+            return True
+        return False
+
+    def checkpoint_exists(self, name, subdir=None):
+        """Check if a checkpoint file exists."""
+        return os.path.exists(self._path(name, subdir))
+
+    def save_metadata(self, meta, subdir=None):
+        d = os.path.join(self.base_dir, subdir) if subdir else self.base_dir
+        os.makedirs(d, exist_ok=True)
+        p = os.path.join(d, "metadata.json")
+        with open(p, "w") as f:
+            json.dump(meta, f, indent=2, default=_to_serialisable)
+
+
+# ════════════════════════════════════════════════════════════════════
+# Relay factory
+# ════════════════════════════════════════════════════════════════════
+
+def build_base_relays(gpu=False, activation="tanh", clip_range=None,
+                      layer_norm=False):
+    """Build the 9-relay dictionary (untrained)."""
+    relays = {
+        "AF": AmplifyAndForwardRelay(),
+        "DF": DecodeAndForwardRelay(),
+        "MLP (169p)": MinimalGenAIRelay(
+            window_size=5, hidden_size=24, prefer_gpu=False,
+            output_activation=activation, clip_range=clip_range),
+        "Hybrid": HybridRelay(
+            snr_threshold=5.0, prefer_gpu=False,
+            output_activation=activation, clip_range=clip_range),
+        "VAE": VAERelay(
+            window_size=7, latent_size=8, beta=0.1, prefer_gpu=False,
+            output_activation=activation, clip_range=clip_range),
+        "CGAN (WGAN-GP)": CGANRelay(
+            window_size=7, noise_size=8, lambda_gp=10, lambda_l1=20,
+            n_critic=5, prefer_gpu=gpu,
+            output_activation=activation, clip_range=clip_range),
+    }
+    if _HAS_SEQ:
+        relays["Transformer"] = TransformerRelayWrapper(
+            target_power=1.0, window_size=11, d_model=32,
+            num_heads=4, num_layers=2, prefer_gpu=gpu,
+            use_input_norm=layer_norm,
+            output_activation=activation, clip_range=clip_range)
+        relays["Mamba S6"] = MambaRelayWrapper(
+            target_power=1.0, window_size=11, d_model=32,
+            d_state=16, num_layers=2, prefer_gpu=gpu,
+            use_input_norm=layer_norm,
+            output_activation=activation, clip_range=clip_range)
+        relays["Mamba2 (SSD)"] = Mamba2RelayWrapper(
+            target_power=1.0, window_size=11, d_model=32,
+            d_state=16, num_layers=2, prefer_gpu=gpu,
+            use_input_norm=layer_norm,
+            output_activation=activation, clip_range=clip_range)
+    return relays
+
+
+def train_base_relays(relays, args, modulation="bpsk"):
+    """Train all AI relays with standard parameters."""
+    samples = 5_000 if args.quick else 25_000
+    epochs = 20 if args.quick else 100
+    vae_samples = 5_000 if args.quick else 50_000
+    cgan_samples = 5_000 if args.quick else 50_000
+    cgan_epochs = 20 if args.quick else 200
+    seq_samples = 3_000 if args.quick else 50_000
+    seq_epochs = 10 if args.quick else 100
+
+    for name, relay in relays.items():
+        if name in ("AF", "DF"):
+            continue
+        print(f"  Training {name} …", end=" ", flush=True)
+        t0 = perf_counter()
+        kw = {"seed": args.seed}
+
+        if name == "MLP (169p)":
+            relay.train(training_snrs=[5, 10, 15], num_samples=samples,
+                        epochs=epochs, **kw)
+        elif name == "Hybrid":
+            relay.train(training_snrs=[2, 4, 6], num_samples=samples,
+                        epochs=epochs, **kw)
+        elif name == "VAE":
+            relay.train(training_snrs=[5, 10, 15], num_samples=vae_samples,
+                        epochs=epochs, **kw)
+        elif name == "CGAN (WGAN-GP)":
+            relay.train(training_snrs=[5, 10, 15], num_samples=cgan_samples,
+                        epochs=cgan_epochs, **kw)
+        elif name in ("Transformer", "Mamba S6", "Mamba2 (SSD)"):
+            relay.train(training_snrs=[5, 10, 15], num_samples=seq_samples,
+                        epochs=seq_epochs, lr=0.001,
+                        training_modulation=modulation)
+        print(f"done ({perf_counter() - t0:.1f}s)")
+
+
+# ════════════════════════════════════════════════════════════════════
+# Monte Carlo evaluation helper
+# ════════════════════════════════════════════════════════════════════
+
+def evaluate_relays(relays, snr_range, channel_fn=None,
+                    modulation="bpsk",
+                    bits_per_trial=10_000, num_trials=10):
+    """Run Monte Carlo BER evaluation for all relays.
+
+    Returns dict ``{name: {"ber_mean": [...], "ber_trials": [[...]], ...}}``.
+    """
+    results = {}
+    for name, relay in relays.items():
+        print(f"    {name} …", end=" ", flush=True)
+        t0 = perf_counter()
+        snr, ber, trials = run_monte_carlo(
+            relay, snr_range,
+            num_bits_per_trial=bits_per_trial,
+            num_trials=num_trials,
+            channel_fn=channel_fn,
+            modulation=modulation,
+        )
+        ci_lo, ci_hi = compute_confidence_interval(trials)
+        results[name] = {
+            "ber_mean": ber,
+            "ber_trials": trials,
+            "ci_lower": ci_lo,
+            "ci_upper": ci_hi,
+        }
+        print(f"done ({perf_counter() - t0:.1f}s)")
+    return results
+
+
+# ════════════════════════════════════════════════════════════════════
+# EXPERIMENT FUNCTIONS — one per thesis section
+# ════════════════════════════════════════════════════════════════════
+
+# ── §7.1  Channel Model Analysis ───────────────────────────────────
+
+def exp_7_1_channel_analysis(args):
+    """§7.1 Theoretical vs simulative channel BER curves."""
+    print("\n══ §7.1 Channel Model Analysis ══")
+    out = os.path.join(args.results_dir, "channel_analysis")
+    os.makedirs(out, exist_ok=True)
+    snr_db = np.arange(0, 22, 2, dtype=float)
+    snr_lin = 10 ** (snr_db / 10)
+    bits = 5_000 if args.quick else 50_000
+    trials = 5 if args.quick else 20
+
+    def Q(x):
+        return 0.5 * special.erfc(x / np.sqrt(2))
+
+    # Theoretical curves
+    ber_awgn_th = Q(np.sqrt(2 * snr_lin))
+    ber_ray_th = 0.5 * (1 - np.sqrt(snr_lin / (1 + snr_lin)))
+    ber_ric_th = []
+    for g in snr_lin:
+        K = 3.0
+        ber_ric_th.append(0.5 * (1 - np.sqrt(g / (1 + g)) *
+                                  (1 + K / (g + K))))
+    ber_ric_th = np.clip(ber_ric_th, 1e-10, 1)
+
+    # Two-hop theoretical
+    ber_df_th = ber_awgn_th + ber_awgn_th - 2 * ber_awgn_th * ber_awgn_th
+    snr_af_eff = snr_lin ** 2 / (2 * snr_lin + 1)
+    ber_af_th = Q(np.sqrt(2 * snr_af_eff))
+
+    # Simulative
+    from relaynet.nodes import Source, Destination
+    from relaynet.modulation.bpsk import bpsk_modulate, bpsk_demodulate, calculate_ber
+
+    sim_results = {}
+    for ch_name, ch_fn in [("AWGN", None),
+                            ("Rayleigh", rayleigh_fading_channel),
+                            ("Rician K=3",
+                             lambda s, snr: rician_fading_channel(s, snr, k_factor=3.0))]:
+        print(f"  Simulating {ch_name} …")
+        bers = np.zeros(len(snr_db))
+        for i, snr in enumerate(snr_db):
+            trial_bers = []
+            for t in range(trials):
+                src = Source(seed=t, modulation="bpsk")
+                dst = Destination(modulation="bpsk")
+                tx_bits, tx_sym = src.transmit(bits)
+                if ch_fn:
+                    rx = ch_fn(tx_sym, snr)
+                else:
+                    rx = awgn_channel(tx_sym, snr)
+                if isinstance(rx, tuple):
+                    rx = rx[0]
+                rx_bits = dst.receive(rx)
+                b, _ = calculate_ber(tx_bits, rx_bits)
+                trial_bers.append(b)
+            bers[i] = np.mean(trial_bers)
+        sim_results[ch_name] = bers
+
+    # Save JSON
+    save_results_json(
+        os.path.join(out, "channel_analysis.json"),
+        snr_db,
+        {
+            "AWGN_theoretical": {"ber_mean": ber_awgn_th},
+            "AWGN_simulated": {"ber_mean": sim_results.get("AWGN", ber_awgn_th)},
+            "Rayleigh_theoretical": {"ber_mean": ber_ray_th},
+            "Rayleigh_simulated": {"ber_mean": sim_results.get("Rayleigh", ber_ray_th)},
+            "Rician_theoretical": {"ber_mean": ber_ric_th},
+            "Rician_simulated": {"ber_mean": sim_results.get("Rician K=3", ber_ric_th)},
+            "TwoHop_DF_theoretical": {"ber_mean": ber_df_th},
+            "TwoHop_AF_theoretical": {"ber_mean": ber_af_th},
+        },
+        meta={"experiment": "7.1", "bits": bits, "trials": trials},
+    )
+
+    if not _HAS_MPL:
+        return
+
+    # Individual channel plots
+    for tag, th, sim_key in [
+        ("awgn", ber_awgn_th, "AWGN"),
+        ("rayleigh", ber_ray_th, "Rayleigh"),
+        ("rician", ber_ric_th, "Rician K=3"),
+    ]:
+        fig, ax = plt.subplots(figsize=(8, 5))
+        ax.semilogy(snr_db, th, "k-", linewidth=1.3, label=f"{sim_key} (theory)")
+        ax.semilogy(snr_db, sim_results[sim_key], "ro", markersize=5,
+                     label=f"{sim_key} (sim)")
+        ax.grid(True, which="both", linestyle="--", alpha=0.3)
+        ax.set_xlabel("SNR (dB)", fontsize=14)
+        ax.set_ylabel("BER", fontsize=14)
+        ax.set_title(f"Theoretical vs Simulated — {sim_key}", fontsize=16)
+        ax.legend(fontsize=12)
+        plt.tight_layout()
+        plt.savefig(os.path.join(out, f"channel_theoretical_{tag}.png"),
+                    dpi=150, bbox_inches="tight")
+        plt.close(fig)
+
+    # Summary plot: all SISO channels
+    fig, ax = plt.subplots(figsize=(8, 5))
+    ax.semilogy(snr_db, ber_awgn_th, "k-", lw=1.3, label="AWGN")
+    ax.semilogy(snr_db, ber_ray_th, "b--", lw=1.3, label="Rayleigh")
+    ax.semilogy(snr_db, np.array(ber_ric_th), "g-.", lw=1.3, label="Rician K=3")
+    ax.grid(True, which="both", linestyle="--", alpha=0.3)
+    ax.set_xlabel("SNR (dB)", fontsize=14); ax.set_ylabel("BER", fontsize=14)
+    ax.set_title("SISO Channel Comparison", fontsize=16)
+    ax.legend(fontsize=12)
+    plt.tight_layout()
+    plt.savefig(os.path.join(out, "channel_comparison_all.png"),
+                dpi=150, bbox_inches="tight")
+    plt.close(fig)
+
+    print(f"  §7.1 complete → {out}/")
+
+
+# ── §7.2–§7.7  BPSK relay comparisons on 6 channels ───────────────
+
+_CHANNELS = {
+    "awgn":         ("AWGN",             None),
+    "rayleigh":     ("Rayleigh Fading",  rayleigh_fading_channel),
+    "rician_k3":    ("Rician K=3",       lambda s, snr: rician_fading_channel(s, snr, k_factor=3.0)),
+    "mimo_zf":      ("2×2 MIMO ZF",      mimo_2x2_channel),
+    "mimo_mmse":    ("2×2 MIMO MMSE",    mimo_2x2_mmse_channel),
+    "mimo_sic":     ("2×2 MIMO SIC",     mimo_2x2_sic_channel),
+}
+
+_SECTION_MAP = {
+    "awgn":      "7.2",
+    "rayleigh":  "7.3",
+    "rician_k3": "7.4",
+    "mimo_zf":   "7.5",
+    "mimo_mmse": "7.6",
+    "mimo_sic":  "7.7",
+}
+
+
+def exp_7_2_to_7_7_relay_comparison(args):
+    """§7.2–§7.7 BPSK relay comparison on 6 channels."""
+    print("\n══ §7.2–§7.7 BPSK Relay Comparison ══")
+    wm = WeightManager(args.weights_dir, args.seed)
+    relays = build_base_relays(gpu=args.gpu)
+    snr_range = np.arange(args.snr_min, args.snr_max + 1, args.snr_step)
+
+    if args.inference_only:
+        for name, relay in relays.items():
+            wm.load(name, relay)
+    else:
+        for name, relay in relays.items():
+            if not args.retrain and wm.load(name, relay):
+                print(f"  Loaded cached {name} (use --retrain to force)")
+                continue
+        train_base_relays(relays, args, modulation="bpsk")
+        for name, relay in relays.items():
+            wm.save(name, relay)
+        wm.save_metadata({
+            "seed": args.seed, "date": datetime.now().isoformat(),
+            "modulation": "bpsk", "quick": args.quick,
+        })
+
+    out = os.path.join(args.results_dir, "bpsk_comparison")
+    os.makedirs(out, exist_ok=True)
+
+    for ch_key, (ch_name, ch_fn) in _CHANNELS.items():
+        sec = _SECTION_MAP[ch_key]
+        print(f"\n  §{sec} — {ch_name}")
+        results = evaluate_relays(
+            relays, snr_range, channel_fn=ch_fn,
+            modulation="bpsk",
+            bits_per_trial=args.bits_per_trial,
+            num_trials=args.num_trials,
+        )
+        save_results_json(
+            os.path.join(out, f"{ch_key}.json"), snr_range, results,
+            meta={"experiment": sec, "channel": ch_name, "modulation": "bpsk"},
+        )
+        ber_dict = {n: r["ber_mean"] for n, r in results.items()}
+        ci_dict = {n: (r["ci_lower"], r["ci_upper"]) for n, r in results.items()}
+        plot_ber_chart(
+            snr_range, ber_dict, ci_dict,
+            title=f"{ch_name} — BPSK Relay Comparison (§{sec})",
+            save_path=os.path.join(out, f"{ch_key}_ci.png"),
+        )
+        plot_top3_chart(
+            snr_range, results,
+            title=f"Top-3 Neural Relays — {ch_name} BPSK",
+            save_path=os.path.join(out, f"{ch_key}_top3.png"),
+        )
+
+    print(f"\n  §7.2–§7.7 complete → {out}/")
+
+
+# ── §7.8  Normalized 3K comparison ─────────────────────────────────
+
+def exp_7_8_normalized_3k(args):
+    """§7.8 Normalized ~3K-parameter relay comparison."""
+    print("\n══ §7.8 Normalized 3K-Parameter Comparison ══")
+    if not _HAS_3K:
+        print("  [SKIP] checkpoint_22_normalized_3k not available")
+        return
+
+    wm = WeightManager(args.weights_dir, args.seed)
+    snr_range = np.arange(args.snr_min, args.snr_max + 1, args.snr_step)
+    out = os.path.join(args.results_dir, "normalized_3k")
+    os.makedirs(out, exist_ok=True)
+
+    relays_3k = build_all_3k(prefer_gpu=args.gpu)
+    # Add baselines
+    relays_3k["AF"] = AmplifyAndForwardRelay()
+    relays_3k["DF"] = DecodeAndForwardRelay()
+
+    if not args.inference_only:
+        epochs = 10 if args.quick else 100
+        samples = 3_000 if args.quick else 25_000
+        for name, relay in relays_3k.items():
+            if name in ("AF", "DF"):
+                continue
+            if wm.load(name, relay, subdir="3k"):
+                print(f"  Loaded {name}")
+                continue
+            print(f"  Training {name} …", end=" ", flush=True)
+            t0 = perf_counter()
+            # Sequence model wrappers don't accept seed=
+            is_seq = any(tag in name for tag in ("Transformer", "Mamba"))
+            kw = {} if is_seq else {"seed": args.seed}
+            relay.train(training_snrs=[5, 10, 15], num_samples=samples,
+                        epochs=epochs, **kw)
+            wm.save(name, relay, subdir="3k")
+            print(f"done ({perf_counter() - t0:.1f}s)")
+    else:
+        for name, relay in relays_3k.items():
+            wm.load(name, relay, subdir="3k")
+
+    for ch_key, (ch_name, ch_fn) in _CHANNELS.items():
+        print(f"  {ch_name} …")
+        results = evaluate_relays(
+            relays_3k, snr_range, channel_fn=ch_fn,
+            bits_per_trial=args.bits_per_trial,
+            num_trials=args.num_trials,
+        )
+        save_results_json(
+            os.path.join(out, f"3k_{ch_key}.json"), snr_range, results,
+            meta={"experiment": "7.8", "channel": ch_name},
+        )
+        ber_dict = {n: r["ber_mean"] for n, r in results.items()}
+        ci_dict = {n: (r["ci_lower"], r["ci_upper"]) for n, r in results.items()}
+        plot_ber_chart(
+            snr_range, ber_dict, ci_dict,
+            title=f"Normalized 3K — {ch_name} (§7.8)",
+            save_path=os.path.join(out, f"3k_{ch_key}.png"),
+        )
+
+    print(f"  §7.8 complete → {out}/")
+
+
+# ── §7.9  Master 2×3 comparison chart ──────────────────────────────
+
+def exp_7_9_master_chart(args):
+    """§7.9 Master 2×3 summary chart from §7.2–§7.7 results."""
+    print("\n══ §7.9 Master 2×3 Comparison Chart ══")
+    if not _HAS_MPL:
+        print("  [SKIP] matplotlib not available")
+        return
+    bpsk_dir = os.path.join(args.results_dir, "bpsk_comparison")
+    panels = [
+        ("awgn", "AWGN"), ("rayleigh", "Rayleigh"), ("rician_k3", "Rician K=3"),
+        ("mimo_zf", "MIMO ZF"), ("mimo_mmse", "MIMO MMSE"), ("mimo_sic", "MIMO SIC"),
+    ]
+    fig, axes = plt.subplots(2, 3, figsize=(18, 10))
+    for ax, (ch_key, ch_name) in zip(axes.flat, panels):
+        jpath = os.path.join(bpsk_dir, f"{ch_key}.json")
+        if not os.path.exists(jpath):
+            ax.set_title(f"{ch_name} (no data)")
+            continue
+        data = load_results_json(jpath)
+        snr = np.array(data["snr_range"])
+        for idx, (name, rd) in enumerate(data["results"].items()):
+            ber = np.array(rd["ber_mean"])
+            ber = np.where(ber > 0, ber, 1e-10)
+            st = _style_for(name, idx)
+            ax.semilogy(snr, ber, marker=st["marker"], color=st["color"],
+                         linewidth=1.0, markersize=4, label=name,
+                         linestyle=st.get("ls", "-"), alpha=0.85)
+        ax.grid(True, which="both", linestyle="--", alpha=0.3, linewidth=0.5)
+        ax.set_title(ch_name, fontsize=13)
+        ax.set_xlabel("SNR (dB)", fontsize=11)
+        ax.set_ylabel("BER", fontsize=11)
+    handles, labels = axes[0, 0].get_legend_handles_labels()
+    fig.legend(handles, labels, loc="lower center", ncol=5, fontsize=10,
+               bbox_to_anchor=(0.5, -0.02))
+    fig.suptitle("Master BER Comparison — 9 Relays × 6 Channels (§7.9)", fontsize=16)
+    plt.tight_layout(rect=[0, 0.04, 1, 0.96])
+    save_path = os.path.join(args.results_dir, "master_ber_comparison.png")
+    plt.savefig(save_path, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    print(f"  §7.9 complete → {save_path}")
+
+
+# ── §7.10  Modulation comparison ───────────────────────────────────
+
+def exp_7_10_modulation_comparison(args):
+    """§7.10 BPSK / QPSK / 16-QAM relay comparison."""
+    print("\n══ §7.10 Modulation Comparison ══")
+    wm = WeightManager(args.weights_dir, args.seed)
+    snr_range = np.arange(args.snr_min, args.snr_max + 1, args.snr_step)
+    out = os.path.join(args.results_dir, "modulation")
+    os.makedirs(out, exist_ok=True)
+
+    # Train once on BPSK
+    relays = build_base_relays(gpu=args.gpu)
+    if args.inference_only:
+        for name, relay in relays.items():
+            wm.load(name, relay)
+    else:
+        train_base_relays(relays, args, modulation="bpsk")
+
+    modulations = ["bpsk", "qpsk", "qam16"]
+    channels = [("awgn", None), ("rayleigh", rayleigh_fading_channel)]
+
+    all_results = {}
+    for mod in modulations:
+        for ch_key, ch_fn in channels:
+            tag = f"{mod}_{ch_key}"
+            print(f"\n  {mod.upper()} × {ch_key.upper()}")
+            results = evaluate_relays(
+                relays, snr_range, channel_fn=ch_fn,
+                modulation=mod,
+                bits_per_trial=args.bits_per_trial,
+                num_trials=args.num_trials,
+            )
+            all_results[tag] = results
+            save_results_json(
+                os.path.join(out, f"{tag}.json"), snr_range, results,
+                meta={"experiment": "7.10", "modulation": mod, "channel": ch_key},
+            )
+            ber_dict = {n: r["ber_mean"] for n, r in results.items()}
+            ci_dict = {n: (r["ci_lower"], r["ci_upper"]) for n, r in results.items()}
+            plot_ber_chart(
+                snr_range, ber_dict, ci_dict,
+                title=f"{mod.upper()} — {ch_key.upper()} (§7.10)",
+                save_path=os.path.join(out, f"{tag}_ci.png"),
+            )
+
+    print(f"\n  §7.10 complete → {out}/")
+
+
+# ── §7.11  QAM16 activation study ─────────────────────────────────
+
+def exp_7_11_qam16_activation(args):
+    """§7.11 QAM16 activation: tanh (BPSK-trained) vs linear vs hardtanh."""
+    print("\n══ §7.11 QAM16 Activation Study ══")
+    wm = WeightManager(args.weights_dir, args.seed)
+    snr_range = np.arange(args.snr_min, args.snr_max + 1, args.snr_step)
+    out = os.path.join(args.results_dir, "qam16_activation")
+    os.makedirs(out, exist_ok=True)
+    clip_range = get_clip_range("qam16")
+
+    activations = {
+        "tanh": {"act": "tanh", "cr": None, "mod": "bpsk"},
+        "linear": {"act": "linear", "cr": None, "mod": "qam16"},
+        "hardtanh": {"act": "hardtanh", "cr": clip_range, "mod": "qam16"},
+    }
+
+    for ch_key, ch_fn in [("awgn", None), ("rayleigh", rayleigh_fading_channel)]:
+        print(f"\n  Channel: {ch_key.upper()}")
+        all_ber = {}
+        all_ci = {}
+        for act_name, cfg in activations.items():
+            print(f"    Activation: {act_name}")
+            relays = build_base_relays(
+                gpu=args.gpu, activation=cfg["act"], clip_range=cfg["cr"])
+            if not args.inference_only:
+                train_base_relays(relays, args, modulation=cfg["mod"])
+            results = evaluate_relays(
+                relays, snr_range, channel_fn=ch_fn,
+                modulation="qam16",
+                bits_per_trial=args.bits_per_trial,
+                num_trials=args.num_trials,
+            )
+            for rname, rd in results.items():
+                label = f"{rname} ({act_name})"
+                all_ber[label] = rd["ber_mean"]
+                all_ci[label] = (rd["ci_lower"], rd["ci_upper"])
+
+        save_results_json(
+            os.path.join(out, f"qam16_activation_{ch_key}.json"),
+            snr_range,
+            {k: {"ber_mean": v} for k, v in all_ber.items()},
+            meta={"experiment": "7.11", "channel": ch_key},
+        )
+        plot_ber_chart(
+            snr_range, all_ber, all_ci,
+            title=f"QAM16 Activation Comparison — {ch_key.upper()} (§7.11)",
+            save_path=os.path.join(out, f"qam16_activation_{ch_key}.png"),
+        )
+
+    print(f"  §7.11 complete → {out}/")
+
+
+# ── §7.12  LayerNorm study ─────────────────────────────────────────
+
+def exp_7_12_layernorm(args):
+    """§7.12 Input LayerNorm impact on sequence models."""
+    print("\n══ §7.12 LayerNorm Study ══")
+    if not _HAS_SEQ:
+        print("  [SKIP] Sequence model checkpoints unavailable")
+        return
+
+    snr_range = np.arange(args.snr_min, args.snr_max + 1, args.snr_step)
+    out = os.path.join(args.results_dir, "layernorm")
+    os.makedirs(out, exist_ok=True)
+
+    variants = {
+        "Baseline": {"ln": False, "act": "tanh"},
+        "+InputLN": {"ln": True, "act": "tanh"},
+        "+LN+Scaled": {"ln": True, "act": "scaled_tanh"},
+    }
+
+    seq_models = ["Transformer", "Mamba S6", "Mamba2 (SSD)"]
+    modulations = ["qpsk", "qam16"]
+    channels = [("awgn", None), ("rayleigh", rayleigh_fading_channel)]
+
+    for mod in modulations:
+        act_default = "tanh" if mod != "qam16" else "hardtanh"
+        cr = get_clip_range(mod) if mod == "qam16" else None
+
+        for ch_key, ch_fn in channels:
+            print(f"\n  {mod.upper()} × {ch_key.upper()}")
+            all_ber = {}
+            all_ci = {}
+
+            for var_name, cfg in variants.items():
+                act = cfg["act"] if mod != "qam16" else "hardtanh"
+                relays = build_base_relays(
+                    gpu=args.gpu, activation=act, clip_range=cr,
+                    layer_norm=cfg["ln"])
+
+                if not args.inference_only:
+                    subdir = f"layernorm/{var_name.strip('+').lower()}"
+                    samples = 5_000 if args.quick else 50_000
+                    epochs = 10 if args.quick else 100
+                    for name in seq_models:
+                        if name not in relays:
+                            continue
+                        print(f"    {name} {var_name} …", end=" ", flush=True)
+                        t0 = perf_counter()
+                        relays[name].train(
+                            training_snrs=[5, 10, 15], num_samples=samples,
+                            epochs=epochs, lr=0.001,
+                            training_modulation=mod)
+                        print(f"done ({perf_counter() - t0:.1f}s)")
+
+                # Evaluate only sequence models + baselines
+                eval_relays = {n: relays[n] for n in ["AF", "DF"] + seq_models
+                               if n in relays}
+                results = evaluate_relays(
+                    eval_relays, snr_range, channel_fn=ch_fn,
+                    modulation=mod,
+                    bits_per_trial=args.bits_per_trial,
+                    num_trials=args.num_trials,
+                )
+                for rname, rd in results.items():
+                    if rname in ("AF", "DF") and var_name != "Baseline":
+                        continue  # Only add baselines once
+                    label = f"{rname} {var_name}" if rname not in ("AF", "DF") else rname
+                    all_ber[label] = rd["ber_mean"]
+                    all_ci[label] = (rd["ci_lower"], rd["ci_upper"])
+
+            tag = f"{mod}_{ch_key}"
+            save_results_json(
+                os.path.join(out, f"layernorm_{tag}.json"),
+                snr_range,
+                {k: {"ber_mean": v} for k, v in all_ber.items()},
+                meta={"experiment": "7.12", "modulation": mod, "channel": ch_key},
+            )
+            plot_ber_chart(
+                snr_range, all_ber, all_ci,
+                title=f"LayerNorm Study — {mod.upper()} {ch_key.upper()} (§7.12)",
+                save_path=os.path.join(out, f"layernorm_{tag}.png"),
+            )
+
+    print(f"  §7.12 complete → {out}/")
+
+
+# ── §7.13  Activation comparison ──────────────────────────────────
+
+def exp_7_13_activation_comparison(args):
+    """§7.13 Sigmoid vs hardtanh vs scaled_tanh across all relays."""
+    print("\n══ §7.13 Activation Comparison ══")
+    snr_range = np.arange(args.snr_min, args.snr_max + 1, args.snr_step)
+    out = os.path.join(args.results_dir, "activation_comparison")
+    os.makedirs(out, exist_ok=True)
+
+    activations = ["sigmoid", "hardtanh", "scaled_tanh"]
+    act_styles = {
+        "sigmoid": "-", "hardtanh": "--", "scaled_tanh": "-.",
+    }
+    modulations = ["qpsk", "qam16"]
+    channels = [("awgn", None), ("rayleigh", rayleigh_fading_channel)]
+
+    for mod in modulations:
+        cr = get_clip_range(mod) if mod == "qam16" else None
+        for ch_key, ch_fn in channels:
+            print(f"\n  {mod.upper()} × {ch_key.upper()}")
+            all_ber = {}
+            all_ci = {}
+            extra_styles = {}
+            cidx = 0
+
+            for act in activations:
+                relays = build_base_relays(gpu=args.gpu, activation=act,
+                                           clip_range=cr)
+                if not args.inference_only:
+                    train_base_relays(relays, args, modulation="qam16")
+
+                results = evaluate_relays(
+                    relays, snr_range, channel_fn=ch_fn,
+                    modulation=mod,
+                    bits_per_trial=args.bits_per_trial,
+                    num_trials=args.num_trials,
+                )
+                for rname, rd in results.items():
+                    label = f"{rname} ({act})"
+                    all_ber[label] = rd["ber_mean"]
+                    all_ci[label] = (rd["ci_lower"], rd["ci_upper"])
+                    extra_styles[label] = {
+                        "color": PALETTE[cidx % len(PALETTE)],
+                        "marker": MARKERS[cidx % len(MARKERS)],
+                        "ls": act_styles[act],
+                    }
+                    cidx += 1
+
+            tag = f"{mod}_{ch_key}"
+            save_results_json(
+                os.path.join(out, f"activation_{tag}.json"),
+                snr_range,
+                {k: {"ber_mean": v} for k, v in all_ber.items()},
+                meta={"experiment": "7.13", "modulation": mod, "channel": ch_key},
+            )
+            plot_ber_chart(
+                snr_range, all_ber, all_ci,
+                title=f"Activation Comparison — {mod.upper()} {ch_key.upper()} (§7.13)",
+                save_path=os.path.join(out, f"{mod}_activation_{ch_key}.png"),
+                extra_styles=extra_styles,
+            )
+
+    print(f"  §7.13 complete → {out}/")
+
+
+# ── §7.14  CSI injection (single architecture) ────────────────────
+
+def _build_csi_variant(model_name, cfg, gpu, constellation):
+    """Build a single CSI experiment variant."""
+    cr = get_clip_range(constellation)
+    in_ch = 2 if cfg["csi"] else 1
+    base_kw = dict(target_power=1.0, window_size=11, d_model=32,
+                   num_layers=2, clip_range=cr, in_channels=in_ch,
+                   use_input_norm=cfg["ln"],
+                   output_activation=cfg["act"])
+    if model_name == "Mamba S6":
+        return MambaRelayWrapper(d_state=16, prefer_gpu=gpu, **base_kw)
+    elif model_name == "Transformer":
+        return TransformerRelayWrapper(num_heads=4, prefer_gpu=gpu, **base_kw)
+    elif model_name == "Mamba2 (SSD)":
+        return Mamba2RelayWrapper(d_state=16, prefer_gpu=gpu, **base_kw)
+    return None
+
+
+def exp_7_14_csi_injection(args):
+    """§7.14 CSI injection experiment."""
+    print("\n══ §7.14 CSI Injection Experiment ══")
+    if not _HAS_SEQ:
+        print("  [SKIP] Sequence model checkpoints unavailable")
+        return
+
+    snr_range = np.arange(args.snr_min, args.snr_max + 1, args.snr_step)
+    out = os.path.join(args.results_dir, "csi")
+    os.makedirs(out, exist_ok=True)
+
+    constellations = ["qam16", "psk16"]
+    model_names = ["Mamba S6", "Transformer", "Mamba2 (SSD)"]
+    activations = ["hardtanh", "scaled_tanh", "tanh", "sigmoid"]
+    configs = {
+        "Baseline": {"csi": False, "ln": False},
+        "LN":       {"csi": False, "ln": True},
+        "CSI":      {"csi": True,  "ln": False},
+        "CSI+LN":   {"csi": True,  "ln": True},
+    }
+
+    train_samples = 1_000 if args.quick else 20_000
+    train_epochs = 5 if args.quick else 25
+
+    ch_fn = lambda s, snr: rayleigh_fading_channel(s, snr, return_channel=True)
+
+    for constellation in constellations:
+        print(f"\n  Constellation: {constellation.upper()}")
+        all_results = {"AF": None, "DF": None}
+        cr = get_clip_range(constellation)
+
+        # Evaluate AF/DF baselines
+        af = AmplifyAndForwardRelay()
+        df = DecodeAndForwardRelay()
+        for bname, relay in [("AF", af), ("DF", df)]:
+            print(f"    {bname} …", end=" ", flush=True)
+            _, ber, trials = run_monte_carlo(
+                relay, snr_range, channel_fn=ch_fn,
+                num_bits_per_trial=args.bits_per_trial,
+                num_trials=args.num_trials,
+                modulation=constellation)
+            ci_lo, ci_hi = compute_confidence_interval(trials)
+            all_results[bname] = {
+                "ber_mean": ber, "ber_trials": trials,
+                "ci_lower": ci_lo, "ci_upper": ci_hi,
+            }
+            print("done")
+
+        # Train and evaluate all variants
+        for model_name in model_names:
+            for act in activations:
+                for cfg_name, cfg_vals in configs.items():
+                    label = f"{model_name} {cfg_name} {act}"
+                    cfg = {**cfg_vals, "act": act}
+                    print(f"    {label} …", end=" ", flush=True)
+                    t0 = perf_counter()
+
+                    relay = _build_csi_variant(model_name, cfg, args.gpu,
+                                               constellation)
+                    if relay is None:
+                        print("SKIP")
+                        continue
+
+                    if not args.inference_only:
+                        relay.train(
+                            training_snrs=[5, 10, 15],
+                            num_samples=train_samples,
+                            epochs=train_epochs,
+                            training_modulation=constellation,
+                            use_rayleigh=True)
+
+                    _, ber, trials = run_monte_carlo(
+                        relay, snr_range, channel_fn=ch_fn,
+                        num_bits_per_trial=args.bits_per_trial,
+                        num_trials=args.num_trials,
+                        modulation=constellation)
+                    ci_lo, ci_hi = compute_confidence_interval(trials)
+                    all_results[label] = {
+                        "ber_mean": ber, "ber_trials": trials,
+                        "ci_lower": ci_lo, "ci_upper": ci_hi,
+                    }
+                    print(f"done ({perf_counter() - t0:.1f}s)")
+
+        # Save results
+        save_results_json(
+            os.path.join(out, f"csi_experiment_{constellation}_rayleigh.json"),
+            snr_range, all_results,
+            meta={"experiment": "7.14-7.15", "constellation": constellation},
+        )
+
+        # Plot all variants
+        ber_dict = {n: r["ber_mean"] for n, r in all_results.items()}
+        ci_dict = {n: (r["ci_lower"], r["ci_upper"]) for n, r in all_results.items()}
+        plot_ber_chart(
+            snr_range, ber_dict, ci_dict,
+            title=f"CSI Experiment — {constellation.upper()} Rayleigh (§7.14–7.15)",
+            save_path=os.path.join(out, f"csi_experiment_{constellation}_rayleigh.png"),
+        )
+        plot_top3_chart(
+            snr_range, all_results,
+            title=f"Top-3 CSI Variants — {constellation.upper()} Rayleigh",
+            save_path=os.path.join(out, f"top3_{constellation}_rayleigh.png"),
+        )
+
+    print(f"  §7.14–7.15 complete → {out}/")
+
+
+# ── §7.15  Multi-architecture CSI (uses same function as §7.14) ───
+
+def exp_7_15_multi_csi(args):
+    """§7.15 Multi-architecture CSI — results generated by §7.14."""
+    print("\n══ §7.15 Multi-Architecture CSI ══")
+    print("  Results combined with §7.14 (run --exp 7.14 to generate)")
+
+
+# ── §7.16  E2E autoencoder ─────────────────────────────────────────
+
+def exp_7_16_e2e(args):
+    """§7.16 End-to-End autoencoder experiment."""
+    print("\n══ §7.16 End-to-End Autoencoder ══")
+    if not _HAS_E2E:
+        print("  [SKIP] checkpoint_24_e2e_transmitter not available")
+        return
+
+    import torch
+    out = os.path.join(args.results_dir, "e2e")
+    os.makedirs(out, exist_ok=True)
+    wm = WeightManager(args.weights_dir, args.seed)
+
+    device = torch.device("cuda" if args.gpu and torch.cuda.is_available()
+                          else "cpu")
+    M = 16
+    hidden = 64
+    epochs = 500 if args.quick else 10_000
+
+    # ── Train E2E autoencoder ──
+    from checkpoints.checkpoint_24_e2e_transmitter import (
+        E2EReceiver, plot_constellation, plot_ber_with_ci as e2e_plot_ber,
+    )
+
+    tx = E2ETransmitter(M=M, hidden_dim=hidden).to(device)
+    channel = DifferentiableRayleighChannel(perfect_csi=True).to(device)
+    rx = E2EReceiver(M=M, hidden_dim=hidden).to(device)
+
+    weight_path = wm._path("e2e_transmitter", subdir="e2e")
+    if args.inference_only and os.path.exists(weight_path):
+        state = torch.load(weight_path, map_location=device, weights_only=False)
+        tx.load_state_dict(state["transmitter"])
+        rx.load_state_dict(state["receiver"])
+        print("  Loaded E2E weights")
+    else:
+        print(f"  Training E2E ({epochs} epochs) …")
+        t0 = perf_counter()
+        history = train_e2e(tx, channel, rx, epochs=epochs, seed=args.seed,
+                            device=device, verbose=True)
+        print(f"  Training done ({perf_counter() - t0:.1f}s)")
+
+        # Save weights
+        os.makedirs(os.path.dirname(weight_path), exist_ok=True)
+        torch.save({
+            "transmitter": tx.state_dict(),
+            "receiver": rx.state_dict(),
+            "M": M, "hidden_dim": hidden, "epochs": epochs,
+        }, weight_path)
+        print(f"  Weights → {weight_path}")
+
+        # Plot training loss
+        if _HAS_MPL and history:
+            fig, ax = plt.subplots(figsize=(8, 5))
+            ax.plot(history, linewidth=1.0)
+            ax.set_xlabel("Epoch", fontsize=14)
+            ax.set_ylabel("Loss", fontsize=14)
+            ax.set_title("E2E Training Loss", fontsize=16)
+            ax.grid(True, alpha=0.3)
+            plt.tight_layout()
+            plt.savefig(os.path.join(out, "e2e_training_loss.png"),
+                        dpi=150, bbox_inches="tight")
+            plt.close(fig)
+
+    # ── Evaluate BER ──
+    snr_eval = np.arange(0, 21, 1, dtype=float)
+    bits_per_sym = int(np.log2(M))
+    num_trials_e2e = 3 if args.quick else 10
+    num_symbols = 1_000 if args.quick else 5_000
+    snr_vals, mean_ber, ber_trials_arr = evaluate_ber(
+        tx, channel, rx, snr_range_db=snr_eval,
+        num_symbols=num_symbols, num_trials=num_trials_e2e,
+        device=device)
+
+    # ── Constellation metrics ──
+    metrics = constellation_metrics(tx)
+    print(f"  d_min = {metrics['d_min']:.4f}, PAPR = {metrics['papr']:.4f}")
+
+    # ── Relay comparison (AF vs DF vs E2E) ──
+    print("  Running relay comparison (AF vs DF vs E2E) …")
+    from relaynet.relays.e2e import E2ERelay
+    e2e_relay = E2ERelay(M=M, hidden_dim=hidden, prefer_gpu=args.gpu)
+    e2e_relay._transmitter = tx
+    e2e_relay._refresh_codebook()
+    e2e_relay.is_trained = True
+
+    snr_relay = np.arange(0, 22, 2, dtype=float)
+    relay_ch = rayleigh_fading_channel
+    relay_results = {}
+    for rname, relay in [("AF", AmplifyAndForwardRelay()),
+                          ("DF", DecodeAndForwardRelay()),
+                          ("E2E", e2e_relay)]:
+        print(f"    {rname} …", end=" ", flush=True)
+        _, ber, trials = run_monte_carlo(
+            relay, snr_relay, channel_fn=relay_ch,
+            num_bits_per_trial=args.bits_per_trial,
+            num_trials=args.num_trials,
+            modulation="qam16")
+        ci_lo, ci_hi = compute_confidence_interval(trials)
+        relay_results[rname] = {
+            "ber_mean": ber, "ber_trials": trials,
+            "ci_lower": ci_lo, "ci_upper": ci_hi,
+        }
+        print("done")
+
+    # Save all results
+    save_results_json(
+        os.path.join(out, "e2e_ber.json"), snr_vals,
+        {"E2E": {"ber_mean": mean_ber,
+                 "ber_trials": ber_trials_arr}},
+        meta={"experiment": "7.16", "M": M, "epochs": epochs,
+              "metrics": {k: float(v) if isinstance(v, (float, np.floating)) else v
+                          for k, v in metrics.items() if k != "points"}},
+    )
+    save_results_json(
+        os.path.join(out, "e2e_relay_comparison.json"), snr_relay, relay_results,
+        meta={"experiment": "7.16", "comparison": "AF vs DF vs E2E"},
+    )
+
+    # Plots
+    if _HAS_MPL:
+        # Constellation
+        if hasattr(plot_constellation, '__call__'):
+            try:
+                plot_constellation(tx,
+                                   save_path=os.path.join(out, "e2e_constellation.png"))
+            except Exception:
+                pass
+
+        # BER vs SNR
+        e2e_bers = np.asarray(mean_ber)
+        plot_ber_chart(
+            snr_eval, {"E2E Autoencoder": e2e_bers},
+            title="E2E BER vs SNR — Rayleigh Fading (§7.16)",
+            save_path=os.path.join(out, "e2e_ber_comparison.png"),
+        )
+
+        # Relay comparison
+        ber_dict = {n: r["ber_mean"] for n, r in relay_results.items()}
+        ci_dict = {n: (r["ci_lower"], r["ci_upper"]) for n, r in relay_results.items()}
+        plot_ber_chart(
+            snr_relay, ber_dict, ci_dict,
+            title="E2E vs AF/DF — 16-QAM Rayleigh (§7.16)",
+            save_path=os.path.join(out, "e2e_relay_comparison.png"),
+        )
+
+    print(f"  §7.16 complete → {out}/")
+
+
+# ── Constellation diagrams ─────────────────────────────────────────
+
+def exp_constellations(args):
+    """Generate constellation diagrams for all 4 modulation schemes."""
+    print("\n══ Constellation Diagrams ══")
+    if not _HAS_MPL:
+        return
+    from relaynet.modulation import get_modulation_functions
+
+    out = os.path.join(args.results_dir, "modulation")
+    os.makedirs(out, exist_ok=True)
+
+    schemes = {
+        "BPSK": "bpsk", "QPSK": "qpsk",
+        "16-QAM": "qam16", "16-PSK": "psk16",
+    }
+    fig, axes = plt.subplots(2, 2, figsize=(10, 10))
+    for ax, (label, mod) in zip(axes.flat, schemes.items()):
+        modulate, _, bps = get_modulation_functions(mod)
+        bits = np.arange(2 ** bps)
+        # Generate all possible symbols
+        all_bits = []
+        for b in bits:
+            bit_arr = [(b >> (bps - 1 - i)) & 1 for i in range(bps)]
+            all_bits.extend(bit_arr)
+        symbols = modulate(np.array(all_bits))
+        if np.iscomplexobj(symbols):
+            ax.scatter(symbols.real, symbols.imag, s=80, c=PALETTE[0], zorder=5)
+            for i, sym in enumerate(symbols):
+                ax.annotate(f"{i}", (sym.real, sym.imag),
+                            textcoords="offset points", xytext=(5, 5), fontsize=8)
+        else:
+            ax.scatter(symbols, np.zeros_like(symbols), s=80, c=PALETTE[0], zorder=5)
+        ax.set_title(label, fontsize=14)
+        ax.set_xlabel("In-phase (I)", fontsize=12)
+        ax.set_ylabel("Quadrature (Q)", fontsize=12)
+        ax.grid(True, alpha=0.3)
+        ax.set_aspect("equal")
+        ax.axhline(0, color="grey", lw=0.5)
+        ax.axvline(0, color="grey", lw=0.5)
+
+    plt.suptitle("Constellation Diagrams", fontsize=16)
+    plt.tight_layout()
+    plt.savefig(os.path.join(out, "constellation_diagrams.png"),
+                dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    print(f"  Constellation diagrams → {out}/constellation_diagrams.png")
+
+
+# ── §7.17  16-Class 2D QAM16 Classification ───────────────────────
+
+_16CLS_VARIANTS = [
+    # (name, relay_class, relay_kwargs, train_kwargs)
+    # ── MLP ──
+    ("MLP 4-cls", "genai", dict(
+        window_size=5, hidden_size=24, classify=True, training_modulation="qam16",
+        prefer_gpu=False,
+    ), dict(num_samples=50_000, epochs=100)),
+    ("MLP 16-cls", "genai", dict(
+        window_size=1, hidden_size=24, classify_2d=True, training_modulation="qam16",
+        prefer_gpu=False,
+    ), dict(num_samples=50_000, epochs=200)),
+    # ── VAE ──
+    ("VAE 4-cls", "vae", dict(
+        window_size=7, latent_size=8, beta=0.1, hidden_sizes=(32, 16),
+        classify=True, training_modulation="qam16", prefer_gpu=False,
+    ), dict(num_samples=50_000, epochs=100)),
+    ("VAE 16-cls", "vae", dict(
+        window_size=1, latent_size=8, beta=0.1, hidden_sizes=(32, 16),
+        classify_2d=True, training_modulation="qam16", prefer_gpu=False,
+    ), dict(num_samples=50_000, epochs=200)),
+    # ── CGAN ──
+    ("CGAN 4-cls", "cgan", dict(
+        window_size=7, noise_size=8, lambda_gp=10, lambda_l1=20, n_critic=3,
+        g_hidden_sizes=(32, 16), c_hidden_sizes=(32, 16),
+        classify=True, training_modulation="qam16", prefer_gpu=False,
+    ), dict(num_samples=20_000, epochs=80)),
+    ("CGAN 16-cls", "cgan", dict(
+        window_size=1, noise_size=8, lambda_gp=10, lambda_l1=20, n_critic=3,
+        g_hidden_sizes=(32, 16), c_hidden_sizes=(32, 16),
+        classify_2d=True, training_modulation="qam16", prefer_gpu=False,
+    ), dict(num_samples=20_000, epochs=80)),
+    # ── Hybrid ──
+    ("Hybrid 4-cls", "hybrid", dict(
+        snr_threshold=5.0, mlp_window_size=5, mlp_hidden_size=24,
+        classify=True, training_modulation="qam16", prefer_gpu=False,
+    ), dict(num_samples=30_000, epochs=100)),
+    ("Hybrid 16-cls", "hybrid", dict(
+        snr_threshold=5.0, mlp_window_size=1, mlp_hidden_size=24,
+        classify_2d=True, training_modulation="qam16", prefer_gpu=False,
+    ), dict(num_samples=30_000, epochs=200)),
+    # ── Transformer ──
+    ("Transformer 4-cls", "transformer", dict(
+        window_size=5, d_model=32, num_layers=2,
+        classify=True, training_modulation="qam16",
+    ), dict(num_samples=50_000, epochs=100)),
+    ("Transformer 16-cls", "transformer", dict(
+        window_size=5, d_model=32, num_layers=2,
+        classify_2d=True, training_modulation="qam16",
+    ), dict(num_samples=50_000, epochs=200)),
+    # ── Mamba S6 ──
+    ("Mamba-S6 4-cls", "mamba_s6", dict(
+        window_size=5, d_model=32, d_state=16, num_layers=2,
+        classify=True, training_modulation="qam16",
+    ), dict(num_samples=50_000, epochs=100)),
+    ("Mamba-S6 16-cls", "mamba_s6", dict(
+        window_size=5, d_model=32, d_state=16, num_layers=2,
+        classify_2d=True, training_modulation="qam16",
+    ), dict(num_samples=50_000, epochs=200)),
+    # ── Mamba2 SSD ──
+    ("Mamba2 4-cls", "mamba2", dict(
+        window_size=5, d_model=32, d_state=16, num_layers=2,
+        classify=True, training_modulation="qam16",
+    ), dict(num_samples=50_000, epochs=100)),
+    ("Mamba2 16-cls", "mamba2", dict(
+        window_size=5, d_model=32, d_state=16, num_layers=2,
+        classify_2d=True, training_modulation="qam16",
+    ), dict(num_samples=50_000, epochs=200)),
+]
+
+
+def _build_16cls_relay(tag, rkw, gpu):
+    """Instantiate a relay by tag for the 16-class experiment."""
+    rkw = dict(rkw)  # copy
+    if tag in ("transformer", "mamba_s6", "mamba2"):
+        rkw["prefer_gpu"] = gpu
+    if tag == "genai":
+        return MinimalGenAIRelay(**rkw)
+    if tag == "vae":
+        return VAERelay(**rkw)
+    if tag == "cgan":
+        return CGANRelay(**rkw)
+    if tag == "hybrid":
+        return HybridRelay(**rkw)
+    if tag == "transformer" and _HAS_SEQ:
+        return TransformerRelayWrapper(**rkw)
+    if tag == "mamba_s6" and _HAS_SEQ:
+        return MambaRelayWrapper(**rkw)
+    if tag == "mamba2" and _HAS_SEQ:
+        return Mamba2RelayWrapper(**rkw)
+    return None
+
+
+def exp_7_17_16class_2d(args):
+    """§7.17 16-Class 2D QAM16 classification vs 4-class per-axis."""
+    print("\n══ §7.17 16-Class 2D QAM16 Classification ══")
+    wm = WeightManager(args.weights_dir, args.seed)
+    snr_range = np.arange(args.snr_min, args.snr_max + 1, args.snr_step)
+    out = os.path.join(args.results_dir, "all_relays_16class")
+    os.makedirs(out, exist_ok=True)
+
+    training_snrs = [5, 10, 15, 20, 25]
+    modulation = "qam16"
+
+    # Quick-mode reductions
+    if args.quick:
+        quick_samples_factor = 0.1
+        quick_epoch_factor = 0.2
+    else:
+        quick_samples_factor = 1.0
+        quick_epoch_factor = 1.0
+
+    all_results = {}
+
+    for vname, relay_tag, rkw, tkw in _16CLS_VARIANTS:
+        print(f"\n  {vname}")
+        relay = _build_16cls_relay(relay_tag, rkw, args.gpu)
+        if relay is None:
+            print(f"    [SKIP] {relay_tag} not available")
+            continue
+
+        subdir = "16class"
+        if not args.inference_only:
+            # Check cache
+            if not args.retrain and wm.load(vname, relay, subdir=subdir):
+                print(f"    Using cached weights (--retrain to force)")
+            else:
+                t0 = perf_counter()
+                samples = int(tkw["num_samples"] * quick_samples_factor)
+                epochs = max(5, int(tkw["epochs"] * quick_epoch_factor))
+                print(f"    Training ({samples} samples, {epochs} epochs) …",
+                      end=" ", flush=True)
+                # Sequence model wrappers don't accept seed=
+                is_seq = relay_tag in ("transformer", "mamba_s6", "mamba2")
+                train_kw = dict(
+                    training_snrs=training_snrs,
+                    num_samples=samples,
+                    epochs=epochs,
+                    training_modulation=modulation,
+                )
+                if not is_seq:
+                    train_kw["seed"] = args.seed
+                relay.train(**train_kw)
+                print(f"done ({perf_counter() - t0:.1f}s)")
+                wm.save(vname, relay, subdir=subdir)
+        else:
+            wm.load(vname, relay, subdir=subdir)
+
+        # Evaluate
+        print(f"    Evaluating BER …", end=" ", flush=True)
+        t0 = perf_counter()
+        snrs, bers, trials = run_monte_carlo(
+            relay, snr_range,
+            num_bits_per_trial=args.bits_per_trial,
+            num_trials=args.num_trials,
+            modulation=modulation,
+        )
+        ci_lo, ci_hi = compute_confidence_interval(trials)
+        all_results[vname] = {
+            "ber_mean": bers,
+            "ber_trials": trials,
+            "ci_lower": ci_lo,
+            "ci_upper": ci_hi,
+            "params": getattr(relay, "num_params", 0),
+        }
+        print(f"done ({perf_counter() - t0:.1f}s)  "
+              f"BER@{int(snr_range[-1])}dB={bers[-1]:.6f}")
+
+    # Baselines
+    print("  Computing AF & DF baselines …")
+    for bname, relay in [("AF", AmplifyAndForwardRelay()),
+                          ("DF", DecodeAndForwardRelay())]:
+        _, bers, trials = run_monte_carlo(
+            relay, snr_range,
+            num_bits_per_trial=args.bits_per_trial,
+            num_trials=args.num_trials,
+            modulation=modulation,
+        )
+        ci_lo, ci_hi = compute_confidence_interval(trials)
+        all_results[bname] = {
+            "ber_mean": bers, "ber_trials": trials,
+            "ci_lower": ci_lo, "ci_upper": ci_hi,
+        }
+        print(f"    {bname} BER@{int(snr_range[-1])}dB = {bers[-1]:.6f}")
+
+    # ── Save JSON ──
+    save_results_json(
+        os.path.join(out, "all_relays_16class.json"),
+        snr_range, all_results,
+        meta={"experiment": "7.17", "modulation": modulation,
+              "description": "16-class 2D vs 4-class per-axis QAM16"},
+    )
+
+    # ── Save metadata ──
+    wm.save_metadata({
+        "experiment": "7.17",
+        "seed": args.seed,
+        "date": datetime.now().isoformat(),
+        "modulation": modulation,
+        "quick": args.quick,
+        "variants": [v[0] for v in _16CLS_VARIANTS],
+    }, subdir="16class")
+
+    # ── Charts ──
+    if not _HAS_MPL:
+        print(f"  §7.17 complete → {out}/")
+        return
+
+    # Style map for 16-class experiment
+    _16CLS_COLORS = {
+        "MLP 4-cls": "#D55E00", "MLP 16-cls": "#E69F00",
+        "VAE 4-cls": "#56B4E9", "VAE 16-cls": "#0072B2",
+        "CGAN 4-cls": "#CC79A7", "CGAN 16-cls": "#882255",
+        "Hybrid 4-cls": "#009E73", "Hybrid 16-cls": "#44AA99",
+        "Transformer 4-cls": "#F0E442", "Transformer 16-cls": "#B8860B",
+        "Mamba-S6 4-cls": "#7570B3", "Mamba-S6 16-cls": "#4B0082",
+        "Mamba2 4-cls": "#E7298A", "Mamba2 16-cls": "#A50026",
+        "AF": "#888888", "DF": "#333333",
+    }
+    _16CLS_MARKERS = {
+        "MLP 4-cls": "o", "MLP 16-cls": "s",
+        "VAE 4-cls": "^", "VAE 16-cls": "v",
+        "CGAN 4-cls": "D", "CGAN 16-cls": "d",
+        "Hybrid 4-cls": "p", "Hybrid 16-cls": "h",
+        "Transformer 4-cls": "P", "Transformer 16-cls": "X",
+        "Mamba-S6 4-cls": "*", "Mamba-S6 16-cls": "H",
+        "Mamba2 4-cls": "8", "Mamba2 16-cls": "1",
+        "AF": "<", "DF": ">",
+    }
+    extra_styles = {}
+    for name in all_results:
+        color = _16CLS_COLORS.get(name, PALETTE[0])
+        marker = _16CLS_MARKERS.get(name, "o")
+        ls = "--" if "4-cls" in name else (":" if name in ("AF", "DF") else "-")
+        extra_styles[name] = {"color": color, "marker": marker, "ls": ls}
+
+    ber_dict = {n: r["ber_mean"] for n, r in all_results.items()}
+    ci_dict = {n: (r["ci_lower"], r["ci_upper"]) for n, r in all_results.items()}
+
+    # Main BER chart
+    plot_ber_chart(
+        snr_range, ber_dict, ci_dict,
+        title="16-Class 2D vs 4-Class per-Axis — QAM16 (§7.17)",
+        save_path=os.path.join(out, "ber_16class_ci.png"),
+        extra_styles=extra_styles,
+    )
+    # Top-3
+    plot_top3_chart(
+        snr_range, all_results,
+        title="Top-3 — 16-Class QAM16 (§7.17)",
+        save_path=os.path.join(out, "ber_16class_top3.png"),
+    )
+    # Achievement
+    plot_achievement_chart(
+        snr_range, all_results,
+        title="Achievement — 16-Class QAM16 (§7.17)",
+        save_path=os.path.join(out, "ber_16class_achievement.png"),
+    )
+    # BER summary table
+    print_ber_summary_table(snr_range, all_results,
+                            title="§7.17 16-Class 2D QAM16")
+
+    # Grouped bar chart: 4-cls vs 16-cls at highest SNR
+    architectures = ["MLP", "VAE", "CGAN", "Hybrid",
+                     "Transformer", "Mamba-S6", "Mamba2"]
+    snr_last_idx = len(snr_range) - 1
+    ber_4 = []
+    ber_16 = []
+    valid_archs = []
+    for arch in architectures:
+        n4 = f"{arch} 4-cls"
+        n16 = f"{arch} 16-cls"
+        if n4 in all_results and n16 in all_results:
+            ber_4.append(all_results[n4]["ber_mean"][snr_last_idx])
+            ber_16.append(all_results[n16]["ber_mean"][snr_last_idx])
+            valid_archs.append(arch)
+
+    if valid_archs:
+        fig, ax = plt.subplots(figsize=(10, 5))
+        x = np.arange(len(valid_archs))
+        w = 0.3
+        ax.bar(x - w / 2, ber_4, w, label="4-class per-axis",
+               color="#D55E00", edgecolor="black", linewidth=0.5, alpha=0.8)
+        ax.bar(x + w / 2, ber_16, w, label="16-class 2D",
+               color="#0072B2", edgecolor="black", linewidth=0.5, alpha=0.8)
+        if "DF" in all_results:
+            df_ber = all_results["DF"]["ber_mean"][snr_last_idx]
+            ax.axhline(y=df_ber, color="#333333", linewidth=1.5, linestyle="--",
+                       label=f"DF = {df_ber:.5f}")
+        ax.set_xticks(x)
+        ax.set_xticklabels(valid_archs, fontsize=12)
+        ax.set_ylabel(f"BER @ {int(snr_range[-1])} dB", fontsize=14)
+        ax.set_title("BER @ 20 dB — 4-Class vs 16-Class per Architecture",
+                      fontsize=14)
+        ax.legend(fontsize=11, loc="upper right")
+        ax.grid(True, axis="y", linewidth=0.4, alpha=0.4)
+        plt.tight_layout()
+        plt.savefig(os.path.join(out, "ber_16class_bar.png"),
+                    dpi=150, bbox_inches="tight")
+        plt.close(fig)
+        print(f"  Bar chart → {out}/ber_16class_bar.png")
+
+    print(f"  §7.17 complete → {out}/")
+
+
+
+# ════════════════════════════════════════════════════════════════════
+# Experiment registry
+# ════════════════════════════════════════════════════════════════════
+
+EXPERIMENTS = {
+    "7.1":  ("Channel Model Analysis",            exp_7_1_channel_analysis),
+    "7.2":  ("BPSK AWGN Relay Comparison",         exp_7_2_to_7_7_relay_comparison),
+    "7.3":  ("BPSK Rayleigh Relay Comparison",     exp_7_2_to_7_7_relay_comparison),
+    "7.4":  ("BPSK Rician K=3",                    exp_7_2_to_7_7_relay_comparison),
+    "7.5":  ("2×2 MIMO ZF",                        exp_7_2_to_7_7_relay_comparison),
+    "7.6":  ("2×2 MIMO MMSE",                      exp_7_2_to_7_7_relay_comparison),
+    "7.7":  ("2×2 MIMO SIC",                       exp_7_2_to_7_7_relay_comparison),
+    "7.8":  ("Normalized 3K Comparison",            exp_7_8_normalized_3k),
+    "7.9":  ("Master 2×3 Chart",                    exp_7_9_master_chart),
+    "7.10": ("Modulation Comparison",               exp_7_10_modulation_comparison),
+    "7.11": ("QAM16 Activation Study",              exp_7_11_qam16_activation),
+    "7.12": ("LayerNorm Study",                     exp_7_12_layernorm),
+    "7.13": ("Activation Comparison",               exp_7_13_activation_comparison),
+    "7.14": ("CSI Injection",                       exp_7_14_csi_injection),
+    "7.15": ("Multi-Architecture CSI",              exp_7_15_multi_csi),
+    "7.16": ("E2E Autoencoder",                     exp_7_16_e2e),
+    "7.17": ("16-Class 2D QAM16",                   exp_7_17_16class_2d),
+    "constellations": ("Constellation Diagrams",    exp_constellations),
+}
+
+# §7.2–§7.7 share one function; avoid running it 6× when --all
+_RELAY_COMPARISON_SECTIONS = {"7.2", "7.3", "7.4", "7.5", "7.6", "7.7"}
+
+
+# ════════════════════════════════════════════════════════════════════
+# Chart regeneration from existing JSON (no re-running experiments)
+# ════════════════════════════════════════════════════════════════════
+
+def _regen_from_json(json_path, out_dir, tag, title_prefix, extra_styles=None):
+    """Regenerate BER chart + top-3 + achievement + summary table from one JSON."""
+    data = load_results_json(json_path)
+    snr = np.array(data["snr_range"])
+    results = data["results"]
+
+    ber_dict = {n: np.array(r["ber_mean"]) for n, r in results.items()}
+    ci_dict = {}
+    for n, r in results.items():
+        if "ci_lower" in r and "ci_upper" in r:
+            ci_dict[n] = (np.array(r["ci_lower"]), np.array(r["ci_upper"]))
+
+    # Main BER chart (rules 1-16)
+    plot_ber_chart(
+        snr, ber_dict, ci_dict if ci_dict else None,
+        title=f"{title_prefix} ({tag})",
+        save_path=os.path.join(out_dir, f"{tag}_ci.png"),
+        extra_styles=extra_styles,
+    )
+
+    # Top-3 chart (rule 22) — only when AF/DF baselines exist
+    if "AF" in results or "DF" in results:
+        results_for_top3 = {}
+        for n, r in results.items():
+            results_for_top3[n] = {"ber_mean": np.array(r["ber_mean"])}
+            if "ci_lower" in r:
+                results_for_top3[n]["ci_lower"] = np.array(r["ci_lower"])
+                results_for_top3[n]["ci_upper"] = np.array(r["ci_upper"])
+        plot_top3_chart(
+            snr, results_for_top3,
+            title=f"Top-3 — {title_prefix}",
+            save_path=os.path.join(out_dir, f"{tag}_top3.png"),
+        )
+
+    # Achievement chart (rule 20)
+    ai_count = sum(1 for n in results if n not in ("AF", "DF"))
+    if ai_count >= 2:
+        plot_achievement_chart(
+            snr, results,
+            title=f"Achievement — {title_prefix}",
+            save_path=os.path.join(out_dir, f"{tag}_achievement.png"),
+        )
+
+    # BER summary table (rule 18)
+    print_ber_summary_table(snr, results, title=f"{title_prefix}")
+
+
+def regenerate_all_charts(args):
+    """Regenerate every chart from existing JSON results (no training)."""
+    results_dir = args.results_dir
+    count = 0
+
+    # ── §7.1 Channel analysis ──
+    j = os.path.join(results_dir, "channel_analysis", "channel_analysis.json")
+    if os.path.exists(j):
+        print("\n── §7.1 Channel Analysis ──")
+        data = load_results_json(j)
+        snr = np.array(data["snr_range"])
+        out = os.path.join(results_dir, "channel_analysis")
+        ber_dict = {n: np.array(r["ber_mean"]) for n, r in data["results"].items()}
+        plot_ber_chart(snr, ber_dict, title="Channel Analysis (§7.1)",
+                       save_path=os.path.join(out, "channel_analysis_ci.png"))
+        count += 1
+
+    # ── §7.2-7.7 BPSK relay comparisons ──
+    bpsk_dir = os.path.join(results_dir, "bpsk_comparison")
+    bpsk_multi = {}  # for heatmap (rule 19)
+    for ch_key, (ch_name, _) in _CHANNELS.items():
+        j = os.path.join(bpsk_dir, f"{ch_key}.json")
+        if not os.path.exists(j):
+            continue
+        sec = _SECTION_MAP[ch_key]
+        print(f"\n── §{sec} {ch_name} ──")
+        _regen_from_json(j, bpsk_dir, ch_key,
+                         f"{ch_name} — BPSK Relay Comparison (§{sec})")
+        # Collect for heatmap
+        data = load_results_json(j)
+        bpsk_multi[ch_name] = data["results"]
+        count += 1
+
+    # Heatmap across all BPSK channels (rule 19)
+    if len(bpsk_multi) >= 2:
+        first_snr = None
+        for j_file in [os.path.join(bpsk_dir, f"{k}.json") for k in _CHANNELS]:
+            if os.path.exists(j_file):
+                first_snr = np.array(load_results_json(j_file)["snr_range"])
+                break
+        if first_snr is not None:
+            plot_summary_heatmap(
+                first_snr, bpsk_multi,
+                title="BPSK Relay Performance — All Channels (§7.2–7.7)",
+                save_path=os.path.join(bpsk_dir, "bpsk_heatmap.png"),
+            )
+
+    # ── §7.8 Normalized 3K ──
+    n3k_dir = os.path.join(results_dir, "normalized_3k")
+    n3k_multi = {}
+    for ch_key, (ch_name, _) in _CHANNELS.items():
+        j = os.path.join(n3k_dir, f"3k_{ch_key}.json")
+        if not os.path.exists(j):
+            continue
+        print(f"\n── §7.8 Normalized 3K — {ch_name} ──")
+        _regen_from_json(j, n3k_dir, f"3k_{ch_key}",
+                         f"Normalized 3K — {ch_name} (§7.8)")
+        data = load_results_json(j)
+        n3k_multi[ch_name] = data["results"]
+        count += 1
+
+    if len(n3k_multi) >= 2:
+        first_snr = None
+        for j_file in [os.path.join(n3k_dir, f"3k_{k}.json") for k in _CHANNELS]:
+            if os.path.exists(j_file):
+                first_snr = np.array(load_results_json(j_file)["snr_range"])
+                break
+        if first_snr is not None:
+            plot_summary_heatmap(
+                first_snr, n3k_multi,
+                title="Normalized 3K Performance — All Channels (§7.8)",
+                save_path=os.path.join(n3k_dir, "3k_heatmap.png"),
+            )
+
+    # ── §7.9 Master chart (regenerate from §7.2-7.7 data) ──
+    if len(bpsk_multi) >= 2 and _HAS_MPL:
+        print("\n── §7.9 Master 2×3 Chart ──")
+        panels = [
+            ("awgn", "AWGN"), ("rayleigh", "Rayleigh"), ("rician_k3", "Rician K=3"),
+            ("mimo_zf", "MIMO ZF"), ("mimo_mmse", "MIMO MMSE"), ("mimo_sic", "MIMO SIC"),
+        ]
+        fig, axes = plt.subplots(2, 3, figsize=(18, 10))
+        for ax, (ck, cn) in zip(axes.flat, panels):
+            jp = os.path.join(bpsk_dir, f"{ck}.json")
+            if not os.path.exists(jp):
+                ax.set_title(f"{cn} (no data)")
+                continue
+            data = load_results_json(jp)
+            snr = np.array(data["snr_range"])
+            for idx, (name, rd) in enumerate(data["results"].items()):
+                ber = np.where(np.array(rd["ber_mean"]) > 0,
+                               np.array(rd["ber_mean"]), 1e-10)
+                st = _style_for(name, idx)
+                ax.semilogy(snr, ber, marker=st["marker"], color=st["color"],
+                            linewidth=1.0, markersize=4, label=name,
+                            linestyle=st.get("ls", "-"), alpha=0.85)
+            ax.grid(True, which="both", linestyle="--", alpha=0.3, linewidth=0.5)
+            ax.set_title(cn, fontsize=13)
+            ax.set_xlabel("SNR (dB)", fontsize=11)
+            ax.set_ylabel("BER", fontsize=11)
+        handles, labels = axes[0, 0].get_legend_handles_labels()
+        fig.legend(handles, labels, loc="lower center", ncol=5, fontsize=10,
+                   bbox_to_anchor=(0.5, -0.02))
+        fig.suptitle("Master BER Comparison — 9 Relays × 6 Channels (§7.9)",
+                     fontsize=16)
+        plt.tight_layout(rect=[0, 0.04, 1, 0.96])
+        sp = os.path.join(results_dir, "master_ber_comparison.png")
+        plt.savefig(sp, dpi=150, bbox_inches="tight")
+        plt.close(fig)
+        print(f"  Plot → {sp}")
+        count += 1
+
+    # ── §7.10 Modulation comparison ──
+    mod_dir = os.path.join(results_dir, "modulation")
+    for mod in ["bpsk", "qpsk", "qam16"]:
+        for ch in ["awgn", "rayleigh"]:
+            j = os.path.join(mod_dir, f"{mod}_{ch}.json")
+            if not os.path.exists(j):
+                continue
+            tag = f"{mod}_{ch}"
+            print(f"\n── §7.10 {mod.upper()} × {ch.upper()} ──")
+            _regen_from_json(j, mod_dir, tag,
+                             f"{mod.upper()} — {ch.upper()} (§7.10)")
+            count += 1
+
+    # ── §7.11 QAM16 activation ──
+    qam_dir = os.path.join(results_dir, "qam16_activation")
+    for ch in ["awgn", "rayleigh"]:
+        j = os.path.join(qam_dir, f"qam16_activation_{ch}.json")
+        if not os.path.exists(j):
+            continue
+        print(f"\n── §7.11 QAM16 Activation — {ch.upper()} ──")
+        _regen_from_json(j, qam_dir, f"qam16_activation_{ch}",
+                         f"QAM16 Activation — {ch.upper()} (§7.11)")
+        count += 1
+
+    # ── §7.12 LayerNorm ──
+    ln_dir = os.path.join(results_dir, "layernorm")
+    for mod in ["qpsk", "qam16"]:
+        for ch in ["awgn", "rayleigh"]:
+            j = os.path.join(ln_dir, f"layernorm_{mod}_{ch}.json")
+            if not os.path.exists(j):
+                continue
+            tag = f"layernorm_{mod}_{ch}"
+            print(f"\n── §7.12 LayerNorm {mod.upper()} × {ch.upper()} ──")
+            _regen_from_json(j, ln_dir, tag,
+                             f"LayerNorm — {mod.upper()} {ch.upper()} (§7.12)")
+            count += 1
+
+    # ── §7.13 Activation comparison ──
+    act_dir = os.path.join(results_dir, "activation_comparison")
+    act_styles_map = {"sigmoid": "-", "hardtanh": "--", "scaled_tanh": "-."}
+    for mod in ["qpsk", "qam16"]:
+        for ch in ["awgn", "rayleigh"]:
+            j = os.path.join(act_dir, f"activation_{mod}_{ch}.json")
+            if not os.path.exists(j):
+                continue
+            tag = f"{mod}_activation_{ch}"
+            print(f"\n── §7.13 Activation {mod.upper()} × {ch.upper()} ──")
+            # Build extra_styles from the curve names
+            data = load_results_json(j)
+            extra_styles = {}
+            cidx = 0
+            for name in data["results"]:
+                ls = "-"
+                for act_key, act_ls in act_styles_map.items():
+                    if f"({act_key})" in name:
+                        ls = act_ls
+                        break
+                extra_styles[name] = {
+                    "color": PALETTE[cidx % len(PALETTE)],
+                    "marker": MARKERS[cidx % len(MARKERS)],
+                    "ls": ls,
+                }
+                cidx += 1
+            _regen_from_json(j, act_dir, tag,
+                             f"Activation — {mod.upper()} {ch.upper()} (§7.13)",
+                             extra_styles=extra_styles)
+            count += 1
+
+    # ── §7.14-15 CSI ──
+    csi_dir = os.path.join(results_dir, "csi")
+    for constellation in ["qam16", "psk16"]:
+        j = os.path.join(csi_dir, f"csi_experiment_{constellation}_rayleigh.json")
+        if not os.path.exists(j):
+            continue
+        tag = f"csi_experiment_{constellation}_rayleigh"
+        print(f"\n── §7.14-15 CSI {constellation.upper()} ──")
+        _regen_from_json(j, csi_dir, tag,
+                         f"CSI — {constellation.upper()} Rayleigh (§7.14-15)")
+        count += 1
+
+    # ── §7.16 E2E ──
+    e2e_dir = os.path.join(results_dir, "e2e")
+    for jname, tag, title in [
+        ("e2e_ber.json", "e2e_ber", "E2E BER vs SNR (§7.16)"),
+        ("e2e_relay_comparison.json", "e2e_relay_comparison",
+         "E2E vs AF/DF — 16-QAM Rayleigh (§7.16)"),
+    ]:
+        j = os.path.join(e2e_dir, jname)
+        if not os.path.exists(j):
+            continue
+        print(f"\n── §7.16 {tag} ──")
+        _regen_from_json(j, e2e_dir, tag, title)
+        count += 1
+
+    # ── §7.17 16-Class 2D QAM16 ──
+    cls16_dir = os.path.join(results_dir, "all_relays_16class")
+    j = os.path.join(cls16_dir, "all_relays_16class.json")
+    if os.path.exists(j):
+        print(f"\n── §7.17 16-Class 2D QAM16 ──")
+        # Custom styles for 16-class experiment
+        _16cls_colors = {
+            "MLP 4-cls": "#D55E00", "MLP 16-cls": "#E69F00",
+            "VAE 4-cls": "#56B4E9", "VAE 16-cls": "#0072B2",
+            "CGAN 4-cls": "#CC79A7", "CGAN 16-cls": "#882255",
+            "Hybrid 4-cls": "#009E73", "Hybrid 16-cls": "#44AA99",
+            "Transformer 4-cls": "#F0E442", "Transformer 16-cls": "#B8860B",
+            "Mamba-S6 4-cls": "#7570B3", "Mamba-S6 16-cls": "#4B0082",
+            "Mamba2 4-cls": "#E7298A", "Mamba2 16-cls": "#A50026",
+            "AF": "#888888", "DF": "#333333",
+        }
+        _16cls_markers = {
+            "MLP 4-cls": "o", "MLP 16-cls": "s",
+            "VAE 4-cls": "^", "VAE 16-cls": "v",
+            "CGAN 4-cls": "D", "CGAN 16-cls": "d",
+            "Hybrid 4-cls": "p", "Hybrid 16-cls": "h",
+            "Transformer 4-cls": "P", "Transformer 16-cls": "X",
+            "Mamba-S6 4-cls": "*", "Mamba-S6 16-cls": "H",
+            "Mamba2 4-cls": "8", "Mamba2 16-cls": "1",
+            "AF": "<", "DF": ">",
+        }
+        data = load_results_json(j)
+        extra_styles = {}
+        for name in data["results"]:
+            c = _16cls_colors.get(name, PALETTE[0])
+            m = _16cls_markers.get(name, "o")
+            ls = "--" if "4-cls" in name else (":" if name in ("AF", "DF") else "-")
+            extra_styles[name] = {"color": c, "marker": m, "ls": ls}
+        _regen_from_json(j, cls16_dir, "ber_16class",
+                         "16-Class 2D vs 4-Class — QAM16 (§7.17)",
+                         extra_styles=extra_styles)
+        count += 1
+
+    print(f"\n{'='*60}")
+    print(f"  Regenerated charts from {count} JSON files")
+    print(f"{'='*60}")
+
+
+def parse_args():
+    p = argparse.ArgumentParser(
+        description="Unified thesis experiment runner",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  python run_experiments.py --list
+  python run_experiments.py --all --quick
+  python run_experiments.py --exp 7.2 7.10 7.16
+  python run_experiments.py --all --inference-only
+  python run_experiments.py --regen-charts
+""")
+    p.add_argument("--list", action="store_true",
+                   help="List all available experiments and exit.")
+    p.add_argument("--regen-charts", action="store_true",
+                   help="Regenerate all charts from JSON without re-running.")
+    p.add_argument("--all", action="store_true",
+                   help="Run all experiments sequentially.")
+    p.add_argument("--exp", nargs="+", default=[],
+                   help="Run specific experiments by section number.")
+    p.add_argument("--quick", action="store_true",
+                   help="Reduced training/MC effort for fast testing.")
+    p.add_argument("--gpu", action="store_true",
+                   help="Use CUDA for sequence models and E2E.")
+    p.add_argument("--seed", type=int, default=42)
+    p.add_argument("--inference-only", action="store_true",
+                   help="Skip training; load saved weights.")
+    p.add_argument("--retrain", action="store_true",
+                   help="Force retraining even if cached weights exist.")
+    p.add_argument("--weights-dir", type=str, default="weights",
+                   help="Directory for weight storage.")
+    p.add_argument("--results-dir", type=str, default="results",
+                   help="Output directory for JSON + charts.")
+    p.add_argument("--snr-min", type=float, default=0)
+    p.add_argument("--snr-max", type=float, default=20)
+    p.add_argument("--snr-step", type=float, default=2)
+    p.add_argument("--bits-per-trial", type=int, default=10_000)
+    p.add_argument("--num-trials", type=int, default=10)
+    return p.parse_args()
+
+
+def main():
+    args = parse_args()
+
+    if args.list:
+        print("\nAvailable experiments:")
+        print(f"  {'Section':<15} Description")
+        print(f"  {'-------':<15} -----------")
+        for key, (desc, _) in EXPERIMENTS.items():
+            print(f"  {key:<15} {desc}")
+        return
+
+    if args.regen_charts:
+        regenerate_all_charts(args)
+        return
+
+    # Determine which experiments to run
+    if args.all:
+        to_run = list(EXPERIMENTS.keys())
+    elif args.exp:
+        to_run = args.exp
+    else:
+        print("No experiments selected. Use --all or --exp <section>.")
+        print("Run with --list to see available experiments.")
+        return
+
+    # Apply quick-mode defaults
+    if args.quick:
+        if args.bits_per_trial == 10_000:
+            args.bits_per_trial = 2_000
+        if args.num_trials == 10:
+            args.num_trials = 3
+
+    # Ensure --retrain attribute exists
+    if not hasattr(args, "retrain"):
+        args.retrain = False
+
+    # Setup logging
+    log_file = setup_logging(args.results_dir)
+
+    print(f"\n{'='*60}")
+    print(f"  Thesis Experiment Runner")
+    print(f"  Experiments: {', '.join(to_run)}")
+    print(f"  Quick: {args.quick}  |  GPU: {args.gpu}  |  Seed: {args.seed}")
+    print(f"  Retrain: {args.retrain}  |  Inference-only: {args.inference_only}")
+    print(f"  Results → {args.results_dir}/  |  Weights → {args.weights_dir}/")
+    print(f"  Log → {log_file}")
+    print(f"{'='*60}")
+
+    t_start = perf_counter()
+    ran_relay_comparison = False
+    succeeded = []
+    failed = []
+
+    for exp_key in to_run:
+        if exp_key not in EXPERIMENTS:
+            print(f"\n  [WARNING] Unknown experiment: {exp_key}")
+            continue
+
+        # §7.2–7.7 share one function — run only once
+        if exp_key in _RELAY_COMPARISON_SECTIONS:
+            if ran_relay_comparison:
+                continue
+            ran_relay_comparison = True
+
+        desc, func = EXPERIMENTS[exp_key]
+        ok = run_experiment_safe(f"§{exp_key} {desc}", func, args)
+        (succeeded if ok else failed).append(exp_key)
+
+    elapsed = perf_counter() - t_start
+    print(f"\n{'='*60}")
+    print(f"  All experiments completed in {elapsed:.1f}s")
+    print(f"  Succeeded: {len(succeeded)}  |  Failed: {len(failed)}")
+    if failed:
+        print(f"  Failed experiments: {', '.join(failed)}")
+        print(f"  See {args.results_dir}/logs/ for details")
+    print(f"{'='*60}")
+
+
+if __name__ == "__main__":
+    main()

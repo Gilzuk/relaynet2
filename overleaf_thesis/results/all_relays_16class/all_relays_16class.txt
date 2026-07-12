@@ -1,0 +1,272 @@
+python -u C:\thesis\relaynet2\_seq_relays_16class.py
+  Loaded existing results: ['MLP 4-cls', 'MLP 16-cls', 'VAE 4-cls', 'VAE 16-cls', 'CGAN 4-cls', 'CGAN 16-cls', 'Hybrid 4-cls', 'Hybrid 16-cls']
+
+============================================================
+  Transformer 4-cls
+============================================================
+  Params: 17748
+  Training (GPU) ...
+  Transformer Training Configuration:    
+    Device: cuda
+    Architecture: 5-token Transformer    
+    d_model: 32, heads: 4
+    in_channels: 1
+    Layers: 2
+    Parameters: 17,748
+    Training SNRs: [5, 10, 15, 20, 25] dB
+    Samples: 50,000, Epochs: 100
+    Training modulation: qam16
+
+  Generating training data...
+  Training data ready: 42,483 train, 7,497 val samples
+
+  Training Transformer...
+    Epoch 1/100, Loss: 0.372947, Train Acc: 0.9047, Val Acc: 0.9040, Best: 0.372947
+    Epoch 10/100, Loss: 0.277365, Train Acc: 0.9089, Val Acc: 0.9090, Best: 0.277365
+    Epoch 20/100, Loss: 0.267382, Train Acc: 0.9074, Val Acc: 0.9088, Best: 0.267382
+    Epoch 30/100, Loss: 0.260661, Train Acc: 0.9072, Val Acc: 0.9090, Best: 0.260661
+    Epoch 40/100, Loss: 0.257873, Train Acc: 0.9073, Val Acc: 0.9084, Best: 0.257833
+    Epoch 50/100, Loss: 0.256385, Train Acc: 0.9081, Val Acc: 0.9097, Best: 0.255437
+    Epoch 60/100, Loss: 0.254764, Train Acc: 0.9085, Val Acc: 0.9100, Best: 0.254372
+    Epoch 70/100, Loss: 0.253471, Train Acc: 0.9088, Val Acc: 0.9073, Best: 0.253254
+    Epoch 80/100, Loss: 0.252117, Train Acc: 0.9094, Val Acc: 0.9093, Best: 0.251268
+    Epoch 90/100, Loss: 0.251237, Train Acc: 0.9085, Val Acc: 0.9074, Best: 0.250618
+    Epoch 100/100, Loss: 0.250029, Train Acc: 0.9082, Val Acc: 0.9089, Best: 0.250029
+
+  Transformer training complete!
+  Final loss: 0.250029, Best loss: 0.250029
+  Total parameters: 17,748
+  Evaluating BER ...
+  BER@20dB = 0.008100  avg = 0.163337
+
+============================================================
+  Transformer 16-cls
+============================================================
+  Params: 17984
+  Training (GPU) ...
+  Transformer Training Configuration:
+    Device: cuda
+    Architecture: 5-token Transformer
+    d_model: 32, heads: 4
+    in_channels: 2
+    Layers: 2
+    Parameters: 17,984
+    Training SNRs: [5, 10, 15, 20, 25] dB
+    Samples: 50,000, Epochs: 200
+    Training modulation: qam16
+
+  Generating training data...
+  Training data ready: 42,500 train, 7,500 val samples
+
+  Training Transformer...
+    Epoch 1/200, Loss: 0.957382, Train Acc: 0.8404, Val Acc: 0.8376, Best: 0.957382
+    Epoch 20/200, Loss: 0.503411, Train Acc: 0.8436, Val Acc: 0.8409, Best: 0.503411
+    Epoch 40/200, Loss: 0.487945, Train Acc: 0.8424, Val Acc: 0.8392, Best: 0.487945
+    Epoch 60/200, Loss: 0.481139, Train Acc: 0.8443, Val Acc: 0.8387, Best: 0.481139
+    Epoch 80/200, Loss: 0.475845, Train Acc: 0.8456, Val Acc: 0.8408, Best: 0.475368
+    Epoch 100/200, Loss: 0.471729, Train Acc: 0.8456, Val Acc: 0.8389, Best: 0.471104
+    Epoch 120/200, Loss: 0.468527, Train Acc: 0.8478, Val Acc: 0.8409, Best: 0.467652
+    Epoch 140/200, Loss: 0.466468, Train Acc: 0.8475, Val Acc: 0.8415, Best: 0.463995
+    Epoch 160/200, Loss: 0.461226, Train Acc: 0.8475, Val Acc: 0.8400, Best: 0.461226
+    Epoch 180/200, Loss: 0.459921, Train Acc: 0.8495, Val Acc: 0.8411, Best: 0.459926
+    Epoch 200/200, Loss: 0.458851, Train Acc: 0.8495, Val Acc: 0.8388, Best: 0.456994
+
+  Transformer training complete!
+  Final loss: 0.458851, Best loss: 0.456994
+  Total parameters: 17,984
+  Evaluating BER ...
+  BER@20dB = 0.000010  avg = 0.145457
+
+============================================================
+  Mamba-S6 4-cls
+============================================================
+  Params: 24052
+  Training (GPU) ...
+  Mamba S6 Training Configuration:
+    Device: cuda
+    Architecture: 5-token Mamba (S6)
+    d_model: 32, d_state: 16
+    in_channels: 1
+    Layers: 2
+    Parameters: 24,052
+    Training SNRs: [5, 10, 15, 20, 25] dB
+    Samples: 50,000, Epochs: 100
+    Training modulation: qam16
+
+  Generating training data...
+  Training data ready: 42,483 train, 7,497 val samples
+
+  Training Mamba S6...
+    Epoch 1/100, Loss: 0.319225, Train Acc: 0.9019, Val Acc: 0.9046, Best: 0.319225
+    Epoch 10/100, Loss: 0.270898, Train Acc: 0.9054, Val Acc: 0.9081, Best: 0.270898
+    Epoch 20/100, Loss: 0.267872, Train Acc: 0.9082, Val Acc: 0.9121, Best: 0.267553
+    Epoch 30/100, Loss: 0.263394, Train Acc: 0.9077, Val Acc: 0.9084, Best: 0.263394
+    Epoch 40/100, Loss: 0.259027, Train Acc: 0.9083, Val Acc: 0.9104, Best: 0.259027
+    Epoch 50/100, Loss: 0.258037, Train Acc: 0.9066, Val Acc: 0.9104, Best: 0.258037
+    Epoch 60/100, Loss: 0.257288, Train Acc: 0.9084, Val Acc: 0.9108, Best: 0.257288
+    Epoch 70/100, Loss: 0.256739, Train Acc: 0.9071, Val Acc: 0.9090, Best: 0.256739
+    Epoch 80/100, Loss: 0.256141, Train Acc: 0.9088, Val Acc: 0.9108, Best: 0.255915
+    Epoch 90/100, Loss: 0.255753, Train Acc: 0.9082, Val Acc: 0.9112, Best: 0.255753
+    Epoch 100/100, Loss: 0.255580, Train Acc: 0.9082, Val Acc: 0.9089, Best: 0.255537
+
+  Mamba training complete!
+  Final loss: 0.255580, Best loss: 0.255537
+  Total parameters: 24,052
+  Evaluating BER ...
+  BER@20dB = 0.008100  avg = 0.163368
+
+============================================================
+  Mamba-S6 16-cls
+============================================================
+  Params: 24288
+  Training (GPU) ...
+  Mamba S6 Training Configuration:
+    Device: cuda
+    Architecture: 5-token Mamba (S6)
+    d_model: 32, d_state: 16
+    in_channels: 2
+    Layers: 2
+    Parameters: 24,288
+    Training SNRs: [5, 10, 15, 20, 25] dB
+    Samples: 50,000, Epochs: 200
+    Training modulation: qam16
+
+  Generating training data...
+  Training data ready: 42,500 train, 7,500 val samples
+
+  Training Mamba S6...
+    Epoch 1/200, Loss: 0.817945, Train Acc: 0.8375, Val Acc: 0.8400, Best: 0.817945
+    Epoch 20/200, Loss: 0.512468, Train Acc: 0.8397, Val Acc: 0.8396, Best: 0.512468
+    Epoch 40/200, Loss: 0.494732, Train Acc: 0.8395, Val Acc: 0.8399, Best: 0.494732
+    Epoch 60/200, Loss: 0.482747, Train Acc: 0.8420, Val Acc: 0.8411, Best: 0.482747
+    Epoch 80/200, Loss: 0.476326, Train Acc: 0.8431, Val Acc: 0.8424, Best: 0.474866
+    Epoch 100/200, Loss: 0.467821, Train Acc: 0.8452, Val Acc: 0.8435, Best: 0.467821
+    Epoch 120/200, Loss: 0.462261, Train Acc: 0.8445, Val Acc: 0.8373, Best: 0.462261
+    Epoch 140/200, Loss: 0.457077, Train Acc: 0.8470, Val Acc: 0.8408, Best: 0.457077
+    Epoch 160/200, Loss: 0.452291, Train Acc: 0.8488, Val Acc: 0.8385, Best: 0.451973
+    Epoch 180/200, Loss: 0.447525, Train Acc: 0.8509, Val Acc: 0.8367, Best: 0.447083
+    Epoch 200/200, Loss: 0.442427, Train Acc: 0.8501, Val Acc: 0.8393, Best: 0.441585
+
+  Mamba training complete!
+  Final loss: 0.442427, Best loss: 0.441585
+  Total parameters: 24,288
+  Evaluating BER ...
+  BER@20dB = 0.000090  avg = 0.146649
+
+============================================================
+  Mamba2 4-cls
+============================================================
+  Params: 26230
+  Training (GPU) ...
+  Mamba-2 (SSD) Training Configuration:
+    Device: cuda
+    Architecture: 5-token Mamba-2 (SSD)
+    d_model: 32, d_state: 16
+    in_channels: 1
+    Layers: 2
+    Parameters: 26,230
+    Training SNRs: [5, 10, 15, 20, 25] dB
+    Samples: 50,000, Epochs: 100
+    Training modulation: qam16
+  Training data: 42,483 train, 7,497 val samples
+    Epoch 1/100, Loss: 0.314192, Train Acc: 0.9060, Val Acc: 0.9049, Best: 0.314192
+    Epoch 10/100, Loss: 0.264139, Train Acc: 0.9086, Val Acc: 0.9065, Best: 0.264139
+    Epoch 20/100, Loss: 0.256880, Train Acc: 0.9088, Val Acc: 0.9081, Best: 0.256877
+    Epoch 30/100, Loss: 0.256060, Train Acc: 0.9089, Val Acc: 0.9076, Best: 0.255296
+    Epoch 40/100, Loss: 0.255444, Train Acc: 0.9091, Val Acc: 0.9073, Best: 0.254218
+    Epoch 50/100, Loss: 0.253946, Train Acc: 0.9092, Val Acc: 0.9064, Best: 0.252963
+    Epoch 60/100, Loss: 0.252801, Train Acc: 0.9090, Val Acc: 0.9084, Best: 0.252603
+    Epoch 70/100, Loss: 0.252155, Train Acc: 0.9088, Val Acc: 0.9068, Best: 0.251603
+    Epoch 80/100, Loss: 0.250853, Train Acc: 0.9086, Val Acc: 0.9037, Best: 0.250814
+    Epoch 90/100, Loss: 0.249797, Train Acc: 0.9078, Val Acc: 0.9057, Best: 0.249797
+    Epoch 100/100, Loss: 0.249102, Train Acc: 0.9091, Val Acc: 0.9064, Best: 0.248833
+
+  Mamba-2 training complete!  Final loss: 0.249102, Best: 0.248833  Parameters: 26,230
+  Evaluating BER ...
+  BER@20dB = 0.008110  avg = 0.163495
+
+============================================================
+  Mamba2 16-cls
+============================================================
+  Params: 26466
+  Training (GPU) ...
+  Mamba-2 (SSD) Training Configuration:
+    Device: cuda
+    Architecture: 5-token Mamba-2 (SSD)
+    d_model: 32, d_state: 16
+    in_channels: 2
+    Layers: 2
+    Parameters: 26,466
+    Training SNRs: [5, 10, 15, 20, 25] dB
+    Samples: 50,000, Epochs: 200
+    Training modulation: qam16
+  Training data: 42,500 train, 7,500 val samples
+    Epoch 1/200, Loss: 0.747964, Train Acc: 0.8364, Val Acc: 0.8456, Best: 0.747964
+    Epoch 20/200, Loss: 0.496474, Train Acc: 0.8405, Val Acc: 0.8400, Best: 0.496474
+    Epoch 40/200, Loss: 0.466066, Train Acc: 0.8483, Val Acc: 0.8385, Best: 0.466066
+    Epoch 60/200, Loss: 0.437150, Train Acc: 0.8562, Val Acc: 0.8343, Best: 0.437150
+    Epoch 80/200, Loss: 0.403770, Train Acc: 0.8673, Val Acc: 0.8303, Best: 0.403398
+    Epoch 100/200, Loss: 0.370855, Train Acc: 0.8756, Val Acc: 0.8232, Best: 0.370855
+    Epoch 120/200, Loss: 0.341779, Train Acc: 0.8871, Val Acc: 0.8141, Best: 0.341335
+    Epoch 140/200, Loss: 0.318280, Train Acc: 0.8966, Val Acc: 0.8056, Best: 0.317031
+    Epoch 160/200, Loss: 0.293493, Train Acc: 0.9052, Val Acc: 0.7991, Best: 0.293493
+    Epoch 180/200, Loss: 0.276041, Train Acc: 0.9110, Val Acc: 0.8035, Best: 0.274833
+    Epoch 200/200, Loss: 0.260617, Train Acc: 0.9156, Val Acc: 0.8013, Best: 0.259444
+
+  Mamba-2 training complete!  Final loss: 0.260617, Best: 0.259444  Parameters: 26,466
+  Evaluating BER ...
+  BER@20dB = 0.001970  avg = 0.160593
+
+  Computing AF & DF baselines ...
+  AF BER@20dB = 0.000630
+  DF BER@20dB = 0.000000
+
+  Merged JSON -> C:\thesis\relaynet2\results\all_relays_16class\all_relays_16class.json
+  Generating BER chart ...
+C:\thesis\relaynet2\_seq_relays_16class.py:283: UserWarning: This figure includes Axes that are not compatible with tight_layout, so results might be incorrect.
+  fig.tight_layout()
+  BER chart saved.
+  Generating grouped bar chart ...
+  Grouped bar chart saved.
+  Generating heatmap ...
+  Heatmap saved.
+  Generating top-3 chart ...
+  Top-3 chart saved.
+
+======================================================================
+  BER SUMMARY TABLE
+======================================================================
+  Variant                      4dB      10dB      16dB      20dB      AvgBER  Params
+  ----------------------------------------------------------------------------------
+  MLP 4-cls                0.29442   0.13655   0.03310   0.00811    0.163038     244
+  MLP 16-cls               0.28632   0.11088   0.00478   0.00002    0.145705     472
+  VAE 4-cls                0.49856   0.49927   0.49926   0.49919    0.499058    1876
+  VAE 16-cls               0.28505   0.10927   0.00421   0.00000    0.144935    2112
+  CGAN 4-cls               0.29432   0.13662   0.03307   0.00811    0.162965    3093
+  CGAN 16-cls              0.50008   0.50010   0.50014   0.50043    0.500195    3361
+  Hybrid 4-cls             0.33692   0.27110   0.25117   0.25017    0.294274     244
+  Hybrid 16-cls            0.28637   0.38611   0.37578   0.37553    0.370529     472
+  Transformer 4-cls        0.29417   0.13761   0.03314   0.00810    0.163337   17748
+  Transformer 16-cls       0.28739   0.10945   0.00440   0.00001    0.145457   17984
+  Mamba-S6 4-cls           0.29473   0.13736   0.03326   0.00810    0.163368   24052
+  Mamba-S6 16-cls          0.28795   0.11245   0.00538   0.00009    0.146649   24288
+  DF                       0.28546   0.10763   0.00379   0.00000    0.144165     ---
+
+  GAP vs DF @ 20 dB:
+    MLP 4-cls               BER=0.00811  gap=+0.00811
+    MLP 16-cls              BER=0.00002  gap=+0.00002
+    VAE 4-cls               BER=0.49919  gap=+0.49919
+    VAE 16-cls              BER=0.00000  gap=+0.00000
+    CGAN 4-cls              BER=0.00811  gap=+0.00811
+    Hybrid 4-cls            BER=0.25017  gap=+0.25017
+    Hybrid 16-cls           BER=0.37553  gap=+0.37553
+    Transformer 4-cls       BER=0.00810  gap=+0.00810
+    Transformer 16-cls      BER=0.00001  gap=+0.00001
+    Mamba-S6 4-cls          BER=0.00810  gap=+0.00810
+    Mamba-S6 16-cls         BER=0.00009  gap=+0.00009
+    Mamba2 4-cls            BER=0.00811  gap=+0.00811
+    Mamba2 16-cls           BER=0.00197  gap=+0.00197
+
+  Top-3: VAE 16-cls, Transformer 16-cls, MLP 16-cls
+
+  All outputs in: C:\thesis\relaynet2\results\all_relays_16class

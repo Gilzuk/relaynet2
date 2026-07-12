@@ -5,7 +5,7 @@ Directory layout::
     {base_dir}/
       seed_{seed}/
         metadata.json
-        genai_169p.pt
+        mlp_169p.pt
         hybrid.pt
         vae.pt
         cgan_wgan_gp.pt

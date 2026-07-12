@@ -1,0 +1,157 @@
+﻿Total: 78
+EQ001|C \leq \max_{p(x, x_R)} \min\left\{I(X, X_R; Y_D), \; I(X; Y_R, Y_D | X_R)\right\}
+  CTX|rocessing strategy $f(\cdot)$ and the channel statistics. Cover and El Gamal [3] established two fundamental capacity bounds:  **Cut-set upper bound.** The capacity of any relay channel is bounded by:
+EQ002|C_{\text{DF}} = \max_{p(x, x_R)} \min\left\{I(X; Y_R | X_R), \; I(X, X_R; Y_D)\right\}
+  CTX|r relay communication.  **DF achievability bound.** Under decode-and-forward, the relay fully decodes the source message and cooperates with the source to transmit a common message to the destination:
+EQ003|C_{\text{DF}}^{\text{Gaussian}} = \frac{1}{2}\log_2\left(1 + \gamma\right)
+  CTX|versa ΓÇö Cover and El Gamal showed that the DF bound coincides with the cut-set bound, establishing the exact capacity. In the Gaussian case with equal per-hop SNR $\gamma$, the two-hop DF capacity is:
+EQ004|y_R = x + n_1, \quad n_1 \sim \mathcal{N}(0, \sigma^2)
+  CTX|tudied in this thesis, the relay cannot transmit and receive simultaneously, and there is no direct source-destination link. The communication proceeds in two time slots:  **Slot 1 (Source ΓåÆ Relay):**
+EQ005|y_D = x_R + n_2, \quad n_2 \sim \mathcal{N}(0, \sigma^2)
+  CTX|irect source-destination link. The communication proceeds in two time slots:  **Slot 1 (Source ΓåÆ Relay):** $$y_R = x + n_1, \quad n_1 \sim \mathcal{N}(0, \sigma^2)$$  **Slot 2 (Relay ΓåÆ Destination):**
+EQ006|G = \sqrt{\frac{P_{\text{target}}}{\mathbb{E}[|y_R|^2]}}
+  CTX|rk may provide a substantive advantage.  ### Classical Relay Strategies  **Amplify-and-Forward (AF).** The AF relay amplifies the received signal by a gain factor $G$ that normalizes the output power:
+EQ007|\text{SNR}_{\text{eff}}^{\text{AF}} = \frac{\text{SNR}_1 \cdot \text{SNR}_2}{\text{SNR}_1 + \text{SNR}_2 + 1}
+  CTX|.** The AF relay amplifies the received signal by a gain factor $G$ that normalizes the output power:  $$G = \sqrt{\frac{P_{\text{target}}}{\mathbb{E}[|y_R|^2]}}$$  The end-to-end SNR for AF relay is:
+EQ008|\hat{b}_R = \text{demod}(y_R), \quad x_R = \text{mod}(\hat{b}_R)
+  CTX| first hop, leading to noise accumulation at the destination.  **Decode-and-Forward (DF).** The DF relay demodulates the received signal, recovers the transmitted bits, and re-modulates clean symbols:
+EQ009|P_e^{\text{DF}} = P_{e,1} + (1 - P_{e,1}) \cdot P_{e,2}
+  CTX|lay demodulates the received signal, recovers the transmitted bits, and re-modulates clean symbols:  $$\hat{b}_R = \text{demod}(y_R), \quad x_R = \text{mod}(\hat{b}_R)$$  The end-to-end BER for DF is:
+EQ010|f^*: \mathbb{R}^{2w+1} \to [-1, 1], \quad f^*(y_{i-w}, \dots, y_{i+w}) = \mathbb{E}[x_i \mid y_{i-w}, \dots, y_{i+w}]
+  CTX|an approximate any continuous function on a compact domain to arbitrary accuracy, given sufficient width. For relay denoising, the target function maps noisy observations to clean transmitted symbols:
+EQ011|f^*(y) = \tanh\left(\frac{y}{\sigma^2}\right)
+  CTX|ional expectation $f^*$ is the Bayes-optimal denoiser ΓÇö it minimizes the mean squared error (MSE) over all possible estimators. For BPSK symbols corrupted by AWGN, $f^*$ reduces to the posterior mean:
+EQ012|\mathbb{E}[(\hat{x} - x)^2] = \text{Bias}^2(\hat{x}) + \text{Var}(\hat{x}) + \sigma^2_{\text{irreducible}}
+  CTX|present this function exactly, explaining why even a 169-parameter network suffices for this task.  Second, the **bias-variance decomposition** provides a framework for understanding model complexity:
+EQ013|\mathcal{L}(\theta) = \frac{1}{N} \sum_{i=1}^{N} (\hat{x}_i - x_i)^2, \quad \hat{x}_i = f_\theta(y_{i-w:i+w})
+  CTX| faster than conventional iterative algorithms.  #### Neural Network Relay Processing  For relay processing specifically, a supervised learning approach trains a neural network $f_\theta$ to minimize:
+EQ014|\log p_\theta(\mathbf{x}) = \underbrace{\mathbb{E}_{q_\phi}\left[\log \frac{p_\theta(\mathbf{x}, \mathbf{z})}{q_\phi(\mathbf{z} | \mathbf{x}
+  CTX|the true posterior $p(\mathbf{z} | \mathbf{x})$ is intractable, an encoder network $q_\phi(\mathbf{z} | \mathbf{x})$ approximates it. The ELBO objective is derived from the log-evidence decomposition:
+EQ015|\mathcal{L}_{\text{VAE}} = \underbrace{\mathbb{E}_{q_\phi(\mathbf{z}|\mathbf{x})}[\log p_\theta(\mathbf{x}|\mathbf{z})]}_{\text{Reconstructi
+  CTX|ximizing the ELBO simultaneously trains the encoder to approximate the true posterior and the decoder to reconstruct the data. The ELBO decomposes into a reconstruction term and a regularization term:
+EQ016|\min_G \max_D \; \mathbb{E}_{\mathbf{x} \sim p_{\text{data}}}[\log D(\mathbf{x})] + \mathbb{E}_{\mathbf{z} \sim p_z}[\log(1 - D(G(\mathbf{z}
+  CTX|ugh adversarial training, building on the foundational GAN framework [14]. The original GAN formulates generative modeling as a two-player minimax game between a generator $G$ and a discriminator $D$:
+EQ017|W(p_{\text{data}}, p_G) = \inf_{\gamma \in \Pi(p_{\text{data}}, p_G)} \mathbb{E}_{(\mathbf{x}, \mathbf{y}) \sim \gamma}[\|\mathbf{x} - \math
+  CTX|ata distribution have disjoint supports (which is common early in training). The **Wasserstein GAN (WGAN)** addresses this by replacing the JS divergence with the Earth Mover (Wasserstein-1) distance:
+EQ018|\text{GP} = \mathbb{E}_{\hat{\mathbf{x}} \sim p_{\hat{\mathbf{x}}}}\left[\left(\|\nabla_{\hat{\mathbf{x}}} D(\hat{\mathbf{x}})\|_2 - 1\right
+  CTX|ns, which the critic network approximates. The **gradient penalty (GP)** formulation [13] enforces the Lipschitz constraint softly by penalizing the gradient norm of the critic at interpolated points:
+EQ019|\mathcal{L}_G = -\mathbb{E}[D(G(\mathbf{y}, \mathbf{z}), \mathbf{y})] + \lambda_{\text{L1}} \|\hat{\mathbf{x}} - \mathbf{x}\|_1
+  CTX| $\hat{\mathbf{x}} = \epsilon \mathbf{x}_{\text{real}} + (1-\epsilon) \mathbf{x}_{\text{fake}}$ with $\epsilon \sim \text{Uniform}(0, 1)$. The full WGAN-GP training objectives used in this thesis are:
+EQ020|\mathcal{L}_D = \mathbb{E}[D(G(\mathbf{y}, \mathbf{z}), \mathbf{y})] - \mathbb{E}[D(\mathbf{x}, \mathbf{y})] + \lambda_{\text{GP}} \cdot \te
+  CTX| 1)$. The full WGAN-GP training objectives used in this thesis are:  $$\mathcal{L}_G = -\mathbb{E}[D(G(\mathbf{y}, \mathbf{z}), \mathbf{y})] + \lambda_{\text{L1}} \|\hat{\mathbf{x}} - \mathbf{x}\|_1$$
+EQ021|\text{Attention}(\mathbf{Q}, \mathbf{K}, \mathbf{V}) = \text{softmax}\left(\frac{\mathbf{Q}\mathbf{K}^T}{\sqrt{d_k}}\right)\mathbf{V}
+  CTX| capture global dependencies in sequences. The core attention mechanism computes a weighted combination of value vectors, where the weights are derived from the compatibility of query and key vectors:
+EQ022|\text{MultiHead}(\mathbf{X}) = \text{Concat}(\text{head}_1, \dots, \text{head}_h) W^O, \quad \text{head}_i = \text{Attention}(\mathbf{X} W_i
+  CTX|ax into saturation regions with vanishing gradients.  **Multi-head attention** extends this by running $h$ parallel attention heads, each with independent projections, and concatenating their outputs:
+EQ023|PE_{(pos, 2k)} = \sin(pos / 10000^{2k/d}), \quad PE_{(pos, 2k+1)} = \cos(pos / 10000^{2k/d})
+  CTX|ternatives.  **Positional encoding** is necessary because the attention mechanism is permutation-equivariant (it treats input positions symmetrically). This thesis uses sinusoidal positional encoding:
+EQ024|\dot{\mathbf{x}}(t) = \mathbf{A}\mathbf{x}(t) + \mathbf{B}u(t), \quad y(t) = \mathbf{C}\mathbf{x}(t) + Du(t)
+  CTX|continuous-time linear dynamical systems. The continuous-time SSM maps an input signal $u(t) \in \mathbb{R}$ to an output $y(t) \in \mathbb{R}$ through a latent state $\mathbf{x}(t) \in \mathbb{R}^N$:
+EQ025|\bar{\mathbf{A}} = \exp(\Delta \mathbf{A}), \quad \bar{\mathbf{B}} = (\Delta \mathbf{A})^{-1}(\exp(\Delta \mathbf{A}) - \mathbf{I}) \cdot \D
+  CTX| of poles/zeros in the transfer function).  To process discrete-time sequences, the continuous SSM is **discretized** using a step size $\Delta > 0$. Applying the zero-order hold (ZOH) discretization:
+EQ026|\mathbf{x}_k = \bar{\mathbf{A}} \mathbf{x}_{k-1} + \bar{\mathbf{B}} u_k, \quad y_k = \mathbf{C} \mathbf{x}_k + D u_k
+  CTX| = \exp(\Delta \mathbf{A}), \quad \bar{\mathbf{B}} = (\Delta \mathbf{A})^{-1}(\exp(\Delta \mathbf{A}) - \mathbf{I}) \cdot \Delta \mathbf{B} \approx \Delta \mathbf{B}$$  yields the discrete recurrence:
+EQ027|\Delta_k = \text{softplus}(W_\Delta u_k + b_\Delta), \quad \mathbf{B}_k = W_B u_k, \quad \mathbf{C}_k = W_C u_k
+  CTX|# Mamba: Selective State Spaces  **Mamba** [16] extends the SSM framework by making the parameters **input-dependent** (selective), transforming the LTI system into a linear time-varying (LTV) system:
+EQ028|y_i = \sum_{j \leq i} \mathbf{C}_i^\top \left(\prod_{k=j+1}^{i} \bar{\mathbf{A}}_k\right) \mathbf{B}_j u_j
+  CTX|s the selective state space model through an algebraic duality between linear recurrences and structured matrix multiplications. The key theoretical insight is that the SSM output can be expressed as:
+EQ029|M_{ij} = \begin{cases} \mathbf{C}_i^\top \bar{\mathbf{A}}_{j+1:i} \mathbf{B}_j & i \geq j \\ 0 & i < j \end{cases}
+  CTX|expressed as:  $$y_i = \sum_{j \leq i} \mathbf{C}_i^\top \left(\prod_{k=j+1}^{i} \bar{\mathbf{A}}_k\right) \mathbf{B}_j u_j$$  Defining the **SSM matrix** $M \in \mathbb{R}^{n \times n}$ with entries:
+EQ030|C = \mathbb{E}\left[\log_2 \det\left(\mathbf{I}_{N_r} + \frac{\text{SNR}}{N_t}\mathbf{H}\mathbf{H}^H\right)\right]
+  CTX|retical foundation was established by Telatar [26] and Foschini [27], who independently showed that the ergodic capacity of an $N_t \times N_r$ MIMO channel with independent Rayleigh fading scales as:
+EQ031|\mathbf{y} = \mathbf{H}\mathbf{x} + \mathbf{n}
+  CTX|xt{SNR}/2)$ at high SNR ΓÇö a doubling of the SISO capacity, achieved by transmitting independent data streams on each antenna.  #### System Model  In a $2 \times 2$ MIMO system, the received signal is:
+EQ032|\hat{\mathbf{x}}_{\text{ZF}} = (\mathbf{H}^H\mathbf{H})^{-1}\mathbf{H}^H\mathbf{y} = \mathbf{x} + (\mathbf{H}^H\mathbf{H})^{-1}\mathbf{H}^H\
+  CTX|n the presence of inter-stream interference. Three methods of increasing sophistication are employed in this thesis:  **Zero-Forcing (ZF).** The ZF equalizer applies the pseudo-inverse of the channel:
+EQ033|\text{SNR}_k^{\text{ZF}} = \frac{\text{SNR}}{[(\mathbf{H}^H\mathbf{H})^{-1}]_{kk}}
+  CTX|H\mathbf{y} = \mathbf{x} + (\mathbf{H}^H\mathbf{H})^{-1}\mathbf{H}^H\mathbf{n}$$  This completely eliminates inter-stream interference but amplifies noise. The post-equalization SNR for stream $k$ is:
+EQ034|\hat{\mathbf{x}}_{\text{MMSE}} = (\mathbf{H}^H\mathbf{H} + \sigma^2\mathbf{I})^{-1}\mathbf{H}^H\mathbf{y}
+  CTX|sity protection and its BER decays as $1/\text{SNR}$.  **Minimum Mean Square Error (MMSE).** The MMSE equalizer minimizes $\mathbb{E}[\|\hat{\mathbf{x}} - \mathbf{x}\|^2]$, yielding the Wiener filter:
+EQ035|\text{SINR}_k^{\text{MMSE}} = \frac{1}{[(\mathbf{H}^H\mathbf{H} + \sigma^2\mathbf{I})^{-1}]_{kk}} - 1
+  CTX|{H}^H\mathbf{y}$$  The regularization term $\sigma^2\mathbf{I}$ prevents noise amplification by biasing the estimate toward zero when the channel is weak. The post-equalization SINR for stream $k$ is:
+EQ036|\text{Source} \xrightarrow{\text{Hop 1}} \text{Relay} \xrightarrow{\text{Hop 2}} \text{Destination}
+  CTX|ce bits are BPSK-modulated, passed through Hop 1 (SISO channel), processed by the relay (classical or neural), then transmitted over Hop 2 (2├ù2 MIMO Rayleigh channel) and equalized at the destination.
+EQ037|y = h(x, \text{SNR}) + n
+  CTX|to 16 equally spaced points on the unit circle (4 bits/symbol). Full modulation details are given in Section 3.7.  **Hop Model.** Each hop applies a channel function followed by optional equalization:
+EQ038|x_R \leftarrow x_R \cdot \sqrt{\frac{P_{\text{target}}}{P_{\text{current}}}}
+  CTX|\text{SNR}) + n$$  where $h(\cdot)$ depends on the specific channel type (AWGN, fading, or MIMO).  **Power Normalization.** All relay strategies normalize their output power to ensure fair comparison:
+EQ039|y_R = x + n_1, \quad n_1 \sim \mathcal{N}(0, \sigma^2)
+  CTX|ream separation). The two stages are independent and their gains are additive.  **The relay's neural network** operates on Hop 1 and solves a **denoising** problem. Each antenna at the relay receives:
+EQ040|\begin{aligned} y_1 &= h_{11} x_{R,1} + h_{12} x_{R,2} + n_1 \\ y_2 &= h_{21} x_{R,1} + h_{22} x_{R,2} + n_2 \end{aligned}
+  CTX|s and the destination has 2 RX antennas. Each of the 4 TXΓÇôRX antenna pairs experiences an independent Rayleigh fading channel ($H_{ij} \sim \mathcal{CN}(0,1)$), creating **inter-stream interference**:
+EQ041|y = x + n, \quad n \sim \mathcal{N}(0, \sigma^2), \quad \sigma^2 = \frac{P_s}{\text{SNR}_{\text{linear}}}
+  CTX|amework, and (ii) it establishes the baseline performance that AI relays must beat.  #### AWGN Channel ΓÇö Theoretical Analysis  The AWGN channel adds zero-mean Gaussian noise to the transmitted signal:
+EQ042|P_e^{\text{AWGN}} = Q\!\left(\frac{1}{\sigma}\right) = Q\left(\sqrt{\text{SNR}}\right) = \frac{1}{2}\,\text{erfc}\!\left(\sqrt{\frac{\text{S
+  CTX|\pm 1$ symbols and real-valued AWGN with variance $\sigma^2 = 1/\text{SNR}$, an error occurs when the noise pushes the received sample past the decision boundary at the origin. The theoretical BER is:
+EQ043|P_e^{\text{DF}} = P_{e,1} + P_{e,2} - 2P_{e,1}P_{e,2}
+  CTX|ng them consistent with the standard textbook forms.  **Two-hop DF BER.** For a decode-and-forward relay with equal-SNR hops, an error occurs at the destination if exactly one hop introduces an error:
+EQ044|\text{SNR}_{\text{eff}}^{\text{AF}} = \frac{\text{SNR}_1 \cdot \text{SNR}_2}{\text{SNR}_1 + \text{SNR}_2 + 1} = \frac{\gamma^2}{2\gamma + 1}
+  CTX| and $P_e^{\text{DF}} \approx 2P_e$, i.e., the two-hop penalty is approximately a factor of 2 in BER.  **Two-hop AF BER.** For amplify-and-forward with equal-SNR hops, the effective end-to-end SNR is:
+EQ045|y = hx + n, \quad h \sim \mathcal{CN}(0, 1), \quad n \sim \mathcal{CN}(0, \sigma^2)
+  CTX|hop AF, and two-hop DF.*  #### Rayleigh Fading Channel ΓÇö Theoretical Analysis  The Rayleigh fading channel models non-line-of-sight (NLOS) propagation where the signal undergoes multiplicative fading:
+EQ046|f_{|h|}(r) = 2r \cdot e^{-r^2}, \quad r \geq 0
+  CTX|hcal{CN}(0, 1), \quad n \sim \mathcal{CN}(0, \sigma^2)$$  The fading coefficient $h$ is a circularly-symmetric complex Gaussian random variable, so its magnitude $|h|$ follows a Rayleigh distribution:
+EQ047|P_e^{\text{Rayleigh}} = \frac{1}{2}\left(1 - \sqrt{\frac{\bar{\gamma}}{1 + \bar{\gamma}}}\right)
+  CTX|entially distributed.  **Single-hop BER.** Averaging the conditional BER $P_e(\gamma_h) = Q(\sqrt{2\gamma_h})$ over the exponential distribution of $\gamma_h$ yields the closed-form [21, Eq. 14-4-15]:
+EQ048|P_e^{\text{Rayleigh}} \approx \frac{1}{4\bar{\gamma}}
+  CTX|-4-15]:  $$P_e^{\text{Rayleigh}} = \frac{1}{2}\left(1 - \sqrt{\frac{\bar{\gamma}}{1 + \bar{\gamma}}}\right)$$  where $\bar{\gamma} = \text{SNR}$ is the average SNR. At high SNR ($\bar{\gamma} \gg 1$):
+EQ049|P_e^{\text{DF,Rayleigh}} = 2P_e^{\text{Rayleigh}}(1 - P_e^{\text{Rayleigh}})
+  CTX|is is a primary motivation for MIMO systems, which exploit spatial diversity to combat fading.  **Two-hop DF BER.** The two-hop DF relay over Rayleigh fading follows the same composition rule as AWGN:
+EQ050|h = \sqrt{\frac{K}{K+1}} e^{j\theta} + \sqrt{\frac{1}{K+1}} h_{\text{scatter}}, \quad h_{\text{scatter}} \sim \mathcal{CN}(0, 1)
+  CTX|rve) is clearly visible.*  #### Rician Fading Channel ΓÇö Theoretical Analysis  The Rician fading channel models environments with a dominant line-of-sight (LOS) component alongside scattered multipath:
+EQ051|f_{|h|}(r) = \frac{r}{\sigma^2} \exp\left(-\frac{r^2 + \nu^2}{2\sigma^2}\right) I_0\left(\frac{r\nu}{\sigma^2}\right)
+  CTX|frac{1}{K+1}} h_{\text{scatter}}, \quad h_{\text{scatter}} \sim \mathcal{CN}(0, 1)$$  The K-factor is the ratio of LOS power to scatter power. The fading amplitude $|h|$ follows a Rician distribution:
+EQ052|P_e^{\text{Rician}} = \frac{1}{\pi} \int_0^{\pi/2} M_{\gamma}\left(\frac{-1}{\sin^2\theta}\right) d\theta
+  CTX|3$ (used in this study) representing a moderate LOS environment.  **Single-hop BER.** The average BER for BPSK over a Rician channel is obtained via the moment-generating function (MGF) approach [22]:
+EQ053|M_{\gamma}(s) = \frac{1+K}{1+K - s\bar{\gamma}} \cdot \exp\left(\frac{Ks\bar{\gamma}}{1+K-s\bar{\gamma}}\right)
+  CTX|) approach [22]:  $$P_e^{\text{Rician}} = \frac{1}{\pi} \int_0^{\pi/2} M_{\gamma}\left(\frac{-1}{\sin^2\theta}\right) d\theta$$  where the MGF of the instantaneous SNR $\gamma$ under Rician fading is:
+EQ054|\mathbf{y} = \mathbf{H}\mathbf{x} + \mathbf{n}, \quad \mathbf{H} \in \mathbb{C}^{2 \times 2}, \quad H_{ij} \sim \mathcal{CN}(0, 1), \quad \m
+  CTX| has the highest deep-fade probability at any threshold.*  #### 2├ù2 MIMO Channel ΓÇö Theoretical Analysis  The 2├ù2 MIMO spatial multiplexing system transmits two independent BPSK streams simultaneously:
+EQ055|P_e^{\text{ZF}} \approx \frac{1}{2}\left(1 - \sqrt{\frac{\bar{\gamma}}{1 + \bar{\gamma}}}\right)
+  CTX|bf{H}^{-1}(\mathbf{H}^{-1})^H]_{kk}$. For a 2├ù2 system with i.i.d. Rayleigh fading, each post-ZF stream sees an effective diversity order of $n_R - n_T + 1 = 1$, identical to SISO Rayleigh. Therefore:
+EQ056|P_e^{\text{MMSE}} \approx \frac{1}{2}\left(1 - \sqrt{\frac{\gamma_{\text{eff}}}{1 + \gamma_{\text{eff}}}}\right), \quad \gamma_{\text{eff}} 
+  CTX|nditioned. The exact BER analysis requires integration over the joint distribution of post-MMSE SINRs, which does not admit a simple closed form for 2├ù2 systems. An effective SNR approximation yields:
+EQ057|\mathbf{h} = \text{ReLU}(\mathbf{W}_1 \mathbf{w} + \mathbf{b}_1), \quad \hat{x} = \tanh(\mathbf{W}_2 \mathbf{h} + \mathbf{b}_2)
+  CTX|the error-composition formula $P_e^{\text{DF}} = 2P_e(1-P_e)$.  **Supervised Learning:**  - **MLP (Minimal):** A two-layer feedforward neural network (multi-layer perceptron, MLP) with 169 parameters:
+EQ058|\hat{\mathbf{x}}_{\text{ZF}} = (\mathbf{H}^H\mathbf{H})^{-1}\mathbf{H}^H\mathbf{y} = \mathbf{H}^{-1}\mathbf{y}
+  CTX|l to simultaneously capture short-range and medium-range dependencies.  ### MIMO Equalization Techniques  Three equalization methods were implemented for the 2├ù2 MIMO topology:  **Zero-Forcing (ZF):**
+EQ059|\hat{\mathbf{x}}_{\text{MMSE}} = (\mathbf{H}^H\mathbf{H} + \sigma^2\mathbf{I})^{-1}\mathbf{H}^H\mathbf{y}
+  CTX|mathbf{H}^H\mathbf{H})^{-1}\mathbf{H}^H\mathbf{y} = \mathbf{H}^{-1}\mathbf{y}$$  ZF completely removes inter-stream interference but amplifies noise when $\mathbf{H}$ is poorly conditioned.  **MMSE:**
+EQ060|\hat{P}_e = \frac{1}{N}\sum_{i=1}^{N} \mathbb{1}(b_i \neq \hat{b}_i)
+  CTX| 100,000 - **SNR range:** 0 to 20 dB (step: 2 dB), yielding 11 evaluation points - **Random seed control:** Each trial uses a unique seed for bit generation and noise realization  **BER Computation:**
+EQ061|\text{CI}_{95\%} = \bar{P}_e \pm t_{0.025, M-1} \cdot \frac{s}{\sqrt{M}}
+  CTX|al BER estimate is approximately normally distributed with variance $P_e(1-P_e)/N$.  **Confidence Intervals.** The 95% confidence interval is computed from the $M = 10$ independent trial estimates as:
+EQ062|H_0: \text{median}(P_{e,A} - P_{e,B}) = 0 \quad \text{vs.} \quad H_1: \text{median}(P_{e,A} - P_{e,B}) \neq 0
+  CTX|re assessed using the **Wilcoxon signed-rank test**, a non-parametric paired test. For each pair of relay strategies $(A, B)$ at each SNR point, the test compares the $M = 10$ paired BER observations:
+EQ063|x = 1 - 2b, \quad b \in \{0, 1\} \implies x \in \{-1, +1\}
+  CTX|odulation schemes and the I/Q splitting technique that enables real-valued AI relays to process complex-valued signals.  #### BPSK  Binary Phase-Shift Keying maps a single bit to a real-valued symbol:
+EQ064|x = \frac{(1 - 2b_0) + j(1 - 2b_1)}{\sqrt{2}}
+  CTX|ls and all relay architectures can process the signal directly.  #### QPSK ΓÇö Gray-Coded Quadrature Phase-Shift Keying  Quadrature Phase-Shift Keying maps pairs of bits $(b_0, b_1)$ to complex symbols:
+EQ065|P_b^{\text{QPSK}} = Q\!\left(\sqrt{\frac{2E_b}{N_0}}\right) = P_b^{\text{BPSK}}
+  CTX|that of BPSK.  **Theoretical QPSK BER.** For uncoded QPSK over an AWGN channel, the BER per bit equals the BPSK BER at the same $E_b/N_0$ because each I/Q component carries an independent BPSK stream:
+EQ066|I = \frac{L(b_0, b_1)}{\sqrt{10}}, \quad Q = \frac{L(b_2, b_3)}{\sqrt{10}}, \quad x = I + jQ
+  CTX|ps of four bits $(b_0, b_1, b_2, b_3)$ to one of 16 complex constellation points arranged on a $4 \times 4$ rectangular grid (Figure 8c). Each axis (I and Q) uses independent Gray-coded PAM-4 mapping:
+EQ067|P_b^{\text{16-QAM}} \approx \frac{3}{8} \operatorname{erfc}\!\left(\sqrt{\frac{2E_b}{5N_0}}\right)
+  CTX|aries at $\{-2, 0, +2\}/\sqrt{10}$ and maps back to bits via the inverse Gray table. The spectral efficiency is 4 bits/symbol.  **Theoretical 16-QAM BER.** The approximate BER for 16-QAM over AWGN is:
+EQ068|x_k = e^{j \theta_k}, \quad \theta_k = \frac{2\pi k}{16}, \quad k = 0, 1, \ldots, 15
+  CTX|circle (Figure 8d). Unlike 16-QAM, which modulates both amplitude and phase, 16-PSK uses **constant-envelope** transmission ΓÇö all symbols have identical magnitude ($|x| = 1$) and differ only in phase:
+EQ069|\hat{k} = \arg\min_{k \in \{0,\ldots,15\}} \left| \angle \hat{x} - \theta_k \right|
+  CTX| average symbol energy is $E_s = E[|x|^2] = 1$ (unit circle).  **Demodulation.** Hard-decision demodulation computes the phase of the received symbol and assigns it to the nearest constellation point:
+EQ070|P_b^{\text{16-PSK}} \approx \frac{1}{4} \operatorname{erfc}\!\left(\sqrt{\frac{E_b}{N_0}} \sin\!\left(\frac{\pi}{16}\right)\right)
+  CTX|obtained from the inverse Gray mapping of $\hat{k}$. The spectral efficiency is 4 bits/symbol, identical to 16-QAM.  **Theoretical 16-PSK BER.** The approximate BER for Gray-coded 16-PSK over AWGN is:
+EQ071|\hat{x}_R = f_\theta(\text{Re}(y_R)) + j \cdot f_\theta(\text{Im}(y_R))
+  CTX|: the complex received signal is separated into its in-phase (I) and quadrature (Q) components, each component is processed independently through the real-valued relay, and the outputs are recombined:
+EQ072|\hat{x}_R = s_{\hat{k}}, \quad \hat{k} = \arg\max_{k \in \{1, \dots, M\}} \, f_\theta(y_I, y_Q)_k
+  CTX|y_Q)$ and outputs $M$ logits ΓÇö one per constellation point. The predicted class index $\hat{k} = \arg\max_k \, z_k$ is mapped back to the corresponding complex symbol $s_{\hat{k}}$ for retransmission:
+EQ073|A_{\max} = \frac{\sqrt{M} - 1}{\sqrt{\frac{2(M-1)}{3}}}
+  CTX|d tanh** ΓÇö alongside hardtanh across all three constellations.  #### Constellation-Aware Clip Range  The maximum per-axis amplitude for a rectangular $M$-QAM constellation with average unit energy is:
+EQ074|\mathbf{x} = \sqrt{2n} \frac{\mathbf{z} - \mathbb{E}[\mathbf{z}]}{\sqrt{\text{Var}(\mathbf{z}) + \epsilon}}
+  CTX|channel uses ($n=1$ for standard symbol-by-symbol transmission). To satisfy physical hardware limitations, a strict average power constraint is enforced via batch standardisation across the dimension:
+EQ075|\mathbf{y} = \mathbf{h} \odot \mathbf{x} + \mathbf{n}, \quad h_i \sim \mathcal{CN}(0, 1), \quad n_i \sim \mathcal{CN}(0, \sigma^2)
+  CTX|network to learn variable amplitude boundaries (analogous to QAM) while bounding average transmission power.  **The Physical Channel.** The signal is subjected to a single-tap Rayleigh fading channel:
+EQ076|P_s \approx 2 \left( \frac{\sqrt{M}-1}{\sqrt{M}} \right) \left( 1 - \sqrt{\frac{1.5 \gamma / (M-1)}{1 + 1.5 \gamma / (M-1)}} \right)
+  CTX|mporal diversity. To benchmark the learned representation, the E2E performance is compared against the exact closed-form theoretical approximation for standard square 16-QAM over Rayleigh fading [21]:
+EQ077|f^*(y) = \mathbb{E}[x | y] = \tanh\left(\frac{y}{\sigma^2}\right)
+  CTX|l across all channels or all neural architectures. The theoretical explanation lies in the structure of the Bayes-optimal relay function. For a single received sample with BPSK transmission over AWGN:
+EQ078|\text{MSE}(\hat{x}) = \underbrace{(\mathbb{E}[\hat{x}] - f^*(y))^2}_{\text{Bias}^2} + \underbrace{\mathbb{E}[(\hat{x} - \mathbb{E}[\hat{x}])
+  CTX|n needed to describe a 1-dimensional function. This explains why even the smallest model is sufficient.  #### Bias-Variance Analysis  The bias-variance decomposition provides a quantitative framework:

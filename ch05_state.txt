@@ -1,0 +1,8 @@
+Figures in ch05: 0
+Lines: 254
+First 5 lines:
+%% ============================================================
+%% Chapter 5: Experiments
+%% Structure: Master config table + conclusion-only sections
+%% All figures and tables are in Appendix (ch09_appendices.tex)
+%% ============================================================

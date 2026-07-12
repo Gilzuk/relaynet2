@@ -1,0 +1,61 @@
+---
+title: "Deep Learning Architectures for Two-Hop Relay Communication: A Comparative Study of Classical and Neural Network Relay Strategies"
+author: "Gil Zukerma"
+date: "2026"
+lang: en
+documentclass: report
+classoption:
+  - 12pt
+  - a4paper
+  - oneside
+geometry:
+  - top=2.5cm
+  - bottom=2.5cm
+  - left=3cm
+  - right=2.5cm
+fontsize: 12pt
+linestretch: 1.5
+toc: true
+toc-depth: 3
+lof: true
+lot: true
+numbersections: true
+secnumdepth: 3
+colorlinks: true
+linkcolor: blue
+citecolor: blue
+urlcolor: blue
+header-includes:
+  - \usepackage{amsmath}
+  - \usepackage{amssymb}
+  - \usepackage{booktabs}
+  - \usepackage{longtable}
+  - \usepackage{array}
+  - \usepackage{multirow}
+  - \usepackage{graphicx}
+  - \usepackage{float}
+  - \usepackage{caption}
+  - \usepackage{subcaption}
+  - \usepackage{hyperref}
+  - \usepackage{cleveref}
+  - \usepackage{polyglossia}
+  - \setmainlanguage{english}
+  - \setotherlanguage{hebrew}
+  - \newfontfamily\hebrewfont[Script=Hebrew]{Arial}
+  - \usepackage{geometry}
+  - \usepackage{setspace}
+  - \usepackage{fancyhdr}
+  - \pagestyle{fancy}
+  - \fancyhf{}
+  - \fancyhead[L]{\leftmark}
+  - \fancyhead[R]{\thepage}
+  - \renewcommand{\headrulewidth}{0.4pt}
+  - \usepackage{titlesec}
+  - \usepackage{microtype}
+  - \usepackage{xcolor}
+  - \definecolor{darkblue}{RGB}{0,0,139}
+  - \usepackage{listings}
+  - \usepackage{algorithm}
+  - \usepackage{algpseudocode}
+crossrefYaml: crossref.yaml
+---

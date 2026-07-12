@@ -1,0 +1,8 @@
+﻿Hebrew word count: 674
+Para 1 : 1 words
+Para 2 : 15 words
+Para 3 : 145 words
+Para 4 : 157 words
+Para 5 : 179 words
+Para 6 : 176 words
+Para 7 : 1 words

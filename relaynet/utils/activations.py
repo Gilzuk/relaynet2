@@ -29,6 +29,66 @@ CONSTELLATION_CLIP = {
     "psk16": 1.0,
 }
 
+# ── Per-axis constellation levels for classification-based relaying ──
+
+CONSTELLATION_LEVELS = {
+    "bpsk":  np.array([-1.0, 1.0]),
+    "qpsk":  np.array([-1.0, 1.0]) / np.sqrt(2.0),
+    "qam16": np.array([-3.0, -1.0, 1.0, 3.0]) / np.sqrt(10.0),
+    "psk16": np.sort(np.unique(np.round(
+        np.cos(2.0 * np.pi * np.arange(16) / 16.0), decimals=10,
+    ))),  # 9 unique I-axis projections
+}
+
+# ── Full 2-D constellation for 16-class QAM16 classification ────
+_QAM16_LEVELS_1D = np.array([-3.0, -1.0, 1.0, 3.0]) / np.sqrt(10.0)
+CONSTELLATION_2D_QAM16 = np.array([
+    i_val + 1j * q_val
+    for i_val in _QAM16_LEVELS_1D
+    for q_val in _QAM16_LEVELS_1D
+])  # (16,) complex – I varies slow, Q varies fast
+
+
+def get_num_classes(modulation, classify_2d=False):
+    """Return the number of constellation classes for *modulation*.
+
+    When *classify_2d* is True and modulation is ``"qam16"``, returns 16
+    (full 2-D constellation) instead of 4 (per-axis levels).
+    """
+    if classify_2d and modulation.lower() == "qam16":
+        return 16
+    levels = CONSTELLATION_LEVELS.get(modulation.lower())
+    if levels is None:
+        return 1
+    return len(levels)
+
+
+def get_constellation_levels(modulation):
+    """Return sorted per-axis constellation levels as a 1-D numpy array."""
+    return CONSTELLATION_LEVELS[modulation.lower()]
+
+
+def get_constellation_2d(modulation):
+    """Return the full 2-D complex constellation as a 1-D complex array."""
+    if modulation.lower() == "qam16":
+        return CONSTELLATION_2D_QAM16.copy()
+    raise ValueError(f"2-D constellation not defined for {modulation}")
+
+
+def symbols_to_class_indices(symbols, modulation):
+    """Map 1-D real symbols to nearest constellation-level class index."""
+    levels = CONSTELLATION_LEVELS[modulation.lower()]
+    syms = np.asarray(symbols).reshape(-1, 1)
+    diffs = np.abs(syms - levels.reshape(1, -1))
+    return np.argmin(diffs, axis=1).astype(np.int64)
+
+
+def complex_symbols_to_2d_class_indices(symbols):
+    """Map complex QAM16 symbols to nearest of 16 constellation points -> index 0..15."""
+    syms = np.asarray(symbols).ravel()
+    dist = np.abs(syms[:, None] - CONSTELLATION_2D_QAM16[None, :])  # (N, 16)
+    return np.argmin(dist, axis=1).astype(np.int64)
+
 
 def get_clip_range(constellation):
     """Return the per-axis clip range for *constellation* (str or float).
@@ -185,3 +245,27 @@ def generate_training_targets(num_samples, snr_db, training_modulation="bpsk",
             return clean, noisy, np.ones_like(noisy, dtype=np.complex128)
             
     return clean, noisy
+
+
+def generate_training_targets_2d(num_samples, snr_db, seed=None):
+    """Generate complex QAM16 training data for 16-class classification.
+
+    Returns
+    -------
+    clean : ndarray, shape (num_samples,), complex
+        Clean complex QAM16 symbols.
+    noisy : ndarray, shape (num_samples,), complex
+        Noisy complex QAM16 symbols after AWGN.
+    labels : ndarray, shape (num_samples,), int64
+        Class indices 0..15 for 16-class classification.
+    """
+    from relaynet.channels.awgn import awgn_channel
+
+    if seed is not None:
+        np.random.seed(seed)
+
+    indices = np.random.randint(0, 16, num_samples)
+    clean = CONSTELLATION_2D_QAM16[indices]  # complex
+    noisy = awgn_channel(clean, snr_db)
+
+    return clean, noisy, indices.astype(np.int64)

@@ -1,0 +1,116 @@
+\xpg@aux {}{english}
+\contentsline {chapter}{Abstract (English)}{ii}{chapter*.1}%
+\contentsline {chapter}{Abstract (English)}{ii}{chapter*.1}%
+\xpg@aux {}{hebrew}
+\xpg@aux {}{english}
+\contentsline {chapter}{Acknowledgments}{iv}{chapter*.2}%
+\contentsline {chapter}{List of Figures}{xiv}{chapter*.2}%
+\contentsline {chapter}{List of Tables}{xvi}{chapter*.2}%
+\contentsline {chapter}{\numberline {1}Introduction and Literature Review}{2}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Cooperative Relay Communication}{2}{section.1.1}%
+\contentsline {subsection}{\numberline {1.1.1}Information-Theoretic Foundations}{2}{subsection.1.1.1}%
+\contentsline {subsection}{\numberline {1.1.2}Two-Hop Relay Model}{3}{subsection.1.1.2}%
+\contentsline {subsection}{\numberline {1.1.3}Cooperative Diversity and Practical Relevance}{4}{subsection.1.1.3}%
+\contentsline {section}{\numberline {1.2}Classical Relay Strategies}{5}{section.1.2}%
+\contentsline {section}{\numberline {1.3}Machine Learning in Wireless Communication}{7}{section.1.3}%
+\contentsline {subsection}{\numberline {1.3.1}Theoretical Basis: Universal Approximation and Denoising}{7}{subsection.1.3.1}%
+\contentsline {subsection}{\numberline {1.3.2}Prior Work in Deep Learning for Physical-Layer Processing}{9}{subsection.1.3.2}%
+\contentsline {subsection}{\numberline {1.3.3}Neural Network Relay Processing}{9}{subsection.1.3.3}%
+\contentsline {section}{\numberline {1.4}Generative Models for Signal Processing}{10}{section.1.4}%
+\contentsline {subsection}{\numberline {1.4.1}Variational Autoencoders}{11}{subsection.1.4.1}%
+\contentsline {subsection}{\numberline {1.4.2}Conditional Generative Adversarial Networks}{12}{subsection.1.4.2}%
+\contentsline {subsection}{\numberline {1.4.3}Generative vs.~Discriminative Paradigms for Relay Processing}{13}{subsection.1.4.3}%
+\contentsline {section}{\numberline {1.5}Sequence Models: Transformers and State Space Models}{14}{section.1.5}%
+\contentsline {subsection}{\numberline {1.5.1}Transformers and the Attention Mechanism}{14}{subsection.1.5.1}%
+\contentsline {subsection}{\numberline {1.5.2}Structured State Space Models}{15}{subsection.1.5.2}%
+\contentsline {subsection}{\numberline {1.5.3}Mamba: Selective State Spaces}{16}{subsection.1.5.3}%
+\contentsline {subsection}{\numberline {1.5.4}Mamba-2: Structured State Space Duality}{17}{subsection.1.5.4}%
+\contentsline {subsection}{\numberline {1.5.5}State Space Models for Signal Processing}{19}{subsection.1.5.5}%
+\contentsline {section}{\numberline {1.6}MIMO Systems and Equalization}{19}{section.1.6}%
+\contentsline {subsection}{\numberline {1.6.1}System Model}{19}{subsection.1.6.1}%
+\contentsline {subsection}{\numberline {1.6.2}Equalization Methods}{20}{subsection.1.6.2}%
+\contentsline {subsection}{\numberline {1.6.3}MIMO with Relay Processing}{22}{subsection.1.6.3}%
+\contentsline {section}{\numberline {1.7}Research Gap and Motivation}{22}{section.1.7}%
+\contentsline {section}{\numberline {1.8}Theoretical Foundations: Channel Models}{24}{section.1.8}%
+\contentsline {subsection}{\numberline {1.8.1}AWGN Channel --- Theoretical Analysis}{25}{subsection.1.8.1}%
+\contentsline {subsection}{\numberline {1.8.2}Rayleigh Fading Channel --- Theoretical Analysis}{27}{subsection.1.8.2}%
+\contentsline {subsection}{\numberline {1.8.3}Rician Fading Channel --- Theoretical Analysis}{29}{subsection.1.8.3}%
+\contentsline {subsection}{\numberline {1.8.4}Fading Coefficient Distributions}{31}{subsection.1.8.4}%
+\contentsline {subsection}{\numberline {1.8.5}2×2 MIMO Channel --- Theoretical Analysis}{32}{subsection.1.8.5}%
+\contentsline {subsection}{\numberline {1.8.6}Channel Model Validation (Simulative)}{34}{subsection.1.8.6}%
+\contentsline {section}{\numberline {1.9}Theoretical Foundations: MIMO Equalization}{37}{section.1.9}%
+\contentsline {chapter}{\numberline {2}Research Objectives}{38}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Main Objective}{38}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Research Hypotheses}{38}{section.2.2}%
+\contentsline {section}{\numberline {2.3}Specific Objectives}{39}{section.2.3}%
+\contentsline {section}{\numberline {2.4}Scope and Delimitations}{40}{section.2.4}%
+\contentsline {chapter}{\numberline {3}Methods}{42}{chapter.3}%
+\contentsline {section}{\numberline {3.1}System Model}{42}{section.3.1}%
+\contentsline {subsection}{\numberline {3.1.1}MIMO Topology with Neural Network Relay and Equalization}{44}{subsection.3.1.1}%
+\contentsline {section}{\numberline {3.2}Relay Strategies}{46}{section.3.2}%
+\contentsline {section}{\numberline {3.3}Simulation Framework}{50}{section.3.3}%
+\contentsline {subsection}{\numberline {3.3.1}Monte Carlo BER Estimation}{50}{subsection.3.3.1}%
+\contentsline {subsection}{\numberline {3.3.2}Statistical Significance Testing}{51}{subsection.3.3.2}%
+\contentsline {subsection}{\numberline {3.3.3}Training Protocol}{52}{subsection.3.3.3}%
+\contentsline {subsection}{\numberline {3.3.4}Reproducibility and Weight Management}{53}{subsection.3.3.4}%
+\contentsline {section}{\numberline {3.4}Normalized Parameter Comparison}{54}{section.3.4}%
+\contentsline {section}{\numberline {3.5}Modulation Schemes}{55}{section.3.5}%
+\contentsline {subsection}{\numberline {3.5.1}BPSK}{56}{subsection.3.5.1}%
+\contentsline {subsection}{\numberline {3.5.2}QPSK --- Gray-Coded Quadrature Phase-Shift Keying}{56}{subsection.3.5.2}%
+\contentsline {subsection}{\numberline {3.5.3}16-QAM --- Gray-Coded Quadrature Amplitude Modulation}{57}{subsection.3.5.3}%
+\contentsline {subsection}{\numberline {3.5.4}Constellation Diagram Summary}{58}{subsection.3.5.4}%
+\contentsline {subsection}{\numberline {3.5.5}16-PSK --- Gray-Coded Phase-Shift Keying}{59}{subsection.3.5.5}%
+\contentsline {subsection}{\numberline {3.5.6}I/Q Splitting for AI Relay Processing of Complex Constellations}{60}{subsection.3.5.6}%
+\contentsline {subsection}{\numberline {3.5.7}2D Joint Classification as an Alternative to I/Q Splitting}{62}{subsection.3.5.7}%
+\contentsline {chapter}{\numberline {4}Experiments}{64}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Channel Model Validation}{64}{section.4.1}%
+\contentsline {subsection}{\numberline {4.1.1}Results Figures}{65}{subsection.4.1.1}%
+\contentsline {section}{\numberline {4.2}SISO BPSK Performance (Baseline Relay Comparison)}{69}{section.4.2}%
+\contentsline {subsection}{\numberline {4.2.1}Results Tables}{70}{subsection.4.2.1}%
+\contentsline {subsection}{\numberline {4.2.2}Results Figures}{71}{subsection.4.2.2}%
+\contentsline {section}{\numberline {4.3}MIMO 2x2 BPSK Performance}{72}{section.4.3}%
+\contentsline {subsection}{\numberline {4.3.1}Results Tables}{73}{subsection.4.3.1}%
+\contentsline {subsection}{\numberline {4.3.2}Results Figures}{75}{subsection.4.3.2}%
+\contentsline {section}{\numberline {4.4}Parameter Normalization \& Complexity Trade-off}{76}{section.4.4}%
+\contentsline {subsection}{\numberline {4.4.1}Results Tables}{76}{subsection.4.4.1}%
+\contentsline {subsection}{\numberline {4.4.2}Results Figures}{80}{subsection.4.4.2}%
+\contentsline {section}{\numberline {4.5}Higher-Order Modulation Scalability (Constellation-Aware Training)}{82}{section.4.5}%
+\contentsline {subsection}{\numberline {4.5.1}Results Tables}{83}{subsection.4.5.1}%
+\contentsline {subsection}{\numberline {4.5.2}Results Figures}{85}{subsection.4.5.2}%
+\contentsline {section}{\numberline {4.6}Input Normalization and CSI Injection}{97}{section.4.6}%
+\contentsline {subsection}{\numberline {4.6.1}Results Tables}{98}{subsection.4.6.1}%
+\contentsline {subsection}{\numberline {4.6.2}Results Figures}{101}{subsection.4.6.2}%
+\contentsline {section}{\numberline {4.7}16-Class 2D Classification for QAM16}{105}{section.4.7}%
+\contentsline {subsection}{\numberline {4.7.1}Results Tables}{106}{subsection.4.7.1}%
+\contentsline {subsection}{\numberline {4.7.2}Results Figures}{107}{subsection.4.7.2}%
+\contentsline {section}{\numberline {4.8}End-to-End Joint Optimization}{109}{section.4.8}%
+\contentsline {subsection}{\numberline {4.8.1}Results Figures}{109}{subsection.4.8.1}%
+\contentsline {chapter}{\numberline {5}Discussion and Conclusions}{112}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Interpretation of Results}{112}{section.5.1}%
+\contentsline {subsection}{\numberline {5.1.1}Selective Low-SNR Advantage of Neural Relays (H1: Partially Confirmed)}{112}{subsection.5.1.1}%
+\contentsline {subsection}{\numberline {5.1.2}Classical Dominance at High SNR (H2: Confirmed)}{113}{subsection.5.1.2}%
+\contentsline {subsection}{\numberline {5.1.3}Channel Robustness}{114}{subsection.5.1.3}%
+\contentsline {subsection}{\numberline {5.1.4}MIMO Equalization Hierarchy (H6: Confirmed)}{114}{subsection.5.1.4}%
+\contentsline {section}{\numberline {5.2}The ``Less is More'' Principle (H3: Confirmed)}{114}{section.5.2}%
+\contentsline {subsection}{\numberline {5.2.1}Information-Theoretic Perspective}{115}{subsection.5.2.1}%
+\contentsline {subsection}{\numberline {5.2.2}Bias-Variance Analysis}{115}{subsection.5.2.2}%
+\contentsline {subsection}{\numberline {5.2.3}Practical Implications}{116}{subsection.5.2.3}%
+\contentsline {section}{\numberline {5.3}State Space vs.~Attention for Signal Processing}{116}{section.5.3}%
+\contentsline {subsection}{\numberline {5.3.1}Context-Length Benchmark: Validating the Crossover Hypothesis}{118}{subsection.5.3.1}%
+\contentsline {section}{\numberline {5.4}Practical Deployment Recommendations}{119}{section.5.4}%
+\contentsline {section}{\numberline {5.5}Limitations}{120}{section.5.5}%
+\contentsline {section}{\numberline {5.6}Future Work}{122}{section.5.6}%
+\contentsline {section}{\numberline {5.7}Conclusions}{123}{section.5.7}%
+\contentsline {chapter}{Equation Reference}{129}{chapter*.133}%
+\contentsline {chapter}{\numberline {6}References}{133}{chapter.6}%
+\contentsline {chapter}{\numberline {7}Appendices}{136}{chapter.7}%
+\contentsline {section}{\numberline {7.1}Appendix A: Mathematical Notation}{136}{section.7.1}%
+\contentsline {section}{\numberline {7.2}Appendix B: Model Architectures and Hyperparameters}{137}{section.7.2}%
+\contentsline {section}{\numberline {7.3}Appendix C: Software Architecture}{138}{section.7.3}%
+\contentsline {section}{\numberline {7.4}Appendix D: Normalized 3K-Parameter Configurations}{139}{section.7.4}%
+\contentsline {chapter}{Abstract (Hebrew)}{142}{chapter*.134}%
+\xpg@aux {}{hebrew}
+\contentsline {chapter}{Abstract (Hebrew)}{142}{chapter*.134}%
+\xpg@aux {}{hebrew}
+\xpg@aux {}{hebrew}
+\xpg@aux {}{english}

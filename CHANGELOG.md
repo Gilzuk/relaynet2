@@ -464,7 +464,7 @@ def process(self, received_signal):
     raise NotImplementedError("Subclasses must implement process()")
 ```
 
-**Why Abstract**: Enables easy addition of new relay types (DF, GenAI, etc.)
+**Why Abstract**: Enables easy addition of new relay types (DF, MLP, etc.)
 
 #### Added Class: `AmplifyAndForwardRelay`
 
@@ -514,7 +514,7 @@ def receive(self, received_signal):
 **Why Base Relay Class**:
 - Defines common interface for all relay strategies
 - Enables polymorphism (can swap relay types easily)
-- Prepares for GenAI relay implementation in Phase 2
+- Prepares for MLP relay implementation in Phase 2
 
 **Why Power Normalization in AF Relay**:
 - Standard practice in relay communications
@@ -528,7 +528,7 @@ def receive(self, received_signal):
 - Checkpoint 04: Can now simulate complete two-hop transmission
 - Checkpoint 04: Source → Channel → Relay → Channel → Destination
 - Checkpoint 05: Performance evaluation of AF relay
-- Phase 2: Easy replacement of AF relay with GenAI relay
+- Phase 2: Easy replacement of AF relay with MLP relay
 
 **Integration Points**:
 - Source uses `bpsk_modulate()` from CP-02
@@ -618,7 +618,7 @@ def receive(self, received_signal):
 **Future Extensions**:
 - Decode-and-Forward (DF) relay
 - Compress-and-Forward (CF) relay
-- GenAI-based relay (Phase 2)
+- MLP-based relay (Phase 2)
 - Multi-antenna relay (MIMO)
 - Cooperative relay strategies
 
@@ -841,7 +841,7 @@ git checkout checkpoint-XX
 - Automated testing reports
 
 ### Phase 2 Considerations
-- How to track GenAI model changes
+- How to track MLP model changes
 - Performance comparison logging
 - Hyperparameter tuning history
 
@@ -850,3 +850,67 @@ git checkout checkpoint-XX
 **End of Change Log**
 
 *This file will be updated after each checkpoint execution*
+
+---
+
+## [Thesis Review Entry] - 2026-03-26
+
+### Summary
+Created a thesis review companion file and recorded a thesis-specific comparison entry.
+
+### Added Files
+1. **thesis_gpt_feedback.md**
+   - Structured academic feedback on `thesis.md`
+   - Focus on inconsistencies, contradictions, numbering issues, and methodological alignment
+   - Organized by priority and revision urgency
+
+### Changed Files
+1. **changelog.md**
+   - Appended this thesis-specific review entry
+   - Preserved all pre-existing project checkpoint history
+
+### Changes Made
+- Created `thesis_gpt_feedback.md` as a standalone review document.
+- Did **not** modify `thesis.md` directly.
+- Identified major issue categories in `thesis.md`, including:
+  - contradiction between hypotheses and reported results,
+  - abstract vs. results inconsistencies,
+  - inconsistent automated test counts,
+  - inconsistent simulation counts and training sample sizes,
+  - broken table and figure numbering,
+  - duplicate subsection numbering,
+  - invalid bit labels in modulation mapping tables,
+  - inconsistent window sizes and device descriptions,
+  - terminology drift and overgeneralized claims.
+
+### Reason
+The user requested:
+- feedback on `thesis.md`,
+- creation of `thesis_gpt_feedback.md`,
+- and creation/update of `changelog.md` documenting differences between the thesis and the feedback document.
+
+### Impact
+- `thesis.md` remains unchanged.
+- `thesis_gpt_feedback.md` now serves as the review reference for future thesis revisions.
+- `changelog.md` now includes both software project history and a thesis-review tracking entry.
+
+### Diff Summary
+**`thesis.md` → `thesis_gpt_feedback.md`** is not a source edit diff; it is a **review transformation**:
+- original manuscript content was analyzed,
+- no text was rewritten in place,
+- a separate critique document was generated listing discrepancies and recommended fixes.
+
+### Dependencies
+None.
+
+### Testing / Validation
+- ✅ Verified that `thesis_gpt_feedback.md` was created successfully.
+- ✅ Verified that `changelog.md` already existed before modification.
+- ✅ Appended thesis-review tracking information without removing prior content.
+
+### Notes
+If needed in the next step, a more granular thesis-specific changelog can be created with:
+- exact quotes from `thesis.md`,
+- precise issue classification,
+- and proposed replacement text for each inconsistency.
+

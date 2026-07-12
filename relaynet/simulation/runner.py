@@ -51,7 +51,7 @@ def _process_relay(relay, received_signal, modulation="bpsk"):
       - **AF**: amplifies the complex signal as-is (power normalisation
         handles complex magnitudes correctly).
       - **DF**: nearest-constellation-point detection + re-transmission.
-      - **All other relays** (GenAI, Hybrid, VAE, CGAN, Transformer,
+      - **All other relays** (MLP, Hybrid, VAE, CGAN, Transformer,
         Mamba, …): process the I and Q components independently through
         the real-valued neural network, then recombine.
 
@@ -89,6 +89,11 @@ def _process_relay(relay, received_signal, modulation="bpsk"):
             y, modulation,
             target_power=relay.target_power,
         )
+
+    # AI-based relays: check for 2D classification mode first
+    if getattr(relay, 'classify_2d', False):
+        # 16-class 2D: relay handles complex signal natively
+        return relay.process(y)
 
     # AI-based relays: process I and Q independently
     if h_csi is not None:

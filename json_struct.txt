@@ -1,0 +1,30 @@
+﻿=== results/modulation/qam16_awgn.json ===
+  Top keys: ['created', 'snr_range', 'results', 'meta']
+  list field [snr_range]: [0, 2, 4, 6, 8]...
+  dict field [results]: keys=['AF', 'DF', 'GenAI (169p)', 'Hybrid', 'VAE', 'CGAN (WGAN-GP)']
+  dict field [meta]: keys=['experiment', 'modulation', 'channel']
+
+=== results/qam16_activation/qam16_activation_awgn.json ===
+  Top keys: ['created', 'snr_range', 'results', 'meta']
+  list field [snr_range]: [0, 2, 4, 6, 8]...
+  dict field [results]: keys=['AF (tanh)', 'DF (tanh)', 'GenAI (169p) (tanh)', 'Hybrid (tanh)', 'VAE (tanh)', 'CGAN (WGAN-GP) (tanh)']
+  dict field [meta]: keys=['experiment', 'channel']
+
+=== results/activation_comparison/activation_qam16_awgn.json ===
+  Top keys: ['created', 'snr_range', 'results', 'meta']
+  list field [snr_range]: [0, 2, 4, 6, 8]...
+  dict field [results]: keys=['AF (sigmoid)', 'DF (sigmoid)', 'GenAI (169p) (sigmoid)', 'Hybrid (sigmoid)', 'VAE (sigmoid)', 'CGAN (WGAN-GP) (sigmoid)']
+  dict field [meta]: keys=['experiment', 'modulation', 'channel']
+
+=== results/csi/csi_experiment_qam16_rayleigh.json ===
+  Top keys: ['created', 'snr_range', 'results', 'meta']
+  list field [snr_range]: [0, 2, 4, 6, 8]...
+  dict field [results]: keys=['AF', 'DF', 'Mamba S6 Baseline hardtanh', 'Mamba S6 LN hardtanh', 'Mamba S6 CSI hardtanh', 'Mamba S6 CSI+LN hardtanh']
+  dict field [meta]: keys=['experiment', 'constellation']
+
+=== results/layernorm/layernorm_qam16_awgn.json ===
+  Top keys: ['created', 'snr_range', 'results', 'meta']
+  list field [snr_range]: [0, 2, 4, 6, 8]...
+  dict field [results]: keys=['AF', 'DF', 'Transformer Baseline', 'Mamba S6 Baseline', 'Mamba2 (SSD) Baseline', 'Transformer +InputLN']
+  dict field [meta]: keys=['experiment', 'modulation', 'channel']
+

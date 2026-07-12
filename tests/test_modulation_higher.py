@@ -355,8 +355,8 @@ class TestSimulationModulation:
         )
         assert 0.0 <= ber <= 1.0
 
-    def test_qpsk_genai(self):
-        """GenAI relay processing I/Q independently on QPSK."""
+    def test_qpsk_mlp(self):
+        """MLP relay processing I/Q independently on QPSK."""
         np.random.seed(0)
         relay = MinimalGenAIRelay(window_size=5, hidden_size=24, prefer_gpu=False)
         relay.train(training_snrs=[10], num_samples=2000, epochs=5, seed=1)

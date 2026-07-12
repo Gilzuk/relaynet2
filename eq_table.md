@@ -1,0 +1,80 @@
+﻿| # | Description | Primary Reference | Equation Location / Notes |
+|---|---|---|---|
+| (1) | Cut-set upper bound on relay channel capacity | [3] Cover & El Gamal, IEEE Trans. Inf. Theory, 1979 | Theorem 1 in [3]; also [4] El Gamal & Kim, Network Information Theory, 2011 |
+| (2) | DF achievability bound (two-hop capacity) | [3] Cover & El Gamal, IEEE Trans. Inf. Theory, 1979 | Theorem 6 in [3] |
+| (3) | Gaussian two-hop DF capacity (equal-SNR hops) | [3] Cover & El Gamal, 1979; [19] Tse & Viswanath, 2005 | Specialisation of DF bound to AWGN; [19] Ch. 6 |
+| (4) | Hop 1 received signal model (AWGN) | [21] Proakis & Salehi, Digital Communications, 5th ed., 2008 | [21] Ch. 4; standard AWGN channel model |
+| (5) | Hop 2 received signal model (relay to destination) | [21] Proakis & Salehi, 2008 | [21] Ch. 4 |
+| (6) | AF power-normalisation gain factor G | [1] Laneman, Tse & Wornell, IEEE Trans. Inf. Theory, 2004 | Eq. (3) in [1]; also [6] Rankov & Wittneben, 2007 |
+| (7) | End-to-end SNR for two-hop AF relay | [1] Laneman et al., 2004; [19] Tse & Viswanath, 2005 | Harmonic-mean SNR formula; [1] Eq. (5) |
+| (8) | DF relay demodulation and re-modulation | [1] Laneman et al., 2004 | Definition of DF operation; [1] Section II |
+| (9) | End-to-end BER for two-hop DF relay | [21] Proakis & Salehi, 2008; [24] Sklar, 2001 | Error-composition rule; [21] Ch. 14 |
+| (10) | Bayes-optimal relay denoising function (window) | [23] Goodfellow, Bengio & Courville, Deep Learning, 2016 | MMSE estimator definition; [23] Ch. 5 |
+| (11) | Bayes-optimal denoiser for BPSK over AWGN | [21] Proakis & Salehi, 2008 | Posterior mean for BPSK; [21] Ch. 5.1 |
+| (12) | Bias-variance decomposition of MSE | [23] Goodfellow et al., Deep Learning, 2016 | [23] Ch. 5.4; standard statistical learning result |
+| (13) | Supervised MSE training loss for neural relay | [23] Goodfellow et al., 2016; [7] Ye, Li & Juang, 2018 | Standard regression loss; [7] Eq. (1) |
+| (14) | VAE ELBO derivation (log-evidence decomposition) | [11] Kingma & Welling, ICLR, 2014 | Eq. (2)-(3) in [11] |
+| (15) | VAE ELBO objective (reconstruction + KL terms) | [11] Kingma & Welling, ICLR, 2014 | Eq. (4) in [11]; also [31] Higgins et al., ICLR, 2017 |
+| (16) | Original GAN minimax objective | [14] Goodfellow et al., NeurIPS, 2014 | Eq. (1) in [14] |
+| (17) | Wasserstein-1 (Earth Mover) distance | [13] Gulrajani et al., NeurIPS, 2017 | Eq. (1) in [13]; Kantorovich-Rubinstein duality |
+| (18) | WGAN-GP gradient penalty | [13] Gulrajani et al., NeurIPS, 2017 | Eq. (3) in [13] |
+| (19) | WGAN-GP generator loss with L1 reconstruction | [13] Gulrajani et al., 2017; [12] Mirza & Osindero, 2014 | Conditional GAN extension of [13] |
+| (20) | WGAN-GP discriminator/critic loss | [13] Gulrajani et al., NeurIPS, 2017 | Eq. (2) in [13] |
+| (21) | Scaled dot-product attention | [15] Vaswani et al., NeurIPS, 2017 | Eq. (1) in [15] |
+| (22) | Multi-head self-attention | [15] Vaswani et al., NeurIPS, 2017 | Eq. (2) in [15] |
+| (23) | Sinusoidal positional encoding | [15] Vaswani et al., NeurIPS, 2017 | Eq. (3)-(4) in [15] |
+| (24) | Continuous-time linear SSM (state-space model) | [17] Gu, Goel & Re, ICLR, 2022 | Eq. (1) in [17]; HiPPO framework |
+| (25) | ZOH discretisation of continuous SSM | [17] Gu et al., ICLR, 2022; [16] Gu & Dao, 2024 | Eq. (2) in [17] |
+| (26) | Discrete-time SSM recurrence | [17] Gu et al., 2022; [16] Gu & Dao, 2024 | Eq. (3) in [17] |
+| (27) | Mamba S6 input-dependent (selective) parameters | [16] Gu & Dao, arXiv:2312.00752, 2024 | Eq. (4)-(6) in [16]; selective scan mechanism |
+| (28) | SSM output as sum over structured matrix (SSD) | [18] Dao & Gu, arXiv:2405.21060, 2024 | Eq. (3) in [18]; semi-separable matrix formulation |
+| (29) | SSM matrix M (semi-separable structure) | [18] Dao & Gu, 2024 | Eq. (4) in [18]; Mamba-2 SSD kernel |
+| (30) | MIMO ergodic capacity (Telatar formula) | [26] Telatar, European Trans. Telecommun., 1999; [27] Foschini, 1996 | Eq. (1) in [26]; also [19] Tse & Viswanath Ch. 7 |
+| (31) | 2x2 MIMO received signal model y=Hx+n | [19] Tse & Viswanath, 2005; [26] Telatar, 1999 | Standard MIMO signal model; [19] Ch. 7.1 |
+| (32) | ZF equaliser (pseudo-inverse) | [19] Tse & Viswanath, 2005; [20] Wolniansky et al., 1998 | [19] Ch. 7.3; V-BLAST ZF step [20] |
+| (33) | Post-ZF SNR per stream | [19] Tse & Viswanath, 2005 | [19] Ch. 7.3; noise enhancement factor |
+| (34) | MMSE equaliser (Wiener filter) | [29] Tse & Hanly, IEEE Trans. Inf. Theory, 1999 | Eq. (2) in [29]; also [19] Ch. 7.3 |
+| (35) | Post-MMSE SINR per stream | [29] Tse & Hanly, 1999 | Eq. (4) in [29] |
+| (36) | Two-hop relay system model (arrow notation) | [1] Laneman et al., 2004 | Conceptual diagram; [1] Fig. 1 |
+| (37) | Generic hop channel model y=h(x,SNR)+n | [21] Proakis & Salehi, 2008 | General channel abstraction; [21] Ch. 4 |
+| (38) | Relay output power normalisation | [1] Laneman et al., 2004; [6] Rankov & Wittneben, 2007 | Power constraint; [1] Eq. (3) |
+| (39) | Hop 1 received signal at relay (AWGN) | [21] Proakis & Salehi, 2008 | Same as EQ4; repeated in Methods for clarity |
+| (40) | 2x2 MIMO received signal (per-antenna form) | [19] Tse & Viswanath, 2005; [20] Wolniansky et al., 1998 | Expanded form of EQ31 |
+| (41) | AWGN channel model with noise variance | [21] Proakis & Salehi, 2008 | [21] Ch. 4.1; SNR definition |
+| (42) | Theoretical BPSK BER over AWGN (Q-function form) | [21] Proakis & Salehi, 2008; [24] Sklar, 2001 | [21] Eq. (5-2-57); [24] Ch. 4 |
+| (43) | Two-hop DF BER (exact, AWGN) | [21] Proakis & Salehi, 2008 | Error-composition; [21] Ch. 14 |
+| (44) | Two-hop AF effective SNR (equal hops) | [1] Laneman et al., 2004 | Eq. (5) in [1]; harmonic-mean approximation |
+| (45) | Rayleigh fading channel model | [22] Simon & Alouini, Digital Comm. over Fading Channels, 2005 | [22] Ch. 2.1; CN(0,1) fading coefficient |
+| (46) | Rayleigh amplitude PDF | [22] Simon & Alouini, 2005; [19] Tse & Viswanath, 2005 | [22] Eq. (2.6); Rayleigh distribution |
+| (47) | Single-hop BPSK BER over Rayleigh fading (closed form) | [21] Proakis & Salehi, 2008 | [21] Eq. (14-4-15); averaging Q(sqrt(2*gamma)) over exponential |
+| (48) | High-SNR approximation of Rayleigh BER | [21] Proakis & Salehi, 2008; [22] Simon & Alouini, 2005 | [21] Eq. (14-4-16); 1/(4*SNR) diversity-order-1 slope |
+| (49) | Two-hop DF BER over Rayleigh fading | [21] Proakis & Salehi, 2008 | Error-composition applied to Rayleigh single-hop BER |
+| (50) | Rician fading channel model (LOS + scatter) | [22] Simon & Alouini, 2005 | [22] Ch. 2.2; K-factor definition |
+| (51) | Rician amplitude PDF (modified Bessel I_0) | [22] Simon & Alouini, 2005 | [22] Eq. (2.16) |
+| (52) | BPSK BER over Rician fading (MGF method) | [22] Simon & Alouini, 2005 | [22] Eq. (8.98); Craig MGF approach |
+| (53) | MGF of instantaneous SNR under Rician fading | [22] Simon & Alouini, 2005 | [22] Eq. (8.99) |
+| (54) | 2x2 MIMO channel model (full matrix form) | [26] Telatar, 1999; [19] Tse & Viswanath, 2005 | Standard MIMO model; [19] Ch. 7 |
+| (55) | Post-ZF BER approximation for 2x2 MIMO | [19] Tse & Viswanath, 2005; [30] Loyka & Gagnon, 2004 | Diversity order 1 per stream; [30] Eq. (12) |
+| (56) | Post-MMSE BER approximation (effective SNR) | [29] Tse & Hanly, 1999; [22] Simon & Alouini, 2005 | Effective SNR substitution into Rayleigh BER formula |
+| (57) | MLP relay architecture (two-layer, tanh output) | [23] Goodfellow et al., Deep Learning, 2016 | [23] Ch. 6; standard MLP definition |
+| (58) | ZF equaliser (square 2x2 case, H^-1) | [19] Tse & Viswanath, 2005; [20] Wolniansky et al., 1998 | Simplified form of EQ32 for square H |
+| (59) | MMSE equaliser (Methods section) | [29] Tse & Hanly, 1999 | Repeated from EQ34 in Methods for completeness |
+| (60) | Monte Carlo BER estimator | [21] Proakis & Salehi, 2008 | [21] Ch. 14; standard MC BER formula |
+| (61) | 95% confidence interval (t-distribution) | Standard statistics; e.g. [23] Goodfellow et al., 2016 | Student-t CI; [23] App. A |
+| (62) | Wilcoxon signed-rank test null hypothesis | F. Wilcoxon, Biometrics Bulletin, 1945 | Non-parametric paired test; standard reference |
+| (63) | BPSK symbol mapping | [21] Proakis & Salehi, 2008; [24] Sklar, 2001 | [21] Ch. 5.2; antipodal signalling |
+| (64) | QPSK Gray-coded symbol mapping | [21] Proakis & Salehi, 2008 | [21] Ch. 5.4; Gray-coded QPSK |
+| (65) | Theoretical QPSK BER over AWGN | [21] Proakis & Salehi, 2008 | [21] Eq. (5-4-3); equals BPSK BER at same Eb/N0 |
+| (66) | 16-QAM Gray-coded I/Q symbol mapping | [21] Proakis & Salehi, 2008; [24] Sklar, 2001 | [21] Ch. 5.5; PAM-4 per axis, normalised by sqrt(10) |
+| (67) | Theoretical 16-QAM BER over AWGN | [21] Proakis & Salehi, 2008 | [21] Eq. (5-5-8); approximate erfc form |
+| (68) | 16-PSK symbol mapping (unit circle) | [21] Proakis & Salehi, 2008; [24] Sklar, 2001 | [21] Ch. 5.4; M-PSK general form with M=16 |
+| (69) | 16-PSK hard-decision demodulation (nearest phase) | [21] Proakis & Salehi, 2008 | [21] Ch. 5.4; phase detector |
+| (70) | Theoretical 16-PSK BER over AWGN | [21] Proakis & Salehi, 2008 | [21] Eq. (5-4-41); approximate erfc form for M-PSK |
+| (71) | I/Q splitting for complex constellation relay processing | [7] Ye, Li & Juang, IEEE Wireless Commun. Lett., 2018 | Real-valued processing of complex signals; [7] Section III |
+| (72) | 2D joint classifier output mapping | [23] Goodfellow et al., Deep Learning, 2016 | Softmax classifier; [23] Ch. 6.2 |
+| (73) | Maximum per-axis amplitude for M-QAM (clip range) | [21] Proakis & Salehi, 2008; [24] Sklar, 2001 | Derived from unit-energy normalisation of PAM-4 levels |
+| (74) | Batch normalisation / power normalisation | [23] Goodfellow et al., 2016; [9] Dorner et al., 2018 | Power constraint in E2E learning; [9] Eq. (3) |
+| (75) | Single-tap Rayleigh fading channel (E2E experiment) | [22] Simon & Alouini, 2005 | Same as EQ45; repeated in E2E section |
+| (76) | Theoretical 16-QAM BER over Rayleigh fading | [21] Proakis & Salehi, 2008 | [21] Eq. (14-5-10); approximate closed form |
+| (77) | Bayes-optimal BPSK denoiser (Discussion) | [21] Proakis & Salehi, 2008 | Same as EQ11; repeated in Discussion for interpretation |
+| (78) | Bias-variance decomposition (Discussion) | [23] Goodfellow et al., Deep Learning, 2016 | Same as EQ12; repeated in Discussion |

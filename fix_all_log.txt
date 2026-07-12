@@ -1,0 +1,35 @@
+﻿================================================================
+  Fixing ALL thesis figures
+================================================================
+  Fixed (9 curves): results/awgn_comparison_ci.png
+  Fixed (9 curves): results/fading_comparison.png
+  Fixed (9 curves): results/rician_comparison_ci.png
+  Fixed (9 curves): results/mimo_2x2_comparison_ci.png
+  Fixed (9 curves): results/mimo_2x2_mmse_comparison_ci.png
+  Fixed (9 curves): results/mimo_2x2_sic_comparison_ci.png
+  Fixed (8 curves): results/normalized_3k_awgn.png
+  Fixed (8 curves): results/normalized_3k_rayleigh.png
+  Fixed (8 curves): results/normalized_3k_rician_k3.png
+  Fixed (grid 2x3): results/normalized_3k_all_channels.png
+  Fixed (9 curves): results/modulation/bpsk_awgn_ci.png
+  Fixed (9 curves): results/modulation/bpsk_rayleigh_ci.png
+  Fixed (9 curves): results/modulation/qpsk_awgn_ci.png
+  Fixed (9 curves): results/modulation/qpsk_rayleigh_ci.png
+  Fixed (9 curves): results/modulation/qam16__awgn_ci.png
+  Fixed (9 curves): results/modulation/qam16__rayleigh_ci.png
+  Fixed (activation split 3 panels): results/qam16_activation/qam16_activation_awgn.png
+  Fixed (activation split 3 panels): results/qam16_activation/qam16_activation_rayleigh.png
+  Fixed (activation split 3 panels): results/activation_comparison/bpsk_activation_awgn.png
+  Fixed (activation split 3 panels): results/activation_comparison/bpsk_activation_rayleigh.png
+  Fixed (activation split 3 panels): results/activation_comparison/qpsk_activation_awgn.png
+  Fixed (activation split 3 panels): results/activation_comparison/qpsk_activation_rayleigh.png
+  Fixed (activation split 3 panels): results/activation_comparison/qam16_activation_awgn.png
+  Fixed (activation split 3 panels): results/activation_comparison/qam16_activation_rayleigh.png
+  Fixed (CSI split 3 panels): results/csi/csi_experiment_qam16_rayleigh.png
+  Fixed (CSI split 3 panels): results/csi/csi_experiment_psk16_rayleigh.png
+  Fixed (top-3): results/csi/top3_qam16_rayleigh.png
+  Fixed (top-3): results/csi/top3_psk16_rayleigh.png
+  Fixed (16-class split): results/all_relays_16class/ber_all_relays_16class.png
+  Fixed (top-3): results/all_relays_16class/top3_16class.png
+
+All done.

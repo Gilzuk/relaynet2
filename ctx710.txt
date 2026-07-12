@@ -1,0 +1,70 @@
+﻿ 699: 
+ 700: #### MIMO Topology with Neural Network Relay and Equalization
+ 701: 
+ 702: An important distinction in this work is the separation of three independent signal-processing functions that operate at different stages of the relay pipeline and solve fundamentally different problems:
+ 703: 
+ 704: 1. **Channel type** (AWGN, Rayleigh, Rician) ΓÇö defines the physical propagation environment on each link.
+ 705: 2. **Neural network relay** ΓÇö denoises the signal at the intermediate relay node after Hop 1.
+ 706: 3. **MIMO equalizer** (ZF, MMSE, SIC) ΓÇö separates spatially multiplexed streams at the destination after Hop 2.
+ 707: 
+ 708: These three components combine in the following end-to-end signal flow:
+ 709: 
+ 710: ```
+ 711:                           Hop 1                              Hop 2 (2├ù2 MIMO)
+ 712:                      ΓöîΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÉ                    ΓöîΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÉ
+ 713:                      Γöé  Channel:   Γöé                    Γöé  4 Rayleigh links:   Γöé
+ 714:   Source ΓöÇΓöÇBPSKΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöé  AWGN /     ΓöéΓöÇΓöÇΓöÇΓåÆ Relay ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓåÆΓöé  y = H┬╖x_R + n       ΓöéΓöÇΓöÇΓöÇΓåÆ Destination
+ 715:   (tx bits)          Γöé  Rayleigh / Γöé     Γöé              Γöé                      Γöé     Γöé
+ 716:                      Γöé  Rician     Γöé     Γöé Neural Net   Γöé  H = [h11 h12]       Γöé     Γöé Equalizer
+ 717:                      ΓööΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÿ     Γöé (denoise)    Γöé      [h21 h22]       Γöé     Γöé (ZF/MMSE/SIC)
+ 718:                                          Γöé              ΓööΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÿ     Γöé
+ 719:                                          Γû╝                                           Γû╝
+ 720:                                     Clean-up noisy                          Separate mixed
+ 721:                                     signal from                             streams and
+ 722:                                     Hop 1 noise                             recover tx bits
+ 723: ```
+ 724: 
+ 725: **The relay's neural network** operates on Hop 1 and solves a **denoising** problem. Each antenna at the relay receives:
+ 726: 
+ 727: $$y_R = x + n_1, \quad n_1 \sim \mathcal{N}(0, \sigma^2)$$
+ 728: 
+ 729: The neural network processes a sliding window of received samples and outputs a cleaner estimate $\hat{x}_R = f_\theta(y_{R,i-w:i+w})$. This is purely a noise-removal task ΓÇö there is no inter-stream interference at this stage.
+ 730: 
+ 731: **The MIMO topology** applies to Hop 2, where the relay retransmits using 2 TX antennas and the destination has 2 RX antennas. Each of the 4 TXΓÇôRX antenna pairs experiences an independent Rayleigh fading channel ($H_{ij} \sim \mathcal{CN}(0,1)$), creating **inter-stream interference**:
+ 732: 
+ 733: $$\begin{aligned}
+ 734: y_1 &= h_{11} x_{R,1} + h_{12} x_{R,2} + n_1 \\
+ 735: y_2 &= h_{21} x_{R,1} + h_{22} x_{R,2} + n_2
+ 736: \end{aligned}$$
+ 737: 
+ 738: Each RX antenna sees a **mixture** of both transmitted streams ΓÇö this mixing is the inter-stream interference that the equalizer must undo.
+ 739: 
+ 740: **The equalizer** at the destination solves an **interference cancellation** problem, not a denoising problem:
+ 741: 
+ 742: | Component | Problem Solved | Location | Input ΓåÆ Output |
+ 743: |---|---|---|---|
+ 744: | Neural network relay | Remove **noise** from Hop 1 | Relay node | Noisy signal ΓåÆ clean estimate |
+ 745: | MIMO equalizer | Remove **inter-stream interference** | Destination | Mixed streams ΓåÆ separated symbols |
+ 746: 
+ 747: The three equalizer options trade off complexity for performance:
+ 748: 
+ 749: - **ZF** ($\hat{\mathbf{x}} = \mathbf{H}^{-1}\mathbf{y}$): Inverts $\mathbf{H}$ exactly ΓÇö removes all interference but **amplifies noise**.
+ 750: - **MMSE** ($\hat{\mathbf{x}} = (\mathbf{H}^H\mathbf{H} + \sigma^2\mathbf{I})^{-1}\mathbf{H}^H\mathbf{y}$): Adds regularization $\sigma^2\mathbf{I}$ ΓÇö **trades residual interference for less noise amplification**.
+ 751: - **SIC**: Detects the strongest stream first via MMSE, cancels its contribution, then detects the remaining stream interference-free. This **non-linear** technique eliminates interference sequentially.
+ 752: 
+ 753: The gains from better relay processing and better equalization are **additive and independent**: a better relay (e.g., Mamba S6 vs. AF) reduces the noise entering Hop 2, while a better equalizer (e.g., SIC vs. ZF) more effectively separates the spatially multiplexed streams. Combining the best relay with the best equalizer yields the lowest overall BER, as confirmed by the results in Section 7.
+ 754: 
+ 755: This architecture reflects practical 5G NR relay deployments, where the relay node performs baseband processing (potentially AI-assisted) and the destination's MIMO receiver applies standard equalization algorithms independently.
+ 756: 
+ 757: ### Channel Models
+ 758: 
+ 759: This section presents the theoretical BER analysis for each channel model used in this study, derives the closed-form expressions, and validates them against Monte Carlo simulation. The theoreticalΓÇôsimulative comparison serves two purposes: (i) it verifies the correctness of the simulation framework, and (ii) it establishes the baseline performance that AI relays must beat.
+ 760: 
+ 761: #### AWGN Channel ΓÇö Theoretical Analysis
+ 762: 
+ 763: The AWGN channel adds zero-mean Gaussian noise to the transmitted signal:
+ 764: 
+ 765: $$y = x + n, \quad n \sim \mathcal{N}(0, \sigma^2), \quad \sigma^2 = \frac{P_s}{\text{SNR}_{\text{linear}}}$$
+ 766: 
+ 767: where $P_s = \mathbb{E}[|x|^2] = 1$ for unit-power BPSK symbols. The noise variance is inversely proportional to the linear SNR.
+ 768: 

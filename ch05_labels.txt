@@ -1,0 +1,2 @@
+Remaining fig labels in ch05: ['\\label{fig:fig6}', '\\label{fig:fig9}', '\\label{fig:fig5}', '\\label{fig:fig15}', '\\label{fig:fig27}', '\\label{fig:fig40}', '\\label{fig:fig50}', '\\label{fig:fig49}']
+Done

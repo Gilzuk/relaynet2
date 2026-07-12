@@ -1,0 +1,70 @@
+﻿## Table of Contents
+## List of Figures
+## List of Tables
+## 1. List of Abbreviations
+## 2. Abstract (Hebrew)
+## 3. Keywords
+## 4. Introduction and Literature Review
+### 4.1 Cooperative Relay Communication
+### 4.2 Classical Relay Strategies
+### 4.3 Machine Learning in Wireless Communication
+### 4.4 Generative Models for Signal Processing
+### 4.5 Sequence Models: Transformers and State Space Models
+### 4.6 MIMO Systems and Equalization
+### 4.7 Research Gap and Motivation
+## 5. Research Objectives
+### 5.1 Main Objective
+### 5.2 Research Hypotheses
+### 5.3 Specific Objectives
+### 5.4 Scope and Delimitations
+## 6. Methods
+### 6.1 System Model
+### 6.2 Channel Models
+### 6.3 Relay Strategies
+### 6.4 MIMO Equalization Techniques
+### 6.5 Simulation Framework
+### 6.6 Normalized Parameter Comparison
+### 6.7 Modulation Schemes
+## 7. Results
+### 7.1 Channel Model Validation
+### 7.2 AWGN Channel ΓÇö Relay Comparison
+### 7.3 Rayleigh Fading Channel
+### 7.4 Rician Fading Channel (K=3)
+### 7.5 2├ù2 MIMO with ZF Equalization
+### 7.6 2├ù2 MIMO with MMSE Equalization
+### 7.7 2├ù2 MIMO with SIC Equalization
+### 7.8 Normalized 3K-Parameter Comparison
+### 7.9 ComplexityΓÇôPerformance Trade-off
+### 7.10 Modulation Comparison: BPSK vs. QPSK vs. 16-QAM
+### 7.11 16-QAM Activation Experiment: Modulation-Aware Training
+### 7.12 Constellation-Aware Activation Study
+### 7.13 Input Layer Normalization and Scaled Tanh Experiment
+### 7.14 Structural CSI Injection for 16-QAM in Rayleigh Fading
+### 7.14.1 Motivation
+### 7.14.2 Experimental Design
+### 7.14.3 Results and Analysis
+### 7.15 Comprehensive Multi-Architecture CSI Experiment
+### 7.15.1 Motivation
+### 7.15.2 Experimental Design
+### 7.15.3 Results: 16-QAM in Rayleigh Fading
+### 7.15.4 Results: 16-PSK in Rayleigh Fading
+### 7.15.5 Cross-Constellation Analysis
+### 7.15.6 Training Convergence Examples
+### 7.15.7 Experiment Goals vs. Outcomes
+### 7.16 Extension Experiment: End-to-End Joint Optimization
+### 7.17 16-Class 2D Classification for QAM16
+## 8. Discussion and Conclusions
+### 8.1 Interpretation of Results
+### 8.2 The "Less is More" Principle (H3: Confirmed)
+### 8.3 State Space vs. Attention for Signal Processing
+### 8.4 Practical Deployment Recommendations
+### 8.5 Limitations
+### 8.6 Future Work
+### 8.7 Conclusions
+## 9. References
+## 10. Appendices
+### Appendix A: Mathematical Notation
+### Appendix B: Model Architectures and Hyperparameters
+### Appendix C: Software Architecture
+### Appendix D: Normalized 3K-Parameter Configurations
+## 11. Abstract (English)

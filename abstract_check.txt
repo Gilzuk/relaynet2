@@ -1,0 +1,5 @@
+﻿English abstract: 401 words
+Hebrew abstract:  351 words
+
+English: OK (<=500)
+Hebrew:  OK (<=500)

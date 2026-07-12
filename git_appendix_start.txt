@@ -1,0 +1,32 @@
+Lines in git version: 2360
+Lines 1-30:
+1: \chapter{Appendices}\label{sec:appendices}
+2: 
+3: \section{Appendix A: Mathematical Notation}\label{sec:appendix-a-mathematical-notation}
+4: 
+5: {\def\LTcaptype{table} % do not increment counter
+6: \begin{longtable}[]{@{}ll@{}}
+7: \toprule\noalign{}
+8: Symbol & Description \\
+9: \midrule\noalign{}
+10: \endhead
+11: \bottomrule\noalign{}
+12: \endlastfoot
+13: \(b\) & Binary bit (\(\in \{0, 1\}\)) \\
+14: \(x\) & Modulated BPSK symbol (\(\in \{-1, +1\}\)) \\
+15: \(y\) & Received signal \\
+16: \(n\) & Noise sample \\
+17: \(h\) & Fading coefficient \\
+18: \(\sigma^2\) & Noise variance \\
+19: \(\text{SNR}\) & Signal-to-Noise Ratio (linear) \\
+20: \(G\) & AF amplification gain \\
+21: \(\mathbf{H}\) & MIMO channel matrix (\(\in \mathbb{C}^{2 \times 2}\)) \\
+22: \(\mathbf{W}\) & Neural network weight matrix \\%% ============================================================
+23: %% Chapter 5: Experiments
+24: %% Structure: Master config table + conclusion-only sections
+25: %% All figures and tables are in Appendix (ch09_appendices.tex)
+26: %% ============================================================
+27: \chapter{Experiments}\label{sec:experiments}
+28: 
+29: This chapter presents the experimental evaluation of nine relay strategies across eight
+30: systematic experiments. Each experiment is described by its goal, configuration, and

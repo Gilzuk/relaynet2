@@ -1,0 +1,21 @@
+﻿### System Model
+
+The system under study is a two-hop relay network with a single relay node:
+
+$$\text{Source} \xrightarrow{\text{Hop 1}} \text{Relay} \xrightarrow{\text{Hop 2}} \text{Destination}$$
+
+**Modulation.** Four modulation schemes are supported. The primary experiments use Binary Phase-Shift Keying (BPSK): bits $b \in \{0, 1\}$ are mapped to real symbols $x = 1 - 2b \in \{-1, +1\}$. Extensions to Quadrature Phase-Shift Keying (QPSK), 16-point Quadrature Amplitude Modulation (16-QAM), and 16-point Phase-Shift Keying (16-PSK) are evaluated in Sections 7.10 and 7.15 to test whether the BPSK findings generalise to complex constellations. QPSK maps pairs of bits to complex symbols on the unit circle (2 bits/symbol); 16-QAM maps groups of four bits to a $4 \times 4$ Gray-coded grid (4 bits/symbol); 16-PSK maps groups of four bits to 16 equally spaced points on the unit circle (4 bits/symbol). Full modulation details are given in Section 3.7.
+
+**Hop Model.** Each hop applies a channel function followed by optional equalization:
+
+$$y = h(x, \text{SNR}) + n$$
+
+where $h(\cdot)$ depends on the specific channel type (AWGN, fading, or MIMO).
+
+**Power Normalization.** All relay strategies normalize their output power to ensure fair comparison:
+
+$$x_R \leftarrow x_R \cdot \sqrt{\frac{P_{\text{target}}}{P_{\text{current}}}}$$
+
+#### MIMO Topology with Neural Network Relay and Equalization
+
+An important distinction in this work is the separation of three independent signal-processing 

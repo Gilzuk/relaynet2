@@ -11,8 +11,8 @@ Target parameter budget: ~3,000 ± 40
 +---------------+----------------------------------------------+--------+
 | Model         | Configuration                                | Params |
 +---------------+----------------------------------------------+--------+
-| GenAI-3K      | window=11, hidden=231                        | 3,004  |
-| Hybrid-3K     | wraps GenAI-3K (same sub-network)            | 3,004  |
+| MLP-3K        | window=11, hidden=231                        | 3,004  |
+| Hybrid-3K     | wraps MLP-3K (same sub-network)               | 3,004  |
 | VAE-3K        | window=11, hidden=(44,20), latent=10         | 3,037  |
 | CGAN-3K       | window=11, g_hidden=(30,30,16), c=(32,16)    | 3,004  |
 | Transformer-3K| d_model=18, heads=2, layers=1, window=11     | 3,007  |
@@ -54,12 +54,12 @@ except Exception:
 
 # ── Normalized configurations ───────────────────────────────────────
 
-# GenAI: params = window*hidden + hidden + hidden*1 + 1
-#       = 11*231 + 231 + 231 + 1 = 3004
-GENAI_3K = dict(window_size=11, hidden_size=231)
+# MLP: params = window*hidden + hidden + hidden*1 + 1
+#      = 11*231 + 231 + 231 + 1 = 3004
+MLP_3K = dict(window_size=11, hidden_size=231)
 
-# Hybrid: wraps GenAI sub-relay with the same architecture
-HYBRID_3K = dict(genai_window_size=11, genai_hidden_size=231)
+# Hybrid: wraps MLP sub-relay with the same architecture
+HYBRID_3K = dict(mlp_window_size=11, mlp_hidden_size=231)
 
 # VAE: enc 11→44→20→(mu,logvar)10, dec 10→20→44→1
 #      = 528+900+210+210 + 220+924+45 = 3037
@@ -103,13 +103,13 @@ MAMBA2_3K = dict(
 
 # ── Factory functions ───────────────────────────────────────────────
 
-def make_genai_3k(prefer_gpu=False, **kw):
-    """Return a ~3004-param GenAI relay."""
-    return MinimalGenAIRelay(**GENAI_3K, prefer_gpu=prefer_gpu, **kw)
+def make_mlp_3k(prefer_gpu=False, **kw):
+    """Return a ~3004-param MLP relay."""
+    return MinimalGenAIRelay(**MLP_3K, prefer_gpu=prefer_gpu, **kw)
 
 
 def make_hybrid_3k(prefer_gpu=False, **kw):
-    """Return a Hybrid relay wrapping a ~3004-param GenAI sub-network."""
+    """Return a Hybrid relay wrapping a ~3004-param MLP sub-network."""
     return HybridRelay(snr_threshold=5.0, **HYBRID_3K, prefer_gpu=prefer_gpu, **kw)
 
 
@@ -156,7 +156,7 @@ def build_all_3k(prefer_gpu=False, include_sequence_models=True,
     Parameters
     ----------
     prefer_gpu : bool
-        GPU preference for small models (GenAI, Hybrid, VAE, CGAN).
+        GPU preference for small models (MLP, Hybrid, VAE, CGAN).
     include_sequence_models : bool
         Include Transformer, Mamba S6, and Mamba-2 relays.
     include_cgan : bool
@@ -185,7 +185,7 @@ def build_all_3k(prefer_gpu=False, include_sequence_models=True,
     if prefer_gpu_seq is None:
         prefer_gpu_seq = prefer_gpu
     relays = {
-        "GenAI-3K": make_genai_3k(prefer_gpu=prefer_gpu,
+        "MLP-3K": make_mlp_3k(prefer_gpu=prefer_gpu,
                                    output_activation=output_activation,
                                    clip_range=clip_range),
         "Hybrid-3K": make_hybrid_3k(prefer_gpu=prefer_gpu,
@@ -228,8 +228,8 @@ if __name__ == "__main__":
             n = relay.num_params
         elif hasattr(relay, "model"):
             n = sum(p.numel() for p in relay.model.parameters())
-        elif hasattr(relay, "genai_relay"):
-            n = relay.genai_relay.num_params
+        elif hasattr(relay, "mlp_relay"):
+            n = relay.mlp_relay.num_params
         elif hasattr(relay, "_torch_model"):
             # CGAN / VAE — count via torch internals
             n = "?"

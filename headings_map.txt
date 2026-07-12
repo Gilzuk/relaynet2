@@ -1,0 +1,133 @@
+﻿L  13: ## Table of Contents {.unnumbered}
+L  92: ## List of Figures {.unnumbered}
+L 150: ## List of Tables {.unnumbered}
+L 181: ## List of Abbreviations {.unnumbered}
+L 223: ## Abstract (Hebrew) {.unnumbered}
+L 241: ## Keywords {.unnumbered}
+L 247: ## Introduction and Literature Review
+L 249: ### Cooperative Relay Communication
+L 253: #### Information-Theoretic Foundations
+L 275: #### Two-Hop Relay Model
+L 289: #### Cooperative Diversity and Practical Relevance
+L 297: ### Classical Relay Strategies
+L 323: ### Machine Learning in Wireless Communication
+L 327: #### Theoretical Basis: Universal Approximation and Denoising
+L 345: #### Prior Work in Deep Learning for Physical-Layer Processing
+L 355: #### Neural Network Relay Processing
+L 369: ### Generative Models for Signal Processing
+L 373: #### Variational Autoencoders
+L 389: #### Conditional Generative Adversarial Networks
+L 413: #### Generative vs. Discriminative Paradigms for Relay Processing
+L 417: ### Sequence Models: Transformers and State Space Models
+L 421: #### Transformers and the Attention Mechanism
+L 443: #### Structured State Space Models
+L 463: #### Mamba: Selective State Spaces
+L 478: #### Mamba-2: Structured State Space Duality
+L 498: #### State Space Models for Signal Processing
+L 504: ### MIMO Systems and Equalization
+L 512: #### System Model
+L 522: #### Equalization Methods
+L 557: #### MIMO with Relay Processing
+L 563: ### Research Gap and Motivation
+L 592: ## Research Objectives
+L 594: ### Main Objective
+L 598: ### Research Hypotheses
+L 626: ### Specific Objectives
+L 638: ### Scope and Delimitations
+L 652: ## Methods
+L 654: ### System Model
+L 699: #### MIMO Topology with Neural Network Relay and Equalization
+L 769: ### Channel Models
+L 773: #### AWGN Channel ΓÇö Theoretical Analysis
+L 807: #### Rayleigh Fading Channel ΓÇö Theoretical Analysis
+L 837: #### Rician Fading Channel ΓÇö Theoretical Analysis
+L 867: #### Fading Coefficient Distributions
+L 884: #### 2├ù2 MIMO Channel ΓÇö Theoretical Analysis
+L 910: #### Channel Model Validation (Simulative)
+L 942: ### Relay Strategies
+L1006: ### MIMO Equalization Techniques
+L1033: ### Simulation Framework
+L1035: #### Monte Carlo BER Estimation
+L1059: #### Statistical Significance Testing
+L1067: #### Training Protocol
+L1084: #### Reproducibility and Weight Management
+L1095: ### Normalized Parameter Comparison
+L1119: ### Modulation Schemes
+L1123: #### BPSK
+L1131: #### QPSK ΓÇö Gray-Coded Quadrature Phase-Shift Keying
+L1154: #### 16-QAM ΓÇö Gray-Coded Quadrature Amplitude Modulation
+L1177: #### Constellation Diagram Summary
+L1185: #### 16-PSK ΓÇö Gray-Coded Phase-Shift Keying
+L1207: #### I/Q Splitting for AI Relay Processing of Complex Constellations
+L1227: #### 2D Joint Classification as an Alternative to I/Q Splitting
+L1246: ## Results
+L1250: ### Channel Model Validation
+L1281: ### AWGN Channel ΓÇö Relay Comparison
+L1302: ### Rayleigh Fading Channel
+L1323: ### Rician Fading Channel (K=3)
+L1344: ### 2├ù2 MIMO with ZF Equalization
+L1365: ### 2├ù2 MIMO with MMSE Equalization
+L1384: ### 2├ù2 MIMO with SIC Equalization
+L1407: ### Normalized 3K-Parameter Comparison
+L1499: ### ComplexityΓÇôPerformance Trade-off
+L1547: ### Modulation Comparison: BPSK vs. QPSK vs. 16-QAM
+L1615: ### 16-QAM Activation Experiment: Modulation-Aware Training
+L1619: #### Experimental Design
+L1629: #### Results
+L1656: #### Analysis
+L1670: ### Constellation-Aware Activation Study
+L1674: #### Constellation-Aware Clip Range
+L1691: #### Activation Functions Compared
+L1703: #### Experimental Design
+L1707: #### Results
+L1735: #### Analysis
+L1749: ### Input Layer Normalization and Scaled Tanh Experiment
+L1753: #### Experimental Design
+L1771: #### Training Results
+L1783: #### Results
+L1793: #### Analysis
+L1799: ### Structural CSI Injection for 16-QAM in Rayleigh Fading
+L1801: ### Motivation
+L1805: ### Experimental Design
+L1817: ### Results and Analysis
+L1834: ### Comprehensive Multi-Architecture CSI Experiment
+L1836: ### Motivation
+L1842: ### Experimental Design
+L1867: ### Results: 16-QAM in Rayleigh Fading
+L1895: ### Results: 16-PSK in Rayleigh Fading
+L1923: ### Cross-Constellation Analysis
+L1946: ### Training Convergence Examples
+L1967: ### Experiment Goals vs. Outcomes
+L1983: ### Extension Experiment: End-to-End Joint Optimization
+L1987: #### System Formulation
+L2005: #### Results: E2E vs. Classical Theoretical Limits
+L2038: #### E2E vs. Two-Hop Relay Comparison: AF and DF
+L2069: #### Analysis
+L2077: ### 16-Class 2D Classification for QAM16
+L2079: #### Motivation
+L2085: #### Experimental Design
+L2108: #### Results
+L2142: #### Analysis
+L2156: ## Discussion and Conclusions
+L2158: ### Interpretation of Results
+L2162: #### Selective Low-SNR Advantage of Neural Relays (H1: Partially Confirmed)
+L2178: #### Classical Dominance at High SNR (H2: Confirmed)
+L2184: #### Channel Robustness
+L2190: #### MIMO Equalization Hierarchy (H6: Confirmed)
+L2196: ### The "Less is More" Principle (H3: Confirmed)
+L2202: #### Information-Theoretic Perspective
+L2208: #### Bias-Variance Analysis
+L2219: #### Practical Implications
+L2227: ### State Space vs. Attention for Signal Processing
+L2247: #### Context-Length Benchmark: Validating the Crossover Hypothesis
+L2275: ### Practical Deployment Recommendations
+L2291: ### Limitations
+L2309: ### Future Work
+L2325: ### Conclusions
+L2377: ## References
+L2445: ## Appendices
+L2447: ### Appendix A: Mathematical Notation
+L2471: ### Appendix B: Model Architectures and Hyperparameters
+L2532: ### Appendix C: Software Architecture
+L2574: ### Appendix D: Normalized 3K-Parameter Configurations
+L2590: ## Abstract (English) {.unnumbered}

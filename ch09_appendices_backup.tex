@@ -1,0 +1,2360 @@
+\chapter{Appendices}\label{sec:appendices}
+
+\section{Appendix A: Mathematical Notation}\label{sec:appendix-a-mathematical-notation}
+
+{\def\LTcaptype{table} % do not increment counter
+\begin{longtable}[]{@{}ll@{}}
+\toprule\noalign{}
+Symbol & Description \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\(b\) & Binary bit (\(\in \{0, 1\}\)) \\
+\(x\) & Modulated BPSK symbol (\(\in \{-1, +1\}\)) \\
+\(y\) & Received signal \\
+\(n\) & Noise sample \\
+\(h\) & Fading coefficient \\
+\(\sigma^2\) & Noise variance \\
+\(\text{SNR}\) & Signal-to-Noise Ratio (linear) \\
+\(G\) & AF amplification gain \\
+\(\mathbf{H}\) & MIMO channel matrix (\(\in \mathbb{C}^{2 \times 2}\)) \\
+\(\mathbf{W}\) & Neural network weight matrix \\%% ============================================================
+%% Chapter 5: Experiments
+%% Structure: Master config table + conclusion-only sections
+%% All figures and tables are in Appendix (ch09_appendices.tex)
+%% ============================================================
+\chapter{Experiments}\label{sec:experiments}
+
+This chapter presents the experimental evaluation of nine relay strategies across eight
+systematic experiments. Each experiment is described by its goal, configuration, and
+conclusion only. All supporting figures and numerical tables are consolidated in
+Appendix~\ref{chap:app-experiments} to maintain narrative clarity.
+
+%% ============================================================
+%% Master Configuration Table
+%% ============================================================
+\section{Experiment Overview}\label{sec:experiment-overview}
+
+Table~\ref{tbl:master-config} summarises the configuration space explored across all
+eight experiments. Each row defines the topology, modulation, channel, equalizer, and
+neural-network settings used; outcomes are reported in the per-experiment sections below
+and detailed in Appendix~\ref{chap:app-experiments}.
+
+\begin{table}[H]
+\centering
+\caption{Master experiment configuration table. All nine relay strategies
+(AF, DF, MLP, Hybrid, VAE, CGAN, Transformer, Mamba~S6, Mamba-2~SSD) are evaluated
+unless otherwise noted. ``CA'' = Constellation-Aware; ``E2E'' = End-to-End.}
+\label{tbl:master-config}
+\small
+\begin{tabular}{@{}p{0.04\linewidth}p{0.18\linewidth}p{0.10\linewidth}p{0.12\linewidth}p{0.12\linewidth}p{0.10\linewidth}p{0.22\linewidth}@{}}
+\toprule
+\textbf{E\#} & \textbf{Experiment} & \textbf{Topology} & \textbf{Modulation} & \textbf{Channel} & \textbf{Equalizer} & \textbf{Special Setting} \\
+\midrule
+E1 & Channel Model Validation & SISO, MIMO 2$\times$2 & BPSK & AWGN, Rayleigh, Rician & None / ZF / MMSE / SIC & Theory vs.\ simulation \\
+\midrule
+E2 & SISO BPSK Baseline & SISO & BPSK & AWGN, Rayleigh, Rician & None & Activation: \texttt{tanh} \\
+\midrule
+E3 & MIMO 2$\times$2 BPSK & MIMO 2$\times$2 & BPSK & Rayleigh & ZF, MMSE, SIC & Activation: \texttt{tanh} \\
+\midrule
+E4 & Parameter Normalization & SISO, MIMO 2$\times$2 & BPSK & AWGN, Rayleigh, Rician, MIMO & None / ZF / MMSE / SIC & $\sim$3\,K normalised params \\
+\midrule
+E5 & Higher-Order Modulation & SISO & QPSK, 16-QAM & AWGN, Rayleigh & None & CA activations: \texttt{tanh}, \texttt{hardtanh}, scaled \texttt{tanh}, scaled sigmoid \\
+\midrule
+E6 & CSI Injection \& LayerNorm & SISO & 16-QAM, 16-PSK & Rayleigh & None & 48 variants: Baseline / CSI / LN / CSI+LN \\
+\midrule
+E7 & 16-Class 2D Classification & SISO & 16-QAM & AWGN & None & Joint 2D softmax (16-class) \\
+\midrule
+E8 & End-to-End Optimization & SISO & Learned ($M{=}16$) & Rayleigh & ZF (receiver) & MLP autoencoder (E2E) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+%% ============================================================
+%% E1: Channel Model Validation
+%% ============================================================
+\section{E1: Channel Model Validation}\label{sec:channel-model-validation}
+
+\textbf{Goal.}
+Validate the simulation framework against closed-form theoretical BER expressions to
+ensure baseline accuracy before evaluating AI relays.
+
+\textbf{Configuration.}
+Topology: SISO and MIMO 2$\times$2.
+Modulation: BPSK.
+Channels: AWGN, Rayleigh, Rician ($K{=}3$).
+Equalizers (MIMO only): ZF, MMSE, SIC.
+Demodulation: hard decision.
+
+\textbf{Conclusion.}
+Monte Carlo simulations match theoretical predictions within the 95\,\% confidence
+interval at all SNR points for every channel and equalizer combination.
+The simulation framework is validated and used as the ground truth for all subsequent
+experiments.
+Full validation charts are provided in Appendix~\ref{sec:app-e1}.
+
+%% ============================================================
+%% E2: SISO BPSK Baseline
+%% ============================================================
+\section{E2: SISO BPSK Performance (Baseline Relay Comparison)}\label{sec:siso-bpsk-performance-baseline-relay-comparison}
+
+\textbf{Goal.}
+Evaluate baseline classical and AI-based relay strategies on single-antenna
+configurations across different fading environments.
+
+\textbf{Configuration.}
+Topology: SISO.
+Modulation: BPSK.
+Channels: AWGN, Rayleigh, Rician ($K{=}3$).
+Equalizers: none.
+NN architectures: MLP, Hybrid, VAE, CGAN, Transformer, Mamba~S6, Mamba-2~SSD.
+Activation: \texttt{tanh}.
+
+\textbf{Conclusion.}
+AI relays selectively outperform AF and, on AWGN and Rician channels, DF at low SNR
+(0--4\,dB).
+Under Rayleigh fading, classical DF dominates even at low SNR.
+Across all channels, DF remains dominant at medium-to-high SNR ($\geq 6$\,dB),
+matching or exceeding all AI methods with zero parameters.
+BER curves and numerical tables are in Appendix~\ref{sec:app-e2}
+(Figures~\ref{fig:fig9}--\ref{fig:fig11}).
+
+%% ============================================================
+%% E3: MIMO 2x2 BPSK
+%% ============================================================
+\section{E3: MIMO 2$\times$2 BPSK Performance}\label{sec:mimo-2x2-bpsk-performance}
+
+\textbf{Goal.}
+Evaluate relay strategies under spatial multiplexing and various interference
+cancellation techniques.
+
+\textbf{Configuration.}
+Topology: MIMO 2$\times$2.
+Modulation: BPSK.
+Channel: Rayleigh.
+Equalizers: ZF, MMSE, SIC.
+NN architectures: all nine.
+Activation: \texttt{tanh}.
+
+\textbf{Conclusion.}
+The MIMO equalization hierarchy (ZF $<$ MMSE $<$ SIC) holds for all relay types.
+The AI advantage at low SNR is preserved under ZF and MMSE (Mamba~S6 achieves the
+lowest BER), but under SIC equalization, classical DF provides the lowest BER at all
+low-to-medium SNR points.
+Relay processing gains and MIMO equalization gains are additive.
+BER curves and numerical tables are in Appendix~\ref{sec:app-e3}
+(Figures~\ref{fig:fig12}--\ref{fig:fig14}).
+
+%% ============================================================
+%% E4: Parameter Normalization
+%% ============================================================
+\section{E4: Parameter Normalization \& Complexity Trade-off}\label{sec:parameter-normalization-complexity-trade-off}
+
+\textbf{Goal.}
+Isolate architectural inductive biases from parameter-count effects and characterise
+the complexity--performance trade-off for relay denoising.
+
+\textbf{Configuration.}
+Topology: SISO and MIMO 2$\times$2.
+Modulation: BPSK.
+Channels: AWGN, Rayleigh, Rician, MIMO (ZF, MMSE, SIC).
+NN architectures: all nine, normalised to $\sim$3\,000 parameters and at original
+sizes (169 to 26\,K).
+Activation: \texttt{tanh}.
+
+\textbf{Conclusion.}
+The relay denoising task exhibits an inverted-U complexity relationship: a minimal
+169-parameter MLP matches models 140$\times$ larger, while excessive parameters
+($>$11\,K) lead to overfitting.
+At a normalised scale of 3\,000 parameters, the performance gap between feedforward
+and sequence architectures narrows to $\sim$1\,\% BER, indicating that parameter
+count rather than architectural choice is the primary performance driver.
+Generative VAE is a consistent underperformer due to probabilistic overhead.
+BER curves, complexity charts, and numerical tables are in Appendix~\ref{sec:app-e4}
+(Figures~\ref{fig:fig15}--\ref{fig:fig20}).
+
+%% ============================================================
+%% E5: Higher-Order Modulation
+%% ============================================================
+\section{E5: Higher-Order Modulation Scalability (Constellation-Aware Training)}\label{sec:higher-order-modulation-scalability-constellation-aware-training}
+
+\textbf{Goal.}
+Evaluate the generalisability of BPSK-trained relays to complex constellations and
+resolve the multi-level amplitude bottleneck.
+
+\textbf{Configuration.}
+Topology: SISO.
+Modulations: QPSK, 16-QAM.
+Channels: AWGN, Rayleigh.
+Equalizers: none.
+NN architectures: all nine.
+Activations: \texttt{tanh}, linear, \texttt{hardtanh}, scaled \texttt{tanh}, scaled
+sigmoid.
+Special case: constellation-aware training.
+
+\textbf{Conclusion.}
+QPSK performance mirrors BPSK perfectly due to I/Q independence.
+On 16-QAM, standard \texttt{tanh} compression causes a severe, irreducible BER floor
+($\approx$0.22 at 16\,dB).
+Replacing \texttt{tanh} with constellation-aware bounded activations
+(\texttt{hardtanh}, scaled \texttt{tanh}) bounded to the precise signal amplitude
+($3/\sqrt{10}$) and retraining eliminates this floor.
+Sequence models benefit most, reducing their BER floor by 5$\times$, though a gap to
+classical DF persists due to per-axis error accumulation.
+BER curves, activation comparisons, and numerical tables are in
+Appendix~\ref{sec:app-e5}
+(Figures~\ref{fig:fig21}--\ref{fig:fig36}).
+
+%% ============================================================
+%% E6: CSI Injection & LayerNorm
+%% ============================================================
+\section{E6: Input Normalization and CSI Injection}\label{sec:input-normalization-and-csi-injection}
+
+\textbf{Goal.}
+Evaluate the impact of explicit Channel State Information (CSI) injection and Input
+Layer Normalization across 48 distinct neural relay configurations for 16-QAM and
+16-PSK.
+
+\textbf{Configuration.}
+Topology: SISO.
+Modulations: 16-QAM, 16-PSK.
+Channel: Rayleigh.
+Equalizers: none.
+NN architectures: Transformer, Mamba~S6, Mamba-2~SSD.
+Variants: Baseline / CSI / LayerNorm / CSI+LayerNorm $\times$ 4 activations
+$\times$ 3 architectures $\times$ 2 modulations = 48 configurations.
+
+\textbf{Conclusion.}
+A clear dichotomy emerges between the two modulation schemes. Explicit CSI injection significantly improves BER performance for phase-sensitive modulations (16-PSK) by enabling the network to compensate for channel-induced phase rotation in the Rayleigh fading channel. For amplitude-dependent modulations (16-QAM), the effect of CSI injection is architecture- and injection-method-dependent; in several configurations a performance degradation is observed empirically, the precise mechanism of which warrants further investigation. Input Layer Normalization consistently improves convergence and BER across the majority of tested configurations; however, its interaction with amplitude-sensitive modulations such as 16-QAM should be interpreted with caution, as normalization removes amplitude scale information that is intrinsic to QAM symbol detection.
+Appendix~\ref{chap:app-csi}
+(Figures~\ref{fig:fig39}--\ref{fig:fig45}).
+
+%% ============================================================
+%% E7: 16-Class 2D Classification
+%% ============================================================
+\section{E7: 16-Class 2D Classification for QAM16}\label{sec:class-2d-classification-for-qam16}
+
+\textbf{Goal.}
+Eliminate the structural BER floor imposed by per-axis I/Q splitting for 16-QAM by
+utilising full 2D decision boundaries.
+
+\textbf{Configuration.}
+Topology: SISO.
+Modulation: 16-QAM.
+Channel: AWGN.
+Equalizers: none.
+NN architectures: MLP, VAE, Transformer, Mamba~S6, Mamba-2~SSD.
+Activation: softmax (implicit via cross-entropy loss).
+Special case: joint 16-class 2D classification.
+
+\textbf{Conclusion.}
+Treating the relay as a joint 16-point classifier over the full 2D constellation space
+completely eliminates the structural 4-class BER floor.
+For the first time, neural variants (VAE, Transformer, MLP) matched classical DF
+performance at high SNR, achieving near-zero BER at 20\,dB.
+This proves the previous BER floor was an artefact of I/Q splitting, not a fundamental
+limitation of neural relays.
+BER curves, bar charts, and numerical tables are in Appendix~\ref{sec:app-e7}
+(Figures~\ref{fig:fig50}--\ref{fig:fig53}).
+
+%% ============================================================
+%% E8: End-to-End Optimization
+%% ============================================================
+\section{E8: End-to-End Joint Optimization}\label{sec:end-to-end-joint-optimization}
+
+\textbf{Goal.}
+Compare the modular neural relay approach against a fully joint transmitter--receiver
+autoencoder.
+
+\textbf{Configuration.}
+Topology: SISO.
+Modulation: learned latent space ($M{=}16$, power-constrained).
+Channel: Rayleigh.
+Equalizer: ZF (receiver side).
+NN architecture: MLP autoencoder (encoder/decoder).
+Special case: end-to-end (E2E) optimization.
+
+\textbf{Conclusion.}
+The E2E autoencoder underperforms both the theoretical limits of classical 16-QAM and
+the modular two-hop DF relay across all SNR points (67--141\,\% higher BER).
+The network fails to discover a constellation geometry that surpasses the classical
+square grid under single-antenna Rayleigh fading, demonstrating that black-box deep
+learning is inefficient compared to modular designs that leverage classical signal
+processing for modulation and equalization.
+BER curves, learned constellation, and training loss are in Appendix~\ref{sec:app-e8}
+(Figures~\ref{fig:fig46}--\ref{fig:fig49}).%% ============================================================
+%% Chapter 5: Experiments
+%% Structure: Master config table + conclusion-only sections
+%% All figures and tables are in Appendix (ch09_appendices.tex)
+%% ============================================================
+\chapter{Experiments}\label{sec:experiments}
+
+This chapter presents the experimental evaluation of nine relay strategies across eight
+systematic experiments. Each experiment is described by its goal, configuration, and
+conclusion only. All supporting figures and numerical tables are consolidated in
+Appendix~\ref{chap:app-experiments} to maintain narrative clarity.
+
+%% ============================================================
+%% Master Configuration Table
+%% ============================================================
+\section{Experiment Overview}\label{sec:experiment-overview}
+
+Table~\ref{tbl:master-config} summarises the configuration space explored across all
+eight experiments. Each row defines the topology, modulation, channel, equalizer, and
+neural-network settings used; outcomes are reported in the per-experiment sections below
+and detailed in Appendix~\ref{chap:app-experiments}.
+
+\begin{table}[H]
+\centering
+\caption{Master experiment configuration table. All nine relay strategies
+(AF, DF, MLP, Hybrid, VAE, CGAN, Transformer, Mamba~S6, Mamba-2~SSD) are evaluated
+unless otherwise noted. ``CA'' = Constellation-Aware; ``E2E'' = End-to-End.}
+\label{tbl:master-config}
+\small
+\begin{tabular}{@{}p{0.04\linewidth}p{0.18\linewidth}p{0.10\linewidth}p{0.12\linewidth}p{0.12\linewidth}p{0.10\linewidth}p{0.22\linewidth}@{}}
+\toprule
+\textbf{E\#} & \textbf{Experiment} & \textbf{Topology} & \textbf{Modulation} & \textbf{Channel} & \textbf{Equalizer} & \textbf{Special Setting} \\
+\midrule
+E1 & Channel Model Validation & SISO, MIMO 2$\times$2 & BPSK & AWGN, Rayleigh, Rician & None / ZF / MMSE / SIC & Theory vs.\ simulation \\
+\midrule
+E2 & SISO BPSK Baseline & SISO & BPSK & AWGN, Rayleigh, Rician & None & Activation: \texttt{tanh} \\
+\midrule
+E3 & MIMO 2$\times$2 BPSK & MIMO 2$\times$2 & BPSK & Rayleigh & ZF, MMSE, SIC & Activation: \texttt{tanh} \\
+\midrule
+E4 & Parameter Normalization & SISO, MIMO 2$\times$2 & BPSK & AWGN, Rayleigh, Rician, MIMO & None / ZF / MMSE / SIC & $\sim$3\,K normalised params \\
+\midrule
+E5 & Higher-Order Modulation & SISO & QPSK, 16-QAM & AWGN, Rayleigh & None & CA activations: \texttt{tanh}, \texttt{hardtanh}, scaled \texttt{tanh}, scaled sigmoid \\
+\midrule
+E6 & CSI Injection \& LayerNorm & SISO & 16-QAM, 16-PSK & Rayleigh & None & 48 variants: Baseline / CSI / LN / CSI+LN \\
+\midrule
+E7 & 16-Class 2D Classification & SISO & 16-QAM & AWGN & None & Joint 2D softmax (16-class) \\
+\midrule
+E8 & End-to-End Optimization & SISO & Learned ($M{=}16$) & Rayleigh & ZF (receiver) & MLP autoencoder (E2E) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+%% ============================================================
+%% E1: Channel Model Validation
+%% ============================================================
+\section{E1: Channel Model Validation}\label{sec:channel-model-validation}
+
+\textbf{Goal.}
+Validate the simulation framework against closed-form theoretical BER expressions to
+ensure baseline accuracy before evaluating AI relays.
+
+\textbf{Configuration.}
+Topology: SISO and MIMO 2$\times$2.
+Modulation: BPSK.
+Channels: AWGN, Rayleigh, Rician ($K{=}3$).
+Equalizers (MIMO only): ZF, MMSE, SIC.
+Demodulation: hard decision.
+
+\textbf{Conclusion.}
+Monte Carlo simulations match theoretical predictions within the 95\,\% confidence
+interval at all SNR points for every channel and equalizer combination.
+The simulation framework is validated and used as the ground truth for all subsequent
+experiments.
+Full validation charts are provided in Appendix~\ref{sec:app-e1}.
+
+%% ============================================================
+%% E2: SISO BPSK Baseline
+%% ============================================================
+\section{E2: SISO BPSK Performance (Baseline Relay Comparison)}\label{sec:siso-bpsk-performance-baseline-relay-comparison}
+
+\textbf{Goal.}
+Evaluate baseline classical and AI-based relay strategies on single-antenna
+configurations across different fading environments.
+
+\textbf{Configuration.}
+Topology: SISO.
+Modulation: BPSK.
+Channels: AWGN, Rayleigh, Rician ($K{=}3$).
+Equalizers: none.
+NN architectures: MLP, Hybrid, VAE, CGAN, Transformer, Mamba~S6, Mamba-2~SSD.
+Activation: \texttt{tanh}.
+
+\textbf{Conclusion.}
+AI relays selectively outperform AF and, on AWGN and Rician channels, DF at low SNR
+(0--4\,dB).
+Under Rayleigh fading, classical DF dominates even at low SNR.
+Across all channels, DF remains dominant at medium-to-high SNR ($\geq 6$\,dB),
+matching or exceeding all AI methods with zero parameters.
+BER curves and numerical tables are in Appendix~\ref{sec:app-e2}
+(Figures~\ref{fig:fig9}--\ref{fig:fig11}).
+
+%% ============================================================
+%% E3: MIMO 2x2 BPSK
+%% ============================================================
+\section{E3: MIMO 2$\times$2 BPSK Performance}\label{sec:mimo-2x2-bpsk-performance}
+
+\textbf{Goal.}
+Evaluate relay strategies under spatial multiplexing and various interference
+cancellation techniques.
+
+\textbf{Configuration.}
+Topology: MIMO 2$\times$2.
+Modulation: BPSK.
+Channel: Rayleigh.
+Equalizers: ZF, MMSE, SIC.
+NN architectures: all nine.
+Activation: \texttt{tanh}.
+
+\textbf{Conclusion.}
+The MIMO equalization hierarchy (ZF $<$ MMSE $<$ SIC) holds for all relay types.
+The AI advantage at low SNR is preserved under ZF and MMSE (Mamba~S6 achieves the
+lowest BER), but under SIC equalization, classical DF provides the lowest BER at all
+low-to-medium SNR points.
+Relay processing gains and MIMO equalization gains are additive.
+BER curves and numerical tables are in Appendix~\ref{sec:app-e3}
+(Figures~\ref{fig:fig12}--\ref{fig:fig14}).
+
+%% ============================================================
+%% E4: Parameter Normalization
+%% ============================================================
+\section{E4: Parameter Normalization \& Complexity Trade-off}\label{sec:parameter-normalization-complexity-trade-off}
+
+\textbf{Goal.}
+Isolate architectural inductive biases from parameter-count effects and characterise
+the complexity--performance trade-off for relay denoising.
+
+\textbf{Configuration.}
+Topology: SISO and MIMO 2$\times$2.
+Modulation: BPSK.
+Channels: AWGN, Rayleigh, Rician, MIMO (ZF, MMSE, SIC).
+NN architectures: all nine, normalised to $\sim$3\,000 parameters and at original
+sizes (169 to 26\,K).
+Activation: \texttt{tanh}.
+
+\textbf{Conclusion.}
+The relay denoising task exhibits an inverted-U complexity relationship: a minimal
+169-parameter MLP matches models 140$\times$ larger, while excessive parameters
+($>$11\,K) lead to overfitting.
+At a normalised scale of 3\,000 parameters, the performance gap between feedforward
+and sequence architectures narrows to $\sim$1\,\% BER, indicating that parameter
+count rather than architectural choice is the primary performance driver.
+Generative VAE is a consistent underperformer due to probabilistic overhead.
+BER curves, complexity charts, and numerical tables are in Appendix~\ref{sec:app-e4}
+(Figures~\ref{fig:fig15}--\ref{fig:fig20}).
+
+%% ============================================================
+%% E5: Higher-Order Modulation
+%% ============================================================
+\section{E5: Higher-Order Modulation Scalability (Constellation-Aware Training)}\label{sec:higher-order-modulation-scalability-constellation-aware-training}
+
+\textbf{Goal.}
+Evaluate the generalisability of BPSK-trained relays to complex constellations and
+resolve the multi-level amplitude bottleneck.
+
+\textbf{Configuration.}
+Topology: SISO.
+Modulations: QPSK, 16-QAM.
+Channels: AWGN, Rayleigh.
+Equalizers: none.
+NN architectures: all nine.
+Activations: \texttt{tanh}, linear, \texttt{hardtanh}, scaled \texttt{tanh}, scaled
+sigmoid.
+Special case: constellation-aware training.
+
+\textbf{Conclusion.}
+QPSK performance mirrors BPSK perfectly due to I/Q independence.
+On 16-QAM, standard \texttt{tanh} compression causes a severe, irreducible BER floor
+($\approx$0.22 at 16\,dB).
+Replacing \texttt{tanh} with constellation-aware bounded activations
+(\texttt{hardtanh}, scaled \texttt{tanh}) bounded to the precise signal amplitude
+($3/\sqrt{10}$) and retraining eliminates this floor.
+Sequence models benefit most, reducing their BER floor by 5$\times$, though a gap to
+classical DF persists due to per-axis error accumulation.
+BER curves, activation comparisons, and numerical tables are in
+Appendix~\ref{sec:app-e5}
+(Figures~\ref{fig:fig21}--\ref{fig:fig36}).
+
+%% ============================================================
+%% E6: CSI Injection & LayerNorm
+%% ============================================================
+\section{E6: Input Normalization and CSI Injection}\label{sec:input-normalization-and-csi-injection}
+
+\textbf{Goal.}
+Evaluate the impact of explicit Channel State Information (CSI) injection and Input
+Layer Normalization across 48 distinct neural relay configurations for 16-QAM and
+16-PSK.
+
+\textbf{Configuration.}
+Topology: SISO.
+Modulations: 16-QAM, 16-PSK.
+Channel: Rayleigh.
+Equalizers: none.
+NN architectures: Transformer, Mamba~S6, Mamba-2~SSD.
+Variants: Baseline / CSI / LayerNorm / CSI+LayerNorm $\times$ 4 activations
+$\times$ 3 architectures $\times$ 2 modulations = 48 configurations.
+
+\textbf{Conclusion.}
+A clear dichotomy emerges between the two modulation schemes. Explicit CSI injection significantly improves BER performance for phase-sensitive modulations (16-PSK) by enabling the network to compensate for channel-induced phase rotation in the Rayleigh fading channel. For amplitude-dependent modulations (16-QAM), the effect of CSI injection is architecture- and injection-method-dependent; in several configurations a performance degradation is observed empirically, the precise mechanism of which warrants further investigation. Input Layer Normalization consistently improves convergence and BER across the majority of tested configurations; however, its interaction with amplitude-sensitive modulations such as 16-QAM should be interpreted with caution, as normalization removes amplitude scale information that is intrinsic to QAM symbol detection.
+Appendix~\ref{chap:app-csi}
+(Figures~\ref{fig:fig39}--\ref{fig:fig45}).
+
+%% ============================================================
+%% E7: 16-Class 2D Classification
+%% ============================================================
+\section{E7: 16-Class 2D Classification for QAM16}\label{sec:class-2d-classification-for-qam16}
+
+\textbf{Goal.}
+Eliminate the structural BER floor imposed by per-axis I/Q splitting for 16-QAM by
+utilising full 2D decision boundaries.
+
+\textbf{Configuration.}
+Topology: SISO.
+Modulation: 16-QAM.
+Channel: AWGN.
+Equalizers: none.
+NN architectures: MLP, VAE, Transformer, Mamba~S6, Mamba-2~SSD.
+Activation: softmax (implicit via cross-entropy loss).
+Special case: joint 16-class 2D classification.
+
+\textbf{Conclusion.}
+Treating the relay as a joint 16-point classifier over the full 2D constellation space
+completely eliminates the structural 4-class BER floor.
+For the first time, neural variants (VAE, Transformer, MLP) matched classical DF
+performance at high SNR, achieving near-zero BER at 20\,dB.
+This proves the previous BER floor was an artefact of I/Q splitting, not a fundamental
+limitation of neural relays.
+BER curves, bar charts, and numerical tables are in Appendix~\ref{sec:app-e7}
+(Figures~\ref{fig:fig50}--\ref{fig:fig53}).
+
+%% ============================================================
+%% E8: End-to-End Optimization
+%% ============================================================
+\section{E8: End-to-End Joint Optimization}\label{sec:end-to-end-joint-optimization}
+
+\textbf{Goal.}
+Compare the modular neural relay approach against a fully joint transmitter--receiver
+autoencoder.
+
+\textbf{Configuration.}
+Topology: SISO.
+Modulation: learned latent space ($M{=}16$, power-constrained).
+Channel: Rayleigh.
+Equalizer: ZF (receiver side).
+NN architecture: MLP autoencoder (encoder/decoder).
+Special case: end-to-end (E2E) optimization.
+
+\textbf{Conclusion.}
+The E2E autoencoder underperforms both the theoretical limits of classical 16-QAM and
+the modular two-hop DF relay across all SNR points (67--141\,\% higher BER).
+The network fails to discover a constellation geometry that surpasses the classical
+square grid under single-antenna Rayleigh fading, demonstrating that black-box deep
+learning is inefficient compared to modular designs that leverage classical signal
+processing for modulation and equalization.
+BER curves, learned constellation, and training loss are in Appendix~\ref{sec:app-e8}
+(Figures~\ref{fig:fig46}--\ref{fig:fig49}).
+\(\mathbf{b}\) & Bias vector \\
+\(P_e\) & Bit error rate \\
+\(Q(\cdot)\) & Gaussian Q-function \\
+\(K\) & Rician K-factor \\
+\(\beta\) & VAE KL weight \\
+\(\lambda\) & Regularization parameter \\
+\(\eta\) & Learning rate \\
+\(\Delta\) & State space discretization step \\
+\(\mathbf{A}, \mathbf{B}, \mathbf{C}, D\) & State space model matrices \\
+\end{longtable}
+}
+
+\section{Appendix B: Model Architectures and Hyperparameters}\label{sec:appendix-b-model-architectures-and-hyperparameters}
+
+\textbf{MLP (Minimal):} - Input: 5-symbol sliding window - Hidden: 24 neurons, ReLU activation - Output: 1 neuron, Tanh activation - Parameters: 169 - Training: MSE loss, lr=0.01, 100 epochs, 25K samples at SNR=\cite{nazer2011compute, sun2018learning, vaswani2017attention} dB - Implementation: NumPy (CPU)
+
+\textbf{Hybrid:} - Architecture: Same as MLP (169 params) - SNR threshold: Learned (default \textasciitilde5 dB) - Below threshold → MLP processing; Above threshold → DF processing - Implementation: NumPy (CPU)
+
+\textbf{VAE:} - Encoder: 7 → 32 (ReLU) → 16 (ReLU) → μ(8), log σ²(8) - Decoder: 8 → 16 (ReLU) → 32 (ReLU) → 1 (Tanh) - Parameters: 1,777 - Training: β-VAE loss (β=0.1), Adam lr=1e-3, 100 epochs - Implementation: PyTorch (CUDA)
+
+\textbf{CGAN (WGAN-GP):} - Generator: (7+8) → 32 (LeakyReLU) → 32 (LeakyReLU) → 16 (LeakyReLU) → 1 (Tanh) - Critic: (1+7) → 32 (LeakyReLU) → 16 (LeakyReLU) → 1 - Parameters: 2,946 - Training: WGAN-GP (λ\_GP=10, λ\_L1=100), Adam lr=1e-4, 200 epochs, 5 critic updates per generator update - Implementation: PyTorch (CUDA)
+
+\textbf{Transformer:} - Input projection: 1 → 32 - Positional encoding: Sinusoidal - Encoder: 2 layers, 4 heads, d\_model=32, d\_ff=128 - Output projection: 32 → 1 (Tanh) - Parameters: 17,697 - Training: MSE loss, Adam lr=1e-3, 100 epochs - Implementation: PyTorch (reported experiments on CUDA; CPU fallback supported)
+
+\textbf{Mamba S6:} - Input projection: 1 → 32 - Mamba blocks: 2 layers, each: LayerNorm → expand (32→64) → S6 (d\_state=16) → contract (64→32) → residual - S6 selective parameters: Δ, B, C = f(input) via learned linear projections - Output projection: 32 → 1 (Tanh) - Parameters: 24,001 - Training: MSE loss, Adam lr=1e-3, 100 epochs - Implementation: PyTorch (reported experiments on CUDA; CPU fallback supported)
+
+\textbf{Mamba2 (SSD):} - Input projection: 1 → 32 - Mamba-2 blocks: 2 layers, each: LayerNorm → parallel branches (SiLU gate ∥ SSD layer) → gated output → contract (64→32) → residual - SSD layer: chunk\_size=8, builds lower-triangular causal kernel \(M \in \mathbb{R}^{L \times L}\) per chunk via cumulative log-decay, applies \(Y = M \cdot V\) as batched matmul - Inter-chunk state: running state \((B, N, D)\) updated once per chunk - S4D-style A initialisation: \(A_{\log} = \log(1, 2, \dots, d_{\text{state}})\) - Selective parameters: Δ, B, C = f(input); value projection V = f(input) - Output projection: 32 → 16 (SiLU) → 1 (Tanh) - Parameters: 26,179 - Training: MSE loss, Adam lr=1e-3, 100 epochs, gradient clipping (max\_norm=1.0) - Implementation: PyTorch (CUDA)
+
+\section{Appendix C: Software Architecture}\label{sec:appendix-c-software-architecture}
+
+The project is implemented as a modular Python package (\texttt{relaynet}) with the following structure:
+
+\begin{verbatim}
+relaynet/
+├── channels/          # Channel models
+│   ├── awgn.py            # AWGN channel
+│   ├── fading.py          # Rayleigh & Rician fading
+│   └── mimo.py            # 2×2 MIMO + ZF/MMSE/SIC equalization
+├── modulation/
+│   ├── bpsk.py            # BPSK modulate/demodulate
+│   ├── qpsk.py            # QPSK Gray-coded modulate/demodulate
+│   ├── qam.py             # 16-QAM Gray-coded modulate/demodulate
+│   └── psk.py             # 16-PSK modulate/demodulate
+├── relays/            # Relay strategies
+│   ├── base.py            # Abstract base class
+│   ├── af.py              # Amplify-and-Forward
+│   ├── df.py              # Decode-and-Forward
+│   ├── genai.py           # Minimal MLP (feedforward NN)
+│   ├── hybrid.py          # SNR-adaptive Hybrid
+│   ├── vae.py             # Variational Autoencoder
+│   ├── cgan.py            # Conditional GAN (WGAN-GP)
+│   ├── transformer.py     # Transformer relay
+│   ├── mamba.py           # Mamba S6 relay
+│   └── mamba2.py          # Mamba-2 SSD relay
+
+├── simulation/
+│   ├── runner.py          # Monte Carlo BER simulation
+│   └── statistics.py      # CI computation, significance tests
+├── visualization/
+│   └── plots.py           # BER plotting utilities
+└── utils/
+    └── torch_compat.py    # Device detection helpers
+\end{verbatim}
+
+The framework uses object-oriented design with a common \texttt{Relay} base class, enabling polymorphic relay swapping. Monte Carlo simulation is implemented in \texttt{runner.py} with configurable trial count, bit count, and SNR range. All MIMO operations use vectorized PyTorch for GPU acceleration.
+
+\textbf{Testing:} 126 automated tests (pytest) cover all channels, modulation (BPSK, QPSK, 16-QAM, 16-PSK), relay strategies, simulation, statistics, and modulation-comparison modules with 100\% pass rate.
+
+\textbf{Reproducibility:} Random seeds are controlled at the source (bit generation) and noise (per-trial seeding) levels to ensure reproducible results.
+
+\section{Appendix D: Normalized 3K-Parameter Configurations}\label{sec:appendix-d-normalized-3k-parameter-configurations}
+
+{\def\LTcaptype{table} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Model
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Parameters
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Window
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Hidden / Architecture
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+MLP-3K & 3,004 & 11 & hidden=231 \\
+Hybrid-3K & 3,004 & 11 & hidden=231 (+ DF switch) \\
+VAE-3K & 3,037 & 11 & latent=10, hidden=(44, 20) \\
+CGAN-3K & 3,004 & 11 & noise=8, g\_hidden=(30, 30, 16), c\_hidden=(32, 16) \\
+Transformer-3K & 3,007 & 11 & d\_model=18, heads=2, layers=1 \\
+Mamba-3K & 3,027 & 11 & d\_model=16, d\_state=6, layers=1 \\
+Mamba2-3K & 3,004 & 11 & d\_model=15, d\_state=6, chunk\_size=8, layers=1 \\
+\end{longtable}
+}
+
+All 3K configurations use a window size of 11 (vs.~5 for original MLP/Hybrid, and 11 for original sequence models) to provide a common input context. The parameter counts are within ±1.2\% of the 3,000 target.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+%% ── Hebrew Abstract (Back Matter) ───────────────────────────
+
+
+\chapter{Channel Model Validation Charts}\label{chap:app-validation}
+\textbf{Goal:} Validate the simulation framework against closed-form theoretical BER expressions to ensure baseline accuracy before evaluating AI relays.
+
+\textbf{Trials:} - \textbf{Topology:} SISO, MIMO 2x2 - \textbf{Modulation scheme:} BPSK - \textbf{Channel:} AWGN, Rayleigh, Rician (K=3) - \textbf{Equalizers (in MIMO only):} None (SISO), ZF, MMSE, SIC - \textbf{Demod:} Hard decision only
+
+\textbf{Conclusion:} Monte Carlo simulations match theoretical predictions within 95\% confidence intervals across all channel models and topologies. AWGN follows the expected exponential decay, Rayleigh validates the \(1/(4\bar{\gamma})\) high-SNR slope, Rician falls between the two, and MIMO equalization correctly exhibits the expected ZF \textless{} MMSE \textless{} SIC performance hierarchy.
+
+\subsection{Results Figures}\label{sec:results-figures}
+
+\begin{figure}[H]
+\centering
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/channel_theoretical_awgn.png}}
+\caption{AWGN Channel --- Theoretical vs.~Simulative BER. Single-hop, two-hop AF, and two-hop DF: closed-form theory (solid lines) versus Monte Carlo simulation (markers with 95\% CI). Theory and simulation match within the confidence interval at all SNR points.}\label{fig:fig1}
+\end{figure}
+
+
+
+\begin{figure}[H]
+\centering
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/channel_theoretical_rayleigh.png}}
+\caption{Rayleigh fading --- theory vs.~simulation for single-hop and two-hop DF. The characteristic \(1/\text{SNR}\) slope (compared to the steeper exponential AWGN curve) is clearly visible.}\label{fig:fig2}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/channel_theoretical_rician.png}}
+\caption{Rician fading (K=3) --- theory vs.~simulation for single-hop and two-hop DF.}\label{fig:fig3}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/channel_fading_pdf.png}}
+\caption{Left --- PDF of \(|h|\) for Rayleigh and Rician (\(K=1, 3, 10\)). Right --- CDF (outage probability). Rayleigh has the highest deep-fade probability at any threshold.}\label{fig:fig4}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/mimo_equalizer_comparison.png}}
+\caption{2Ã—2 MIMO Rayleigh --- single-hop BER with ZF, MMSE, and SIC equalization. Theoretical approximations (solid/dashed lines) overlaid with Monte Carlo simulation (markers with 95\% CI). MMSE provides \textasciitilde1--2 dB gain over ZF; SIC provides an additional \textasciitilde0.5--1 dB gain.}\label{fig:fig5}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/channel_analysis_summary.png}}
+\caption{Consolidated 2Ã—3 grid of all channel model validations. Top row: (a) AWGN, (b) Rayleigh, (c) Rician K=3 --- theory (blue) vs.~simulation (red). Bottom row: (d) all SISO channels compared, (e) fading PDFs, (f) MIMO equalizer comparison.}\label{fig:fig6}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/channel_comparison_all.png}}
+\caption{Single-hop BPSK BER for all three SISO channel models. AWGN provides the best BER (no fading), Rician K=3 is intermediate, and Rayleigh is the most challenging. The SNR penalty for Rayleigh relative to AWGN exceeds 15 dB at \(\text{BER} = 10^{-3}\), motivating the use of diversity techniques such as MIMO.}\label{fig:fig7}
+\end{figure}
+
+
+\chapter{Detailed Experimental Tables}\label{chap:app-tables}
+This appendix contains the exhaustive numerical BER results for the experiments discussed in Chapter~\ref{sec:experiments}.
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}@{}}
+\caption{BER comparison of all nine relay strategies on the AWGN channel.}\label{tbl:table1}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+SNR (dB)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+AF
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+DF
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+MLP (169p)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Hybrid
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+VAE
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+CGAN
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Transformer
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mamba S6
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mamba-2 SSD
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+SNR (dB)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+AF
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+DF
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+MLP (169p)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Hybrid
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+VAE
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+CGAN
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Transformer
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mamba S6
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mamba-2 SSD
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 0.291 & 0.268 & 0.264 & 0.262 & 0.376 & \textbf{0.261} & 0.267 & 0.269 & 0.270 \\
+4 & 0.154 & 0.112 & 0.112 & 0.113 & 0.330 & \textbf{0.111} & 0.114 & 0.111 & \textbf{0.111} \\
+8 & 0.044 & \textbf{0.010} & 0.015 & \textbf{0.010} & 0.291 & 0.013 & 0.014 & \textbf{0.010} & 0.012 \\
+12 & 0.0027 & \textbf{1.67e-04} & \textbf{1.67e-04} & \textbf{1.67e-04} & 0.269 & 3.33e-04 & 3.33e-04 & \textbf{1.67e-04} & \textbf{1.67e-04} \\
+16 & \textbf{0} & \textbf{0} & \textbf{0} & \textbf{0} & 0.258 & \textbf{0} & \textbf{0} & \textbf{0} & \textbf{0} \\
+20 & \textbf{0} & \textbf{0} & \textbf{0} & \textbf{0} & 0.250 & \textbf{0} & \textbf{0} & \textbf{0} & \textbf{0} \\
+\end{longtable}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}@{}}
+\caption{BER comparison on the Rayleigh fading channel (SISO).}\label{tbl:table2}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+SNR (dB)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+AF
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+DF
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+MLP (169p)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Hybrid
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+VAE
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+CGAN
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Transformer
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mamba S6
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mamba-2 SSD
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+SNR (dB)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+AF
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+DF
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+MLP (169p)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Hybrid
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+VAE
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+CGAN
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Transformer
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mamba S6
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mamba-2 SSD
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 0.330 & \textbf{0.245} & 0.247 & 0.250 & 0.395 & 0.247 & 0.325 & 0.317 & 0.318 \\
+4 & 0.205 & 0.139 & 0.141 & 0.141 & 0.347 & \textbf{0.138} & 0.183 & 0.178 & 0.180 \\
+8 & 0.092 & \textbf{0.068} & 0.070 & 0.069 & 0.304 & 0.070 & 0.077 & 0.076 & 0.076 \\
+12 & 0.037 & \textbf{0.031} & 0.032 & 0.032 & 0.278 & 0.031 & 0.032 & 0.032 & 0.032 \\
+16 & 0.015 & 0.014 & 0.014 & 0.014 & 0.262 & 0.014 & 0.014 & \textbf{0.013} & 0.014 \\
+20 & 0.0053 & \textbf{0.0047} & \textbf{0.0047} & \textbf{0.0047} & 0.250 & 0.0052 & 0.0048 & 0.0052 & \textbf{0.0047} \\
+\end{longtable}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}@{}}
+\caption{BER comparison on the Rician fading channel with K-factor = 3.}\label{tbl:table3}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+SNR (dB)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+AF
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+DF
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+MLP (169p)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Hybrid
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+VAE
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+CGAN
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Transformer
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mamba S6
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mamba-2 SSD
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+SNR (dB)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+AF
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+DF
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+MLP (169p)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Hybrid
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+VAE
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+CGAN
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Transformer
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mamba S6
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mamba-2 SSD
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 0.265 & 0.206 & 0.206 & 0.205 & 0.372 & \textbf{0.203} & 0.242 & 0.239 & 0.241 \\
+4 & 0.137 & \textbf{0.090} & 0.092 & 0.093 & 0.320 & 0.090 & 0.104 & 0.103 & 0.105 \\
+8 & 0.044 & \textbf{0.028} & 0.030 & 0.030 & 0.284 & 0.029 & 0.030 & 0.030 & 0.030 \\
+12 & 0.0092 & 0.0072 & \textbf{0.0068} & 0.0072 & 0.263 & 0.0077 & 0.0077 & \textbf{0.0068} & 0.0070 \\
+16 & 0.0023 & 0.0018 & \textbf{0.0017} & 0.0018 & 0.252 & 0.0018 & 0.0018 & \textbf{0.0017} & \textbf{0.0017} \\
+20 & \textbf{6.67e-04} & \textbf{6.67e-04} & \textbf{6.67e-04} & \textbf{6.67e-04} & 0.248 & 8.33e-04 & \textbf{6.67e-04} & \textbf{6.67e-04} & \textbf{6.67e-04} \\
+\end{longtable}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}@{}}
+\caption{BER comparison on 2Ã—2 MIMO Rayleigh channel with ZF equalization.}\label{tbl:table4}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+SNR (dB)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+AF
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+DF
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+MLP (169p)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Hybrid
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+VAE
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+CGAN
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Transformer
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mamba S6
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mamba-2 SSD
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+SNR (dB)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+AF
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+DF
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+MLP (169p)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Hybrid
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+VAE
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+CGAN
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Transformer
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mamba S6
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mamba-2 SSD
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 0.328 & 0.254 & \textbf{0.250} & 0.253 & 0.398 & 0.254 & 0.329 & 0.326 & 0.327 \\
+4 & 0.206 & \textbf{0.140} & 0.145 & 0.146 & 0.350 & 0.143 & 0.181 & 0.180 & 0.181 \\
+8 & 0.104 & \textbf{0.071} & 0.073 & 0.073 & 0.313 & 0.072 & 0.082 & 0.081 & 0.081 \\
+12 & 0.040 & \textbf{0.032} & \textbf{0.032} & \textbf{0.032} & 0.277 & 0.032 & 0.033 & 0.033 & 0.033 \\
+16 & 0.015 & 0.014 & \textbf{0.013} & 0.014 & 0.265 & 0.014 & 0.014 & 0.014 & 0.014 \\
+20 & 0.0043 & \textbf{0.0037} & 0.0042 & \textbf{0.0037} & 0.256 & \textbf{0.0037} & 0.0038 & 0.0040 & 0.0038 \\
+\end{longtable}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}@{}}
+\caption{BER comparison on 2Ã—2 MIMO Rayleigh channel with MMSE equalization.}\label{tbl:table5}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+SNR (dB)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+AF
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+DF
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+MLP (169p)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Hybrid
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+VAE
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+CGAN
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Transformer
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mamba S6
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mamba-2 SSD
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+SNR (dB)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+AF
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+DF
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+MLP (169p)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Hybrid
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+VAE
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+CGAN
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Transformer
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mamba S6
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mamba-2 SSD
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 0.199 & 0.164 & 0.166 & 0.164 & 0.354 & 0.165 & 0.173 & \textbf{0.163} & 0.165 \\
+4 & 0.119 & \textbf{0.086} & 0.090 & \textbf{0.086} & 0.318 & 0.091 & 0.094 & 0.088 & 0.089 \\
+8 & 0.058 & \textbf{0.040} & 0.044 & \textbf{0.040} & 0.288 & 0.044 & 0.045 & 0.042 & 0.043 \\
+12 & 0.026 & \textbf{0.018} & 0.019 & \textbf{0.018} & 0.270 & 0.019 & 0.020 & 0.018 & 0.019 \\
+16 & 0.0090 & \textbf{0.0067} & 0.0073 & \textbf{0.0067} & 0.259 & 0.0072 & 0.0073 & 0.0070 & 0.0070 \\
+20 & 0.0020 & 0.0018 & 0.0018 & 0.0018 & 0.255 & 0.0025 & 0.0020 & \textbf{0.0015} & 0.0018 \\
+\end{longtable}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}@{}}
+\caption{BER comparison on 2Ã—2 MIMO Rayleigh channel with MMSE-SIC equalization.}\label{tbl:table6}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+SNR (dB)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+AF
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+DF
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+MLP (169p)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Hybrid
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+VAE
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+CGAN
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Transformer
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mamba S6
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mamba-2 SSD
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+SNR (dB)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+AF
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+DF
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+MLP (169p)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Hybrid
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+VAE
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+CGAN
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Transformer
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mamba S6
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mamba-2 SSD
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 0.172 & \textbf{0.134} & 0.139 & 0.138 & 0.347 & 0.136 & 0.146 & 0.143 & 0.143 \\
+4 & 0.075 & \textbf{0.045} & 0.048 & \textbf{0.045} & 0.315 & 0.047 & 0.049 & 0.048 & 0.048 \\
+8 & 0.020 & \textbf{0.011} & 0.013 & \textbf{0.011} & 0.290 & 0.012 & 0.012 & 0.012 & 0.012 \\
+12 & 0.0052 & \textbf{0.0037} & 0.0038 & \textbf{0.0037} & 0.278 & 0.0043 & 0.0042 & 0.0038 & 0.0038 \\
+16 & 0.0017 & 0.0013 & 0.0012 & 0.0013 & 0.271 & 0.0012 & \textbf{0.0010} & 0.0015 & 0.0013 \\
+20 & 1.67e-04 & \textbf{0} & \textbf{0} & \textbf{0} & 0.266 & \textbf{0} & \textbf{0} & 1.67e-04 & \textbf{0} \\
+\end{longtable}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}@{}}
+\caption{Normalized 3K BER results --- AWGN channel.}\label{tbl:table7}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+SNR (dB)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+MLP-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Hybrid-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+VAE-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Transformer-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mamba-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mamba2-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+AF
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+DF
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+SNR (dB)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+MLP-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Hybrid-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+VAE-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Transformer-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mamba-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mamba2-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+AF
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+DF
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & \textbf{0.267} & 0.269 & 0.408 & 0.269 & 0.271 & 0.270 & 0.291 & 0.268 \\
+4 & 0.114 & 0.114 & 0.359 & 0.114 & \textbf{0.112} & 0.113 & 0.154 & 0.112 \\
+10 & 0.0033 & \textbf{0.0012} & 0.309 & 0.0023 & 0.0017 & 0.0018 & 0.013 & 0.0012 \\
+16 & \textbf{0} & \textbf{0} & 0.285 & \textbf{0} & \textbf{0} & \textbf{0} & 0 & 0 \\
+20 & \textbf{0} & \textbf{0} & 0.280 & \textbf{0} & \textbf{0} & \textbf{0} & 0 & 0 \\
+\end{longtable}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}@{}}
+\caption{Normalized 3K BER results --- Rayleigh fading channel.}\label{tbl:table8}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+SNR (dB)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+MLP-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Hybrid-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+VAE-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Transformer-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mamba-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mamba2-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+AF
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+DF
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+SNR (dB)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+MLP-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Hybrid-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+VAE-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Transformer-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mamba-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mamba2-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+AF
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+DF
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & \textbf{0.252} & 0.258 & 0.411 & 0.329 & 0.320 & 0.320 & 0.330 & 0.245 \\
+4 & 0.146 & \textbf{0.145} & 0.375 & 0.181 & 0.180 & 0.179 & 0.205 & 0.139 \\
+10 & 0.049 & \textbf{0.047} & 0.315 & 0.050 & 0.049 & 0.049 & 0.058 & 0.044 \\
+16 & 0.015 & 0.014 & 0.289 & 0.014 & \textbf{0.014} & 0.014 & 0.015 & 0.014 \\
+20 & 0.0050 & \textbf{0.0047} & 0.279 & \textbf{0.0047} & \textbf{0.0047} & \textbf{0.0047} & 0.0053 & 0.0047 \\
+\end{longtable}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}@{}}
+\caption{Normalized 3K BER results --- Rician K=3 fading channel.}\label{tbl:table9}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+SNR (dB)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+MLP-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Hybrid-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+VAE-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Transformer-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mamba-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mamba2-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+AF
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+DF
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+SNR (dB)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+MLP-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Hybrid-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+VAE-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Transformer-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mamba-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mamba2-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+AF
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+DF
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 0.211 & \textbf{0.211} & 0.389 & 0.243 & 0.242 & 0.241 & 0.265 & 0.206 \\
+4 & \textbf{0.095} & 0.099 & 0.345 & 0.104 & 0.102 & 0.103 & 0.137 & 0.090 \\
+10 & 0.016 & \textbf{0.015} & 0.301 & 0.016 & 0.016 & 0.016 & 0.020 & 0.015 \\
+16 & \textbf{0.0015} & 0.0018 & 0.283 & \textbf{0.0015} & 0.0017 & \textbf{0.0015} & 0.0023 & 0.0018 \\
+20 & \textbf{6.67e-04} & \textbf{6.67e-04} & 0.275 & \textbf{6.67e-04} & \textbf{6.67e-04} & \textbf{6.67e-04} & 6.67e-04 & 6.67e-04 \\
+\end{longtable}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}@{}}
+\caption{Normalized 3K BER results --- 2Ã—2 MIMO ZF.}\label{tbl:table10}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+SNR (dB)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+MLP-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Hybrid-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+VAE-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Transformer-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mamba-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mamba2-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+AF
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+DF
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+SNR (dB)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+MLP-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Hybrid-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+VAE-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Transformer-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mamba-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mamba2-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+AF
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+DF
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & \textbf{0.256} & 0.257 & 0.410 & 0.329 & 0.327 & 0.326 & 0.328 & 0.254 \\
+4 & \textbf{0.146} & 0.150 & 0.369 & 0.185 & 0.181 & 0.182 & 0.206 & 0.140 \\
+10 & \textbf{0.049} & 0.049 & 0.319 & 0.053 & 0.052 & 0.053 & 0.066 & 0.048 \\
+16 & 0.014 & \textbf{0.014} & 0.288 & 0.014 & 0.014 & 0.014 & 0.015 & 0.014 \\
+20 & 0.0040 & \textbf{0.0037} & 0.279 & 0.0040 & 0.0040 & 0.0040 & 0.0043 & 0.0037 \\
+\end{longtable}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}@{}}
+\caption{Normalized 3K BER results --- 2Ã—2 MIMO MMSE.}\label{tbl:table11}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+SNR (dB)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+MLP-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Hybrid-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+VAE-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Transformer-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mamba-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mamba2-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+AF
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+DF
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+SNR (dB)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+MLP-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Hybrid-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+VAE-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Transformer-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mamba-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mamba2-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+AF
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+DF
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 0.167 & \textbf{0.164} & 0.384 & 0.169 & 0.165 & 0.164 & 0.199 & 0.164 \\
+4 & 0.094 & \textbf{0.086} & 0.348 & 0.091 & 0.089 & 0.089 & 0.119 & 0.086 \\
+10 & 0.030 & 0.027 & 0.317 & 0.029 & \textbf{0.026} & 0.027 & 0.040 & 0.027 \\
+16 & 0.0083 & 0.0067 & 0.287 & \textbf{0.0067} & 0.0072 & 0.0073 & 0.0090 & 0.0067 \\
+20 & 0.0022 & \textbf{0.0018} & 0.280 & \textbf{0.0018} & \textbf{0.0018} & \textbf{0.0018} & 0.0020 & 0.0018 \\
+\end{longtable}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}@{}}
+\caption{Normalized 3K BER results --- 2Ã—2 MIMO SIC.}\label{tbl:table12}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+SNR (dB)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+MLP-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Hybrid-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+VAE-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Transformer-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mamba-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mamba2-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+AF
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+DF
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+SNR (dB)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+MLP-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Hybrid-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+VAE-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Transformer-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mamba-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mamba2-3K
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+AF
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+DF
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 0.140 & \textbf{0.137} & 0.368 & 0.144 & 0.142 & 0.144 & 0.172 & 0.134 \\
+4 & 0.048 & \textbf{0.045} & 0.335 & 0.048 & 0.047 & 0.048 & 0.075 & 0.045 \\
+10 & 0.0060 & \textbf{0.0057} & 0.309 & 0.0060 & \textbf{0.0057} & 0.0060 & 0.010 & 0.0057 \\
+16 & 0.0013 & 0.0013 & 0.298 & \textbf{0.0010} & 0.0013 & 0.0013 & 0.0017 & 0.0013 \\
+20 & 1.67e-04 & \textbf{0} & 0.292 & \textbf{0} & \textbf{0} & \textbf{0} & 1.67e-04 & 0 \\
+\end{longtable}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1667}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1667}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1667}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1667}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1667}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1667}}@{}}
+\caption{Model complexity and timing comparison (experiment-specific training settings; Monte Carlo evaluation over 11 SNR points Ã— 10 trials Ã— 10,000 bits). All inference uses batched window extraction and a single forward pass per signal block.}\label{tbl:table13}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Model
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Parameters
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Device
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Training Time
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Eval Time (AWGN)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Eval Time (SIC)
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Model
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Parameters
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Device
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Training Time
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Eval Time (AWGN)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Eval Time (SIC)
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+AF & 0 & --- & 0 s & 0.80 s & 3.47 s \\
+DF & 0 & --- & 0 s & 0.77 s & 1.51 s \\
+MLP (169p) & 169 & CPU & 4.9 s & 1.57 s & 2.20 s \\
+Hybrid & 169 & CPU & 4.6 s & 0.41 s & 1.70 s \\
+VAE & 1,777 & CPU & 21.6 s & 1.81 s & 3.11 s \\
+CGAN (WGAN-GP) & 2,946 & CUDA & 7,293 s (\textasciitilde2 h) & 1.14 s & 2.34 s \\
+Transformer & 17,697 & CUDA & 474 s (\textasciitilde8 min) & 3.71 s & 3.69 s \\
+\textbf{Mamba S6} & \textbf{24,001} & \textbf{CUDA} & \textbf{2,141 s (\textasciitilde36 min)} & \textbf{1.88 s} & \textbf{3.02 s} \\
+\textbf{Mamba2 (SSD)} & \textbf{26,179} & \textbf{CUDA} & \textbf{1,438 s (\textasciitilde24 min)} & \textbf{4.11 s} & \textbf{5.61 s} \\
+\end{longtable}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1250}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1250}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1250}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1250}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1250}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1250}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1250}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1250}}@{}}
+\caption{BER comparison across modulations at selected SNR points (AWGN channel). All nine relay strategies.}\label{tbl:table14}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Relay
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+BPSK 0 dB
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+BPSK 10 dB
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+QPSK 0 dB
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+QPSK 10 dB
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+16-QAM 0 dB
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+16-QAM 10 dB
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+16-QAM 16 dB
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Relay
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+BPSK 0 dB
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+BPSK 10 dB
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+QPSK 0 dB
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+QPSK 10 dB
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+16-QAM 0 dB
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+16-QAM 10 dB
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+16-QAM 16 dB
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+AF & 0.2813 & 0.0141 & 0.2794 & 0.0142 & 0.3778 & 0.1244 & 0.0180 \\
+DF & 0.2651 & 0.0015 & 0.2644 & 0.0016 & 0.3811 & 0.1076 & 0.0038 \\
+MLP (169p) & 0.2589 & 0.0021 & 0.2563 & 0.0025 & 0.3907 & 0.2180 & 0.2180 \\
+Hybrid & 0.2573 & 0.0015 & 0.2644 & 0.0016 & 0.4000 & 0.2711 & 0.2512 \\
+VAE & 0.2611 & 0.0021 & 0.2597 & 0.0036 & 0.3945 & 0.2391 & 0.2231 \\
+CGAN (WGAN-GP) & 0.2633 & 0.0017 & 0.2621 & 0.0018 & 0.3976 & 0.2588 & 0.2486 \\
+Transformer & 0.2593 & 0.0024 & 0.2576 & 0.0036 & 0.3897 & 0.2042 & 0.1827 \\
+Mamba S6 & 0.2585 & 0.0021 & 0.2560 & 0.0028 & 0.3894 & 0.2016 & 0.1935 \\
+Mamba2 (SSD) & 0.2593 & 0.0023 & 0.2566 & 0.0034 & 0.3903 & 0.2032 & 0.1890 \\
+\end{longtable}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1429}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1429}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1429}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1429}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1429}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1429}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1429}}@{}}
+\caption{BER at 16 dB for all relay variants across activation functions and modulations (AWGN and Rayleigh).}\label{tbl:table15}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Relay
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+tanh (BPSK)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+linear (QAM16)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+hardtanh (QAM16)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+tanh (BPSK)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+linear (QAM16)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+hardtanh (QAM16)
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Relay
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+tanh (BPSK)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+linear (QAM16)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+hardtanh (QAM16)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+tanh (BPSK)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+linear (QAM16)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+hardtanh (QAM16)
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+& \textbf{AWGN} & & & \textbf{Rayleigh} & & \\
+MLP & 0.2202 & 0.0721 & \textbf{0.0630} & 0.2375 & 0.1279 & \textbf{0.1247} \\
+Hybrid & 0.2512 & 0.2512 & 0.2512 & 0.2723 & 0.2723 & 0.2723 \\
+VAE & 0.2231 & 0.1111 & \textbf{0.1059} & 0.2462 & 0.1575 & \textbf{0.1573} \\
+CGAN & 0.2482 & 0.0973 & \textbf{0.0863} & 0.2666 & 0.1432 & \textbf{0.1383} \\
+Transformer & 0.2111 & \textbf{0.0453} & 0.0505 & 0.2305 & \textbf{0.1159} & 0.1194 \\
+Mamba S6 & 0.2131 & 0.0422 & \textbf{0.0396} & 0.2333 & 0.1129 & \textbf{0.1108} \\
+Mamba-2 SSD & 0.2065 & 0.0471 & \textbf{0.0441} & 0.2273 & 0.1157 & \textbf{0.1145} \\
+AF & 0.0180 & --- & --- & 0.1009 & --- & --- \\
+DF & 0.0038 & --- & --- & 0.0828 & --- & --- \\
+\end{longtable}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.2000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.2000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.2000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.2000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.2000}}@{}}
+\caption{16-QAM BER improvements at 20 dB for sequence models with and without CSI injection and layer normalisation (AWGN).}\label{tbl:table16}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+SNR (dB)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+AF Baseline
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+DF Baseline
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mamba S6 (Baseline)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mamba S6 (+CSI + LN)
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+SNR (dB)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+AF Baseline
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+DF Baseline
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mamba S6 (Baseline)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mamba S6 (+CSI + LN)
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\textbf{0.0} & 0.3332 & 0.4300 & 0.2288 & 0.2396 \\
+\textbf{8.0} & 0.1436 & 0.2798 & 0.2241 & 0.0635 \\
+\textbf{14.0} & 0.0592 & 0.1557 & 0.2227 & 0.0163 \\
+\textbf{20.0} & 0.0246 & 0.0901 & 0.2302 & \textbf{0.0055} \\
+\end{longtable}
+
+\begin{longtable}[]{@{}llll@{}}
+\caption{BER at 20 dB for all relay variants: 4-class (I/Q split) vs.~16-class (joint 2D) classification for 16-QAM.}\label{tbl:table24}\tabularnewline
+\toprule\noalign{}
+Relay & 4-cls BER @ 20 dB & 16-cls BER @ 20 dB & Improvement \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+Relay & 4-cls BER @ 20 dB & 16-cls BER @ 20 dB & Improvement \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+MLP & 0.00811 & \textbf{0.00002} & 405Ã— \\
+VAE & --- & \textbf{0.00000} & --- \\
+CGAN & 0.00811 & --- & --- \\
+Hybrid & --- & --- & --- \\
+Transformer & 0.00810 & \textbf{0.00001} & 810Ã— \\
+Mamba S6 & 0.00810 & \textbf{0.00009} & 90Ã— \\
+Mamba-2 SSD & 0.00811 & \textbf{0.00197} & 4.1Ã— \\
+AF & 0.00063 & --- & --- \\
+DF & 0.00000 & --- & --- \\
+\end{longtable}
+
+
+
+\chapter{48-Variant Neural Relay Experiments (CSI \& Normalization)}\label{chap:app-csi}
+\textbf{Goal:} Determine the impact of structural input normalization and explicit channel state information (CSI) injection on higher-order modulations in fading channels.
+
+\textbf{Trials:} - \textbf{Topology:} SISO - \textbf{Modulation scheme:} 16-QAM, 16-PSK - \textbf{Channel:} Rayleigh - \textbf{Equalizers:} None - \textbf{NN architecture:} Transformer, Mamba S6, Mamba-2 SSD - \textbf{NN activation:} tanh, hardtanh, scaled tanh, sigmoid - \textbf{Special case:} CSI Injection, LayerNorm
+
+\textbf{Conclusion:} Input LayerNorm universally benefits multi-level constellations like 16-QAM. Explicit CSI injection is highly modulation-dependent: it degrades performance for amplitude-carrying 16-QAM (creating redundant feature confusion) but significantly improves performance for constant-envelope 16-PSK, bringing the best neural models to within 2.5\% of AF at high SNR. Across the 48 tested combinatorial variants, Mamba S6 proved the strongest architecture, but no neural relay surpassed classical DF.
+
+\section{Results Tables}\label{sec:results-tables-4}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1667}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1667}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1667}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1667}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1667}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1667}}@{}}
+\caption{Sample BER values comparing blind spatial tracking vs.~explicit Channel State injection for 16-QAM in Rayleigh fading.}\label{tbl:table18}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+SNR (dB)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+AF
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+DF
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\#1 Mamba S6 (+LN tanh)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\#2 Transformer (+LN sigmoid)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\#3 Transformer (+LN tanh)
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+SNR (dB)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+AF
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+DF
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\#1 Mamba S6 (+LN tanh)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\#2 Transformer (+LN sigmoid)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\#3 Transformer (+LN tanh)
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 0.4490 & 0.4130 & 0.4513 & 0.4490 & 0.4493 \\
+4 & 0.3893 & 0.3472 & 0.3893 & 0.3865 & 0.3852 \\
+8 & 0.2913 & 0.2543 & 0.2943 & 0.2965 & 0.2943 \\
+12 & 0.1877 & 0.1575 & 0.1903 & 0.1912 & 0.1903 \\
+16 & 0.1020 & 0.0817 & 0.1063 & 0.1093 & 0.1102 \\
+20 & 0.0465 & 0.0393 & 0.0562 & 0.0598 & 0.0620 \\
+\end{longtable}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1667}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1667}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1667}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1667}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1667}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1667}}@{}}
+\caption{BER at selected SNR points for the top-3 neural relays and classical baselines (16-QAM, Rayleigh fading, 100 MC trials). The best neural variant (Mamba S6 +LN tanh) comes within 21\% of AF at 20 dB but does not surpass it.}\label{tbl:table19}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+SNR (dB)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+AF
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+DF
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\#1 Mamba S6 (+CSI+LN hardtanh)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\#2 Mamba S6 (+CSI hardtanh)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\#3 Mamba S6 (+CSI scaled\_tanh)
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+SNR (dB)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+AF
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+DF
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\#1 Mamba S6 (+CSI+LN hardtanh)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\#2 Mamba S6 (+CSI hardtanh)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\#3 Mamba S6 (+CSI scaled\_tanh)
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 0.4503 & 0.4218 & 0.4490 & 0.4532 & 0.4535 \\
+4 & 0.3987 & 0.3670 & 0.3963 & 0.3990 & 0.3945 \\
+8 & 0.3240 & 0.2983 & 0.3157 & 0.3123 & 0.3130 \\
+12 & 0.2293 & 0.2083 & 0.2225 & 0.2197 & 0.2232 \\
+16 & 0.1473 & 0.1317 & 0.1415 & 0.1440 & 0.1433 \\
+20 & 0.0812 & 0.0710 & 0.0832 & 0.0808 & 0.0842 \\
+\end{longtable}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
+\caption{BER at selected SNR points for the top-3 neural relays and classical baselines (16-PSK, Rayleigh fading, 100 MC trials). The best neural variants track AF closely at high SNR, with the gap narrowing to 2.5\% at 20 dB.}\label{tbl:table20}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Property
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+16-QAM Top-3
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+16-PSK Top-3
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Property
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+16-QAM Top-3
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+16-PSK Top-3
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Dominant configuration & +LN (LayerNorm only) & +CSI / +CSI+LN \\
+CSI injection benefit & Negative (degrades BER) & Positive (improves BER) \\
+Best architecture & Mamba S6, Transformer & Mamba S6 (all three) \\
+Best activation & tanh, sigmoid & hardtanh, scaled\_tanh \\
+Gap to AF at 20 dB & \textasciitilde21\% (0.0562 vs.~0.0465) & \textasciitilde2.5\% (0.0832 vs.~0.0812) \\
+DF superiority at 20 dB & DF wins by 43\% over best neural & DF wins by 17\% over best neural \\
+\end{longtable}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
+\caption{Cross-constellation comparison of top-performing neural relay strategies.}\label{tbl:table21}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Goal
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Outcome
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Assessment
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Goal
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Outcome
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Assessment
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Identify top architectures for higher-order modulations & QAM16: Mamba S6 and Transformer dominate; PSK16: Mamba S6 sweeps all top-3 & \textbf{Achieved} --- clear ranking established with statistical confidence over 100 MC trials \\
+Determine whether CSI injection universally improves relay performance & CSI injection is modulation-dependent: beneficial for PSK16, detrimental for QAM16 & \textbf{Achieved} --- unexpected finding that refutes the Section~\ref{sec:input-normalization-and-csi-injection} hypothesis of universal CSI benefit \\
+Evaluate the role of input LayerNorm across architectures & LayerNorm consistently helps QAM16 (all top-3 use it) but is neutral-to-unnecessary for PSK16 & \textbf{Achieved} --- extends Section~\ref{sec:input-normalization-and-csi-injection} finding to multi-model, multi-constellation setting \\
+Compare 48 neural variants against classical baselines & No neural variant beats DF; best variants approach but do not surpass AF & \textbf{Achieved} --- confirms DF optimality for higher-order modulations at all SNR points \\
+Establish reproducible JSON-backed experiment infrastructure & Full per-trial BER data, 95\% CI bounds, and metadata saved to JSON; automated top-3 chart generation & \\
+\end{longtable}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}@{}}
+\caption{Goals vs.~outcomes for the comprehensive multi-architecture CSI experiment.}\label{tbl:table22}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+SNR (dB)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Standard 16-QAM Theory
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+E2E Learned Autoencoder
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Relative Difference
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+SNR (dB)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Standard 16-QAM Theory
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+E2E Learned Autoencoder
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Relative Difference
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+10.0 & 0.1098 & 0.183 & âˆ’67\% \\
+12.0 & 0.0762 & 0.142 & âˆ’86\% \\
+15.0 & 0.0481 & 0.084 & âˆ’75\% \\
+20.0 & 0.0174 & 0.042 & âˆ’141\% \\
+\end{longtable}
+
+\section{Results Figures}\label{sec:results-figures-5}
+
+\begin{figure}[H]
+\centering
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/csi/csi_experiment_qam16_rayleigh.png}}
+\caption{16-QAM Rayleigh fading --- BER vs.~SNR for all 48 neural relay variants and two classical baselines (AF, DF) with 95\% confidence intervals. The plot reveals a dense cluster of neural variants between the AF and DF curves, with the best variants approaching AF performance at high SNR.}\label{fig:fig39}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/csi/top3_qam16_rayleigh.png}}
+\caption{Top-3 neural relay architectures compared against AF and DF for 16-QAM in Rayleigh fading. All three best-performing variants use input LayerNorm (+LN) without CSI injection.}\label{fig:fig40}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/csi/csi_experiment_psk16_rayleigh.png}}
+\caption{16-PSK Rayleigh fading --- BER vs.~SNR for all 48 neural relay variants and two classical baselines. The neural variants form a tighter cluster than QAM16, reflecting the constant-envelope nature of PSK which reduces the amplitude-aliasing challenge.}\label{fig:fig41}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/csi/top3_psk16_rayleigh.png}}
+\caption{Top-3 neural relay architectures compared against AF and DF for 16-PSK in Rayleigh fading. In contrast to QAM16, all three best-performing PSK16 variants use CSI injection (+CSI or +CSI+LN).}\label{fig:fig42}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/csi/training_Mamba2_LN_scaled_tanh.png}}
+\caption{Training loss (MSE) and accuracy for Mamba-2 (+LN scaled\_tanh). The model converges within approximately 5 epochs and stabilises, with validation accuracy closely tracking training accuracy --- indicating minimal overfitting.}\label{fig:fig43}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/csi/training_Mamba_CSI_tanh.png}}
+\caption{Training loss and accuracy for Mamba S6 (+CSI tanh). The CSI-augmented input produces a smooth, monotonic training convergence, with the additional channel-state feature providing clear gradient signal for the optimizer.}\label{fig:fig44}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/csi/training_Transformer_CSI_sigmoid.png}}
+\caption{Training loss and accuracy for Transformer (+CSI sigmoid). The Transformer exhibits rapid initial convergence (within 3 epochs) followed by a flat plateau, characteristic of the attention mechanism's ability to capture input structure quickly.}\label{fig:fig45}
+\end{figure}
+
+
+%% ============================================================
+%% Appendix: Experimental Results (Figures per Experiment)
+%% ============================================================
+\chapter{Experimental Results}\label{chap:app-experiments}
+
+This appendix contains all BER curves, charts, and supporting figures for the eight
+experiments described in Chapter~\ref{sec:experiments}.
+Each section corresponds to one experiment and is cross-referenced from the main text.
+
+%% ── E1 ──────────────────────────────────────────────────────
+\section{E1: Channel Model Validation}\label{sec:app-e1}
+
+Figures~\ref{fig:fig1}--\ref{fig:fig7} are located in
+Appendix~\ref{chap:app-validation} (Channel Model Validation Charts).
+
+%% ── E2 ──────────────────────────────────────────────────────
+\section{E2: SISO BPSK Performance (Baseline Relay Comparison)}\label{sec:app-e2}
+
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/awgn_comparison_ci.png}}
+\caption{AWGN channel --- BER vs.\ SNR for all nine relay strategies with 95\,\% CI.
+AI relays outperform classical methods at low SNR; DF dominates at medium-to-high SNR.}
+\label{fig:fig9}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/fading_comparison.png}}
+\caption{Rayleigh fading --- BER vs.\ SNR for all nine relay strategies with 95\,\% CI.}
+\label{fig:fig10}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/rician_comparison_ci.png}}
+\caption{Rician fading ($K{=}3$) --- BER vs.\ SNR for all nine relay strategies with 95\,\% CI.}
+\label{fig:fig11}
+\end{figure}
+
+Numerical BER tables for E2 are in Appendix~\ref{chap:app-tables}
+(Tables~\ref{tbl:table1}--\ref{tbl:table3}).
+
+%% ── E3 ──────────────────────────────────────────────────────
+\section{E3: MIMO 2$\times$2 BPSK Performance}\label{sec:app-e3}
+
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/mimo_2x2_comparison_ci.png}}
+\caption{2$\times$2 MIMO with ZF equalization --- BER vs.\ SNR for all nine relay strategies with 95\,\% CI.}
+\label{fig:fig12}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/mimo_2x2_mmse_comparison_ci.png}}
+\caption{2$\times$2 MIMO with MMSE equalization --- BER vs.\ SNR for all nine relay strategies with 95\,\% CI.}
+\label{fig:fig13}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/mimo_2x2_sic_comparison_ci.png}}
+\caption{2$\times$2 MIMO with MMSE-SIC equalization --- BER vs.\ SNR for all nine relay strategies with 95\,\% CI.}
+\label{fig:fig14}
+\end{figure}
+
+Numerical BER tables for E3 are in Appendix~\ref{chap:app-tables}
+(Tables~\ref{tbl:table4}--\ref{tbl:table6}).
+
+%% ── E4 ──────────────────────────────────────────────────────
+\section{E4: Parameter Normalisation \& Complexity Trade-off}\label{sec:app-e4}
+
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/normalized_3k_all_channels.png}}
+\caption{Normalised 3K-parameter comparison across all channels.
+At equal parameter budgets, all architectures converge to similar BER, with VAE being the consistent underperformer.}
+\label{fig:fig15}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/normalized_3k_awgn.png}}
+\caption{Normalised 3K-parameter BER comparison on AWGN.
+Mamba-3K and Transformer-3K produce nearly identical BER, eliminating the gap seen at original parameter counts.}
+\label{fig:fig16}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/normalized_3k_rayleigh.png}}
+\caption{Normalised 3K-parameter BER comparison on Rayleigh fading.}
+\label{fig:fig17}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/normalized_3k_rician_k3.png}}
+\caption{Normalised 3K-parameter BER comparison on Rician fading ($K{=}3$).}
+\label{fig:fig18}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/complexity_comparison_all_relays.png}}
+\caption{Complexity--performance trade-off.
+Training time vs.\ parameter count vs.\ BER improvement over DF at low SNR.
+The Minimal MLP (169 params) achieves the best efficiency.}
+\label{fig:fig19}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/master_ber_comparison.png}}
+\caption{Master BER comparison --- consolidated view of all nine relay strategies across all six channel/topology configurations.}
+\label{fig:fig20}
+\end{figure}
+
+Numerical BER tables for E4 are in Appendix~\ref{chap:app-tables}
+(Tables~\ref{tbl:table7}--\ref{tbl:table13}).
+
+%% ── E5 ──────────────────────────────────────────────────────
+\section{E5: Higher-Order Modulation Scalability (Constellation-Aware Training)}\label{sec:app-e5}
+
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/modulation/bpsk_awgn_ci.png}}
+\caption{BPSK on AWGN --- all relay strategies with 95\,\% CI (baseline for modulation comparison).}
+\label{fig:fig21}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/modulation/bpsk_rayleigh_ci.png}}
+\caption{BPSK on Rayleigh fading --- all relay strategies with 95\,\% CI.}
+\label{fig:fig22}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/modulation/qpsk_awgn_ci.png}}
+\caption{QPSK on AWGN --- BER curves closely match the BPSK baseline (Figure~\ref{fig:fig21}), confirming I/Q splitting validity.}
+\label{fig:fig23}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/modulation/qpsk_rayleigh_ci.png}}
+\caption{QPSK on Rayleigh fading --- same relative ordering as BPSK, confirming hypothesis generalisability.}
+\label{fig:fig24}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/modulation/qam16__awgn_ci.png}}
+\caption{16-QAM on AWGN --- AI relays hit a BER floor near 0.22 at medium-high SNR due to \(\tanh\) compression of multi-level signals.}
+\label{fig:fig25}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/modulation/qam16__rayleigh_ci.png}}
+\caption{16-QAM on Rayleigh fading --- wider BER gap between modulations under fading; all AI relays significantly worse than DF at every SNR point.}
+\label{fig:fig26}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/modulation/combined_modulation_awgn.png}}
+\caption{Combined modulation comparison (AWGN) --- all nine relays across BPSK (solid), QPSK (dashed, overlapping BPSK), and 16-QAM (dotted).
+The BPSK/QPSK overlap confirms I/Q splitting equivalence.
+The 16-QAM dotted curves reveal the AI relay BER floor.}
+\label{fig:fig27}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/qam16_activation/qam16_activation_awgn.png}}
+\caption{16-QAM activation experiment (AWGN) --- dashed lines = \texttt{tanh}/BPSK baseline, solid = linear/QAM16, dotted = \texttt{hardtanh}/QAM16.
+Replacing \texttt{tanh} and retraining on QAM16 eliminates the BER floor for all AI relays except Hybrid.}
+\label{fig:fig28}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/qam16_activation/qam16_activation_rayleigh.png}}
+\caption{16-QAM activation experiment (Rayleigh fading) --- same trend under fading.}
+\label{fig:fig29}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/activation_comparison/bpsk_activation_awgn.png}}
+\caption{BPSK constellation-aware activation comparison (AWGN).
+All three bounded activations achieve equivalent BER, confirming that BPSK is insensitive to activation choice.}
+\label{fig:fig30}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/activation_comparison/bpsk_activation_rayleigh.png}}
+\caption{BPSK constellation-aware activation comparison (Rayleigh fading).}
+\label{fig:fig31}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/activation_comparison/qpsk_activation_awgn.png}}
+\caption{QPSK constellation-aware activation comparison (AWGN).}
+\label{fig:fig32}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/activation_comparison/qpsk_activation_rayleigh.png}}
+\caption{QPSK constellation-aware activation comparison (Rayleigh fading).}
+\label{fig:fig33}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/activation_comparison/qam16_activation_awgn.png}}
+\caption{16-QAM constellation-aware activation comparison (AWGN).
+All three bounded activations eliminate the \texttt{tanh} BER floor.}
+\label{fig:fig34}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/activation_comparison/qam16_activation_rayleigh.png}}
+\caption{16-QAM constellation-aware activation comparison (Rayleigh fading).}
+\label{fig:fig35}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/activation_comparison/various_activation_functions.png}}
+\caption{Comparison of activation function shapes (left) and their derivatives (right) for $A_{\max} = 0.9487$ (16-QAM).}
+\label{fig:fig36}
+\end{figure}
+
+Numerical BER tables for E5 are in Appendix~\ref{chap:app-tables}
+(Tables~\ref{tbl:table14}--\ref{tbl:table16}).
+
+%% ── E6 ──────────────────────────────────────────────────────
+\section{E6: Input Normalisation and CSI Injection}\label{sec:app-e6}
+
+Figures~\ref{fig:fig39}--\ref{fig:fig45} and the associated tables are located in
+Appendix~\ref{chap:app-csi} (48-Variant Neural Relay Experiments).
+
+%% ── E7 ──────────────────────────────────────────────────────
+\section{E7: 16-Class 2D Classification for QAM16}\label{sec:app-e7}
+
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/all_relays_16class/ber_all_relays_16class.png}}
+\caption{16-QAM BER vs.\ SNR for all relay variants (4-class and 16-class) on AWGN.
+The 4-class variants (dashed) plateau at BER $\approx 0.008$ while the 16-class variants (solid) continue decreasing, approaching and matching the DF baseline.}
+\label{fig:fig50}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/all_relays_16class/grouped_bar_16class.png}}
+\caption{Grouped bar comparison of 4-class vs.\ 16-class BER at 20\,dB for each architecture.}
+\label{fig:fig51}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/all_relays_16class/heatmap_all_relays_16class.png}}
+\caption{Heatmap of BER across all relay variants and SNR points.
+The 16-class variants show a clear colour transition from high BER (warm) at low SNR to near-zero BER (cool) at high SNR.}
+\label{fig:fig52}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/all_relays_16class/top3_16class.png}}
+\caption{Top-3 16-class relay variants compared against AF and DF.
+VAE 16-cls, Transformer 16-cls, and MLP 16-cls all match or approach DF performance across the full SNR range.}
+\label{fig:fig53}
+\end{figure}
+
+Numerical BER table for E7 is in Appendix~\ref{chap:app-tables}
+(Table~\ref{tbl:table24}).
+
+%% ── E8 ──────────────────────────────────────────────────────
+\section{E8: End-to-End Joint Optimisation}\label{sec:app-e8}
+
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/e2e/e2e_ber_comparison.png}}
+\caption{BER vs.\ SNR for E2E learned autoencoder compared to theoretical 16-QAM over Rayleigh fading.
+The E2E system underperforms the classical grid constellation across the full SNR range.}
+\label{fig:fig46}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/e2e/e2e_constellation.png}}
+\caption{Learned 16-point constellation of the E2E autoencoder.
+The network discovers a non-rectangular geometry that maximises minimum Euclidean distance under the average power constraint.}
+\label{fig:fig47}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/e2e/e2e_training_loss.png}}
+\caption{Training loss (cross-entropy) convergence of the E2E autoencoder.
+The model converges within approximately 200 epochs.}
+\label{fig:fig48}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/e2e/e2e_relay_comparison.png}}
+\caption{Performance comparison of the E2E autoencoder against the modular relay-based approaches.
+The E2E system does not achieve lower BER than the two-hop DF relay.}
+\label{fig:fig49}
+\end{figure}
