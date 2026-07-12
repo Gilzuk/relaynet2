@@ -18,6 +18,19 @@ MLP-170 (BPSK) trails Viterbi-Genie by roughly 1.5–2dB in the transition regio
 
 **Lesson for future comparisons**: always check hop-2 (and hop-1) channel objects match exactly across scripts before comparing BER numbers pulled from different files — even same-scenario-sounding runs can silently differ. Chart: `/tmp/e6_mlp_vs_viterbi_qpsk_comparison.png`, data: `/tmp/e6_mlp_vs_viterbi_qpsk_results.npy` (ephemeral).
 
+## Latest result: symmetric-hop relay comparison (e6_relay_comparison_symmetric.py — EXECUTED)
+User pointed out every prior E6 relay comparison in this repo made hop 2 easier than hop 1 (clean AWGN or Rayleigh-only, no ISI) — a relay that fixes hop 1 got a free ride on hop 2, conflating relay quality with channel asymmetry. Asked to redo it with **symmetric hops: same channel model (ISI + Rayleigh + AWGN) on both hops, agnostic to transmitter/receiver**, to isolate relay-architecture effects only.
+
+Added `ISIRayleighChannel` (real) and `ComplexISIRayleighChannel` (complex) to `relaynet/channels/e6_channels.py` — combined unknown 3-tap ISI + coherently-compensated Rayleigh magnitude fading + AWGN, same taps/SNR convention as the rest of the framework. Used identically (same taps, independent per-hop RNG/fading realizations) for hop 1 AND hop 2 in the new `e6_relay_comparison_symmetric.py`. Important modeling note baked into the script's docstring: "Viterbi-Genie" here still only knows the static ISI taps (matching every other E6 Viterbi comparison in this repo) — the Rayleigh fading is NOT part of its genie CSI, deliberately, to see how an ISI-only-aware relay degrades once fading is layered on top. Also: the destination does plain hard-decision demod with no hop-2 equalization, so even a theoretically perfect relay still gets re-corrupted by hop 2's own unequalized ISI+fading — there's an unavoidable shared floor by construction.
+
+Full-scale run (5×50k, BPSK: AF/DF-Hard/DF-Soft/MLP-170/Viterbi-Genie; QPSK: AF/DF-Hard/DF-Soft/Viterbi-Genie), key findings:
+- **DF-Hard becomes the *worst* relay at high SNR** (0.384 @20dB, worse than AF's 0.337 and DF-Soft's 0.337) — hard-decision lock-in from hop 1 now compounds with hop 2's own independent ISI corruption, making it actively counterproductive rather than just non-monotonic.
+- **AF and DF-Soft plateau hard** around 0.34 BER, barely moving from 0dB to 20dB — the double impairment saturates them almost immediately.
+- **MLP-170 and Viterbi-Genie both bottom out around 0.225–0.230 BER by 14–20dB** — clearly the best (≈1.5× lower BER than classical relays) but nowhere near zero, exactly as expected: neither can touch hop 2's uncorrected impairment, only hop 1's.
+- **BPSK and QPSK numbers are statistically indistinguishable per relay again** (e.g. Viterbi-Genie 0.2253 BPSK vs 0.2263 QPSK @14dB) — same modulation-invariance property as the earlier fair comparison, further cross-validating `ViterbiMLSEQPSKRelay`.
+
+Chart: `/tmp/e6_relay_comparison_symmetric.png` (2-panel BPSK/QPSK), data: `/tmp/e6_relay_comparison_symmetric_results.npy` (ephemeral).
+
 ## Still explicitly scoped out (per user instruction / not yet requested)
 - **QAM16 Viterbi** — user said "no, viterbi only for qpsk". Do not build a 16-QAM trellis (256 states for L=3) unless asked.
 - **AI relays (MLP) for QPSK/16-QAM** — `MLPRelay` regresses a single real tanh output per window, valid for BPSK only; would need a multi-output/complex-output redesign. Not started.

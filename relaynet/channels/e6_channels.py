@@ -144,6 +144,65 @@ class ComplexAWGNChannel:
         return signal + noise
 
 
+class ISIRayleighChannel:
+    """Combined unknown ISI + coherently-compensated Rayleigh fading + AWGN.
+
+    y = |h| * conv(x, taps) + n, real-valued (BPSK). Intended to be used
+    identically on BOTH hops of a two-hop link (same taps, independent
+    per-hop RNG streams) so that neither hop is artificially easier than
+    the other -- isolating relay-architecture differences rather than
+    channel-asymmetry differences.
+
+    Parameters
+    ----------
+    taps : array-like
+        Channel impulse response coefficients. Will be normalized to unit energy.
+    seed : int, optional
+    rng : numpy.random.Generator, optional
+    """
+
+    def __init__(self, taps, seed=None, rng=None):
+        self.taps = np.asarray(taps, dtype=float)
+        self.taps /= np.linalg.norm(self.taps)
+        self.rng = np.random.default_rng(seed) if rng is None else rng
+
+    def __call__(self, signal, snr_db):
+        isi_output = np.convolve(signal, self.taps)[:signal.size]
+        h = np.abs(
+            (self.rng.standard_normal(signal.size) +
+             1j * self.rng.standard_normal(signal.size)) / np.sqrt(2)
+        )
+        faded = h * isi_output
+        sigma = 10 ** (-snr_db / 20.0)
+        noise = sigma * self.rng.standard_normal(signal.size)
+        return faded + noise
+
+
+class ComplexISIRayleighChannel:
+    """Combined unknown ISI + coherently-compensated Rayleigh fading + AWGN,
+    for complex baseband signals (QPSK/QAM). See :class:`ISIRayleighChannel`.
+    """
+
+    def __init__(self, taps, seed=None, rng=None):
+        self.taps = np.asarray(taps, dtype=float)
+        self.taps /= np.linalg.norm(self.taps)
+        self.rng = np.random.default_rng(seed) if rng is None else rng
+
+    def __call__(self, signal, snr_db):
+        isi_output = np.convolve(signal, self.taps)[:signal.size]
+        h = np.abs(
+            (self.rng.standard_normal(signal.size) +
+             1j * self.rng.standard_normal(signal.size)) / np.sqrt(2)
+        )
+        faded = h * isi_output
+        sigma = 10 ** (-snr_db / 20.0)
+        noise = sigma * (
+            self.rng.standard_normal(signal.size) +
+            1j * self.rng.standard_normal(signal.size)
+        ) / np.sqrt(2)
+        return faded + noise
+
+
 class NonlinearBiasChannel:
     """Nonlinear saturation with DC bias channel.
 
