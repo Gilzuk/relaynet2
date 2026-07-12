@@ -1,6 +1,15 @@
 # Active Context (update this file first, every session)
 
-_Last updated: 2026-07-11_
+_Last updated: 2026-07-12_
+
+## Latest result: 1%-pilot-overhead Viterbi-Est vs Viterbi-Genie, QPSK (e6_viterbi_qpsk_pilot_overhead.py — EXECUTED)
+User asked to compare ISI decoding "with 1% pilot overhead" — extends the genie-CSI assumption used everywhere else in this repo's Viterbi work to a realistic LS channel estimate from a pilot preamble. Implementation: pilot preamble = 1% of the data block's symbol count (250 pilots for a 25,000-symbol QPSK data payload at N_BITS=50,000), transmitted through the SAME `channel_h1` instance immediately before the data (continuous RNG stream) so the LS estimate reflects a realistic noisy/faded observation, re-estimated fresh every trial/SNR via `ViterbiMLSEQPSKRelay(pilot_symbols=(y_pilot, pilot_symbols), channel_len=L)` (this constructor path already existed, just hadn't been exercised for QPSK before). L=3 taps, symmetric ISI+Rayleigh+AWGN hops, full scale (5×50k).
+
+**Finding — genuinely surprising, worth double-checking if it matters later**: Viterbi-Est-1pct is not just close to Viterbi-Genie, it's **consistently and systematically slightly *better*** across all 11 SNR points (e.g. 0.2275 vs 0.2292 @20dB, 0.2431 vs 0.2451 @10dB) — same sign at every single SNR point (binomial p≈0.0005 under a no-real-difference null), so this is a real effect, not noise, even though the magnitude is small (~0.002–0.003 BER). Reported to user as an **unconfirmed hypothesis**: the LS estimate is fit from pilots that pass through the same per-symbol Rayleigh fading the data experiences, so it may implicitly recalibrate the tap-magnitude scale to that block's realized fading level in a way the fixed idealized genie taps can't — but this mechanism is NOT confirmed, just plausible. Do not assert it as established fact in any writeup without further isolation experiments.
+
+Practical takeaway (solid, not hypothesis): 1% airtime overhead is enough to match or slightly beat free genie CSI here — channel estimation is essentially free at this pilot budget for a 3-tap channel. Both Viterbi variants stay well ahead of MLP-QPSK (~0.228 vs ~0.237 @20dB) and dramatically ahead of classical relays (~0.34–0.38).
+
+Chart: `/tmp/e6_viterbi_qpsk_pilot_overhead.png`, data: `/tmp/e6_viterbi_qpsk_pilot_overhead_results.npy` (ephemeral).
 
 ## Latest result: 4-class MLP classifier for QPSK vs Viterbi-Genie, incl. latency (e6_mlp_qpsk_vs_viterbi.py — EXECUTED)
 User asked (garbled dictation, clarified via AskUserQuestion) for: a proper MLP-QPSK relay using **4-class classification** (not the BPSK-only regression `MLPRelay`), compared against Viterbi-Genie and classical relays, scoped to **L=3 taps only for now**, plus a latency comparison MLP vs Viterbi.
