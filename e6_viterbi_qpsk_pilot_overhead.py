@@ -18,6 +18,24 @@ throughout this repo's E6 work).
 
 L=3 taps, symmetric ISI+Rayleigh+AWGN hops (ComplexISIRayleighChannel),
 same methodology as e6_mlp_qpsk_vs_viterbi.py.
+
+DIAGNOSTIC ADDED: a first full-scale run (5 trials) showed Viterbi-Est
+consistently beating Viterbi-Genie, which should be impossible if genie
+truly has better CSI. Investigated directly (not just re-run with more
+trials): the LS-estimated taps average almost exactly to
+`true_taps * E[|h|]` (E[|h|]=sqrt(pi)/2~=0.8862 for this channel's Rayleigh
+model), NOT the raw unit-energy taps genie uses -- because
+ComplexISIRayleighChannel applies fading as a per-symbol multiplicative
+gain AFTER the ISI convolution, and "Viterbi-Genie" (by this repo's
+established convention) only ever knows the static ISI shape, never the
+fading -- its branch metric implicitly assumes unit gain, which is a
+systematic mismatch against a channel whose average output magnitude is
+scaled down by E[|h|]. The LS pilot fit can't separate fading from the
+ISI response, so it averages toward the correctly-scaled taps almost by
+accident, giving it a better-calibrated branch metric than a truly
+fading-blind "genie". Added `Viterbi-Genie-EhScaled` (genie taps scaled by
+the analytic E[|h|]) to test this directly: if it closes/exceeds the gap
+to Viterbi-Est, the mechanism is confirmed and this is NOT a bug.
 """
 
 import numpy as np
@@ -30,10 +48,11 @@ from e6_sim_enhanced_multimod import DFHardRelay, DFSoftRelay
 from e6_mlp_qpsk_vs_viterbi import train_mlp_qpsk, taps_for, W, TRAIN_SNRS
 
 SNRS = np.arange(0, 21, 2)
-N_TRIALS, N_BITS = 5, 50_000
+N_TRIALS, N_BITS = 20, 50_000
 MODULATION = 'qpsk'
 L = 3
 PILOT_FRAC = 0.01
+E_H = np.sqrt(np.pi) / 2  # analytic mean Rayleigh fading magnitude for this channel model
 
 rng = np.random.default_rng(42)
 
@@ -91,6 +110,7 @@ def main():
         'DF-Soft': DFSoftRelay(),
         'MLP-QPSK': mlp_qpsk,
         'Viterbi-Genie': ViterbiMLSEQPSKRelay(channel_taps=taps),
+        'Viterbi-Genie-EhScaled': ViterbiMLSEQPSKRelay(channel_taps=taps * E_H),
     }
     all_names = list(static_relays.keys()) + [f'Viterbi-Est-{PILOT_FRAC*100:.0f}pct']
     results = {name: np.zeros((len(SNRS), N_TRIALS)) for name in all_names}
@@ -127,9 +147,11 @@ def plot_results(summary):
 
     color_map = {'AF': '#1f77b4', 'DF-Hard': '#ff7f0e', 'DF-Soft': '#d62728',
                  'MLP-QPSK': '#2ca02c', 'Viterbi-Genie': '#8c564b',
+                 'Viterbi-Genie-EhScaled': '#17becf',
                  f'Viterbi-Est-{PILOT_FRAC*100:.0f}pct': '#e377c2'}
     marker_map = {'AF': 'o', 'DF-Hard': 's', 'DF-Soft': '^', 'MLP-QPSK': 'd',
-                  'Viterbi-Genie': 'p', f'Viterbi-Est-{PILOT_FRAC*100:.0f}pct': 'X'}
+                  'Viterbi-Genie': 'p', 'Viterbi-Genie-EhScaled': '*',
+                  f'Viterbi-Est-{PILOT_FRAC*100:.0f}pct': 'X'}
 
     for name, (mu, ci) in summary.items():
         ax.semilogy(SNRS, mu, color=color_map[name], marker=marker_map[name],
