@@ -2,6 +2,18 @@
 
 _Last updated: 2026-07-12_
 
+## Latest result: QPSK Viterbi three-tier CSI comparison — worst/medium/ideal (e6_viterbi_qpsk_partial_csi.py — EXECUTED)
+User asked to compare partial CSI knowledge, not just ideal-vs-realistic-1% — explicitly wanted a worst case and a medium case too, and to revert to the "previous Monte Carlo setup" (N_TRIALS=5, the project's standard iteration scale used throughout most of this session, rather than the N=20 used for the genie-mechanism confirmation run).
+
+Built `e6_viterbi_qpsk_partial_csi.py`: three CSI tiers for `ViterbiMLSEQPSKRelay`, all L=3 taps, symmetric ISI+Rayleigh+AWGN hops —
+- **Worst**: 5-pilot LS estimate (just above the L=3 identifiability floor: 3 unknowns, 5 equations)
+- **Medium**: 20-pilot LS estimate (realistic partial CSI, 0.08% overhead)
+- **Ideal**: `Viterbi-Genie-EhScaled` (perfect fading-aware CSI, from the previous round's resolved-mechanism work)
+
+**Finding**: Worst-5pilots is not just worse on average, it's **dramatically unstable** — CIs 10-30x wider than Medium/Ideal (e.g. ±0.040 vs ±0.001 @20dB, ±0.10 at SNR=6dB), visibly non-monotonic in SNR (occasional catastrophically-bad LS fits from having almost no redundancy to average out pilot noise at only 5 pilots for 3 unknowns). This is a direct, concrete demonstration of the "Viterbi collapses at 5 pilots (LS identifiability limit)" behavior the original standalone `E6_PARTIAL` spec predicted (still in `progress.md` → Not started) — now shown for real in the ported QPSK framework. Medium-20pilots is already close to Ideal and stable (most of the estimation penalty gone with just 4x more pilots than worst case).
+
+Chart: `/tmp/e6_viterbi_qpsk_partial_csi.png`, data: `/tmp/e6_viterbi_qpsk_partial_csi_results.npy` (ephemeral).
+
 ## Latest result: 1%-pilot-overhead Viterbi-Est vs Viterbi-Genie, QPSK — RESOLVED, was genie mis-specification not a bug (e6_viterbi_qpsk_pilot_overhead.py — EXECUTED, 2 rounds)
 User asked to compare ISI decoding "with 1% pilot overhead" — extends the genie-CSI assumption used everywhere else in this repo's Viterbi work to a realistic LS channel estimate from a pilot preamble (250 pilots per 25,000-symbol QPSK data payload, transmitted through the SAME `channel_h1` instance immediately before the data, re-estimated fresh every trial/SNR via `ViterbiMLSEQPSKRelay(pilot_symbols=(y_pilot, pilot_symbols), channel_len=L)`). L=3 taps, symmetric ISI+Rayleigh+AWGN hops.
 
