@@ -126,8 +126,14 @@ def main():
     return summary
 
 
-def plot_results(summary):
-    fig, ax = plt.subplots(figsize=(9.5, 6.5))
+ZOOM_SNR_MIN = 12  # dB, start of the high-SNR zoom panel
+
+
+def plot_results(summary, snrs=None):
+    if snrs is None:
+        snrs = SNRS
+
+    fig, axes = plt.subplots(1, 2, figsize=(17, 6.5))
 
     color_map = {'AF': '#1f77b4', 'DF-Hard': '#ff7f0e', 'DF-Soft': '#d62728',
                  'MLP-QPSK': '#2ca02c', 'Viterbi-Ideal-EhScaled': '#8c564b',
@@ -136,25 +142,45 @@ def plot_results(summary):
                   'Viterbi-Ideal-EhScaled': 'p', 'Viterbi-Medium-20pilots': 'X',
                   'Viterbi-Worst-5pilots': 'v'}
 
+    # Panel 1: full SNR range
+    ax = axes[0]
     for name, (mu, ci) in summary.items():
-        ax.semilogy(SNRS, mu, color=color_map[name], marker=marker_map[name],
+        ax.semilogy(snrs, mu, color=color_map[name], marker=marker_map[name],
                     label=name, linewidth=2.5, markersize=8)
-        ax.fill_between(SNRS, np.maximum(mu - ci, 1e-6), mu + ci, alpha=0.15, color=color_map[name])
-
+        ax.fill_between(snrs, np.maximum(mu - ci, 1e-6), mu + ci, alpha=0.15, color=color_map[name])
     ax.set_xlabel('SNR (dB)', fontsize=12, fontweight='bold')
     ax.set_ylabel('BER', fontsize=12, fontweight='bold')
-    ax.set_title(f'QPSK, L={L} taps — Viterbi CSI quality: worst (5 pilots) / medium (20) / ideal',
-                 fontsize=12, fontweight='bold')
+    ax.set_title(f'QPSK, L={L} taps — full range', fontsize=12, fontweight='bold')
     ax.legend(loc='upper right', fontsize=9)
     ax.grid(True, which='both', alpha=0.3, linestyle='--')
     ax.set_ylim([1e-3, 0.6])
 
+    # Panel 2: zoom on the high-SNR regime, where CSI-quality differences matter most
+    ax = axes[1]
+    zoom_mask = snrs >= ZOOM_SNR_MIN
+    for name, (mu, ci) in summary.items():
+        ax.semilogy(snrs[zoom_mask], mu[zoom_mask], color=color_map[name], marker=marker_map[name],
+                    label=name, linewidth=2.5, markersize=9)
+        ax.fill_between(snrs[zoom_mask], np.maximum(mu[zoom_mask] - ci[zoom_mask], 1e-4),
+                        mu[zoom_mask] + ci[zoom_mask], alpha=0.15, color=color_map[name])
+    ax.set_xlabel('SNR (dB)', fontsize=12, fontweight='bold')
+    ax.set_title(f'Zoom: SNR ≥ {ZOOM_SNR_MIN}dB', fontsize=12, fontweight='bold')
+    ax.legend(loc='upper right', fontsize=9)
+    ax.grid(True, which='both', alpha=0.3, linestyle='--')
+
+    zoom_mu_all = np.concatenate([mu[zoom_mask] for mu, ci in summary.values()])
+    zoom_ci_all = np.concatenate([ci[zoom_mask] for mu, ci in summary.values()])
+    ax.set_ylim([max((zoom_mu_all - zoom_ci_all).min() * 0.7, 1e-4),
+                 (zoom_mu_all + zoom_ci_all).max() * 1.3])
+
+    fig.suptitle(f'QPSK Viterbi CSI quality: worst (5 pilots) / medium (20 pilots) / ideal',
+                 fontsize=14, fontweight='bold')
     plt.tight_layout()
     plt.savefig('/tmp/e6_viterbi_qpsk_partial_csi.png', dpi=150, bbox_inches='tight')
     print("\n  Saved: /tmp/e6_viterbi_qpsk_partial_csi.png")
 
     np.save('/tmp/e6_viterbi_qpsk_partial_csi_results.npy',
-            {'snrs': SNRS, 'summary': summary}, allow_pickle=True)
+            {'snrs': snrs, 'summary': summary}, allow_pickle=True)
     print("  Saved: /tmp/e6_viterbi_qpsk_partial_csi_results.npy")
 
 
