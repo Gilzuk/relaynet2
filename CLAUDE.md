@@ -9,6 +9,7 @@ This repo is an M.Sc. thesis ("Deep Learning Architectures for Two-Hop Relay Com
 ## Scope boundary
 - If a task touches `relaynet/**` or `e6_*_ported.py` / `e6_*_enhanced.py` (Python simulation code): this file + `memory-bank/` govern.
 - If a task touches `chapters/**`, `thesis_tau.tex`, `references.bib`, or anything under `results/`: `.clinerules/*.md` governs — especially `90-safety.md` (never alter numerical results/figures/conclusions without explicit instruction and new data).
+- **`chapters/**` has a separate authoritative branch: `clean-thesis`** (per `.clinerules/90-safety.md`, "Always push to `clean-thesis` branch only"). Before treating any `chapters/*.tex` content as wrong/violating `.clinerules`, diff it against `origin/clean-thesis`'s history first — the `.clinerules` docs can be (and have been) stale relative to deliberate restructuring already done there. A mismatch may mean the rules doc needs updating, not the thesis. See `memory-bank/techContext.md` gotcha #5 for a concrete case where this went wrong and had to be reverted.
 
 ## Working agreement (this session, carried forward)
 - Develop on the assigned feature branch (currently `claude/porting-md-file-l6xzsr`); never push elsewhere without explicit permission.

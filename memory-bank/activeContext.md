@@ -2,6 +2,15 @@
 
 _Last updated: 2026-07-12_
 
+## Latest: thesis general-review pass — one mistake made and reverted, rest of the review still valid but unactioned
+User asked for a general quality/correctness review of `chapters/*.tex`. Ran existing `audit_clinerules.py` plus independent checks (label/ref consistency, citation-key consistency, table/figure numbering, appendix ordering vs `.clinerules/40-appendices.md`). Findings: (1) 8 figures in `ch05_experiments.tex` apparently violating "no figures in Ch5", (2) table label gaps (`tbl:table18`-`23` missing, `25`+ exist beyond documented range), (3) figure label gaps (`fig:fig6`, `37`, `38` missing), (4) appendix section ordering differs from the documented spec. Also ruled out two false positives from `audit_clinerules.py` itself (equation-citation check has a regex bug; bold-text/hardcoded-ref flags were non-issues).
+
+User approved fixing #1. **This was a mistake** — the 8 figures were deliberately added by the user on `clean-thesis` (the actual authoritative thesis branch per `.clinerules/90-safety.md`) in commit `d5912c2` ("add 1 fig/experiment in ch05"). This session's branch forked directly from `clean-thesis`'s current tip, so the `.clinerules` docs (which say "no figures in Ch5") are simply stale relative to that deliberate restructure. Caught when user said "compare this with the last commits from the Claude chat" — reverted immediately (`5248440`), confirmed byte-identical to `origin/clean-thesis` for that file afterward. Full writeup: `techContext.md` gotcha #5.
+
+**Findings #2-4 were never acted on and still need the same clean-thesis-history cross-check before anyone (including a future session) treats them as real bugs** — do not assume they're valid just because they came from the same review pass as the reverted #1.
+
+**Structural note for any future thesis work**: `chapters/**` is governed by the separate `clean-thesis` branch, not this session's `claude/porting-md-file-l6xzsr`. See updated `CLAUDE.md` scope-boundary section.
+
 ## Latest: rescaled Tier-1 findings to project-standard scale (10×100k) — thesis integration EXPLICITLY DEFERRED
 Asked to review all QPSK/symmetric-hop findings from this thread and propose which are thesis-ready. Assessment: three "Tier 1" results were solid/mechanism-confirmed but only run at dev scale (5×50k) — (1) symmetric-hop relay comparison, (2) MLP-QPSK-classifier vs Viterbi-Genie (BER + latency), (3) worst/medium/ideal CSI pilot-tier comparison. User said "Do so" (rescale + integrate into thesis).
 
