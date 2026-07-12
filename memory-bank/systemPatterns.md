@@ -7,7 +7,8 @@ relaynet/
 │   ├── base.py        # Relay base class/interface
 │   ├── af.py           AmplifyAndForwardRelay
 │   ├── df.py            DecodeAndForwardRelay (hard-decision)
-│   ├── mlp.py            MLPRelay              (E6 port: general windowed neural relay)
+│   ├── mlp.py            MLPRelay (BPSK regression), MLPQPSKClassifierRelay (QPSK,
+│   │                       4-class softmax over the Gray-coded alphabet)
 │   ├── viterbi.py         ViterbiMLSERelay (BPSK), ViterbiMLSEQPSKRelay (QPSK, 4-symbol
 │   │                       Gray-coded trellis) — both MLSE for ISI channels
 │   ├── e2e.py, vae.py, cgan.py, hybrid.py, rl.py, genai.py   (other thesis chapters' architectures)

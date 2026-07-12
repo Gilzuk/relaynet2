@@ -159,3 +159,121 @@ class MLPRelay(Relay):
         # Normalize output power to 1
         output_power = np.sqrt(np.mean(output ** 2)) + 1e-12
         return output / output_power
+
+
+class MLPQPSKClassifierRelay(Relay):
+    """4-class MLP classifier relay for QPSK over ISI/fading channels.
+
+    Unlike :class:`MLPRelay` (single tanh regression output, valid for
+    BPSK only), this classifies each received complex sample window into
+    one of the 4 Gray-coded QPSK constellation points via a softmax output
+    trained with cross-entropy loss -- the natural generalization of "hard
+    decision" to a learned relay for multi-symbol modulations.
+
+    Class index -> constellation point mapping is identical to
+    :class:`relaynet.relays.viterbi.ViterbiMLSEQPSKRelay`'s ALPHABET, so
+    outputs from the two relays are directly comparable.
+
+    Parameters
+    ----------
+    window_size : int, optional
+        Number of received symbols (per I/Q branch) used per decision (default 11).
+    hidden_size : int, optional
+        Number of hidden units (default 7).
+    seed : int, optional
+        Random seed for weight initialization.
+    """
+
+    ALPHABET = np.array([1 + 1j, 1 - 1j, -1 + 1j, -1 - 1j]) / np.sqrt(2)
+
+    def __init__(self, window_size=11, hidden_size=7, seed=0):
+        self.window_size = window_size
+        self.input_size = 2 * window_size
+        self.hidden_size = hidden_size
+        self.num_classes = 4
+
+        rng = np.random.default_rng(seed)
+        self.W1 = rng.standard_normal((self.input_size, hidden_size)) * np.sqrt(2.0 / self.input_size)
+        self.b1 = np.zeros(hidden_size)
+        self.W2 = rng.standard_normal((hidden_size, self.num_classes)) * np.sqrt(2.0 / hidden_size)
+        self.b2 = np.zeros(self.num_classes)
+
+        self.params = [self.W1, self.b1, self.W2, self.b2]
+        self.m = [np.zeros_like(p) for p in self.params]
+        self.v = [np.zeros_like(p) for p in self.params]
+        self.t = 0
+
+    def n_params(self):
+        return sum(p.size for p in self.params)
+
+    def _extract_windows(self, y):
+        """Extract I/Q sliding windows from a complex signal, concatenated."""
+        pad = self.window_size // 2
+        yp_real = np.pad(y.real, (pad, pad), mode='constant')
+        yp_imag = np.pad(y.imag, (pad, pad), mode='constant')
+        wr = np.lib.stride_tricks.sliding_window_view(yp_real, self.window_size)
+        wi = np.lib.stride_tricks.sliding_window_view(yp_imag, self.window_size)
+        return np.concatenate([wr, wi], axis=1)
+
+    def fwd(self, X):
+        """Forward pass returning class probabilities, shape (batch, 4)."""
+        self.h = np.tanh(X @ self.W1 + self.b1)
+        logits = self.h @ self.W2 + self.b2
+        z = logits - logits.max(axis=1, keepdims=True)
+        exp_z = np.exp(z)
+        self.probs = exp_z / exp_z.sum(axis=1, keepdims=True)
+        return self.probs
+
+    def step(self, X, target_idx, lr=3e-3):
+        """Training step with Adam optimizer, softmax cross-entropy loss."""
+        probs = self.fwd(X)
+        batch_size = X.shape[0]
+
+        onehot = np.zeros_like(probs)
+        onehot[np.arange(batch_size), target_idx] = 1.0
+        dlogits = (probs - onehot) / batch_size
+
+        gW2 = self.h.T @ dlogits
+        gb2 = dlogits.sum(0)
+        dh = dlogits @ self.W2.T * (1 - self.h ** 2)
+        gW1 = X.T @ dh
+        gb1 = dh.sum(0)
+
+        self.t += 1
+        grads = [gW1, gb1, gW2, gb2]
+        for p, g, m, v in zip(self.params, grads, self.m, self.v):
+            m[:] = 0.9 * m + 0.1 * g
+            v[:] = 0.999 * v + 0.001 * g ** 2
+            mh = m / (1 - 0.9 ** self.t)
+            vh = v / (1 - 0.999 ** self.t)
+            p -= lr * mh / (np.sqrt(vh) + 1e-8)
+
+        return -np.mean(np.log(probs[np.arange(batch_size), target_idx] + 1e-12))
+
+    def train_on_data(self, X, target_idx, epochs=25, batch_size=256, lr=3e-3):
+        """Train the classifier on provided windowed data and class indices."""
+        idx = np.arange(X.shape[0])
+        rng = np.random.default_rng(42)
+        for _ in range(epochs):
+            rng.shuffle(idx)
+            for i in range(0, len(idx), batch_size):
+                batch_idx = idx[i:i + batch_size]
+                self.step(X[batch_idx], target_idx[batch_idx], lr=lr)
+
+    def process(self, received_signal):
+        """Classify each windowed sample and forward the predicted constellation point.
+
+        Parameters
+        ----------
+        received_signal : numpy.ndarray
+            Received complex signal.
+
+        Returns
+        -------
+        output : numpy.ndarray
+            Forwarded complex QPSK symbols (exact constellation points, unit power).
+        """
+        windows = self._extract_windows(received_signal)
+        probs = self.fwd(windows)
+        pred_idx = np.argmax(probs, axis=1)
+        return self.ALPHABET[pred_idx]

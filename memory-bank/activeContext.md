@@ -2,6 +2,15 @@
 
 _Last updated: 2026-07-11_
 
+## Latest result: 4-class MLP classifier for QPSK vs Viterbi-Genie, incl. latency (e6_mlp_qpsk_vs_viterbi.py — EXECUTED)
+User asked (garbled dictation, clarified via AskUserQuestion) for: a proper MLP-QPSK relay using **4-class classification** (not the BPSK-only regression `MLPRelay`), compared against Viterbi-Genie and classical relays, scoped to **L=3 taps only for now**, plus a latency comparison MLP vs Viterbi.
+
+Built `MLPQPSKClassifierRelay` (`relaynet/relays/mlp.py`, exported via `relaynet/relays/__init__.py`) — window=11 (I/Q concatenated, input_size=22), hidden=7, softmax output over the 4 Gray-coded QPSK constellation points, trained with cross-entropy/Adam. Class-index-to-symbol mapping is identical to `ViterbiMLSEQPSKRelay.ALPHABET` so outputs are directly comparable. 193 params total. Verified forward pass / output magnitudes (constant modulus = 1.0, correct for QPSK) before training.
+
+Full-scale run (5×50k, L=3, symmetric ISI+Rayleigh+AWGN hops, same methodology as the tap-sweep): **MLP-QPSK tracks Viterbi-Genie closely across the whole SNR range** (e.g. @20dB: MLP-QPSK 0.2363 vs Viterbi-Genie 0.2289 — ~3% relative gap), both far below AF/DF-Hard/DF-Soft (~0.34–0.38). **Latency: MLP-QPSK is ~179x faster than Viterbi-Genie** (9.5ms vs 1700ms for a 50k-symbol block, 0.19 vs 34 μs/symbol) while sacrificing only a small amount of BER — the concrete "MLP wins on wall-clock despite Viterbi being asymptotically optimal" result that E6_COMPLEXITY (still not-started in `progress.md`) was meant to establish, now demonstrated for real on QPSK.
+
+Chart: `/tmp/e6_mlp_qpsk_vs_viterbi.png` (BER panel + latency bar chart), data: `/tmp/e6_mlp_qpsk_vs_viterbi_results.npy` (ephemeral). L=4/5 not rerun with the MLP classifier yet — explicitly deferred ("for now only l=3").
+
 ## Latest result: Viterbi-Genie MLSE for QPSK (e6_viterbi_qpsk.py — EXECUTED)
 User asked "How is soft decision inferior to hard?" (answered from `e6_sim_enhanced_multimod.py` data: DF-Hard wins at low/moderate SNR via denoising-on-correct-decode, loses at higher SNR / on denser constellations because ISI-driven errors are systematic and hard-decision commits to them at full confidence with zero recoverability — QAM16 showed this most starkly, DF-Hard inferior across nearly the whole 0-16dB range). Follow-up "what's the optimal DF decoder for QAM16" → answered conceptually: neither hard nor soft memoryless decision is optimal against a *memory* (ISI) impairment; the real optimum is sequence detection (Viterbi/MLSE) or a learned sequence estimator. User then asked to implement **Viterbi only for QPSK** (explicitly not QAM16, scope note).
 
