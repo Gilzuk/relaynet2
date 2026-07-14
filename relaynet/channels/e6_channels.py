@@ -290,6 +290,58 @@ class RayleighChannel:
         return faded + noise
 
 
+class AdaptiveRayleighChannel:
+    """Coherently-compensated Rayleigh fading + AWGN, real/complex-adaptive.
+
+    Same physical model as :class:`RayleighChannel` (y = |h|*x + n) but the
+    AWGN is complex when the input signal is complex and real when the
+    input is real, matching a hop where different relays forward different
+    signal types (e.g. AF forwards a complex, undecoded signal while DF/MLP
+    forward a real, decided one) -- both must see the same underlying
+    channel model without one type being spuriously under- or over-noised.
+
+    Parameters
+    ----------
+    seed : int, optional
+    rng : numpy.random.Generator, optional
+    """
+
+    def __init__(self, seed=None, rng=None):
+        if rng is None:
+            self.rng = np.random.default_rng(seed)
+        else:
+            self.rng = rng
+
+    def __call__(self, signal, snr_db):
+        """Apply Rayleigh fading and real/complex-adaptive AWGN.
+
+        Parameters
+        ----------
+        signal : numpy.ndarray
+        snr_db : float
+
+        Returns
+        -------
+        output : numpy.ndarray
+        """
+        h = np.abs(
+            (self.rng.standard_normal(signal.size) +
+             1j * self.rng.standard_normal(signal.size)) / np.sqrt(2)
+        )
+        faded = h * signal
+
+        sigma = 10 ** (-snr_db / 20.0)
+        if np.iscomplexobj(signal):
+            noise = sigma * (
+                self.rng.standard_normal(signal.size) +
+                1j * self.rng.standard_normal(signal.size)
+            ) / np.sqrt(2)
+        else:
+            noise = sigma * self.rng.standard_normal(signal.size)
+
+        return faded + noise
+
+
 class FlatPhaseChannel:
     """Unknown phase channel (DBPSK scenario).
 

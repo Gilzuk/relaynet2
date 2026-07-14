@@ -35,12 +35,15 @@ Rescaled `e6_relay_comparison_symmetric.py`, `e6_mlp_qpsk_vs_viterbi.py`, `e6_vi
 
 **Results committed to the repo** at `e6_qpsk_rescaled_results/` (3 PNGs + 3 .npy + README) — NOT inside `results/` (that's the thesis's canonical figures dir; this content is explicitly not yet thesis-integrated). See `activeContext.md` for full detail.
 
+## Done ✅ (cont'd — continuing the original PORTING.md 7-script scope)
+
+- **`e6_composite_ported.py`** — E6_COMPOSITE ported: DBPSK → 3-tap ISI[1,0.6,0.4] → Rapp PA(sat=1.2) → unknown block phase → noise (reuses existing `CompositeChannel` for hop 1), hop 2 = new `AdaptiveRayleighChannel` (`relaynet/channels/e6_channels.py` — Rayleigh + real/complex-adaptive AWGN, needed because AF forwards a complex undecoded signal while DF-diff/Viterbi-diff/MLP forward real decided ones, and the existing `RayleighChannel`/`ComplexISIRayleighChannel` don't adapt to input type). Ported `ViterbiDiffCompositeRelay` (4-state differential MLSE with complex pilot-LS channel estimate, absorbs the per-block phase into the complex channel estimate, blind to PA) verbatim per `PORTING.md`'s "port verbatim" instruction; DF-diff and MLP training/inference implemented inline matching the standalone script. Full scale (5×40k, matching the standalone's own budget). **All targets confirmed**: AF/DF-diff floored ~0.254 @20dB (target ~0.25); MLP-169 (169 params) = 0.0051 @20dB (target ~5e-3); Viterbi-diff visibly ahead of MLP-169 in the 8-12dB transition region (0.0302 vs 0.0403 @12dB); MLP-large (1153 params) ≈ MLP-169 (both 0.0051 @20dB, confirming H3: more params don't help once the task is this hard). Results in `/tmp/e6_composite_ported_results.npy` (ephemeral, not yet copied to repo).
+
 ## Not started ⏳
 
 | Experiment | Spec summary | Est. effort |
 |---|---|---|
-| E6_COMPOSITE (`e6_composite_ported.py`) | Cascade DBPSK→ISI→PA→Phase→Noise; new baselines `blind_viterbi()`, `cma_dfe()` | ~3–4h |
-| E6_BLIND (`e6_blind_ported.py`) | Posterior-free (no pilots for LS estimator), random ISI per block; expect decision-directed blind MLSE instability | ~2–3h |
+| E6_BLIND (`e6_blind_ported.py`) | Posterior-free (no pilots for LS estimator), random ISI per block; expect decision-directed blind MLSE instability. **Note**: this standalone script's `hop2()` always adds complex noise regardless of forwarded-signal type (unlike e6_composite's adaptive hop2) — reuse `ComplexISIRayleighChannel(taps=[1.0])` for hop 2 here, NOT `AdaptiveRayleighChannel`. | ~2–3h |
 | E6_PARTIAL (`e6_partial_ported.py`) | Pilot-count sweep {800,200,50,20,10,5} + block-length sweep {40,80,160,320,1000}; expect Viterbi collapse at 5 pilots, MLP flat/zero-overhead | ~3–4h |
 | E6_COMPLEXITY (`e6_complexity_ported.py`) | Mostly analytical: flop-count formula + wall-clock timing (numpy MLP vs Python Viterbi) | ~1–2h |
 
