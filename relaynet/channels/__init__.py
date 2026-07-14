@@ -17,6 +17,7 @@ from .e6_channels import (
     BranchAsymmetryChannel,
     PowerAmplifierChannel,
     CompositeChannel,
+    RandomISICompositeChannel,
 )
 
 __all__ = [
@@ -40,4 +41,5 @@ __all__ = [
     "BranchAsymmetryChannel",
     "PowerAmplifierChannel",
     "CompositeChannel",
+    "RandomISICompositeChannel",
 ]

@@ -586,3 +586,69 @@ class CompositeChannel:
             noise = sigma * self.rng.standard_normal(signal.size)
 
         return pa_out + noise
+
+
+class RandomISICompositeChannel:
+    """Composite cascade with a FRESH RANDOM ISI response drawn every call.
+
+    Same cascade as :class:`CompositeChannel` (ISI -> Rapp PA -> phase ->
+    AWGN) but the 3-tap ISI response is redrawn from
+    ``[1.0, U(0.3,0.7), U(0.2,0.5)]`` (normalized) on every call instead of
+    being fixed at construction -- used for the "posterior-free/blind"
+    E6 scenario where no pilot-based channel estimate is possible because
+    the channel itself changes every block. Always adds complex AWGN
+    (the input is always the complex, diff-encoded DBPSK stream in this
+    scenario, unlike :class:`CompositeChannel` which is also used with
+    real-valued forwarded signals).
+
+    Parameters
+    ----------
+    pa_sat : float, optional
+        PA saturation level (default 1.2).
+    seed : int, optional
+    rng : numpy.random.Generator, optional
+    """
+
+    def __init__(self, pa_sat=1.2, seed=None, rng=None):
+        self.pa_sat = pa_sat
+        if rng is None:
+            self.rng = np.random.default_rng(seed)
+        else:
+            self.rng = rng
+
+    def random_taps(self):
+        """Draw a fresh normalized 3-tap ISI response."""
+        h = np.array([1.0, self.rng.uniform(0.3, 0.7), self.rng.uniform(0.2, 0.5)])
+        return h / np.linalg.norm(h)
+
+    def __call__(self, signal, snr_db, fixed_taps=None):
+        """Apply the composite cascade with a fresh (or fixed) random ISI draw.
+
+        Parameters
+        ----------
+        signal : numpy.ndarray
+            Complex-valued input signal.
+        snr_db : float
+        fixed_taps : array-like, optional
+            If given, use these taps instead of drawing new ones (e.g. to
+            reuse the realization a genie/oracle needs to know).
+
+        Returns
+        -------
+        output : numpy.ndarray
+        """
+        taps = fixed_taps if fixed_taps is not None else self.random_taps()
+
+        isi_out = np.convolve(signal, taps)[:signal.size]
+
+        a = np.abs(isi_out)
+        pa_out = a / np.sqrt(1 + (a / self.pa_sat) ** 2) * np.exp(1j * np.angle(isi_out))
+
+        theta = self.rng.uniform(0, 2 * np.pi)
+        pa_out = pa_out * np.exp(1j * theta)
+
+        sigma = 10 ** (-snr_db / 20.0)
+        noise = sigma * (self.rng.standard_normal(signal.size) +
+                          1j * self.rng.standard_normal(signal.size)) / np.sqrt(2)
+
+        return pa_out + noise
