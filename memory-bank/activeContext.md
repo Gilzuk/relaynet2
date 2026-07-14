@@ -114,11 +114,21 @@ Chart: `/tmp/e6_viterbi_qpsk_tap_sweep.png` (4 panels: L=3/4/5 individually + Vi
 - **QAM16 Viterbi** — user said "no, viterbi only for qpsk". Do not build a 16-QAM trellis (256 states for L=3) unless asked.
 - **AI relays (MLP) for QPSK/16-QAM** — `MLPRelay` regresses a single real tanh output per window, valid for BPSK only; would need a multi-output/complex-output redesign. Not started.
 
+## Latest: all 4 remaining PORTING.md experiments ported (E6_COMPOSITE, E6_BLIND, E6_PARTIAL, E6_COMPLEXITY)
+Completed the full PORTING.md scope this session (all 7 of 7 experiments now have a `relaynet` port; see `progress.md` for full numeric details per script):
+- **E6_COMPOSITE** and **E6_BLIND**: verified full-scale against PORTING.md targets (composite: AF/DF-diff floor ~0.254, MLP-169 0.0051 @20dB; blind: CMA/MLP ~0.0024/0.0026 @20dB, Viterbi-blind instability reproduced).
+- **E6_PARTIAL** (`e6_partial_ported.py`): panel (a) pilot sweep collapses at 5 pilots to **0.1192**, matching PORTING.md's stated "0.119" almost exactly; panel (b) block-length sweep shows overhead 25%→1% (L=40→1000) as specified. Panel (b)'s source script was never in the repo (only cached `.npy` survived) — reconstructed from spec + that file's structure, then verified full-scale.
+- **E6_COMPLEXITY** (`e6_complexity_ported.py`): panel (a) analytical flop counts confirm the honest caveat (Viterbi cheaper per-flop at BPSK/L=3: 64 vs 330); panel (b) wall-clock uses relaynet's **actual** `ViterbiMLSERelay`/`MLPRelay` (not hand-rolled reimplementations, unlike the standalone script) — measured 30.8x–85.1x speedup, within the standalone's stated 30–90x range.
+
+All 4 committed and pushed to `claude/porting-md-file-l6xzsr` (commits `7888b8c`, `b708208`, `3aeeba3`, `8266edd`).
+
 ## Immediate next step
-None pending — awaiting user direction. Natural candidates if asked:
-1. Commit the `/tmp` charts+data into the repo if these numbers should be kept long-term — nothing under `/tmp` survives a session restart.
-2. Multi-output MLP for QPSK (to compare against Viterbi-Genie the way BPSK's MLP-170/512 were compared against BPSK Viterbi-Genie).
-3. Resume the "not started" E6 ports (COMPOSITE, BLIND, PARTIAL, COMPLEXITY) — see `progress.md`.
+None pending — awaiting user direction. All 7 PORTING.md experiments are now ported; remaining work is the "After porting" thesis-integration checklist plus the previously-identified gaps in the first 3 experiments:
+1. Rescale E6_SIM/E6_VITERBI/E6_FLAT (and now COMPOSITE/BLIND/PARTIAL/COMPLEXITY where applicable) to project-standard 10×100k.
+2. Run direct standalone-script comparisons (not just comparison against PORTING.md's stated expected numbers).
+3. Produce thesis-styled figures via relaynet's plotting, replace `results/e6_*.png`.
+4. Update Chapter 7 tables and Appendix C reproducibility statement; remove the "clean-room/standalone" caveat.
+5. Commit the various `/tmp` charts+data into the repo if these numbers should be kept long-term — nothing under `/tmp` survives a session restart.
 
 ## Environment issue (unresolved, non-blocking for local work)
 Git push to `origin/claude/porting-md-file-l6xzsr` has been failing intermittently this session (`fatal: could not read Username for 'https://github.com'`), and commit signing has also been failing (stop-hook flags commits as Unverified). This is an environment credential/signing service issue, not a repo problem — retried with backoff each time, work stays committed locally regardless. Check before assuming a commit made it to `origin`.
