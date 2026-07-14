@@ -1,6 +1,11 @@
 # Active Context (update this file first, every session)
 
-_Last updated: 2026-07-12_
+_Last updated: 2026-07-14_
+
+## Latest: full LaTeX environment set up + × mojibake fixed on clean-thesis
+Two follow-ups from the thesis-review/PDF work: (1) got a fully faithful compile working (real Hebrew RTL via `bidi.sty` from `texlive-lang-arabic`, real Times New Roman/Arial/Courier New via `ttf-mscorefonts-installer`, worked around a python3.11/3.12 `apt_pkg` mismatch blocking its dependency's postinst) — see `techContext.md` "Compiling the thesis" section for the exact recipe, this environment starts with zero LaTeX installed every session. (2) Found and fixed a real, pre-existing bug: 12 occurrences of a double-UTF-8-encoded `×` (rendering as `Ã—`) in `chapters/ch09_appendices.tex`, introduced during an old table/figure relocation pass. **This time did it correctly**: checked `clean-thesis`'s actual history first (confirmed present on its real tip, confirmed unintentional via `git log -S`), applied the fix by checking out `clean-thesis` directly (not this branch), committed and pushed there (`d626b67`), then switched back to `claude/porting-md-file-l6xzsr`. Verified via full recompile before AND after committing (zero undefined refs both times).
+
+Noted but not fixed (touches preamble structure, not asked): `bidi` package logs "Oops! you have loaded package X after bidi package" for amsmath/amstext/amsthm/caption/xcolor/etc. — a real package-ordering issue by bidi's own self-check, but non-fatal in nonstopmode and the Hebrew page still visually renders correctly. Present in every compile of this thesis, not something this session introduced.
 
 ## Latest: thesis general-review pass — one mistake made and reverted, rest of the review still valid but unactioned
 User asked for a general quality/correctness review of `chapters/*.tex`. Ran existing `audit_clinerules.py` plus independent checks (label/ref consistency, citation-key consistency, table/figure numbering, appendix ordering vs `.clinerules/40-appendices.md`). Findings: (1) 8 figures in `ch05_experiments.tex` apparently violating "no figures in Ch5", (2) table label gaps (`tbl:table18`-`23` missing, `25`+ exist beyond documented range), (3) figure label gaps (`fig:fig6`, `37`, `38` missing), (4) appendix section ordering differs from the documented spec. Also ruled out two false positives from `audit_clinerules.py` itself (equation-citation check has a regex bug; bold-text/hardcoded-ref flags were non-issues).
