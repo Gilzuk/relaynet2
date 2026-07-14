@@ -28,7 +28,7 @@ W = 11          # window length for real signals
 W_COMPLEX = 2*W # I/Q pairs for complex signals
 SNRS = np.arange(0, 21, 2)
 TRAIN_SNRS = [5, 10, 15]
-N_TRIALS, N_BITS = 5, 50_000
+N_TRIALS, N_BITS = 10, 100_000
 
 # Global RNG
 rng = np.random.default_rng(21)
@@ -152,32 +152,38 @@ def train_mlp(kind, seed=2, n_train=150_000, epochs=25, batch_size=256):
         seed=seed
     )
 
-    # Collect training data
+    # Collect training data. Matches the standalone script's 4-sub-batch-per-SNR
+    # structure: each sub-batch draws a FRESH random unknown-channel realization
+    # (theta/gain/asymmetry), giving the MLP much more diversity of that unknown
+    # parameter than one draw per SNR would -- this diversity mattered a lot for
+    # the phase case (theta in [0, 2*pi)), where too few draws visibly widened
+    # the MLP-vs-DF "control" gap past the PORTING.md target.
     per_snr = n_train // len(TRAIN_SNRS)
+    per_sub = per_snr // 4
     X_list, T_list = [], []
 
     for snr_db in TRAIN_SNRS:
-        # Generate random symbols
-        bits = rng.integers(0, 2, per_snr)
+        for _ in range(4):
+            bits = rng.integers(0, 2, per_sub)
 
-        if kind == 'phase':
-            # DBPSK: differential binary phase shift keying
-            x = 1.0 - 2.0 * bits  # BPSK: {-1, +1}
-            x_dbpsk = diff_encode(x)  # differential encoding
-            # Pass through phase channel
-            y = channel(x_dbpsk, snr_db)
-            # Extract windows (complex)
-            windows = extract_windows(y, window_size=W)
-            X_list.append(windows)
-            T_list.append(x)  # target is original BPSK
-        else:
-            # Standard BPSK
-            x = 1.0 - 2.0 * bits
-            y = channel(x, snr_db)
-            # Extract windows (real)
-            windows = extract_windows(y, window_size=W)
-            X_list.append(windows)
-            T_list.append(x)
+            if kind == 'phase':
+                # DBPSK: differential binary phase shift keying
+                x = 1.0 - 2.0 * bits  # BPSK: {-1, +1}
+                x_dbpsk = diff_encode(x)  # differential encoding
+                # Pass through phase channel
+                y = channel(x_dbpsk, snr_db)
+                # Extract windows (complex)
+                windows = extract_windows(y, window_size=W)
+                X_list.append(windows)
+                T_list.append(x)  # target is original BPSK
+            else:
+                # Standard BPSK
+                x = 1.0 - 2.0 * bits
+                y = channel(x, snr_db)
+                # Extract windows (real)
+                windows = extract_windows(y, window_size=W)
+                X_list.append(windows)
+                T_list.append(x)
 
     X = np.vstack(X_list)
     T = np.concatenate(T_list)
@@ -189,34 +195,34 @@ def train_mlp(kind, seed=2, n_train=150_000, epochs=25, batch_size=256):
     return mlp, n_params
 
 
-def run_ber_trial_phase(relay_name, relay, channel, snr_db, seed=None):
+def run_ber_trial_phase(relay_name, relay, y_received, bits, snr_db, hop2_seed):
     """Run a single BER trial for phase channel.
+
+    `y_received` (hop 1's output) and `bits` are computed ONCE per trial by the
+    caller and shared across AF/DF/MLP, so all three relays are compared on the
+    identical unknown-phase realization -- only `hop2_seed` (also shared across
+    relays, but distinct from the hop-1/bits stream) determines hop 2's fading
+    and noise, again identical across relays for a paired, low-variance
+    comparison.
 
     Parameters
     ----------
     relay_name : str
         'AF', 'DF', 'MLP'.
     relay : Relay
-    channel : callable
+    y_received : ndarray
+        Hop 1's complex output (shared across relays for this trial).
+    bits : ndarray
+        The trial's transmitted bits (shared across relays).
     snr_db : float
-    seed : int, optional
+    hop2_seed : int
+        Seed for hop 2's fading/noise draw (shared across relays this trial).
 
     Returns
     -------
     ber : float
     """
-    if seed is None:
-        seed = 42
-
-    rng_trial = np.random.default_rng(seed)
-
-    # Transmit BPSK, encode with DBPSK
-    bits = rng_trial.integers(0, 2, N_BITS)
-    x_bpsk = 1.0 - 2.0 * bits
-    x_dbpsk = diff_encode(x_bpsk)
-
-    # Hop 1
-    y_received = channel(x_dbpsk, snr_db)  # complex
+    rng2 = np.random.default_rng(hop2_seed)
 
     # Relay processing
     if relay_name == 'AF':
@@ -224,24 +230,24 @@ def run_ber_trial_phase(relay_name, relay, channel, snr_db, seed=None):
         gain = np.sqrt(1.0 / (np.mean(np.abs(y_received) ** 2) + 1e-12))
         relay_out = gain * y_received
         # Hop 2
-        h = np.abs((rng_trial.standard_normal(N_BITS) + 1j * rng_trial.standard_normal(N_BITS)) / np.sqrt(2))
+        h = np.abs((rng2.standard_normal(N_BITS) + 1j * rng2.standard_normal(N_BITS)) / np.sqrt(2))
         sigma = 10 ** (-snr_db / 20.0)
-        n = sigma * (rng_trial.standard_normal(N_BITS) + 1j * rng_trial.standard_normal(N_BITS)) / np.sqrt(2)
+        n = sigma * (rng2.standard_normal(N_BITS) + 1j * rng2.standard_normal(N_BITS)) / np.sqrt(2)
         y_dest = h * relay_out + n
         # Differential detection (full-length, with first element = 1.0)
         bit_out = diff_detect(y_dest)
-        bit_out = (bit_out >= 0).astype(int)
+        bit_out = (bit_out < 0).astype(int)
         # Skip first bit (differential encoding boundary)
         return np.mean(bit_out[1:] != bits[1:])
 
     elif relay_name == 'DF':
         # DF: differential detection at relay
         bit_out = diff_detect(y_received)
-        relay_out = 1.0 - 2.0 * (bit_out >= 0).astype(int)  # {-1, +1}
+        relay_out = 1.0 - 2.0 * (bit_out < 0).astype(int)  # {-1, +1}
         # Hop 2
-        h = np.abs((rng_trial.standard_normal(N_BITS) + 1j * rng_trial.standard_normal(N_BITS)) / np.sqrt(2))
+        h = np.abs((rng2.standard_normal(N_BITS) + 1j * rng2.standard_normal(N_BITS)) / np.sqrt(2))
         sigma = 10 ** (-snr_db / 20.0)
-        n = sigma * rng_trial.standard_normal(N_BITS)
+        n = sigma * rng2.standard_normal(N_BITS)
         y_dest = h * relay_out + n
         # Bit detection
         bit_out_2 = (y_dest < 0).astype(int)
@@ -255,9 +261,9 @@ def run_ber_trial_phase(relay_name, relay, channel, snr_db, seed=None):
         # Normalize output power
         relay_out_norm = relay_out / (np.sqrt(np.mean(relay_out ** 2)) + 1e-12)
         # Hop 2
-        h = np.abs((rng_trial.standard_normal(N_BITS) + 1j * rng_trial.standard_normal(N_BITS)) / np.sqrt(2))
+        h = np.abs((rng2.standard_normal(N_BITS) + 1j * rng2.standard_normal(N_BITS)) / np.sqrt(2))
         sigma = 10 ** (-snr_db / 20.0)
-        n = sigma * rng_trial.standard_normal(N_BITS)
+        n = sigma * rng2.standard_normal(N_BITS)
         y_dest = h * relay_out_norm + n
         # Bit detection
         bit_out = (y_dest < 0).astype(int)
@@ -267,34 +273,31 @@ def run_ber_trial_phase(relay_name, relay, channel, snr_db, seed=None):
     raise ValueError(f"Unknown relay: {relay_name}")
 
 
-def run_ber_trial_real(relay_name, relay, channel, snr_db, seed=None):
+def run_ber_trial_real(relay_name, relay, y_received, bits, snr_db, hop2_seed):
     """Run a single BER trial for real-valued channels (gain, iqimb).
+
+    `y_received` (hop 1's output) and `bits` are computed ONCE per trial by the
+    caller and shared across AF/DF/MLP -- see `run_ber_trial_phase`'s docstring
+    for why (paired comparison: same unknown-channel + hop-2 realization for
+    all three relays, so gaps reflect the relay, not sampling noise).
 
     Parameters
     ----------
     relay_name : str
         'AF', 'DF', 'MLP'.
     relay : Relay
-    channel : callable
+    y_received : ndarray
+        Hop 1's real output (shared across relays for this trial).
+    bits : ndarray
+        The trial's transmitted bits (shared across relays).
     snr_db : float
-    seed : int, optional
+    hop2_seed : int
+        Seed for hop 2's fading/noise draw (shared across relays this trial).
 
     Returns
     -------
     ber : float
     """
-    if seed is None:
-        seed = 42
-
-    rng_trial = np.random.default_rng(seed)
-
-    # Transmit BPSK
-    bits = rng_trial.integers(0, 2, N_BITS)
-    x = 1.0 - 2.0 * bits
-
-    # Hop 1
-    y_received = channel(x, snr_db)  # real
-
     # Relay processing
     if relay_name == 'AF':
         gain = np.sqrt(1.0 / (np.mean(y_received ** 2) + 1e-12))
@@ -307,9 +310,10 @@ def run_ber_trial_real(relay_name, relay, channel, snr_db, seed=None):
         raise ValueError(f"Unknown relay: {relay_name}")
 
     # Hop 2 (Rayleigh, coherently compensated)
-    h = np.abs((rng_trial.standard_normal(N_BITS) + 1j * rng_trial.standard_normal(N_BITS)) / np.sqrt(2))
+    rng2 = np.random.default_rng(hop2_seed)
+    h = np.abs((rng2.standard_normal(N_BITS) + 1j * rng2.standard_normal(N_BITS)) / np.sqrt(2))
     sigma = 10 ** (-snr_db / 20.0)
-    n = sigma * rng_trial.standard_normal(N_BITS)
+    n = sigma * rng2.standard_normal(N_BITS)
     y_dest = h * relay_out + n
 
     # Bit detection
@@ -344,15 +348,27 @@ def run_experiment(kind, mlp_relay):
         for tr in range(N_TRIALS):
             seed_base = 9000 * si + tr
 
+            # Draw bits + hop-1 channel ONCE per trial, shared across AF/DF/MLP
+            # (paired comparison -- same unknown-channel realization for all
+            # three relays; only hop2_seed differs from seed_base so hop 2's
+            # fading/noise draw is independent of the bits/hop1 stream, but is
+            # itself likewise shared across the three relays this trial).
+            rng_trial = np.random.default_rng(seed_base)
+            bits = rng_trial.integers(0, 2, N_BITS)
+            x_bpsk = 1.0 - 2.0 * bits
+            hop2_seed = seed_base + 5_000_000
+
             if is_phase:
                 run_fn = run_ber_trial_phase
                 relays = [('AF', None), ('DF', None), ('MLP', mlp_relay)]
+                y_received = channel(diff_encode(x_bpsk), snr)
             else:
                 run_fn = run_ber_trial_real
                 relays = [('AF', af_relay), ('DF', df_relay), ('MLP', mlp_relay)]
+                y_received = channel(x_bpsk, snr)
 
             for name, relay_obj in relays:
-                ber = run_fn(name, relay_obj, channel, snr, seed=seed_base)
+                ber = run_fn(name, relay_obj, y_received, bits, snr, hop2_seed)
                 results[name][si, tr] = ber
 
             if tr == 0:

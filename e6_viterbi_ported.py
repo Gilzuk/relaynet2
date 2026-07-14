@@ -17,7 +17,7 @@ from relaynet.nodes import Source, Destination
 H_ISI = np.array([1.0, 0.7, 0.5])
 H_ISI = H_ISI / np.linalg.norm(H_ISI)
 SNRS = np.arange(0, 21, 2)
-N_TRIALS, N_BITS, N_PILOT = 5, 50_000, 200
+N_TRIALS, N_BITS, N_PILOT = 10, 100_000, 200
 
 # Global RNG
 rng = np.random.default_rng(43)

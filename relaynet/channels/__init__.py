@@ -11,11 +11,13 @@ from .e6_channels import (
     ComplexISIRayleighChannel,
     NonlinearBiasChannel,
     RayleighChannel,
+    AdaptiveRayleighChannel,
     FlatPhaseChannel,
     FlatGainChannel,
     BranchAsymmetryChannel,
     PowerAmplifierChannel,
     CompositeChannel,
+    RandomISICompositeChannel,
 )
 
 __all__ = [
@@ -33,9 +35,11 @@ __all__ = [
     "ComplexISIRayleighChannel",
     "NonlinearBiasChannel",
     "RayleighChannel",
+    "AdaptiveRayleighChannel",
     "FlatPhaseChannel",
     "FlatGainChannel",
     "BranchAsymmetryChannel",
     "PowerAmplifierChannel",
     "CompositeChannel",
+    "RandomISICompositeChannel",
 ]
