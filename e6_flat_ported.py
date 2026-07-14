@@ -28,7 +28,7 @@ W = 11          # window length for real signals
 W_COMPLEX = 2*W # I/Q pairs for complex signals
 SNRS = np.arange(0, 21, 2)
 TRAIN_SNRS = [5, 10, 15]
-N_TRIALS, N_BITS = 5, 50_000
+N_TRIALS, N_BITS = 10, 100_000
 
 # Global RNG
 rng = np.random.default_rng(21)

@@ -23,7 +23,7 @@ W = 11          # window length
 HID = 13        # hidden units -> params = 11*13+13 + 13*1+1 = 170
 SNRS = np.arange(0, 21, 2)
 TRAIN_SNRS = [5, 10, 15]
-N_TRIALS, N_BITS = 5, 50_000
+N_TRIALS, N_BITS = 10, 100_000
 
 # Global RNG (for reproducibility)
 rng = np.random.default_rng(42)
