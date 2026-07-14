@@ -152,32 +152,38 @@ def train_mlp(kind, seed=2, n_train=150_000, epochs=25, batch_size=256):
         seed=seed
     )
 
-    # Collect training data
+    # Collect training data. Matches the standalone script's 4-sub-batch-per-SNR
+    # structure: each sub-batch draws a FRESH random unknown-channel realization
+    # (theta/gain/asymmetry), giving the MLP much more diversity of that unknown
+    # parameter than one draw per SNR would -- this diversity mattered a lot for
+    # the phase case (theta in [0, 2*pi)), where too few draws visibly widened
+    # the MLP-vs-DF "control" gap past the PORTING.md target.
     per_snr = n_train // len(TRAIN_SNRS)
+    per_sub = per_snr // 4
     X_list, T_list = [], []
 
     for snr_db in TRAIN_SNRS:
-        # Generate random symbols
-        bits = rng.integers(0, 2, per_snr)
+        for _ in range(4):
+            bits = rng.integers(0, 2, per_sub)
 
-        if kind == 'phase':
-            # DBPSK: differential binary phase shift keying
-            x = 1.0 - 2.0 * bits  # BPSK: {-1, +1}
-            x_dbpsk = diff_encode(x)  # differential encoding
-            # Pass through phase channel
-            y = channel(x_dbpsk, snr_db)
-            # Extract windows (complex)
-            windows = extract_windows(y, window_size=W)
-            X_list.append(windows)
-            T_list.append(x)  # target is original BPSK
-        else:
-            # Standard BPSK
-            x = 1.0 - 2.0 * bits
-            y = channel(x, snr_db)
-            # Extract windows (real)
-            windows = extract_windows(y, window_size=W)
-            X_list.append(windows)
-            T_list.append(x)
+            if kind == 'phase':
+                # DBPSK: differential binary phase shift keying
+                x = 1.0 - 2.0 * bits  # BPSK: {-1, +1}
+                x_dbpsk = diff_encode(x)  # differential encoding
+                # Pass through phase channel
+                y = channel(x_dbpsk, snr_db)
+                # Extract windows (complex)
+                windows = extract_windows(y, window_size=W)
+                X_list.append(windows)
+                T_list.append(x)  # target is original BPSK
+            else:
+                # Standard BPSK
+                x = 1.0 - 2.0 * bits
+                y = channel(x, snr_db)
+                # Extract windows (real)
+                windows = extract_windows(y, window_size=W)
+                X_list.append(windows)
+                T_list.append(x)
 
     X = np.vstack(X_list)
     T = np.concatenate(T_list)
