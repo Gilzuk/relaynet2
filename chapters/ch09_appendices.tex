@@ -829,7 +829,7 @@ Mamba-2 SSD
   >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
   >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
   >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}@{}}
-\caption{BER comparison on 2Ã—2 MIMO Rayleigh channel with ZF equalization.}\label{tbl:table4}\tabularnewline
+\caption{BER comparison on 2×2 MIMO Rayleigh channel with ZF equalization.}\label{tbl:table4}\tabularnewline
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 SNR (dB)
@@ -899,7 +899,7 @@ Mamba-2 SSD
   >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
   >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
   >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}@{}}
-\caption{BER comparison on 2Ã—2 MIMO Rayleigh channel with MMSE equalization.}\label{tbl:table5}\tabularnewline
+\caption{BER comparison on 2×2 MIMO Rayleigh channel with MMSE equalization.}\label{tbl:table5}\tabularnewline
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 SNR (dB)
@@ -969,7 +969,7 @@ Mamba-2 SSD
   >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
   >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
   >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}@{}}
-\caption{BER comparison on 2Ã—2 MIMO Rayleigh channel with MMSE-SIC equalization.}\label{tbl:table6}\tabularnewline
+\caption{BER comparison on 2×2 MIMO Rayleigh channel with MMSE-SIC equalization.}\label{tbl:table6}\tabularnewline
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 SNR (dB)
@@ -1230,7 +1230,7 @@ DF
   >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
   >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
   >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}@{}}
-\caption{Normalized 3K BER results --- 2Ã—2 MIMO ZF.}\label{tbl:table10}\tabularnewline
+\caption{Normalized 3K BER results --- 2×2 MIMO ZF.}\label{tbl:table10}\tabularnewline
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 SNR (dB)
@@ -1294,7 +1294,7 @@ DF
   >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
   >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
   >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}@{}}
-\caption{Normalized 3K BER results --- 2Ã—2 MIMO MMSE.}\label{tbl:table11}\tabularnewline
+\caption{Normalized 3K BER results --- 2×2 MIMO MMSE.}\label{tbl:table11}\tabularnewline
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 SNR (dB)
@@ -1358,7 +1358,7 @@ DF
   >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
   >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
   >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}@{}}
-\caption{Normalized 3K BER results --- 2Ã—2 MIMO SIC.}\label{tbl:table12}\tabularnewline
+\caption{Normalized 3K BER results --- 2×2 MIMO SIC.}\label{tbl:table12}\tabularnewline
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 SNR (dB)
@@ -1419,7 +1419,7 @@ DF
   >{\raggedright\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1667}}
   >{\raggedright\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1667}}
   >{\raggedright\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1667}}@{}}
-\caption{Model complexity and timing comparison (experiment-specific training settings; Monte Carlo evaluation over 11 SNR points Ã— 10 trials Ã— 10,000 bits). All inference uses batched window extraction and a single forward pass per signal block.}\label{tbl:table13}\tabularnewline
+\caption{Model complexity and timing comparison (experiment-specific training settings; Monte Carlo evaluation over 11 SNR points × 10 trials × 10,000 bits). All inference uses batched window extraction and a single forward pass per signal block.}\label{tbl:table13}\tabularnewline
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 Model
@@ -1642,13 +1642,13 @@ Relay & 4-cls BER @ 20 dB & 16-cls BER @ 20 dB & Improvement \\
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-MLP & 0.00811 & \textbf{0.00002} & 405Ã— \\
+MLP & 0.00811 & \textbf{0.00002} & 405× \\
 VAE & --- & \textbf{0.00000} & --- \\
 CGAN & 0.00811 & --- & --- \\
 Hybrid & --- & --- & --- \\
-Transformer & 0.00810 & \textbf{0.00001} & 810Ã— \\
-Mamba S6 & 0.00810 & \textbf{0.00009} & 90Ã— \\
-Mamba-2 SSD & 0.00811 & \textbf{0.00197} & 4.1Ã— \\
+Transformer & 0.00810 & \textbf{0.00001} & 810× \\
+Mamba S6 & 0.00810 & \textbf{0.00009} & 90× \\
+Mamba-2 SSD & 0.00811 & \textbf{0.00197} & 4.1× \\
 AF & 0.00063 & --- & --- \\
 DF & 0.00000 & --- & --- \\
 \end{longtable}
