@@ -1,36 +1,114 @@
+\xpginauxfiletrue 
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {1.1}{\ignorespaces Research positioning: comparison of this thesis against prior work in deep-learning-based relay communication.}}{9}{table.1.1}%
-\addvspace {10\p@ }
-\addvspace {10\p@ }
-\addvspace {10\p@ }
-\contentsline {table}{\numberline {4.1}{\ignorespaces MIMO system components, the problem each solves, and their input/output mapping.}}{32}{table.4.1}%
-\contentsline {table}{\numberline {4.2}{\ignorespaces Normalized 3K-parameter model configurations: parameter count and scaling method for each architecture.}}{39}{table.4.2}%
-\contentsline {table}{\numberline {4.3}{\ignorespaces QPSK Gray-coded symbol mapping: bit pairs to complex symbols.}}{41}{table.4.3}%
-\contentsline {table}{\numberline {4.4}{\ignorespaces 16-QAM PAM-4 Gray-coded level mapping for in-phase and quadrature components.}}{42}{table.4.4}%
-\contentsline {table}{\numberline {4.5}{\ignorespaces Relay-specific complex signal handling strategies and rationale.}}{45}{table.4.5}%
-\addvspace {10\p@ }
-\contentsline {table}{\numberline {5.1}{\ignorespaces \xpg@aux {}{english}\ignorespaces Master experiment configuration table. All nine relay strategies (AF, DF, MLP, Hybrid, VAE, CGAN, Transformer, Mamba~S6, Mamba-2~SSD) are evaluated unless otherwise noted. ``CA'' = Constellation-Aware; ``E2E'' = End-to-End.}}{48}{table.caption.75}%
-\addvspace {10\p@ }
-\contentsline {table}{\numberline {6.1}{\ignorespaces Context-length benchmark --- three sequence models at \(n = 255\) on CUDA.}}{62}{table.6.1}%
-\contentsline {table}{\numberline {6.2}{\ignorespaces Practical deployment recommendations: recommended relay strategy by operating regime.}}{63}{table.6.2}%
-\contentsline {table}{\numberline {6.3}{\ignorespaces Research hypotheses, their statements, and experimental outcomes.}}{66}{table.6.3}%
+\contentsline {table}{\numberline {1.1}{\ignorespaces Research positioning: comparison of this thesis against prior work in deep-learning-based relay communication.}}{10}{table.1.1}%
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {A.2}{\ignorespaces \xpg@aux {}{english}\ignorespaces Summary of relay architecture configurations and training hyperparameters. All models trained with MSE loss (regression) or cross-entropy (16-class), Adam optimiser, 100 epochs, 25\,000 training samples.}}{79}{table.caption.89}%
-\contentsline {table}{\numberline {A.4}{\ignorespaces BER comparison of all nine relay strategies on the AWGN channel.}}{107}{table.A.4}%
-\contentsline {table}{\numberline {A.5}{\ignorespaces BER comparison on the Rayleigh fading channel (SISO).}}{107}{table.A.5}%
-\contentsline {table}{\numberline {A.6}{\ignorespaces BER comparison on the Rician fading channel with K-factor = 3.}}{107}{table.A.6}%
-\contentsline {table}{\numberline {A.7}{\ignorespaces BER comparison on 2Ã—2 MIMO Rayleigh channel with ZF equalization.}}{108}{table.A.7}%
-\contentsline {table}{\numberline {A.8}{\ignorespaces BER comparison on 2Ã—2 MIMO Rayleigh channel with MMSE equalization.}}{108}{table.A.8}%
-\contentsline {table}{\numberline {A.9}{\ignorespaces BER comparison on 2Ã—2 MIMO Rayleigh channel with MMSE-SIC equalization.}}{108}{table.A.9}%
-\contentsline {table}{\numberline {A.10}{\ignorespaces Normalized 3K BER results --- AWGN channel.}}{109}{table.A.10}%
-\contentsline {table}{\numberline {A.11}{\ignorespaces Normalized 3K BER results --- Rayleigh fading channel.}}{109}{table.A.11}%
-\contentsline {table}{\numberline {A.12}{\ignorespaces Normalized 3K BER results --- Rician K=3 fading channel.}}{109}{table.A.12}%
-\contentsline {table}{\numberline {A.13}{\ignorespaces Normalized 3K BER results --- 2Ã—2 MIMO ZF.}}{110}{table.A.13}%
-\contentsline {table}{\numberline {A.14}{\ignorespaces Normalized 3K BER results --- 2Ã—2 MIMO MMSE.}}{110}{table.A.14}%
-\contentsline {table}{\numberline {A.15}{\ignorespaces Normalized 3K BER results --- 2Ã—2 MIMO SIC.}}{110}{table.A.15}%
-\contentsline {table}{\numberline {A.16}{\ignorespaces Model complexity and timing comparison (experiment-specific training settings; Monte Carlo evaluation over 11 SNR points Ã— 10 trials Ã— 10,000 bits). All inference uses batched window extraction and a single forward pass per signal block.}}{111}{table.A.16}%
-\contentsline {table}{\numberline {A.17}{\ignorespaces BER comparison across modulations at selected SNR points (AWGN channel). All nine relay strategies.}}{111}{table.A.17}%
-\contentsline {table}{\numberline {A.18}{\ignorespaces BER at 16 dB for all relay variants across activation functions and modulations (AWGN and Rayleigh).}}{112}{table.A.18}%
-\contentsline {table}{\numberline {A.19}{\ignorespaces 16-QAM BER improvements at 20 dB for sequence models with and without CSI injection and layer normalisation (AWGN).}}{112}{table.A.19}%
-\contentsline {table}{\numberline {A.20}{\ignorespaces BER at 20 dB for all relay variants: 4-class (I/Q split) vs.~16-class (joint 2D) classification for 16-QAM.}}{113}{table.A.20}%
+\addvspace {10\p@ }
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\contentsline {table}{\numberline {4.1}{\ignorespaces MIMO system components, the problem each solves, and their input/output mapping.}}{33}{table.4.1}%
+\contentsline {table}{\numberline {4.2}{\ignorespaces Normalized 3K-parameter model configurations: parameter count and scaling method for each architecture.}}{41}{table.4.2}%
+\contentsline {table}{\numberline {4.3}{\ignorespaces QPSK Gray-coded symbol mapping: bit pairs to complex symbols.}}{42}{table.4.3}%
+\contentsline {table}{\numberline {4.4}{\ignorespaces 16-QAM PAM-4 Gray-coded level mapping for in-phase and quadrature components.}}{43}{table.4.4}%
+\setforeignlanguage {english}
+\contentsline {table}{\numberline {4.5}{\ignorespaces Relay-specific complex signal handling strategies and rationale.}}{46}{table.4.5}%
+\addvspace {10\p@ }
+\setforeignlanguage {english}
+\contentsline {table}{\numberline {5.1}{\ignorespaces Master experiment configuration table. All nine relay strategies (AF, DF, MLP, Hybrid, VAE, CGAN, Transformer, Mamba~S6, Mamba-2~SSD) are evaluated unless otherwise noted. ``CA'' = Constellation-Aware; ``E2E'' = End-to-End.}}{49}{table.caption.75}%
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {6.1}{\ignorespaces Context-length benchmark --- three sequence models at \(n = 255\) on CUDA.}}{63}{table.6.1}%
+\contentsline {table}{\numberline {6.2}{\ignorespaces Practical deployment recommendations: recommended relay strategy by operating regime.}}{64}{table.6.2}%
+\contentsline {table}{\numberline {6.3}{\ignorespaces Research hypotheses, their statements, and experimental outcomes.}}{67}{table.6.3}%
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\setforeignlanguage {english}
+\contentsline {table}{\numberline {A.2}{\ignorespaces Summary of relay architecture configurations and training hyperparameters. All models trained with MSE loss (regression) or cross-entropy (16-class), Adam optimiser, 100 epochs, 25\,000 training samples.}}{81}{table.caption.89}%
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\setforeignlanguage {english}
+\contentsline {table}{\numberline {A.4}{\ignorespaces BER comparison of all nine relay strategies on the AWGN channel.}}{109}{table.A.4}%
+\contentsline {table}{\numberline {A.5}{\ignorespaces BER comparison on the Rayleigh fading channel (SISO).}}{109}{table.A.5}%
+\contentsline {table}{\numberline {A.6}{\ignorespaces BER comparison on the Rician fading channel with K-factor = 3.}}{109}{table.A.6}%
+\contentsline {table}{\numberline {A.7}{\ignorespaces BER comparison on 2×2 MIMO Rayleigh channel with ZF equalization.}}{110}{table.A.7}%
+\contentsline {table}{\numberline {A.8}{\ignorespaces BER comparison on 2×2 MIMO Rayleigh channel with MMSE equalization.}}{110}{table.A.8}%
+\contentsline {table}{\numberline {A.9}{\ignorespaces BER comparison on 2×2 MIMO Rayleigh channel with MMSE-SIC equalization.}}{110}{table.A.9}%
+\contentsline {table}{\numberline {A.10}{\ignorespaces Normalized 3K BER results --- AWGN channel.}}{111}{table.A.10}%
+\contentsline {table}{\numberline {A.11}{\ignorespaces Normalized 3K BER results --- Rayleigh fading channel.}}{111}{table.A.11}%
+\contentsline {table}{\numberline {A.12}{\ignorespaces Normalized 3K BER results --- Rician K=3 fading channel.}}{111}{table.A.12}%
+\contentsline {table}{\numberline {A.13}{\ignorespaces Normalized 3K BER results --- 2×2 MIMO ZF.}}{112}{table.A.13}%
+\contentsline {table}{\numberline {A.14}{\ignorespaces Normalized 3K BER results --- 2×2 MIMO MMSE.}}{112}{table.A.14}%
+\contentsline {table}{\numberline {A.15}{\ignorespaces Normalized 3K BER results --- 2×2 MIMO SIC.}}{112}{table.A.15}%
+\contentsline {table}{\numberline {A.16}{\ignorespaces Model complexity and timing comparison (experiment-specific training settings; Monte Carlo evaluation over 11 SNR points × 10 trials × 10,000 bits). All inference uses batched window extraction and a single forward pass per signal block.}}{112}{table.A.16}%
+\contentsline {table}{\numberline {A.17}{\ignorespaces BER comparison across modulations at selected SNR points (AWGN channel). All nine relay strategies.}}{113}{table.A.17}%
+\contentsline {table}{\numberline {A.18}{\ignorespaces BER at 16 dB for all relay variants across activation functions and modulations (AWGN and Rayleigh).}}{114}{table.A.18}%
+\contentsline {table}{\numberline {A.19}{\ignorespaces 16-QAM BER improvements at 20 dB for sequence models with and without CSI injection and layer normalisation (AWGN).}}{114}{table.A.19}%
+\contentsline {table}{\numberline {A.20}{\ignorespaces BER at 20 dB for all relay variants: 4-class (I/Q split) vs.~16-class (joint 2D) classification for 16-QAM.}}{114}{table.A.20}%
+\contentsline {table}{\numberline {A.21}{\ignorespaces Unknown-ISI two-hop relay: BER at 0/8/16/20\,dB, unknown ISI $\to $ AWGN (S1).}}{115}{table.A.21}%
+\setforeignlanguage {english}
+\contentsline {table}{\numberline {A.22}{\ignorespaces Viterbi MLSE, genie vs.\ pilot-estimated channel, unknown ISI $\to $ AWGN.}}{116}{table.A.22}%
+\setforeignlanguage {english}
+\contentsline {table}{\numberline {A.23}{\ignorespaces Memoryless unknown-phase channel (F1, DBPSK): BER at 0/8/16/20\,dB.}}{117}{table.A.23}%
+\setforeignlanguage {english}
+\contentsline {table}{\numberline {A.24}{\ignorespaces Composite channel cascade: BER at 0/8/16/20\,dB.}}{118}{table.A.24}%
+\setforeignlanguage {english}
+\contentsline {table}{\numberline {A.25}{\ignorespaces Blind regime (random ISI, no pilots): BER at 0/8/16/20\,dB.}}{119}{table.A.25}%
+\setforeignlanguage {english}
+\contentsline {table}{\numberline {A.26}{\ignorespaces Pilot-count sweep at 10\,dB: payload BER (pilot region excluded).}}{120}{table.A.26}%
+\setforeignlanguage {english}
+\contentsline {table}{\numberline {A.27}{\ignorespaces Per-symbol operation count: Viterbi MLSE vs.\ MLP-169.}}{121}{table.A.27}%
+\setforeignlanguage {english}

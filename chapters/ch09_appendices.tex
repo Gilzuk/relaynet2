@@ -1652,3 +1652,282 @@ Mamba-2 SSD & 0.00811 & \textbf{0.00197} & 4.1× \\
 AF & 0.00063 & --- & --- \\
 DF & 0.00000 & --- & --- \\
 \end{longtable}
+
+%% ── Supplementary: Unknown-Channel Relay Experiments ────────────────────────
+
+\section{Supplementary: Unknown-Channel Relay Experiments}\label{sec:app-supplementary-unknown-channel}
+
+This section reports supplementary, exploratory results from a companion simulation
+suite examining two-hop relay communication when the exact channel (ISI taps, phase,
+or gain) is \emph{unknown} to the receiver -- the ``Imperfect CSI'' direction flagged
+in Section~\ref{sec:future-work}. These results are distinct from, and not part of,
+the eight numbered experiments (E1--E8) of Chapter~\ref{sec:experiments}; they are
+included here as supplementary material only. All results were produced with the
+\texttt{relaynet} simulation framework (the same framework used throughout
+Chapter~\ref{sec:experiments}), each at 10 trials $\times$ 100{,}000 bits unless noted
+otherwise, and cross-checked against an independent clean-room implementation.
+Three relay strategies recur throughout: amplify-and-forward (AF), decode-and-forward
+(DF, including its differential-detection variant DF-diff for phase-unknown cases),
+classical Viterbi maximum-likelihood sequence estimation (MLSE), and a small
+multilayer-perceptron relay (MLP, 169--193 parameters, window size 11).
+
+\subsection{Unknown ISI and Nonlinear-Bias Channels}\label{sec:app-supp-sim}
+
+Four scenarios were evaluated: an unknown 3-tap ISI channel followed by AWGN or
+Rayleigh fading, an unknown saturating-nonlinearity-plus-DC-bias channel followed by
+AWGN, and a Rayleigh-to-Rayleigh control. Table~\ref{tbl:supp-sim} reports BER at
+four representative SNR points; the full 0--20\,dB sweep is shown in
+Figure~\ref{fig:supp-sim}.
+
+\begin{longtable}[]{@{}lrrrr@{}}
+\caption{Unknown-ISI two-hop relay: BER at 0/8/16/20\,dB, unknown ISI $\to$ AWGN (S1).}\label{tbl:supp-sim}\tabularnewline
+\toprule\noalign{}
+SNR (dB) & AF & DF & MLP (169p) \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+SNR (dB) & AF & DF & MLP (169p) \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\textbf{0.0} & 0.3408 & 0.3398 & 0.3047 \\
+\textbf{8.0} & 0.2039 & 0.1843 & 0.0480 \\
+\textbf{16.0} & 0.1881 & 0.2076 & 0.0001 \\
+\textbf{20.0} & 0.2146 & 0.2339 & \textbf{0.0000} \\
+\end{longtable}
+
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/unkchan_sim_S1.png}}
+\caption{Unknown-ISI two-hop relay BER vs.\ SNR (S1: unknown ISI $\to$ AWGN). AF/DF
+plateau at a non-monotonic floor around 0.18--0.23; the MLP relay breaks away toward
+the noise floor at high SNR. Companion scenarios (S2: ISI $\to$ Rayleigh, S3:
+nonlinear-bias $\to$ AWGN, S4: Rayleigh-to-Rayleigh control) are provided alongside
+this figure in the accompanying results directory.}
+\label{fig:supp-sim}
+\end{figure}
+
+\subsection{MLSE Detection of Unknown ISI}\label{sec:app-supp-viterbi}
+
+A 4-state Viterbi MLSE decoder was evaluated with genie (perfectly known) channel
+taps and with taps estimated from a 200-symbol least-squares pilot preamble (0.2\%
+overhead), on the same unknown-ISI channel as Section~\ref{sec:app-supp-sim}.
+
+\begin{longtable}[]{@{}lrr@{}}
+\caption{Viterbi MLSE, genie vs.\ pilot-estimated channel, unknown ISI $\to$ AWGN.}\label{tbl:supp-viterbi}\tabularnewline
+\toprule\noalign{}
+SNR (dB) & Viterbi-genie & Viterbi-est (200 pilots) \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+SNR (dB) & Viterbi-genie & Viterbi-est (200 pilots) \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\textbf{0.0} & 0.3081 & 0.3103 \\
+\textbf{8.0} & 0.0272 & 0.0287 \\
+\textbf{16.0} & 0.0000 & 0.0000 \\
+\textbf{20.0} & 0.0000 & 0.0000 \\
+\end{longtable}
+
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/unkchan_viterbi_awgn.png}}
+\caption{Viterbi MLSE with genie vs.\ pilot-estimated channel taps, unknown ISI $\to$
+AWGN. The 200-symbol (0.2\% overhead) pilot estimate tracks the genie curve closely
+at every SNR. A companion Rayleigh-hop2 scenario is provided alongside this figure.}
+\label{fig:supp-viterbi}
+\end{figure}
+
+\subsection{Memoryless Unknown-Channel Control}\label{sec:app-supp-flat}
+
+Three memoryless (no-ISI) unknown-channel cases were evaluated as a control: an
+unknown per-block phase rotation (DBPSK, differential detection), an unknown flat
+gain, and an unknown per-branch amplitude asymmetry. Because these channels have no
+memory, classical DF is expected to track the MLP relay closely.
+
+\begin{longtable}[]{@{}lrrr@{}}
+\caption{Memoryless unknown-phase channel (F1, DBPSK): BER at 0/8/16/20\,dB.}\label{tbl:supp-flat}\tabularnewline
+\toprule\noalign{}
+SNR (dB) & AF & DF & MLP (169p) \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+SNR (dB) & AF & DF & MLP (169p) \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\textbf{0.0} & 0.3974 & 0.3175 & 0.3250 \\
+\textbf{8.0} & 0.1124 & 0.0654 & 0.0669 \\
+\textbf{16.0} & 0.0143 & 0.0121 & 0.0121 \\
+\textbf{20.0} & 0.0052 & 0.0050 & \textbf{0.0050} \\
+\end{longtable}
+
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/unkchan_flat_phase.png}}
+\caption{Memoryless unknown-phase channel (F1, DBPSK): DF and MLP track each other
+closely at every SNR (maximum gap 0.0075 across the sweep), consistent with the
+expectation that classical detection is not disadvantaged when the unknown channel
+parameter has no memory. Companion unknown-gain (F2) and per-branch-asymmetry (F3)
+figures are provided alongside this one.}
+\label{fig:supp-flat}
+\end{figure}
+
+\subsection{Composite Channel Cascade}\label{sec:app-supp-composite}
+
+A composite cascade (3-tap ISI, Rapp soft-limiter power-amplifier nonlinearity, and
+an unknown per-block phase rotation, DBPSK) was evaluated with AF, DF-diff, a
+differential 4-state Viterbi MLSE using a pilot-based complex channel estimate, and
+two MLP relay sizes (169 and 1153 parameters).
+
+\begin{longtable}[]{@{}lrrrrr@{}}
+\caption{Composite channel cascade: BER at 0/8/16/20\,dB.}\label{tbl:supp-composite}\tabularnewline
+\toprule\noalign{}
+SNR (dB) & AF & DF-diff & Viterbi-diff & MLP (169p) & MLP (1153p) \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+SNR (dB) & AF & DF-diff & Viterbi-diff & MLP (169p) & MLP (1153p) \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\textbf{0.0} & 0.4611 & 0.4379 & 0.3947 & 0.4155 & 0.4070 \\
+\textbf{8.0} & 0.3219 & 0.2941 & 0.0939 & 0.1290 & 0.1381 \\
+\textbf{16.0} & 0.2566 & 0.2545 & 0.0121 & 0.0128 & 0.0124 \\
+\textbf{20.0} & 0.2542 & 0.2534 & 0.0051 & \textbf{0.0051} & \textbf{0.0051} \\
+\end{longtable}
+
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/unkchan_composite.png}}
+\caption{Composite channel cascade (ISI $\times$ PA nonlinearity $\times$ unknown
+phase). AF/DF-diff plateau near 0.25; Viterbi-diff is ahead of both MLP sizes in the
+8--12\,dB transition region, while all three converge by 20\,dB. The 169- and
+1153-parameter MLPs perform near-identically, indicating that additional capacity
+does not help once the task saturates.}
+\label{fig:supp-composite}
+\end{figure}
+
+\subsection{Blind Regime: No Pilots, Randomly-Drawn ISI}\label{sec:app-supp-blind}
+
+The composite-cascade scenario was repeated with a fresh random 3-tap ISI response
+drawn independently on every trial and \emph{no pilots available to any relay}.
+Classical options without a channel estimate are DF-diff, a blind constant-modulus
+adaptive equalizer (CMA), and a decision-directed bootstrap Viterbi MLSE; the MLP was
+trained on the channel family (i.e.\ across many random ISI draws) but sees an
+unseen realization at test time with no per-block adaptation.
+
+\begin{longtable}[]{@{}lrrrr@{}}
+\caption{Blind regime (random ISI, no pilots): BER at 0/8/16/20\,dB.}\label{tbl:supp-blind}\tabularnewline
+\toprule\noalign{}
+SNR (dB) & CMA-blind & Viterbi-blind & MLP (169p) \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+SNR (dB) & CMA-blind & Viterbi-blind & MLP (169p) \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\textbf{0.0} & 0.4503 & 0.4038 & 0.3848 \\
+\textbf{8.0} & 0.0737 & 0.1886 & 0.0812 \\
+\textbf{16.0} & 0.0063 & 0.0061 & 0.0068 \\
+\textbf{20.0} & 0.0024 & 0.0024 & \textbf{0.0024} \\
+\end{longtable}
+
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/unkchan_blind.png}}
+\caption{Blind regime, random ISI per trial, no pilots. CMA-blind and MLP-169
+converge to near-identical BER by 20\,dB (0.0024 vs.\ 0.0024). Viterbi-blind's
+decision-directed channel bootstrap is visibly less stable than the other two: its
+95\% confidence interval at 10\,dB is roughly 9$\times$ wider than the MLP's
+(\(\pm 0.088\) vs.\ \(\pm 0.010\)), reflecting occasional bootstrap-estimate failures
+on individual trials rather than a difference in mean performance.}
+\label{fig:supp-blind}
+\end{figure}
+
+\subsection{Pilot-Count and Block-Length Sensitivity}\label{sec:app-supp-partial}
+
+Using the same composite-cascade channel, the classical Viterbi MLSE's pilot budget
+was swept at a fixed 10\,dB operating point: pilot count $\in \{800, 200, 50, 20, 10,
+5\}$ (panel a), and separately, block length $\in \{40, 80, 160, 320, 1000\}$ with a
+fixed 10-symbol pilot preamble per block (panel b). The zero-pilot MLP-169 and
+CMA-blind references from Section~\ref{sec:app-supp-blind} are shown as flat lines
+for comparison.
+
+\begin{longtable}[]{@{}lrr@{}}
+\caption{Pilot-count sweep at 10\,dB: payload BER (pilot region excluded).}\label{tbl:supp-partial}\tabularnewline
+\toprule\noalign{}
+Pilots & Viterbi payload BER & Overhead (\% of 100k-bit block) \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+Pilots & Viterbi payload BER & Overhead (\% of 100k-bit block) \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+800 & 0.0267 & 0.800 \\
+50 & 0.0296 & 0.050 \\
+10 & 0.0321 & 0.010 \\
+\textbf{5} & \textbf{0.1192} & 0.005 \\
+\end{longtable}
+
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/unkchan_partial.png}}
+\caption{(a) Viterbi payload BER vs.\ pilot count at 10\,dB: performance is flat and
+below the zero-pilot MLP/CMA references down to 10 pilots, then collapses sharply at
+5 pilots (0.119) -- consistent with an identifiability floor when too few pilot
+symbols remain to resolve the channel's degrees of freedom. (b) Block-length sweep
+with a fixed 10-pilot preamble: pilot overhead falls from 25\% (L=40) to 1\%
+(L=1000) as block length grows, while the MLP relay carries zero pilot overhead
+throughout.}
+\label{fig:supp-partial}
+\end{figure}
+
+\subsection{Computational Cost: MLSE vs.\ MLP}\label{sec:app-supp-complexity}
+
+Finally, the computational cost of Viterbi MLSE and the MLP relay was compared
+analytically (operation counts as a function of modulation order $M$ and channel
+memory $L$) and empirically (measured wall-clock inference time on identical signal
+lengths, using \texttt{relaynet}'s own Viterbi and MLP relay implementations).
+
+\begin{longtable}[]{@{}lrr@{}}
+\caption{Per-symbol operation count: Viterbi MLSE vs.\ MLP-169.}\label{tbl:supp-complexity}\tabularnewline
+\toprule\noalign{}
+(M, L) & Viterbi flops/symbol & MLP flops/symbol \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+(M, L) & Viterbi flops/symbol & MLP flops/symbol \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+(2, 3) & 64 & 330 \\
+(4, 3) & 512 & 330 \\
+(16, 3) & 32{,}768 & 330 \\
+(16, 5) & 8{,}388{,}608 & \textbf{330} \\
+\end{longtable}
+
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/unkchan_complexity.png}}
+\caption{(a) Per-symbol flop count: Viterbi MLSE grows as $M^L$ while the MLP relay
+is constant in both $M$ and $L$; at the smallest configuration (BPSK, $L=3$) Viterbi
+is in fact cheaper per-flop (64 vs.\ 330) -- the MLP's advantage is in scaling, not
+in absolute cost at the smallest setting. (b) Measured wall-clock inference time
+(\texttt{relaynet}'s own Viterbi and MLP implementations, BPSK, $L=3$): the MLP is
+30.8$\times$--85.1$\times$ faster across signal lengths 1{,}000--50{,}000 symbols,
+reflecting a vectorized batched matrix multiply versus an inherently sequential
+per-symbol trellis scan; this ratio is specific to this numpy/Python implementation,
+not a universal hardware-independent claim.}
+\label{fig:supp-complexity}
+\end{figure}
