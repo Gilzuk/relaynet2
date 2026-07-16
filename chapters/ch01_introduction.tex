@@ -1,0 +1,102 @@
+\chapter{Introduction}\label{sec:introduction}
+
+Relay communication is a key technique in contemporary wireless systems that uses intermediate nodes between a source and a destination to extend coverage, enhance reliability, and boost throughput. Classical relay strategies such as amplify-and-forward (\texttt{AF}) and decode-and-forward (\texttt{DF}) have been extensively analyzed and are widely used as baseline protocols; in several canonical relay-channel models, \texttt{DF} (and related forwarding schemes) can achieve capacity or approach fundamental limits, particularly in the high-SNR regime \cite{CoverGamal1979RelayChannel,ElGamalKim2011NetworkIT,Laneman2004CooperativeDiversity,RankovWittneben2007HalfDuplexRelay,Nosratinia2004CooperativeCommunication}.
+
+Recent advances in machine learning have motivated the application of neural networks to physical-layer communication problems, including detection, decoding, and end-to-end system optimization. Neural models can approximate nonlinear mappings that are analytically intractable and may offer advantages in low-SNR or non-ideal regimes. 
+
+This motivates the central question of this thesis: \emph{under what conditions can neural network–based relays improve upon or complement classical relay strategies in two-hop cooperative communication?} 
+
+This thesis presents a systematic comparative study of classical and neural relay strategies within a unified simulation framework. Nine relay methods are evaluated: Two classical relay strategies (\texttt{AF} and \texttt{DF}) and seven neural relays spanning supervised learning (\texttt{MLP}, SNR-adaptive \texttt{hybrid} relay), generative modeling (variational autoencoder \texttt{VAE} and conditional GAN with \texttt{WGAN-GP}), and sequence-based architectures (\texttt{Transformer}, \texttt{Mamba-S6}, and \texttt{Mamba-SSD}  with structured state space duality). 
+
+The main objective of this thesis is not to propose a new relay design, but to quantify \textit{performance Vs. complexity} tradeoffs and identify regimes where learning-based relays are effective, as Existing studies typically focus on a limited set of architectures or channel models, making it difficult to disentangle the effects of model structure, parameter count, and channel conditions.
+
+\paragraph{Scope of this thesis.}
+This thesis studies a single, fixed communication problem --- the classical
+source--relay--destination (two-hop) link --- under \emph{one canonical setup}:
+SISO on both hops, i.i.d.\ Rayleigh fast fading, complex baseband, BPSK, uncoded
+BER. The only axis varied is the \emph{relay
+function}. A scoped modulation extension (Chapter~\ref{sec:extensions}) and a dedicated unknown-channel contribution (Chapter~\ref{sec:unknown-channels}) are included;
+all other departures from the canonical setup are identified as future work in Chapter~\ref{sec:discussion-and-conclusions}:
+
+\begin{longtable}{@{}p{0.25\textwidth}p{0.71\textwidth}@{}}
+\caption{Scope of the thesis: the canonical setup, the modulation extension (QPSK/16-QAM), and the unknown-channel contribution. No other topology, relay protocol, or metric is evaluated anywhere in this work.}
+\label{tbl:scope}\\
+
+\toprule
+\textbf{Axis} & \textbf{Canonical value (future work in parentheses)} \\
+\midrule
+\endfirsthead
+
+\multicolumn{2}{@{}l}{\textit{Table \thetable\ continued from previous page}}\\
+\toprule
+\textbf{Axis} & \textbf{Canonical (core) / Extensions (deferred)} \\
+\midrule
+\endhead
+
+\bottomrule
+\endlastfoot
+
+Topology
+&
+SISO on both hops \emph{(future work: MIMO second hop)} \\
+
+Channel
+&
+i.i.d.\ Rayleigh fast fading; AWGN retained as analytical calibration; unknown, mismatched, and time-varying channels are studied in the dedicated contribution (Chapter~\ref{sec:unknown-channels}) \emph{(future work: Rician and other channel families)} \\
+
+Relay Function \emph{(the studied axis)}
+&
+\emph{Classical:} AF, DF.
+\emph{Learned:} MLP, Hybrid, VAE, CGAN, Transformer, Mamba-S6, Mamba-2-SSD \\
+
+Modulation
+&
+BPSK; QPSK and 16-QAM studied as a scoped extension (Chapter~\ref{sec:extensions}) \emph{(future work: 16-PSK, 64-QAM and beyond)} \\
+
+Performance Metric
+&
+Uncoded BER vs.\ SNR, Monte-Carlo averaged \\
+
+\end{longtable}
+
+Everything else discussed in the literature review (the general relay channel with a direct link, its capacity bounds, and the other classical relay protocols such as compress-, compute-, estimate-, and filter-and-forward) is provided as \emph{background context only} and is not part of the studied system.
+
+
+\section{System Model}\label{sec:system-model-intro}
+
+\paragraph{System model studied in this thesis.}
+Throughout this work, a \emph{single canonical setup} is fixed and never departed from in the main line of argument: a half-duplex two-hop link with a single relay and \emph{no} direct source-to-destination path, in which the source $S$ transmits during a listening phase to the relay $R$, and the relay then transmits during a transmission phase to the destination $D$. Both hops are single-input single-output (SISO) complex-baseband channels with i.i.d.\ Rayleigh \emph{fast} fading --- a fresh realization $h\sim\mathcal{CN}(0,1)$ per channel use, known perfectly at the corresponding receiver. The modulation is BPSK, and the performance metric is the \emph{uncoded} bit-error rate (BER) as a function of SNR, averaged by Monte Carlo over the fading ensemble. Since BPSK carries information on the real axis only, each receiver applies coherent phase compensation ($y \cdot h^*/|h|$) and takes $\Re\{\cdot\}$ of the result; the imaginary component then contains noise only, so this projection is the sufficient statistic and loses nothing. The learned component of the system is confined to the \emph{relay processing function} $f_\theta(\cdot)$ --- the block for which AF and DF are the classical alternatives; the source, channels, and destination demodulator are fixed, so observed BER differences are attributable to the relay strategy alone. The AWGN channel appears only as the analytical calibration limit used to validate the simulator. Beyond the canonical core, the thesis makes two further contributions of unequal weight. A scoped modulation extension (Chapter~\ref{sec:extensions}) tests whether the canonical BPSK conclusions generalize to QPSK and 16-QAM, including a joint 2D $N$-class classification formulation of the relay. The principal experimental contribution (Chapter~\ref{sec:unknown-channels}) is a systematic study of learned relaying under \emph{unknown and mismatched} channels --- mapping, along every axis a skeptic would probe, precisely when a minimal learned relay adds value over the strongest classical baselines and when it does not (H6). All other departures (other channel families, a MIMO second hop, learned constellations) are identified as future work in Chapter~\ref{sec:discussion-and-conclusions}. Capacity-theoretic results and the cooperative-diversity order are quoted in Chapter~\ref{sec:literature-review} as classical \emph{background only}; they are not the operating point evaluated in the experiments.
+
+\subsection{Two-Hop Relay Model}\label{sec:two-hop-relay-model}
+
+In the half-duplex two-hop model studied in this thesis, the relay cannot transmit and receive simultaneously, and there is no direct source--destination link. The communication proceeds in two time slots:
+
+\textbf{Slot 1 (Source $\to$ Relay) --- listening phase:} \begin{equation}\protect\phantomsection\label{eq:awgn-hop1}{y_R[i] = x[i] + n_1[i], \quad n_1[i] \sim \mathcal{N}(0, \sigma^2)
+}\end{equation}
+\addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad awgn-hop1}
+
+\textbf{Slot 2 (Relay $\to$ Destination) --- transmission phase:} \begin{equation}\protect\phantomsection\label{eq:awgn-hop2}{y_D[i] = x_R[i] + n_2[i], \quad n_2[i] \sim \mathcal{N}(0, \sigma^2)
+}\end{equation}
+\addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad awgn-hop2}
+
+where \(x[i] \in \{-1, +1\}\) is the BPSK symbol transmitted by the source at time~$i$, \(y_R[i]\) is the signal received at the relay, \(x_R[i] = f_\theta(y_R[i-w:i+w])\) is the signal transmitted by the relay at time~$i$, and \(y_D[i]\) is the signal received at the destination.
+
+\begin{remark}[Realizability of the symmetric window]\label{rem:window-causality}
+The window $y_R[i-w:i+w]$ uses look-ahead samples and is therefore non-causal in the \emph{streaming} sense. It is nonetheless fully realizable in the half-duplex protocol studied here: the relay buffers the \emph{entire} listening-phase block before the transmission phase begins, so by the time $x_R[i]$ is computed, all samples $y_R[i-w:i+w]$ have already been received. The symmetric window is thus a block-level (store-and-forward) operation with a fixed processing latency of $w$ symbols. The classical baselines AF and DF are memoryless in their per-symbol operation ($w=0$) and are strictly causal.
+\end{remark}
+
+The noise terms are independent and identically distributed with variance 
+
+\begin{equation}\protect\phantomsection\label{eq:awgn-sigma2}
+\sigma^2 = \frac{P_s}{\gamma}
+\end{equation}
+\addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad awgn-sigma2}
+
+
+The choice of relay processing function \(f(\cdot)\) fundamentally determines system performance and is the central object of study in this thesis. Classical approaches include amplify-and-forward (AF), which simply scales the received signal, and decode-and-forward (DF), which regenerates the signal through demodulation and re-modulation. Each has well-understood performance characteristics: AF is simple but propagates noise, while DF eliminates first-hop noise but introduces error propagation when decoding fails \cite{CoverGamal1979RelayChannel}.
+
+\begin{remark}[Terminology: symbol-wise DF vs.\ information-theoretic DF]\label{rem:df-terminology}
+The term ``decode-and-forward'' is used in two distinct senses in the literature, and the distinction matters for interpreting the results of this thesis. In its \emph{information-theoretic} sense \cite{CoverGamal1979RelayChannel,ElGamalKim2011NetworkIT}, DF is a \emph{block} strategy: the source protects each message block with a strong (ideally capacity-achieving) channel code, the relay decodes the entire block, and only then re-encodes and forwards the recovered message. This block-DF is inherently \emph{not} memoryless and, over a single link, can operate reliably at any rate below the first-hop capacity.
+
+The system studied in this thesis is \emph{uncoded}: one BPSK symbol carries one information bit and no outer error-correction code is applied. Consequently, the ``DF'' baseline throughout this work refers to \emph{symbol-wise slicing}: per-symbol demodulation followed by re-modulation, i.e., $f_{\text{DF}}(y_R[i]) = \operatorname{sign}(y_R[i])$ with $w=0$. This is the appropriate classical counterpart to the learned relays under the uncoded BER metric used here, but it is strictly weaker than block-DF with coding; the reported DF results should not be read as bounds on coded block-DF performance. Extending the comparison to the coded setting --- where the relay (classical or learned) aggregates information across a full code block --- is an important direction for future work and is discussed in Chapter~\ref{sec:discussion-and-conclusions}.
+\end{remark}

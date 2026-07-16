@@ -1,0 +1,223 @@
+\chapter{Appendices}\label{sec:appendices}
+
+\section{Appendix A: Mathematical Notation}\label{sec:appendix-a-mathematical-notation}
+
+{\def\LTcaptype{table} % do not increment counter
+\begin{longtable}[]{@{}ll@{}}
+\toprule\noalign{}
+Symbol & Description \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\(b\) & Binary bit (\(\in \{0, 1\}\)) \\
+\(x\) & Modulated BPSK symbol (\(\in \{-1, +1\}\)) \\
+\(y\) & Received signal \\
+\(n\) & Noise sample \\
+\(h\) & Fading coefficient \\
+\(\sigma^2\) & Noise variance \\
+\(\text{SNR}\) & Signal-to-Noise Ratio (linear) \\
+\(G\) & AF amplification gain \\
+\(\mathbf{W}\) & Neural network weight matrix \\
+\(\mathbf{b}\) & Bias vector \\
+\(P_e\) & Bit error rate \\
+\(Q(\cdot)\) & Gaussian Q-function \\
+\(\beta\) & VAE KL weight \\
+\(\lambda\) & Regularization parameter \\
+\(\eta\) & Learning rate \\
+\(\Delta\) & State space discretization step \\
+\(\mathbf{A}, \mathbf{B}, \mathbf{C}, D\) & State space model matrices \\
+\end{longtable}
+}
+
+\section{Appendix B: Model Architectures and Hyperparameters}\label{sec:appendix-b-model-architectures-and-hyperparameters}
+
+% column helpers
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+
+\begin{table}[ht]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+
+\begin{tabularx}{\textwidth}{|L{2.1cm}|Y|L{3.2cm}|L{1.7cm}|L{2.3cm}|}
+\hline
+\textbf{Relay} &
+\textbf{Network Topology} &
+\textbf{Train Loss (LR)} &
+\textbf{Total Params} &
+\textbf{Implementation} \\
+\hline
+MLP (Minimal) &
+Feedforward MLP, 5-symbol sliding window &
+MSE, lr=0.01, 100 epochs &
+169 &
+NumPy (CPU) \\
+\hline
+Hybrid &
+MLP + DF switching via learned SNR threshold ($\sim$5 dB) &
+MSE (MLP only), lr=0.01 &
+169 &
+NumPy (CPU) \\
+\hline
+VAE &
+Encoder--decoder latent model (7$\to$8$\to$1) &
+$\beta$-VAE ($\beta=0.1$), Adam lr=$10^{-3}$ &
+1{,}777 &
+PyTorch (CUDA) \\
+\hline
+CGAN (WGAN-GP) &
+Conditional GAN (generator + critic) &
+WGAN-GP, Adam lr=$10^{-4}$ &
+2{,}946 &
+PyTorch (CUDA) \\
+\hline
+Transformer &
+2-layer encoder, 4 heads, $d_{\text{model}}=32$ &
+MSE, Adam lr=$10^{-3}$ &
+17{,}697 &
+PyTorch (CUDA/CPU) \\
+\hline
+Mamba S6 &
+Selective SSM, 2 S6 layers &
+MSE, Adam lr=$10^{-3}$ &
+24{,}001 &
+PyTorch (CUDA/CPU) \\
+\hline
+Mamba2 (SSD) &
+Selective SSM with SSD kernel (2 layers) &
+MSE, Adam lr=$10^{-3}$, clip=1.0 &
+26{,}179 &
+PyTorch (CUDA) \\
+\hline
+\end{tabularx}
+
+\caption{Comparison of relay models, training objectives, parameter counts, and implementations.}
+\label{tab:relay_comparison}
+\end{table}
+
+\section{Appendix C: Software Architecture}\label{sec:appendix-c-software-architecture}
+
+\noindent
+All numerical results reported in Chapter~\ref{sec:experiments} were generated using a single simulation framework, ensuring consistent evaluation across classical and learning-based relay architectures. The project is implemented as a modular Python package (\texttt{relaynet}).
+The framework uses object-oriented design with a common \texttt{Relay} base class, enabling polymorphic relay swapping. Monte Carlo simulation is implemented in \texttt{runner.py} with configurable trial count, bit count, and SNR range. All batched tensor operations use vectorized PyTorch for GPU acceleration.
+
+\subsection{Testing} 126 automated tests (pytest) cover all channels, modulation, relay strategies, simulation, and statistics modules with 100\% pass rate.
+
+\subsection{Reproducibility} Random seeds are controlled at the source (bit generation) and noise (per-trial seeding) levels to ensure reproducible results. 
+
+\clearpage
+
+\section{Appendix D: Normalized 3K-Parameter Configurations}\label{sec:appendix-d-normalized-3k-parameter-configurations}
+
+{\def\LTcaptype{table} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Model
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Parameters
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Window
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Hidden / Architecture
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+MLP-3K & 3,004 & 11 & hidden=231 \\
+Hybrid-3K & 3,004 & 11 & hidden=231 (+ DF switch) \\
+VAE-3K & 3,037 & 11 & latent=10, hidden=(44, 20) \\
+CGAN-3K & 3,004 & 11 & noise=8, g\_hidden=(30, 30, 16), c\_hidden=(32, 16) \\
+Transformer-3K & 3,007 & 11 & d\_model=18, heads=2, layers=1 \\
+Mamba-3K & 3,027 & 11 & d\_model=16, d\_state=6, layers=1 \\
+Mamba2-3K & 3,004 & 11 & d\_model=15, d\_state=6, chunk\_size=8, layers=1 \\
+\end{longtable}
+}
+
+All 3K configurations use a window size of 11 (vs.~5 for original MLP/Hybrid, and 11 for original sequence models) to provide a common input context. The parameter counts are within ±1.2\% of the 3,000 target.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+%% ── Hebrew Abstract (Back Matter) ───────────────────────────
+
+\section{Appendix E: Response to Supervisor Comments}\label{sec:appendix-response-to-comments}
+
+This appendix reproduces each comment raised by the supervisor (\textbf{AK}) on the previous draft, together with its resolution (\textbf{GZ}). Because the revision restructured the thesis around a single canonical setup (Section~\ref{sec:introduction}) and, in doing so, \emph{removed} several sections that the earlier draft contained, resolutions that entailed deletion are flagged explicitly with \textbf{[SECTION REMOVED]} so that the change is transparent.
+
+\subsection*{Chapter 1 --- Introduction}
+
+\begingroup\small
+\begin{enumerate}\setlength{\itemsep}{2pt}\setlength{\parskip}{1pt}
+
+\item \AK{Abstract is missing.}\\
+\GZ{Resolved. English and Hebrew abstracts are included via \texttt{ch00\_frontmatter.tex} and \texttt{ch09\_hebrew\_abstract.tex}, and both were rewritten to match the final (canonical) scope.}
+
+\item \AK{There are compilation errors. Would be good to resolve them.}\\
+\GZ{Resolved. The missing-brace errors and a duplicate \texttt{\textbackslash listoflistequations} were fixed; the project compiles cleanly under XeLaTeX with zero undefined references.}
+
+\item \AK{There are compilation errors. Would be good to resolve them. (second instance)}\\
+\GZ{Resolved together with the item above; the second flagged location shared the same root cause.}
+
+\item \AK{Unusual citation.}\\
+\GZ{Resolved. The inline \texttt{source: [\ldots]} annotations placed under equations were removed throughout, and equation attributions now use standard \texttt{\textbackslash cite} references (e.g.\ Proakis, Goodfellow et al.).}
+
+\item \AK{This is not causal\ldots{} [regarding the symmetric relay window $x_R[i]=f_\theta(y_R[i-w:i+w])$]}\\
+\GZ{Addressed and formalised as Remark~\ref{rem:window-causality}. The symmetric window is non-causal in the streaming sense but fully realizable in the half-duplex, store-and-forward setting: the relay buffers the entire listening-phase block before transmitting, so by the time $x_R[i]$ is computed all samples $y_R[i-w:i+w]$ have been received. The window costs a fixed processing latency of $w$ symbols; AF/DF use $w=0$ (strictly causal). This is analysed quantitatively in the latency discussion of Section~\ref{sec:latency-and-adaptivity-considerations}.}
+
+\item \AK{This is the transmitted signal by the relay.}\\
+\GZ{Resolved; the surrounding sentence was corrected and the time index restored.}
+
+\item \AK{The time axis is missing. Aggregation of information can be useful, especially when incorporating an error correction code. Do you allow only scalar operations at the relay?}\\
+\GZ{Resolved. The time index is restored, and the relay is explicitly \emph{not} restricted to scalar processing: learned relays use a length-$2w+1$ sliding window ($w>0$), while AF and symbol-wise DF are memoryless ($w=0$). The uncoded setting is stated up front; the value of temporal aggregation is in fact a central theme of the principal contribution (Chapter~\ref{sec:unknown-channels}), where the window is what allows the learned relay to equalise unknown intersymbol interference.}
+
+\item \AK{I agree that AF is memoryless but DF is not. Information-theoretic DF works in blocks to incorporate a strong (capacity-achieving over a single link) code and recovers the message at the end of the time block. You may of course use simple slicing, but this won't do much good.}\\
+\GZ{Addressed and formalised as Remark~\ref{rem:df-terminology}. The thesis studies \emph{symbol-wise} (slicing) DF and now states this explicitly wherever DF appears, distinguishing it from information-theoretic block-DF. The distinction is load-bearing in the results: the high-SNR optimality of symbol-wise DF (H2) is explicitly \emph{not} claimed to carry over to the coded block-DF setting, and a coded block-DF comparison is identified as the leading item of future work (Chapter~\ref{sec:discussion-and-conclusions}).}
+
+\end{enumerate}
+
+\endgroup
+
+\subsection*{Chapter 2 --- Literature Review}
+
+\begingroup\small
+\begin{enumerate}\setlength{\itemsep}{2pt}\setlength{\parskip}{1pt}
+
+\item \AK{You haven't defined the system model so this discussion seems out of place.}\\
+\GZ{Resolved. The system-model definition was moved to Chapter~\ref{sec:introduction}; Chapter~\ref{sec:literature-review} is now a pure literature review, and the MIMO background section carries a one-sentence pointer noting it supports only the deferred material.}
+
+\item \AK{The relevance to this equation is not clear. Also, what do you mean by scaling? Isn't that the capacity for any SNR?}\\
+\textbf{[SECTION REMOVED]} \GZ{The capacity/scaling passage was part of the MIMO capacity discussion. In the canonical restructure the entire MIMO thread was removed from the main line of the thesis (see comment~4 below), so the unclear equation no longer appears. The residual capacity material retained as background was corrected to avoid the ambiguous ``scaling'' phrasing.}
+
+\item \AK{Here you introduce fading for the first time. You could've done that already in the SISO case. Also, now the channels are complex whereas up until now they were real (and with fixed known gains).}\\
+\GZ{Resolved. The model conventions were unified: the canonical channel is i.i.d.\ Rayleigh fast fading in complex baseband from the outset. For SISO Hop~1, BPSK is transmitted on the real axis and the receiver applies coherent compensation and takes $\Re\{\cdot\}$, which is the sufficient statistic; this reconciles the earlier real-valued derivations with the complex model and is stated once in Chapter~\ref{sec:introduction}.}
+
+\item \AK{Why not recovering both then? You keep jumping between multiple settings: no-fading/slow-fading/fast-fading, real/complex, SISO/MIMO. Please define one model that you've tackled and stick to it, unless you've actually tackled several settings. Then, each of them deserves a separate chapter.}\\
+\textbf{[SECTION REMOVED]} \GZ{This was the decisive comment behind the restructure. The thesis now fixes \emph{one} canonical setup --- SISO on both hops, i.i.d.\ Rayleigh fast fading, complex baseband, BPSK, uncoded BER --- and varies only the relay function. The AWGN and Rician robustness studies, the $2\times2$ MIMO second hop with ZF/LMMSE/SIC equalization, the 16-PSK modulation, the CSI-injection study, and the end-to-end autoencoder were all \emph{removed} from the thesis; each is now listed as future work. The two threads that survive as deliberate, separately-chaptered studies are the higher-order-modulation extension (Chapter~\ref{sec:extensions}) and the unknown-channel contribution (Chapter~\ref{sec:unknown-channels}), each with its own clearly stated configuration --- exactly as requested.}
+
+\item \AK{The diversity--multiplexing tradeoff (DMT) is irrelevant in the ergodic setting. DMT assumes slow fading and discusses performance in the presence of some outage probability.}\\
+\textbf{[SECTION REMOVED]} \GZ{The DMT discussion was removed. The canonical setting is ergodic fast fading with an uncoded-BER metric, for which DMT does not apply; only a single background sentence remains, with no DMT-based claims.}
+
+\item \AK{Why is it needed at all?}\\
+\textbf{[SECTION REMOVED]} \GZ{The flagged passage belonged to the MIMO-equalization background that supported the now-removed MIMO study. With the MIMO thread deferred to future work, the passage was deleted; the remaining equalization background is confined to a clearly-labelled subsection and kept only to the extent needed to define terms used in the future-work discussion.}
+
+\item \AK{It's linear MMSE (LMMSE) unless you work with a Gaussian codebook, which I suspect you do not.}\\
+\GZ{Resolved. All references to ``MMSE'' equalization were corrected to ``LMMSE'' (linear MMSE), since the system uses a BPSK constellation rather than a Gaussian codebook. Note that the MIMO equalization material itself is now future work (comment~4); the terminology was corrected in the retained background nonetheless.}
+
+\item \AK{Again, you can construct a variant that recovers a block code, cancels it out from the measurements, then recovers the next block code, etc.\ [coded SIC]}\\
+\GZ{Acknowledged and scoped. As with block-DF (Ch.~1, comment~8), the thesis studies uncoded, symbol-level processing; coded per-layer SIC is outside the uncoded scope and is named explicitly in the future-work discussion. Since the MIMO study itself is now deferred (comment~4), coded SIC is doubly future work.}
+
+\item \AK{I thought the goal was to replace the various classical strategies with a neural net that would learn what's the best strategy.}\\
+\GZ{This comment reshaped the thesis's central claim, and the response is now the thesis's main finding rather than a rebuttal. The honest result is that a learned relay does \emph{not} universally replace classical strategies: on a matched, known channel symbol-wise DF is at least as good at zero parameter cost (H2). What the learned relay \emph{does} provide --- and this is the principal contribution (Chapter~\ref{sec:unknown-channels}) --- is family-agnostic mitigation when the channel is unknown or mismatched: it restores reliable relaying where memoryless classical relays fail, approaches the model-aware optimum (Viterbi) without knowing the channel family, and does so at constant, parallelizable complexity. The framing is therefore ``characterise when learning helps,'' not ``replace classical processing everywhere'' --- a change made directly in response to this comment.}
+
+\end{enumerate}
+\endgroup
+
+\noindent\textbf{Summary of removed material.} In direct response to comment~4 above, the following were removed from the thesis and redesignated as future work: the AWGN and Rician channel-robustness studies; the $2\times2$ MIMO second hop and its ZF/LMMSE/SIC equalization; 16-PSK modulation; the CSI-injection ablation; and the end-to-end autoencoder. The diversity--multiplexing tradeoff discussion (comment~5) and the MIMO-capacity/equalization background passages (comments~2 and~6) were likewise deleted. All removals served the single-canonical-model discipline requested in comment~4, and none affects the validity of the retained results, which were re-run and re-derived entirely within the canonical setup.

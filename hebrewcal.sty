@@ -1,0 +1,21 @@
+%% Local stub: suppress othello font loading from polyglossia hebrewcal
+%% The othello METAFONT source fails to compile on this MiKTeX installation.
+%% Hebrew calendar features are not needed for this thesis.
+\ProvidesPackage{hebrewcal}[2026/04/01 stub - no othello font]
+
+%% Declare the same keys as the real hebrewcal.sty (using LaTeX3 key system)
+\DeclareKeys[hebrewcal]{
+  marcheshvan.if = @xpg@hebrew@marcheshvan,
+  marcheshvan.default:n = true,
+  fullyear.if = @xpg@hebrew@fullyear,
+  fullyear.default:n = true,
+}
+\newif\if@xpg@hebrew@marcheshvan
+\newif\if@xpg@hebrew@fullyear
+\ProcessKeyOptions[hebrewcal]
+
+%% Provide no-op stubs for calendar commands used by polyglossia
+\providecommand{\hebrewdate}[3]{}
+\providecommand{\hebrewtoday}{}
+\let\Hebrewtoday\hebrewtoday
+\endinput
