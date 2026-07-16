@@ -1,7 +1,13 @@
+% !TEX program = xelatex
 %% ============================================================
 %% TAU Thesis Template — Tel Aviv University
 %% Deep Learning Architectures for Two-Hop Relay Communication
 %% Gil Zukerma, M.Sc. Thesis, 2026
+%%
+%% Compile with XeLaTeX (required: fontspec + polyglossia Hebrew).
+%% On Overleaf: Menu -> Compiler -> XeLaTeX (the magic comment above
+%% also sets this automatically). Fonts are bundled in ./fonts/ so the
+%% project is self-contained and needs no system font installation.
 %% ============================================================
 \documentclass[12pt,a4paper,oneside]{book}
 
@@ -9,13 +15,23 @@
 \usepackage{iftex}
 \usepackage{tabularx}
 \usepackage{array}
-\usepackage{plantuml}
 
 \ifXeTeX
   \usepackage{fontspec}
-  \setmainfont{Times New Roman}
-  \setsansfont{David CLM}
-  \setmonofont{Courier New}
+  %% Fonts bundled in ./fonts/ (Times New Roman, Courier New, David CLM,
+  %% Arial) so the project compiles on Overleaf without system fonts.
+  \setmainfont{TimesNewRoman}[
+    Path=./fonts/, Extension=.ttf,
+    UprightFont=*-Regular, BoldFont=*-Bold,
+    ItalicFont=*-Italic, BoldItalicFont=*-BoldItalic]
+  \setsansfont{DavidCLM}[
+    Path=./fonts/, Extension=.otf,
+    UprightFont=*-Medium, BoldFont=*-Bold,
+    ItalicFont=*-MediumItalic, BoldItalicFont=*-BoldItalic]
+  \setmonofont{CourierNew}[
+    Path=./fonts/, Extension=.ttf,
+    UprightFont=*-Regular, BoldFont=*-Bold,
+    ItalicFont=*-Italic, BoldItalicFont=*-BoldItalic]
 \else
   \usepackage[T1]{fontenc}
   \usepackage[utf8]{inputenc}
@@ -35,8 +51,12 @@
 \setmainlanguage{english}
 \setotherlanguage{hebrew}
 \ifXeTeX
-  \newfontfamily\hebrewfont[Script=Hebrew]{Arial}
-  \newfontfamily\hebrewfonttt[Script=Hebrew]{Courier New}
+  \newfontfamily\hebrewfont[Script=Hebrew, Path=./fonts/, Extension=.ttf,
+    UprightFont=*-Regular, BoldFont=*-Bold,
+    ItalicFont=*-Italic, BoldItalicFont=*-BoldItalic]{Arial}
+  \newfontfamily\hebrewfonttt[Script=Hebrew, Path=./fonts/, Extension=.ttf,
+    UprightFont=*-Regular, BoldFont=*-Bold,
+    ItalicFont=*-Italic, BoldItalicFont=*-BoldItalic]{CourierNew}
 \fi
 
 %% ── Mathematics ──────────────────────────────────────────────
