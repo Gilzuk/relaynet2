@@ -1,20 +1,23 @@
-%% Local stub: suppress othello font loading from polyglossia hebrewcal
-%% The othello METAFONT source fails to compile on this MiKTeX installation.
-%% Hebrew calendar features are not needed for this thesis.
+%% Local stub: suppress othello font loading from polyglossia's hebrewcal.
+%% The real hebrewcal pulls in the "othello" METAFONT Hebrew-calendar font,
+%% which fails to build on some installations (and is not needed here — this
+%% thesis uses no Hebrew calendar dates). This stub swallows whatever options
+%% polyglossia passes (marcheshvan, fullyear, ...) and provides no-op command
+%% stubs, so it works across LaTeX/polyglossia versions (MiKTeX, TeX Live,
+%% Overleaf) regardless of whether options arrive via the xkeyval or the
+%% LaTeX3 key system.
 \ProvidesPackage{hebrewcal}[2026/04/01 stub - no othello font]
 
-%% Declare the same keys as the real hebrewcal.sty (using LaTeX3 key system)
-\DeclareKeys[hebrewcal]{
-  marcheshvan.if = @xpg@hebrew@marcheshvan,
-  marcheshvan.default:n = true,
-  fullyear.if = @xpg@hebrew@fullyear,
-  fullyear.default:n = true,
-}
-\newif\if@xpg@hebrew@marcheshvan
-\newif\if@xpg@hebrew@fullyear
-\ProcessKeyOptions[hebrewcal]
+\RequirePackage{xkeyval}
+%% Define the keys polyglossia later sets via \setkeys{hebrewcal}{...};
+%% they accept true/false and do nothing (no Hebrew calendar dates here).
+\define@key{hebrewcal}{marcheshvan}[true]{}
+\define@key{hebrewcal}{fullyear}[true]{}
+%% Also swallow them if passed as package load options.
+\DeclareOptionX*{}
+\ProcessOptionsX\relax
 
-%% Provide no-op stubs for calendar commands used by polyglossia
+%% No-op stubs for the calendar commands polyglossia may reference.
 \providecommand{\hebrewdate}[3]{}
 \providecommand{\hebrewtoday}{}
 \let\Hebrewtoday\hebrewtoday
