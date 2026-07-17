@@ -12,8 +12,8 @@ This motivates the central question of this thesis: \emph{under what conditions 
 
 This thesis presents a systematic comparative study of classical and neural relay strategies within a unified simulation framework. Nine relay methods are evaluated: Two classical relay strategies (\texttt{AF} and \texttt{DF}) and seven neural relays spanning supervised learning (\texttt{MLP}, SNR-adaptive \texttt{hybrid} relay), generative modeling (variational autoencoder \texttt{VAE} and conditional GAN with \texttt{WGAN-GP}), and sequence-based architectures (\texttt{Transformer}, \texttt{Mamba-S6}, and \texttt{Mamba-SSD}  with structured state space duality). 
 
-The main objective of this thesis is not to propose a new relay design, but to quantify \textit{performance Vs. complexity} tradeoffs and identify regimes where learning-based relays are effective, as Existing studies typically focus on a limited set of architectures or channel models, making it difficult to disentangle the effects of model structure, parameter count, and channel conditions.
-\REV{Copy-edit this sentence: ``Vs.''\ $\to$ ``vs.''\ and ``as Existing'' is a mid-sentence capital in a run-on --- split into two sentences. The framing itself (comparison study, not a new design) is exactly the right claim to make and should stay.}
+The main objective of this thesis is not to propose a new relay design, but to quantify \textit{performance vs.\ complexity} tradeoffs and identify regimes where learning-based relays are effective. Existing studies typically focus on a limited set of architectures or channel models, making it difficult to disentangle the effects of model structure, parameter count, and channel conditions.
+\REV{Fix applied: ``Vs.''\ $\to$ ``vs.'', and the ``as Existing'' run-on split into two sentences.}
 
 \paragraph{Scope of this thesis.}
 This thesis studies a single, fixed communication problem --- the classical
