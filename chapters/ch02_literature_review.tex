@@ -19,6 +19,7 @@ The end-to-end SNR for AF relay is: (Equation~\ref{eq:af-snr})
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad af-snr}
 
 This expression reveals a fundamental limitation: even when one hop has high SNR, the effective SNR is bottlenecked by the weaker hop. Moreover, the relay amplifies both signal and noise from the first hop, leading to noise accumulation at the destination.
+\REV{Equation~\ref{eq:af-snr} is a standard result and needs a citation (e.g., Laneman et al.\ \cite{Laneman2004CooperativeDiversity} or Hasna \& Alouini on end-to-end SNR of AF relays); also state its assumption --- fixed-gain vs.\ CSI-assisted variable-gain AF --- since the ``$+1$'' term differs between conventions.}
 
 \subsection{Decode-and-Forward (DF)}\label{sec:classical-relay-strategies-df} 
 The DF relay demodulates the received signal, recovers the transmitted bits, and re-modulates clean symbols:
@@ -59,6 +60,7 @@ This conditional expectation \(f^*\) is the Bayes-optimal denoiser : it minimize
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad optimal-denoiser-awgn}
 
 which is a smooth sigmoid-like function that approaches the hard-decision signum function as \(\sigma^2 \to 0\) (high SNR). A neural network with a single hidden layer and tanh output can represent this function exactly, explaining why even a 169-parameter network suffices for this task.
+\REV{``Represent this function exactly'' overclaims. A single tanh unit represents $\tanh(y/\sigma^2)$ exactly only for one \emph{fixed} $\sigma^2$; the deployed network is trained across SNR $\in\{5,10,15\}$~dB and evaluated across $0$--$20$~dB, so it must approximate a \emph{family} of posteriors with one set of weights (and, on fading, a mixture over effective SNRs). That it does so well is the finding --- soften to ``can represent the fixed-$\sigma^2$ posterior exactly, and approximate the multi-SNR family closely.''}
 
 Second, the \textbf{bias-variance decomposition} provides a framework for understanding model complexity:
 
@@ -75,6 +77,7 @@ Ye et al.~\cite{YeLiJuang2018OFDMDL} demonstrated that deep neural networks can 
 Samuel et al.~\cite{SamuelDiskinWunder2019MIMODetect} proposed DetNet, an unfolded projected gradient descent network for MIMO detection. By unrolling iterative optimization into a fixed number of neural network layers, DetNet achieves near-maximum-likelihood detection performance with \(O(N_t^2)\) complexity instead of the exponential complexity of exhaustive ML search. This demonstrates the power of incorporating domain knowledge (the iterative structure of the detection problem) into the network architecture.
 
 Dorner et al.~\cite{Dorner2018OverTheAirDL} proposed treating the entire communication system : modulator, channel, and demodulator : as an autoencoder, trained end-to-end to minimize bit error rate. This approach jointly optimizes all components, potentially discovering novel modulation and coding schemes that outperform separately designed modules. The autoencoder paradigm is conceptually related to the relay processing task: (Equation~\ref{eq:mamba-selective}) both involve learning an encoder-decoder pair that maps through a noisy channel.
+\REV{Stray cross-reference: ``(Equation~\ref{eq:mamba-selective})'' has nothing to do with this sentence about autoencoders --- delete it. The same class of misplaced parenthetical \texttt{(Equation...)} pointers appears repeatedly in this chapter (e.g., a pointer to \ref{eq:mse-loss} inside the $\beta$-VAE sentence, and Section~2.2.4's ``to minimize: (Equation~\ref{eq:optimal-denoiser})'' which should point to \ref{eq:mse-loss}); they look like artifacts of an automated conversion pass. Sweep the whole document for \texttt{(Equation~$\backslash$ref\{...\})} and verify each one points at the equation actually being discussed.}
 
 Sun et al.~\cite{Sun2018LearnToOptimize} applied deep learning to the NP-hard problem of resource allocation in interference networks, demonstrating that a DNN can learn near-optimal power control policies orders of magnitude faster than conventional iterative algorithms.
 
@@ -326,6 +329,7 @@ which resets the state and allows the new input to dominate via:\
 \end{equation}\addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad mamba-selective-ak}
 
 A \textbf{small \(\Delta_k\)} (triggered by irrelevant or noisy input) makes \ref{eq:mamba-selective-ak2} approximately unity ($I$) hence,preserving the current state and ignoring the input.
+\REV{Two points here. (1)~Technical: $\exp(\Delta_k \mathbf{A}) \to \mathbf{0}$ for large $\Delta_k$ holds only if $\mathbf{A}$ is Hurwitz (eigenvalues with negative real part) --- which Mamba guarantees by parameterizing $\mathbf{A} = -\exp(A_{\log})$ --- but that sign convention is never stated in this section, so Eq.~\ref{eq:mamba-selective-ak} is unjustified as written. State $\mathbf{A} \prec 0$ explicitly. (2)~Editorial: ``makes \ref{eq:mamba-selective-ak2} approximately unity'' uses a bare \texttt{$\backslash$ref} (renders as a number with no ``Eq.''), ``hence,preserving'' is missing a space, and Eq.~\ref{eq:mamba-selective-bk} has its \texttt{addcontentsline} \emph{inside} the equation environment plus a duplicated entry --- clean up this block.}
 
 
 \begin{equation}\protect\phantomsection\label{eq:mamba-selective-ak2}{
@@ -418,6 +422,7 @@ where \(Q(x) = \frac{1}{2}\text{erfc}(x/\sqrt{2})\) is the Gaussian Q-function a
 
 By contrast, the fading channels add \textbf{complex} Gaussian noise with total power \(1/\text{SNR}\) (i.e.~\(\sigma_I^2 = \sigma_Q^2 = 1/(2\,\text{SNR})\)) and extract the real part after ZF equalization, halving the effective noise variance per decision dimension. This naturally introduces a factor of 2 inside the Q-function argument for all fading-channel BER expressions (the fading-channel analysis above), making them consistent with the standard textbook forms.
 \end{quote}
+\REV{This noise-convention note is very good --- most theses silently mix the $Q(\sqrt{\gamma})$ and $Q(\sqrt{2\gamma})$ conventions and leave the reader to reconcile a 3-dB discrepancy; here it is stated once, correctly, and referenced later. One mechanical fix: it is referenced in Section 2.5.1.2 via a bare \texttt{$\backslash$ref} to a label on a \texttt{quote} environment, which resolves to the enclosing \emph{section} number; use the page-reference form (as done in Chapter~\ref{sec:experiments}) or promote this note to a numbered remark so it can be referenced cleanly.}
 
 \subsubsection{Two-hop AF BER}\label{sec:awgn-two-hop-af-ber}
 For amplify-and-forward with equal-SNR hops, the effective end-to-end SNR is:
@@ -453,8 +458,9 @@ confirming the well-known 3 dB penalty of AF relaying.
 For a decode-and-forward relay with equal-SNR hops, an error occurs at the destination if exactly one hop introduces an error:
 
 \begin{equation}\protect\phantomsection\label{eq:df-ber-awgn}{P_e^{\text{DF}} = P_{e,1} + P_{e,2} - 2P_{e,1}P_{e,2}
-}\end{equation} 
+}\end{equation}
 \addcontentsline{equ}{listequations}R{\protect\numberline{\theequation}\quad df-ber-awgn}
+\REV{Typo in the source right above this line: \texttt{$\backslash$addcontentsline\{equ\}\{listequations\}R\{...\}} --- the stray ``R'' before the brace is typeset into the PDF as a literal letter after the equation. Remove it. Also note Eq.~\ref{eq:df-ber-awgn} here and Eq.~\ref{eq:df-ber-hops} in Section~2.1.2 are two different expressions for the same quantity ($P_{e,1}+(1-P_{e,1})P_{e,2}$ vs.\ $P_{e,1}+P_{e,2}-2P_{e,1}P_{e,2}$); they differ because the second counts an error only when exactly one hop errs (double-flip corrects itself) --- say so explicitly, otherwise it reads as an inconsistency.}
 
 With equal hops (i.e. \(P_{e,1} = P_{e,2} = P_e^{\text{AWGN}}\)), this becomes 
 
@@ -485,6 +491,7 @@ with \(\mathbb{E}[|h|^2] = 1\) (unit average power). The instantaneous SNR after
 
 \subsubsection{Single-hop BER}\label{sec:rayleigh-single-hop-ber}
 Averaging the conditional BER \(P_e(\gamma_h) = Q(\sqrt{2\gamma_h})\) over the exponential distribution of \(\gamma_h\) yields the closed-form {[}21, Eq. 14-4-15{]} (Equation~\ref{eq:rayleigh-ber}):
+\REV{``{[}21, Eq.\ 14-4-15{]}'' is a hardcoded numeric citation left over from a pre-BibTeX draft --- replace with \texttt{$\backslash$cite} (this is Proakis \& Salehi, \cite{ProakisSalehi2008DigitalComm}). Grep for remaining ``{[}digit{]}''-style citations; at least one more (``{[}21, Ch.\ 14{]}'') survives elsewhere. Mixed citation styles are the kind of thing that costs credibility cheaply.}
 
 \begin{equation}\protect\phantomsection\label{eq:rayleigh-ber}{P_e^{\text{Rayleigh}} = \frac{1}{2}\left(1 - \sqrt{\frac{\bar{\gamma}}{1 + \bar{\gamma}}}\right)
 }\end{equation} 
@@ -609,4 +616,5 @@ The SIC equalizer decodes streams sequentially in order of post-detection SINR:
 SIC outperforms linear MMSE because the second stream sees no inter-stream interference after cancellation. The cost is potential error propagation from incorrect first-stream decisions.
 
 All MIMO operations are implemented using vectorized PyTorch batched \texttt{torch.linalg.solve} for GPU acceleration, achieving \textgreater 100× speedup over per-symbol Python loops.
+\REV{Scope check on Section~2.6: the scope table in Chapter~1 states MIMO is \emph{future work} and no MIMO experiment appears anywhere in this thesis, yet this section says three equalizers ``were implemented'' and gives implementation/speedup details. Either (a) frame the section explicitly as background (``for completeness; not evaluated in this work'') and drop the implementation claims, or (b) if the ZF/MMSE/SIC code genuinely ships with the framework, say that in Appendix~C (software architecture), not in the literature review. As it stands, an examiner will ask ``where are the MIMO results?''}
 

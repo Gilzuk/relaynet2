@@ -246,6 +246,11 @@
 %-------------------------------------
 \newcommand{\AK}[1]{{\color{blue} \textbf{AK:} #1}}
 \newcommand{\GZ}[1]{{\color{red!70!black} \textbf{GZ:} #1}}
+%% Reviewer feedback (external review pass, 2026-07): teal, tagged REV.
+\newcommand{\REV}[1]{{\color{teal!70!black} \textbf{REV:} #1}}
+\newenvironment{revblock}%
+  {\par\medskip\begingroup\color{teal!70!black}\noindent\textbf{REV (reviewer):}\space\ignorespaces}%
+  {\endgroup\par\medskip}
 \newenvironment{gzblock}%
   {\par\medskip\begingroup\color{red!70!black}\noindent\textbf{GZ:}\space\ignorespaces}%
   {\endgroup\par\medskip}
