@@ -84,6 +84,7 @@ performance comparable to models with $10-100\times$ more parameters.
 \item \textbf{H6 (Principal contribution --- unknown-channel mitigation).} On channels with structure unknown to the receiver chain --- memory (intersymbol interference) or asymmetry (biased nonlinearity) --- the \emph{memoryless} classical relays (AF, symbol-wise DF) fail to relay reliably, exhibiting error floors or severe degradation, whereas the minimal 170-parameter MLP relay restores reliable relaying by learning the impairment from data, approaching the performance of the optimal model-aware detector without requiring knowledge of the channel family.
 
 \emph{Rationale:} AF forwards the channel impairment untouched, and symbol-wise DF applies a fixed memoryless zero-threshold decision; neither can compensate structure they do not model. Classical theory does provide a remedy \emph{once the channel family is known} --- estimate-then-MLSE (pilot-based channel estimation followed by Viterbi equalization) is optimal for a linear FIR channel and is included as a benchmark. The hypothesis is therefore not that learning beats classical theory, but that a single fixed learned architecture can approach model-aware performance with no channel-family knowledge, no explicit identification stage, and complexity independent of channel memory --- and that it remains applicable on impairments (e.g., nonlinear bias) for which linear MLSE is mis-specified. How far this holds, and on which impairment structures it breaks down, is determined empirically in Chapter~\ref{sec:unknown-channels}. Conversely, on channels that satisfy the classical assumptions, H2 predicts no learned relay can beat DF, so H6 also delineates the precise boundary of the learned relay's value.
+\REV{H6 as formulated here is the strongest part of the hypothesis set: it is falsifiable, pre-commits to the honest comparison (against estimate-then-MLSE rather than only against AF/DF), and explicitly predicts its own boundary. This is the right way to pose a learning-vs-classical claim.}
 \end{enumerate}
 
 \section{Specific Objectives}\label{sec:specific-objectives}
@@ -112,6 +113,7 @@ The following limitations define the scope of this study, which is confined enti
   \textbf{Modulation:} The core experiments use BPSK. A scoped extension (Chapter~\ref{sec:extensions}) evaluates QPSK and 16-QAM, including the joint 2D $N$-class classification formulation; 16-PSK, 64-QAM and denser constellations are deferred to future work.
 \item
   \textbf{Channel knowledge:} Perfect CSI is assumed at the receiver. Channel estimation errors are not modeled.
+  \REV{Stale relative to the restructure: Chapter~\ref{sec:unknown-channels} explicitly models finite-pilot LS channel estimation (200-pilot and swept-budget Viterbi baselines) and even a zero-CSI blind regime. Qualify this item as ``in the canonical core (Chapters~\ref{sec:experiments}--\ref{sec:extensions})''; as written it contradicts the thesis's own principal contribution.}
 \item
   \textbf{Relay topology:} Single relay, two-hop, half-duplex. Multi-relay and full-duplex configurations are excluded.
 \item
