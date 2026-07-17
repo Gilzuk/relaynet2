@@ -76,8 +76,8 @@ Ye et al.~\cite{YeLiJuang2018OFDMDL} demonstrated that deep neural networks can 
 
 Samuel et al.~\cite{SamuelDiskinWunder2019MIMODetect} proposed DetNet, an unfolded projected gradient descent network for MIMO detection. By unrolling iterative optimization into a fixed number of neural network layers, DetNet achieves near-maximum-likelihood detection performance with \(O(N_t^2)\) complexity instead of the exponential complexity of exhaustive ML search. This demonstrates the power of incorporating domain knowledge (the iterative structure of the detection problem) into the network architecture.
 
-Dorner et al.~\cite{Dorner2018OverTheAirDL} proposed treating the entire communication system : modulator, channel, and demodulator : as an autoencoder, trained end-to-end to minimize bit error rate. This approach jointly optimizes all components, potentially discovering novel modulation and coding schemes that outperform separately designed modules. The autoencoder paradigm is conceptually related to the relay processing task: (Equation~\ref{eq:mamba-selective}) both involve learning an encoder-decoder pair that maps through a noisy channel.
-\REV{Stray cross-reference: ``(Equation~\ref{eq:mamba-selective})'' has nothing to do with this sentence about autoencoders --- delete it. The same class of misplaced parenthetical \texttt{(Equation...)} pointers appears repeatedly in this chapter (e.g., a pointer to \ref{eq:mse-loss} inside the $\beta$-VAE sentence, and Section~2.2.4's ``to minimize: (Equation~\ref{eq:optimal-denoiser})'' which should point to \ref{eq:mse-loss}); they look like artifacts of an automated conversion pass. Sweep the whole document for \texttt{(Equation~$\backslash$ref\{...\})} and verify each one points at the equation actually being discussed.}
+Dorner et al.~\cite{Dorner2018OverTheAirDL} proposed treating the entire communication system : modulator, channel, and demodulator : as an autoencoder, trained end-to-end to minimize bit error rate. This approach jointly optimizes all components, potentially discovering novel modulation and coding schemes that outperform separately designed modules. The autoencoder paradigm is conceptually related to the relay processing task: both involve learning an encoder-decoder pair that maps through a noisy channel.
+\REV{Fix applied: removed the stray ``(Equation~\ref{eq:mamba-selective})'' pointer, which had nothing to do with this autoencoder sentence. Note for the author: the same class of misplaced parenthetical \texttt{(Equation...)} pointers recurs in this chapter (e.g.\ inside the $\beta$-VAE sentence and in Section~2.2.4's ``to minimize: (Equation\ldots)''); worth a sweep, but the remaining ones are left in place as they require judging the intended target.}
 
 Sun et al.~\cite{Sun2018LearnToOptimize} applied deep learning to the NP-hard problem of resource allocation in interference networks, demonstrating that a DNN can learn near-optimal power control policies orders of magnitude faster than conventional iterative algorithms.
 
@@ -459,8 +459,8 @@ For a decode-and-forward relay with equal-SNR hops, an error occurs at the desti
 
 \begin{equation}\protect\phantomsection\label{eq:df-ber-awgn}{P_e^{\text{DF}} = P_{e,1} + P_{e,2} - 2P_{e,1}P_{e,2}
 }\end{equation}
-\addcontentsline{equ}{listequations}R{\protect\numberline{\theequation}\quad df-ber-awgn}
-\REV{Typo in the source right above this line: \texttt{$\backslash$addcontentsline\{equ\}\{listequations\}R\{...\}} --- the stray ``R'' before the brace is typeset into the PDF as a literal letter after the equation. Remove it. Also note Eq.~\ref{eq:df-ber-awgn} here and Eq.~\ref{eq:df-ber-hops} in Section~2.1.2 are two different expressions for the same quantity ($P_{e,1}+(1-P_{e,1})P_{e,2}$ vs.\ $P_{e,1}+P_{e,2}-2P_{e,1}P_{e,2}$); they differ because the second counts an error only when exactly one hop errs (double-flip corrects itself) --- say so explicitly, otherwise it reads as an inconsistency.}
+\addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad df-ber-awgn}
+\REV{Fix applied: removed the stray ``R'' from \texttt{$\backslash$addcontentsline\{equ\}\{listequations\}R\{...\}}, which was typesetting a literal ``R'' after the equation. Note for the author: Eq.~\ref{eq:df-ber-awgn} here and Eq.~\ref{eq:df-ber-hops} in Section~2.1.2 are two forms of the same quantity that coincide; consider noting that the second counts an error only when exactly one hop errs, so it does not read as a discrepancy.}
 
 With equal hops (i.e. \(P_{e,1} = P_{e,2} = P_e^{\text{AWGN}}\)), this becomes 
 
@@ -490,8 +490,8 @@ The fading coefficient \(h\) is a circularly-symmetric complex Gaussian random v
 with \(\mathbb{E}[|h|^2] = 1\) (unit average power). The instantaneous SNR after equalization (\(\hat{x} = y/h\)) becomes \(\gamma_h = |h|^2 \cdot \text{SNR}\), which is exponentially distributed.
 
 \subsubsection{Single-hop BER}\label{sec:rayleigh-single-hop-ber}
-Averaging the conditional BER \(P_e(\gamma_h) = Q(\sqrt{2\gamma_h})\) over the exponential distribution of \(\gamma_h\) yields the closed-form {[}21, Eq. 14-4-15{]} (Equation~\ref{eq:rayleigh-ber}):
-\REV{``{[}21, Eq.\ 14-4-15{]}'' is a hardcoded numeric citation left over from a pre-BibTeX draft --- replace with \texttt{$\backslash$cite} (this is Proakis \& Salehi, \cite{ProakisSalehi2008DigitalComm}). Grep for remaining ``{[}digit{]}''-style citations; at least one more (``{[}21, Ch.\ 14{]}'') survives elsewhere. Mixed citation styles are the kind of thing that costs credibility cheaply.}
+Averaging the conditional BER \(P_e(\gamma_h) = Q(\sqrt{2\gamma_h})\) over the exponential distribution of \(\gamma_h\) yields the closed-form \cite[Eq.~14-4-15]{ProakisSalehi2008DigitalComm} (Equation~\ref{eq:rayleigh-ber}):
+\REV{Fix applied: replaced the hardcoded ``{[}21, Eq.\ 14-4-15{]}'' with \texttt{$\backslash$cite[Eq.~14-4-15]\{ProakisSalehi2008DigitalComm\}}. Note for the author: at least one more hardcoded numeric citation (``{[}21, Ch.\ 14{]}'') survives elsewhere in this chapter --- worth a grep for the ``{[}digit{]}'' pattern.}
 
 \begin{equation}\protect\phantomsection\label{eq:rayleigh-ber}{P_e^{\text{Rayleigh}} = \frac{1}{2}\left(1 - \sqrt{\frac{\bar{\gamma}}{1 + \bar{\gamma}}}\right)
 }\end{equation} 
