@@ -166,7 +166,7 @@ Prior to evaluating relay strategies, we first verify that the simulation framew
 
 \textbf{Goal:} Evaluate all nine classical and AI-based relay strategies on the canonical setup of this thesis.
 
-\textbf{Trials:} - \textbf{Topology:} SISO (both hops) - \textbf{Modulation scheme:} BPSK - \textbf{Channel:} i.i.d.\ Rayleigh fast fading (canonical) - \textbf{Equalizers:} None - \textbf{NN architecture:} Supervised (MLP, Hybrid), Generative (VAE, CGAN), Sequence (Transformer, Mamba S6, Mamba-2 SSD) - \textbf{NN activation:} tanh
+\textbf{Trials:} - \textbf{Topology:} SISO (both hops) - \textbf{Modulation scheme:} BPSK - \textbf{Channel:} i.i.d.\ Rayleigh fast fading (canonical) - \textbf{Equalizers:} None - \textbf{NN architecture:} Supervised (MLP, Hybrid), Generative (VAE, CGAN), Sequence (Transformer, Mamba S6, Mamba-2 SSD) - \textbf{NN activation:} ReLU hidden, tanh output
 
 \textbf{Conclusion:} On the canonical Rayleigh channel, AI relays match but do not surpass symbol-wise DF: DF achieves the lowest or tied-lowest BER at essentially every SNR point, including the low-SNR regime, while the best neural relays (MLP, Hybrid, CGAN) track it within statistical uncertainty and clearly outperform AF. This confirms H1 (AI relays beat AF at low SNR) and H2 (DF dominance at $\geq 6$ dB with zero parameters) on the canonical channel.
 
@@ -263,7 +263,7 @@ This study tests H3 (inverted-U complexity) and H4 (architecture convergence at 
 
 \textbf{Goal:} Isolate architectural inductive biases from parameter count effects and characterize the complexity-performance trade-off for relay denoising.
 
-\textbf{Trials:} - \textbf{Topology:} SISO (both hops) - \textbf{Modulation scheme:} BPSK - \textbf{Channel:} i.i.d.\ Rayleigh fast fading (canonical) - \textbf{Equalizers:} None - \textbf{NN architecture:} All normalized to \textasciitilde3,000 parameters, plus original sizes (169 to 26K) - \textbf{NN activation:} tanh
+\textbf{Trials:} - \textbf{Topology:} SISO (both hops) - \textbf{Modulation scheme:} BPSK - \textbf{Channel:} i.i.d.\ Rayleigh fast fading (canonical) - \textbf{Equalizers:} None - \textbf{NN architecture:} All normalized to \textasciitilde3,000 parameters, plus original sizes (169 to 26K) - \textbf{NN activation:} ReLU hidden, tanh output
 
 \textbf{Conclusion:} The relay denoising task exhibits an inverted-U complexity relationship: a minimal 169-parameter MLP matches models 140x larger, while excessive parameters (11K+) lead to overfitting. At a normalized scale of 3,000 parameters, the performance gap between feedforward and sequence architectures narrows to \textasciitilde1\% BER, indicating that parameter count rather than architectural choice is the primary performance driver. Generative VAE is a consistent underperformer due to probabilistic overhead.
 
@@ -385,7 +385,7 @@ The core of this thesis (Chapter~\ref{sec:experiments}) answers hypotheses H1--H
 
 \textbf{Goal:} Evaluate the generalizability of BPSK-trained relays to complex constellations and resolve the multi-level amplitude bottleneck.
 
-\textbf{Trials:} - \textbf{Topology:} SISO - \textbf{Modulation scheme:} QPSK, 16-QAM - \textbf{Channel:} AWGN, Rayleigh - \textbf{Equalizers:} None - \textbf{NN architecture:} Supervised (MLP, Hybrid), Generative (VAE, CGAN), Sequence (Transformer, Mamba S6, Mamba-2 SSD) - \textbf{NN activation:} tanh, linear, clipped tanh (hardtanh), scaled tanh, scaled sigmoid - \textbf{Special case:} Constellation Aware training
+\textbf{Trials:} - \textbf{Topology:} SISO - \textbf{Modulation scheme:} QPSK, 16-QAM - \textbf{Channel:} AWGN, Rayleigh - \textbf{Equalizers:} None - \textbf{NN architecture:} Supervised (MLP, Hybrid), Generative (VAE, CGAN), Sequence (Transformer, Mamba S6, Mamba-2 SSD) - \textbf{NN output activation (swept):} tanh, linear, clipped tanh (hardtanh), scaled tanh, scaled sigmoid (ReLU hidden throughout) - \textbf{Special case:} Constellation Aware training
 
 \textbf{Conclusion:} QPSK performance mirrors BPSK perfectly due to I/Q independence. On 16-QAM, standard tanh compression causes a severe, irreducible BER floor (\textasciitilde0.22 at 16 dB). Replacing tanh with constellation-aware bounded activations (hardtanh, scaled tanh) bounded to the precise signal amplitude (\(3/\sqrt{10}\)) and retraining eliminates this floor. Sequence models benefit most, reducing their BER floor by 5x, though a gap to classical DF persists due to per-axis error accumulation --- the limitation removed by the 2D classification study below.
 
