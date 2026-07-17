@@ -44,3 +44,17 @@ trained_weights_layernorm_qam16/
 
 # Test artifacts
 _test_*.py
+
+# LaTeX build artifacts (thesis/)
+*.aux
+*.bbl
+*.blg
+*.lof
+*.lot
+*.out
+*.toc
+*.equ
+*.xdv
+*.fdb_latexmk
+*.fls
+*.synctex*
