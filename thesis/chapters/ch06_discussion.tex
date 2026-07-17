@@ -26,6 +26,7 @@ At low SNR (e.g., 0 dB, \(\sigma^2 = 1\)), this is a gentle sigmoid: \(f^*(y) = 
 The AI relay implements a \textbf{non-linear soft mapping} that is intermediate between these extremes: it suppresses noise (like DF's regeneration) while preserving soft information near the decision boundary (unlike DF's hard decision). This explains why learned non-linear relay processing can outperform AF and, under selected channel conditions, also outperform DF at low SNR.
 
 Among the AI methods, Mamba S6 (at its original 24K parameter count) achieves the lowest BER, followed closely by the Transformer and then the simpler feedforward models. This ordering correlates with model capacity, suggesting that the low-SNR advantage is driven more by the number of learnable parameters than by architectural inductive bias : a conclusion reinforced by the normalized comparison (Section \ref{sec:normalized-parameter-comparison}).
+\REV{This claim contradicts the canonical-channel data: in Table~\ref{tbl:table2} (Rayleigh, 0~dB) Mamba~S6 is at $0.317$ while MLP and CGAN are at $0.247$ --- Mamba is among the \emph{worst} AI relays at low SNR on the canonical channel, and the stated ordering holds (marginally, $0.2585$ vs.\ $0.2589$) only on the AWGN calibration table in the appendix. Specify which channel the ordering refers to, or better, re-write around the canonical channel where the ranking is MLP/CGAN/Hybrid first. As written, a reader who flips back to Table~\ref{tbl:table2} will catch this immediately. Also note the section label still reads \texttt{...h1-partially-confirmed} while the heading says ``H1: Confirmed'' --- stale label from an earlier draft; harmless to the reader but confusing to maintainers.}
 
 \subsection{Classical Dominance at High SNR (H2: Confirmed)}\label{sec:classical-dominance-at-high-snr-h2-confirmed}
 
@@ -92,6 +93,7 @@ The comparison of Mamba S6 and Transformer architectures yields nuanced conclusi
 \textbf{Complexity advantage.} Even when BER performance is similar, Mamba offers a fundamental computational advantage: \(O(n)\) inference complexity versus \(O(n^2)\) for Transformers. For the relay processing task where low-latency inference is critical, this linear-time property makes Mamba the preferred choice when a sequence model is desired.
 
 \textbf{Training time paradox.} Despite its superior asymptotic complexity, Mamba S6 required approximately 4× longer to train than the Transformer (2,366 s vs.~597 s on CUDA). This counter-intuitive result is explained by three compounding factors:
+\REV{Numerical inconsistency: the timing table in Chapter~\ref{sec:experiments} (Table~\ref{tbl:table13}) reports Mamba~S6 at 2{,}141~s and Transformer at 474~s, while this paragraph says 2{,}366~s and 597~s. Presumably different runs --- pick one source of truth, cite the table, and if run-to-run variance matters, say so. Inconsistent timings across chapters invite the question of what else changed between runs.}
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -324,6 +326,7 @@ The main conclusions, in order of significance, are:
   \textbf{No AI architecture separates itself at original parameter counts.} On the canonical channel the best neural relays (MLP, Hybrid, CGAN) perform within statistical uncertainty of one another, and classical DF matches or exceeds all of them across the SNR range. The selective state space model's \(O(n)\) complexity and adaptive filtering mechanism make it an efficient sequence-model choice, but no architectural inductive bias yields a decisive BER advantage on this task.
 \item
   \textbf{Architecture matters less than parameter count at equal scale.} When all models are normalized to approximately 3,000 parameters, the performance gap between architectures narrows to within \textasciitilde1 dB, with VAE being the consistent underperformer. This confirms that parameter count, not architectural choice, is the primary performance driver for the relay denoising task.
+  \REV{Units drift: here the converged gap is ``$\sim$1~dB'', in Chapter~\ref{sec:experiments} it is ``$\sim$1\% BER'', and H4's outcome table says ``within $\sim$1\% BER''. A 1-dB horizontal gap and a 1\% relative-BER vertical gap are very different claims at these operating points --- pick the metric actually measured and use it in all three places.}
 \item
   \textbf{A 169-parameter network is sufficient for relay denoising.} The Minimal MLP architecture achieves performance comparable to models 100× larger, demonstrating that the relay denoising task has inherently low complexity. The bias-variance analysis explains this: the target function is simple (a soft threshold), so additional parameters increase variance without reducing bias.
 \item
@@ -337,6 +340,8 @@ The main conclusions, in order of significance, are:
 \item
   \textbf{Input LayerNorm is universally beneficial for QAM16 but modulation-dependent for PSK16.} Every QAM16 top-3 variant includes input LayerNorm, extending the Section 4.13 finding to a multi-architecture, multi-activation setting. For PSK16, only one of three top-3 variants uses LayerNorm, indicating that the constant-envelope signal distribution is already well-conditioned for direct processing without normalisation.
 \end{enumerate}
+
+\REV{Conclusions 8--10 are orphaned: the ``48-variant combinatorial search'', the 16-PSK experiments, the QAM16/PSK16 ``top-3'' rankings, and the LayerNorm study are not described anywhere in this version of the thesis (16-PSK is explicitly out of scope per Chapter~1, and ``Section 4.13'' is a hardcoded number from a previous chapter structure that resolves to nothing here). A conclusion may only summarize evidence the document presents. Either (a) delete conclusions 8--10 and the corresponding hypothesis-table caveats, or (b) reinstate the supporting experiments in an appendix and cross-reference them properly. This is the most serious internal-consistency defect in the thesis --- an examiner reading conclusion~9's ``sweeps all three positions'' will search for the PSK16 table and find nothing.}
 
 The modulation extension (Chapter~\ref{sec:extensions}) adds one further finding:
 
