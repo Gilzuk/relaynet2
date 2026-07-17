@@ -74,30 +74,38 @@ Throughout this work, a \emph{single canonical setup} is fixed and never departe
 
 \subsection{Two-Hop Relay Model}\label{sec:two-hop-relay-model}
 
-In the half-duplex two-hop model studied in this thesis, the relay cannot transmit and receive simultaneously, and there is no direct source--destination link. The communication proceeds in two time slots:
+In the half-duplex two-hop model studied in this thesis, the relay cannot transmit and receive simultaneously, and there is no direct source--destination link. The communication proceeds in two time slots. On the canonical Rayleigh fast-fading channel each hop applies an i.i.d.\ complex fading coefficient followed by complex AWGN:
 
-\textbf{Slot 1 (Source $\to$ Relay) --- listening phase:} \begin{equation}\protect\phantomsection\label{eq:awgn-hop1}{y_R[i] = x[i] + n_1[i], \quad n_1[i] \sim \mathcal{N}(0, \sigma^2)
+\textbf{Slot 1 (Source $\to$ Relay) --- listening phase:} \begin{equation}\protect\phantomsection\label{eq:rayleigh-hop1}{y_R[i] = h_1[i]\,x[i] + n_1[i], \quad h_1[i] \sim \mathcal{CN}(0, 1), \quad n_1[i] \sim \mathcal{CN}(0, \sigma^2)
+}\end{equation}
+\addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad rayleigh-hop1}
+
+\textbf{Slot 2 (Relay $\to$ Destination) --- transmission phase:} \begin{equation}\protect\phantomsection\label{eq:rayleigh-hop2}{y_D[i] = h_2[i]\,x_R[i] + n_2[i], \quad h_2[i] \sim \mathcal{CN}(0, 1), \quad n_2[i] \sim \mathcal{CN}(0, \sigma^2)
+}\end{equation}
+\addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad rayleigh-hop2}
+
+where \(x[i] \in \{-1, +1\}\) is the BPSK symbol transmitted by the source at time~$i$, \(y_R[i]\) is the signal received at the relay, \(x_R[i] = f_\theta(y_R[i-w:i+w])\) is the signal transmitted by the relay at time~$i$, and \(y_D[i]\) is the signal received at the destination. Because the fading coefficient is known at each receiver, coherent compensation ($y \cdot h^*/|h|$ followed by $\Re\{\cdot\}$) reduces each hop to an equivalent real channel with a random per-symbol effective gain $|h[i]|$,
+
+\begin{equation}\protect\phantomsection\label{eq:awgn-hop1}{\tilde{y}_R[i] = |h_1[i]|\,x[i] + \tilde{n}_1[i], \qquad \tilde{y}_D[i] = |h_2[i]|\,x_R[i] + \tilde{n}_2[i],
 }\end{equation}
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad awgn-hop1}
 
-\textbf{Slot 2 (Relay $\to$ Destination) --- transmission phase:} \begin{equation}\protect\phantomsection\label{eq:awgn-hop2}{y_D[i] = x_R[i] + n_2[i], \quad n_2[i] \sim \mathcal{N}(0, \sigma^2)
-}\end{equation}
-\addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad awgn-hop2}
+with $\tilde{n}[i] \sim \mathcal{N}(0, \sigma^2)$ real. The \emph{AWGN calibration limit} used to validate the simulator (Chapter~\ref{sec:literature-review}) is the special case $|h[i]| \equiv 1$, i.e.\ $y_R[i] = x[i] + n_1[i]$ and $y_D[i] = x_R[i] + n_2[i]$.
 
-where \(x[i] \in \{-1, +1\}\) is the BPSK symbol transmitted by the source at time~$i$, \(y_R[i]\) is the signal received at the relay, \(x_R[i] = f_\theta(y_R[i-w:i+w])\) is the signal transmitted by the relay at time~$i$, and \(y_D[i]\) is the signal received at the destination.
-
-\REV{Consistency issue in the system model: the canonical setup fixed two paragraphs earlier is i.i.d.\ \emph{Rayleigh} fast fading on both hops, yet the only displayed hop equations (\ref{eq:awgn-hop1})--(\ref{eq:awgn-hop2}) are the AWGN forms $y = x + n$ with real $\mathcal{N}(0,\sigma^2)$ noise --- no fading coefficient appears anywhere in Section~1.1. Write the canonical hop as $y_R[i] = h_1[i]\,x[i] + n_1[i]$, $h_1[i]\sim\mathcal{CN}(0,1)$, state the coherent compensation $y\,h^*/|h|$ here, and \emph{then} present the AWGN pair explicitly as the calibration special case. As written, the equations a reader first meets contradict the setup the thesis says it never departs from. (Same issue recurs at Eq.~\ref{eq:relay-received-siso} in Methods.) Also: Eq.~\ref{eq:awgn-sigma2} uses $\gamma$ before it is defined --- define $\gamma$ as the per-hop linear SNR at first use.}
+\REV{Fix applied (system-model consistency): the canonical hop equations now show the Rayleigh fading coefficient (\ref{eq:rayleigh-hop1})--(\ref{eq:rayleigh-hop2}), the coherent-compensation step is stated, and the former AWGN-only pair is retained explicitly as the $|h|\equiv1$ calibration limit --- so the displayed math no longer contradicts the ``i.i.d.\ Rayleigh on both hops'' setup. The same AWGN-form issue recurs at Eq.~\ref{eq:relay-received-siso} in Methods (left with a note there, since that section legitimately describes the post-compensation observation). Also: $\gamma$ in Eq.~\ref{eq:awgn-sigma2} is now defined at first use below.}
 
 \begin{remark}[Realizability of the symmetric window]\label{rem:window-causality}
 The window $y_R[i-w:i+w]$ uses look-ahead samples and is therefore non-causal in the \emph{streaming} sense. It is nonetheless fully realizable in the half-duplex protocol studied here: the relay buffers the \emph{entire} listening-phase block before the transmission phase begins, so by the time $x_R[i]$ is computed, all samples $y_R[i-w:i+w]$ have already been received. The symmetric window is thus a block-level (store-and-forward) operation with a fixed processing latency of $w$ symbols. The classical baselines AF and DF are memoryless in their per-symbol operation ($w=0$) and are strictly causal.
 \end{remark}
 
-The noise terms are independent and identically distributed with variance 
+The noise terms are independent and identically distributed with variance
 
 \begin{equation}\protect\phantomsection\label{eq:awgn-sigma2}
 \sigma^2 = \frac{P_s}{\gamma}
 \end{equation}
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad awgn-sigma2}
+
+where \(P_s = \mathbb{E}[|x|^2]\) is the transmit symbol power (unit for BPSK) and \(\gamma\) denotes the per-hop linear signal-to-noise ratio (SNR), equal on both hops.
 
 
 The choice of relay processing function \(f(\cdot)\) fundamentally determines system performance and is the central object of study in this thesis. Classical approaches include amplify-and-forward (AF), which simply scales the received signal, and decode-and-forward (DF), which regenerates the signal through demodulation and re-modulation. Each has well-understood performance characteristics: AF is simple but propagates noise, while DF eliminates first-hop noise but introduces error propagation when decoding fails \cite{CoverGamal1979RelayChannel}.

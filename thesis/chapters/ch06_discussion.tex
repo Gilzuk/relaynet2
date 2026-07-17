@@ -92,8 +92,8 @@ The comparison of Mamba S6 and Transformer architectures yields nuanced conclusi
 
 \textbf{Complexity advantage.} Even when BER performance is similar, Mamba offers a fundamental computational advantage: \(O(n)\) inference complexity versus \(O(n^2)\) for Transformers. For the relay processing task where low-latency inference is critical, this linear-time property makes Mamba the preferred choice when a sequence model is desired.
 
-\textbf{Training time paradox.} Despite its superior asymptotic complexity, Mamba S6 required approximately 4× longer to train than the Transformer (2,366 s vs.~597 s on CUDA). This counter-intuitive result is explained by three compounding factors:
-\REV{Numerical inconsistency: the timing table in Chapter~\ref{sec:experiments} (Table~\ref{tbl:table13}) reports Mamba~S6 at 2{,}141~s and Transformer at 474~s, while this paragraph says 2{,}366~s and 597~s. Presumably different runs --- pick one source of truth, cite the table, and if run-to-run variance matters, say so. Inconsistent timings across chapters invite the question of what else changed between runs.}
+\textbf{Training time paradox.} Despite its superior asymptotic complexity, Mamba S6 required roughly 4.5× longer to train than the Transformer (2{,}141~s vs.~474~s on CUDA; Table~\ref{tbl:table13}). This counter-intuitive result is explained by three compounding factors:
+\REV{Fix applied (numerical inconsistency): the prose now uses Table~\ref{tbl:table13}'s figures (2{,}141~s / 474~s, $\approx$4.5$\times$) as the single source of truth, where it previously quoted 2{,}366~s / 597~s from a different run. If run-to-run timing variance is material it should be stated once alongside the table; otherwise the two chapters now agree.}
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -325,8 +325,8 @@ The main conclusions, in order of significance, are:
 \item
   \textbf{No AI architecture separates itself at original parameter counts.} On the canonical channel the best neural relays (MLP, Hybrid, CGAN) perform within statistical uncertainty of one another, and classical DF matches or exceeds all of them across the SNR range. The selective state space model's \(O(n)\) complexity and adaptive filtering mechanism make it an efficient sequence-model choice, but no architectural inductive bias yields a decisive BER advantage on this task.
 \item
-  \textbf{Architecture matters less than parameter count at equal scale.} When all models are normalized to approximately 3,000 parameters, the performance gap between architectures narrows to within \textasciitilde1 dB, with VAE being the consistent underperformer. This confirms that parameter count, not architectural choice, is the primary performance driver for the relay denoising task.
-  \REV{Units drift: here the converged gap is ``$\sim$1~dB'', in Chapter~\ref{sec:experiments} it is ``$\sim$1\% BER'', and H4's outcome table says ``within $\sim$1\% BER''. A 1-dB horizontal gap and a 1\% relative-BER vertical gap are very different claims at these operating points --- pick the metric actually measured and use it in all three places.}
+  \textbf{Architecture matters less than parameter count at equal scale.} When all models are normalized to approximately 3,000 parameters, the performance gap between architectures narrows to within \textasciitilde1\% BER, with VAE being the consistent underperformer. This confirms that parameter count, not architectural choice, is the primary performance driver for the relay denoising task.
+  \REV{Fix applied (units drift): ``$\sim$1~dB'' changed to ``$\sim$1\% BER'' to match the same claim in Chapter~\ref{sec:experiments} (Section~\ref{sec:parameter-normalization-complexity-trade-off}) and the H4 row of the outcome table, which both report a relative-BER gap.}
 \item
   \textbf{A 169-parameter network is sufficient for relay denoising.} The Minimal MLP architecture achieves performance comparable to models 100× larger, demonstrating that the relay denoising task has inherently low complexity. The bias-variance analysis explains this: the target function is simple (a soft threshold), so additional parameters increase variance without reducing bias.
 \item
