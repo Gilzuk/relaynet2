@@ -1,0 +1,429 @@
+% !TEX program = xelatex
+%% ============================================================
+%% TAU Thesis Template — Tel Aviv University
+%% Deep Learning Architectures for Two-Hop Relay Communication
+%% Gil Zukerma, M.Sc. Thesis, 2026
+%%
+%% Compile with XeLaTeX (required: fontspec + polyglossia Hebrew).
+%% On Overleaf: Menu -> Compiler -> XeLaTeX (the magic comment above
+%% also sets this automatically). Fonts are bundled in ./fonts/ so the
+%% project is self-contained and needs no system font installation.
+%% ============================================================
+\documentclass[12pt,a4paper,oneside]{book}
+
+%% ── Encoding & Fonts ─────────────────────────────────────────
+\usepackage{iftex}
+\usepackage{tabularx}
+\usepackage{array}
+
+\ifXeTeX
+  \usepackage{fontspec}
+  %% Fonts bundled in ./fonts/ (Times New Roman, Courier New, David CLM,
+  %% Arial) so the project compiles on Overleaf without system fonts.
+  \setmainfont{TimesNewRoman}[
+    Path=./fonts/, Extension=.ttf,
+    UprightFont=*-Regular, BoldFont=*-Bold,
+    ItalicFont=*-Italic, BoldItalicFont=*-BoldItalic]
+  \setsansfont{DavidCLM}[
+    Path=./fonts/, Extension=.otf,
+    UprightFont=*-Medium, BoldFont=*-Bold,
+    ItalicFont=*-MediumItalic, BoldItalicFont=*-BoldItalic]
+  \setmonofont{CourierNew}[
+    Path=./fonts/, Extension=.ttf,
+    UprightFont=*-Regular, BoldFont=*-Bold,
+    ItalicFont=*-Italic, BoldItalicFont=*-BoldItalic]
+\else
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\fi
+\usepackage[normalem]{ulem}
+
+
+\usepackage[inline]{enumitem}
+%% ── Page Layout ──────────────────────────────────────────────
+\usepackage[top=2.5cm, bottom=2.5cm, left=3.5cm, right=2.5cm,
+            headheight=25pt]{geometry}
+\usepackage{setspace}
+\onehalfspacing
+
+%% ── Language & Hebrew ────────────────────────────────────────
+\usepackage{polyglossia}
+\setmainlanguage{english}
+\setotherlanguage{hebrew}
+\ifXeTeX
+  \newfontfamily\hebrewfont[Script=Hebrew, Path=./fonts/, Extension=.ttf,
+    UprightFont=*-Regular, BoldFont=*-Bold,
+    ItalicFont=*-Italic, BoldItalicFont=*-BoldItalic]{Arial}
+  \newfontfamily\hebrewfonttt[Script=Hebrew, Path=./fonts/, Extension=.ttf,
+    UprightFont=*-Regular, BoldFont=*-Bold,
+    ItalicFont=*-Italic, BoldItalicFont=*-BoldItalic]{CourierNew}
+\fi
+
+%% ── Mathematics ──────────────────────────────────────────────
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathtools}
+\usepackage{bm}
+
+%% ── Tables ───────────────────────────────────────────────────
+\usepackage{booktabs}
+\usepackage{ltablex}
+\keepXColumns
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{makecell}
+
+%% ── Figures ──────────────────────────────────────────────────
+\usepackage{graphicx}
+\graphicspath{{./}{./results/}}
+\usepackage{float}
+\usepackage[style=default]{caption}
+%\captionsetup{style=default}
+\captionsetup{compatibility=false}
+
+\usepackage[compatibility=false]{subcaption}
+\captionsetup{font=small, labelfont=bf, margin=10pt}
+\captionsetup[table]{position=below}
+\captionsetup[figure]{position=below}
+
+%% ── Colors ───────────────────────────────────────────────────
+\usepackage{xcolor}
+\definecolor{tauBlue}{RGB}{0,56,101}
+\definecolor{tauGray}{RGB}{100,100,100}
+\definecolor{linkBlue}{RGB}{0,70,140}
+
+%% ── Headers & Footers ────────────────────────────────────────
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textcolor{tauGray}{\nouppercase{\leftmark}}}
+\fancyhead[R]{\small\textcolor{tauGray}{\thepage}}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\headrule}{\hbox to\headwidth{%
+  \color{tauBlue}\leaders\hrule height \headrulewidth\hfill}}
+\fancypagestyle{plain}{%
+  \fancyhf{}
+  \fancyfoot[C]{\small\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+}
+
+%% ── Chapter & Section Headings ───────────────────────────────
+\usepackage{titlesec}
+\titleformat{\chapter}[display]
+  {\normalfont\huge\bfseries\color{tauBlue}}
+  {\chaptertitlename\ \thechapter}{20pt}{\Huge}
+\titlespacing*{\chapter}{0pt}{-20pt}{40pt}
+
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{tauBlue}}
+  {\thesection}{1em}{}
+\titleformat{\subsection}
+  {\normalfont\large\bfseries}
+  {\thesubsection}{1em}{}
+\titleformat{\subsubsection}
+  {\normalfont\normalsize\bfseries}
+  {\thesubsubsection}{1em}{}
+
+%% ── TOC Formatting ───────────────────────────────────────────
+\usepackage{tocloft}
+\newlistof{listequations}{equ}{List of Equations}
+
+\renewcommand{\cftchapfont}{\bfseries\color{tauBlue}}
+\renewcommand{\cftchappagefont}{\bfseries}
+\renewcommand{\cftsecfont}{\small}
+\renewcommand{\cftsubsecfont}{\small}
+\setlength{\cftbeforechapskip}{6pt}
+\setcounter{tocdepth}{3}
+\setcounter{secnumdepth}{3}
+
+%% ── Hyperlinks ───────────────────────────────────────────────
+\usepackage[colorlinks=true,
+            linkcolor=linkBlue,
+            citecolor=linkBlue,
+            urlcolor=linkBlue,
+            bookmarks=true,
+            bookmarksnumbered=true,
+            pdftitle={Deep Learning Architectures for Two-Hop Relay Communication},
+            pdfauthor={Gil Zukerma},
+            pdfsubject={M.Sc. Thesis, Tel Aviv University, 2026}]{hyperref}
+\usepackage{cleveref}
+
+%% ── Bibliography ─────────────────────────────────────────────
+% \usepackage[numbers,sort&compress]{natbib}
+\bibliographystyle{IEEEtran}
+
+
+%% ── Code Listings ────────────────────────────────────────────
+\usepackage{listings}
+\lstset{
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  frame=single,
+  numbers=left,
+  numberstyle=\tiny\color{tauGray},
+  keywordstyle=\color{tauBlue}\bfseries,
+  commentstyle=\color{tauGray}\itshape,
+  stringstyle=\color{red!70!black},
+}
+
+%% ── Miscellaneous ────────────────────────────────────────────
+\usepackage[patch=none]{microtype}
+\usepackage{parskip}
+\setlength{\parskip}{6pt}
+\usepackage{enumitem}
+\usepackage{csquotes}
+\usepackage{url}
+
+%% ── pandoc compatibility ─────────────────────────────────────
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+
+
+%% ── Theorem environments ─────────────────────────────────────
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{lemma}[theorem]{Lemma}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+
+%% ============================================================
+
+%% ── Pandoc syntax highlighting ──────────────────────────────
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\},fontsize=\small}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{quote}}{\end{quote}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+
+
+%% ── Pandoc 3.x compatibility ─────────────────────────────────
+\newcommand{\pandocbounded}[1]{#1}
+
+
+%% ── TikZ diagrams ────────────────────────────────────────────────────────────
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric,arrows.meta,positioning,fit,calc}
+
+%% ── Chapter-based numbering ─────────────────────────────────────────────────
+\counterwithin{figure}{chapter}
+\counterwithin{table}{chapter}
+\counterwithin{equation}{chapter}
+
+%-------------------------------------
+\newcommand{\AK}[1]{{\color{blue} \textbf{AK:} #1}}
+\newcommand{\GZ}[1]{{\color{red!70!black} \textbf{GZ:} #1}}
+%% Reviewer feedback (external review pass, 2026-07): teal, tagged REV.
+\newcommand{\REV}[1]{{\color{teal!70!black} \textbf{REV:} #1}}
+\newenvironment{revblock}%
+  {\par\medskip\begingroup\color{teal!70!black}\noindent\textbf{REV (reviewer):}\space\ignorespaces}%
+  {\endgroup\par\medskip}
+\newenvironment{gzblock}%
+  {\par\medskip\begingroup\color{red!70!black}\noindent\textbf{GZ:}\space\ignorespaces}%
+  {\endgroup\par\medskip}
+\begin{document}
+
+%% ── Title Page ───────────────────────────────────────────────
+\begin{titlepage}
+\begin{center}
+\vspace*{0.5cm}
+
+{\LARGE\textbf{TEL AVIV UNIVERSITY}}\\[6pt]
+{\large The Iby and Aladar Fleischman Faculty of Engineering}\\[4pt]
+{\large Department of Electrical Engineering}\\[2cm]
+
+% \noindent\rule{\textwidth}{2pt}[0.4cm]\\
+{\LARGE\bfseries
+Deep Learning Architectures for\\
+Two-Hop Relay Communication:\\
+A Comparative Study of Classical and\\
+Neural Network Relay Strategies\\[2cm]
+}
+% \noindent\rule{\textwidth}{2pt}[1.2cm]\\
+
+{\large A thesis submitted toward the degree of}\\
+{\large Master of Science in Electrical and Electronic Engineering \newline In Tel Aviv University}\\[1.5cm]
+
+{\large by}\\[6pt]
+{\Large\bfseries Gil Zukerman}\\[1.5cm]
+\vfill
+{\large\textbf{March 2026}}\\[1.5cm]
+
+
+\end{center}
+\end{titlepage}
+
+%% ── Title Page ───────────────────────────────────────────────
+\begin{titlepage}
+\begin{center}
+\vspace*{0.5cm}
+
+{\LARGE\textbf{TEL AVIV UNIVERSITY}}\\[6pt]
+{\large The Iby and Aladar Fleischman Faculty of Engineering}\\[4pt]
+{\large Department of Electrical Engineering}\\[2cm]
+
+% \noindent\rule{\textwidth}{2pt}\\[0.4cm]
+{\LARGE\bfseries
+Deep Learning Architectures for\\[6pt]
+Two-Hop Relay Communication:\\[6pt]
+A Comparative Study of Classical and\\[6pt]
+Neural Network Relay Strategies\\[2cm]
+}
+% \noindent\rule{\textwidth}{2pt}\\[1.2cm]
+
+{\large A thesis submitted toward the degree of}\\[4pt]
+{\large Master of Science in Electrical and Electronic Engineering \newline In Tel Aviv University}\\[1.5cm]
+
+{\large by}\\[6pt]
+{\Large\bfseries Gil Zukerman}\\[1.5cm]
+% \begin{flushleft}
+This research work was carried out at Tel-Aviv University\\
+in the School of Electrical and Electronics Engineering\\
+under the supervision of Dr. Anatoly Khina and Prof. Raja Giryes\\
+\vfill
+{\large{March 2026}}\\[1.5cm]
+% \end{flushleft}
+\vfill
+\end{center}
+\end{titlepage}
+
+
+
+
+%% ── Front Matter ─────────────────────────────────────────────
+\frontmatter
+\pagenumbering{roman}
+
+%% ── Dedication ───────────────────────────────────────────────
+
+%% ── English Abstract ─────────────────────────────────────────
+%% REV fix: was \include{chapters/ch00_frontmatter} (nonexistent file,
+%% silently skipped -> abstract missing from PDF). Point at the real file.
+\include{chapters/frontmatter}
+
+\tableofcontents
+\clearpage
+\cleardoublepage
+\phantomsection
+\addcontentsline{toc}{chapter}{\listfigurename}
+\listoffigures
+\clearpage
+\listoflistequations
+\cleardoublepage
+\phantomsection
+\addcontentsline{toc}{chapter}{\listtablename}
+\listoftables
+\clearpage
+
+
+
+\mainmatter
+\include{chapters/ch01_introduction}
+\include{chapters/ch02_literature_review}
+\include{chapters/ch03_objectives}
+\include{chapters/ch04_methods}
+\include{chapters/ch05_experiments}
+\include{chapters/ch06_discussion}
+\include{chapters/ch07_summary}
+% \include{chapters/equation_ref}
+% \include{chapters/references}
+\bibliography{chapters/references.bib}
+\include{chapters/appendices}
+
+%% ── Title Page ───────────────────────────────────────────────
+\begin{titlepage}
+\begin{center}
+\vspace*{0.5cm}
+\begin{otherlanguage}{hebrew}
+
+{\LARGE\textbf{אוניברסיטת תל-אביב}}\\[6pt]
+{\large הפקולטה להנדסה ע"ש איבי ואלדר פליישמן}\\[4pt]
+{\large בית הספר להנדסת חשמל}\\[1.5cm]
+
+\noindent\rule{\textwidth}{2pt}\\[0.4cm]
+{\LARGE\bfseries
+ארכיטקטורות למידה עמוקה לתקשורת ממסר דו-קפיצתית: מחקר השוואתי של אסטרטגיות ממסר קלאסיות ומבוססות רשתות נוירונים}\\[6pt]
+\noindent\rule{\textwidth}{2pt}\\[1.2cm]
+
+{\large חיבור זה הוגש כעבודת גמר לקראת התואר "מוסמך אוניברסיטה"}\\[4pt]
+{\large בהנדסת חשמל ואלקטרוניקה באוניבסיטת תל-אביב}\\[1.5cm]
+
+{\large על-ידי}\\[6pt]
+{\Large\bfseries גיל צוקרמן}\\[1.5cm]
+
+{\large\textbf{ניסן תשפ"ו}}\\[1.5cm]
+
+\vfill
+\end{otherlanguage}
+\end{center}
+\end{titlepage}
+
+%% ── Title Page ───────────────────────────────────────────────
+\begin{titlepage}
+\begin{center}
+\vspace*{0.5cm}
+\begin{otherlanguage}{hebrew}
+
+{\LARGE\textbf{אוניברסיטת תל-אביב}}\\[6pt]
+{\large הפקולטה להנדסה ע"ש איבי ואלדר פליישמן}\\[4pt]
+{\large בית הספר להנדסת חשמל}\\[1.5cm]
+
+\noindent\rule{\textwidth}{2pt}\\[0.4cm]
+{\LARGE\bfseries
+ארכיטקטורות למידה עמוקה לתקשורת ממסר דו-קפיצתית: מחקר השוואתי של אסטרטגיות ממסר קלאסיות ומבוססות רשתות נוירונים}\\[6pt]
+\noindent\rule{\textwidth}{2pt}\\[1.2cm]
+
+{\large חיבור זה הוגש כעבודת גמר לקראת התואר "מוסמך אוניברסיטה"}\\[4pt]
+{\large בהנדסת חשמל ואלקטרוניקה באוניבסיטת תל-אביב}\\[1.5cm]
+
+{\large על-ידי}\\[6pt]
+{\Large\bfseries גיל צוקרמן}\\[1.5cm]
+
+{\small העבודה נעשתה בבית ספר להנדסת חשמל \\
+בהדרכת ד"ר אנטולי חינה ופרופ' ראג'א ג'יריס}\\
+ 
+\vfill
+
+{\large\textbf{ניסן תשפ"ו}}\\[1.5cm]
+
+\end{otherlanguage}
+\end{center}
+\end{titlepage}
+
+\backmatter
+\input{chapters/ch09_hebrew_abstract}
+
+\end{document}
