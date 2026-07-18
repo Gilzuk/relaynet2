@@ -166,7 +166,7 @@ Prior to evaluating relay strategies, we first verify that the simulation framew
 
 \textbf{Goal:} Evaluate all nine classical and AI-based relay strategies on the canonical setup of this thesis.
 
-\textbf{Trials:} - \textbf{Topology:} SISO (both hops) - \textbf{Modulation scheme:} BPSK - \textbf{Channel:} i.i.d.\ Rayleigh fast fading (canonical) - \textbf{Equalizers:} None - \textbf{NN architecture:} Supervised (MLP, Hybrid), Generative (VAE, CGAN), Sequence (Transformer, Mamba S6, Mamba-2 SSD) - \textbf{NN activation:} tanh
+\textbf{Trials:} - \textbf{Topology:} SISO (both hops) - \textbf{Modulation scheme:} BPSK - \textbf{Channel:} i.i.d.\ Rayleigh fast fading (canonical) - \textbf{Equalizers:} None - \textbf{NN architecture:} Supervised (MLP, Hybrid), Generative (VAE, CGAN), Sequence (Transformer, Mamba S6, Mamba-2 SSD) - \textbf{NN activation:} ReLU hidden, tanh output
 
 \textbf{Conclusion:} On the canonical Rayleigh channel, AI relays match but do not surpass symbol-wise DF: DF achieves the lowest or tied-lowest BER at essentially every SNR point, including the low-SNR regime, while the best neural relays (MLP, Hybrid, CGAN) track it within statistical uncertainty and clearly outperform AF. This confirms H1 (AI relays beat AF at low SNR) and H2 (DF dominance at $\geq 6$ dB with zero parameters) on the canonical channel.
 
@@ -263,7 +263,7 @@ This study tests H3 (inverted-U complexity) and H4 (architecture convergence at 
 
 \textbf{Goal:} Isolate architectural inductive biases from parameter count effects and characterize the complexity-performance trade-off for relay denoising.
 
-\textbf{Trials:} - \textbf{Topology:} SISO (both hops) - \textbf{Modulation scheme:} BPSK - \textbf{Channel:} i.i.d.\ Rayleigh fast fading (canonical) - \textbf{Equalizers:} None - \textbf{NN architecture:} All normalized to \textasciitilde3,000 parameters, plus original sizes (169 to 26K) - \textbf{NN activation:} tanh
+\textbf{Trials:} - \textbf{Topology:} SISO (both hops) - \textbf{Modulation scheme:} BPSK - \textbf{Channel:} i.i.d.\ Rayleigh fast fading (canonical) - \textbf{Equalizers:} None - \textbf{NN architecture:} All normalized to \textasciitilde3,000 parameters, plus original sizes (169 to 26K) - \textbf{NN activation:} ReLU hidden, tanh output
 
 \textbf{Conclusion:} The relay denoising task exhibits an inverted-U complexity relationship: a minimal 169-parameter MLP matches models 140x larger, while excessive parameters (11K+) lead to overfitting. At a normalized scale of 3,000 parameters, the performance gap between feedforward and sequence architectures narrows to \textasciitilde1\% BER, indicating that parameter count rather than architectural choice is the primary performance driver. Generative VAE is a consistent underperformer due to probabilistic overhead.
 
@@ -385,7 +385,7 @@ The core of this thesis (Chapter~\ref{sec:experiments}) answers hypotheses H1--H
 
 \textbf{Goal:} Evaluate the generalizability of BPSK-trained relays to complex constellations and resolve the multi-level amplitude bottleneck.
 
-\textbf{Trials:} - \textbf{Topology:} SISO - \textbf{Modulation scheme:} QPSK, 16-QAM - \textbf{Channel:} AWGN, Rayleigh - \textbf{Equalizers:} None - \textbf{NN architecture:} Supervised (MLP, Hybrid), Generative (VAE, CGAN), Sequence (Transformer, Mamba S6, Mamba-2 SSD) - \textbf{NN activation:} tanh, linear, clipped tanh (hardtanh), scaled tanh, scaled sigmoid - \textbf{Special case:} Constellation Aware training
+\textbf{Trials:} - \textbf{Topology:} SISO - \textbf{Modulation scheme:} QPSK, 16-QAM - \textbf{Channel:} AWGN, Rayleigh - \textbf{Equalizers:} None - \textbf{NN architecture:} Supervised (MLP, Hybrid), Generative (VAE, CGAN), Sequence (Transformer, Mamba S6, Mamba-2 SSD) - \textbf{NN output activation (swept):} tanh, linear, clipped tanh (hardtanh), scaled tanh, scaled sigmoid (ReLU hidden throughout) - \textbf{Special case:} Constellation Aware training
 
 \textbf{Conclusion:} QPSK performance mirrors BPSK perfectly due to I/Q independence. On 16-QAM, standard tanh compression causes a severe, irreducible BER floor (\textasciitilde0.22 at 16 dB). Replacing tanh with constellation-aware bounded activations (hardtanh, scaled tanh) bounded to the precise signal amplitude (\(3/\sqrt{10}\)) and retraining eliminates this floor. Sequence models benefit most, reducing their BER floor by 5x, though a gap to classical DF persists due to per-axis error accumulation --- the limitation removed by the 2D classification study below.
 
@@ -515,52 +515,7 @@ AF & 0.0180 & : & : & 0.1009 & : & : \\
 DF & 0.0038 & : & : & 0.0828 & : & : \\
 \end{longtable}
 
-Table 16 summarises the 16-QAM and 20dB AWGN improvements for the sequence models.
-
-\begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.2000}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.2000}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.2000}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.2000}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.2000}}@{}}
-\caption{16-QAM BER improvements at 20 dB for sequence models with and without CSI injection and layer normalisation (AWGN).}\label{tbl:table16}\tabularnewline
-\toprule\noalign{}
-\begin{minipage}[b]{\linewidth}\raggedright
-SNR (dB)
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-AF Baseline
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-DF Baseline
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Mamba S6 (Baseline)
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Mamba S6 (+CSI + LN)
-\end{minipage} \\
-\midrule\noalign{}
-\endfirsthead
-\toprule\noalign{}
-\begin{minipage}[b]{\linewidth}\raggedright
-SNR (dB)
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-AF Baseline
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-DF Baseline
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Mamba S6 (Baseline)
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Mamba S6 (+CSI + LN)
-\end{minipage} \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-\textbf{0.0} & 0.3332 & 0.4300 & 0.2288 & 0.2396 \\
-\textbf{8.0} & 0.1436 & 0.2798 & 0.2241 & 0.0635 \\
-\textbf{14.0} & 0.0592 & 0.1557 & 0.2227 & 0.0163 \\
-\textbf{20.0} & 0.0246 & 0.0901 & 0.2302 & \textbf{0.0055} \\
-\end{longtable}
-
-\REV{Scope contradiction: Table~\ref{tbl:table16} reports a ``Mamba S6 (+CSI + LN)'' variant, but the chapter opening (and Chapter~1's scope table) explicitly lists \emph{CSI injection} as future work not studied in this thesis, and no methods section defines what ``CSI injection'' or the LN placement means here. Either (a) drop this table and let the 2D-classification study carry the 16-QAM story (my recommendation --- it is the cleaner result), or (b) restore a short methods subsection defining the CSI+LN variant and adjust the scope statements. Related: Conclusions 8--10 in Chapter~\ref{sec:discussion-and-conclusions} still cite a ``48-variant combinatorial search,'' 16-PSK results, and a hardcoded ``Section 4.13'' --- none of which exist in this version of the document. This is the single most important consistency repair in the thesis.}
+\REV{Fix applied (review finding \#2): the former Table~16 (``16-QAM BER improvements \ldots with and without CSI injection and layer normalisation'') has been removed. It reported a ``Mamba S6 (+CSI + LN)'' variant, but the CSI-injection study was deliberately cut in the restructure (see Appendix~E / \texttt{ak\_response\_appendix}) and is listed as future work in Chapter~1's scope table, with no methods section defining it. The 16-QAM story is carried by the joint 2D-classification study (Section~\ref{sec:class-2d-classification-for-qam16}), which is the cleaner, in-scope result. The orphaned Conclusions 8--10 that cited this table (plus the 48-variant search and 16-PSK) have been removed from Chapter~\ref{sec:discussion-and-conclusions} accordingly.}
 
 \subsection{Results Figures}\label{sec:results-figures-4}
 
@@ -582,9 +537,9 @@ Mamba S6 (+CSI + LN)
 \centering
 \centering
 \pandocbounded{\includegraphics[width=\linewidth,height=0.8\textheight,keepaspectratio]{results/modulation/qam16__awgn_ci.png}}
-\caption{16-QAM on AWGN : AI relays hit a BER floor near 0.22 at medium-high SNR due to \(\tanh\) compression of multi-level signals; AF outperforms DF at low SNR (Y}\label{fig:fig25}
+\caption{16-QAM on AWGN : AI relays hit a BER floor near 0.22 at medium-high SNR due to \(\tanh\) compression of multi-level signals; AF outperforms DF at low SNR.}\label{fig:fig25}
 \end{figure}
-\REV{Caption of Figure~\ref{fig:fig25} is truncated mid-sentence (``...at low SNR (Y'') --- restore the missing text. Also sweep captions for encoding damage: the caption of Figure~\ref{fig:fig50} contains a double-encoded ``$\approx$'' (rendering as mojibake ``â‰ˆ'').}
+\REV{Fix applied: the Figure~\ref{fig:fig25} caption was truncated mid-sentence (``\ldots at low SNR (Y'') --- the dangling fragment has been removed and the sentence closed. The Figure~\ref{fig:fig50} mojibake is fixed at its own caption below.}
 
 \begin{figure}[H]
 \centering
@@ -649,7 +604,7 @@ DF & 0.00000 & : & : \\
 \centering
 \centering
 \pandocbounded{\includegraphics[width=\linewidth,height=0.8\textheight,keepaspectratio]{results/all_relays_16class/ber_all_relays_16class.png}}
-\caption{16-QAM BER vs.~SNR for all relay variants (4-class and 16-class) on AWGN. The 4-class variants (dashed) plateau at BER â‰ˆ 0.008 while the successfully trained 16-class variants (solid) continue decreasing, approaching and matching the DF baseline.}\label{fig:fig50}
+\caption{16-QAM BER vs.~SNR for all relay variants (4-class and 16-class) on AWGN. The 4-class variants (dashed) plateau at BER $\approx 0.008$ while the successfully trained 16-class variants (solid) continue decreasing, approaching and matching the DF baseline.}\label{fig:fig50}
 \end{figure}
 
 \begin{figure}[H]

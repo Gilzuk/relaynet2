@@ -9,16 +9,20 @@
 
 A comprehensive framework for comparing **classical and AI-based relay strategies** in two-hop cooperative communication across **3 channel types** (AWGN, Rayleigh fading, Rician fading), **2 antenna topologies** (SISO, 2×2 MIMO with ZF/MMSE/SIC equalization), and **4 modulation schemes** (BPSK, QPSK, 16-QAM, 16-PSK).
 
+> **Thesis vs. framework scope.** This repository contains both the `relaynet` simulation **framework** (whose full capabilities are described below) and the M.Sc. **thesis** it supports, under [`thesis/`](thesis/). The thesis deliberately fixes a **single canonical setup** — SISO on both hops, i.i.d. Rayleigh fast fading, complex baseband, BPSK, uncoded BER — and varies only the relay function, with two scoped extensions (higher-order modulation; **learned relaying under unknown/mismatched channels**). MIMO, Rician, and 16-PSK remain in the framework and are treated as thesis *future work*. See the [Thesis](#thesis-msc) section.
+
 ---
 
 ## Table of Contents
 
 - [Overview](#overview)
+- [Thesis (M.Sc.)](#thesis-msc)
 - [Channel Types](#channel-types)
 - [Antenna Topologies](#antenna-topologies)
 - [Relay Strategies](#relay-strategies)
 - [Architecture](#architecture)
 - [Key Findings](#key-findings)
+- [Unknown-Channel Contribution](#unknown-channel-contribution)
 - [Recent Experiments Summary](#recent-experiments-summary)
 - [BER Results — Original Models](#ber-results--original-models)
 - [Normalized 3K-Parameter Comparison](#normalized-3k-parameter-comparison)
@@ -64,6 +68,31 @@ This project implements and compares **9 relay strategies** (2 classical + 7 AI-
 |----------|----------|------------------|----|
 | **SISO** | 1 TX, 1 RX | AWGN / Rayleigh / Rician | Perfect CSI |
 | **2×2 MIMO** | 2 TX, 2 RX | Rayleigh (i.i.d. per link) | **ZF**, **MMSE**, or **SIC** |
+
+---
+
+## Thesis (M.Sc.)
+
+The M.Sc. thesis *"Deep Learning Architectures for Two-Hop Relay Communication: A Comparative Study of Classical and Neural Network Relay Strategies"* (Gil Zukerman, Tel Aviv University, 2026) lives under [`thesis/`](thesis/).
+
+| Item | Location |
+|------|----------|
+| LaTeX source (chapters, bibliography, figures) | `thesis/main.tex`, `thesis/chapters/`, `thesis/results/` |
+| Compiled PDF (120+ pages) | `thesis/main.pdf`, `thesis_preview.pdf` |
+| **Overleaf-ready package** (self-contained, bundled fonts) | `thesis_overleaf.zip` |
+
+**Building.** Compile with **XeLaTeX** (required for `fontspec` + `polyglossia` Hebrew); all fonts are bundled in `thesis/fonts/`, so no system-font installation is needed. See `thesis/OVERLEAF.md`. To use Overleaf: upload `thesis_overleaf.zip`, set **Menu → Compiler → XeLaTeX**, main document `main.tex`.
+
+**Structure.** The thesis fixes one canonical setup and varies only the relay function:
+
+| Chapter | Content |
+|---------|---------|
+| Ch 5 | **Core experiments** on the canonical setup (SISO, Rayleigh, BPSK): channel-model validation, relay comparison, parameter-normalization & complexity (H1–H5) |
+| Ch 6 | **Extension:** higher-order modulations (QPSK, 16-QAM incl. joint 2D $N$-class classification) |
+| Ch 7 | **Principal contribution:** learned relaying under **unknown & mismatched channels** (H6) — see below |
+| Ch 8–9 | Discussion, conclusions, summary |
+
+The unknown-channel study (Ch 7) is reproduced in this framework by the `e6_*_ported.py` scripts (see [Unknown-Channel Contribution](#unknown-channel-contribution)).
 
 ---
 
@@ -200,6 +229,24 @@ When all 7 AI models are constrained to ≈3,000 parameters:
 2. **MLP/Hybrid remain competitive** — simple feedforward networks match sequence models at equal param budgets
 3. **VAE consistently underperforms** — probabilistic overhead hurts at all scales
 4. **Architecture matters less than expected** — at 3K params, all models are within ~1 dB of each other
+
+---
+
+## Unknown-Channel Contribution
+
+The thesis's principal contribution (Ch 7) studies **learned relaying when the channel is unknown to, or mismatched with, the classical relay's model class** — the regime where a fixed minimal MLP earns its place. It is reproduced in this framework by the `e6_*_ported.py` scripts, with figures/data in [`e6_unknown_channel_results/`](e6_unknown_channel_results/).
+
+| Study | Script | Key result |
+|-------|--------|-----------|
+| Unknown ISI + control | `e6_sim_ported.py` | AF/DF pinned at the **analytic 0.25 ISI floor** (DF *non-monotonic* in SNR); the 170-param MLP restores reliable relaying |
+| Viterbi MLSE benchmark | `e6_viterbi_ported.py` | Genie-CSI Viterbi is ~1–1.5 dB better than the MLP; a 200-pilot LS estimate matches genie |
+| Flat (memoryless) control | `e6_flat_ported.py` | Unknown phase/gain/asymmetry: classical **does not fail**, MLP only matches it (gap ≤ 0.0036) — isolates *memory*, not unknownness, as the cause |
+| Composite cascade | `e6_composite_ported.py` | ISI × PA-nonlinearity × unknown phase: MLP recovers from raw I/Q, ~2 dB behind pilot-aided Viterbi |
+| Posterior-free (blind) | `e6_blind_ported.py` | MLP matches blind CMA while avoiding decision-directed MLSE's instability |
+| Partial posterior | `e6_partial_ported.py` | Pilot-budget crossover: Viterbi wins with ≥10 pilots, collapses at 5; MLP is pilot-free and flat |
+| Complexity | `e6_complexity_ported.py` | Viterbi cost grows as $M^L$; the MLP is constant (~330 flops/sym) and 30–90× faster in wall-clock |
+
+**Bottom line (H6):** the learned relay **never beats a matched classical receiver**, but occupies a well-defined niche — *family-agnostic, identification-free, constant-complexity* mitigation of structural model-class mismatch (memory, nonlinearity, absent pilots), where the memoryless classical relays fail outright.
 
 ---
 
@@ -454,6 +501,25 @@ relaynet2/
 │   ├── logs/                             # experiment failure logs
 │   └── ...
 │
+├── thesis/                           # M.Sc. thesis (canonical restructured version)
+│   ├── main.tex                          # XeLaTeX root (compiler set via magic comment)
+│   ├── main.pdf                          # compiled thesis
+│   ├── chapters/                         # ch01–ch09 + frontmatter, appendices
+│   ├── results/                          # thesis figures
+│   ├── fonts/                            # bundled TTF/OTF (Times New Roman, Arial, Courier New, David CLM)
+│   └── OVERLEAF.md                       # Overleaf compile instructions
+├── thesis_preview.pdf                # compiled thesis (top-level copy)
+├── thesis_overleaf.zip               # self-contained Overleaf upload package
+│
+├── e6_sim_ported.py                  # Unknown-channel study (Ch 7) ported to relaynet:
+├── e6_viterbi_ported.py              #   ISI, Viterbi-MLSE benchmark, flat control,
+├── e6_flat_ported.py                 #   composite cascade, blind/partial posterior,
+├── e6_composite_ported.py            #   and complexity — see Unknown-Channel Contribution
+├── e6_blind_ported.py
+├── e6_partial_ported.py
+├── e6_complexity_ported.py
+├── e6_unknown_channel_results/       # figures + .npy data for the ported unknown-channel studies
+│
 ├── run_experiments.py                # Unified experiment runner (18 experiments)
 ├── make.ps1                          # PowerShell build script (Windows)
 ├── Makefile                          # GNU Make build script (Linux/macOS)
@@ -690,9 +756,11 @@ A jointly optimised transmitter-receiver autoencoder (no relay) achieves 67–14
 If you use this work, please cite:
 
 ```bibtex
-@misc{relaynet2_2026,
-  title={Generative AI for Two-Hop Relay Communication},
-  author={Zukerma, Gil},
+@mastersthesis{zukerman2026relay,
+  title={Deep Learning Architectures for Two-Hop Relay Communication:
+         A Comparative Study of Classical and Neural Network Relay Strategies},
+  author={Zukerman, Gil},
+  school={Tel Aviv University},
   year={2026},
   url={https://github.com/Gilzuk/relaynet2}
 }
