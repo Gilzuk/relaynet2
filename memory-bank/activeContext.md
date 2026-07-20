@@ -1,6 +1,14 @@
 # Active Context (update this file first, every session)
 
-_Last updated: 2026-07-14_
+_Last updated: 2026-07-19_
+
+## Latest: 6 verifier-flagged thesis table cells fixed (branch claude/cleanup-temp-scripts)
+Completed the "6 Flagg cells fix" from the `verify_thesis_tables.py` verification work. `verify_thesis_tables.py` (the single publish-ready verification script; reads thesis `.tex` longtable rows and compares cell-by-cell against committed JSON/npy/closed-form sources) flagged 6 transcription errors. All fixed in `chapters/ch05_experiments.tex` (commit `ab2f250`), each corrected to its authoritative source — no numbers tuned:
+- **ber_validation Rayleigh row** (4 dB, 16 dB): `9.10E-2`/`7.58E-3` → `7.71E-2`/`6.17E-3`. Matches closed-form `0.5*(1-sqrt(g/(1+g)))`, confirmed by 4M-bit MC. 10 dB was already correct.
+- **table24 CGAN row**: copy-paste artifact (`0.00811 / : / :`) → committed 16-class results `0.3530 / 0.2817 / ---`.
+- **tableE6flat "Unknown gain" DF + MLP-170 rows**: stale pre-bugfix values → committed post-bugfix `e6_unknown_channel_results/e6_flat_ported_results.npy` (DF `0.0681/0.0330/0.0131/0.0050`, MLP `0.0682/0.0333/0.0132/0.0050`). **Gotcha**: the verifier references `res[rkey][0]` — the *first trial row* of the (2,11) array, NOT the mean over trials. The phase and iqimb rows already matched row0, so gain was simply transcribed from stale data. Don't compute `.mean(axis=0)` when reproducing these — use row0 to match the verifier's convention.
+
+After fix: verifier passes 185/185 cells, 0 inconsistencies, exit 0. (STOCHASTIC_TABLES tolerances: tableE6/tableE6flat 0.010, table24 0.002 — this is why only the 8/12 dB gain cells were flagged, not the within-tolerance 16/20 dB.) **Branch note**: this session's designated branch is `claude/porting-md-file-l6xzsr`, but the fix was committed to `claude/cleanup-temp-scripts` because its base (the verifier + cleaned repo, commit `75d7f9e`) lives only there — flagged to user.
 
 ## Latest: full LaTeX environment set up + × mojibake fixed on clean-thesis
 Two follow-ups from the thesis-review/PDF work: (1) got a fully faithful compile working (real Hebrew RTL via `bidi.sty` from `texlive-lang-arabic`, real Times New Roman/Arial/Courier New via `ttf-mscorefonts-installer`, worked around a python3.11/3.12 `apt_pkg` mismatch blocking its dependency's postinst) — see `techContext.md` "Compiling the thesis" section for the exact recipe, this environment starts with zero LaTeX installed every session. (2) Found and fixed a real, pre-existing bug: 12 occurrences of a double-UTF-8-encoded `×` (rendering as `Ã—`) in `chapters/ch09_appendices.tex`, introduced during an old table/figure relocation pass. **This time did it correctly**: checked `clean-thesis`'s actual history first (confirmed present on its real tip, confirmed unintentional via `git log -S`), applied the fix by checking out `clean-thesis` directly (not this branch), committed and pushed there (`d626b67`), then switched back to `claude/porting-md-file-l6xzsr`. Verified via full recompile before AND after committing (zero undefined refs both times).

@@ -1,3 +1,0 @@
-Missing labels in current .tex files:
-
-Total defined labels: 258
