@@ -1,6 +1,18 @@
 # Active Context (update this file first, every session)
 
-_Last updated: 2026-07-19_
+_Last updated: 2026-07-21_
+
+## Latest: chapter-by-chapter fact/hallucination review + fixes (on main)
+User asked for a full review of the thesis for wrong facts / LLM hallucinations, then approved fixing everything found. Verdict: no fabricated results — all analytics recomputed by hand check out (ISI slicer amplitudes, 0.25 floor, all parameter counts 169/170/1777/2946, trellis op counts, "126 pytest tests" exact). Fixes applied (all chapters + bib + zips + PDF, verifier still 0 flags):
+- **references.bib**: `SamuelDiskinWunder2019MIMODetect` was a hallucinated entry (wrong 3rd author "Wunder", wrong title, wrong pages) → corrected to Samuel/Diskin/**Wiesel**, "Learning to detect", TSP 67(10):2554–2564. Removed duplicate entries `Nosratinia2004Cooperative` and `dao2024transformersssmsgeneralizedmodels` (same papers under 2 keys → appeared twice in printed refs); cites repointed. Bibliography now 27 unique entries (was 29 w/ dupes).
+- **ch03**: "The Mamba architecture \cite{GuGoelRe2022SSM}" misattributed the S4 paper → `gu2023mamba`; "entirely unexplored" (PHY-wide) softened to relay-scoped.
+- **ch02**: eq:df-ber-hops was P1+(1−P1)P2 (union, wrong by P1P2) → exact odd-flip form P1(1−P2)+(1−P1)P2 with reconciliation note; §2.6 MIMO reframed as background-only (no MIMO results exist), MMSE→LMMSE per Appendix E's own claim, implementation note moved to Appendix C.
+- **table24 + fig51 (KEY DATA-PROVENANCE FIND)**: `grouped_bar_16class.png` was from an OLDER run contradicting the committed JSON (old fig: VAE 4-cls 0.4992 failed, CGAN 4-cls 0.0081 fine; JSON: VAE 4-cls 0.0087 fine, CGAN fails both 0.353/0.282). `ber_all_relays_16class.png` and `top3_16class.png` had already been regenerated (have `_orig` backups); grouped_bar was missed. Regenerated grouped_bar from committed JSON (root + thesis copies); rewrote fig51 caption; set ALL table24 cells from JSON (single provenance): 4-cls 0.00867 across relays, 16-cls MLP 0.00017/S6 0.00033/Mamba2 0.00167, VAE/Hybrid/Transformer 0 (caption notes resolution floor ~2e-4, no ratio quoted for zero cells).
+- **Timing drifts**: "<3 s training" → "<5 s" (abstract, ch06 ×2; table13 says 4.9 s); "S6 1.83 s" → 1.88 s (ch06 vs table13).
+- **ch07**: "a few dB behind Viterbi" → precise 1–1.5 dB (ISI) / ~2 dB (composite); 30–90× wall-clock claims now carry reference-implementation caveat (ch05 §complexity, fig caption, ch07).
+- **Appendices**: stale `ch00_frontmatter.tex` filename → `frontmatter.tex`; VAE "PyTorch (CUDA)" → "(CPU/CUDA)"; Appendix C now documents the shipped-but-unused MIMO equalizers.
+- Both Overleaf zips patched (full keeps REV, clean REV-stripped via validated stripper — regex: remove revblock env + lines that are solely `\REV{...}`); clean zip fresh-compile verified: 124 pp, 0 undefined refs/citations, no REV leakage. Repo PDF rebuilt (129 pp annotated).
+- **Still unverifiable from committed data**: E6 blind/partial/composite prose numbers (CMA 2.4e-3 etc.) — only PNGs + scripts committed, no npy; suggested running `e6_{blind,partial,composite}_ported.py` once to close the loop. Bergel/Akdemir bib entries unverified (user to confirm).
 
 ## Latest: 6 verifier-flagged thesis table cells fixed (branch claude/cleanup-temp-scripts)
 Completed the "6 Flagg cells fix" from the `verify_thesis_tables.py` verification work. `verify_thesis_tables.py` (the single publish-ready verification script; reads thesis `.tex` longtable rows and compares cell-by-cell against committed JSON/npy/closed-form sources) flagged 6 transcription errors. All fixed in `chapters/ch05_experiments.tex` (commit `ab2f250`), each corrected to its authoritative source — no numbers tuned:

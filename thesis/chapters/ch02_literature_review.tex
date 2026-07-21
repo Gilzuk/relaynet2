@@ -30,11 +30,11 @@ The DF relay demodulates the received signal, recovers the transmitted bits, and
 
 The end-to-end BER for DF is: (Equation~\ref{eq:df-ber-hops})
 
-\begin{equation}\protect\phantomsection\label{eq:df-ber-hops}{P_e^{\text{DF}} = P_{e,1} + (1 - P_{e,1}) \cdot P_{e,2}
-}\end{equation} 
+\begin{equation}\protect\phantomsection\label{eq:df-ber-hops}{P_e^{\text{DF}} = P_{e,1}(1 - P_{e,2}) + (1 - P_{e,1}) \cdot P_{e,2}
+}\end{equation}
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad df-ber-hops}
 
-where \(P_{e,1}\) and \(P_{e,2}\) are the BER of the first and second hops, respectively. For BPSK modulation over AWGN (real-valued noise with variance \(1/\text{SNR}\)), each hop's BER is \(P_e = Q\left(\sqrt{\text{SNR}}\right)\). DF provides clean regeneration at high SNR but suffers from error propagation when the first-hop BER is non-negligible.
+where \(P_{e,1}\) and \(P_{e,2}\) are the BER of the first and second hops, respectively: an end-to-end bit error occurs exactly when \emph{one} of the two hops flips the bit (two flips cancel), so this expands to \(P_{e,1} + P_{e,2} - 2P_{e,1}P_{e,2}\), the same expression used in the AWGN analysis (Equation~\ref{eq:df-ber-awgn}). For BPSK modulation over AWGN (real-valued noise with variance \(1/\text{SNR}\)), each hop's BER is \(P_e = Q\left(\sqrt{\text{SNR}}\right)\). DF provides clean regeneration at high SNR but suffers from error propagation when the first-hop BER is non-negligible.
 
 \subsection{Other Classical Relay Techniques}
 
@@ -87,7 +87,7 @@ A broader perspective on the role of machine learning in wireless communications
 
 Another related line of work exploits the structural similarities between amplify-and-forward (AF) relay networks and neural networks, treating relay nodes as neurons with nonlinear transfer functions and using deep-learning optimization tools to tune relay gains and exploit hardware-induced nonlinearities \cite{Bergel2023RelaysAsNeurons,BergelICASSP2024}. While these approaches demonstrate significant gains over classical linear AF schemes, they focus on analog gain optimization rather than symbol-level detection. 
 
-Classical cooperative communication frameworks based on AF and DF relaying remain well understood and widely adopted \cite{Nosratinia2004Cooperative}, but they rely on fixed linear forwarding or hard-decision rules. Consequently, despite substantial progress, relatively little attention has been devoted to learning the relay’s symbol-level input-output mapping itself, motivating neural network-based detection at the relay as a generalized, data-driven alternative to conventional AF and DF processing.
+Classical cooperative communication frameworks based on AF and DF relaying remain well understood and widely adopted \cite{Nosratinia2004CooperativeCommunication}, but they rely on fixed linear forwarding or hard-decision rules. Consequently, despite substantial progress, relatively little attention has been devoted to learning the relay’s symbol-level input-output mapping itself, motivating neural network-based detection at the relay as a generalized, data-driven alternative to conventional AF and DF processing.
 
 \subsection{Relay methods comparison}
 
@@ -379,7 +379,7 @@ The per-chunk cost is \(O(L^2 N)\) for matrix construction and \(O(L^2 d)\) for 
 
 The ``\emph{duality}'' in the name refers to the equivalence between the recurrent view (state propagation) and the matrix view (structured matmul): the same computation can be expressed either way, and the implementation can choose whichever is more efficient for the hardware and sequence length. This thesis demonstrates this duality empirically: at \(n = 11\), the recurrent $S_6$ view is faster; at \(n = 255\), the matrix SSD view dominates. 
 
-Mamba-2 can be viewed as a streamlined evolution of Mamba-1: it restructures the block so that the state-space parameters are formed upfront (rather than being generated sequentially along the SSM pathway), and it further stabilizes training by adding an extra normalization stage in the spirit of \emph{NormFormer} \cite{shleifer2021normformer}. In addition, Mamba-2 emphasizes more parallel, consolidated parameter projection (e.g., producing multiple SSM-related tensors via fewer projections) and reduces per-head redundancy by sharing the BBB and CCC projections across heads—conceptually similar to multi-value attention. Figure~\ref{fig:mamba2-ssd-2} presents a comparison of Mamba-SSM and Mamba-2-SSD \cite{dao2024transformersssmsgeneralizedmodels}:
+Mamba-2 can be viewed as a streamlined evolution of Mamba-1: it restructures the block so that the state-space parameters are formed upfront (rather than being generated sequentially along the SSM pathway), and it further stabilizes training by adding an extra normalization stage in the spirit of \emph{NormFormer} \cite{shleifer2021normformer}. In addition, Mamba-2 emphasizes more parallel, consolidated parameter projection (e.g., producing multiple SSM-related tensors via fewer projections) and reduces per-head redundancy by sharing the BBB and CCC projections across heads—conceptually similar to multi-value attention. Figure~\ref{fig:mamba2-ssd-2} presents a comparison of Mamba-SSM and Mamba-2-SSD \cite{DaoGu2024TransformersSSM}:
 
 \begin{figure}[H]
     \centering
@@ -582,7 +582,7 @@ Rayleigh & \textasciitilde24 dB & 1 & \(1/(4\bar{\gamma})\) \\
 
 \section{Theoretical Foundations: MIMO Equalization}\label{sec:theoretical-foundations-mimo-equalization}
 
-Three equalization methods were implemented for the 2×2 MIMO topology:
+\emph{This section is background only: no MIMO experiment is evaluated in this thesis --- the scope table of Chapter~\ref{sec:introduction} defers MIMO to future work. The material is retained solely to define the terms used in the future-work discussion (Chapter~\ref{sec:discussion-and-conclusions}); the corresponding equalizer implementations ship with the simulation framework (Appendix~C).} Three standard equalization methods for a 2×2 MIMO topology are:
 
 \textbf{Zero-Forcing (ZF):} \begin{equation}\protect\phantomsection\label{eq:zf-equalizer-methods}{\hat{\mathbf{x}}_{\text{ZF}} = (\mathbf{H}^H\mathbf{H})^{-1}\mathbf{H}^H\mathbf{y} = \mathbf{H}^{-1}\mathbf{y}
 }\end{equation} 
@@ -590,13 +590,13 @@ Three equalization methods were implemented for the 2×2 MIMO topology:
 
 ZF completely removes inter-stream interference but amplifies noise when \(\mathbf{H}\) is poorly conditioned.
 
-\textbf{MMSE:} \begin{equation}\protect\phantomsection\label{eq:mmse-equalizer-methods}{\hat{\mathbf{x}}_{\text{MMSE}} = (\mathbf{H}^H\mathbf{H} + \sigma^2\mathbf{I})^{-1}\mathbf{H}^H\mathbf{y}
-}\end{equation} 
+\textbf{LMMSE:} \begin{equation}\protect\phantomsection\label{eq:mmse-equalizer-methods}{\hat{\mathbf{x}}_{\text{LMMSE}} = (\mathbf{H}^H\mathbf{H} + \sigma^2\mathbf{I})^{-1}\mathbf{H}^H\mathbf{y}
+}\end{equation}
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad mmse-equalizer-methods}
 
-MMSE adds a noise-variance regularization term that prevents excessive noise amplification, trading residual interference for better noise performance.
+LMMSE (linear MMSE) adds a noise-variance regularization term that prevents excessive noise amplification, trading residual interference for better noise performance.
 
-\textbf{MMSE-SIC (V-BLAST):}
+\textbf{LMMSE-SIC (V-BLAST):}
 
 The SIC equalizer decodes streams sequentially in order of post-detection SINR:
 
@@ -614,7 +614,5 @@ The SIC equalizer decodes streams sequentially in order of post-detection SINR:
 \end{enumerate}
 
 SIC outperforms linear MMSE because the second stream sees no inter-stream interference after cancellation. The cost is potential error propagation from incorrect first-stream decisions.
-
-All MIMO operations are implemented using vectorized PyTorch batched \texttt{torch.linalg.solve} for GPU acceleration, achieving \textgreater 100× speedup over per-symbol Python loops.
-\REV{Scope check on Section~2.6: the scope table in Chapter~1 states MIMO is \emph{future work} and no MIMO experiment appears anywhere in this thesis, yet this section says three equalizers ``were implemented'' and gives implementation/speedup details. Either (a) frame the section explicitly as background (``for completeness; not evaluated in this work'') and drop the implementation claims, or (b) if the ZF/MMSE/SIC code genuinely ships with the framework, say that in Appendix~C (software architecture), not in the literature review. As it stands, an examiner will ask ``where are the MIMO results?''}
+\REV{Fix applied (scope): Section~2.6 is now framed explicitly as background --- no MIMO experiment is evaluated in this thesis --- with the implementation note moved to Appendix~C, and the MMSE terminology corrected to LMMSE per the supervisor's comment (Appendix~E).}
 
