@@ -66,7 +66,7 @@ VAE &
 Encoder--decoder latent model (7$\to$8$\to$1) &
 $\beta$-VAE ($\beta=0.1$), Adam lr=$10^{-3}$ &
 1{,}777 &
-PyTorch (CUDA) \\
+PyTorch (CPU/CUDA) \\
 \hline
 CGAN (WGAN-GP) &
 Conditional GAN (generator + critic) &
@@ -102,7 +102,7 @@ PyTorch (CUDA) \\
 
 \noindent
 All numerical results reported in Chapter~\ref{sec:experiments} were generated using a single simulation framework, ensuring consistent evaluation across classical and learning-based relay architectures. The project is implemented as a modular Python package (\texttt{relaynet}).
-The framework uses object-oriented design with a common \texttt{Relay} base class, enabling polymorphic relay swapping. Monte Carlo simulation is implemented in \texttt{runner.py} with configurable trial count, bit count, and SNR range. All batched tensor operations use vectorized PyTorch for GPU acceleration.
+The framework uses object-oriented design with a common \texttt{Relay} base class, enabling polymorphic relay swapping. Monte Carlo simulation is implemented in \texttt{runner.py} with configurable trial count, bit count, and SNR range. All batched tensor operations use vectorized PyTorch for GPU acceleration. The framework additionally ships ZF/LMMSE/SIC equalizer implementations for a $2\times2$ MIMO topology (vectorized batched \texttt{torch.linalg.solve}); these support only the deferred MIMO extension (Section~\ref{sec:theoretical-foundations-mimo-equalization}) and are not exercised by any experiment reported in this thesis.
 
 \subsection{Testing} 126 automated tests (pytest) cover all channels, modulation, relay strategies, simulation, and statistics modules with 100\% pass rate.
 
@@ -158,7 +158,7 @@ This appendix reproduces each comment raised by the supervisor (\textbf{AK}) on 
 \begin{enumerate}\setlength{\itemsep}{2pt}\setlength{\parskip}{1pt}
 
 \item \AK{Abstract is missing.}\\
-\GZ{Resolved. English and Hebrew abstracts are included via \texttt{ch00\_frontmatter.tex} and \texttt{ch09\_hebrew\_abstract.tex}, and both were rewritten to match the final (canonical) scope.}
+\GZ{Resolved. English and Hebrew abstracts are included via \texttt{chapters/frontmatter.tex} and \texttt{chapters/ch09\_hebrew\_abstract.tex}, and both were rewritten to match the final (canonical) scope.}
 
 \item \AK{There are compilation errors. Would be good to resolve them.}\\
 \GZ{Resolved. The missing-brace errors and a duplicate \texttt{\textbackslash listoflistequations} were fixed; the project compiles cleanly under XeLaTeX with zero undefined references.}

@@ -77,7 +77,7 @@ The bias-variance decomposition \cite{GoodfellowBengioCourville2016DeepLearning}
 \item
   \textbf{Occam's Razor for relay AI.} The relay denoising task has inherently low complexity : the mapping from noisy to clean BPSK symbols is fundamentally simple, and the neural network needs only enough capacity to learn a non-linear threshold function with some contextual smoothing. Adding parameters beyond this minimal requirement leads to overfitting.
 \item
-  \textbf{Deployment feasibility.} A 169-parameter model requires approximately 0.7 KB of memory (169 float32 values) and can be trained in under 3 seconds on a CPU. This makes AI-based relay processing viable even on severely resource-constrained embedded relay nodes, such as IoT devices or sensor network relays. The model can be stored in on-chip SRAM and executed without any external memory access.
+  \textbf{Deployment feasibility.} A 169-parameter model requires approximately 0.7 KB of memory (169 float32 values) and can be trained in under 5 seconds on a CPU (4.9~s in Table~\ref{tbl:table13}). This makes AI-based relay processing viable even on severely resource-constrained embedded relay nodes, such as IoT devices or sensor network relays. The model can be stored in on-chip SRAM and executed without any external memory access.
 \item
   \textbf{Generalization.} Smaller models generalize better because they are forced to learn the essential structure of the denoising task rather than memorizing training examples. The 169-parameter MLP handles the full Rayleigh fading ensemble --- every effective SNR the fades produce --- with a single set of weights and no per-condition retraining, an instance of generalization that would be harder to achieve with a larger, more specialized model.
 \end{enumerate}
@@ -171,7 +171,7 @@ The results confirm the crossover hypothesis decisively:
 \item
   \textbf{Inference parity.} Mamba-2 inference (1.05 s) is nearly identical to the Transformer (0.99 s) and \textbf{2.6× faster} than Mamba S6 (2.69 s). This is a complete reversal from the \(n = 11\) case, where Mamba-2 was 2× \emph{slower} than S6.
 \item
-  \textbf{Direction reversal.} At \(n = 11\): Mamba S6 (1.83 s) \textless{} Mamba-2 (4.11 s). At \(n = 255\): Mamba-2 (1.05 s) \textless{} Mamba S6 (2.69 s). The crossover occurs because the overhead of building the \(L \times L\) SSM matrix is amortised over longer chunks, while S6's per-step kernel launch cost grows linearly.
+  \textbf{Direction reversal.} At \(n = 11\): Mamba S6 (1.88 s) \textless{} Mamba-2 (4.11 s). At \(n = 255\): Mamba-2 (1.05 s) \textless{} Mamba S6 (2.69 s). The crossover occurs because the overhead of building the \(L \times L\) SSM matrix is amortised over longer chunks, while S6's per-step kernel launch cost grows linearly.
 \end{enumerate}
 
 This benchmark validates the architectural trade-off: Mamba-2's structured state space duality is designed for long-context efficiency where chunk-parallel computation outperforms sequential recurrence. For the 11-token relay window, the classical S6 scan remains faster due to lower per-operation overhead. The choice between S6 and SSD should therefore be guided by the target context length of the application.
@@ -212,7 +212,7 @@ Rationale
 \textbf{Low SNR (0-4 dB)} & MLP Minimal / Hybrid / channel-specific selection & Neural relays often help; exact best choice is channel-dependent, with DF remaining strong on some fading scenarios \\
 \textbf{Medium SNR (4-8 dB)} & Hybrid (MLP + DF) & Automatic switching at optimal threshold \\
 \textbf{High SNR (\textgreater8 dB)} & DF & Zero parameters, optimal performance \\
-\textbf{Resource-constrained} & MLP Minimal (169 params) & 0.7 KB memory, \textless3s training \\
+\textbf{Resource-constrained} & MLP Minimal (169 params) & 0.7 KB memory, \textless5 s training \\
 \textbf{Best overall (BPSK/QPSK)} & Hybrid & Combines AI advantage with DF reliability \\
 \textbf{16-QAM} & VAE / Transformer / MLP (16-class 2D) & Joint 2D classification matches DF; eliminates the I/Q-splitting floor \\
 \end{longtable}

@@ -567,16 +567,16 @@ DF & 0.0038 & : & : & 0.0828 & : & : \\
 
 \textbf{Goal:} Eliminate the structural BER floor imposed by per-axis I/Q splitting for 16-QAM by utilizing full 2D decision boundaries.
 
-\textbf{Trials:} - \textbf{Topology:} SISO - \textbf{Modulation scheme:} 16-QAM - \textbf{Channel:} AWGN - \textbf{Equalizers:} None - \textbf{NN architecture:} Supervised (MLP), Generative (VAE), Sequence (Transformer, Mamba S6, Mamba-2 SSD) - \textbf{NN activation:} None (Softmax implicitly via Cross-Entropy loss) - \textbf{Special case:} 16-class joint 2D classification
+\textbf{Trials:} - \textbf{Topology:} SISO - \textbf{Modulation scheme:} 16-QAM - \textbf{Channel:} AWGN - \textbf{Equalizers:} None - \textbf{NN architecture:} Supervised (MLP, Hybrid), Generative (VAE, CGAN), Sequence (Transformer, Mamba S6, Mamba-2 SSD) - \textbf{NN activation:} None (Softmax implicitly via Cross-Entropy loss) - \textbf{Special case:} 16-class joint 2D classification
 
-\textbf{Conclusion:} Treating the relay as a joint 16-point classifier over the full 2D constellation space completely eliminates the structural 4-class BER floor. For the first time, neural variants (VAE, Transformer, MLP) matched classical DF performance at high SNR, achieving near-zero BER at 20 dB. This proves the previous BER floor was an artifact of I/Q splitting, not a fundamental limitation (Equation~\ref{eq:iq-splitting}) of neural relays.
+\textbf{Conclusion:} Treating the relay as a joint 16-point classifier over the full 2D constellation space completely eliminates the structural 4-class BER floor. For the first time, neural variants (VAE, Hybrid, Transformer, MLP) matched classical DF performance at high SNR, achieving near-zero BER at 20 dB; only the CGAN fails to converge in either formulation. This proves the previous BER floor was an artifact of I/Q splitting, not a fundamental limitation (Equation~\ref{eq:iq-splitting}) of neural relays.
 
 \subsection{Results Tables}\label{sec:results-tables-5}
 
 Table 24 presents the BER at 20 dB for all variants alongside the classical AF and DF baselines.
 
 \begin{longtable}[]{@{}llll@{}}
-\caption{BER at 20 dB for all relay variants: 4-class (I/Q split) vs.~16-class (joint 2D) classification for 16-QAM.}\label{tbl:table24}\tabularnewline
+\caption{BER at 20 dB for all relay variants: 4-class (I/Q split) vs.~16-class (joint 2D) classification for 16-QAM. Entries of 0.00000 correspond to zero errors observed within the trial budget (BER below the $\sim$$2\times10^{-4}$ resolution floor), so no finite improvement ratio is quoted for them.}\label{tbl:table24}\tabularnewline
 \toprule\noalign{}
 Relay & 4-cls BER @ 20 dB & 16-cls BER @ 20 dB & Improvement \\
 \midrule\noalign{}
@@ -587,14 +587,14 @@ Relay & 4-cls BER @ 20 dB & 16-cls BER @ 20 dB & Improvement \\
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-MLP & 0.00811 & \textbf{0.00002} & 405x \\
-VAE & : & \textbf{0.00000} & : \\
+MLP & 0.00867 & \textbf{0.00017} & 51x \\
+VAE & 0.00867 & \textbf{0.00000} & --- \\
 CGAN & 0.3530 & 0.2817 & --- \\
-Hybrid & : & : & : \\
-trans-\\former & 0.00810 & \textbf{0.00001} & 810x \\
-Mamba S6 & 0.00810 & \textbf{0.00009} & 90x \\
-Mamba2\\(ssd) & 0.00811 & \textbf{0.00197} & 4.1x \\
-AF & 0.00063 & : & : \\
+Hybrid & 0.00867 & \textbf{0.00000} & --- \\
+trans-\\former & 0.00867 & \textbf{0.00000} & --- \\
+Mamba S6 & 0.00867 & \textbf{0.00033} & 26x \\
+Mamba2\\(ssd) & 0.00867 & \textbf{0.00167} & 5.2x \\
+AF & 0.00083 & : & : \\
 DF & 0.00000 & : & : \\
 \end{longtable}
 
@@ -611,7 +611,7 @@ DF & 0.00000 & : & : \\
 \centering
 \centering
 \pandocbounded{\includegraphics[width=\linewidth,height=0.8\textheight,keepaspectratio]{results/all_relays_16class/grouped_bar_16class.png}}
-\caption{Grouped bar comparison of 4-class vs.~16-class BER at 20 dB for each architecture. The 16-class advantage is visible for MLP, VAE, Transformer, and Mamba S6. Failed variants (VAE 4-cls \textasciitilde0.50, CGAN 16-cls \textasciitilde0.50) are truncated.}\label{fig:fig51}
+\caption{Grouped bar comparison of 4-class vs.~16-class BER at 20 dB for each architecture. The joint 16-class formulation drives the BER to (near-)zero for every architecture except the CGAN, which fails to converge in both formulations (0.353 / 0.282) and dominates the plot at this scale.}\label{fig:fig51}
 \end{figure}
 
 \begin{figure}[H]
@@ -750,12 +750,12 @@ Across the unknown-channel studies the pilot-aided Viterbi receiver, where it ap
 
 \textbf{Per-symbol cost and scaling.} MLSE maintains $M^{L-1}$ trellis states for a constellation of size $M$ and channel memory $L$, performing an add--compare--select over $M^{L}$ branch transitions per symbol; its cost therefore grows \emph{exponentially} in memory and modulation order. The 170-parameter MLP performs one fixed forward pass --- about $330$ floating-point operations per symbol --- \emph{independent} of $M$ and $L$. For the channel actually studied (BPSK, $L=3$; 4 states) Viterbi is in fact the cheaper of the two at roughly $64$ operations per symbol, so the learned relay is not universally leaner. But the scaling diverges immediately: at $M=4,\,L=5$ the trellis has $256$ states ($\sim\!8{,}000$ operations/symbol), and at $M=16,\,L=5$ it has $65{,}536$ states ($\sim\!8.4$~million operations/symbol), while the MLP remains at $330$ --- a $2.5\times10^{4}$ ratio. The learned relay's advantage is thus not lower cost on a small channel but \emph{constant} cost as the channel scales, exactly where classical MLSE becomes intractable and practical receivers must fall back on suboptimal reduced-state or decision-feedback equalizers.
 
-\textbf{Measured inference time.} On identical signals (BPSK, $L=3$), the MLP is $30$--$90\times$ faster in wall-clock terms despite Viterbi's lower nominal operation count, because the MLP is a single vectorized matrix multiplication whereas the Viterbi trellis is an inherently sequential scan with a per-symbol data dependency. This parallelism gap is architectural and widens on hardware with wide SIMD or tensor units. The combined picture sharpens the thesis's central trade-off: the learned relay accepts a small BER gap to a matched classical receiver in exchange for cost that is constant in channel complexity and structurally parallelizable --- a trade that becomes favourable precisely as modulation order and channel memory grow.
+\textbf{Measured inference time.} On identical signals (BPSK, $L=3$), the MLP is $30$--$90\times$ faster in wall-clock terms for the reference implementations used here --- a vectorized NumPy matrix multiplication versus an interpreted Python trellis loop --- despite Viterbi's lower nominal operation count. Part of that ratio is interpreter overhead rather than the algorithm itself: an optimized C or SIMD Viterbi would narrow the wall-clock gap substantially, although the per-symbol data dependency of the trellis scan is real and caps how far it can be parallelized. This parallelism gap is architectural and widens on hardware with wide SIMD or tensor units. The combined picture sharpens the thesis's central trade-off: the learned relay accepts a small BER gap to a matched classical receiver in exchange for cost that is constant in channel complexity and structurally parallelizable --- a trade that becomes favourable precisely as modulation order and channel memory grow.
 
-\REV{The $30$--$90\times$ number needs an implementation caveat that the ``architectural'' sentence currently papers over: the measurement compares a \emph{vectorized NumPy} matmul against an \emph{interpreted Python} trellis loop, so a large (perhaps dominant) share of the ratio is interpreter overhead, not the sequential data dependency itself --- a C or SIMD Viterbi would narrow the wall-clock gap substantially even though the per-symbol dependency is real. The scaling argument in the preceding paragraph ($M^{L}$ vs.\ constant) is the robust, implementation-independent claim; state the wall-clock ratio as ``for our reference implementations'' and let the scaling carry the conclusion. The chapter is otherwise commendably honest about Viterbi being cheaper at BPSK/$L{=}3$ (64 vs.\ $\sim$330 ops) --- extend the same honesty to the timing comparison.}
+\REV{Fix applied: the $30$--$90\times$ wall-clock figure now carries the implementation caveat (vectorized NumPy matmul vs.\ interpreted Python trellis loop; a C/SIMD Viterbi would narrow the gap), so the implementation-independent $M^{L}$-vs.-constant scaling argument carries the conclusion.}
 
 \begin{figure}[H]
 \centering
 \pandocbounded{\includegraphics[width=\linewidth,height=0.30\textheight,keepaspectratio]{results/e6_complexity.png}}
-\caption{Complexity of Viterbi MLSE vs the 170-parameter MLP. (a) Per-symbol operations: Viterbi grows as $M^{L}$ (intractable by $M{=}16,L{=}5$), while the MLP is constant at $\sim$330 flops. On the small studied channel (BPSK, $L{=}3$) Viterbi is actually cheaper; the MLP wins on \emph{scaling}, not on the small case. (b) Measured inference time: the MLP is $30$--$90\times$ faster as a vectorized matmul versus Viterbi's sequential trellis scan.}\label{fig:figE6complexity}
+\caption{Complexity of Viterbi MLSE vs the 170-parameter MLP. (a) Per-symbol operations: Viterbi grows as $M^{L}$ (intractable by $M{=}16,L{=}5$), while the MLP is constant at $\sim$330 flops. On the small studied channel (BPSK, $L{=}3$) Viterbi is actually cheaper; the MLP wins on \emph{scaling}, not on the small case. (b) Measured inference time (reference implementations): the MLP is $30$--$90\times$ faster as a vectorized matmul versus Viterbi's interpreted sequential trellis scan.}\label{fig:figE6complexity}
 \end{figure}
