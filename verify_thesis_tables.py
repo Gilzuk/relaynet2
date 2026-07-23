@@ -16,6 +16,9 @@ Data sources, by table:
   tbl:tableE6flat       flat-channel control BER           <- e6_unknown_channel_results/e6_flat_ported_results.npy
   tbl:table26           theoretical SNR @ BER=1e-3         <- closed-form (Q-function inversion)
   tab:ber_validation    theory-vs-sim BER                  <- closed-form theory column
+  prose:E6blind         blind-regime prose claims          <- e6_unknown_channel_results/e6_blind_ported_results.npy
+  prose:E6partial       pilot-sweep prose claims           <- e6_unknown_channel_results/e6_partial_ported_results.npy
+  prose:E6composite     composite-cascade prose claims     <- e6_unknown_channel_results/e6_composite_ported_results.npy
 
 Timing tables (tbl:table13, tbl:table25) report machine-dependent wall-clock and
 are checked only for their deterministic content (parameter counts); the timing
@@ -127,7 +130,13 @@ def data_rows(body):
 # display-rounding tolerance. JSON-backed tables (deterministic transcriptions)
 # and analytical tables keep the tight rounding tolerance.
 STOCHASTIC_TABLES = {"tbl:tableE6": 0.010, "tbl:tableE6flat": 0.010,
-                     "tbl:table24": 0.002}
+                     "tbl:table24": 0.002,
+                     # prose claims from the E6 blind/partial/composite studies
+                     # (5-6 trials x 40k bits; the partial-posterior 5-pilot
+                     # point is dominated by occasional catastrophic LS fits,
+                     # hence the wider slack)
+                     "prose:E6blind": 0.010, "prose:E6composite": 0.010,
+                     "prose:E6partial": 0.030}
 
 
 class Report:
@@ -415,6 +424,89 @@ def check_tableE6flat(tex, rep):
     rep.finish_table(T, before)
 
 
+def _load_e6_npy(name):
+    p = os.path.join(ROOT, "e6_unknown_channel_results", name)
+    if not os.path.exists(p):
+        return None
+    return np.load(p, allow_pickle=True).item()
+
+
+def check_E6blind_prose(tex, rep):
+    """Blind-regime prose claims (Section 'The Posterior-Free (Blind) Regime')
+    vs e6_blind_ported_results.npy: CMA/MLP BER at 20 dB and the mid-SNR
+    (10 dB) 95% CI instability comparison."""
+    T = "prose:E6blind"; before = rep.checked
+    d = _load_e6_npy("e6_blind_ported_results.npy")
+    if d is None:
+        return rep.skip(T, "e6_blind_ported_results.npy not found (run e6_blind_ported.py)")
+    snrs = list(d["snrs"]); s20 = snrs.index(20)
+    sm = d["summary"]  # name -> (mean_per_snr, ci_per_snr)
+
+    m = re.search(r"CMA converges smoothly to BER \$([\d.]+)\\times10\^\{-3\}\$ at 20 dB", tex)
+    if m:
+        rep.cell(T, "CMA-blind/20dB", m.group(1) + "e-3", float(m.group(1)) * 1e-3,
+                 sm["CMA-blind"][0][s20])
+    m = re.search(r"tracks it almost exactly \(\$([\d.]+)\\times10\^\{-3\}\$\)", tex)
+    if m:
+        rep.cell(T, "MLP-169/20dB", m.group(1) + "e-3", float(m.group(1)) * 1e-3,
+                 sm["MLP-169"][0][s20])
+    m = re.search(r"mid-SNR \((\d+) dB\) confidence interval of \$([\d.]+)\$ "
+                  r"\(versus \$([\d.]+)\$ for the MLP and \$([\d.]+)\$ for CMA\)", tex)
+    if m:
+        sci = snrs.index(int(m.group(1)))
+        db = m.group(1)
+        rep.cell(T, f"Viterbi-blind CI/{db}dB", m.group(2), float(m.group(2)),
+                 sm["Viterbi-blind"][1][sci])
+        rep.cell(T, f"MLP CI/{db}dB", m.group(3), float(m.group(3)), sm["MLP-169"][1][sci])
+        rep.cell(T, f"CMA CI/{db}dB", m.group(4), float(m.group(4)), sm["CMA-blind"][1][sci])
+    rep.finish_table(T, before)
+
+
+def check_E6partial_prose(tex, rep):
+    """Partial-posterior prose claims (pilot-budget sweep at 10 dB) vs
+    e6_partial_ported_results.npy."""
+    T = "prose:E6partial"; before = rep.checked
+    d = _load_e6_npy("e6_partial_ported_results.npy")
+    if d is None:
+        return rep.skip(T, "e6_partial_ported_results.npy not found (run e6_partial_ported.py)")
+    pa = d["panel_a"]  # n_pilots -> (mean, ci)
+
+    m = re.search(r"payload BER \$([\d.]+)\$ at 800 pilots", tex)
+    if m:
+        rep.cell(T, "Viterbi/800 pilots", m.group(1), float(m.group(1)), pa[800][0])
+    m = re.search(r"down to \$([\d.]+)\$ at 10 pilots", tex)
+    if m:
+        rep.cell(T, "Viterbi/10 pilots", m.group(1), float(m.group(1)), pa[10][0])
+    m = re.search(r"jumps to \$([\d.]+)\$", tex)
+    if m:
+        rep.cell(T, "Viterbi/5 pilots", m.group(1), float(m.group(1)), pa[5][0])
+    m = re.search(r"sweep at \$([\d.]+)\$", tex)
+    if m:
+        rep.cell(T, "MLP pilot-free ref", m.group(1), float(m.group(1)), d["mlp_ref"][0])
+    rep.finish_table(T, before)
+
+
+def check_E6composite_prose(tex, rep):
+    """Composite-cascade prose claims vs e6_composite_ported_results.npy:
+    MLP-170 BER at 20 dB and the Viterbi-vs-MLP gap at 8 dB."""
+    T = "prose:E6composite"; before = rep.checked
+    d = _load_e6_npy("e6_composite_ported_results.npy")
+    if d is None:
+        return rep.skip(T, "e6_composite_ported_results.npy not found (run e6_composite_ported.py)")
+    snrs = list(d["snrs"]); s20 = snrs.index(20); s8 = snrs.index(8)
+    sm = d["summary"]
+
+    m = re.search(r"reaching \$([\d.]+)\\times10\^\{-3\}\$ at 20 dB", tex)
+    if m:
+        rep.cell(T, "MLP-170/20dB", m.group(1) + "e-3", float(m.group(1)) * 1e-3,
+                 sm["MLP-169"][0][s20])
+    m = re.search(r"\(\$([\d.]+)\$ vs\.\\ \$([\d.]+)\$ at 8 dB\)", tex)
+    if m:
+        rep.cell(T, "Viterbi-diff/8dB", m.group(1), float(m.group(1)), sm["Viterbi-diff"][0][s8])
+        rep.cell(T, "MLP-170/8dB", m.group(2), float(m.group(2)), sm["MLP-169"][0][s8])
+    rep.finish_table(T, before)
+
+
 def check_table26(tex, rep):
     """Theoretical SNR @ BER=1e-3 (tbl:table26) vs closed-form inversion."""
     T = "tbl:table26"; before = rep.checked
@@ -480,7 +572,8 @@ def main():
     if args.rerun:
         MC_SLACK = 0.01  # allow Monte-Carlo variation for freshly re-simulated cells
         print("Regenerating Ch7 (E6) result files (this runs the ported experiments)...")
-        for scr in ("e6_sim_ported.py", "e6_viterbi_ported.py", "e6_flat_ported.py"):
+        for scr in ("e6_sim_ported.py", "e6_viterbi_ported.py", "e6_flat_ported.py",
+                    "e6_blind_ported.py", "e6_partial_ported.py", "e6_composite_ported.py"):
             print(f"  running {scr} ...", flush=True)
             subprocess.run([sys.executable, scr], cwd=ROOT, check=True,
                            stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
@@ -489,14 +582,18 @@ def main():
         for tmp, dst in [("/tmp/e6_sim_ported_results.npy", "e6_sim_ported_results.npy"),
                          ("/tmp/e6_viterbi_awgn.npy", "e6_viterbi_awgn.npy"),
                          ("/tmp/e6_viterbi_rayleigh.npy", "e6_viterbi_rayleigh.npy"),
-                         ("/tmp/e6_flat_ported_results.npy", "e6_flat_ported_results.npy")]:
+                         ("/tmp/e6_flat_ported_results.npy", "e6_flat_ported_results.npy"),
+                         ("/tmp/e6_blind_ported_results.npy", "e6_blind_ported_results.npy"),
+                         ("/tmp/e6_partial_ported_results.npy", "e6_partial_ported_results.npy"),
+                         ("/tmp/e6_composite_ported_results.npy", "e6_composite_ported_results.npy")]:
             if os.path.exists(tmp):
                 shutil.copy(tmp, os.path.join(ROOT, "e6_unknown_channel_results", dst))
 
     tex = load_tex()
     rep = Report()
     checks = [check_ber_validation, check_table26, check_table2, check_table8,
-              check_table24, check_tableE6, check_tableE6flat]
+              check_table24, check_tableE6, check_tableE6flat,
+              check_E6blind_prose, check_E6partial_prose, check_E6composite_prose]
     for chk in checks:
         try:
             chk(tex, rep)
