@@ -6,7 +6,7 @@ This discussion draws on two bodies of results. The canonical core (Chapter~\ref
 
 The experimental results reveal several consistent patterns across all six channel/topology configurations. This section interprets these patterns through the lens of the theoretical framework established in Section \ref{sec:theoretical-foundations-channel-models}  and evaluates each research hypothesis.
 
-\subsection{Low-SNR Advantage of Neural Relays over AF (H1: Confirmed)}\label{sec:selective-low-snr-advantage-of-neural-relays-h1-partially-confirmed}
+\subsection{Low-SNR Advantage of Neural Relays over AF (H1: Confirmed)}\label{sec:low-snr-advantage-of-neural-relays-h1-confirmed}
 
 \textbf{Low SNR (0-4 dB): AI advantage over AF.} At low SNR, AI-based relays consistently outperform AF on the canonical channel, confirming H1. The theoretical explanation lies in the structure of the MMSE-optimal (posterior-mean) relay estimate. For a single received sample with BPSK transmission over AWGN:
 
@@ -26,7 +26,6 @@ At low SNR (e.g., 0 dB, \(\sigma^2 = 1\)), this is a gentle sigmoid: \(f^*(y) = 
 The AI relay implements a \textbf{non-linear soft mapping} that is intermediate between these extremes: it suppresses noise (like DF's regeneration) while preserving soft information near the decision boundary (unlike DF's hard decision). This explains why learned non-linear relay processing can outperform AF and, under selected channel conditions, also outperform DF at low SNR.
 
 Among the AI methods, the low-SNR advantage over AF is realized by the \emph{minimal} feedforward relays, not by the larger sequence models. On the canonical Rayleigh channel (Table~\ref{tbl:table2}, 0~dB) the MLP, CGAN, and Hybrid relays achieve the lowest AI BER ($\approx 0.247$, essentially matching DF's $0.245$), while the higher-capacity Transformer and Mamba S6 relays are worse ($\approx 0.317$--$0.325$) and only the VAE is worse still. The advantage over AF is therefore \emph{not} driven by parameter count --- the smallest network already captures it --- which is fully consistent with the inverted-U complexity finding (H3) and the equal-capacity convergence of the normalized comparison (H4, Section~\ref{sec:normalized-parameter-comparison}).
-\REV{Fix applied: this paragraph previously claimed ``Mamba S6 achieves the lowest BER \ldots ordering correlates with capacity,'' which is contradicted by Table~\ref{tbl:table2} (on the canonical channel Mamba/Transformer are among the \emph{worst} AI relays at low SNR, not the best; the old ordering held only marginally on the AWGN calibration data). The corrected statement matches the canonical-channel table and, in fact, reinforces the thesis's ``less is more'' (H3/H4) narrative. Minor maintainer note: this subsection's label still reads \texttt{...h1-partially-confirmed} although the heading is ``H1: Confirmed'' --- harmless to readers but worth renaming.}
 
 \subsection{Classical Dominance at High SNR (H2: Confirmed)}\label{sec:classical-dominance-at-high-snr-h2-confirmed}
 
@@ -93,7 +92,6 @@ The comparison of Mamba S6 and Transformer architectures yields nuanced conclusi
 \textbf{Complexity advantage.} Even when BER performance is similar, Mamba offers a fundamental computational advantage: \(O(n)\) inference complexity versus \(O(n^2)\) for Transformers. For the relay processing task where low-latency inference is critical, this linear-time property makes Mamba the preferred choice when a sequence model is desired.
 
 \textbf{Training time paradox.} Despite its superior asymptotic complexity, Mamba S6 required roughly 4.5× longer to train than the Transformer (2{,}141~s vs.~474~s on CUDA; Table~\ref{tbl:table13}). This counter-intuitive result is explained by three compounding factors:
-\REV{Fix applied (numerical inconsistency): the prose now uses Table~\ref{tbl:table13}'s figures (2{,}141~s / 474~s, $\approx$4.5$\times$) as the single source of truth, where it previously quoted 2{,}366~s / 597~s from a different run. If run-to-run timing variance is material it should be stated once alongside the table; otherwise the two chapters now agree.}
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -326,7 +324,6 @@ The main conclusions, in order of significance, are:
   \textbf{No AI architecture separates itself at original parameter counts.} On the canonical channel the best neural relays (MLP, Hybrid, CGAN) perform within statistical uncertainty of one another, and classical DF matches or exceeds all of them across the SNR range. The selective state space model's \(O(n)\) complexity and adaptive filtering mechanism make it an efficient sequence-model choice, but no architectural inductive bias yields a decisive BER advantage on this task.
 \item
   \textbf{Architecture matters less than parameter count at equal scale.} When all models are normalized to approximately 3,000 parameters, the performance gap between architectures narrows to within \textasciitilde1\% BER, with VAE being the consistent underperformer. This confirms that parameter count, not architectural choice, is the primary performance driver for the relay denoising task.
-  \REV{Fix applied (units drift): ``$\sim$1~dB'' changed to ``$\sim$1\% BER'' to match the same claim in Chapter~\ref{sec:experiments} (Section~\ref{sec:parameter-normalization-complexity-trade-off}) and the H4 row of the outcome table, which both report a relative-BER gap.}
 \item
   \textbf{A 169-parameter network is sufficient for relay denoising.} The Minimal MLP architecture achieves performance comparable to models 100× larger, demonstrating that the relay denoising task has inherently low complexity. The bias-variance analysis explains this: the target function is simple (a soft threshold), so additional parameters increase variance without reducing bias.
 \item
@@ -335,7 +332,6 @@ The main conclusions, in order of significance, are:
   \textbf{Mamba-2 SSD provides a 10.7× training speedup over S6 at longer contexts.} The chunk-parallel structured matrix multiplication of SSD eliminates the sequential bottleneck of S6, making it the preferred state space architecture for applications requiring longer symbol windows.
 \end{enumerate}
 
-\REV{Fix applied (review finding \#2, cont.): three orphaned conclusions were removed here --- (8)~``Mamba S6 is the strongest architecture across the higher-order modulation experiments'' (QAM16/PSK16 ``top-3'' rankings), (9)~``No neural relay outperforms DF across the full 48-variant combinatorial search'' (with 16-PSK figures), and (10)~``Input LayerNorm is universally beneficial \ldots'' (citing a nonexistent ``Section 4.13''). None of the supporting experiments exist in this restructured version (16-PSK, the CSI/LayerNorm ablation, and the 48-variant search were all cut --- see Appendix~E). The in-scope part of the DF-optimality claim is already covered by Conclusion~2 and the modulation-extension finding below.}
 
 The modulation extension (Chapter~\ref{sec:extensions}) adds one further finding:
 

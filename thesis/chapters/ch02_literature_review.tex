@@ -12,14 +12,15 @@ The AF relay amplifies the received signal by a gain factor \(G\) that normalize
 \begin{equation}\protect\phantomsection\label{eq:af-gain}{G = \sqrt{\frac{P_{\text{target}}}{\mathbb{E}[|y_R|^2]}}
 }\end{equation} 
 
-The end-to-end SNR for AF relay is: (Equation~\ref{eq:af-snr})
+The end-to-end SNR for AF relay is the standard harmonic-mean expression \cite{Laneman2004CooperativeDiversity,TseViswanath2005Fundamentals}: (Equation~\ref{eq:af-snr})
 
 \begin{equation}\protect\phantomsection\label{eq:af-snr}{\text{SNR}_{\text{eff}}^{\text{AF}} = \frac{\text{SNR}_1 \cdot \text{SNR}_2}{\text{SNR}_1 + \text{SNR}_2 + 1}
-}\end{equation} 
+}\end{equation}
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad af-snr}
 
+This form assumes \emph{CSI-assisted variable-gain} AF, in which the relay knows its instantaneous first-hop gain and normalizes its output power per symbol (Equation~\ref{eq:af-gain}); this is the variant implemented throughout this thesis. The additive $+1$ in the denominator originates from the relay's own noise being re-amplified along with the signal, and it is the term that distinguishes this convention from the fixed-gain (blind, long-term-power-normalized) variant, whose end-to-end SNR takes a slightly different form.
+
 This expression reveals a fundamental limitation: even when one hop has high SNR, the effective SNR is bottlenecked by the weaker hop. Moreover, the relay amplifies both signal and noise from the first hop, leading to noise accumulation at the destination.
-\REV{Equation~\ref{eq:af-snr} is a standard result and needs a citation (e.g., Laneman et al.\ \cite{Laneman2004CooperativeDiversity} or Hasna \& Alouini on end-to-end SNR of AF relays); also state its assumption --- fixed-gain vs.\ CSI-assisted variable-gain AF --- since the ``$+1$'' term differs between conventions.}
 
 \subsection{Decode-and-Forward (DF)}\label{sec:classical-relay-strategies-df} 
 The DF relay demodulates the received signal, recovers the transmitted bits, and re-modulates clean symbols:
@@ -59,8 +60,7 @@ This conditional expectation \(f^*\) is the Bayes-optimal denoiser : it minimize
 }\end{equation} 
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad optimal-denoiser-awgn}
 
-which is a smooth sigmoid-like function that approaches the hard-decision signum function as \(\sigma^2 \to 0\) (high SNR). A neural network with a single hidden layer and tanh output can represent this function exactly, explaining why even a 169-parameter network suffices for this task.
-\REV{``Represent this function exactly'' overclaims. A single tanh unit represents $\tanh(y/\sigma^2)$ exactly only for one \emph{fixed} $\sigma^2$; the deployed network is trained across SNR $\in\{5,10,15\}$~dB and evaluated across $0$--$20$~dB, so it must approximate a \emph{family} of posteriors with one set of weights (and, on fading, a mixture over effective SNRs). That it does so well is the finding --- soften to ``can represent the fixed-$\sigma^2$ posterior exactly, and approximate the multi-SNR family closely.''}
+which is a smooth sigmoid-like function that approaches the hard-decision signum function as \(\sigma^2 \to 0\) (high SNR). A neural network with a single hidden layer and tanh output can represent this posterior \emph{exactly for a fixed} \(\sigma^2\) --- a single tanh unit with the appropriate input scaling suffices. The deployed relay, however, is trained at SNR \(\in\{5,10,15\}\)~dB and evaluated over \(0\)--\(20\)~dB, so one set of weights must approximate an entire \emph{family} of posteriors indexed by \(\sigma^2\) (and, on the fading channel, a mixture over random effective SNRs). That a 169-parameter network approximates this family closely enough to track the classical baselines is an empirical finding of this thesis, not a consequence of the exact single-\(\sigma^2\) representation.
 
 Second, the \textbf{bias-variance decomposition} provides a framework for understanding model complexity:
 
@@ -77,7 +77,6 @@ Ye et al.~\cite{YeLiJuang2018OFDMDL} demonstrated that deep neural networks can 
 Samuel et al.~\cite{SamuelDiskinWunder2019MIMODetect} proposed DetNet, an unfolded projected gradient descent network for MIMO detection. By unrolling iterative optimization into a fixed number of neural network layers, DetNet achieves near-maximum-likelihood detection performance with \(O(N_t^2)\) complexity instead of the exponential complexity of exhaustive ML search. This demonstrates the power of incorporating domain knowledge (the iterative structure of the detection problem) into the network architecture.
 
 Dorner et al.~\cite{Dorner2018OverTheAirDL} proposed treating the entire communication system : modulator, channel, and demodulator : as an autoencoder, trained end-to-end to minimize bit error rate. This approach jointly optimizes all components, potentially discovering novel modulation and coding schemes that outperform separately designed modules. The autoencoder paradigm is conceptually related to the relay processing task: both involve learning an encoder-decoder pair that maps through a noisy channel.
-\REV{Fix applied: removed the stray ``(Equation~\ref{eq:mamba-selective})'' pointer, which had nothing to do with this autoencoder sentence. Note for the author: the same class of misplaced parenthetical \texttt{(Equation...)} pointers recurs in this chapter (e.g.\ inside the $\beta$-VAE sentence and in Section~2.2.4's ``to minimize: (Equation\ldots)''); worth a sweep, but the remaining ones are left in place as they require judging the intended target.}
 
 Sun et al.~\cite{Sun2018LearnToOptimize} applied deep learning to the NP-hard problem of resource allocation in interference networks, demonstrating that a DNN can learn near-optimal power control policies orders of magnitude faster than conventional iterative algorithms.
 
@@ -138,7 +137,7 @@ Prior DL (Selection / Optimization) & Conventional AF/DF & No & Conventional & P
 \end{longtable}
 \subsection{Neural Network Relay Processing}\label{sec:neural-network-relay-processing}
 
-For relay processing specifically, a supervised learning approach trains a neural network \(f_\theta\) to minimize: (Equation~\ref{eq:optimal-denoiser})
+For relay processing specifically, a supervised learning approach trains a neural network \(f_\theta\) to minimize the empirical mean-squared error: (Equation~\ref{eq:mse-loss})
 
 \begin{equation}\protect\phantomsection\label{eq:mse-loss}{\mathcal{L}(\theta) = \frac{1}{N} \sum_{i=1}^{N} (\hat{x}_i - x_i)^2, \quad \hat{x}_i = f_\theta(y_{i-w:i+w})
 }\end{equation} 
@@ -182,7 +181,7 @@ Since the KL divergence is non-negative, the ELBO is a lower bound on the log-ev
 }\end{equation} 
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad vae-loss}
 
-The reconstruction term encourages the decoder to accurately reproduce the input from the latent code, while the KL term regularizes the latent space to be close to the standard Gaussian prior \(p(\mathbf{z})\). The \(\beta\) parameter (\(\beta\)-VAE) \cite{Higgins2017betaVAE} controls the trade-off between reconstruction quality and latent space smoothness: (Equation~\ref{eq:mse-loss}) \(\beta < 1\) prioritizes reconstruction (beneficial for the relay task where accurate signal recovery is paramount), while \(\beta > 1\) encourages disentangled latent representations.
+The reconstruction term encourages the decoder to accurately reproduce the input from the latent code, while the KL term regularizes the latent space to be close to the standard Gaussian prior \(p(\mathbf{z})\). The \(\beta\) parameter (\(\beta\)-VAE) \cite{Higgins2017betaVAE} in Equation~\ref{eq:vae-loss} controls the trade-off between reconstruction quality and latent space smoothness: \(\beta < 1\) prioritizes reconstruction (beneficial for the relay task where accurate signal recovery is paramount), while \(\beta > 1\) encourages disentangled latent representations.
 
 The \emph{reparameterization-trick} enables gradient-based optimization through the stochastic sampling layer:  
 \begin{equation}\protect\phantomsection\label{eq:repremtrized-trick}
@@ -239,7 +238,7 @@ The $L_1$ reconstruction loss in the generator objective serves a dual purpose: 
 
 \subsection{Generative vs.~Discriminative Paradigms for Relay Processing}\label{sec:generative-vs.-discriminative-paradigms-for-relay-processing}
 
-The application of generative models to relay processing has not been extensively studied. The key question is whether the generative inductive bias : learning the data distribution rather than just the input-output mapping : provides any advantage for the relay denoising task. For BPSK, the clean signal distribution is trivially simple (a discrete distribution on \(\{-1, +1\}\)), suggesting that the generative overhead may not be justified. This thesis provides the first systematic comparison of VAE and CGAN-based relay processing against classical and supervised learning methods, and the results confirm that the generative paradigm provides no significant advantage (and, in the case of VAE, a consistent disadvantage) for this particular task.
+The application of generative models to relay processing has not been extensively studied. The key question is whether the generative inductive bias : learning the data distribution rather than just the input-output mapping : provides any advantage for the relay denoising task. For BPSK, the clean signal distribution is trivially simple (a discrete distribution on \(\{-1, +1\}\)), suggesting that the generative overhead may not be justified. This thesis provides the first systematic comparison of VAE and CGAN-based relay processing against classical and supervised learning methods, and the results show that the generative paradigm provides no significant advantage for this particular task. The VAE is a consistent underperformer, but that specific result should be read with a caveat: the VAE relay samples \(\mathbf{z}\sim q_\phi(\mathbf{z}\mid\mathbf{x})\) stochastically at inference, and the deterministic-decoding variant (substituting the posterior mean \(\boldsymbol{\mu}\) at test time, which is standard practice) was not evaluated here. The VAE's gap may therefore reflect this single inference-time choice rather than the generative paradigm as such; disentangling the two is left to future work.
 
 \section{Sequence Models: Transformers, State Space Models}\label{sec:sequence-models-transformers-and-state-space-models}
 
@@ -316,25 +315,27 @@ The S4 model \cite{GuGoelRe2022SSM} introduced the key insight that structured (
 }\end{equation} 
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad mamba-selective}
 
-where \(W_\Delta, W_B, W_C\) are learned projection matrices. The selectivity mechanism allows the model to dynamically control which inputs are stored in the state and which are forgotten: 
+where \(W_\Delta, W_B, W_C\) are learned projection matrices. Crucially, the state matrix is parameterized as \(\mathbf{A} = -\exp(A_{\log})\), so that \(\mathbf{A}\) is diagonal with strictly negative entries (Hurwitz, \(\mathbf{A} \prec 0\)) and the discretized transition \(\exp(\Delta_k \mathbf{A})\) is a contraction for every \(\Delta_k > 0\). This sign convention is what makes the selectivity mechanism well behaved: it lets the model dynamically control which inputs are stored in the state and which are forgotten.
 
-A \textbf{large \(\Delta_k\)} (triggered by a relevant input) makes: 
+A \textbf{large \(\Delta_k\)} (triggered by a relevant input) drives the transition toward zero,
 \begin{equation}\protect\phantomsection\label{eq:mamba-selective-ak}{
-\bar{\mathbf{A}}_k = \exp(\Delta_k \mathbf{A}) \approx \mathbf{0}}
-\end{equation}\addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad mamba-selective-ak}
-which resets the state and allows the new input to dominate via:\
-\begin{equation}\protect\phantomsection\label{eq:mamba-selective-bk}
-\bar{\mathbf{B}}_k \approx \Delta_k \mathbf{B}_k.
+\bar{\mathbf{A}}_k = \exp(\Delta_k \mathbf{A}) \approx \mathbf{0},}
+\end{equation}
+\addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad mamba-selective-ak}
+
+which resets the state and lets the new input dominate via
+\begin{equation}\protect\phantomsection\label{eq:mamba-selective-bk}{
+\bar{\mathbf{B}}_k \approx \Delta_k \mathbf{B}_k.}
+\end{equation}
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad mamba-selective-bk}
-\end{equation}\addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad mamba-selective-ak}
 
-A \textbf{small \(\Delta_k\)} (triggered by irrelevant or noisy input) makes \ref{eq:mamba-selective-ak2} approximately unity ($I$) hence,preserving the current state and ignoring the input.
-\REV{Two points here. (1)~Technical: $\exp(\Delta_k \mathbf{A}) \to \mathbf{0}$ for large $\Delta_k$ holds only if $\mathbf{A}$ is Hurwitz (eigenvalues with negative real part) --- which Mamba guarantees by parameterizing $\mathbf{A} = -\exp(A_{\log})$ --- but that sign convention is never stated in this section, so Eq.~\ref{eq:mamba-selective-ak} is unjustified as written. State $\mathbf{A} \prec 0$ explicitly. (2)~Editorial: ``makes \ref{eq:mamba-selective-ak2} approximately unity'' uses a bare \texttt{$\backslash$ref} (renders as a number with no ``Eq.''), ``hence,preserving'' is missing a space, and Eq.~\ref{eq:mamba-selective-bk} has its \texttt{addcontentsline} \emph{inside} the equation environment plus a duplicated entry --- clean up this block.}
-
-
+Conversely, a \textbf{small \(\Delta_k\)} (triggered by an irrelevant or noisy input) makes the transition approximately the identity,
 \begin{equation}\protect\phantomsection\label{eq:mamba-selective-ak2}{
-\bar{\mathbf{A}}_k \approx \mathbf{I}}
-\end{equation}\addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad mamba-selective-ak2}
+\bar{\mathbf{A}}_k \approx \mathbf{I},}
+\end{equation}
+\addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad mamba-selective-ak2}
+
+thereby preserving the current state and ignoring the input.
 
 
 For relay signal processing, this selective mechanism is particularly well-suited: the model can learn to attend to the actual signal component of each received sample while suppressing the noise component, effectively implementing an \emph{adaptive-filter} whose coefficients are conditioned on the input. This is a more general form of the Wiener filter, which is the optimal LTI denoiser but cannot adapt its coefficients on a per-sample basis.
@@ -417,12 +418,11 @@ where \(P_s = \mathbb{E}[|x|^2] = 1\) for unit-power BPSK symbols. The noise var
 
 where \(Q(x) = \frac{1}{2}\text{erfc}(x/\sqrt{2})\) is the Gaussian Q-function and \(\text{SNR} = P_s / \sigma^2\) is the ratio of signal power to noise variance.
 
-\begin{quote}\label{noise-convension}
-\textbf{Noise-convention note.} The standard textbook result \(P_e = Q(\sqrt{2 E_b/N_0})\) assumes that the one-sided noise PSD is \(N_0\), giving a baseband noise variance of \(N_0/2\) per real dimension. In our AWGN implementation the noise is purely real with variance \(\sigma^2 = P_s/\text{SNR}\), so \(N_0 = 2\sigma^2 = 2P_s/\text{SNR}\) and \(E_b/N_0 = \text{SNR}/2\). Substituting yields \(Q(\sqrt{2 \cdot \text{SNR}/2}) = Q(\sqrt{\text{SNR}})\), which is the expression used throughout this work.
+\begin{remark}[Noise convention]\label{noise-convension}
+The standard textbook result \(P_e = Q(\sqrt{2 E_b/N_0})\) assumes that the one-sided noise PSD is \(N_0\), giving a baseband noise variance of \(N_0/2\) per real dimension. In our AWGN implementation the noise is purely real with variance \(\sigma^2 = P_s/\text{SNR}\), so \(N_0 = 2\sigma^2 = 2P_s/\text{SNR}\) and \(E_b/N_0 = \text{SNR}/2\). Substituting yields \(Q(\sqrt{2 \cdot \text{SNR}/2}) = Q(\sqrt{\text{SNR}})\), which is the expression used throughout this work.
 
 By contrast, the fading channels add \textbf{complex} Gaussian noise with total power \(1/\text{SNR}\) (i.e.~\(\sigma_I^2 = \sigma_Q^2 = 1/(2\,\text{SNR})\)) and extract the real part after ZF equalization, halving the effective noise variance per decision dimension. This naturally introduces a factor of 2 inside the Q-function argument for all fading-channel BER expressions (the fading-channel analysis above), making them consistent with the standard textbook forms.
-\end{quote}
-\REV{This noise-convention note is very good --- most theses silently mix the $Q(\sqrt{\gamma})$ and $Q(\sqrt{2\gamma})$ conventions and leave the reader to reconcile a 3-dB discrepancy; here it is stated once, correctly, and referenced later. One mechanical fix: it is referenced in Section 2.5.1.2 via a bare \texttt{$\backslash$ref} to a label on a \texttt{quote} environment, which resolves to the enclosing \emph{section} number; use the page-reference form (as done in Chapter~\ref{sec:experiments}) or promote this note to a numbered remark so it can be referenced cleanly.}
+\end{remark}
 
 \subsubsection{Two-hop AF BER}\label{sec:awgn-two-hop-af-ber}
 For amplify-and-forward with equal-SNR hops, the effective end-to-end SNR is:
@@ -438,7 +438,7 @@ where
 }\end{equation} 
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad af-p-eff}
 
-under the same real-noise convention \ref{noise-convension} as the single-hop case.At high SNR, 
+under the same real-noise convention as the single-hop case (Remark~\ref{noise-convension}). At high SNR,
 
 \begin{equation}\protect\phantomsection\label{eq:gamma-high-snr}{\text{SNR}_{\text{eff}} \approx \frac{\gamma}{2}}
 \end{equation}
@@ -460,7 +460,6 @@ For a decode-and-forward relay with equal-SNR hops, an error occurs at the desti
 \begin{equation}\protect\phantomsection\label{eq:df-ber-awgn}{P_e^{\text{DF}} = P_{e,1} + P_{e,2} - 2P_{e,1}P_{e,2}
 }\end{equation}
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad df-ber-awgn}
-\REV{Fix applied: removed the stray ``R'' from \texttt{$\backslash$addcontentsline\{equ\}\{listequations\}R\{...\}}, which was typesetting a literal ``R'' after the equation. Note for the author: Eq.~\ref{eq:df-ber-awgn} here and Eq.~\ref{eq:df-ber-hops} in Section~2.1.2 are two forms of the same quantity that coincide; consider noting that the second counts an error only when exactly one hop errs, so it does not read as a discrepancy.}
 
 With equal hops (i.e. \(P_{e,1} = P_{e,2} = P_e^{\text{AWGN}}\)), this becomes 
 
@@ -491,7 +490,6 @@ with \(\mathbb{E}[|h|^2] = 1\) (unit average power). The instantaneous SNR after
 
 \subsubsection{Single-hop BER}\label{sec:rayleigh-single-hop-ber}
 Averaging the conditional BER \(P_e(\gamma_h) = Q(\sqrt{2\gamma_h})\) over the exponential distribution of \(\gamma_h\) yields the closed-form \cite[Eq.~14-4-15]{ProakisSalehi2008DigitalComm} (Equation~\ref{eq:rayleigh-ber}):
-\REV{Fix applied: replaced the hardcoded ``{[}21, Eq.\ 14-4-15{]}'' with \texttt{$\backslash$cite[Eq.~14-4-15]\{ProakisSalehi2008DigitalComm\}}. Note for the author: at least one more hardcoded numeric citation (``{[}21, Ch.\ 14{]}'') survives elsewhere in this chapter --- worth a grep for the ``{[}digit{]}'' pattern.}
 
 \begin{equation}\protect\phantomsection\label{eq:rayleigh-ber}{P_e^{\text{Rayleigh}} = \frac{1}{2}\left(1 - \sqrt{\frac{\bar{\gamma}}{1 + \bar{\gamma}}}\right)
 }\end{equation} 
@@ -614,5 +612,4 @@ The SIC equalizer decodes streams sequentially in order of post-detection SINR:
 \end{enumerate}
 
 SIC outperforms linear MMSE because the second stream sees no inter-stream interference after cancellation. The cost is potential error propagation from incorrect first-stream decisions.
-\REV{Fix applied (scope): Section~2.6 is now framed explicitly as background --- no MIMO experiment is evaluated in this thesis --- with the implementation note moved to Appendix~C, and the MMSE terminology corrected to LMMSE per the supervisor's comment (Appendix~E).}
 
