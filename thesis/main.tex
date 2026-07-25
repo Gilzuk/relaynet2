@@ -47,17 +47,14 @@
 \onehalfspacing
 
 %% ── Language & Hebrew ────────────────────────────────────────
-\usepackage{polyglossia}
-\setmainlanguage{english}
-\setotherlanguage{hebrew}
-\ifXeTeX
-  \newfontfamily\hebrewfont[Script=Hebrew, Path=./fonts/, Extension=.ttf,
-    UprightFont=*-Regular, BoldFont=*-Bold,
-    ItalicFont=*-Italic, BoldItalicFont=*-BoldItalic]{Arial}
-  \newfontfamily\hebrewfonttt[Script=Hebrew, Path=./fonts/, Extension=.ttf,
-    UprightFont=*-Regular, BoldFont=*-Bold,
-    ItalicFont=*-Italic, BoldItalicFont=*-BoldItalic]{CourierNew}
-\fi
+%% NOTE: polyglossia (which pulls in bidi for the Hebrew RTL abstract) is
+%% deliberately loaded at the END of the preamble, immediately before
+%% \begin{document}. bidi patches the packages it coexists with and errors
+%% out ("Oops! you have loaded package X after bidi package") for every
+%% package loaded after it. Those errors are survivable in a forced manual
+%% xelatex run, but latexmk -- which Overleaf uses -- treats them as build
+%% errors and stops rerunning, so cross-references and citations never
+%% resolve and the PDF fills with "??". Keep this block last.
 
 %% ── Mathematics ──────────────────────────────────────────────
 \usepackage{amsmath,amssymb,amsthm}
@@ -254,6 +251,22 @@
 \newenvironment{gzblock}%
   {\par\medskip\begingroup\color{red!70!black}\noindent\textbf{GZ:}\space\ignorespaces}%
   {\endgroup\par\medskip}
+
+%% ── Language & Hebrew (MUST be the last package block) ───────────────────────
+%% bidi (loaded by polyglossia for the Hebrew abstract) must come after every
+%% package it patches -- see the note in the Language section above.
+\usepackage{polyglossia}
+\setmainlanguage{english}
+\setotherlanguage{hebrew}
+\ifXeTeX
+  \newfontfamily\hebrewfont[Script=Hebrew, Path=./fonts/, Extension=.ttf,
+    UprightFont=*-Regular, BoldFont=*-Bold,
+    ItalicFont=*-Italic, BoldItalicFont=*-BoldItalic]{Arial}
+  \newfontfamily\hebrewfonttt[Script=Hebrew, Path=./fonts/, Extension=.ttf,
+    UprightFont=*-Regular, BoldFont=*-Bold,
+    ItalicFont=*-Italic, BoldItalicFont=*-BoldItalic]{CourierNew}
+\fi
+
 \begin{document}
 
 %% ── Title Page ───────────────────────────────────────────────
