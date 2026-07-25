@@ -102,7 +102,7 @@ PyTorch (CUDA) \\
 
 \noindent
 All numerical results reported in Chapter~\ref{sec:experiments} were generated using a single simulation framework, ensuring consistent evaluation across classical and learning-based relay architectures. The project is implemented as a modular Python package (\texttt{relaynet}).
-The framework uses object-oriented design with a common \texttt{Relay} base class, enabling polymorphic relay swapping. Monte Carlo simulation is implemented in \texttt{runner.py} with configurable trial count, bit count, and SNR range. All batched tensor operations use vectorized PyTorch for GPU acceleration. The framework additionally ships ZF/LMMSE/SIC equalizer implementations for a $2\times2$ MIMO topology (vectorized batched \texttt{torch.linalg.solve}); these support only the deferred MIMO extension (Section~\ref{sec:theoretical-foundations-mimo-equalization}) and are not exercised by any experiment reported in this thesis.
+The framework uses object-oriented design with a common \texttt{Relay} base class, enabling polymorphic relay swapping. Monte Carlo simulation is implemented in \texttt{runner.py} with configurable trial count, bit count, and SNR range. All batched tensor operations use vectorized PyTorch for GPU acceleration. The framework additionally ships ZF/LMMSE/SIC equalizer implementations for a $2\times2$ MIMO topology (vectorized batched \texttt{torch.linalg.solve}). These are inactive code: MIMO is deferred to future work (Chapter~\ref{sec:discussion-and-conclusions}), and no experiment reported in this thesis exercises them.
 
 \subsection{Testing} 126 automated tests (pytest) cover all channels, modulation, relay strategies, simulation, and statistics modules with 100\% pass rate.
 
@@ -330,12 +330,19 @@ $P_{e,1}+P_{e,2}-2P_{e,1}P_{e,2}$ in another. \emph{Resolved:} both now use the
 exact odd-flip form, with a sentence explaining that two errors cancel, so the two
 appearances agree by construction.
 
-\item \textbf{MIMO equalization section implied unreported experiments}
-(Section~\ref{sec:theoretical-foundations-mimo-equalization}). The section stated
-that three equalizers ``were implemented,'' with speed-up figures, although MIMO
-is future work and no MIMO result appears in the thesis. \emph{Resolved:} the
-section is reframed explicitly as background, the implementation note is moved to
-Appendix~C, and the terminology is corrected from MMSE to LMMSE.
+\item \textbf{MIMO equalization section implied unreported experiments.} Chapter~2
+carried a ``Theoretical Foundations: MIMO Equalization'' section stating that three
+equalizers (ZF, LMMSE, LMMSE-SIC) ``were implemented,'' with speed-up figures,
+although MIMO is future work and no MIMO result appears anywhere in the thesis ---
+and although the summary of removed material in Appendix~E already listed the
+$2\times2$ MIMO second hop and its equalization among the material deleted in the
+canonical restructure. The section had simply survived that deletion.
+\emph{Resolved:} the section is now \emph{removed}, matching what Appendix~E
+already recorded. The inactive equalizer code is noted in Appendix~C, and with the
+section gone the equalizer-terminology question raised by the supervisor
+(Appendix~E, Chapter~2 comment~7) no longer arises: ``MMSE'' now appears in this
+thesis only in its correct non-linear sense, denoting the MMSE-optimal estimator
+$\mathbb{E}[x\mid y]$ of the relay denoising task.
 
 \end{enumerate}
 \endgroup

@@ -2,6 +2,12 @@
 
 _Last updated: 2026-07-21_
 
+## Latest: MIMO equalization section REMOVED (completing AK comments 2/4/6)
+Audited all 17 supervisor (AK) comments in `thesis/ak_comments.json` against Appendix E — all 17 documented, and the verifiable claims hold EXCEPT two gaps found:
+1. **AK ch02 #7 (MMSE→LMMSE) was only partially applied** — 3 equalizer refs still said MMSE (SIC ordering/detection steps + the "outperforms linear MMSE" sentence). Fixed first, then made moot by (2).
+2. **The whole "Theoretical Foundations: MIMO Equalization" section had survived a deletion Appendix E already claimed** — Appendix E's "Summary of removed material" explicitly lists "the $2\times2$ MIMO second hop and its ZF/LMMSE/SIC equalization" as removed (AK comments 2, 4, 6), but §2.6 was still in ch02. User caught this ("The mmse was removed that's why not appearing" / "The MIMO"). **Section now deleted** (36 lines: ZF/LMMSE/LMMSE-SIC equations, V-BLAST steps, 2 eq labels + section label). Nothing depended on it: 0 citations inside, 0 refs to its equation labels; the only 2 refs to its section label were in Appendix C (rewritten to point at future-work instead) and Appendix F item 11 (rewritten to record the removal). Post-removal label/ref audit: 220 labels, 181 refs, **0 broken**.
+**Consequence:** "MMSE" now appears in the thesis ONLY in its correct non-linear sense (MMSE-optimal estimator E[x|y]) — so AK's LMMSE terminology comment is fully satisfied by construction. Pages: annotated 131, clean 128.
+
 ## Latest: all 24 REV findings resolved inline + Appendix F added (on main)
 User reported still seeing `\REV` blocks flagging *unfixed* issues. Applied the actual fix for every outstanding recommendation, removed all REV/revblock artifacts from every compiled chapter (now **zero** repo-wide), and added **Appendix F "Independent Review Findings and Resolutions"** documenting all 24 findings in 3 groups (11 substantive / 8 consistency / 5 editorial) + a "recorded but no change needed" paragraph for the praise items.
 
