@@ -55,12 +55,12 @@ with hard-decision demodulation \(\hat{b} = \mathbb{1}[\hat{x} < 0]\) at the des
 \subsection{Hop Model}\label{sec:hop-model}
 Each hop applies a channel function followed by optional equalization (Equation~\ref{eq:hop-model-selection}):
 
-\begin{equation}\protect\phantomsection\label{eq:hop-model-selection}{y = h(x, \text{SNR}) + n}
+\begin{equation}\protect\phantomsection\label{eq:hop-model-selection}{y = \mathcal{H}(x, \text{SNR}) + n}
 \end{equation}
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad hop-model}
 
 
-where \(h(\cdot)\) is the canonical Rayleigh fast-fading channel (the AWGN special case is retained for analytical calibration of the simulator).
+where \(\mathcal{H}(\cdot)\) denotes the canonical Rayleigh fast-fading channel operator (the AWGN special case is retained for analytical calibration of the simulator). The calligraphic symbol distinguishes the channel \emph{operator} from the scalar fading \emph{coefficient} \(h\) used throughout the rest of this thesis.
 
 \textbf{Power Normalization.} All relay strategies normalize their output power to ensure fair comparison:
 
@@ -72,12 +72,11 @@ where \(h(\cdot)\) is the canonical Rayleigh fast-fading channel (the AWGN speci
 
 On Hop 1 the relay's single receive antenna observes, as shown in Equation~\ref{eq:relay-received-siso}:
 
-\begin{equation}\protect\phantomsection\label{eq:relay-received-siso}{y_R = x + n_1, \quad n_1 \sim \mathcal{N}(0, \sigma^2)
+\begin{equation}\protect\phantomsection\label{eq:relay-received-siso}{\tilde{y}_R[i] = |h_1[i]|\,x[i] + \tilde{n}_1[i], \quad \tilde{n}_1[i] \sim \mathcal{N}(0, \sigma^2)
 }\end{equation}
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad relay-received-siso}
 
-where the effective observation follows coherent compensation of the Rayleigh fading coefficient (Section~\ref{sec:system-model-1}). The relay applies its processing function to a sliding window of received samples and transmits a cleaner estimate \(\hat{x}_R = f_\theta(y_{R,i-w:i+w})\); classical AF/DF use \(w=0\). This is purely a noise-removal task: in the canonical SISO setup there is no inter-stream interference at any stage, and the destination demodulates the Hop-2 output directly with no equalizer.
-\REV{Same modelling gap as in Section~1.1: Eq.~\ref{eq:relay-received-siso} states $n_1\sim\mathcal{N}(0,\sigma^2)$ with a \emph{fixed} variance, but after coherent compensation of $h\sim\mathcal{CN}(0,1)$ the per-symbol effective SNR is $|h|^2\gamma$ --- random, exponentially distributed --- not constant. The text says the right thing; the equation says the calibration case. Write the post-compensation observation as $\tilde y_R = |h_1|\,x + \tilde n_1$ (or condition on $|h|$) so the displayed math matches the canonical channel. Separately, in Eq.~\ref{eq:hop-model-selection} the symbol $h(\cdot)$ is used as the \emph{channel function} while $h$ elsewhere is the fading \emph{coefficient} --- rename one to avoid collision.}
+where the effective observation follows coherent compensation of the Rayleigh fading coefficient (Section~\ref{sec:system-model-1}). Note that the per-symbol effective SNR is \(|h_1[i]|^2\gamma\) --- a random, exponentially distributed quantity --- not a constant; the AWGN calibration limit is recovered by setting \(|h_1[i]| \equiv 1\). The relay applies its processing function to a sliding window of received samples and transmits a cleaner estimate \(\hat{x}_R = f_\theta(\tilde{y}_{R,i-w:i+w})\); classical AF/DF use \(w=0\). This is purely a noise-removal task: in the canonical SISO setup there is no inter-stream interference at any stage, and the destination demodulates the Hop-2 output directly with no equalizer.
 
 
 \section{Relay Strategies}\label{sec:relay-strategies}
@@ -115,7 +114,6 @@ where \(\mathbf{w} \in \mathbb{R}^5\) is a sliding window of received symbols (\
 \end{quote}
 
 \emph{Design rationale:} The tanh output activation naturally constrains the output to \([-1, +1]\), matching the BPSK symbol range. The ReLU hidden layer provides the non-linearity needed to approximate the Bayes-optimal soft threshold \(\tanh(y/\sigma^2)\). With 24 hidden neurons and a 5-dimensional input, the network has approximately 34 parameters per input dimension : sufficient for the low-complexity denoising task while avoiding overfitting. He initialization is used for ReLU layers to maintain proper gradient flow.
-\REV{Resolved (activation): checked against the implementation --- \texttt{MinimalGenAIRelay} (\texttt{relaynet/relays/genai.py}) uses a \emph{ReLU} hidden layer (\texttt{np.maximum(0, z1)}) and a \emph{tanh} output, exactly as stated here and in Eq.~\ref{eq:mlp-relay}. So Methods is correct; the imprecise text was the experiment-configuration lines in Chapters~\ref{sec:experiments}--\ref{sec:extensions} that list ``NN activation: tanh'' without qualification --- those refer to the \emph{output} activation and have been reworded to ``ReLU hidden, tanh output.'' (Parameter count $(5{\times}24+24)+(24{\times}1+1)=169$ confirmed.)}
 
 Training uses MSE loss with multi-SNR training data (i.e. )  5, 10 and 15 dB), 25,000 samples, and 100 epochs with a learning rate of 0.01.
 
@@ -195,7 +193,6 @@ where \(\bar{P}_e\) is the sample mean BER across trials, \(s\) is the sample st
 
 \textbf{Per-experiment simulation budgets.} The budget above ($M=10$ trials $\times\,N=10{,}000$ bits $=100{,}000$ bits per SNR point) applies to the canonical relay comparison and the parameter-normalization/complexity study (E2--E3). Two experiments use different budgets, stated in their respective sections: the channel-model validation (E1, Section~\ref{sec:channel-model-validation-simulative}) uses $20\times50{,}000 = 1{,}000{,}000$ bits per SNR point for tight validation intervals, and the unknown-channel study (Chapter~\ref{sec:unknown-channels}) uses $5\times50{,}000 = 250{,}000$ bits per SNR point. Because the Wilcoxon signed-rank test at $M=5$ cannot attain $p<0.05$ (its smallest two-sided $p$ is $2^{-4}=0.0625$), formal significance testing is reported only for the $M=10$ experiments; the unknown-channel results are reported with means and 95\% confidence intervals rather than Wilcoxon $p$-values.
 
-\REV{Fix applied (review finding \#3): the per-experiment budget paragraph above replaces the former blanket claim (E1 $20\times50$k, E2--E3 $10\times10$k, Ch7 $5\times50$k), and the $M=5$ Wilcoxon caveat is now stated explicitly. The abstract has been reworded to match.}
 
 \subsection{Statistical Significance Testing}\label{sec:statistical-significance-testing}
 
