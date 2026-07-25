@@ -9,6 +9,7 @@ This motivates the central question of this thesis: \emph{under what conditions 
 This thesis presents a systematic comparative study of classical and neural relay strategies within a unified simulation framework. Nine relay methods are evaluated: Two classical relay strategies (\texttt{AF} and \texttt{DF}) and seven neural relays spanning supervised learning (\texttt{MLP}, SNR-adaptive \texttt{hybrid} relay), generative modeling (variational autoencoder \texttt{VAE} and conditional GAN with \texttt{WGAN-GP}), and sequence-based architectures (\texttt{Transformer}, \texttt{Mamba-S6}, and \texttt{Mamba-SSD}  with structured state space duality). 
 
 The main objective of this thesis is not to propose a new relay design, but to quantify \textit{performance vs.\ complexity} tradeoffs and identify regimes where learning-based relays are effective. Existing studies typically focus on a limited set of architectures or channel models, making it difficult to disentangle the effects of model structure, parameter count, and channel conditions.
+\REV{Fix applied (editorial): ``Vs.''~$\to$ ``vs.'', and the ``as Existing'' run-on was split into two sentences.}
 
 \paragraph{Scope of this thesis.}
 This thesis studies a single, fixed communication problem --- the classical
@@ -86,6 +87,7 @@ where \(x[i] \in \{-1, +1\}\) is the BPSK symbol transmitted by the source at ti
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad awgn-hop1}
 
 with $\tilde{n}[i] \sim \mathcal{N}(0, \sigma^2)$ real. The \emph{AWGN calibration limit} used to validate the simulator (Chapter~\ref{sec:literature-review}) is the special case $|h[i]| \equiv 1$, i.e.\ $y_R[i] = x[i] + n_1[i]$ and $y_D[i] = x_R[i] + n_2[i]$.
+\REV{Fix applied (system-model consistency): the canonical hop equations now show the Rayleigh fading coefficient (Eq.~\ref{eq:rayleigh-hop1})--(Eq.~\ref{eq:rayleigh-hop2}), the coherent-compensation step is stated, and the former AWGN-only pair is retained explicitly as the $|h|\equiv1$ calibration limit, so the displayed math no longer contradicts the ``i.i.d.\ Rayleigh on both hops'' setup. $\gamma$ is now defined at first use below.}
 
 
 \begin{remark}[Realizability of the symmetric window]\label{rem:window-causality}

@@ -3,6 +3,7 @@
 \markboth{Abstract}{Abstract}
 
 \label{sec:abstract-english}
+\REV{Fixes applied. (1)~\texttt{main.tex} previously included the nonexistent \texttt{chapters/ch00\_frontmatter}, so this abstract was silently absent from the compiled PDF; the include now points at \texttt{chapters/frontmatter.tex}. (2)~The former blanket claim that all results use 100{,}000 bits per SNR point over 10 trials was inaccurate --- the channel validation uses $20\times50$k and the unknown-channel study $5\times50$k --- so the budget is now scoped to the canonical comparison, with per-experiment budgets in Section~\ref{sec:monte-carlo-ber-estimation}. (3)~The MLP training time was corrected to ``under 5 seconds'' to match Table~\ref{tbl:table13}.}
 
 
 

@@ -21,6 +21,7 @@ The end-to-end SNR for AF relay is the standard harmonic-mean expression \cite{L
 This form assumes \emph{CSI-assisted variable-gain} AF, in which the relay knows its instantaneous first-hop gain and normalizes its output power per symbol (Equation~\ref{eq:af-gain}); this is the variant implemented throughout this thesis. The additive $+1$ in the denominator originates from the relay's own noise being re-amplified along with the signal, and it is the term that distinguishes this convention from the fixed-gain (blind, long-term-power-normalized) variant, whose end-to-end SNR takes a slightly different form.
 
 This expression reveals a fundamental limitation: even when one hop has high SNR, the effective SNR is bottlenecked by the weaker hop. Moreover, the relay amplifies both signal and noise from the first hop, leading to noise accumulation at the destination.
+\REV{Fix applied: Eq.~\ref{eq:af-snr} now carries a citation, and the text states that it assumes CSI-assisted \emph{variable-gain} AF (the variant used here) and explains the origin of the convention-dependent $+1$ term.}
 
 \subsection{Decode-and-Forward (DF)}\label{sec:classical-relay-strategies-df} 
 The DF relay demodulates the received signal, recovers the transmitted bits, and re-modulates clean symbols:
@@ -61,6 +62,7 @@ This conditional expectation \(f^*\) is the Bayes-optimal denoiser : it minimize
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad optimal-denoiser-awgn}
 
 which is a smooth sigmoid-like function that approaches the hard-decision signum function as \(\sigma^2 \to 0\) (high SNR). A neural network with a single hidden layer and tanh output can represent this posterior \emph{exactly for a fixed} \(\sigma^2\) --- a single tanh unit with the appropriate input scaling suffices. The deployed relay, however, is trained at SNR \(\in\{5,10,15\}\)~dB and evaluated over \(0\)--\(20\)~dB, so one set of weights must approximate an entire \emph{family} of posteriors indexed by \(\sigma^2\) (and, on the fading channel, a mixture over random effective SNRs). That a 169-parameter network approximates this family closely enough to track the classical baselines is an empirical finding of this thesis, not a consequence of the exact single-\(\sigma^2\) representation.
+\REV{Fix applied (overclaim): ``can represent this function exactly'' held only for a \emph{fixed} $\sigma^2$. The claim is now split --- exact representation at fixed $\sigma^2$, close \emph{approximation} of the multi-SNR family --- and the latter is identified as an empirical finding rather than a consequence of the exact result.}
 
 Second, the \textbf{bias-variance decomposition} provides a framework for understanding model complexity:
 
@@ -138,6 +140,7 @@ Prior DL (Selection / Optimization) & Conventional AF/DF & No & Conventional & P
 \subsection{Neural Network Relay Processing}\label{sec:neural-network-relay-processing}
 
 For relay processing specifically, a supervised learning approach trains a neural network \(f_\theta\) to minimize the empirical mean-squared error: (Equation~\ref{eq:mse-loss})
+\REV{Fix applied (misdirected pointers): this sentence and the $\beta$-VAE sentence below previously pointed at the wrong equations; each parenthetical now references its intended target.}
 
 \begin{equation}\protect\phantomsection\label{eq:mse-loss}{\mathcal{L}(\theta) = \frac{1}{N} \sum_{i=1}^{N} (\hat{x}_i - x_i)^2, \quad \hat{x}_i = f_\theta(y_{i-w:i+w})
 }\end{equation} 
@@ -239,6 +242,7 @@ The $L_1$ reconstruction loss in the generator objective serves a dual purpose: 
 \subsection{Generative vs.~Discriminative Paradigms for Relay Processing}\label{sec:generative-vs.-discriminative-paradigms-for-relay-processing}
 
 The application of generative models to relay processing has not been extensively studied. The key question is whether the generative inductive bias : learning the data distribution rather than just the input-output mapping : provides any advantage for the relay denoising task. For BPSK, the clean signal distribution is trivially simple (a discrete distribution on \(\{-1, +1\}\)), suggesting that the generative overhead may not be justified. This thesis provides the first systematic comparison of VAE and CGAN-based relay processing against classical and supervised learning methods, and the results show that the generative paradigm provides no significant advantage for this particular task. The VAE is a consistent underperformer, but that specific result should be read with a caveat: the VAE relay samples \(\mathbf{z}\sim q_\phi(\mathbf{z}\mid\mathbf{x})\) stochastically at inference, and the deterministic-decoding variant (substituting the posterior mean \(\boldsymbol{\mu}\) at test time, which is standard practice) was not evaluated here. The VAE's gap may therefore reflect this single inference-time choice rather than the generative paradigm as such; disentangling the two is left to future work.
+\REV{Fix applied (VAE caveat): the paradigm-level conclusion is now qualified --- the VAE relay decodes stochastically at inference and the standard deterministic variant (posterior mean at test time) was never evaluated, so its gap may be an inference-time artifact rather than evidence about generative modelling.}
 
 \section{Sequence Models: Transformers, State Space Models}\label{sec:sequence-models-transformers-and-state-space-models}
 
@@ -336,6 +340,7 @@ Conversely, a \textbf{small \(\Delta_k\)} (triggered by an irrelevant or noisy i
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad mamba-selective-ak2}
 
 thereby preserving the current state and ignoring the input.
+\REV{Fix applied: (1)~technical --- the step $\exp(\Delta_k\mathbf{A})\to\mathbf{0}$ requires $\mathbf{A}$ Hurwitz, so the parameterization $\mathbf{A}=-\exp(A_{\log})$ ($\mathbf{A}\prec0$) is now stated explicitly before it is used; (2)~editorial --- the bare \texttt{$\backslash$ref}, the missing space, the \texttt{addcontentsline} placed \emph{inside} an equation environment, and a duplicated entry were all corrected.}
 
 
 For relay signal processing, this selective mechanism is particularly well-suited: the model can learn to attend to the actual signal component of each received sample while suppressing the noise component, effectively implementing an \emph{adaptive-filter} whose coefficients are conditioned on the input. This is a more general form of the Wiener filter, which is the optimal LTI denoiser but cannot adapt its coefficients on a per-sample basis.
@@ -423,6 +428,7 @@ The standard textbook result \(P_e = Q(\sqrt{2 E_b/N_0})\) assumes that the one-
 
 By contrast, the fading channels add \textbf{complex} Gaussian noise with total power \(1/\text{SNR}\) (i.e.~\(\sigma_I^2 = \sigma_Q^2 = 1/(2\,\text{SNR})\)) and extract the real part after ZF equalization, halving the effective noise variance per decision dimension. This naturally introduces a factor of 2 inside the Q-function argument for all fading-channel BER expressions (the fading-channel analysis above), making them consistent with the standard textbook forms.
 \end{remark}
+\REV{Fix applied (cross-referencing): this note was a \texttt{quote} environment whose label resolved to the enclosing \emph{section} number. It is now a numbered remark, and both citing sites reference it as Remark~\ref{noise-convension}.}
 
 \subsubsection{Two-hop AF BER}\label{sec:awgn-two-hop-af-ber}
 For amplify-and-forward with equal-SNR hops, the effective end-to-end SNR is:
@@ -460,6 +466,7 @@ For a decode-and-forward relay with equal-SNR hops, an error occurs at the desti
 \begin{equation}\protect\phantomsection\label{eq:df-ber-awgn}{P_e^{\text{DF}} = P_{e,1} + P_{e,2} - 2P_{e,1}P_{e,2}
 }\end{equation}
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad df-ber-awgn}
+\REV{Fix applied: the stray literal ``R'' after \texttt{addcontentsline} was removed, and Eq.~\ref{eq:df-ber-hops} in Section~\ref{sec:classical-relay-strategies-df} now uses the same exact odd-flip form as Eq.~\ref{eq:df-ber-awgn}, with a sentence noting that two errors cancel --- so the two appearances no longer read as a discrepancy.}
 
 With equal hops (i.e. \(P_{e,1} = P_{e,2} = P_e^{\text{AWGN}}\)), this becomes 
 
@@ -612,4 +619,5 @@ The SIC equalizer decodes streams sequentially in order of post-detection SINR:
 \end{enumerate}
 
 SIC outperforms linear MMSE because the second stream sees no inter-stream interference after cancellation. The cost is potential error propagation from incorrect first-stream decisions.
+\REV{Fix applied (scope): Section~\ref{sec:theoretical-foundations-mimo-equalization} is now framed explicitly as background --- no MIMO experiment is evaluated in this thesis --- the implementation note was moved to Appendix~C, and the MMSE terminology was corrected to LMMSE per the supervisor's comment (Appendix~E).}
 
