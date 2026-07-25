@@ -609,15 +609,15 @@ The SIC equalizer decodes streams sequentially in order of post-detection SINR:
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  \textbf{Ordering:} Compute MMSE post-detection SINR for each stream; select the stream with highest SINR first.
+  \textbf{Ordering:} Compute LMMSE post-detection SINR for each stream; select the stream with highest SINR first.
 \item
-  \textbf{Detection:} Apply MMSE equalization to the selected stream and make a hard decision.
+  \textbf{Detection:} Apply LMMSE equalization to the selected stream and make a hard decision.
 \item
   \textbf{Cancellation:} Subtract the detected stream's contribution: \(\mathbf{y}' = \mathbf{y} - \mathbf{h}_{\text{first}} \hat{x}_{\text{first}}\).
 \item
   \textbf{Final Detection:} Estimate the remaining stream interference-free via MRC: \(\hat{x}_{\text{second}} = \text{Re}(\mathbf{h}_{\text{second}}^H \mathbf{y}') / \|\mathbf{h}_{\text{second}}\|^2\).
 \end{enumerate}
 
-SIC outperforms linear MMSE because the second stream sees no inter-stream interference after cancellation. The cost is potential error propagation from incorrect first-stream decisions.
+SIC outperforms plain LMMSE because the second stream sees no inter-stream interference after cancellation. The cost is potential error propagation from incorrect first-stream decisions. Note that the equalizers named here are \emph{linear} MMSE throughout, per the supervisor's comment (Appendix~E, Chapter~2 comment~7); the unqualified term ``MMSE'' is reserved in this thesis for the genuinely non-linear MMSE-optimal estimator $\mathbb{E}[x\mid y]$ of the relay denoising task.
 \REV{Fix applied (scope): Section~\ref{sec:theoretical-foundations-mimo-equalization} is now framed explicitly as background --- no MIMO experiment is evaluated in this thesis --- the implementation note was moved to Appendix~C, and the MMSE terminology was corrected to LMMSE per the supervisor's comment (Appendix~E).}
 
