@@ -585,39 +585,5 @@ AWGN & \textasciitilde9.8 dB & : (no fading) & Exponential \\
 Rayleigh & \textasciitilde24 dB & 1 & \(1/(4\bar{\gamma})\) \\
 \end{longtable}
 
-\section{Theoretical Foundations: MIMO Equalization}\label{sec:theoretical-foundations-mimo-equalization}
 
-\emph{This section is background only: no MIMO experiment is evaluated in this thesis --- the scope table of Chapter~\ref{sec:introduction} defers MIMO to future work. The material is retained solely to define the terms used in the future-work discussion (Chapter~\ref{sec:discussion-and-conclusions}); the corresponding equalizer implementations ship with the simulation framework (Appendix~C).} Three standard equalization methods for a 2×2 MIMO topology are:
-
-\textbf{Zero-Forcing (ZF):} \begin{equation}\protect\phantomsection\label{eq:zf-equalizer-methods}{\hat{\mathbf{x}}_{\text{ZF}} = (\mathbf{H}^H\mathbf{H})^{-1}\mathbf{H}^H\mathbf{y} = \mathbf{H}^{-1}\mathbf{y}
-}\end{equation} 
-\addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad zf-equalizer-methods}
-
-ZF completely removes inter-stream interference but amplifies noise when \(\mathbf{H}\) is poorly conditioned.
-
-\textbf{LMMSE:} \begin{equation}\protect\phantomsection\label{eq:mmse-equalizer-methods}{\hat{\mathbf{x}}_{\text{LMMSE}} = (\mathbf{H}^H\mathbf{H} + \sigma^2\mathbf{I})^{-1}\mathbf{H}^H\mathbf{y}
-}\end{equation}
-\addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad mmse-equalizer-methods}
-
-LMMSE (linear MMSE) adds a noise-variance regularization term that prevents excessive noise amplification, trading residual interference for better noise performance.
-
-\textbf{LMMSE-SIC (V-BLAST):}
-
-The SIC equalizer decodes streams sequentially in order of post-detection SINR:
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  \textbf{Ordering:} Compute LMMSE post-detection SINR for each stream; select the stream with highest SINR first.
-\item
-  \textbf{Detection:} Apply LMMSE equalization to the selected stream and make a hard decision.
-\item
-  \textbf{Cancellation:} Subtract the detected stream's contribution: \(\mathbf{y}' = \mathbf{y} - \mathbf{h}_{\text{first}} \hat{x}_{\text{first}}\).
-\item
-  \textbf{Final Detection:} Estimate the remaining stream interference-free via MRC: \(\hat{x}_{\text{second}} = \text{Re}(\mathbf{h}_{\text{second}}^H \mathbf{y}') / \|\mathbf{h}_{\text{second}}\|^2\).
-\end{enumerate}
-
-SIC outperforms plain LMMSE because the second stream sees no inter-stream interference after cancellation. The cost is potential error propagation from incorrect first-stream decisions. Note that the equalizers named here are \emph{linear} MMSE throughout, per the supervisor's comment (Appendix~E, Chapter~2 comment~7); the unqualified term ``MMSE'' is reserved in this thesis for the genuinely non-linear MMSE-optimal estimator $\mathbb{E}[x\mid y]$ of the relay denoising task.
-\REV{Fix applied (scope): Section~\ref{sec:theoretical-foundations-mimo-equalization} is now framed explicitly as background --- no MIMO experiment is evaluated in this thesis --- the implementation note was moved to Appendix~C, and the MMSE terminology was corrected to LMMSE per the supervisor's comment (Appendix~E).}
-
+\REV{Fix applied (scope, per supervisor comments 2, 4 and 6 in Appendix~E): the ``Theoretical Foundations: MIMO Equalization'' section (ZF / LMMSE / LMMSE-SIC for a $2\times2$ topology) has been \emph{removed}. The MIMO thread was deferred to future work in the canonical restructure and no MIMO experiment appears anywhere in this thesis, so the section described machinery the document never uses; Appendix~E already listed it among the removed material. The equalizer terminology that the section carried is therefore moot, and the term ``MMSE'' now appears in this thesis only in its correct non-linear sense (the MMSE-optimal estimator $\mathbb{E}[x\mid y]$).}
