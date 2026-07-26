@@ -152,7 +152,7 @@ All 3K configurations use a window size of 11 (vs.~5 for original MLP/Hybrid, an
 
 This appendix reproduces each comment raised by the supervisor (\textbf{AK}) on the previous draft, together with its resolution (\textbf{GZ}). Because the revision restructured the thesis around a single canonical setup (Section~\ref{sec:introduction}) and, in doing so, \emph{removed} several sections that the earlier draft contained, resolutions that entailed deletion are flagged explicitly with \textbf{[SECTION REMOVED]} so that the change is transparent.
 
-\subsection*{Chapter 1 --- Introduction}
+\subsection*{Chapter 1, Introduction}
 
 \begingroup\small
 \begin{enumerate}\setlength{\itemsep}{2pt}\setlength{\parskip}{1pt}
@@ -185,7 +185,7 @@ This appendix reproduces each comment raised by the supervisor (\textbf{AK}) on 
 
 \endgroup
 
-\subsection*{Chapter 2 --- Literature Review}
+\subsection*{Chapter 2, Literature Review}
 
 \begingroup\small
 \begin{enumerate}\setlength{\itemsep}{2pt}\setlength{\parskip}{1pt}
@@ -200,7 +200,7 @@ This appendix reproduces each comment raised by the supervisor (\textbf{AK}) on 
 \GZ{Resolved. The model conventions were unified: the canonical channel is i.i.d.\ Rayleigh fast fading in complex baseband from the outset. For SISO Hop~1, BPSK is transmitted on the real axis and the receiver applies coherent compensation and takes $\Re\{\cdot\}$, which is the sufficient statistic; this reconciles the earlier real-valued derivations with the complex model and is stated once in Chapter~\ref{sec:introduction}.}
 
 \item \AK{Why not recovering both then? You keep jumping between multiple settings: no-fading/slow-fading/fast-fading, real/complex, SISO/MIMO. Please define one model that you've tackled and stick to it, unless you've actually tackled several settings. Then, each of them deserves a separate chapter.}\\
-\textbf{[SECTION REMOVED]} \GZ{This was the decisive comment behind the restructure. The thesis now fixes \emph{one} canonical setup --- SISO on both hops, i.i.d.\ Rayleigh fast fading, complex baseband, BPSK, uncoded BER --- and varies only the relay function. The AWGN and Rician robustness studies, the $2\times2$ MIMO second hop with ZF/LMMSE/SIC equalization, the 16-PSK modulation, the CSI-injection study, and the end-to-end autoencoder were all \emph{removed} from the thesis; each is now listed as future work. The two threads that survive as deliberate, separately-chaptered studies are the higher-order-modulation extension (Chapter~\ref{sec:extensions}) and the unknown-channel contribution (Chapter~\ref{sec:unknown-channels}), each with its own clearly stated configuration --- exactly as requested.}
+\textbf{[SECTION REMOVED]} \GZ{This was the decisive comment behind the restructure. The thesis now fixes \emph{one} canonical setup (SISO on both hops, i.i.d.\ Rayleigh fast fading, complex baseband, BPSK, uncoded BER) and varies only the relay function. The AWGN and Rician robustness studies, the $2\times2$ MIMO second hop with ZF/LMMSE/SIC equalization, the 16-PSK modulation, the CSI-injection study, and the end-to-end autoencoder were all \emph{removed} from the thesis; each is now listed as future work. The two threads that survive as deliberate, separately-chaptered studies are the higher-order-modulation extension (Chapter~\ref{sec:extensions}) and the unknown-channel contribution (Chapter~\ref{sec:unknown-channels}), each with its own clearly stated configuration, exactly as requested.}
 
 \item \AK{The diversity--multiplexing tradeoff (DMT) is irrelevant in the ergodic setting. DMT assumes slow fading and discusses performance in the presence of some outage probability.}\\
 \textbf{[SECTION REMOVED]} \GZ{The DMT discussion was removed. The canonical setting is ergodic fast fading with an uncoded-BER metric, for which DMT does not apply; only a single background sentence remains, with no DMT-based claims.}
@@ -215,7 +215,7 @@ This appendix reproduces each comment raised by the supervisor (\textbf{AK}) on 
 \GZ{Acknowledged and scoped. As with block-DF (Ch.~1, comment~8), the thesis studies uncoded, symbol-level processing; coded per-layer SIC is outside the uncoded scope and is named explicitly in the future-work discussion. Since the MIMO study itself is now deferred (comment~4), coded SIC is doubly future work.}
 
 \item \AK{I thought the goal was to replace the various classical strategies with a neural net that would learn what's the best strategy.}\\
-\GZ{This comment reshaped the thesis's central claim, and the response is now the thesis's main finding rather than a rebuttal. The honest result is that a learned relay does \emph{not} universally replace classical strategies: on a matched, known channel symbol-wise DF is at least as good at zero parameter cost (H2). What the learned relay \emph{does} provide --- and this is the principal contribution (Chapter~\ref{sec:unknown-channels}) --- is family-agnostic mitigation when the channel is unknown or mismatched: it restores reliable relaying where memoryless classical relays fail, approaches the model-aware optimum (Viterbi) without knowing the channel family, and does so at constant, parallelizable complexity. The framing is therefore ``characterise when learning helps,'' not ``replace classical processing everywhere'' --- a change made directly in response to this comment.}
+\GZ{This comment reshaped the thesis's central claim, and the response is now the thesis's main finding rather than a rebuttal. The honest result is that a learned relay does \emph{not} universally replace classical strategies: on a matched, known channel symbol-wise DF is at least as good at zero parameter cost (H2). What the learned relay \emph{does} provide, and this is the principal contribution (Chapter~\ref{sec:unknown-channels}), is family-agnostic mitigation when the channel is unknown or mismatched: it restores reliable relaying where memoryless classical relays fail, approaches the model-aware optimum (Viterbi) without knowing the channel family, and does so at constant, parallelizable complexity. The framing is therefore ``characterise when learning helps,'' not ``replace classical processing everywhere'', a change made directly in response to this comment.}
 
 \end{enumerate}
 \endgroup
@@ -258,8 +258,8 @@ text asserted that a single-hidden-layer network with tanh output ``can represen
 this function exactly.'' This holds only for a \emph{fixed} noise variance, whereas
 the deployed relay is trained at $\{5,10,15\}$~dB and evaluated over $0$--$20$~dB,
 and on fading must cover a mixture of random effective SNRs. \emph{Resolved:} the
-claim is now split --- exact representation for fixed $\sigma^2$, close
-\emph{approximation} of the multi-SNR family --- and the latter is identified as an
+claim is now split (exact representation for fixed $\sigma^2$, close
+\emph{approximation} of the multi-SNR family) and the latter is identified as an
 empirical finding rather than a theoretical consequence.
 
 \item \textbf{Unjustified contraction claim in the Mamba selectivity mechanism}
@@ -286,8 +286,8 @@ with the deterministic-decoding comparison identified as future work.
 5~pilots was described as the channel becoming unidentifiable, but with
 5~observations and 3~complex taps the least-squares problem remains
 overdetermined. \emph{Resolved:} the mechanism is now correctly described as an
-\emph{estimation-variance} cliff --- too few observations to average the noise, so
-occasional catastrophic fits dominate --- and the confidence interval at that point
+\emph{estimation-variance} cliff (too few observations to average the noise, so
+occasional catastrophic fits dominate) and the confidence interval at that point
 ($0.119\pm0.084$, versus $\pm0.002$ at 10~pilots) is reported in both the text and
 the figure caption as direct evidence.
 
@@ -333,8 +333,7 @@ appearances agree by construction.
 \item \textbf{MIMO equalization section implied unreported experiments.} Chapter~2
 carried a ``Theoretical Foundations: MIMO Equalization'' section stating that three
 equalizers (ZF, LMMSE, LMMSE-SIC) ``were implemented,'' with speed-up figures,
-although MIMO is future work and no MIMO result appears anywhere in the thesis ---
-and although the summary of removed material in Appendix~E already listed the
+although MIMO is future work and no MIMO result appears anywhere in the thesis, and although the summary of removed material in Appendix~E already listed the
 $2\times2$ MIMO second hop and its equalization among the material deleted in the
 canonical restructure. The section had simply survived that deletion.
 \emph{Resolved:} the section is now \emph{removed}, matching what Appendix~E
@@ -378,7 +377,7 @@ and the units and roundings now agree across chapters.
 
 \item \textbf{Orphaned results and conclusions.} A CSI/LayerNorm table and three
 conclusions referenced a 48-variant search, 16-PSK results, and a nonexistent
-section --- all removed in the restructure. \emph{Resolved:} the table and the
+section, all removed in the restructure. \emph{Resolved:} the table and the
 three conclusions were deleted (see Appendix~E).
 
 \item \textbf{Figure and table disagreed with the committed data.} The 16-class
@@ -408,7 +407,7 @@ consistently with the underlying results files.
 \setcounter{enumi}{19}
 
 \item \textbf{Misdirected equation pointers.} Several parenthetical
-``(Equation~$\ldots$)'' pointers referenced the wrong equation --- notably the
+``(Equation~$\ldots$)'' pointers referenced the wrong equation, notably the
 supervised-loss and $\beta$-VAE sentences. \emph{Resolved:} each now points at its
 intended target, or the pointer was removed where it served no purpose.
 
@@ -443,5 +442,5 @@ and~\ref{rem:window-causality}) were noted as correctly pre-empting the obvious
 objections; the analytic $0.25$ error floor and its four slicer amplitudes were
 independently re-derived and confirmed; the flat-channel control was identified as
 the methodological highlight of the unknown-channel chapter; and the bounded
-phrasing of the H6 conclusions --- never claiming superiority over a matched
-classical receiver --- was endorsed as the defensible reading of the evidence.
+phrasing of the H6 conclusions, never claiming superiority over a matched
+classical receiver, was endorsed as the defensible reading of the evidence.
