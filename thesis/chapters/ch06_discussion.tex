@@ -4,7 +4,7 @@ This discussion draws on two bodies of results. The canonical core (Chapter~\ref
 
 \section{Interpretation of Results}\label{sec:interpretation-of-results}
 
-The experimental results reveal several consistent patterns across all six channel/topology configurations. This section interprets these patterns through the lens of the theoretical framework established in Section \ref{sec:theoretical-foundations-channel-models}  and evaluates each research hypothesis.
+The experimental results reveal several consistent patterns across the canonical setup and its two scoped extensions. This section interprets these patterns through the lens of the theoretical framework established in Section \ref{sec:theoretical-foundations-channel-models}  and evaluates each research hypothesis.
 
 \subsection{Low-SNR Advantage of Neural Relays over AF (H1: Confirmed)}\label{sec:low-snr-advantage-of-neural-relays-h1-confirmed}
 
@@ -176,7 +176,7 @@ The results confirm the crossover hypothesis decisively:
 
 This benchmark validates the architectural trade-off: Mamba-2's structured state space duality is designed for long-context efficiency where chunk-parallel computation outperforms sequential recurrence. For the 11-token relay window, the classical S6 scan remains faster due to lower per-operation overhead. The choice between S6 and SSD should therefore be guided by the target context length of the application.
 
-\subsection{Why state space suits signals.} Signal processing is inherently a sequential temporal task where the state space formulation (propagating a hidden state through time with input-dependent transitions) is a natural fit. The selective mechanism in Mamba allows it to dynamically control information flow, acting as an adaptive filter that selectively passes relevant signal features while suppressing noise.
+\textbf{Why state space suits signals.} Signal processing is inherently a sequential temporal task where the state space formulation (propagating a hidden state through time with input-dependent transitions) is a natural fit. The selective mechanism in Mamba allows it to dynamically control information flow, acting as an adaptive filter that selectively passes relevant signal features while suppressing noise.
 
 \section{Practical Deployment Recommendations}\label{sec:practical-deployment-recommendations}
 
