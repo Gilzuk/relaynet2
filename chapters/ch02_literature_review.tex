@@ -90,53 +90,6 @@ Another related line of work exploits the structural similarities between amplif
 
 Classical cooperative communication frameworks based on AF and DF relaying remain well understood and widely adopted \cite{Nosratinia2004CooperativeCommunication}, but they rely on fixed linear forwarding or hard-decision rules. Consequently, despite substantial progress, relatively little attention has been devoted to learning the relay’s symbol-level input-output mapping itself, motivating neural network-based detection at the relay as a generalized, data-driven alternative to conventional AF and DF processing.
 
-\subsection{Relay methods comparison}
-
-\ref{tbl:relay_comparison} compares classical relay processing strategies with learning-based approaches, highlighting their fundamental differences in terms of signal processing, nonlinearity, and learning capability. \emph{Amplify-and-Forward (AF)} relaying applies linear scaling to the received signal at the relay, which keeps implementation simple but inevitably amplifies noise along with the desired signal. \emph{Decode-and-Forward (DF)} relaying performs hard/soft symbol decisions at the relay before re-encoding and forwarding, thereby suppressing noise but introducing potential error propagation due to incorrect decisions.
-Prior deep-learning-based relay works largely preserve these conventional AF or DF operations and employ neural networks mainly for auxiliary tasks such as relay selection, power allocation, or analog gain optimization. As a result, learning is only partially involved in the overall relay operation and does not directly determine the symbol-level forwarding rule.
-In contrast, the proposed neural network–based detection (NND) relay replaces the fixed relay processing rule with a learned nonlinear mapping $f(y_R)$. This enables the relay to adaptively balance noise suppression and decision reliability in a data-driven manner, effectively generalizing both AF and DF strategies. The table therefore highlights that Neural network is the only approach that jointly introduces nonlinearity and fully learned symbol-level processing at the relay, distinguishing it fundamentally from both classical relaying schemes and prior learning-assisted approaches.
-
-
-\begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.24}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.24}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.18}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.18}}  
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.12}}@{}}
-\caption{Comparison of relay processing strategies}
-\label{tbl:relay_comparison}\\
-\hline
-\textbf{Method} &
-\textbf{Relay Mapping} &
-\textbf{Nonlinear} &
-\textbf{Noise Handling} &
-\textbf{Learned} \\
-\hline
-\endfirsthead
-
-\hline
-\textbf{Method} &
-\textbf{Relay Mapping} &
-\textbf{Nonlinear} &
-\textbf{Noise Handling} &
-\textbf{Learned} \\
-\hline
-\endhead
-
-\hline
-\multicolumn{5}{r}{\textit{Continued on next page}}
-\\
-\endfoot
-
-\hline
-\endlastfoot
-
-AF  & Linear scaling & No & Noise amplified & No \\
-DF  & Hard/soft decision  & Limited & Noise suppressed & No \\
-Prior DL (Selection / Optimization) & Conventional AF/DF & No & Conventional & Partially \\
-\textbf{NND (This work)} & Learned \(f(y_R)\) & Yes & Learned trade--off & Yes \\
-
-\end{longtable}
 \subsection{Neural Network Relay Processing}\label{sec:neural-network-relay-processing}
 
 For relay processing specifically, a supervised learning approach trains a neural network \(f_\theta\) to minimize the empirical mean-squared error: (Equation~\ref{eq:mse-loss})
@@ -453,12 +406,6 @@ under the same real-noise convention as the single-hop case (Remark~\ref{noise-c
 
 confirming the well-known 3 dB penalty of AF relaying.
 
-\begin{figure}[H]
-\centering
-\centering
-\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/channel_theoretical_awgn.png}}
-\caption{AWGN channel: theoretical BER (solid lines) vs.~Monte Carlo simulation (markers with 95\% CI) for single-hop, two-hop AF, and two-hop DF.}\label{fig:fig1}
-\end{figure}
 
 \subsubsection{Two-hop DF BER}\label{sec:awgn-two-hop-df-ber}
 For a decode-and-forward relay with equal-SNR hops, an error occurs at the destination if exactly one hop introduces an error:
@@ -515,73 +462,7 @@ The two-hop DF relay over Rayleigh fading follows the same composition rule as A
 }\end{equation} 
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad df-ber-rayleigh}
 
-\begin{figure}[H]
-\centering
-\centering
-\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/channel_theoretical_rayleigh.png}}
-\caption{Rayleigh fading: theory vs.~simulation for single-hop and two-hop DF. The characteristic \(1/\text{SNR}\) slope (compared to the steeper exponential AWGN curve) is clearly visible.}\label{fig:fig2}
-\end{figure}
 
-\subsection{Fading Coefficient Distributions}\label{sec:fading-coefficient-distributions}
-
-The statistical behavior of the fading coefficient \(|h|\) determines the severity of fading for each channel model. Figure~\ref{fig:fig4} shows the probability density function (PDF) and cumulative distribution function (CDF) of \(|h|\) for Rayleigh and Rician fading with various K-factors.
-
-\textbf{Key observations from the fading PDFs:}
-
-\begin{itemize}
-\tightlist
-\item
-  \textbf{Rayleigh (\(K=0\)):} The PDF is maximized at \(|h| = 1/\sqrt{2} \approx 0.707\) and has a heavy tail toward zero, meaning deep fades are common. The probability of a deep fade (\(|h| < 0.3\)) is approximately 8.6\%.
-\item
-  \textbf{Rician \(K=1\):} The LOS component shifts the PDF peak toward higher amplitudes, reducing the probability of deep fades.
-\item
-  \textbf{Rician \(K=3\):} The distribution becomes more concentrated around the LOS amplitude (\(\nu \approx 0.87\)). Deep fade probability drops to approximately 0.3\%.
-\item
-  \textbf{Rician \(K=10\):} Approaches a near-deterministic channel; the PDF becomes sharply peaked around \(|h| \approx 0.95\). Fading is negligible.
-\end{itemize}
-
-The CDF plot directly shows the \textbf{outage probability} \(P(|h| \leq x)\): for a given threshold \(x\), the CDF value gives the probability that the fading amplitude falls below that threshold. Rayleigh has the highest outage probability at any threshold, confirming its role as the worst-case fading model.
-
-\begin{figure}[H]
-\centering
-\centering
-\pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/channel_fading_pdf.png}}
-\caption{Left: PDF of \(|h|\) for Rayleigh and Rician (\(K=1, 3, 10\)). Right: CDF (outage probability). Rayleigh has the highest deep-fade probability at any threshold.}\label{fig:fig4}
-\end{figure}
-
-\subsection{Channel Model Validation (Simulative)}\label{sec:channel-model-validation-simulative}
-
-Before evaluating relay strategies, we validate the simulation framework by comparing Monte Carlo results against the closed-form theoretical BER expressions derived above. For each channel model, 20 independent trials of 50,000 bits per trial are run at each SNR point (0-20 dB, step 2 dB), yielding 1,000,000 total bits per SNR point and tight 95\% confidence intervals.
-
-\textbf{Validation results:}
-
-\begin{itemize}
-\tightlist
-\item
-  \textbf{AWGN:} Simulation matches theory within 95\% CI at all 11 SNR points for single-hop, two-hop AF, and two-hop DF configurations.
-\item
-  \textbf{Rayleigh:} Simulation confirms the theoretical \(1/(4\bar{\gamma})\) high-SNR slope and matches the closed-form BER within CI bounds.
-\end{itemize}
-
-
-
-Table A summarizes the theoretical SNR required to achieve a target BER of \(10^{-3}\) on each channel (single-hop BPSK):
-
-\begin{longtable}[]{@{}llll@{}}
-\caption{Theoretical SNR required to achieve BER = \(10^{-3}\) on the canonical Rayleigh channel and the AWGN calibration channel (single-hop BPSK).}\label{tbl:table26}\tabularnewline
-\toprule\noalign{}
-Channel & SNR for BER = \(10^{-3}\) & Diversity Order & High-SNR Slope \\
-\midrule\noalign{}
-\endfirsthead
-\toprule\noalign{}
-Channel & SNR for BER = \(10^{-3}\) & Diversity Order & High-SNR Slope \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-AWGN & \textasciitilde9.8 dB &: (no fading) & Exponential \\
-Rayleigh & \textasciitilde24 dB & 1 & \(1/(4\bar{\gamma})\) \\
-\end{longtable}
-
+\REV{Fix applied (scope and duplication): Chapter~2 is now a literature review only, with no experimental results in it. Removed: (i)~the ``Channel Model Validation (Simulative)'' subsection, whose validation results duplicated the E1 experiment reported in Section~\ref{sec:channel-model-validation} (its theoretical-SNR table moved there); (ii)~the ``Fading Coefficient Distributions'' subsection, which analysed Rician $K$-factors although Rician fading is future work and no Rician result appears in the thesis; (iii)~two channel-validation figures that were printed identically in both chapters, so each figure now appears exactly once; and (iv)~the ``Relay methods comparison'' positioning table, which duplicated the research-positioning table in Chapter~\ref{sec:research-objectives}.}
 
 \REV{Fix applied (scope, per supervisor comments 2, 4 and 6 in Appendix~E): the ``Theoretical Foundations: MIMO Equalization'' section (ZF / LMMSE / LMMSE-SIC for a $2\times2$ topology) has been \emph{removed}. The MIMO thread was deferred to future work in the canonical restructure and no MIMO experiment appears anywhere in this thesis, so the section described machinery the document never uses; Appendix~E already listed it among the removed material. The equalizer terminology that the section carried is therefore moot, and the term ``MMSE'' now appears in this thesis only in its correct non-linear sense (the MMSE-optimal estimator $\mathbb{E}[x\mid y]$).}
