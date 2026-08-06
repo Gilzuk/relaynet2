@@ -1,0 +1,74 @@
+{
+ "ch01": [
+  [
+   "Abstract is missing.",
+   "Done. The English abstract is included via \\texttt{chapters/ch00\\_frontmatter.tex}."
+  ],
+  [
+   "There are compilation errors. Would be good to resolve them.",
+   "Resolved. Two \\texttt{Missing \\}"
+  ],
+  [
+   "There are compilation errors. Would be good to resolve them.",
+   ""
+  ],
+  [
+   "unusual citation.",
+   "Done; the inline \\texttt{\\textbackslash par\\{\\textbackslash small\\textbackslash textit\\{source: ...\\}\\}} annotations under equations have been removed throughout ch.~2."
+  ],
+  [
+   "This is not causal...",
+   "Correct in the streaming sense --- the window uses look-ahead samples $y_R[i{+}1{:}i{+}w]$. This is admissible here because the relay is \\emph{half-duplex} and buffers the \\emph{entire} listening-phase block before the transmission phase begins; when $x_R[i]$ is computed (during transmission), all samples $y_R[i{-}w{:}i{+}w]$ have already been received. The symmetric window is therefore non-causal in the streaming sense but fully realizable at the block level, at the cost of a fixed processing latency of $w$ symbols. AF/DF use $w{=}0$ (strictly causal).Alternatively, we can reframe as a causal window (i-2w to i, i.e., only past samples). Practically, AI relays process the whole received sequence with a sliding window (which includes both past and future neighbors) — this is standard for offline/block processing and is exactly what a store-and-forward relay does.)."
+  ],
+  [
+   "this is the transmitted signal by the relay",
+   "Done; corrected in the surrounding sentence and time index restored."
+  ],
+  [
+   "The time axis is missing. Aggregation of information can be useful, especially when incorporating an error correction code. Do you allow only scalar operations at the relay?",
+   "Done; time index restored above. The relay is not restricted to scalar/memoryless processing: AI relays use a length-$2w+1$ sliding window with $w>0$; AF/DF are memoryless ($w=0$). No outer code is applied (one BPSK symbol carries one bit), so any \"aggregation of information\" refers to the relay's local time-window only."
+  ],
+  [
+   "I agree that AF is memoryless but DF is not. Information-theoretic DF works in blocks to incorporate a strong (capacity-acieving over a single link) code and recovers the message at the end of the time block. You may of course use simple slicing, but this won't do much good.",
+   ""
+  ]
+ ],
+ "ch02": [
+  [
+   "You haven't defined the system model so this discussion seems out of place.",
+   "Done; the system-model definition has been moved to Chapter~\\ref{sec:introduction} (Section~\\ref{sec:system-model-intro}); this chapter is now a pure literature review, and a 1-sentence reminder is added at the start of this MIMO section."
+  ],
+  [
+   "The relevance to this equtaion is not clear. \nAlso, what do you mean by scaling? Isn't that the capacity for any SNR?",
+   ""
+  ],
+  [
+   "Here you introduce fading for the first. You could've done that already in the SISO case. Also, now the channels are complex whereas up until now they were real (and with fixed known gains).",
+   "Done; from this point onward all channels are complex baseband. For the SISO Hop~1, BPSK is transmitted on the real axis and only $\\Re\\{\\cdot\\}$ of the matched-filter output is decoded, recovering the real-valued single-hop derivations earlier."
+  ],
+  [
+   "Why not recovering both then? You keep jumping between multiple settings: no-fading/slow-fading/fast-fading. Real/compex. SISO/MIMO. Please define one model that you've tackled and stick to it, unless you've actually tackled several settings. Then, each of them deserves a separate chapter.",
+   ""
+  ],
+  [
+   "The diversity--multiplexing tradeoff (DMT) is irrelevant in the ergodic setting. DMT assumes slow fading and disucsses the performance in the presence of some outage probability.",
+   "Done; the DMT paragraph is demoted to a single background sentence below, and the Hop-2 fast-fading / uncoded-BER metric is restated."
+  ],
+  [
+   "Why is it needed at all?",
+   ""
+  ],
+  [
+   "It's linear MMSE (LMMSE) unless you work with a Gaussian codebook, which I suspect you do not.",
+   ""
+  ],
+  [
+   "Again, you can construct a variant that recovers a block code, cancels it out from the measurements, then recovers the next block code, etc.",
+   ""
+  ],
+  [
+   "I thought the goal was to replace the various classical strategies with a neural net that would learn what's the best strategy.",
+   ""
+  ]
+ ]
+}

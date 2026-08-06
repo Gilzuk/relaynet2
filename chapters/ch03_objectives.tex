@@ -2,30 +2,22 @@
 
 \section{Main Objective}\label{sec:main-objective}
 
-To systematically evaluate and compare classical and AI-based relay strategies for two-hop communication, and to determine the optimal relay architecture as a function of channel conditions, SNR regime, and computational constraints.
+To systematically \REV{Fix applied: Chapter-\ref{sec:literature-review} was reduced to a literature review only. Removed duplicate E1 channel-validation material (including relocated theoretical-SNR results), duplicated validation figures, the Rician fading distribution discussion (future work only), the relay-positioning table duplicated from Chapter~\ref{sec:research-objectives}, and the unused MIMO equalization section (ZF/LMMSE/LMMSE-SIC), since no MIMO experiment appears in the thesis. The term MMSE is now used only in its estimator-theoretic sense, consistent with the canonical-study scope and supervisor comments documented in Appendix~E.}
+evaluate and compare classical and AI-based relay strategies for two-hop communication on a single canonical setup (SISO on both hops, i.i.d.\ Rayleigh fast fading, complex baseband, BPSK, uncoded BER) and to determine the optimal relay architecture as a function of SNR regime and computational constraints.
 
 \section{Research Gap and Motivation}\label{sec:research-gap-and-motivation}
 
-Despite growing interest in AI for wireless communication, a systematic comparison of relay processing paradigms : spanning classical signal processing, supervised learning, generative modeling, and modern sequence architectures : is absent from the literature. 
-
-This thesis addresses all five gaps through a unified framework that implements and compares nine relay strategies across six channel/topology configurations, with both original and normalized parameter counts, full statistical analysis, and a dedicated complexity study.
-
-
-
-The following specific gaps motivate this thesis
+Despite growing interest in AI for wireless communication, a systematic comparison of relay processing paradigms (spanning classical signal processing, supervised learning, generative modeling, and modern sequence architectures) is absent from the literature. The following specific gaps motivate this thesis:
 
 \begin{enumerate}
     \item \textbf{Gap 1: No cross-paradigm relay comparison.} Existing work on AI-based relay processing focuses on individual architectures in isolation. Ye et al.~\cite{YeLiJuang2018OFDMDL} demonstrated DNNs for OFDM detection, Dorner et al.~\cite{Dorner2018OverTheAirDL} explored autoencoders for end-to-end communication, and Samuel et al.~\cite{SamuelDiskinWunder2019MIMODetect} applied unfolded networks to MIMO detection. However, no study systematically compares supervised feedforward networks, variational autoencoders, adversarial networks, attention-based Transformers, and state space models (Mamba) for the same relay denoising task under controlled conditions. Without such a comparison, practitioners cannot make informed architecture selections.
-    \item \textbf{Gap 2: Model complexity-performance relationship is unknown.} It is commonly assumed that larger neural networks yield better performance. However, the relay denoising task : recovering a BPSK symbol from a noisy observation : is a low-dimensional mapping problem. The theoretical minimum description length for this mapping is small (a soft threshold function), suggesting that large models may overfit. No prior work has rigorously characterized the complexity-performance trade-off for relay processing, nor has a normalized (equal-parameter) comparison been conducted to isolate architectural effects from capacity effects.
+    \item \textbf{Gap 2: Model complexity-performance relationship is unknown.} It is commonly assumed that larger neural networks yield better performance. However, the relay denoising task (recovering a BPSK symbol from a noisy observation) is a low-dimensional mapping problem. The theoretical minimum description length for this mapping is small (a soft threshold function), suggesting that large models may overfit. No prior work has rigorously characterized the complexity-performance trade-off for relay processing, nor has a normalized (equal-parameter) comparison been conducted to isolate architectural effects from capacity effects.
 
-    \item \textbf{Gap 3: Limited channel diversity in evaluations.} Most AI-for-wireless studies evaluate on a single channel model (typically AWGN or Rayleigh). The performance of AI relays under Rician fading, MIMO spatial multiplexing, and different equalization strategies has not been studied. Whether AI relays trained on one channel generalize to others : and whether their advantage over classical methods persists across diverse propagation conditions : are open questions.
-
-    \item \textbf{Gap 4: State space models for physical-layer signal processing.} The Mamba architecture \cite{GuGoelRe2022SSM} and its Mamba-2 SSD variant \cite{DaoGu2024TransformersSSM} have demonstrated strong performance in NLP and genomics, but their application to physical-layer wireless communication is entirely unexplored. The theoretical connection between SSMs and classical adaptive filters makes this a natural research direction, but empirical validation is needed.
-
-    \item \textbf{Gap 5: AI relay-MIMO equalization interaction.} While MIMO equalization (ZF, MMSE, SIC) and AI-based processing have been studied independently, their \textbf{joint} effect in a relay pipeline : where the relay denoises the signal before equalization separates the spatial streams : has not been investigated. Whether the gains from better relay processing and better equalization are additive, synergistic, or partially redundant is unknown.
+    \item \textbf{Gap 3: State space models for physical-layer signal processing.} The Mamba architecture \cite{gu2023mamba} and its Mamba-2 SSD variant \cite{DaoGu2024TransformersSSM} have demonstrated strong performance in NLP and genomics, but their application to relay-level physical-layer signal processing remains unexplored. The theoretical connection between SSMs and classical adaptive filters makes this a natural research direction, but empirical validation is needed.
+\REV{Fix applied: the Mamba architecture was previously attributed to the earlier S4 paper; it now cites \cite{gu2023mamba}, and the novelty claim is scoped to relay-level processing rather than all of physical-layer communication.}
 \end{enumerate}
 
-The following table summarizes the positioning of this work relative to the literature:
+This thesis addresses all three gaps through a unified framework that implements and compares nine relay strategies on the canonical setup, with both original and normalized parameter counts, full statistical analysis, and a dedicated complexity study. The following table summarizes the positioning of this work relative to the literature:
 
 \begin{longtable}[]{@{}
   >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
@@ -56,7 +48,7 @@ This Thesis
 \endlastfoot
 Relay strategies compared & 1-2 (typically AF vs.~DF, or one AI method) & 9 (2 classical + 7 AI) \\
 AI paradigms & Single (e.g., supervised only) & 4 (supervised, generative, adversarial, sequential) \\
-Channel models & 1-2 (AWGN, sometimes Rayleigh) & 6 (AWGN + Rayleigh + Rician SISO; MIMO ZF/MMSE/SIC) \\
+Evaluation discipline & Single ad-hoc configuration & One canonical setup (SISO Rayleigh BPSK), fixed in advance, with AWGN analytical calibration \\
 Complexity analysis & None & Normalized 3K comparison + inverted-U study \\
 State space models & None for relay/physical-layer & Mamba $S_6$, Mamba-2 SSD, with crossover benchmark \\
 Statistical rigor & Often missing & Wilcoxon test, 95\% CI, 10 trials per point \\
@@ -66,32 +58,34 @@ Statistical rigor & Often missing & Wilcoxon test, 95\% CI, 10 trials per point 
 
 \section{Research Hypotheses}\label{sec:research-hypotheses}
 
-Based on the theoretical analysis in Section \ref{sec:literature-review}, this thesis tests the following hypotheses:
+Based on the theoretical background of Chapter \ref{sec:literature-review}, this thesis tests the following hypotheses. H1--H4 are posed and answered on the canonical setup; H5 is an architecture-level hypothesis concerning training compute. H6 is the central hypothesis of the thesis's principal contribution (Chapter~\ref{sec:unknown-channels}), posed on channels \emph{outside} the canonical family. The higher-order-modulation extension (Chapter~\ref{sec:extensions}) additionally probes the generalizability of H1--H3 to QPSK and 16-QAM and is reported descriptively:
 
 \begin{enumerate}
-    \item \textbf{H1 (Selective AI advantage at low SNR).} Some AI-based relay strategies achieve lower BER than AF and, on selected channels, lower BER than DF at low SNR (0--4 dB), where the non-linear denoising learned by the neural network may provide an advantage over AF's noise amplification and DF's hard-decision errors.
+    \item \textbf{H1 (AI advantage over AF at low SNR).} On the canonical setup, some AI-based relay strategies achieve lower BER than AF at low SNR (0--4 dB), where the non-linear denoising learned by the neural network provides an advantage over AF's noise amplification.
 
-\emph{Rationale:} At low SNR, the Bayes-optimal relay function \(f^*(y) = \tanh(y/\sigma^2)\) is a smooth non-linear mapping that differs substantially from both AF's linear scaling and DF's hard sign function. A neural network can approximate \(f^*\) closely, while the classical methods cannot.
+\emph{Rationale:} At low SNR, the MMSE-optimal (posterior-mean) denoiser of a BPSK symbol from a single AWGN observation, $f^*(y) = \mathbb{E}[x \mid y] = \tanh(y/\sigma^2)$, is a smooth non-linear mapping that differs substantially from AF's linear scaling; a neural network can approximate $f^*$ closely, whereas AF amplifies noise together with the signal. Note that $f^*$ is optimal in the mean-square sense for the relay's local estimate; it is not claimed to be the end-to-end BER-optimal relay function, which is why H1 is posed as an empirical hypothesis rather than a theorem.
 
-\item \textbf{H2 (DF dominance at high SNR).} The DF relay achieves the lowest BER at medium-to-high SNR (\(\geq 6\) dB), outperforming all AI methods.
+\item \textbf{H2 (DF dominance at high SNR).} The symbol-wise DF relay (Remark~\ref{rem:df-terminology}) achieves the lowest BER at medium-to-high SNR ($\geq 6$ dB), outperforming all AI methods.
 
-\emph{Rationale:} At high SNR, \(f^*(y) \approx \text{sign}(y)\), which is exactly the DF operation. AI relays introduce a small but non-zero approximation error, so DF should be optimal in this regime.
+\emph{Rationale:} At high SNR, $f^*(y) \approx \text{sign}(y)$, which is exactly the symbol-wise DF operation. AI relays introduce a small but non-zero approximation error, so DF should be optimal among the per-symbol relay functions considered in this uncoded setting.
 
-\item \textbf{H3 (Inverted-U complexity curve).} There exists an optimal model size for relay denoising beyond which performance degrades due to overfitting. Specifically, models with $\sim$(100–200 parameters achieve performance comparable to models with 10–100$)\times$ more parameters.
+\item \textbf{H3 (Inverted-U complexity curve).} There exists an optimal model size for relay denoising beyond which performance degrades due to overfitting. Specifically, models with $\sim 100-200$ parameters achieve
+performance comparable to models with $10-100\times$ more parameters.
 
-\emph{Rationale:} The bias-variance analysis (Section \ref{sec:theoretical-basis-universal-approximation-and-denoising}) predicts that the low-complexity target function \(f^*\) requires minimal model capacity. Excess capacity increases variance without reducing bias.
+\emph{Rationale:} The bias-variance analysis (Section \ref{sec:theoretical-basis-universal-approximation-and-denoising}) predicts that the low-complexity target function $f^*$ requires minimal model capacity. Excess capacity increases variance without reducing bias.
 
 \item \textbf{H4 (Architecture convergence at equal scale).} When all AI models are normalized to the same parameter count ($\sim$3,000), the performance differences between architectures narrow significantly, indicating that parameter count is a more important factor than architectural choice.
 
 \emph{Rationale:} All architectures are universal approximators and the target function is simple. At equal capacity, architectural inductive biases provide diminishing returns.
 
-\item \textbf{H5 (SSM speed advantage at long context).} Mamba-2 SSD trains significantly faster than Mamba S6 at longer context lengths (\(n \gg 11\)) due to chunk-parallel computation, while S6 is faster at the short relay window (\(n = 11\)).
+\item \textbf{H5 (SSM speed advantage at long context).} Mamba-2 SSD trains significantly faster than Mamba S6 at longer context lengths ($n \gg 11$) due to chunk-parallel computation, while S6 is faster at the short relay window ($n = 11$).
 
-\emph{Rationale:} The crossover between sequential S6 (\(O(n)\) serial steps) and chunk-parallel SSD (\(O(n/L)\) parallel matmuls of size \(L\)) depends on the ratio of kernel-launch overhead to arithmetic cost.
+\emph{Rationale:} The crossover between sequential S6 ($O(n)$ serial steps) and chunk-parallel SSD ($O(n/L)$ parallel matmuls of size $L$) depends on the ratio of kernel-launch overhead to arithmetic cost.
 
-\item \textbf{H6 (Equalization gains are additive to relay gains).} The BER improvement from better equalization (ZF \(\to\) MMSE \(\to\) SIC) and the improvement from better relay processing (AF \(\to\) AI) are approximately additive in the dB domain.
 
-\emph{Rationale:} The relay operates on Hop 1 (denoising) and the equalizer operates on Hop 2 (stream separation). Since these are independent processing stages, their contributions to BER reduction should be approximately independent.
+\item \textbf{H6 (Principal contribution, unknown-channel mitigation).} On channels with structure unknown to the receiver chain, memory (intersymbol interference) or asymmetry (biased nonlinearity), the \emph{memoryless} classical relays (AF, symbol-wise DF) fail to relay reliably, exhibiting error floors or severe degradation, whereas the minimal 169-parameter MLP relay restores reliable relaying by learning the impairment from data, approaching the performance of the optimal model-aware detector without requiring knowledge of the channel family.
+
+\emph{Rationale:} AF forwards the channel impairment untouched, and symbol-wise DF applies a fixed memoryless zero-threshold decision; neither can compensate structure they do not model. Classical theory does provide a remedy \emph{once the channel family is known}, estimate-then-MLSE (pilot-based channel estimation followed by Viterbi equalization) is optimal for a linear FIR channel and is included as a benchmark. The hypothesis is therefore not that learning beats classical theory, but that a single fixed learned architecture can approach model-aware performance with no channel-family knowledge, no explicit identification stage, and complexity independent of channel memory, and that it remains applicable on impairments (e.g., nonlinear bias) for which linear MLSE is mis-specified. How far this holds, and on which impairment structures it breaks down, is determined empirically in Chapter~\ref{sec:unknown-channels}. Conversely, on channels that satisfy the classical assumptions, H2 predicts no learned relay can beat DF, so H6 also delineates the precise boundary of the learned relay's value.
 \end{enumerate}
 
 \section{Specific Objectives}\label{sec:specific-objectives}
@@ -101,7 +95,7 @@ Based on the theoretical analysis in Section \ref{sec:literature-review}, this t
 \item
   \textbf{Implement and compare nine relay strategies} spanning four learning paradigms: no learning (AF, DF), supervised learning (MLP, Hybrid), generative modeling (VAE, CGAN), and sequence modeling (Transformer, Mamba S6, Mamba-2 SSD).
 \item
-  \textbf{Evaluate across six channel/topology configurations:} AWGN, Rayleigh fading, and Rician fading (K=3) channels in SISO topology, and 2×2 MIMO Rayleigh with ZF, MMSE, and SIC equalization.
+  \textbf{Evaluate on the canonical setup:} SISO Rayleigh fast fading with BPSK, validated against closed-form theory (with AWGN as the analytical calibration limit), and probe modulation generalizability in a scoped QPSK/16-QAM extension.
 \item
   \textbf{Investigate the complexity--performance trade-off} by testing model architectures ranging from 0 parameters (classical) to 26,179 parameters (Mamba-2 SSD), and by conducting a normalized comparison at approximately 3,000 parameters.
 \item
@@ -112,21 +106,21 @@ Based on the theoretical analysis in Section \ref{sec:literature-review}, this t
 
 \section{Scope and limitations}\label{sec:scope-and-delimitations}
 
-The following limitations define the scope of this study:
+The following limitations define the scope of this study, which is confined entirely to the canonical setup (SISO, Rayleigh fast fading, complex baseband, BPSK, uncoded):
 
 \begin{itemize}
 \tightlist
 \item
-  \textbf{Modulation:} Primary experiments use BPSK. Extension experiments with QPSK and 16-QAM are presented in Section \ref{sec:higher-order-modulation-scalability-constellation-aware-training}, and 16-PSK in Section \ref{sec:input-normalization-and-csi-injection}, to evaluate hypothesis generalisability; however, 64-QAM and higher-order constellations are deferred to future work.
+  \textbf{Modulation:} The core experiments use BPSK. A scoped extension (Chapter~\ref{sec:extensions}) evaluates QPSK and 16-QAM, including the joint 2D $N$-class classification formulation; 16-PSK, 64-QAM and denser constellations are deferred to future work.
 \item
-  \textbf{Channel knowledge:} Perfect CSI is assumed at the receiver. Channel estimation errors are not modeled.
+  \textbf{Channel knowledge:} \emph{In the canonical core} (Chapters~\ref{sec:experiments}--\ref{sec:extensions}), perfect CSI is assumed at the receiver and channel estimation errors are not modeled. This limitation is deliberately lifted in the principal contribution: Chapter~\ref{sec:unknown-channels} models finite-pilot least-squares channel estimation (a 200-pilot Viterbi baseline and a swept pilot budget) and, in the blind regime, a fully zero-CSI setting with no channel prior at all.
+\REV{Fix applied : this item previously read ``perfect CSI is assumed; channel estimation errors are not modeled'' without qualification, which contradicted the thesis's own principal contribution. It is now scoped to the canonical core, with the assumptions lifted in Chapter~\ref{sec:unknown-channels} named explicitly.}
 \item
   \textbf{Relay topology:} Single relay, two-hop, half-duplex. Multi-relay and full-duplex configurations are excluded.
 \item
-  \textbf{MIMO configuration:} \(2 \times 2\) spatial multiplexing with Rayleigh fading. Larger arrays and beamforming are not considered.
+  \textbf{Topology:} SISO on both hops. Multi-antenna (MIMO) configurations are deferred to future work.
 \item
   \textbf{Training regime:} Offline training on synthetic data. Online adaptation is not implemented.
 \end{itemize}
 
 These delimitations are chosen to enable a clean comparison of relay processing functions in isolation, without confounding factors from protocol-level or system-level complexity.
-

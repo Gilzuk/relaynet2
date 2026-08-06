@@ -1,24 +1,46 @@
+% !TEX program = xelatex
 %% ============================================================
 %% TAU Thesis Template — Tel Aviv University
 %% Deep Learning Architectures for Two-Hop Relay Communication
 %% Gil Zukerma, M.Sc. Thesis, 2026
+%%
+%% Compile with XeLaTeX (required: fontspec + polyglossia Hebrew).
+%% On Overleaf: Menu -> Compiler -> XeLaTeX (the magic comment above
+%% also sets this automatically). Fonts are bundled in ./fonts/ so the
+%% project is self-contained and needs no system font installation.
 %% ============================================================
+
 \documentclass[12pt,a4paper,oneside]{book}
+% \usepackage{chngcntr}
+\usepackage{xkeyval}
 
 %% ── Encoding & Fonts ─────────────────────────────────────────
 \usepackage{iftex}
 \usepackage{tabularx}
 \usepackage{array}
-\usepackage{plantuml}
 
 \ifXeTeX
   \usepackage{fontspec}
-  \setmainfont{Times New Roman}
-  \setsansfont{David}
+  %% Fonts bundled in ./fonts/ (Times New Roman, Courier New, David CLM,
+  %% Arial) so the project compiles on Overleaf without system fonts.
+  \setmainfont{TimesNewRoman}[
+    Path=./fonts/, Extension=.ttf,
+    UprightFont=*-Regular, BoldFont=*-Bold,
+    ItalicFont=*-Italic, BoldItalicFont=*-BoldItalic]
+  \setsansfont{DavidCLM}[
+    Path=./fonts/, Extension=.otf,
+    UprightFont=*-Medium, BoldFont=*-Bold,
+    ItalicFont=*-MediumItalic, BoldItalicFont=*-BoldItalic]
+  \setmonofont{CourierNew}[
+    Path=./fonts/, Extension=.ttf,
+    UprightFont=*-Regular, BoldFont=*-Bold,
+    ItalicFont=*-Italic, BoldItalicFont=*-BoldItalic]
 \else
   \usepackage[T1]{fontenc}
   \usepackage[utf8]{inputenc}
 \fi
+\usepackage[normalem]{ulem}
+
 
 \usepackage[inline]{enumitem}
 %% ── Page Layout ──────────────────────────────────────────────
@@ -28,13 +50,14 @@
 \onehalfspacing
 
 %% ── Language & Hebrew ────────────────────────────────────────
-\usepackage{polyglossia}
-\setmainlanguage{english}
-\setotherlanguage[calendar=false]{hebrew}
-\ifXeTeX
-  \newfontfamily\hebrewfont[Script=Hebrew]{Arial}
-  \newfontfamily\hebrewfonttt[Script=Hebrew]{Courier New}
-\fi
+%% NOTE: polyglossia (which pulls in bidi for the Hebrew RTL abstract) is
+%% deliberately loaded at the END of the preamble, immediately before
+%% \begin{document}. bidi patches the packages it coexists with and errors
+%% out ("Oops! you have loaded package X after bidi package") for every
+%% package loaded after it. Those errors are survivable in a forced manual
+%% xelatex run, but latexmk -- which Overleaf uses -- treats them as build
+%% errors and stops rerunning, so cross-references and citations never
+%% resolve and the PDF fills with "??". Keep this block last.
 
 %% ── Mathematics ──────────────────────────────────────────────
 \usepackage{amsmath,amssymb,amsthm}
@@ -51,12 +74,19 @@
 \usepackage{tabularx}
 \usepackage{makecell}
 
+%% ── footnotes ──────────────────────────────────────────────────
+% \usepackage[perpage]{footmisc}
+\usepackage{footmisc}
+% \stepcounter{footnote}
 %% ── Figures ──────────────────────────────────────────────────
 \usepackage{graphicx}
 \graphicspath{{./}{./results/}}
 \usepackage{float}
-\usepackage{caption}
-\usepackage{subcaption}
+\usepackage[style=default]{caption}
+%\captionsetup{style=default}
+\captionsetup{compatibility=false}
+
+\usepackage[compatibility=false]{subcaption}
 \captionsetup{font=small, labelfont=bf, margin=10pt}
 \captionsetup[table]{position=below}
 \captionsetup[figure]{position=below}
@@ -111,6 +141,7 @@
 \setcounter{tocdepth}{3}
 \setcounter{secnumdepth}{3}
 
+
 %% ── Hyperlinks ───────────────────────────────────────────────
 \usepackage[colorlinks=true,
             linkcolor=linkBlue,
@@ -142,7 +173,7 @@
 }
 
 %% ── Miscellaneous ────────────────────────────────────────────
-\usepackage{microtype}
+\usepackage[patch=none]{microtype}
 \usepackage{parskip}
 \setlength{\parskip}{6pt}
 \usepackage{enumitem}
@@ -216,17 +247,42 @@
 \counterwithin{figure}{chapter}
 \counterwithin{table}{chapter}
 \counterwithin{equation}{chapter}
+% \counterwithout{footnote}{chapter}
 
 %-------------------------------------
 \newcommand{\AK}[1]{{\color{blue} \textbf{AK:} #1}}
+\newcommand{\GZ}[1]{{\color{red!70!black} \textbf{GZ:} #1}}
+%% Reviewer feedback (external review pass, 2026-07): teal, tagged REV.
+\newcommand{\REV}[1]{{\color{teal!70!black} \footnote{\textbf{} #1}}}
+\newenvironment{revblock}%
+  {\par\medskip\begingroup\color{teal!70!black}\noindent\textbf{REV (reviewer):}\space\ignorespaces}%
+  {\endgroup\par\medskip}
+\newenvironment{gzblock}%
+  {\par\medskip\begingroup\color{red!70!black}\noindent\textbf{GZ:}\space\ignorespaces}%
+  {\endgroup\par\medskip}
 
+%% ── Language & Hebrew (MUST be the last package block) ───────────────────────
+%% bidi (loaded by polyglossia for the Hebrew abstract) must come after every
+%% package it patches -- see the note in the Language section above.
+\usepackage{polyglossia}
+\setmainlanguage{english}
+\setotherlanguage{hebrew}
+\ifXeTeX
+  \newfontfamily\hebrewfont[Script=Hebrew, Path=./fonts/, Extension=.ttf,
+    UprightFont=*-Regular, BoldFont=*-Bold,
+    ItalicFont=*-Italic, BoldItalicFont=*-BoldItalic]{Arial}
+  \newfontfamily\hebrewfonttt[Script=Hebrew, Path=./fonts/, Extension=.ttf,
+    UprightFont=*-Regular, BoldFont=*-Bold,
+    ItalicFont=*-Italic, BoldItalicFont=*-BoldItalic]{CourierNew}
+\fi
+%% ── Global footnote numbering ───────────────────────────────── 
+\makeatletter \@removefromreset{footnote}{chapter} \makeatother \renewcommand{\thefootnote}{[\arabic{footnote}]}
 \begin{document}
 
 %% ── Title Page ───────────────────────────────────────────────
 \begin{titlepage}
 \begin{center}
 \vspace*{0.5cm}
-
 {\LARGE\textbf{TEL AVIV UNIVERSITY}}\\[6pt]
 {\large The Iby and Aladar Fleischman Faculty of Engineering}\\[4pt]
 {\large Department of Electrical Engineering}\\[2cm]
@@ -294,17 +350,11 @@ under the supervision of Dr. Anatoly Khina and Prof. Raja Giryes\\
 \pagenumbering{roman}
 
 %% ── Dedication ───────────────────────────────────────────────
-\clearpage
-\thispagestyle{empty}
-\vspace*{5cm}
-\begin{center}
-\textit{Dedicated to the pursuit of knowledge\\
-at the intersection of communications and machine learning.}
-\end{center}
-\clearpage
 
 %% ── English Abstract ─────────────────────────────────────────
-\include{chapters/ch00_frontmatter}
+%% REV fix: was \include{chapters/ch00_frontmatter} (nonexistent file,
+%% silently skipped -> abstract missing from PDF). Point at the real file.
+\include{chapters/frontmatter}
 
 \tableofcontents
 \clearpage
@@ -313,13 +363,13 @@ at the intersection of communications and machine learning.}
 \addcontentsline{toc}{chapter}{\listfigurename}
 \listoffigures
 \clearpage
-\listoflistofeq
+% \listoflistequations
 \cleardoublepage
 \phantomsection
 \addcontentsline{toc}{chapter}{\listtablename}
 \listoftables
+\AK{You need to use square-brackets to display more concise table and figure titles in the corresponding lists.}
 \clearpage
-\listoflistequations
 
 
 
@@ -329,12 +379,15 @@ at the intersection of communications and machine learning.}
 \include{chapters/ch03_objectives}
 \include{chapters/ch04_methods}
 \include{chapters/ch05_experiments}
-\include{chapters/ch06_discussion}
-\include{chapters/ch07_summary.tex}
+\include{chapters/ch06_experiments_extension_Higher_Order_Modulation}
+\include{chapters/ch07_unknown_and_mismatch_channels}
+\include{chapters/ch08_discussion}
+\include{chapters/ch09_summary}
 % \include{chapters/equation_ref}
 % \include{chapters/references}
 \bibliography{chapters/references.bib}
 \include{chapters/appendices}
+\include{chapters/ak_response_appendix}
 
 %% ── Title Page ───────────────────────────────────────────────
 \begin{titlepage}
@@ -348,7 +401,7 @@ at the intersection of communications and machine learning.}
 
 \noindent\rule{\textwidth}{2pt}\\[0.4cm]
 {\LARGE\bfseries
-ארכיטקטורות למידה עמוקה לתקשורת ממסר דו-קפיצתית: מחקר השוואתי של אסטרטגיות ממסר קלאסיות ומבוססות רשתות נוירונים\\[6pt]
+ארכיטקטורות למידה עמוקה לתקשורת ממסר דו-קפיצתית: מחקר השוואתי של אסטרטגיות ממסר קלאסיות ומבוססות רשתות נוירונים}\\[6pt]
 \noindent\rule{\textwidth}{2pt}\\[1.2cm]
 
 {\large חיבור זה הוגש כעבודת גמר לקראת התואר "מוסמך אוניברסיטה"}\\[4pt]
@@ -376,7 +429,7 @@ at the intersection of communications and machine learning.}
 
 \noindent\rule{\textwidth}{2pt}\\[0.4cm]
 {\LARGE\bfseries
-ארכיטקטורות למידה עמוקה לתקשורת ממסר דו-קפיצתית: מחקר השוואתי של אסטרטגיות ממסר קלאסיות ומבוססות רשתות נוירונים\\[6pt]
+ארכיטקטורות למידה עמוקה לתקשורת ממסר דו-קפיצתית: מחקר השוואתי של אסטרטגיות ממסר קלאסיות ומבוססות רשתות נוירונים}\\[6pt]
 \noindent\rule{\textwidth}{2pt}\\[1.2cm]
 
 {\large חיבור זה הוגש כעבודת גמר לקראת התואר "מוסמך אוניברסיטה"}\\[4pt]
@@ -397,6 +450,6 @@ at the intersection of communications and machine learning.}
 \end{titlepage}
 
 \backmatter
-\include{chapters/ch09_hebrew_abstract}
+\input{chapters/hebrew_abstract}
 
 \end{document}
