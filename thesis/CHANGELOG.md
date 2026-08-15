@@ -46,6 +46,27 @@ the two steps can be separated.
 - The six hardcoded cross-references ("Table 15", "Table 24", "Table 13",
   "Section 3.7.6") are resolved to `\ref`.
 
+### Fixed — Monte Carlo scale audit
+
+- **Stale trial-count text**: the main unknown-ISI study's "Trials" bullet and
+  two table captions (Table 7.1 `tbl:tableE6`, Table 7.2 `tbl:tableE6flat`)
+  said "5 trials $\times$ 50,000 bits", left over from before a 2026-07-14
+  rescale (`4928e65`) that the Overleaf import never picked up. The
+  underlying data was already at the current 10 $\times$ 100,000 scale (the
+  numeric cells were correct and verified throughout); only the stated
+  methodology was wrong. Corrected in three places.
+- **Disclosed a genuine reduced-scale gap**: the composite (Section 7.1.3),
+  blind (Section 7.1.4), and partial-posterior (Section 7.1.5) sub-studies
+  really do run at 5, 5, and 6 trials $\times$ 40,000 bits respectively, not
+  the chapter's 10 $\times$ 100,000 standard. This is real, not a text bug:
+  `e6_composite_ported.py`, `e6_blind_ported.py`, and `e6_partial_ported.py`
+  all carry a `# standalone's own dev budget` scale. Rather than rerun (which
+  would shift every quoted number in the affected prose and requires
+  reconstructing plotting code no longer in the repo for their 4 figures),
+  each subsection and figure caption now explicitly states its actual trial
+  count and bit budget. All three already used the correct 95% CI formula
+  ($1.96\,\sigma/\sqrt{n}$); only the trial count $n$ was undisclosed.
+
 ### Fixed — applied on top of the import
 
 - **`tbl:table8` had lost its label**, so the normalized-3K table was silently
