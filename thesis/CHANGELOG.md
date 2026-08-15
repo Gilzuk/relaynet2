@@ -249,3 +249,32 @@ and all findings from an independent technical review resolved.
   nonexistent file.
 - 142 em dashes replaced with conventional punctuation, and seven asides
   delimited by paired colons.
+
+## [Supervisor-comment consistency pass] — 2026-08-15
+
+Audited all 17 supervisor (AK) comments against the current document rather
+than against the appendix's own account of them. Sixteen held; the exceptions
+were bookkeeping, fixed here.
+
+### Fixed
+
+- **Appendix E claimed AWGN had been removed, while Section 5.3 evaluates it.**
+  The AWGN nine-relay companion comparison (Table 5.5) was added after Appendix
+  E was written, contradicting its statement that "the AWGN and Rician
+  robustness studies ... were all removed". Resolved in favour of keeping AWGN
+  with an explicitly bounded role: calibration plus a BPSK-only companion
+  comparison, from which no hypothesis is tested and no relay ranked. Appendix
+  E, the Section 5.3 discussion, and the Chapter 8 future-work item now state
+  that role identically. Rician remains removed outright.
+- **Appendix E cited the wrong abstract include paths** (`ch00_frontmatter.tex`,
+  `ch09_hebrew_abstract.tex`); `main.tex` includes `chapters/frontmatter.tex`
+  and `chapters/hebrew_abstract.tex`. Corrected.
+- **The Overleaf merge re-added removed-study material.** Figures for the CSI
+  injection study, end-to-end autoencoder, 2x2 MIMO and Rician study returned,
+  contradicting Appendix E's "Summary of removed material". None was referenced
+  by a compiled chapter, so the document was never wrong, but the sources were
+  misleading. Removed; recoverable from git history.
+- **Five superseded chapter drafts** returned alongside their replacements
+  (`ch06_discussion`, `ch07_summary`, `ch09_hebrew_abstract`, `experiments`,
+  `research_objectives`), none included by `main.tex`. Renamed with the leading
+  underscore this repository uses for drafting history.
