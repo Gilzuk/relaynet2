@@ -271,12 +271,15 @@
   {\endgroup\par\medskip}
 
 %% ── Language & Hebrew (MUST be the last package block) ───────────────────────
+%% Loaded before the language block: bidi patches packages loaded before it,
+%% and errors on any loaded after it (see the note below).
+\usepackage{ragged2e}
+
 %% bidi (loaded by polyglossia for the Hebrew abstract) must come after every
 %% package it patches -- see the note in the Language section above.
 \usepackage{polyglossia}
 \setmainlanguage{english}
 \setotherlanguage{hebrew}
- \usepackage{ragged2e}
 \ifXeTeX
   \newfontfamily\hebrewfont[Script=Hebrew, Path=./fonts/, Extension=.ttf,
     UprightFont=*-Regular, BoldFont=*-Bold,
@@ -287,7 +290,6 @@
 \fi
 %% ── Global footnote numbering ───────────────────────────────── 
 \makeatletter \@removefromreset{footnote}{chapter} \makeatother \renewcommand{\thefootnote}{[\arabic{footnote}]}
-\usepackage[left]{lineno}
 \begin{document}
 %% ── Title Page ───────────────────────────────────────────────
 \begin{titlepage}
@@ -399,6 +401,7 @@ under the supervision of Dr. Anatoly Khina and Prof. Raja Giryes\\
 \bibliography{chapters/references.bib}
 \include{chapters/appendices}
 \include{chapters/ak_response_appendix}
+\include{chapters/appendix_f_review}
 
 %% ── Title Page ───────────────────────────────────────────────
 \begin{titlepage}

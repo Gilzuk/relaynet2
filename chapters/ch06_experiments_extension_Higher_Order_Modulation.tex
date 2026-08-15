@@ -199,7 +199,7 @@ DF & 0.0038 & -- & -- & 0.0828 & -- & -- \\
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\linewidth]{results/qam16_activation/qam16_activation_awgn.png}
-    \caption{16-QAM activation experiment (AWGN): dashed lines = tanh/BPSK baseline, solid = linear/QAM16, dotted = hardtanh/QAM16. Replacing tanh and retraining on QAM16 eliminates the BER floor for all AI relays except Hybrid. Sequence models (Transformer, Mamba-S6, Mamba-2 SSD) benefit most, narrowing the gap to DF from \textasciitilde56$\times$ to \textasciitilde10$\times$.}
+    \caption{16-QAM activation experiment (AWGN). Each relay appears three times, once per output activation, tanh (the BPSK-trained baseline), linear, and hardtanh, distinguished by colour and marker in the legend. The tanh variants plateau near $0.2$; replacing the activation and retraining on 16-QAM removes the floor for every AI relay except Hybrid, whose curve is unchanged. Sequence models benefit most, narrowing the gap to DF from $\approx$56$\times$ to $\approx$10$\times$ (Table~\ref{tbl:table15}).}
     \label{fig:fig28}
 \end{figure}
 \REV{Compilation fix: the image path \texttt{results//qam16\_activation/...} had a double slash; corrected to a single slash. Also removed the duplicated commented-out copy of this figure (both carried \texttt{\string\label{fig:fig28}}) to avoid a duplicate-label risk if it were ever uncommented. Architecture names unified.}

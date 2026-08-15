@@ -103,7 +103,7 @@ PyTorch (CUDA) \\
 All numerical results reported in chapter \ref{sec:experiments} were generated using the framework shown in figure \ref{fig:relaynet_uml}, ensuring consistent evaluation across classical and learning-based relay architectures.The project is implemented as a modular Python package (\texttt{relaynet}).
 The framework uses object-oriented design with a common \texttt{Relay} base class, enabling polymorphic relay swapping. Monte Carlo simulation is implemented in \texttt{runner.py} with configurable trial count, bit count, and SNR range. All tensor operations use vectorized PyTorch for GPU acceleration.
 
-\subsection{Testing} 126 automated tests (pytest) cover all channels,modulation (BPSK, QPSK, 16-QAM), relay strategies, simulation, statistics, and modulation-comparison modules with 100\% pass rate.
+\subsection{Testing} 108 automated tests (pytest) cover the channels, modulation, relay-strategy, simulation and statistics modules with a 100\% pass rate. The suite requires only NumPy and SciPy; PyTorch is optional and needed solely by the neural relays that use it.
 
 \subsection{Reproducibility} Random seeds are controlled at the source (bit generation) and noise (per-trial seeding) levels to ensure reproducible results.
 \begin{figure}[bt]
