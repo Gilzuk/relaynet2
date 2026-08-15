@@ -126,6 +126,41 @@ Control: canonical Rayleigh & AF & 0.1591 & 0.0894 & 0.0484 & 0.0236 \\
 \caption{Unknown-channel relaying, BER vs.\ SNR with 95\% CI bands. (a)--(b) On the unknown ISI channel, the memoryless AF/DF relays are pinned near the analytic $0.25$ floor (DF non-monotonic in SNR); the 169-parameter MLP restores monotonically decreasing BER within $\approx$1--1.5 dB of genie-CSI Viterbi MLSE, which a 200-pilot LS estimate matches almost exactly. With the Rayleigh second hop (b), MLSE and the MLP are statistically indistinguishable end-to-end. (c) Control: on the canonical Rayleigh channel the MLP only matches DF, consistent with H2.}\label{fig:figE6}
 \end{figure}
 
+\subsection{Does the Result Generalize to QPSK?}\label{sec:qpsk-unknown-channel}
+
+The unknown-ISI study above uses BPSK throughout, matching the canonical setup of Chapters~\ref{sec:experiments}--\ref{sec:extensions}. The $0.25$ floor derived in Section~\ref{sec:unknown-channel-experiment} is a property of the \emph{binary} slicer: it counts the $2^{3}=8$ equiprobable tap-sign patterns that flip a $\pm1$ decision. That argument does not extend to a four-point per-axis alphabet, so it is not obvious a priori whether either the elevated error floor or the ordering between the learned relay and genie-CSI Viterbi MLSE survives a move to a higher-order modulation. This subsection repeats the unknown-ISI study with Gray-coded QPSK in place of BPSK, keeping every other element fixed: the same $3$-tap ISI channel $h=[1.0,0.7,0.5]$ (normalized) on Hop 1, AWGN or canonical Rayleigh on Hop 2 at the same nominal per-hop SNR (identical convention, $\gamma=10^{\text{SNR}_{\text{dB}}/10}$, memory-bank/techContext.md), and the same relay set generalized to the complex alphabet: AF, symbol-wise DF (hard per-axis decision), a $193$-parameter $4$-class MLP-QPSK classifier (window 11, softmax cross-entropy, trained at SNR $\in\{5,10,15\}$ dB), and genie-CSI Viterbi MLSE generalized to the complex QPSK trellis ($4^{2}=16$ states, complex branch metrics). Evaluation uses $10$ trials $\times$ $100{,}000$ bits per SNR point over the same $0$--$20$ dB range. No closed-form floor is derived for QPSK, so the curves below are reported as measured, not fit to a predicted asymptote. Because the QPSK relays are applied jointly to the complex signal rather than decomposed into two independent BPSK problems, and the per-relay power normalization is computed on total (I+Q) power, the resulting AF/DF operating points are not required to, and empirically do not, numerically match the BPSK figures of Table~\ref{tbl:tableE6} at the same SNR label; no such match is claimed.
+
+\begin{longtable}[]{@{}llllll@{}}
+\caption{QPSK unknown-channel BER (mean over 10 trials). AF and DF plateau at an elevated, non-monotonic BER across the SNR range tabulated; the 193-parameter MLP-QPSK restores monotonically decreasing BER and, unlike the BPSK case, ends up \emph{below} genie-CSI Viterbi MLSE from about 2 dB upward.}\label{tbl:tableE6qpsk}\tabularnewline
+\toprule\noalign{}
+Setup & Relay & 8 dB & 12 dB & 16 dB & 20 dB \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+Setup & Relay & 8 dB & 12 dB & 16 dB & 20 dB \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+QPSK: ISI $\to$ AWGN & AF & 0.2437 & 0.2115 & 0.2024 & 0.2098 \\
+ & DF & 0.2193 & 0.2024 & 0.2074 & 0.2211 \\
+ & \textbf{MLP-QPSK (193p)} & \textbf{0.1292} & \textbf{0.0827} & \textbf{0.0601} & \textbf{0.0508} \\
+ & Viterbi (genie CSI) & 0.1307 & 0.0852 & 0.0670 & 0.0618 \\
+\hline
+QPSK: ISI $\to$ Rayleigh & AF & 0.2715 & 0.2320 & 0.2137 & 0.2116 \\
+ & DF & 0.2528 & 0.2194 & 0.2145 & 0.2239 \\
+ & \textbf{MLP-QPSK (193p)} & \textbf{0.1737} & \textbf{0.1066} & \textbf{0.0707} & \textbf{0.0553} \\
+ & Viterbi (genie CSI) & 0.1749 & 0.1089 & 0.0774 & 0.0662 \\
+\end{longtable}
+
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.24\textheight,keepaspectratio]{results/unkchan_qpsk.png}}
+\caption{QPSK unknown-channel relaying, BER vs.\ SNR (10 trials, 100{,}000 bits/point). As with BPSK, AF and DF plateau far above the MLP and Viterbi curves. Unlike BPSK, the MLP-QPSK curve separates \emph{below} genie-CSI Viterbi MLSE beyond about 2 dB, and the gap widens with SNR.}\label{fig:figE6qpsk}
+\end{figure}
+
+\textbf{Conclusion (the ISI failure mode generalizes; the BPSK ordering does not):} The qualitative pattern of Section~\ref{sec:unknown-channel-experiment} survives the move to QPSK: AF and DF plateau at an elevated, non-monotonic BER (AF ranges $0.2024$--$0.2715$ and DF ranges $0.2024$--$0.2528$ across the four tabulated points, broadly similar in magnitude to BPSK's memoryless-relay floor of $0.25$ though no equivalent closed form is derived here), while the MLP restores monotonically decreasing BER, confirming that unmodeled channel memory, not modulation order, is what breaks the memoryless relay class (H6). What does \emph{not} generalize is the BPSK ordering between the learned relay and the optimal classical benchmark. In the BPSK study, genie-CSI Viterbi MLSE beat the MLP by 1--1.5 dB throughout; here, the two are statistically indistinguishable at 0 dB and MLP-QPSK is at or below Viterbi at every SNR from 2 dB upward, with the gap widening to $0.0508$ vs.\ $0.0618$ (AWGN) and $0.0553$ vs.\ $0.0662$ (Rayleigh) at 20 dB. This is not a violation of MLSE optimality: Viterbi MLSE minimizes the \emph{sequence} error probability under the assumed channel model, not the bit error rate directly. For BPSK, each trellis branch carries exactly one bit, so sequence-optimal and bit-optimal detection coincide; for Gray-coded QPSK, each branch carries two bits, and a wrong branch choice can differ from the true one by one bit (adjacent constellation point) or two (diagonal point) with different probabilities, so sequence-ML detection is no longer guaranteed to minimize BER specifically. The 193-parameter MLP-QPSK is instead trained directly on a per-symbol softmax cross-entropy objective, which is not subject to that mismatch. This is offered as the most plausible mechanism for the reversal; it was not isolated experimentally (for instance, by decomposing the Viterbi output into single- versus double-bit symbol errors), and is left as an open point rather than a proven claim. Either way, the practical conclusion sharpens rather than weakens H6 for higher-order modulation: on this unknown-memory channel, the fixed-complexity learned relay is not merely a family-agnostic near-optimal option, as in the BPSK case, but the best-performing option measured here among either family, at the same constant per-symbol cost quantified in Section~\ref{sec:complexity-viterbi-mlp}.
+
 \subsection{A Composite (Mixed) Channel}\label{sec:composite-channel}
 
 The preceding studies vary one impairment at a time. Real links stack several. This final study cascades three of them into a single unknown channel that \emph{no} classical relay is jointly matched to: a DBPSK stream passes through 3-tap ISI, then a saturating power-amplifier nonlinearity, then an unknown block phase, before additive noise. Each classical baseline is the strongest available for \emph{one} constituent impairment, so the comparison is honest rather than a straw man: conventional differential detection (matched to the phase), and pilot-LS Viterbi MLSE followed by differential decoding (matched to the ISI-plus-phase, but blind to the amplifier nonlinearity). The 169-parameter MLP and a $1{,}153$-parameter MLP receive raw I/Q windows and no knowledge of any constituent. This composite channel departs from the canonical model in two ways: it introduces explicit channel memory through ISI and nonlinear distortion through the amplifier. The resulting benchmark therefore tests robustness to both memory and model mismatch simultaneously.
