@@ -46,6 +46,16 @@ the two steps can be separated.
 - The six hardcoded cross-references ("Table 15", "Table 24", "Table 13",
   "Section 3.7.6") are resolved to `\ref`.
 
+### Added — AWGN companion comparison (Section 5.3)
+
+Table 5.5 (`tbl:table2awgn`) and Figure 5.5 report the same nine-relay
+comparison as the canonical Rayleigh table/figure, but on AWGN, at the
+identical $10\times10{,}000$ budget. The data (`results/bpsk_comparison/awgn.json`)
+already existed and was previously used only for theory-vs-simulation
+calibration (Section 5.2); Chapter 1's "AWGN retained as analytical
+calibration" claims were updated to reflect the new companion use. Verified
+(`tbl:table2awgn`, 54 cells, 0 mismatches).
+
 ### Fixed — closed 3 outstanding supervisor (AK) follow-up comments
 
 Three second-round AK pushbacks, nested inside earlier `\REV` resolutions,
