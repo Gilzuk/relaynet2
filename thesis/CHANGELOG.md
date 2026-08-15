@@ -246,18 +246,23 @@ Audited all 17 supervisor (AK) comments against the current document rather
 than against the appendix's own account of them. Sixteen held; the exceptions
 were bookkeeping, fixed here.
 
-### Reverted
+### Changed — channel pairing per author direction
 
-- **The AWGN nine-relay companion comparison was withdrawn.** It had been added
-  to Section 5.3 alongside the canonical Rayleigh comparison, but it
-  contradicted Appendix E's statement that "the AWGN and Rician robustness
-  studies ... were all removed" in answer to comment 4 — the comment the
-  appendix itself calls the decisive one behind the restructure. Table 5.5,
-  Figure 5.5, the surrounding discussion, the Chapter 1 wording changes, the
-  `check_table2awgn` verifier check and the companion figure are all removed;
-  AWGN returns to its calibration-only role (Section 5.2) and the canonical
-  BPSK/Rayleigh comparison (Table 5.4) is untouched. Verification returns to
-  **250 cells, 0 inconsistencies**.
+At the author's direction the modulation/channel pairing is now explicit in
+both experiment chapters:
+
+- **Chapter 5 keeps the AWGN companion** (Table 5.5, Figure 5.5) alongside the
+  canonical BPSK/Rayleigh comparison. Because Appendix E had told the
+  supervisor that "the AWGN and Rician robustness studies ... were all removed"
+  in answer to comment 4, AWGN is given an explicitly bounded role instead of
+  being reinstated silently: it is the analytical calibration limit plus a
+  BPSK-only companion comparison, no hypothesis is tested on it and no relay is
+  ranked by it, and the canonical setup remains Rayleigh. Appendix E, the
+  Section 5.3 discussion and the Chapter 8 future-work item all state that role
+  identically. Rician remains removed outright.
+- **Chapter 6 gains QPSK on the canonical Rayleigh channel** (Table 6.2). Its
+  modulation comparison had been AWGN-only while every other conclusion is
+  drawn on Rayleigh.
 
 ### Fixed
 

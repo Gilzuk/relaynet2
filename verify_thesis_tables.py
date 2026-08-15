@@ -9,6 +9,7 @@ flagged.
 
 Data sources, by table:
   tbl:table2            canonical Rayleigh BER, 9 relays   <- results/bpsk_comparison/rayleigh.json
+  tbl:table2awgn        AWGN companion BER, 9 relays       <- results/bpsk_comparison/awgn.json
   tbl:table14ray        QPSK vs BPSK on Rayleigh, 9 relays  <- results/modulation/{bpsk,qpsk}_rayleigh.json
   tbl:table8            normalized-3K Rayleigh BER         <- results/normalized_3k/3k_rayleigh.json
   tbl:table14           modulation BER (AWGN)              <- results/bpsk_comparison/awgn.json (+ modulation)
@@ -218,6 +219,32 @@ def check_table2(tex, rep):
     cols = ["AF", "DF", "GenAI (169p)", "Hybrid", "VAE",
             "CGAN (WGAN-GP)", "Transformer", "Mamba S6", "Mamba2 (SSD)"]
     d = json.load(open(os.path.join(ROOT, "results/bpsk_comparison/rayleigh.json")))
+    snrs = d["snr_range"]
+    for row in data_rows(body):
+        if not row or row[0][1] is None:
+            continue
+        snr = int(row[0][1])
+        if snr not in snrs:
+            continue
+        si = snrs.index(snr)
+        for c, relay in enumerate(cols, start=1):
+            if c >= len(row):
+                break
+            pub_text, pub_val = row[c]
+            src = d["results"][relay]["ber_mean"][si]
+            rep.cell(T, f"{snr}dB/{relay}", pub_text, pub_val, src)
+    rep.finish_table(T, before)
+
+
+def check_table2awgn(tex, rep):
+    """AWGN companion BER, 9 relays x SNR (tbl:table2awgn) vs bpsk_comparison/awgn.json."""
+    T = "tbl:table2awgn"; before = rep.checked
+    body = table_body(tex, T)
+    if body is None:
+        return rep.skip(T, "label not found in tex")
+    cols = ["AF", "DF", "GenAI (169p)", "Hybrid", "VAE",
+            "CGAN (WGAN-GP)", "Transformer", "Mamba S6", "Mamba2 (SSD)"]
+    d = json.load(open(os.path.join(ROOT, "results/bpsk_comparison/awgn.json")))
     snrs = d["snr_range"]
     for row in data_rows(body):
         if not row or row[0][1] is None:
@@ -715,7 +742,7 @@ def main():
 
     tex = load_tex()
     rep = Report()
-    checks = [check_ber_validation, check_table26, check_table2, check_table14ray, check_table8,
+    checks = [check_ber_validation, check_table26, check_table2, check_table2awgn, check_table14ray, check_table8,
               check_table24, check_tableE6, check_tableE6flat, check_tableE6qpsk,
               check_E6blind_prose, check_E6partial_prose, check_E6composite_prose]
     for chk in checks:

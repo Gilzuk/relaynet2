@@ -190,7 +190,7 @@ Rayleigh & \textasciitilde24 dB & 1 & \(1/(4\bar{\gamma})\) \\
 
 \textbf{Goal:} Evaluate all nine classical and AI-based relay strategies on the canonical setup of this thesis.
 
-\textbf{Trials:} - \textbf{Topology:} SISO (both hops) - \textbf{Modulation scheme:} BPSK - \textbf{Channel:} i.i.d.\ Rayleigh fast fading (canonical) - \textbf{Equalizers:} None - \textbf{NN architecture:} Supervised (MLP, Hybrid), Generative (VAE, cGAN), Sequence (Transformer, Mamba-S6, Mamba-2 SSD) - \textbf{NN activation:} ReLU hidden, tanh output
+\textbf{Trials:} - \textbf{Topology:} SISO (both hops) - \textbf{Modulation scheme:} BPSK - \textbf{Channel:} i.i.d.\ Rayleigh fast fading (canonical), with an AWGN companion comparison (Table~\ref{tbl:table2awgn}) - \textbf{Equalizers:} None - \textbf{NN architecture:} Supervised (MLP, Hybrid), Generative (VAE, cGAN), Sequence (Transformer, Mamba-S6, Mamba-2 SSD) - \textbf{NN activation:} ReLU hidden, tanh output
 
 \textbf{Conclusion:} On the canonical Rayleigh channel, AI relays match but do not surpass symbol-wise DF: DF achieves the lowest or tied-lowest BER at essentially every SNR point, including the low-SNR regime, while the best neural relays (MLP, Hybrid, cGAN) track it within statistical uncertainty and clearly outperform AF. This confirms H1 (AI relays beat AF at low SNR) and H2 (DF dominance at $\geq 6$ dB with zero parameters) on the canonical channel.
 
@@ -270,6 +270,78 @@ Mamba-2 SSD
 Two features of Table~\ref{tbl:table2} deserve comment. First, the DF value at 20~dB ($0.0047$) matches the closed form $2P(1-P)$ with $P = \frac{1}{2}(1-\sqrt{100/101}) \approx 0.0025$ to two significant figures, providing an end-to-end validation of the simulator against the analysis of Section~\ref{sec:rayleigh-two-hop-df-ber}. Second, the VAE column is not merely an underperformer: it is pinned at $0.25$--$0.40$ at \emph{every} SNR, meaning it never learns the task at any operating point. This should not be read as a verdict on generative relaying as such. The VAE relay samples its latent $\mathbf{z}\sim q_\phi(\mathbf{z}\mid\mathbf{x})$ stochastically at inference; substituting the posterior mean $\boldsymbol{\mu}$ at test time (standard practice for deterministic reconstruction) was not evaluated in this work and could plausibly recover much of the gap. The VAE result is therefore reported as an observation about \emph{this} configuration, and the paradigm-level conclusion is correspondingly qualified in Section~\ref{sec:generative-vs.-discriminative-paradigms-for-relay-processing}.
 \REV{Fix applied: the VAE outcome was previously read as evidence about generative relaying as such. The relay decodes stochastically at inference and the standard deterministic variant was never evaluated, so the result is now reported as specific to this configuration, with the paradigm-level claim qualified in Section~\ref{sec:generative-vs.-discriminative-paradigms-for-relay-processing}.}
 
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}@{}}
+\caption{BER comparison on the AWGN channel (SISO), companion to Table~\ref{tbl:table2}.}\label{tbl:table2awgn}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+SNR (dB)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+AF
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+DF
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+MLP (169p)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Hybrid
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+VAE
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+cGAN
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Trans-\\former
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mamba-S6
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mamba-2\\SSD
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+SNR (dB)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+AF
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+DF
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+MLP (169p)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Hybrid
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+VAE
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+cGAN
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Trans-\\former
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mamba-S6
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mamba-2 SSD
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 0.291 & 0.268 & 0.264 & 0.262 & 0.376 & \textbf{0.261} & 0.267 & 0.269 & 0.270 \\
+4 & 0.154 & 0.112 & 0.112 & 0.113 & 0.330 & \textbf{0.111} & 0.114 & \textbf{0.111} & \textbf{0.111} \\
+8 & 0.044 & \textbf{0.010} & 0.015 & \textbf{0.010} & 0.291 & 0.013 & 0.014 & \textbf{0.010} & 0.012 \\
+12 & 0.0027 & \textbf{0.0002} & \textbf{0.0002} & \textbf{0.0002} & 0.2693 & 0.0003 & 0.0003 & \textbf{0.0002} & \textbf{0.0002} \\
+16 & 0 & 0 & 0 & 0 & 0.258 & 0 & 0 & 0 & 0 \\
+20 & 0 & 0 & 0 & 0 & 0.250 & 0 & 0 & 0 & 0 \\
+\end{longtable}
+
+Table~\ref{tbl:table2awgn} reports the same nine-relay comparison on the AWGN channel, at the same $M{=}10\times N{=}10{,}000$ budget as Table~\ref{tbl:table2} (Section~\ref{sec:monte-carlo-ber-estimation}), included here as a full companion comparison rather than only the theory-vs-simulation calibration of Section~\ref{sec:channel-model-validation-simulative}. The ordering matches the canonical Rayleigh case in kind, DF, the learned relays, and cGAN cluster together and clearly separate from AF, but the picture is far more compressed in scale: without fading variance to average over, every relay except VAE collapses to the simulator's zero-error floor by 16~dB (the steep exponential AWGN tail predicted by Table~\ref{tbl:table26}), so the relays are effectively indistinguishable at high SNR and the comparison is informative mainly at 0--8~dB. VAE again fails to learn the task at any SNR, for the same stochastic-decoding reason noted for Table~\ref{tbl:table2}. The scope of this companion is deliberately limited: AWGN is reported here for BPSK only, no hypothesis is tested and no relay is ranked or selected on it, and every conclusion in this chapter continues to rest on the canonical Rayleigh setup. It is included because the closed-form expressions validating the simulator in Section~\ref{sec:channel-model-validation-simulative} are AWGN expressions, so showing the full relay set on that same channel makes the calibration and the comparison directly commensurable.
+
 
 \subsection{Results Figures}\label{sec:results-figures-1}
 
@@ -278,6 +350,12 @@ Two features of Table~\ref{tbl:table2} deserve comment. First, the DF value at 2
 \centering
 \pandocbounded{\includegraphics[width=\linewidth,height=0.8\textheight,keepaspectratio]{results/fading_comparison.png}}
 \caption{Rayleigh fading: BER vs.~SNR for all nine relay strategies with 95\% CI.}\label{fig:fig10}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.8\textheight,keepaspectratio]{results/awgn_comparison_ci.png}}
+\caption{AWGN channel: BER vs.~SNR for all nine relay strategies with 95\% CI, companion to Figure~\ref{fig:fig10} and Table~\ref{tbl:table2awgn}.}\label{fig:fig10awgn}
 \end{figure}
 
 
@@ -361,6 +439,9 @@ DF
 \end{longtable}
 
 
+
+
+
 \begin{longtable}[]{@{}
   >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.28}}
   >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.15}}
@@ -390,6 +471,7 @@ Transformer & 17,697 & CUDA & 474 s (\textasciitilde8 min) & 3.71 s \\
 \end{longtable}
 
 \subsection{Results Figures}\label{sec:results-figures-3}
+
 
 
 % \begin{figure}[H]
