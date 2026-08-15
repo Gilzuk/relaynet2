@@ -11,6 +11,8 @@
 %% ============================================================
 
 \documentclass[12pt,a4paper,oneside]{book}
+\usepackage{hebcal}
+\usepackage{silence} \WarningFilter{bidi}{Oops! patching}
 % \usepackage{chngcntr}
 \usepackage{xkeyval}
 
@@ -40,7 +42,9 @@
   \usepackage[utf8]{inputenc}
 \fi
 \usepackage[normalem]{ulem}
-
+% \usepackage{lineno}
+\usepackage[left]{lineno} 
+\pretocmd{\chapter}{\resetlinenumber[1]}{}{}
 
 \usepackage[inline]{enumitem}
 %% ── Page Layout ──────────────────────────────────────────────
@@ -194,7 +198,8 @@
 \newtheorem{remark}[theorem]{Remark}
 
 %% ============================================================
-
+\usepackage{tikz} 
+\usetikzlibrary{positioning,arrows.meta}
 %% ── Pandoc syntax highlighting ──────────────────────────────
 \usepackage{fancyvrb}
 \newcommand{\VerbBar}{|}
@@ -250,10 +255,14 @@
 % \counterwithout{footnote}{chapter}
 
 %-------------------------------------
+% reviewer mode :comment the two lines below for reviewing the thesis
 \newcommand{\AK}[1]{{\color{blue} \textbf{AK:} #1}}
 \newcommand{\GZ}[1]{{\color{red!70!black} \textbf{GZ:} #1}}
-%% Reviewer feedback (external review pass, 2026-07): teal, tagged REV.
 \newcommand{\REV}[1]{{\color{teal!70!black} \footnote{\textbf{} #1}}}
+% Final mode: comment the two lines above and use: 
+% \newcommand{\AK}[1]{} 
+% \newcommand{\REV}[1]{}
+
 \newenvironment{revblock}%
   {\par\medskip\begingroup\color{teal!70!black}\noindent\textbf{REV (reviewer):}\space\ignorespaces}%
   {\endgroup\par\medskip}
@@ -267,6 +276,7 @@
 \usepackage{polyglossia}
 \setmainlanguage{english}
 \setotherlanguage{hebrew}
+ \usepackage{ragged2e}
 \ifXeTeX
   \newfontfamily\hebrewfont[Script=Hebrew, Path=./fonts/, Extension=.ttf,
     UprightFont=*-Regular, BoldFont=*-Bold,
@@ -277,8 +287,8 @@
 \fi
 %% ── Global footnote numbering ───────────────────────────────── 
 \makeatletter \@removefromreset{footnote}{chapter} \makeatother \renewcommand{\thefootnote}{[\arabic{footnote}]}
+\usepackage[left]{lineno}
 \begin{document}
-
 %% ── Title Page ───────────────────────────────────────────────
 \begin{titlepage}
 \begin{center}
@@ -371,7 +381,8 @@ under the supervision of Dr. Anatoly Khina and Prof. Raja Giryes\\
 \AK{You need to use square-brackets to display more concise table and figure titles in the corresponding lists.}
 \clearpage
 
-
+% \usepackage[left]{lineno} 
+\linenumbers
 
 \mainmatter
 \include{chapters/ch01_introduction}

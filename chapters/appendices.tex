@@ -17,12 +17,10 @@ Symbol & Description \\
 \(\sigma^2\) & Noise variance \\
 \(\text{SNR}\) & Signal-to-Noise Ratio (linear) \\
 \(G\) & AF amplification gain \\
-\(\mathbf{H}\) & MIMO channel matrix (\(\in \mathbb{C}^{2 \times 2}\)) \\
 \(\mathbf{W}\) & Neural network weight matrix \\
 \(\mathbf{b}\) & Bias vector \\
 \(P_e\) & Bit error rate \\
 \(Q(\cdot)\) & Gaussian Q-function \\
-\(K\) & Rician K-factor \\
 \(\beta\) & VAE KL weight \\
 \(\lambda\) & Regularization parameter \\
 \(\eta\) & Learning rate \\
@@ -69,7 +67,7 @@ $\beta$-VAE ($\beta=0.1$), Adam lr=$10^{-3}$ &
 1{,}777 &
 PyTorch (CUDA) \\
 \hline
-CGAN (WGAN-GP) &
+cGAN (WGAN-GP) &
 Conditional GAN (generator + critic) &
 WGAN-GP, Adam lr=$10^{-4}$ &
 2{,}946 &
@@ -81,13 +79,13 @@ MSE, Adam lr=$10^{-3}$ &
 17{,}697 &
 PyTorch (CUDA/CPU) \\
 \hline
-Mamba S6 &
+Mamba-S6 &
 Selective SSM, 2 S6 layers &
 MSE, Adam lr=$10^{-3}$ &
 24{,}001 &
 PyTorch (CUDA/CPU) \\
 \hline
-Mamba2 (SSD) &
+Mamba-2 SSD &
 Selective SSM with SSD kernel (2 layers) &
 MSE, Adam lr=$10^{-3}$, clip=1.0 &
 26{,}179 &
@@ -103,14 +101,14 @@ PyTorch (CUDA) \\
 
 \noindent
 All numerical results reported in chapter \ref{sec:experiments} were generated using the framework shown in figure \ref{fig:relaynet_uml}, ensuring consistent evaluation across classical and learning-based relay architectures.The project is implemented as a modular Python package (\texttt{relaynet}).
-The framework uses object-oriented design with a common \texttt{Relay} base class, enabling polymorphic relay swapping. Monte Carlo simulation is implemented in \texttt{runner.py} with configurable trial count, bit count, and SNR range. All MIMO operations use vectorized PyTorch for GPU acceleration.
+The framework uses object-oriented design with a common \texttt{Relay} base class, enabling polymorphic relay swapping. Monte Carlo simulation is implemented in \texttt{runner.py} with configurable trial count, bit count, and SNR range. All tensor operations use vectorized PyTorch for GPU acceleration.
 
-\subsection{Testing} 126 automated tests (pytest) cover all channels, modulation (BPSK, QPSK, 16-QAM, 16-PSK), relay strategies, simulation, statistics, and modulation-comparison modules with 100\% pass rate.
+\subsection{Testing} 126 automated tests (pytest) cover all channels,modulation (BPSK, QPSK, 16-QAM), relay strategies, simulation, statistics, and modulation-comparison modules with 100\% pass rate.
 
 \subsection{Reproducibility} Random seeds are controlled at the source (bit generation) and noise (per-trial seeding) levels to ensure reproducible results.
 \begin{figure}[bt]
 \centering
-\includegraphics[width=\textwidth,angle=-90,scale=1.5]{results/relaynet_sw_architecture.png}
+\includegraphics[width=\textwidth,scale=1.0]{results/relaynet_sw_architecture.png}
 \caption{UML-style component diagram of the \texttt{relaynet} simulation framework.}
 \label{fig:relaynet_uml}
 \end{figure}
@@ -144,14 +142,15 @@ Hidden / Architecture
 MLP-3K & 3,004 & 11 & hidden=231 \\
 Hybrid-3K & 3,004 & 11 & hidden=231 (+ DF switch) \\
 VAE-3K & 3,037 & 11 & latent=10, hidden=(44, 20) \\
-CGAN-3K & 3,004 & 11 & noise=8, g\_hidden=(30, 30, 16), c\_hidden=(32, 16) \\
+cGAN-3K & 3,004 & 11 & noise=8, g\_hidden=(30, 30, 16), c\_hidden=(32, 16) \\
 Transformer-3K & 3,007 & 11 & d\_model=18, heads=2, layers=1 \\
-Mamba-3K & 3,027 & 11 & d\_model=16, d\_state=6, layers=1 \\
-Mamba2-3K & 3,004 & 11 & d\_model=15, d\_state=6, chunk\_size=8, layers=1 \\
+Mamba-S6-3K & 3,027 & 11 & d\_model=16, d\_state=6, layers=1 \\
+Mamba-2-3K & 3,004 & 11 & d\_model=15, d\_state=6, chunk\_size=8, layers=1 \\
 \end{longtable}
 }
 
-All 3K configurations use a window size of 11 (vs.~5 for original MLP/Hybrid, and 11 for original sequence models) to provide a common input context. The parameter counts are within ±1.2\% of the 3,000 target.
+All 3K configurations use a window size of 11 (vs.~5 for the original MLP/Hybrid and 7 for the original VAE/cGAN); the original sequence models already used 11. 
+The parameter counts are within ±1.2\% of the 3,000 target.
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 

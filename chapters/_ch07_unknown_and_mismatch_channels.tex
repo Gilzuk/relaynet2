@@ -1,69 +1,21 @@
 \chapter{Learned Relaying under Unknown and Mismatched Channels}\label{sec:unknown-channels}
 
-The core chapters establish that on a matched, known channel a minimal learned relay does not improve on classical decode-and-forward (H2). This chapter turns to the complementary and, in practice, more consequential regime: channels whose structure is \emph{unknown} to the receiver chain or outside the assumptions of the classical relay's model class. It is the principal experimental contribution of this thesis. Rather than a single comparison, it is a systematic map, along every axis relevant to practical deployment, of \emph{when} a fixed 169-parameter learned relay adds value over classical processing, and, equally, when it does not.
+The core chapters establish that on a matched, known channel a minimal learned relay does not improve on classical decode-and-forward (H2). This chapter turns to the complementary and, in practice, more consequential regime: channels whose structure is \emph{unknown} to the receiver chain or \emph{mismatched} to the classical relay's model class. It is the principal experimental contribution of this thesis. Rather than a single comparison, it is a systematic map, along every axis a skeptic would probe, of \emph{when} a fixed 169-parameter learned relay adds value over classical processing, and, equally, when it does not.
 
 The investigation is deliberately adversarial to the learned relay. Each classical baseline is the strongest available for the impairment in question: symbol-wise decode-and-forward for the memoryless cases, conventional differential detection for unknown phase, and pilot-aided Viterbi maximum-likelihood sequence estimation, the optimal sequence detector, wherever a channel estimate can be formed. The learned relay is granted no per-block channel knowledge; it is trained offline on an impairment \emph{family} and evaluated on unseen realizations with no adaptation. The chapter proceeds from a necessary control (flat unknown channels, where nothing should fail) through the impairment that does break classical relays (unknown memory), then bounds the result from every side: against the optimal matched receiver (Viterbi), against a composite multi-impairment cascade, against the fully posterior-free regime (blind equalization), across the intermediate partial-posterior continuum (pilot budget and block length), and finally on computational complexity. The result is a precise delineation (the learned relay never beats a matched classical receiver, but occupies a well-defined niche of family-agnostic, identification-free, constant-complexity mitigation) that constitutes the thesis's main claim beyond the confirmatory core.
-\REV{Register fix: the informal ``along every axis a skeptic would probe'' (which appeared twice) is replaced with ``along every axis relevant to practical deployment'', consistent with the same wording change made in the System Model of Chapter~\ref{sec:methods}.}
-
-\paragraph{Relationship to the canonical model.} The canonical setup of this thesis (Chapters~\ref{sec:experiments}-- \ref{sec:extensions}) assumes a memoryless two-hop relay channel with white noise, perfect receiver-side CSI, and uncoded transmission. The present chapter deliberately departs from those assumptions by introducing impairments that are not part of the canonical model, including channel memory (3-tap intersymbol interference), amplifier nonlinearity, unknown phase, and channel-model mismatch. Consequently, sequence-detection and equalization techniques such as Viterbi MLSE, pilot-aided channel estimation, and blind equalization become relevant only in this chapter. The goal is not to replace the canonical study, but to evaluate whether the conclusions established under matched memoryless conditions remain valid when the underlying channel model no longer represents the true channel.
-
-\begin{figure}[t] \noindent \makebox[\textwidth][l]{% 
-\begin{tikzpicture}[ >=latex, node distance=2.3cm, block/.style={rectangle, draw, thick, minimum width=2.0cm, minimum height=1.0cm, align=center}, imp/.style={rectangle, draw, very thick, fill=black!6, minimum width=2.4cm, minimum height=1.1cm, align=center}, relayblock/.style={rectangle, draw, very thick, dashed, minimum width=2.0cm, minimum height=1.1cm, align=center} ] 
-\node[block] (S) {Source\\BPSK}; 
-\node[imp, right=2.0cm of S] (C) {Unknown Hop-1\\ISI $\times$ PA $\times$ phase}; 
-\node[relayblock, right=2.0cm of C] (R) {Relay\\$f_\theta(\cdot)$}; \node[block, right=2.0cm of R] (D) {Destination\\Decision}; 
-\draw[->,thick] (S) -- (C); 
-\draw[->,thick] (C) -- node[above,align=center]{\footnotesize unknown\\[-2pt]\footnotesize to relay} (R); 
-\draw[->,thick] (R) -- node[above,align=center]{Hop 2\\$h_2[i],n_2[i]$} (D); 
-\node[below=0.9cm of C, align=center, font=\footnotesize] (note) {Departure from the canonical model:\\ channel \emph{memory} (3-tap ISI), nonlinearity, unknown phase.\\ Noise remains white; only the \emph{channel} violates memorylessness.}; 
-\draw[dotted] (C.south) -- (note.north); 
-\end{tikzpicture}% 
-} \caption{Unknown/mismatched-channel study (Chapter~\ref{sec:unknown-channels}), a deliberate departure from the canonical benchmark of Figure~\ref{fig:canonical-relay-benchmark}. The Hop-1 channel is replaced by an unknown impairment (3-tap ISI, amplifier nonlinearity, and unknown phase) that is not disclosed to any relay. The noise remains white; only the channel violates the memoryless assumption, which is why sequence detection (Viterbi MLSE) becomes the relevant classical benchmark here and nowhere else in the thesis.} 
-\label{fig:ext-unknown}
-\end{figure}
 
 \section{Unknown Channel: Classical Failure and Learned Mitigation}\label{sec:unknown-channel-experiment}
 
-\textbf{Goal:} Test whether the learned relay's value changes qualitatively when the channel violates the assumptions under which AF and DF are (near-)optimal: do the \emph{memoryless} classical relays fail on an unknown channel while the minimal 169-parameter MLP mitigates by learning it from data (H6)?\REV{The unknown-channel relay uses real-valued inputs with an $11$-sample window ($11 \to 13 \to 1$, $169$ parameters); the canonical-setup relay of Chapter~\ref{sec:experiments} uses the same minimal class with a slightly different width ($169$ parameters). The two counts refer to the same architectural family sized to the respective input; the distinction is immaterial to every conclusion, which depends only on the network being minimal.}
+\textbf{Goal:} Test whether the learned relay's value changes qualitatively when the channel violates the assumptions under which AF and DF are (near-)optimal: do the \emph{memoryless} classical relays fail on an unknown channel while the minimal 169-parameter MLP mitigates by learning it from data (H6)?\footnote{The unknown-channel relay uses real-valued inputs with an $11$-sample window ($11 \to 13 \to 1$, $169$ parameters); the canonical-setup relay of Chapter~\ref{sec:experiments} uses the same minimal class with a slightly different width ($169$ parameters). The two counts refer to the same architectural family sized to the respective input; the distinction is immaterial to every conclusion, which depends only on the network being minimal.} To make the classical side as strong as possible, the study benchmarks against the optimal sequence detector: Viterbi MLSE \cite{Forney1972MLSE} with genie CSI, and a practical variant with a 200-pilot least-squares estimate.
 
-Unlike the canonical experiments, where each transmitted symbol can be processed independently, the 3-tap ISI channel couples adjacent symbols in time. The sufficient statistic for detection is therefore no longer a single received sample, making sequence detection the relevant classical benchmark. To make the classical side as strong as possible, the study benchmarks against the optimal sequence detector: Viterbi MLSE applied to the 3-tap FIR/ISI channel \cite{Forney1972MLSE} with genie CSI, and a practical variant with a 200-pilot least-squares estimate.
+\textbf{Trials:} - \textbf{Topology:} SISO (both hops) - \textbf{Modulation scheme:} BPSK - \textbf{Hop-1 channel (unknown to all relays):} (i) 3-tap ISI, $h = [1.0, 0.7, 0.5]/\lVert h\rVert$; (ii) control: canonical Rayleigh; (iii) flat unknown channels, block phase, gain, per-branch asymmetry (Section~\ref{sec:flat-unknown-channels}); (iv) a composite cascade of ISI, amplifier nonlinearity, and unknown phase (Section~\ref{sec:composite-channel}) - \textbf{Hop-2 channel:} AWGN or canonical Rayleigh, equal SNR per hop - \textbf{Relays:} AF, symbol-wise DF, MLP (window 11, one hidden layer of 13 tanh units, 169 parameters; trained at SNR $\in \{5,10,15\}$ dB with MSE loss, per the canonical training protocol); for the ISI setups additionally Viterbi MLSE with genie CSI, and Viterbi with a 3-tap LS channel estimate from 200 pilot symbols - \textbf{Evaluation:} 5 trials $\times$ 50{,}000 bits per SNR point, 0--20 dB.
 
-MLSE is introduced here solely because the channel now contains memory. In the canonical memoryless setting of Chapters~\ref{sec:experiments}--\ref{sec:extensions}, per-symbol detection is sufficient and sequence detection provides no additional benefit. The need for MLSE therefore arises from the deliberate introduction of ISI in this chapter rather than from the system model studied elsewhere in the thesis.
-
-
-\paragraph{\textbf{Trials.}} 
-\begin{itemize} 
- \item \textbf{Topology:} SISO (both hops) 
-    \item \textbf{Modulation:} BPSK 
-    \item \textbf{Hop-1 channel (unknown to all relays):} 
-    \begin{itemize} 
-        \item 3-tap ISI, $h=[1.0,0.7,0.5]/\lVert h\rVert$ 
-        \item Control: canonical Rayleigh channel 
-        \item Flat unknown channels (block phase, gain, per-branch asymmetry; Section~\ref{sec:flat-unknown-channels})
-        \item Composite cascade of ISI, amplifier nonlinearity, and unknown phase (Section~\ref{sec:composite-channel}) 
-    \end{itemize} 
-    \item \textbf{Hop-2 channel:} AWGN or canonical Rayleigh, equal SNR per hop 
-    \item \textbf{Relays:} 
-    \begin{itemize} 
-        \item AF 
-        \item Symbol-wise DF 
-        \item MLP (window 11, one hidden layer of 13 tanh units, 169 parameters; trained at SNR $\in\{5,10,15\}$ dB using the canonical training protocol) 
-        \item For ISI setups only: Viterbi MLSE applied to the 3-tap FIR/ISI channel, evaluated with either genie CSI or a 3-tap least-squares channel estimate obtained from 200 pilot symbols 
-    \end{itemize} 
-\item \textbf{Evaluation:} 5 trials $\times$ 50{,}000 bits per SNR point, SNR range 0--20 dB
-\end{itemize}
-
-
-
-The ISI channel admits a sharp analytic prediction: the effective slicer amplitude $h_0 \pm h_1 \pm h_2 \in \{1.67, 0.91, 0.61, -0.15\}$ (normalized) has one of four equiprobable patterns that \emph{flip the symbol sign}, so symbol-wise DF has an irreducible BER floor of $0.25$ (approached from below as SNR grows); AF inherits it. The floor is a property of the \emph{memoryless relay class}, not the channel: Viterbi MLSE over the 4-state trellis has no floor when the channel is known.
+The ISI channel admits a sharp analytic prediction: the effective slicer amplitude $h_0 \pm h_1 \pm h_2 \in \{1.67, 0.91, 0.61, -0.15\}$ (normalized) has one of four equiprobable patterns \emph{flip the symbol sign}, so symbol-wise DF has an irreducible BER floor of $0.25$ (approached from below as SNR grows); AF inherits it. The floor is a property of the \emph{memoryless relay class}, not the channel: Viterbi MLSE over the 4-state trellis has no floor when the channel is known.
 
 
 \subsection{Flat (Memoryless) Unknown Channels: A Necessary Control}\label{sec:flat-unknown-channels}
 
 Before attributing any classical failure to ``unknownness,'' it must be separated from \emph{memory}. This subsection isolates unknown channels that are \emph{flat} (memoryless): the receiver chain does not know the channel parameters, but the channel introduces no intersymbol coupling. Three physically motivated cases are tested, each with the parameter redrawn per block and unknown to all relays: (F1) an unknown carrier phase $\theta\sim\mathcal{U}[0,2\pi)$ (oscillator/synchronization offset), with a DBPSK source and conventional differential detection as the classical relay; (F2) an unknown positive gain $g\sim\mathcal{U}[0.3,2.0]$ (path loss / AGC error), coherent BPSK; and (F3) an unknown per-branch amplitude asymmetry $a_+\!\neq\!a_-$ (per-symbol saturating-PA gain), coherent BPSK. The 169-parameter MLP is trained identically to before.
-
-These channels remain memoryless and therefore stay within the scope of the canonical model despite the parameter uncertainty. Consequently, they serve as a control that separates the effect of parameter uncertainty from the effect of channel memory: any performance change here arises from model uncertainty, not from memory.
-
 
 \textbf{Conclusion (memorylessness $\Rightarrow$ no classical failure, and nothing to mitigate):} On all three flat channels the classical relay does \emph{not} fail, and the MLP matches it to within statistical noise (maximum BER difference $0.0036$ across every case and SNR). The reasons are structural: for F1, unknown phase is exactly what differential detection absorbs; for F2, $\operatorname{sign}(y)$ is \emph{scale-invariant}, so unknown positive gain is irrelevant by construction; for F3, the fixed threshold is only mildly suboptimal because the asymmetry preserves the noiseless symbol's sign. The classical assumption, memorylessness, still holds in each case, so there is nothing for a learned relay to remove. This is the necessary control for the ISI result: the learned relay's advantage is triggered not by parameter uncertainty but by \emph{unmodeled memory} (or amplitude nonlinearity), which is what breaks the memoryless relay class.
 
@@ -104,7 +56,7 @@ Setup & Relay & 8 dB & 12 dB & 16 dB & 20 dB \\
 \endlastfoot
 Unknown ISI $\to$ AWGN & AF & 0.2044 & 0.1779 & 0.1872 & 0.2141 \\
  & DF & 0.1853 & 0.1833 & 0.2068 & 0.2343 \\
- & \textbf{MLP (169p)} & \textbf{0.0421} & \textbf{0.0030} & \textbf{$<5\times10^{-5}$} & \textbf{$<5\times10^{-5}$} \\
+ & \textbf{MLP (169p)} & \textbf{0.0421} & \textbf{0.0030} & \textbf{$<$5e-5} & \textbf{$<$5e-5} \\
  & Viterbi (genie CSI) & 0.0270 & 0.0002 & $<$5e-5 & $<$5e-5 \\
  & Viterbi (200-pilot LS) & 0.0277 & 0.0002 & $<$5e-5 & $<$5e-5 \\
 \hline
@@ -118,7 +70,6 @@ Control: canonical Rayleigh & AF & 0.1591 & 0.0894 & 0.0484 & 0.0236 \\
  & \textbf{DF} & \textbf{0.1208} & \textbf{0.0559} & \textbf{0.0242} & \textbf{0.0100} \\
  & MLP (169p) & 0.1202 & 0.0580 & 0.0265 & 0.0115 \\
 \end{longtable}
-\REV{Compilation fixes: all \texttt{\&amp;} column separators restored to \texttt{\&}, and \texttt{\$\&lt;\$5e-5} restored to \texttt{\$<\$5e-5} in Table~\ref{tbl:tableE6}.}
 
 \begin{figure}[H]
 \centering
@@ -128,10 +79,9 @@ Control: canonical Rayleigh & AF & 0.1591 & 0.0894 & 0.0484 & 0.0236 \\
 
 \subsection{A Composite (Mixed) Channel}\label{sec:composite-channel}
 
-The preceding studies vary one impairment at a time. Real links stack several. This final study cascades three of them into a single unknown channel that \emph{no} classical relay is jointly matched to: a DBPSK stream passes through 3-tap ISI, then a saturating power-amplifier nonlinearity, then an unknown block phase, before additive noise. Each classical baseline is the strongest available for \emph{one} constituent impairment, so the comparison is honest rather than a straw man: conventional differential detection (matched to the phase), and pilot-LS Viterbi MLSE followed by differential decoding (matched to the ISI-plus-phase, but blind to the amplifier nonlinearity). The 169-parameter MLP and a $1{,}153$-parameter MLP receive raw I/Q windows and no knowledge of any constituent. This composite channel departs from the canonical model in two ways: it introduces explicit channel memory through ISI and nonlinear distortion through the amplifier. The resulting benchmark therefore tests robustness to both memory and model mismatch simultaneously.
+The preceding studies vary one impairment at a time. Real links stack several. This final study cascades three of them into a single unknown channel that \emph{no} classical relay is jointly matched to: a DBPSK stream passes through 3-tap ISI, then a saturating power-amplifier nonlinearity, then an unknown block phase, before additive noise. Each classical baseline is the strongest available for \emph{one} constituent impairment, so the comparison is honest rather than a straw man: conventional differential detection (matched to the phase), and pilot-LS Viterbi MLSE followed by differential decoding (matched to the ISI-plus-phase, but blind to the amplifier nonlinearity). The 169-parameter MLP and a $1{,}153$-parameter MLP receive raw I/Q windows and no knowledge of any constituent.
 
-\textbf{Conclusion:} The composite defeats the naive classical relays outright, both AF and conventional differential detection saturate near the $0.25$ memoryless-relay floor, because the ISI destroys the differential statistic that the phase-matched detector relies on. The 169-parameter MLP again restores reliable relaying, reaching $5\times10^{-3}$ at 20 dB from raw I/Q with no impairment model. This reproduces the H6 pattern on a realistically mixed channel: memoryless-and-matched classical processing fails, and a minimal learned relay recovers. Two familiar boundaries also reappear. First, the strongest \emph{constructed} classical baseline, pilot-LS Viterbi plus differential decoding, does not fail: by modelling the ISI and phase (though not the amplifier) it stays about 2 dB ahead of the MLP at low-to-mid SNR ($0.094$ vs.\ $0.130$ at 8 dB) and converges with it by 16--20 dB. The learned relay's value is again \emph{family-agnosticism} (near-Viterbi reliability with no channel identification and no explicit model of any of the three cascaded effects) not superiority over a matched classical receiver. Second, the $1{,}153$-parameter network performs within noise of the 169-parameter one (and slightly worse at high SNR, consistent with mild overfitting), reconfirming the U-shaped complexity finding (H3) on the hardest channel studied. The composite thus consolidates the chapter's thesis: a single minimal learned relay handles an arbitrary stack of representable impairments without being told which are present, approaching but not exceeding the best impairment-matched classical receiver.
-\REV{``inverted-U finding (H3)'' \(\to\) ``U-shaped complexity finding (H3)'', consistent with the retitled H3 in Chapter~\ref{sec:research-objectives} and the wording in Chapter~\ref{sec:experiments}.}
+\textbf{Conclusion:} The composite defeats the naive classical relays outright, both AF and conventional differential detection saturate near the $0.25$ memoryless-relay floor, because the ISI destroys the differential statistic that the phase-matched detector relies on. The 169-parameter MLP again restores reliable relaying, reaching $5\times10^{-3}$ at 20 dB from raw I/Q with no impairment model. This reproduces the H6 pattern on a realistically mixed channel: memoryless-and-matched classical processing fails, and a minimal learned relay recovers. Two familiar boundaries also reappear. First, the strongest \emph{constructed} classical baseline, pilot-LS Viterbi plus differential decoding, does not fail: by modelling the ISI and phase (though not the amplifier) it stays about 2 dB ahead of the MLP at low-to-mid SNR ($0.094$ vs.\ $0.130$ at 8 dB) and converges with it by 16--20 dB. The learned relay's value is again \emph{family-agnosticism} (near-Viterbi reliability with no channel identification and no explicit model of any of the three cascaded effects) not superiority over a matched classical receiver. Second, the $1{,}153$-parameter network performs within noise of the 169-parameter one (and slightly worse at high SNR, consistent with mild overfitting), reconfirming the inverted-U finding (H3) on the hardest channel studied. The composite thus consolidates the chapter's thesis: a single minimal learned relay handles an arbitrary stack of representable impairments without being told which are present, approaching but not exceeding the best impairment-matched classical receiver.
 
 \begin{figure}[H]
 \centering
@@ -141,7 +91,7 @@ The preceding studies vary one impairment at a time. Real links stack several. T
 
 \subsection{The Posterior-Free (Blind) Regime}\label{sec:blind-channel}
 
-The Viterbi baseline in Section~\ref{sec:composite-channel} enjoys a per-block posterior: 200 pilot symbols yield a least-squares channel estimate, after which MLSE is optimal. This raises the sharper question, what if \emph{no} such posterior is available? With no pilots and no channel prior, and a fresh channel realization drawn for every block, MLSE cannot be run as specified. The honest comparison is then against the classical methods that are \emph{genuinely} posterior-free: the constant-modulus algorithm (CMA), the canonical blind adaptive equalizer, which self-adapts from the received signal alone; and a decision-directed blind MLSE that bootstraps a channel estimate from its own hard differential decisions. The learned relay is unchanged, trained offline on the channel \emph{family} (random ISI, PA, and phase per draw) and, crucially, seeing an unseen channel at test with no adaptation, so it too carries no per-block posterior; it amortizes over the family at training time. Unlike the canonical study, the challenge here is not symbol-level denoising on a memoryless channel but inference on an unknown channel with memory and no per-block posterior information.
+The Viterbi baseline in Section~\ref{sec:composite-channel} enjoys a per-block posterior: 200 pilot symbols yield a least-squares channel estimate, after which MLSE is optimal. This raises the sharper question, what if \emph{no} such posterior is available? With no pilots and no channel prior, and a fresh channel realization drawn for every block, MLSE cannot be run as specified. The honest comparison is then against the classical methods that are \emph{genuinely} posterior-free: the constant-modulus algorithm (CMA), the canonical blind adaptive equalizer, which self-adapts from the received signal alone; and a decision-directed blind MLSE that bootstraps a channel estimate from its own hard differential decisions. The learned relay is unchanged, trained offline on the channel \emph{family} (random ISI, PA, and phase per draw) and, crucially, seeing an unseen channel at test with no adaptation, so it too carries no per-block posterior; it amortizes over the family at training time.
 
 \textbf{Conclusion (learning does not beat blind classical, but is stable where blind classical is not):} A well-designed blind classical method still works in this regime, CMA converges smoothly to BER $2.4\times10^{-3}$ at 20 dB, and the family-trained MLP tracks it almost exactly ($2.6\times10^{-3}$), neither method dominating. This is the correct answer to ``what if there is no posterior?'': the learned relay does \emph{not} render classical processing obsolete, because blind adaptive equalization is itself a posterior-free classical tool. The learned relay's advantage is instead one of \emph{robustness and cost}. First, the decision-directed blind MLSE, the natural attempt to run Viterbi without pilots, is unstable: bootstrapping the channel from its own decisions, it intermittently locks onto the wrong hypothesis, producing a non-monotonic BER curve with a mid-SNR (8 dB) confidence interval of $0.164$ (versus $0.008$ for the MLP and $0.011$ for CMA). Second, CMA must iterate to convergence on each received block, whereas the MLP is a single fixed forward pass with no per-block adaptation loop and no convergence to monitor. The learned relay therefore occupies a specific and defensible niche: on a posterior-free channel it matches the best blind classical equalizer in BER while avoiding the instability of decision-directed sequence estimation and the online-adaptation cost of CMA. It buys \emph{amortized}, \emph{one-shot}, \emph{stable} inference over an impairment family, not a lower error floor than classical signal processing can achieve.
 
@@ -160,18 +110,23 @@ The full-posterior (Section~\ref{sec:composite-channel}) and zero-posterior (Sec
 
 The practical force of this depends on block length, because a fixed pilot \emph{count} is a growing pilot \emph{fraction} as blocks shorten. Panel (b) sweeps block length at the same operating point with the classical receiver spending its minimum viable ten pilots per block. The payload BERs stay close (Viterbi retaining a slight edge), but the spectral-efficiency gap widens sharply: at a 1000-symbol block the ten pilots cost $1\%$ of the block, whereas at a 40-symbol block, representative of low-latency or fast-varying links, they cost $25\%$, so the classical receiver carries data on only $75\%$ of the block against the learned relay's $100\%$. The partial-posterior picture therefore refines H6's boundary once more: the learned relay does not achieve lower BER than a classical receiver that can afford to estimate the channel accurately, but it removes the pilot overhead entirely, and it is the only \emph{one-shot} option that remains reliable when the block is too short, or the channel too transient, to estimate from pilots. The qualifier matters: blind CMA is also pilot-free, so the learned relay is not unique in avoiding pilots. What is distinctive is that it requires \emph{zero per-block adaptation}, a single fixed forward pass, whereas CMA must converge its adaptation loop within each block, a requirement that becomes progressively harder as blocks shorten. Whether CMA in fact fails to converge at $L = 40$ was not measured in this sweep, and is left as an open point rather than asserted.
 
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.85\linewidth]{results/e6_partial_pilot_budget_sweep.png}
-\caption{Pilot-budget sweep at 10~dB. Pilot-aided Viterbi outperforms the pilot-free MLP down to approximately 10 pilots per block, but collapses at 5 pilots when the least-squares channel estimate becomes too noisy to construct a reliable trellis ($0.119 \pm 0.084$). In contrast, the MLP remains essentially unchanged because it operates with an amortized posterior and requires no pilots.}
-\label{fig:e6_partial_pilot_budget}
-\end{figure}
+% \begin{figure}[H]
+% \centering
+% \pandocbounded{\includegraphics[width=\linewidth,height=0.30\textheight,keepaspectratio]{results/e6_partial.png}}
+% \caption{Partial known posterior. (a) Pilot-budget sweep at 10 dB: pilot-aided Viterbi beats the pilot-free MLP down to $\sim$10 pilots, then collapses at 5 pilots, where the least-squares channel estimate becomes too noisy to build a reliable trellis ($0.119 \pm 0.084$); the MLP is flat (amortized posterior, no pilots). (b) Block-length sweep with 10 pilots/block: payload BERs stay close, but the classical pilot overhead grows from $1\%$ at $L{=}1000$ to $25\%$ at $L{=}40$, where the learned relay's zero-overhead operation is decisive.}\label{fig:figE6partial}
+% \end{figure}
 
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.85\linewidth]{results/e6_partial_short_blocks_overhead.png}
+\begin{figure}[H] 
+\centering 
+\includegraphics[width=0.85\linewidth]{results/e6_partial_pilot_budget_sweep.png} 
+\caption{Pilot-budget sweep at 10~dB. Pilot-aided Viterbi outperforms the pilot-free MLP down to approximately 10 pilots per block, but collapses at 5 pilots when the least-squares channel estimate becomes too noisy to construct a reliable trellis ($0.119 \pm 0.084$). In contrast, the MLP remains essentially unchanged because it operates with an amortized posterior and requires no pilots.}
+\label{fig:e6_partial_pilot_budget} 
+\end{figure} 
+\begin{figure}[H] 
+\centering 
+\includegraphics[width=0.85\linewidth]{results/e6_partial_short_blocks_overhead.png} 
 \caption{Block-length sweep with 10 pilots per block. Payload BER remains similar across methods, but the effective pilot overhead of the classical approach increases rapidly as the block length decreases, growing from approximately 1\% at $L=1000$ to 25\% at $L=40$. The pilot-free MLP incurs no such overhead and therefore becomes increasingly attractive for short packets.}
-\label{fig:e6_partial_short_blocks}
+\label{fig:e6_partial_short_blocks} 
 \end{figure}
 
 
@@ -183,19 +138,25 @@ Across the unknown-channel studies the pilot-aided Viterbi receiver, where it ap
 
 \textbf{Measured inference time.} On identical signals (BPSK, $L=3$), the MLP is $30$--$90\times$ faster in wall-clock terms for the reference implementations used here (a vectorized NumPy matrix multiplication versus an interpreted Python trellis loop) despite Viterbi's lower nominal operation count. Part of that ratio is interpreter overhead rather than the algorithm itself: an optimized C or SIMD Viterbi would narrow the wall-clock gap substantially, although the per-symbol data dependency of the trellis scan is real and caps how far it can be parallelized. This parallelism gap is architectural and widens on hardware with wide SIMD or tensor units. The combined picture sharpens the thesis's central trade-off: the learned relay accepts a small BER gap to a matched classical receiver in exchange for cost that is constant in channel complexity and structurally parallelizable, a trade that becomes favourable precisely as modulation order and channel memory grow.
 
-The experiments of this chapter deliberately extend the thesis beyond the canonical memoryless model. The resulting conclusions should therefore be interpreted as robustness results under model mismatch rather than as replacements for the matched-model conclusions of Chapters~\ref{sec:experiments}--\ref{sec:extensions}. Together, the two parts of the thesis delineate where learning provides value: not under matched memoryless conditions, where classical methods remain strongest, but when the assumptions underlying those methods are violated.
 
 
-\begin{figure}[H]
+% \begin{figure}[H]
+% \centering
+% \pandocbounded{\includegraphics[width=\linewidth,height=0.30\textheight,keepaspectratio]{results/e6_complexity.png}}
+% \caption{Complexity of Viterbi MLSE vs the 169-parameter MLP. (a) Per-symbol operations: Viterbi grows as $M^{L}$ (intractable by $M{=}16,L{=}5$), while the MLP is constant at $\sim$330 flops. On the small studied channel (BPSK, $L{=}3$) Viterbi is actually cheaper; the MLP wins on \emph{scaling}, not on the small case. (b) Measured inference time (reference implementations): the MLP is $30$--$90\times$ faster as a vectorized matmul versus Viterbi's interpreted sequential trellis scan.}\label{fig:figE6complexity}
+% \end{figure}
+
+\begin{figure}[H] 
 \centering
 \pandocbounded{\includegraphics[width=0.8\linewidth]{results/e6_per_symbol_cost_vs_modulation_memory.png}}
-\caption{Per-symbol computational cost versus modulation order $M$ and channel memory $L$. Per-symbol operations: Viterbi grows as $M^{L}$ (intractable by $M{=}16,L{=}5$), while the MLP is constant at $\sim$330 flops. On the small studied channel (BPSK, $L{=}3$) Viterbi is actually cheaper; the MLP wins on \emph{scaling}, not on the small case.}
-\label{fig:figE6complexity}
-\end{figure}
 
-\begin{figure}[H]
-\centering
+\caption{Per-symbol computational cost versus modulation order $M$ and channel memory $L$.Per-symbol operations: Viterbi grows as $M^{L}$ (intractable by $M{=}16,L{=}5$), while the MLP is constant at $\sim$330 flops. On the small studied channel (BPSK, $L{=}3$) Viterbi is actually cheaper; the MLP wins on \emph{scaling}, not on the small case} 
+\label{fig:figE6complexity} 
+\end{figure} 
+
+\begin{figure}[H] 
+\centering 
 \pandocbounded{\includegraphics[width=0.8\linewidth]{results/e6_right_clean.png}}
-\caption{Measured inference time for BPSK with $L=3$: the MLP is $30$--$90\times$ faster as a vectorized matmul versus Viterbi's interpreted sequential trellis scan.}
-\label{fig:e6_inference_time}
+\caption{Measured inference time for BPSK with $L=3$: the MLP is $30$--$90\times$ faster as a vectorized matmul versus Viterbi's interpreted sequential trellis scan} 
+\label{fig:e6_inference_time} 
 \end{figure}
