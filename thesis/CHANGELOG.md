@@ -101,19 +101,9 @@ Results that changed, all updated in the text and re-verified:
   figures from the committed `.npy` files. These figures previously had no
   regeneration path in the repository, so a rerun could not be reflected in the
   document; that gap is now closed.
-- Verification extended to the rewritten prose: 304 cells, 0 inconsistencies
-  (was 284), with the three prose checks nearly tripling their coverage
-  (blind 5->9, partial 4->13, composite 3->10) at a 5x tighter tolerance.
-
-### Added — AWGN companion comparison (Section 5.3)
-
-Table 5.5 (`tbl:table2awgn`) and Figure 5.5 report the same nine-relay
-comparison as the canonical Rayleigh table/figure, but on AWGN, at the
-identical $10\times10{,}000$ budget. The data (`results/bpsk_comparison/awgn.json`)
-already existed and was previously used only for theory-vs-simulation
-calibration (Section 5.2); Chapter 1's "AWGN retained as analytical
-calibration" claims were updated to reflect the new companion use. Verified
-(`tbl:table2awgn`, 54 cells, 0 mismatches).
+- Verification extended to the rewritten prose, with the three prose checks
+  nearly tripling their coverage (blind 5->9, partial 4->13, composite 3->10)
+  at a 5x tighter tolerance.
 
 ### Fixed — closed 3 outstanding supervisor (AK) follow-up comments
 
@@ -256,16 +246,21 @@ Audited all 17 supervisor (AK) comments against the current document rather
 than against the appendix's own account of them. Sixteen held; the exceptions
 were bookkeeping, fixed here.
 
+### Reverted
+
+- **The AWGN nine-relay companion comparison was withdrawn.** It had been added
+  to Section 5.3 alongside the canonical Rayleigh comparison, but it
+  contradicted Appendix E's statement that "the AWGN and Rician robustness
+  studies ... were all removed" in answer to comment 4 — the comment the
+  appendix itself calls the decisive one behind the restructure. Table 5.5,
+  Figure 5.5, the surrounding discussion, the Chapter 1 wording changes, the
+  `check_table2awgn` verifier check and the companion figure are all removed;
+  AWGN returns to its calibration-only role (Section 5.2) and the canonical
+  BPSK/Rayleigh comparison (Table 5.4) is untouched. Verification returns to
+  **250 cells, 0 inconsistencies**.
+
 ### Fixed
 
-- **Appendix E claimed AWGN had been removed, while Section 5.3 evaluates it.**
-  The AWGN nine-relay companion comparison (Table 5.5) was added after Appendix
-  E was written, contradicting its statement that "the AWGN and Rician
-  robustness studies ... were all removed". Resolved in favour of keeping AWGN
-  with an explicitly bounded role: calibration plus a BPSK-only companion
-  comparison, from which no hypothesis is tested and no relay ranked. Appendix
-  E, the Section 5.3 discussion, and the Chapter 8 future-work item now state
-  that role identically. Rician remains removed outright.
 - **Appendix E cited the wrong abstract include paths** (`ch00_frontmatter.tex`,
   `ch09_hebrew_abstract.tex`); `main.tex` includes `chapters/frontmatter.tex`
   and `chapters/hebrew_abstract.tex`. Corrected.
