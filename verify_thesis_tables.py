@@ -134,12 +134,14 @@ def data_rows(body):
 STOCHASTIC_TABLES = {"tbl:tableE6": 0.010, "tbl:tableE6flat": 0.010,
                      "tbl:tableE6qpsk": 0.010,
                      "tbl:table24": 0.002,
-                     # prose claims from the E6 blind/partial/composite studies
-                     # (5-6 trials x 40k bits; the partial-posterior 5-pilot
-                     # point is dominated by occasional catastrophic LS fits,
-                     # hence the wider slack)
-                     "prose:E6blind": 0.010, "prose:E6composite": 0.010,
-                     "prose:E6partial": 0.030}
+                     # Prose claims from the E6 blind/partial/composite studies.
+                     # These are now transcribed from the committed .npy at
+                     # 10x100k (composite) and 50x20k (blind, partial), so the
+                     # slack only needs to absorb display rounding plus a little
+                     # Monte-Carlo noise -- not the wide cross-run spread the
+                     # earlier 5-6 trial budgets required.
+                     "prose:E6blind": 0.002, "prose:E6composite": 0.002,
+                     "prose:E6partial": 0.004}
 
 
 class Report:
@@ -509,78 +511,116 @@ def _load_e6_npy(name):
 
 
 def check_E6blind_prose(tex, rep):
-    """Blind-regime prose claims (Section 'The Posterior-Free (Blind) Regime')
-    vs e6_blind_ported_results.npy: CMA/MLP BER at 20 dB and the mid-SNR
-    (10 dB) 95% CI instability comparison."""
+    """Blind-regime prose claims vs e6_blind_ported_results.npy."""
     T = "prose:E6blind"; before = rep.checked
     d = _load_e6_npy("e6_blind_ported_results.npy")
     if d is None:
         return rep.skip(T, "e6_blind_ported_results.npy not found (run e6_blind_ported.py)")
-    snrs = list(d["snrs"]); s20 = snrs.index(20)
-    sm = d["summary"]  # name -> (mean_per_snr, ci_per_snr)
+    snrs = list(d["snrs"])
+    sm = d["summary"]
+    i8, i16, i20 = snrs.index(8), snrs.index(16), snrs.index(20)
 
-    m = re.search(r"CMA converges smoothly to BER \$([\d.]+)\\times10\^\{-3\}\$ at 20 dB", tex)
+    m = re.search(r"corrected CMA converges smoothly to BER \$([\d.]+)\\times10\^\{-3\}\$ at 20 dB", tex)
     if m:
         rep.cell(T, "CMA-blind/20dB", m.group(1) + "e-3", float(m.group(1)) * 1e-3,
-                 sm["CMA-blind"][0][s20])
-    m = re.search(r"tracks it almost exactly \(\$([\d.]+)\\times10\^\{-3\}\$\)", tex)
+                 sm["CMA-blind"][0][i20])
+    m = re.search(r"MLP reaches \$([\d.]+)\\times10\^\{-3\}\$", tex)
     if m:
         rep.cell(T, "MLP-169/20dB", m.group(1) + "e-3", float(m.group(1)) * 1e-3,
-                 sm["MLP-169"][0][s20])
-    m = re.search(r"mid-SNR \((\d+) dB\) confidence interval of \$([\d.]+)\$ "
-                  r"\(versus \$([\d.]+)\$ for the MLP and \$([\d.]+)\$ for CMA\)", tex)
+                 sm["MLP-169"][0][i20])
+    m = re.search(r"\(\$([\d.]+)\$ vs\.\\ \$([\d.]+)\$ at 8 dB\)\. This is the correct answer", tex)
     if m:
-        sci = snrs.index(int(m.group(1)))
-        db = m.group(1)
-        rep.cell(T, f"Viterbi-blind CI/{db}dB", m.group(2), float(m.group(2)),
-                 sm["Viterbi-blind"][1][sci])
-        rep.cell(T, f"MLP CI/{db}dB", m.group(3), float(m.group(3)), sm["MLP-169"][1][sci])
-        rep.cell(T, f"CMA CI/{db}dB", m.group(4), float(m.group(4)), sm["CMA-blind"][1][sci])
+        rep.cell(T, "MLP-169/8dB", m.group(1), float(m.group(1)), sm["MLP-169"][0][i8])
+        rep.cell(T, "CMA-blind/8dB", m.group(2), float(m.group(2)), sm["CMA-blind"][0][i8])
+    m = re.search(r"falling to \$([\d.]+)\$ at 16 dB before rising again to \$([\d.]+)\$ at 20 dB", tex)
+    if m:
+        rep.cell(T, "Viterbi-blind/16dB", m.group(1), float(m.group(1)), sm["Viterbi-blind"][0][i16])
+        rep.cell(T, "Viterbi-blind/20dB", m.group(2), float(m.group(2)), sm["Viterbi-blind"][0][i20])
+    m = re.search(r"interval at 8 dB is \$\\pm([\d.]+)\$.*?MLP's \$\\pm([\d.]+)\$.*?CMA's \$\\pm([\d.]+)\$", tex, re.S)
+    if m:
+        rep.cell(T, "Viterbi-blind CI/8dB", m.group(1), float(m.group(1)), sm["Viterbi-blind"][1][i8])
+        rep.cell(T, "MLP CI/8dB", m.group(2), float(m.group(2)), sm["MLP-169"][1][i8])
+        rep.cell(T, "CMA CI/8dB", m.group(3), float(m.group(3)), sm["CMA-blind"][1][i8])
     rep.finish_table(T, before)
 
 
 def check_E6partial_prose(tex, rep):
-    """Partial-posterior prose claims (pilot-budget sweep at 10 dB) vs
-    e6_partial_ported_results.npy."""
+    """Partial-posterior prose claims (both panels) vs e6_partial_ported_results.npy."""
     T = "prose:E6partial"; before = rep.checked
     d = _load_e6_npy("e6_partial_ported_results.npy")
     if d is None:
         return rep.skip(T, "e6_partial_ported_results.npy not found (run e6_partial_ported.py)")
-    pa = d["panel_a"]  # n_pilots -> (mean, ci)
+    pa = d["panel_a"]
+    pb = d.get("panel_b", {})
+    pbc = d.get("panel_b_cma", {})
 
     m = re.search(r"payload BER \$([\d.]+)\$ at 800 pilots", tex)
     if m:
         rep.cell(T, "Viterbi/800 pilots", m.group(1), float(m.group(1)), pa[800][0])
-    m = re.search(r"down to \$([\d.]+)\$ at 10 pilots", tex)
+    m = re.search(r"down to \$([\d.]+)\$ at 20 pilots", tex)
     if m:
-        rep.cell(T, "Viterbi/10 pilots", m.group(1), float(m.group(1)), pa[10][0])
-    m = re.search(r"jumps to \$([\d.]+)\$", tex)
-    if m:
-        rep.cell(T, "Viterbi/5 pilots", m.group(1), float(m.group(1)), pa[5][0])
-    m = re.search(r"sweep at \$([\d.]+)\$", tex)
+        rep.cell(T, "Viterbi/20 pilots", m.group(1), float(m.group(1)), pa[20][0])
+    m = re.search(r"MLP's pilot-free \$([\d.]+)\$", tex)
     if m:
         rep.cell(T, "MLP pilot-free ref", m.group(1), float(m.group(1)), d["mlp_ref"][0])
+    m = re.search(r"At 10 pilots Viterbi has already lost its edge, \$([\d.]+)\$ against the MLP's \$([\d.]+)\$", tex)
+    if m:
+        rep.cell(T, "Viterbi/10 pilots", m.group(1), float(m.group(1)), pa[10][0])
+        rep.cell(T, "MLP ref (10-pilot cmp)", m.group(2), float(m.group(2)), d["mlp_ref"][0])
+    m = re.search(r"at 5 pilots it collapses to \$([\d.]+)\$", tex)
+    if m:
+        rep.cell(T, "Viterbi/5 pilots", m.group(1), float(m.group(1)), pa[5][0])
+    m = re.search(r"\(\$([\d.]+) \\pm ([\d.]+)\$, against \$\\pm ([\d.]+)\$ at 50 pilots\)", tex)
+    if m:
+        rep.cell(T, "Viterbi/5 pilots (CI ctx)", m.group(1), float(m.group(1)), pa[5][0])
+        rep.cell(T, "Viterbi CI/5 pilots", m.group(2), float(m.group(2)), pa[5][1])
+        rep.cell(T, "Viterbi CI/50 pilots", m.group(3), float(m.group(3)), pa[50][1])
+    m = re.search(r"flat across the entire sweep at \$([\d.]+)\$", tex)
+    if m:
+        rep.cell(T, "MLP flat ref", m.group(1), float(m.group(1)), d["mlp_ref"][0])
+    # panel (b): blind CMA per-block convergence failure
+    m = re.search(r"payload BER is \$([\d.]+)\$ at \$L=40\$ and only improves to \$([\d.]+)\$ at \$L=1000\$", tex)
+    if m and pbc:
+        rep.cell(T, "CMA/L=40", m.group(1), float(m.group(1)), pbc[40][0])
+        rep.cell(T, "CMA/L=1000", m.group(2), float(m.group(2)), pbc[1000][0])
+    m = re.search(r"against the \$([\d.]+)\$ it achieves when given a \$20\{,\}000\$-symbol block", tex)
+    if m:
+        rep.cell(T, "CMA/20k-block ref", m.group(1), float(m.group(1)), d["cma_ref"][0])
     rep.finish_table(T, before)
 
 
 def check_E6composite_prose(tex, rep):
-    """Composite-cascade prose claims vs e6_composite_ported_results.npy:
-    MLP-170 BER at 20 dB and the Viterbi-vs-MLP gap at 8 dB."""
+    """Composite-cascade prose claims vs e6_composite_ported_results.npy."""
     T = "prose:E6composite"; before = rep.checked
     d = _load_e6_npy("e6_composite_ported_results.npy")
     if d is None:
         return rep.skip(T, "e6_composite_ported_results.npy not found (run e6_composite_ported.py)")
-    snrs = list(d["snrs"]); s20 = snrs.index(20); s8 = snrs.index(8)
+    snrs = list(d["snrs"]); s8 = snrs.index(8); s10 = snrs.index(10); s20 = snrs.index(20)
     sm = d["summary"]
 
     m = re.search(r"reaching \$([\d.]+)\\times10\^\{-3\}\$ at 20 dB", tex)
     if m:
-        rep.cell(T, "MLP-170/20dB", m.group(1) + "e-3", float(m.group(1)) * 1e-3,
+        rep.cell(T, "MLP-169/20dB", m.group(1) + "e-3", float(m.group(1)) * 1e-3,
                  sm["MLP-169"][0][s20])
-    m = re.search(r"\(\$([\d.]+)\$ vs\.\\ \$([\d.]+)\$ at 8 dB\)", tex)
+    m = re.search(r"\(\$([\d.]+)\$ vs\.\\ \$([\d.]+)\$ at 8 dB\) and converges", tex)
     if m:
         rep.cell(T, "Viterbi-diff/8dB", m.group(1), float(m.group(1)), sm["Viterbi-diff"][0][s8])
-        rep.cell(T, "MLP-170/8dB", m.group(2), float(m.group(2)), sm["MLP-169"][0][s8])
+        rep.cell(T, "MLP-169/8dB", m.group(2), float(m.group(2)), sm["MLP-169"][0][s8])
+    m = re.search(r"indistinguishable at \$([\d.]+)\$ each at 20 dB", tex)
+    if m:
+        rep.cell(T, "MLP-169/20dB (tie)", m.group(1), float(m.group(1)), sm["MLP-169"][0][s20])
+        rep.cell(T, "Viterbi-diff/20dB (tie)", m.group(1), float(m.group(1)), sm["Viterbi-diff"][0][s20])
+    m = re.search(r"\(\$([\d.]+)\$ vs\.\\ \$([\d.]+)\$ at 10 dB for the larger network", tex)
+    if m:
+        rep.cell(T, "MLP-large/10dB", m.group(1), float(m.group(1)), sm["MLP-large"][0][s10])
+        rep.cell(T, "MLP-169/10dB", m.group(2), float(m.group(2)), sm["MLP-169"][0][s10])
+    m = re.search(r"\$([\d.]+)\$ vs\.\\ \$([\d.]+)\$ at 8 dB for the smaller", tex)
+    if m:
+        rep.cell(T, "MLP-large/8dB", m.group(1), float(m.group(1)), sm["MLP-large"][0][s8])
+        rep.cell(T, "MLP-169/8dB (cmp)", m.group(2), float(m.group(2)), sm["MLP-169"][0][s8])
+    m = re.search(r"ending at the identical \$([\d.]+)\$ at 20 dB", tex)
+    if m:
+        rep.cell(T, "MLP-large/20dB", m.group(1), float(m.group(1)), sm["MLP-large"][0][s20])
     rep.finish_table(T, before)
 
 

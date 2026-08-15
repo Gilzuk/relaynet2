@@ -28,7 +28,9 @@ from relaynet.relays import MLPRelay
 
 W = 11
 TRAIN_SNRS = [5, 10, 15]
-N_TRIALS, N_BITS = 6, 40_000
+# As in e6_blind_ported.py: RandomISICompositeChannel redraws per call, so
+# trials are channel draws. 50 x 20k = 1,000,000 bits over 50 realizations.
+N_TRIALS, N_BITS = 50, 20_000
 PILOTS = [800, 200, 50, 20, 10, 5]
 BLOCK_LENGTHS = [40, 80, 160, 320, 1000]
 N_MIN_PILOTS = 10
@@ -98,7 +100,7 @@ def viterbi_diff_decode(y, h):
     return np.r_[1.0, s_rec[1:] * s_rec[:-1]]
 
 
-def cma_dfe(y, taps=7, mu=1e-3, iters=2):
+def cma_dfe(y, taps=7, mu=1e-3, iters=2, eps=1e-6):
     n = y.size
     w = np.zeros(taps, dtype=complex)
     w[taps // 2] = 1.0
@@ -110,7 +112,9 @@ def cma_dfe(y, taps=7, mu=1e-3, iters=2):
             o = np.vdot(w, seg)
             out[i] = o
             e = o * (np.abs(o) ** 2 - 1.0)
-            w -= mu * e * np.conj(seg)
+            # NLMS-normalised step; see the note in e6_blind_ported.cma_dfe.
+            # An unnormalised fixed step diverges on long blocks.
+            w -= (mu / (eps + np.vdot(seg, seg).real)) * e * np.conj(seg)
     return out
 
 
@@ -160,28 +164,71 @@ def ber_viterbi_pilots(snr_db, n_pilots, n_trials, n_bits=N_BITS):
     return errs.mean(), 1.96 * errs.std() / np.sqrt(n_trials)
 
 
-def ber_viterbi_blocklen(snr_db, block_len, n_pilots, n_trials):
-    """Panel (b): payload BER + overhead at a fixed pilot count, varying block length."""
+def ber_viterbi_blocklen(snr_db, block_len, n_pilots, n_trials, n_bits=N_BITS):
+    """Panel (b): payload BER + overhead at a fixed pilot count, varying block length.
+
+    Each trial processes ~n_bits worth of INDEPENDENT short blocks (fresh
+    channel realization per block), so every block length is measured on the
+    same total bit budget rather than a single block per trial.
+    """
     channel = RandomISICompositeChannel(pa_sat=1.2)
     hop2 = ComplexISIRayleighChannel(taps=np.array([1.0]))
+    n_blocks = max(1, n_bits // block_len)
     errs = np.zeros(n_trials)
     for tr in range(n_trials):
         r = np.random.default_rng(60_000 + 700 * block_len + tr)
-        bits = r.integers(0, 2, block_len)
-        x = 1.0 - 2.0 * bits
-        s = diff_encode(x).astype(complex)
         channel.rng = r
-        y = channel(s, snr_db)
-
-        s_pilot = diff_encode(x[:n_pilots])
-        h_est = ls_channel_estimate(y[:n_pilots], s_pilot)
-        x_hat = viterbi_diff_decode(y, h_est)
-
         hop2.rng = r
-        y_dest = hop2(x_hat, snr_db)
-        errs[tr] = np.mean((y_dest.real < 0).astype(int)[n_pilots:] != bits[n_pilots:])
+        n_err, n_payload = 0, 0
+        for _ in range(n_blocks):
+            bits = r.integers(0, 2, block_len)
+            x = 1.0 - 2.0 * bits
+            s = diff_encode(x).astype(complex)
+            y = channel(s, snr_db)
+
+            s_pilot = diff_encode(x[:n_pilots])
+            h_est = ls_channel_estimate(y[:n_pilots], s_pilot)
+            x_hat = viterbi_diff_decode(y, h_est)
+
+            y_dest = hop2(x_hat, snr_db)
+            n_err += int(np.sum((y_dest.real < 0).astype(int)[n_pilots:] != bits[n_pilots:]))
+            n_payload += block_len - n_pilots
+        errs[tr] = n_err / n_payload
     overhead = n_pilots / block_len
     return errs.mean(), 1.96 * errs.std() / np.sqrt(n_trials), overhead
+
+
+def ber_cma_blocklen(snr_db, block_len, n_trials, n_bits=N_BITS):
+    """Panel (b) companion: blind CMA per short block (no pilots).
+
+    CMA must adapt within each block from the block's own samples, so short
+    blocks starve its adaptation loop. This measures that directly, closing
+    what the text previously left as an open point.
+    """
+    channel = RandomISICompositeChannel(pa_sat=1.2)
+    hop2 = ComplexISIRayleighChannel(taps=np.array([1.0]))
+    n_blocks = max(1, n_bits // block_len)
+    errs = np.zeros(n_trials)
+    for tr in range(n_trials):
+        r = np.random.default_rng(90_000 + 700 * block_len + tr)
+        channel.rng = r
+        hop2.rng = r
+        n_err, n_payload = 0, 0
+        for _ in range(n_blocks):
+            bits = r.integers(0, 2, block_len)
+            x = 1.0 - 2.0 * bits
+            s = diff_encode(x).astype(complex)
+            y = channel(s, snr_db)
+
+            eq = cma_dfe(y)
+            d = np.real(eq[1:] * np.conj(eq[:-1]))
+            x_hat = np.r_[1.0, np.sign(d) + (d == 0)]
+
+            y_dest = hop2(x_hat, snr_db)
+            n_err += int(np.sum((y_dest.real < 0).astype(int)[1:] != bits[1:]))
+            n_payload += block_len - 1
+        errs[tr] = n_err / n_payload
+    return errs.mean(), 1.96 * errs.std() / np.sqrt(n_trials)
 
 
 def ref_at(snr_db, mlp, n_trials, n_bits=N_BITS):
@@ -238,18 +285,23 @@ def main():
 
     print(f"\n=== Panel (b): block-length sweep, fixed {N_MIN_PILOTS}-pilot preamble, {OP_SNR:.0f} dB ===")
     panel_b = {}
+    panel_b_cma = {}
     for block_len in BLOCK_LENGTHS:
         mu, ci, overhead = ber_viterbi_blocklen(OP_SNR, block_len, N_MIN_PILOTS, N_TRIALS)
         panel_b[block_len] = (mu, ci, overhead)
+        cmu, cci = ber_cma_blocklen(OP_SNR, block_len, N_TRIALS)
+        panel_b_cma[block_len] = (cmu, cci)
         print(f"  L={block_len:>5d}: Viterbi payload BER={mu:.4f} +/- {ci:.4f}, "
-              f"overhead={100*overhead:.2f}% (MLP overhead = 0% always)")
+              f"overhead={100*overhead:.2f}%  |  CMA-blind BER={cmu:.4f} +/- {cci:.4f} "
+              f"(MLP overhead = 0% always)")
 
     output_path = '/tmp/e6_partial_ported_results.npy'
     np.save(output_path, {
         'op_snr': OP_SNR, 'pilots': PILOTS, 'panel_a': panel_a,
         'mlp_ref': mlp_ref, 'cma_ref': cma_ref,
         'block_lengths': BLOCK_LENGTHS, 'n_min_pilots': N_MIN_PILOTS, 'panel_b': panel_b,
-        'n_bits': N_BITS,
+        'panel_b_cma': panel_b_cma,
+        'n_trials': N_TRIALS, 'n_bits': N_BITS,
     }, allow_pickle=True)
     print(f"\nResults saved to {output_path}")
     print("\n" + "=" * 80)

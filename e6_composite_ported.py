@@ -33,7 +33,7 @@ from relaynet.modulation import calculate_ber
 W = 11
 SNRS = np.arange(0, 21, 2)
 TRAIN_SNRS = [5, 10, 15]
-N_TRIALS, N_BITS = 5, 40_000  # standalone's own dev budget (see PORTING.md conventions table)
+N_TRIALS, N_BITS = 10, 100_000  # project-standard scale (matches e6_sim/viterbi/flat)
 H_ISI = np.array([1.0, 0.6, 0.4])
 H_ISI = H_ISI / np.linalg.norm(H_ISI)
 
@@ -234,7 +234,8 @@ def main():
         print(f"  {name:>13}: " + " ".join(f"{m:7.4f}" for m in mu))
 
     output_path = '/tmp/e6_composite_ported_results.npy'
-    np.save(output_path, {'snrs': SNRS, 'summary': summary}, allow_pickle=True)
+    np.save(output_path, {'snrs': SNRS, 'summary': summary,
+                          'n_trials': N_TRIALS, 'n_bits': N_BITS}, allow_pickle=True)
     print(f"\nResults saved to {output_path}")
     print("\n" + "=" * 80)
     print("E6_COMPOSITE: Complete")

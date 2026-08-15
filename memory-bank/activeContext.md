@@ -224,3 +224,18 @@ User asked about the BPSK+AWGN trials and to list all experiments. Found: AWGN a
 
 ## Immediate next step
 None pending — awaiting user direction.
+
+## Latest (2026-08-15, cont'd): Ch7 sub-studies rerun at full scale; CMA divergence bug found and fixed
+User gave broad latitude ("I don't mind rerun new experiments or restructuring... as long as the professor is pleased"), so the previously disclose-only gap (composite/blind/partial at 5-6x40k) was actually closed. Two REAL defects surfaced — both fixed rather than written up as findings:
+
+1. **CMA divergence (genuine bug).** `cma_dfe` used a fixed unnormalized step; the CMA error is cubic in |o|, so it's a positive-feedback loop. Proved directly: max|w| = 1.50 over 40k samples, `inf` over 100k. The first 10x100k rerun gave CMA 0.128 @20dB vs the old 0.0024 — which, taken at face value, would have been published as "CMA degrades". It was an overflow artifact. Fixed with NLMS normalization (`mu/(eps+<seg,seg>)`) in BOTH `e6_blind_ported.py` and `e6_partial_ported.py`; verified stable at 10k/20k/40k/100k. This is a *stronger* classical baseline, so the comparison got harder for the MLP, not easier. Disclosed in the thesis text as a correction.
+2. **Trials = channel draws.** `RandomISICompositeChannel` redraws ISI/PA/phase per `__call__` = per trial. So for blind/partial, bits-per-trial only sharpens ONE channel's estimate; only trial count averages the family. Nominal "10x100k" would have been scientifically worse than what it replaced. Chose **50x20k** (1M bits, 50 draws = 10x the old ensemble) for blind+partial; **10x100k** for composite (fixed taps, so bits do help). All studies now M>=10 → the Wilcoxon M=5 caveat in Ch4 is gone.
+
+Result changes (all updated + verified): pilot crossover moved from ~10 to ~20 pilots (Viterbi 0.0545 vs MLP 0.0487 at 10 pilots — it now LOSES there); 5-pilot collapse persists (0.1235±0.0304); composite MLP@8dB 0.130→0.126; the "MLP-large slightly worse at high SNR / mild overfitting" claim WITHDRAWN (now identical 0.0050, diffs both directions within CI — H3 still holds via a cleaner argument); blind CIs requoted at 8dB.
+**Open point CLOSED with data**: "whether CMA fails to converge at L=40 was not measured" → now measured: 0.1723 @L=40, 0.1653 @L=1000, vs 0.0645 with a 20k block. CMA does not converge within ≤1000-symbol blocks. Panel (b) is now a much sharper argument: Viterbi and MLP identical (~0.049) at every L, but Viterbi pays up to 25% overhead and the other pilot-free option (CMA) fails outright.
+Added `scripts/plot_e6_studies.py` — regenerates all 4 Ch7 figures from the npys, closing the "no regeneration path" gap flagged earlier (previously only cached .npy survived).
+Verifier: 284 → **304 cells, 0 inconsistencies**; prose coverage nearly tripled (blind 5→9, partial 4→13, composite 3→10) at 5x tighter tolerance (0.002-0.004 vs 0.010-0.030). Gotcha hit and fixed: rewriting the prose broke the old regex-based checkers, and a bad splice deleted `check_table26`/`check_ber_validation` — restored from git. **Always re-run the verifier after rewriting prose; the checks are regex-pinned to exact wording and silently drop to 0 cells otherwise.**
+Recompiled clean: 0 undefined refs, 142 pages (was 139).
+
+## Immediate next step
+Overleaf push still pending — `git.overleaf.com` is blocked by this environment's egress policy, and the user's local GitHub Desktop attempt hit `git subtree` ancestry errors (the Overleaf project has 163 objects of unrelated history) plus an Overleaf server-side force-push ban. Unresolved.

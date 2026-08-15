@@ -46,6 +46,65 @@ the two steps can be separated.
 - The six hardcoded cross-references ("Table 15", "Table 24", "Table 13",
   "Section 3.7.6") are resolved to `\ref`.
 
+### Changed — Chapter 7 sub-studies rerun at full scale; a real CMA bug fixed
+
+The composite, blind, and partial-posterior studies, previously left at their
+original 5-6 trial development budget and merely disclosed as such, were rerun
+properly. Two genuine defects surfaced and were fixed rather than reported as
+findings.
+
+- **Blind equalizer (CMA) divergence — a real bug.** The CMA used a fixed,
+  unnormalized step size. Its error term is cubic in the equalizer output, so a
+  fixed step is a positive-feedback loop: verified directly, the weights stay
+  bounded over 40,000 samples (max |w| = 1.50) but overflow to infinity over
+  100,000. A first rerun at 10 x 100,000 duly produced a CMA BER of 0.128 at
+  20 dB against the previously reported 0.0024 — a number that would have been
+  written up as "CMA degrades" when it was in fact an implementation fault. The
+  step is now NLMS-normalized by the input-segment energy, which is the standard
+  formulation and a strictly stronger baseline; it is stable at every block
+  length tested. Disclosed in the text.
+- **Trials are channel draws, not just samples.** The blind and
+  partial-posterior studies redraw the ISI/amplifier/phase realization for every
+  block, so a trial is one draw from the impairment family. Raising bits per
+  trial sharpens the estimate for one particular channel while leaving the
+  ensemble average as noisy as before; only more trials help. These two studies
+  therefore run at **50 x 20,000** (1,000,000 bits over 50 channel draws, ten
+  times the previous ensemble) rather than the nominal 10 x 100,000. The
+  composite study, whose channel is fixed, uses the standard **10 x 100,000**.
+  Every experiment now has M >= 10 trials, so the Wilcoxon caveat that
+  previously excluded these studies no longer applies (Section 4.6.1).
+
+Results that changed, all updated in the text and re-verified:
+
+- The pilot-budget crossover moved. Pilot-aided Viterbi was reported as beating
+  the pilot-free MLP "down to approximately 10 pilots"; it now loses its edge at
+  10 pilots (0.0545 against the MLP's 0.0487) and the crossover sits between 20
+  and 10 pilots. The 5-pilot collapse persists (0.1235 +/- 0.0304).
+- **An open point is now closed with data.** Whether blind CMA fails to converge
+  at short block lengths was previously "left as an open point rather than
+  asserted". Measured per block, CMA gives 0.1723 at L=40 and only 0.1653 at
+  L=1000, against 0.0645 with a 20,000-symbol block: it does not converge within
+  blocks of a thousand symbols or fewer.
+- Viterbi and the MLP are now statistically indistinguishable in payload BER at
+  every block length (both ~0.049), sharpening the panel-(b) argument from
+  "similar BER" to "identical BER at a quarter less overhead".
+- The composite MLP-169 figure at 8 dB moved 0.130 -> 0.126, and the claim that
+  the 1,153-parameter network was "slightly worse at high SNR, consistent with
+  mild overfitting" is withdrawn: the two now end identical (0.0050) with
+  differences in both directions inside the confidence intervals. H3 is still
+  supported, by a cleaner argument.
+- The blind-regime CI comparison was requoted at 8 dB from the new data
+  (+/-0.0348 blind MLSE, +/-0.0046 MLP, +/-0.0135 CMA); blind MLSE remains the
+  clear instability, but the earlier +/-0.164 reflected a 5-draw ensemble.
+
+- **`scripts/plot_e6_studies.py` added**, regenerating all four Chapter 7 study
+  figures from the committed `.npy` files. These figures previously had no
+  regeneration path in the repository, so a rerun could not be reflected in the
+  document; that gap is now closed.
+- Verification extended to the rewritten prose: 304 cells, 0 inconsistencies
+  (was 284), with the three prose checks nearly tripling their coverage
+  (blind 5->9, partial 4->13, composite 3->10) at a 5x tighter tolerance.
+
 ### Added — AWGN companion comparison (Section 5.3)
 
 Table 5.5 (`tbl:table2awgn`) and Figure 5.5 report the same nine-relay
