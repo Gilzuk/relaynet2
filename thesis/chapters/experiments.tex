@@ -2,26 +2,13 @@
 
 \section{Experiments summary}\label{sec:experiments-summary}
 
-\paragraph{Scope relative to the system model.}
-All experiments in this chapter are conducted under the canonical
-system model defined in Chapter~\ref{sec:methods}. In particular,
-the channel remains memoryless, the noise is white, transmission is
-uncoded, and relay processing is evaluated on a per-symbol basis.
-Consequently, the objective of this chapter is to compare relay
-functions under matched-model conditions rather than to address
-channel estimation, sequence detection, or channels with memory.
-Such effects are introduced only later in
-Chapter~\ref{sec:unknown-channels} as deliberate departures from the
-canonical assumptions in order to study model mismatch and robustness.
-
-
 Following the single-model convention fixed in Chapter~\ref{sec:introduction}, this chapter evaluates all nine relay strategies on the \emph{canonical setup only}: a two-hop SISO link, i.i.d.\ Rayleigh fast fading on both hops, complex baseband, BPSK, uncoded BER. Three experiments constitute the core: the simulator validation (E1), the canonical relay comparison (E2), and the parameter-normalization and complexity study (E3), which together answer every hypothesis (H1--H5). A scoped modulation extension (Chapter~\ref{sec:extensions}) generalizes the canonical findings to QPSK and 16-QAM, including the joint 2D $N$-class classification formulation (E4--E5). The principal contribution (Chapter~\ref{sec:unknown-channels}) is the unknown-channel study (E6), which tests hypothesis H6. All other departures from the canonical setup are identified as future work in Chapter~\ref{sec:discussion-and-conclusions}.
 The experimental configurations are summarised in the table below.
-
-Each experiment subsection reports the key results inline (BER tables and figures); supporting material and model hyperparameters are collected in the appendices (Appendices~\ref{sec:appendix-a-mathematical-notation}--\ref{sec:appendix-c-software-architecture}).
+Detailed numerical results, tables, and figures are provided exclusively in the appendices.
+Each experiment subsection therefore focuses solely on the key conclusions.
 
 \begin{longtable}{p{0.6cm} p{2.2cm} p{2.1cm} p{3.6cm} p{3.9cm}}
-\caption{Summary of experimental configurations}
+\caption{Summary of experimental configurations (results reported in appendices)}
 \label{tab:experiment-summary}\\
 \hline
 \textbf{Exp.} &
@@ -75,7 +62,7 @@ Extension: unknown-channel failure of AF/DF and learned mitigation (H6) \\
 
 \section{Channel Model Validation}\label{sec:channel-model-validation-simulative}
 
-Prior to evaluating relay strategies, we first verify that the simulation framework produces bit error rate (BER) results consistent with theoretical predictions. The canonical channel of this thesis is Rayleigh fast fading, for which closed-form single-hop and two-hop BER expressions exist; the AWGN channel is additionally validated because it is the analytical limit underlying those expressions (and the noise convention), so agreement on both channels is the cleanest guarantee of baseline accuracy. The channel validation plots (Figures~\ref{fig:fig1}--\ref{fig:fig4}) confirm the following:
+Prior to evaluating relay strategies, we first verify that the simulation framework produces bit error rate (BER) results consistent with theoretical predictions. The canonical channel of this thesis is Rayleigh fast fading, for which closed-form single-hop and two-hop BER expressions exist; the AWGN channel is additionally validated because it is the analytical limit underlying those expressions (and the noise convention), so agreement on both channels is the cleanest guarantee of baseline accuracy. The channel validation plots presented in Section~\ref{sec:channel-model-validation-simulative} confirm the following:
 
 \begin{itemize}
   \item \textbf{AWGN channel:} Theoretical and simulated BER curves match exactly. The classical $Q(\sqrt{\gamma})$ expression (Remark~\ref{noise-convension}), as well as its two-hop extensions (including the effective SNR for amplify-and-forward (AF) relaying and the error-composition model for decode-and-forward (DF)) are validated within tight 95\% confidence intervals across all SNR points (Figure~\ref{fig:fig1}).
@@ -167,11 +154,13 @@ Rayleigh & \textasciitilde24 dB & 1 & \(1/(4\bar{\gamma})\) \\
 
 \begin{figure}[H]
 \centering
+\centering
 \pandocbounded{\includegraphics[width=\linewidth,height=0.8\textheight,keepaspectratio]{results/channel_theoretical_awgn.png}}
 \caption{AWGN Channel: Theoretical vs.~Simulative BER. Single-hop, two-hop AF, and two-hop DF: closed-form theory (solid lines) versus Monte Carlo simulation (markers with 95\% CI). Theory and simulation match within the confidence interval at all SNR points.}\label{fig:fig1}
 \end{figure}
 
 \begin{figure}[H]
+\centering
 \centering
 \pandocbounded{\includegraphics[width=\linewidth,height=0.8\textheight,keepaspectratio]{results/channel_theoretical_rayleigh.png}}
 \caption{Rayleigh fading: theory vs.~simulation for single-hop and two-hop DF. The characteristic \(1/\text{SNR}\) slope (compared to the steeper exponential AWGN curve) is clearly visible.}\label{fig:fig2}
@@ -179,6 +168,7 @@ Rayleigh & \textasciitilde24 dB & 1 & \(1/(4\bar{\gamma})\) \\
 
 
 \begin{figure}[H]
+\centering
 \centering
 \pandocbounded{\includegraphics[width=\linewidth,height=0.8\textheight,keepaspectratio]{results/Rayleigh_plot.png}}
 \caption{Normalized Rayleigh fading amplitude distribution. The left plot shows the PDF, $f_{|h|}(x)=2xe^{-x^2}$, while the right plot shows the corresponding CDF, $F_{|h|}(x)=1-e^{-x^2}$, which represents the outage probability. Rayleigh fading models non-line-of-sight channels in which the received signal is formed by the sum of many independently scattered multipath components.}\label{fig:fig4}
@@ -275,6 +265,7 @@ Two features of Table~\ref{tbl:table2} deserve comment. First, the DF value at 2
 
 
 \begin{figure}[H]
+\centering
 \centering
 \pandocbounded{\includegraphics[width=\linewidth,height=0.8\textheight,keepaspectratio]{results/fading_comparison.png}}
 \caption{Rayleigh fading: BER vs.~SNR for all nine relay strategies with 95\% CI.}\label{fig:fig10}
@@ -398,20 +389,19 @@ Transformer & 17,697 & CUDA & 474 s (\textasciitilde8 min) & 3.71 s \\
 
 % \begin{figure}[H]
 % \centering
+% \centering
 % \pandocbounded{\includegraphics[width=\linewidth,height=0.8\textheight,keepaspectratio]{results/complexity_comparison_all_relays.png}}
 % \caption{Complexity--performance trade-off. Training time vs.~parameter count vs.~BER improvement over DF at low SNR. The Minimal MLP (169 params) achieves the best efficiency.}\label{fig:fig19}
 % \end{figure}
 
 \begin{figure}[H]
 \centering
-\pandocbounded{\includegraphics[width=\linewidth]{results/complexity_vs_low_snr.png}}
+\pandocbounded{\includegraphics[width=\linewidth]{results/complexity_vs_low_snr.png} }
 \caption{Complexity versus low-SNR performance. BER at 0~dB is shown as a function of model size.} \label{fig:complexity_vs_low_snr}
 \end{figure}
 
 \begin{figure}[H]
 \centering
-\pandocbounded{\includegraphics[width=\linewidth]{results/complexity_vs_high_snr_tradeoff.png}}
+\pandocbounded{\includegraphics[width=\linewidth]{results/low_snr_vs_high_snr_tradeoff.png}}
 \caption{Low-SNR versus high-SNR trade-off. BER at 8~dB is plotted against BER at 0~dB.} \label{fig:low_snr_vs_high_snr_tradeoff}
 \end{figure}
-
-It is important to emphasize that all conclusions of this chapter are specific to the canonical memoryless channel model. Whether those conclusions remain valid when the underlying channel assumptions are violated is the subject of Chapter~\ref{sec:unknown-channels}.
