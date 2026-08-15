@@ -214,3 +214,13 @@ All 3 closed inline with `\GZ{}` replies matching the document's existing annota
 
 ## Immediate next step
 None pending — awaiting user direction.
+
+## Latest (2026-08-15, cont'd): AWGN companion comparison added to Section 5.3
+User asked about the BPSK+AWGN trials and to list all experiments. Found: AWGN appears twice in the pipeline — (1) channel-model validation (E1, 20x50k, theory-vs-sim calibration, already in the thesis) and (2) a full 9-relay comparison (`results/bpsk_comparison/awgn.json`, MC=10x10k, generated but never used in any table — Ch1 explicitly said "AWGN appears only as the analytical calibration limit"). User then said "5.3 add instead of bpsk Rayleigh" — added AWGN as a companion table+figure in Section 5.3, alongside (not replacing) the Rayleigh one:
+- New `tbl:table2awgn` (Table 5.5) + `fig:fig10awgn` (Figure 5.5), same 9-relay/6-SNR format as `tbl:table2`/`fig:fig10`, sourced from the already-existing `awgn.json` and the already-existing (already-committed) `results/awgn_comparison_ci.png` figure — no new simulation needed.
+- Updated Ch1's now-inaccurate "AWGN retained as analytical calibration [only]" claims (scope table + System Model paragraph) since it's no longer calibration-only.
+- Added `check_table2awgn` to `verify_thesis_tables.py` (54 cells). Suite now 284 cells, 0 inconsistencies (was 230). `REPRODUCE.md` cell count updated.
+- Recompiled clean: 0 undefined refs, 139 pages (was 138). Visually confirmed both table and figure render correctly and cross-reference each other.
+
+## Immediate next step
+None pending — awaiting user direction.
