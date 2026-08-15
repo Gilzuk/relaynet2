@@ -4,12 +4,12 @@
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.6+-red.svg)](https://pytorch.org)
 [![CUDA](https://img.shields.io/badge/CUDA-12.4-green.svg)](https://developer.nvidia.com/cuda-toolkit)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Tests](https://img.shields.io/badge/Tests-126%20passed-brightgreen.svg)](#testing)
+[![Tests](https://img.shields.io/badge/Tests-108%20passed-brightgreen.svg)](#testing)
 [![Experiments](https://img.shields.io/badge/Experiments-18-blue.svg)](#recent-experiments-summary)
 
-A comprehensive framework for comparing **classical and AI-based relay strategies** in two-hop cooperative communication across **3 channel types** (AWGN, Rayleigh fading, Rician fading), **2 antenna topologies** (SISO, 2×2 MIMO with ZF/MMSE/SIC equalization), and **4 modulation schemes** (BPSK, QPSK, 16-QAM, 16-PSK).
+A framework for comparing **classical and AI-based relay strategies** in two-hop cooperative communication, over **AWGN and Rayleigh fading** SISO channels, with **BPSK, QPSK and 16-QAM** modulation.
 
-> **Thesis vs. framework scope.** This repository contains both the `relaynet` simulation **framework** (whose full capabilities are described below) and the M.Sc. **thesis** it supports, under [`thesis/`](thesis/). The thesis deliberately fixes a **single canonical setup** — SISO on both hops, i.i.d. Rayleigh fast fading, complex baseband, BPSK, uncoded BER — and varies only the relay function, with two scoped extensions (higher-order modulation; **learned relaying under unknown/mismatched channels**). MIMO, Rician, and 16-PSK remain in the framework and are treated as thesis *future work*. See the [Thesis](#thesis-msc) section.
+> **Thesis vs. framework scope.** This repository contains both the `relaynet` simulation **framework** (whose full capabilities are described below) and the M.Sc. **thesis** it supports, under [`thesis/`](thesis/). The thesis deliberately fixes a **single canonical setup** — SISO on both hops, i.i.d. Rayleigh fast fading, complex baseband, BPSK, uncoded BER — and varies only the relay function, with two scoped extensions (higher-order modulation; **learned relaying under unknown/mismatched channels**). MIMO, Rician relay comparison, and 16-PSK were removed from both the thesis and the framework, and are recorded as *future work* (Rician is retained only to draw the fading-distribution figure). See the [Thesis](#thesis-msc) section.
 
 ---
 
@@ -38,7 +38,7 @@ A comprehensive framework for comparing **classical and AI-based relay strategie
 
 ## Overview
 
-This project implements and compares **9 relay strategies** (2 classical + 7 AI-based) across **3 channel types** (AWGN, Rayleigh, Rician), **2 antenna topologies** (SISO, 2×2 MIMO), and **4 modulation schemes** (BPSK, QPSK, 16-QAM, 16-PSK) to evaluate the potential of generative AI and modern sequence models for cooperative relay communication.
+This project implements and compares **9 relay strategies** (2 classical + 7 AI-based) across **2 channel types** (AWGN, Rayleigh) and **3 modulation schemes** (BPSK, QPSK, 16-QAM) to evaluate the potential of generative AI and modern sequence models for cooperative relay communication.
 
 ### Relay Methods
 
@@ -60,16 +60,6 @@ This project implements and compares **9 relay strategies** (2 classical + 7 AI-
 |---------|--------------------|
 | **AWGN** | Additive white Gaussian noise only |
 | **Rayleigh** | Flat fading, no line-of-sight (NLOS) |
-| **Rician (K=3)** | Fading with dominant line-of-sight component |
-
-### Antenna Topologies & Equalization
-
-| Topology | Antennas | Channel per Link | Equalization |
-|----------|----------|------------------|----|
-| **SISO** | 1 TX, 1 RX | AWGN / Rayleigh / Rician | Perfect CSI |
-| **2×2 MIMO** | 2 TX, 2 RX | Rayleigh (i.i.d. per link) | **ZF**, **MMSE**, or **SIC** |
-
----
 
 ## Thesis (M.Sc.)
 
@@ -115,61 +105,6 @@ y = h · x + n,    h ~ CN(0, 1),    n ~ CN(0, σ²)
 Equalization: x̂ = y / h   (perfect CSI)
 ```
 
-### Rician Fading (K = 3)
-
-Models channels with a dominant line-of-sight (LOS) component:
-
-```
-h = √(K/(K+1)) · e^{jθ} + √(1/(K+1)) · h_scatter
-```
-
-The Rician K-factor controls the ratio of LOS to scattered power. Higher K yields less severe fading.
-
-## Antenna Topologies
-
-### SISO (Single-Input Single-Output)
-
-Conventional single-antenna setup. Used with all three channel types above.
-
-### 2×2 MIMO (Multiple-Input Multiple-Output)
-
-The MIMO topology uses **2 transmit antennas** and **2 receive antennas**. The underlying channel between each TX–RX antenna pair is **independent Rayleigh fading** (i.i.d. CN(0, 1)). This is not a separate channel type — it is a spatial multiplexing topology where each of the 4 links (TX₁→RX₁, TX₁→RX₂, TX₂→RX₁, TX₂→RX₂) experiences Rayleigh fading:
-
-```
-y = H·x + n,    H ∈ ℂ^{2×2},    H_ij ~ CN(0, 1)  (Rayleigh fading per link)
-```
-
-Two linear equalization techniques are applied at the receiver:
-
-**Zero-Forcing (ZF):** Inverts the channel matrix to completely remove inter-stream interference, but amplifies noise when H is ill-conditioned:
-
-```
-ZF:    x̂ = H⁻¹·y
-```
-
-**MMSE (Minimum Mean Square Error):** Adds noise-variance regularization to prevent excessive noise amplification, trading a small residual interference for better noise performance:
-
-```
-MMSE:  x̂ = (H^H·H + σ²·I)⁻¹ · H^H · y
-```
-
-And one **non-linear** technique:
-
-**MMSE-SIC (Successive Interference Cancellation):** Decodes streams one at a time in order of post-detection SINR. The stronger stream is MMSE-detected and hard-decided first, then cancelled from the received vector. The remaining stream is estimated interference-free via matched-filter:
-
-```
-SIC:   1. Order streams by MMSE post-detection SINR
-       2. x̂_first = sign(MMSE estimate of stronger stream)
-       3. y' = y − h_first · x̂_first          (cancel)
-       4. x̂_second = Re(h_second^H · y') / ||h_second||²   (MRC)
-```
-
-SIC outperforms linear MMSE because the second stream sees no inter-stream interference. The cost is **error propagation**: if the first hard decision is wrong, cancellation adds interference.
-
-> **GPU Acceleration:** All three MIMO equalizers use vectorized PyTorch batched `torch.linalg.solve` instead of per-symbol Python loops, achieving >100× speed-up on CPU and further gains on CUDA GPUs.
-
----
-
 ## Relay Strategies
 
 ### Classical Relays
@@ -198,14 +133,12 @@ SIC outperforms linear MMSE because the second stream sees no inter-stream inter
                   │              ▲              │
              [AWGN/Fading]    [AI or        [AWGN/Fading]
                            Classical]
-
-    Topology:  SISO (1×1)  │  2×2 MIMO (spatial multiplexing)
-    Channels:  AWGN  │  Rayleigh  │  Rician K=3
-    Equalizers (MIMO): ZF  │  MMSE  │  SIC
+    Topology:  SISO (1x1)
+    Channels:  AWGN  |  Rayleigh
     Relays:    AF │ DF │ MLP │ Hybrid │ VAE │ CGAN │ Transformer │ Mamba S6
 ```
 
-Each relay strategy is evaluated across all 6 configurations (3 SISO channels + 3 MIMO equalization methods) using Monte Carlo simulation with 95% confidence intervals (10 trials × 10,000 bits per SNR point).
+Each relay strategy is evaluated on both SISO channels (AWGN and Rayleigh) using Monte Carlo simulation with 95% confidence intervals (10 trials × 10,000 bits per SNR point).
 
 ---
 
@@ -213,13 +146,11 @@ Each relay strategy is evaluated across all 6 configurations (3 SISO channels + 
 
 ### Original Models (varying parameter counts)
 
-1. **The best AI relay is channel-dependent** — CGAN wins AWGN/Rician, MLP wins MIMO ZF, Mamba S6 wins MIMO MMSE; DF wins Rayleigh/SIC even at low SNR
+1. **The best AI relay is channel-dependent** — CGAN leads on AWGN; DF leads on Rayleigh
 2. **State space models beat attention** for signal processing (O(n) vs O(n²))
 3. **DF dominates at medium/high SNR** (≥6 dB) — no training required
 4. **Hybrid relay** provides the best practical trade-off: AI at low SNR, DF at high SNR
 5. **All AI relays dramatically outperform AF** across all channels
-6. **MMSE equalization consistently outperforms ZF** in the 2×2 MIMO topology at every SNR for all relay types
-7. **SIC further improves on MMSE** by cancelling the stronger stream before detecting the weaker one
 
 ### Normalized 3K Comparison (equal parameter budgets)
 
@@ -273,10 +204,6 @@ Per-channel BER comparison plots with 95% confidence intervals are in the `resul
 |---------|------|
 | AWGN | `results/awgn_comparison_ci.png` |
 | Rayleigh | `results/fading_comparison.png` |
-| Rician K=3 | `results/rician_comparison_ci.png` |
-| 2×2 MIMO ZF | `results/mimo_2x2_comparison_ci.png` |
-| 2×2 MIMO MMSE | `results/mimo_2x2_mmse_comparison_ci.png` |
-| 2×2 MIMO SIC | `results/mimo_2x2_sic_comparison_ci.png` |
 | Model Complexity | `results/complexity_comparison_all_relays.png` |
 
 ---
@@ -312,40 +239,12 @@ To enable a fair **apples-to-apples** comparison, all 6 AI models were scaled to
 | 10 | 4.87e-2 | 4.84e-2 | 5.60e-2 | 4.74e-2 | 4.65e-2 | **4.64e-2** |
 | 20 | 5.84e-3 | 5.68e-3 | 7.08e-3 | 5.64e-3 | 5.64e-3 | **5.60e-3** |
 
-#### Rician (K=3)
-
-| SNR (dB) | MLP-3K | Hybrid-3K | VAE-3K | CGAN-3K | Transformer-3K | Mamba-3K |
-|----------|----------|-----------|--------|---------|----------------|----------|
-| 0 | 2.05e-1 | 2.05e-1 | 2.18e-1 | 2.05e-1 | 2.00e-1 | **2.00e-1** |
-| 10 | 1.54e-2 | 1.47e-2 | 1.98e-2 | 1.48e-2 | **1.45e-2** | 1.46e-2 |
-| 20 | 9.20e-4 | 8.80e-4 | 1.24e-3 | 8.80e-4 | **6.80e-4** | 7.20e-4 |
-
-#### 2×2 MIMO (Rayleigh) – ZF Equalization
-
-| SNR (dB) | MLP-3K | Hybrid-3K | VAE-3K | CGAN-3K | Transformer-3K | Mamba-3K |
-|----------|----------|-----------|--------|---------|----------------|----------|
-| 0 | 2.52e-1 | 2.52e-1 | 2.64e-1 | 2.52e-1 | 2.47e-1 | **2.45e-1** |
-| 10 | 4.82e-2 | 4.80e-2 | 5.55e-2 | 4.67e-2 | 4.64e-2 | **4.64e-2** |
-| 20 | 5.40e-3 | **5.12e-3** | 5.92e-3 | 5.16e-3 | **5.12e-3** | 5.16e-3 |
-
-#### 2×2 MIMO (Rayleigh) – MMSE Equalization
-
-| SNR (dB) | MLP-3K | Hybrid-3K | VAE-3K | CGAN-3K | Transformer-3K | Mamba-3K |
-|----------|----------|-----------|--------|---------|----------------|----------|
-| 0 | 1.65e-1 | 1.65e-1 | 1.79e-1 | 1.63e-1 | **1.62e-1** | 1.64e-1 |
-| 10 | 2.68e-2 | 2.51e-2 | 3.37e-2 | 2.54e-2 | 2.56e-2 | 2.60e-2 |
-| 20 | 2.92e-3 | 2.60e-3 | 3.84e-3 | 2.76e-3 | 2.72e-3 | **2.56e-3** |
-
 ### Normalized 3K Plots
 
 | Plot | Description |
 |------|-------------|
 | `results/normalized_3k_awgn.png` | AWGN channel, all 6 models at ~3K params |
 | `results/normalized_3k_rayleigh.png` | Rayleigh fading, all 6 models at ~3K params |
-| `results/normalized_3k_rician_k3.png` | Rician K=3, all 6 models at ~3K params |
-| `results/normalized_3k_2x2_mimo_zf.png` | 2×2 MIMO (Rayleigh) ZF, all 6 models at ~3K params |
-| `results/normalized_3k_2x2_mimo_mmse.png` | 2×2 MIMO (Rayleigh) MMSE, all 6 models at ~3K params |
-| `results/normalized_3k_2x2_mimo_sic.png` | 2×2 MIMO (Rayleigh) SIC, all 6 models at ~3K params |
 | `results/normalized_3k_all_channels.png` | **Consolidated 2×3 grid** of all channels |
 
 ---
@@ -427,8 +326,7 @@ relaynet2/
 ├── relaynet/                         # Core library package
 │   ├── channels/
 │   │   ├── awgn.py                       # AWGN channel
-│   │   ├── fading.py                     # Rayleigh & Rician fading
-│   │   └── mimo.py                       # 2×2 MIMO topology + ZF/MMSE equalization (GPU)
+│   │   ├── fading.py                     # Rayleigh & Rician fading (Rician used for the fading-PDF figure only)
 │   ├── modulation/
 │   │   └── bpsk.py                       # BPSK modulation/demodulation
 │   ├── relays/
@@ -477,7 +375,7 @@ relaynet2/
 │   └── plot_normalized_3k.py             # Standalone 3K comparison plots
 │
 ├── tests/                            # 60 tests (pytest)
-│   ├── test_channels.py                  # AWGN, Rayleigh, Rician, MIMO tests
+│   ├── test_channels.py                  # AWGN and Rayleigh channel tests
 │   ├── test_modulation.py                # BPSK modulation tests
 │   ├── test_relays.py                    # All relay strategy tests
 │   ├── test_simulation.py                # Monte Carlo runner tests
@@ -488,7 +386,6 @@ relaynet2/
 │   ├── normalized_3k/                    # §7.8 equal-parameter comparison
 │   ├── modulation/                       # §7.10 BPSK→QPSK→QAM16
 │   ├── qam16_activation/                 # §7.11 activation study
-│   ├── layernorm/                        # §7.12 LayerNorm study
 │   ├── classify_vs_regress/              # §7.13 classification formulation
 │   ├── classify_activations/             # §7.13 activation sweep
 │   ├── classify_closing_gap/             # §7.13 closing the DF gap
@@ -543,7 +440,6 @@ relaynet2/
 pip install numpy matplotlib torch scipy
 ```
 
-For GPU-accelerated MIMO channels (optional):
 
 ```bash
 pip install torch --index-url https://download.pytorch.org/whl/cu124
@@ -610,13 +506,6 @@ for snr, ber, ci_lo, ci_hi in results:
     print(f"SNR={snr:2d} dB  BER={ber:.4e}  CI=[{ci_lo:.4e}, {ci_hi:.4e}]")
 ```
 
-### Run with MIMO Channel
-
-```python
-from relaynet.channels.mimo import mimo_2x2_mmse_channel
-
-# GPU-accelerated MIMO MMSE (auto-detects CUDA)
-results = run_monte_carlo(relay, snr_range=range(0, 21, 2),
                           channel=lambda s, snr: mimo_2x2_mmse_channel(s, snr, device="auto"),
                           num_bits=10000, num_trials=10)
 ```
@@ -625,15 +514,15 @@ results = run_monte_carlo(relay, snr_range=range(0, 21, 2),
 
 ## Testing
 
-All 126 tests pass:
+All 108 tests pass (104 passed, 4 skipped):
 
 ```bash
 python -m pytest tests/ -q
-# 126 passed in ~28s
+# 108 tests: 104 passed, 4 skipped
 ```
 
 Tests cover:
-- **Channels & topologies:** AWGN noise power, Rayleigh/Rician fading statistics, 2×2 MIMO with ZF & MMSE equalization
+- **Channels:** AWGN noise power, Rayleigh and Rician fading statistics
 - **Modulation:** BPSK modulate/demodulate correctness
 - **Relays:** All 6 AI relays + 2 classical relays (training, inference, parameter counts)
 - **Simulation:** Monte Carlo runner, BER computation
@@ -679,35 +568,17 @@ All experiments are managed through the unified `run_experiments.py` runner (18 
 | §7.1 | Channel Model Analysis | `results/channel_analysis/` |
 | §7.2 | BPSK AWGN Relay Comparison | `results/bpsk_comparison/` |
 | §7.3 | BPSK Rayleigh Relay Comparison | `results/bpsk_comparison/` |
-| §7.4 | BPSK Rician K=3 | `results/bpsk_comparison/` |
-| §7.5 | 2×2 MIMO ZF | `results/bpsk_comparison/` |
-| §7.6 | 2×2 MIMO MMSE | `results/bpsk_comparison/` |
-| §7.7 | 2×2 MIMO SIC | `results/bpsk_comparison/` |
 | §7.8 | Normalized 3K Comparison | `results/normalized_3k/` |
 | §7.9 | Master 2×3 Chart | `results/bpsk_comparison/` |
 | §7.10 | Modulation Comparison (BPSK → QPSK → QAM16) | `results/modulation/` |
 | §7.11 | QAM16 Activation Study | `results/qam16_activation/` |
-| §7.12 | LayerNorm Study | `results/layernorm/` |
 | §7.13 | Classification vs Regression + Activations + Closing Gap | `results/classify_vs_regress/`, `results/classify_activations/`, `results/classify_closing_gap/` |
-| §7.14 | CSI Injection | `results/csi/` |
-| §7.15 | Multi-Architecture CSI | `results/csi/` |
-| §7.16 | End-to-End Autoencoder | `results/e2e/` |
 | §7.17 | 16-Class 2D QAM16 (all 7 architectures) | `results/all_relays_16class/` |
 
 ### Modulation Extension — §7.10 (BPSK → QPSK → 16-QAM)
 
 - **QPSK**: All BPSK findings generalise fully via I/Q splitting — BER curves are identical to BPSK across all 9 relays.
 - **16-QAM**: BPSK-trained relays exhibit an irreducible BER floor (~0.18–0.25 at 16 dB) due to `tanh` compressing the 4-level PAM amplitudes.
-
-### Activation Engineering — §7.11–§7.12
-
-| Activation | Description | Best 16-QAM BER @ 16 dB |
-|---|---|---|
-| `tanh` (baseline) | Saturates at ±1, compresses PAM-4 | 0.2065 (Mamba-2) |
-| `hardtanh` | Clips at ±A_max | 0.0396 (Mamba S6) |
-| `scaled_tanh` | A_max · tanh(x) | 0.0441 (Mamba-2) |
-
-Replacing `tanh` and retraining on PAM-4 targets reduces the BER floor by **2–5×**, with sequence models benefiting most.
 
 ### Classification vs Regression — §7.13
 
@@ -716,19 +587,6 @@ Three sub-studies explore the classification formulation for 16-QAM relaying:
 - **Classify vs Regress**: Classification MLP (4-class) achieves ~1.3× lower BER than regression MLP at 20 dB
 - **Activation Sweep**: 8 hidden/output activation combinations; H:Sigmoid wins overall, O:Sigmoid is the only catastrophic failure
 - **Closing the DF Gap**: 6 progressive enhancements (window, SNR range, hidden size) reduce the classification gap to DF from 8.1× to 1.0× at 20 dB
-
-### CSI Injection & Comprehensive Study — §7.14–§7.15
-
-48 neural variants (3 architectures × 4 activations × 4 configurations) evaluated on 16-QAM and 16-PSK under Rayleigh fading:
-
-- **16-QAM**: CSI injection *degrades* performance; best variants use LayerNorm only (+LN)
-- **16-PSK**: CSI injection *improves* performance; best variants use +CSI or +CSI+LN
-- **Mamba S6** dominates both constellations (all top-3 for PSK16; #1 for QAM16)
-- No neural variant beats DF at any SNR point across all 48 configurations
-
-### End-to-End Autoencoder — §7.16
-
-A jointly optimised transmitter-receiver autoencoder (no relay) achieves 67–141% *higher* BER than classical 16-QAM theory, validating the modular relay-based approach over E2E learning.
 
 ### 16-Class 2D Classification — §7.17 (Key Breakthrough)
 

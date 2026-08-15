@@ -1,5 +1,17 @@
 # Tech Context
 
+## GOTCHA (critical, cost a whole review cycle): bidi package order breaks Overleaf builds
+**Symptom:** thesis compiles fine locally with a manual `xelatex → bibtex → xelatex → xelatex` sequence (0 undefined refs), but on **Overleaf every cross-reference and citation renders as `??`**.
+
+**Cause:** `polyglossia` (loaded for the Hebrew abstract) pulls in `bidi`. `bidi` patches packages and hard-errors — `! Package bidi Error: Oops! you have loaded package X after bidi package` — for **every** package loaded after it. In `main.tex` polyglossia sat at line ~50 with 15 packages after it (amsmath, amstext, amsthm, caption, fancyhdr, fancyvrb, float, graphicx, hyperref, listings, longtable, pgf, tikz, titlesec, xcolor).
+
+**Why it hid for so long:** in `-interaction=nonstopmode` these errors are survivable, and a *forced* manual 4-pass run still converges → logs look clean. But **Overleaf runs `latexmk`**, which treats them as build errors, aborts the rerun chain (exit 12), and never resolves refs. Earlier sessions inspected only the manual build and recorded the errors as "non-fatal" — that conclusion was wrong for the toolchain that matters.
+
+**Fix (2026-07-25):** moved the whole `\usepackage{polyglossia}` + `\setmainlanguage/\setotherlanguage` + `\newfontfamily\hebrewfont*` block to the **very end of the preamble, immediately before `\begin{document}`**, with comments at both the old and new location saying it must stay last. After: `latexmk` exit 0, 0 bidi errors, 0 undefined refs/citations, Hebrew still renders (last 4 pages), page count 129→130 (annotated) / 123→124 (clean) from bidi's later load.
+
+**Rule going forward: always validate the thesis with `latexmk -xelatex`, not a hand-rolled pass sequence** — the manual sequence masks exactly this class of failure. Check the FINAL pass via `main.log` (the combined latexmk log accumulates warnings from early passes and looks alarming even on success).
+
+
 ## Stack
 - Python 3, NumPy (hand-rolled MLP forward/backward + Adam — no PyTorch/TF dependency in the E6 port path)
 - Matplotlib for BER curve plots

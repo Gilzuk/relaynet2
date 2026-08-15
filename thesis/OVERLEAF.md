@@ -29,6 +29,14 @@ compile host:
 | Hebrew | Arial | `fonts/Arial-*.ttf` |
 | Sans / Hebrew sans | David CLM | `fonts/DavidCLM-*.otf` |
 
+## Package order (do not rearrange)
+`polyglossia` is loaded at the very **end** of the preamble, right before
+`\begin{document}`. It pulls in `bidi` (for the Hebrew abstract), and `bidi`
+errors out for every package loaded after it. Those errors are survivable in a
+manual `xelatex` run but make **latexmk — which Overleaf uses — stop rerunning**,
+leaving every cross-reference and citation as `??`. If you add a package, put it
+*before* the Language & Hebrew block at the bottom.
+
 ## Notes
 - `hebrewcal.sty` is a local stub that disables polyglossia's Hebrew-calendar
   font (not needed here) so the build doesn't depend on the `othello`
