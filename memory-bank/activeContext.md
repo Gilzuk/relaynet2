@@ -205,5 +205,12 @@ User asked to "make sure all runs ran with mc = 10 and with ci 95". Audited ever
 - **Found a genuine (not textual) gap**: composite (§7.1.3), blind (§7.1.4), and partial-posterior (§7.1.5) sub-studies really do run at 5, 5, 6 trials × 40,000 bits — `e6_composite_ported.py`/`e6_blind_ported.py`/`e6_partial_ported.py` all carry a `# standalone's own dev budget` scale, never rescaled like sim/viterbi/flat were. Asked the user how to handle it (rerun+rewrite prose+new plotting code vs. rerun-data-only vs. disclose-only); **user chose disclose-only**. Added explicit trial-count/bit-budget statements to all 3 subsections' setup paragraphs and all 4 associated figure captions (composite, blind, 2x partial-posterior sweep). No data changed, no numbers in the prose changed — only truthful disclosure of the actual (smaller, already-CI95%-correct) Monte Carlo budget used for these three.
 - `thesis/main.pdf` rebuilt and committed after each round of ch07 edits (QPSK section, then this audit); still 0 undefined refs, 137 pages throughout.
 
+## Latest (2026-08-15, cont'd): closed 3 outstanding AK follow-up comments
+User: "Now you have all the data available apply the requested changes from AK." Audited every `\AK{` in the live (uncommented) document for ones with no subsequent `\GZ`/reply — found 3, all second-round pushbacks nested inside an earlier `\REV`:
+1. Abstract (`frontmatter.tex`): "AF outperforms DF at low SNR" — checked against `tbl:table2` (canonical Rayleigh) and its AWGN counterpart; DF beats AF at every SNR point 0-20dB on both channels, no crossover in the tested range. Resolved with the actual data rather than argument.
+2. Abstract: "You cannot refer to a model you've never mentioned" (re: MLSE) — rewrote the abstract sentence to name the ISI impairment inline instead of relying on a forward reference to Ch7.
+3. `ch01_introduction.tex` window-realizability remark: "either drop this or define the competing model" — kept scoped as architecture-only, pointed to Ch7's (now QPSK-inclusive) competing-model definition rather than duplicating it.
+All 3 closed inline with `\GZ{}` replies matching the document's existing annotation style (verified via page-render, they show as footnotes). `ak_response_appendix.tex` (Appendix E) itself was already fully paired (17 AK / 17 GZ) and untouched. Recompiled clean: 0 undefined refs, 138 pages (was 137).
+
 ## Immediate next step
 None pending — awaiting user direction.

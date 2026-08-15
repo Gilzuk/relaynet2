@@ -46,6 +46,27 @@ the two steps can be separated.
 - The six hardcoded cross-references ("Table 15", "Table 24", "Table 13",
   "Section 3.7.6") are resolved to `\ref`.
 
+### Fixed — closed 3 outstanding supervisor (AK) follow-up comments
+
+Three second-round AK pushbacks, nested inside earlier `\REV` resolutions,
+had never received a reply and were still open in the compiled document:
+
+- **"AF outperforms DF at low SNR"** (Abstract): checked against this
+  thesis's own data (Table 5.4, canonical Rayleigh and its AWGN
+  counterpart) — DF's per-symbol slicing has a strictly lower BER than AF
+  at every SNR point evaluated (0–20 dB, both channels); no crossover in
+  the range studied. Resolved with the data, while acknowledging the
+  general (naive-DF-vs-selective-DF) point holds in the wider literature.
+- **"You cannot refer to a model that you've never mentioned"** (Abstract):
+  the sentence introducing Viterbi MLSE named the impairment inline (an
+  unknown intersymbol-interference filter) instead of relying on a forward
+  reference to Chapter 7, so the abstract is now self-contained.
+- **"Either drop this or define the competing model"** (Chapter 1, window
+  realizability remark): kept, scoped explicitly as an architectural
+  convention only, with a forward pointer to Chapter 7's now-complete
+  competing-model definition (including the new QPSK generalization,
+  Section 7.1.2) rather than duplicating it in Chapter 1.
+
 ### Fixed — Monte Carlo scale audit
 
 - **Stale trial-count text**: the main unknown-ISI study's "Trials" bullet and
