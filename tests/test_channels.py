@@ -7,6 +7,18 @@ from relaynet.channels.awgn import awgn_channel, calculate_snr
 from relaynet.channels.fading import rayleigh_fading_channel, rician_fading_channel
 from relaynet.channels.mimo import mimo_2x2_channel, mimo_2x2_mmse_channel, mimo_2x2_sic_channel
 
+# The 2x2 MIMO equalizers are the only part of relaynet.channels that needs
+# PyTorch, which requirements.txt lists as optional. Skip rather than fail when
+# it is absent so the suite is green on a NumPy-only install; no experiment
+# reported in the thesis uses these equalizers (MIMO is future work).
+try:
+    import torch as _torch
+    _HAS_TORCH = True
+except ModuleNotFoundError:
+    _HAS_TORCH = False
+
+_needs_torch = pytest.mark.skipif(not _HAS_TORCH, reason="PyTorch not installed (optional dependency)")
+
 
 class TestAWGNChannel:
     def test_output_shape(self):
@@ -72,6 +84,7 @@ class TestFadingChannels:
         assert np.std(out_high_k) < np.std(out_low_k) * 2  # relaxed check
 
 
+@_needs_torch
 class TestMIMOChannel:
     def test_output_shape_even(self):
         np.random.seed(0)
@@ -126,6 +139,7 @@ class TestMIMOChannel:
         )
 
 
+@_needs_torch
 class TestMIMOMMSEChannel:
     def test_output_shape_even(self):
         np.random.seed(0)
@@ -180,6 +194,7 @@ class TestMIMOMMSEChannel:
             )
 
 
+@_needs_torch
 class TestMIMOSICChannel:
     def test_output_shape_even(self):
         np.random.seed(0)
