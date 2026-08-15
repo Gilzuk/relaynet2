@@ -38,7 +38,7 @@ endif
 # ──────────────────────────────────────────
 
 .PHONY: help quick full charts test exp list clean clean-results clean-weights clean-logs \
-        setup check verify repro-unknown repro-qpsk repro-full thesis bundles
+        setup check verify repro-unknown repro-qpsk repro-full thesis bundles overleaf-push overleaf-pull
 
 help: ## Show this help
 	@echo ""
@@ -53,6 +53,10 @@ help: ## Show this help
 	@echo "    make repro-qpsk      Tier 1b: re-run the QPSK unknown-channel study (~20 min)"
 	@echo "    make repro-full      Tier 2: re-run every experiment (hours, needs torch)"
 	@echo "    make bundles         Rebuild the two Overleaf zips from thesis/"
+	@echo ""
+	@echo "  OVERLEAF SYNC (see thesis/OVERLEAF_SYNC.md)"
+	@echo "    make overleaf-push   Push thesis/ up to the linked Overleaf project"
+	@echo "    make overleaf-pull   Pull Overleaf edits back into thesis/"
 	@echo "    make thesis          Build the thesis PDF (needs XeLaTeX + latexmk)"
 	@echo ""
 	@echo "  EXPERIMENT RUNNER"
@@ -98,6 +102,21 @@ repro-full: ## Tier 2: recompute every experiment (hours; requires torch)
 	@echo ">> Re-running all experiments. Hours; a GPU is strongly advised."
 	$(PYTHON) $(RUNNER) --all --seed $(SEED)
 	$(MAKE) verify
+
+overleaf-push: ## Push thesis/ up to the linked Overleaf project
+	@git remote get-url overleaf >/dev/null 2>&1 || \
+	  { echo "ERROR: no 'overleaf' remote. See thesis/OVERLEAF_SYNC.md:"; \
+	    echo "  git remote add overleaf https://git.overleaf.com/<project-id>"; exit 1; }
+	@echo ">> Pushing thesis/ to Overleaf (remote branch: master)..."
+	git subtree push --prefix=thesis overleaf master
+
+overleaf-pull: ## Pull Overleaf edits back into thesis/
+	@git remote get-url overleaf >/dev/null 2>&1 || \
+	  { echo "ERROR: no 'overleaf' remote. See thesis/OVERLEAF_SYNC.md:"; \
+	    echo "  git remote add overleaf https://git.overleaf.com/<project-id>"; exit 1; }
+	@echo ">> Pulling Overleaf edits into thesis/ ..."
+	git subtree pull --prefix=thesis overleaf master --squash
+	@echo ">> Now re-check the numbers:  make verify"
 
 bundles: ## Rebuild the two Overleaf zips from thesis/
 	$(PYTHON) scripts/build_bundles.py
