@@ -23,7 +23,7 @@ Two distinct claims, checkable independently:
 
 1. **The thesis matches its data.** Every numerical table cell and every
    quantitative claim in the prose is compared against the file that produced
-   it. This is `make verify`: **200 values, 0 discrepancies**, exit code 1 on
+   it. This is `make verify`: **198 values, 0 discrepancies**, exit code 1 on
    any mismatch.
 2. **The data can be regenerated.** The experiments are re-runnable from
    scratch. The unknown-channel pipeline is fully seeded and reproduces its
@@ -40,7 +40,7 @@ above it.
 | Tier | Command | Time | Needs | What it establishes |
 |---|---|---|---|---|
 | 0 | `make verify` | ~1 min | numpy, scipy | Every thesis number matches its data source |
-| 0 | `make test` | ~2 s | + pytest | 126 unit tests over channels, modulation, relays, statistics |
+| 0 | `make test` | ~2 s | + pytest | 108 unit tests over channels, modulation, relays, statistics |
 | 1 | `make repro-unknown` | ~40 min | numpy, scipy | Recomputes the whole unknown-channel study (Ch. 7), then verifies |
 | 1b | `make repro-qpsk` | ~20 min | numpy, scipy | Recomputes the QPSK unknown-channel study (ISI → AWGN and → Rayleigh) |
 | 2 | `make repro-full` | hours | **+ torch** | Recomputes every experiment, including all neural relays |
@@ -102,9 +102,9 @@ python3 -m pip install torch --index-url https://download.pytorch.org/whl/cpu
 ```
 
 PyTorch is genuinely optional. If it is absent, the channels package still
-imports, every NumPy-only experiment runs, and only the MIMO equalizers — which
-no reported experiment uses — raise a clear error when called. `make check`
-reports exactly which tiers your machine can run.
+imports and every NumPy-only experiment runs; only the neural relays that use
+torch are unavailable. `make check` reports exactly which tiers your machine can
+run.
 
 Building the PDF (`make thesis`) additionally needs TeX Live with **XeLaTeX**
 and `latexmk`. Compile with XeLaTeX, not pdfLaTeX: the thesis uses `fontspec`
@@ -122,8 +122,15 @@ e6_qpsk_unknown_channel.py    QPSK unknown-channel study, both hop-2 variants
 verify_thesis_tables.py       Checks the thesis against its data sources
 results/                      Committed experiment outputs (JSON + figures)
 e6_unknown_channel_results/   Committed unknown-channel outputs (.npy + figures)
-tests/                        126 unit tests
+tests/                        108 unit tests
 thesis/                       LaTeX sources, figures, fonts, CHANGELOG
+  main.tex                      Compile with XeLaTeX; includes the chapters below
+  chapters/ch0N_*.tex           One file per chapter, numbered to match the document
+                                (ch05 experiments, ch06 higher-order modulation,
+                                 ch07 unknown channels, ch08 discussion, ch09 summary)
+  chapters/_*.tex               Drafting history; not included by main.tex
+scripts/build_bundles.py      Rebuilds the two Overleaf zips from thesis/
+scripts/strip_rev.py          Brace-matching remover for inline REV annotations
 scripts/check_env.py          Environment doctor
 ```
 

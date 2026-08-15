@@ -3,7 +3,7 @@
 # Reproduction suite (start here after cloning -- see REPRODUCE.md):
 #   make setup          - Install pinned dependencies
 #   make check          - Report what this machine can reproduce
-#   make verify         - Check all 200 thesis values against their data sources
+#   make verify         - Check all thesis values against their data sources
 #   make repro-unknown  - Re-run the unknown-channel study, then verify
 #   make repro-full     - Re-run everything (hours, needs torch)
 #   make thesis         - Build the thesis PDF
@@ -38,7 +38,7 @@ endif
 # ──────────────────────────────────────────
 
 .PHONY: help quick full charts test exp list clean clean-results clean-weights clean-logs \
-        setup check verify repro-unknown repro-qpsk repro-full thesis
+        setup check verify repro-unknown repro-qpsk repro-full thesis bundles
 
 help: ## Show this help
 	@echo ""
@@ -48,10 +48,11 @@ help: ## Show this help
 	@echo "  REPRODUCTION (see REPRODUCE.md)"
 	@echo "    make setup           Install pinned dependencies"
 	@echo "    make check           Report what this machine can reproduce"
-	@echo "    make verify          Tier 0: check all 200 thesis values vs data (~1 min)"
+	@echo "    make verify          Tier 0: check every thesis value vs its data source (~1 min)"
 	@echo "    make repro-unknown   Tier 1: re-run unknown-channel study + verify (~40 min)"
 	@echo "    make repro-qpsk      Tier 1b: re-run the QPSK unknown-channel study (~20 min)"
 	@echo "    make repro-full      Tier 2: re-run every experiment (hours, needs torch)"
+	@echo "    make bundles         Rebuild the two Overleaf zips from thesis/"
 	@echo "    make thesis          Build the thesis PDF (needs XeLaTeX + latexmk)"
 	@echo ""
 	@echo "  EXPERIMENT RUNNER"
@@ -97,6 +98,9 @@ repro-full: ## Tier 2: recompute every experiment (hours; requires torch)
 	@echo ">> Re-running all experiments. Hours; a GPU is strongly advised."
 	$(PYTHON) $(RUNNER) --all --seed $(SEED)
 	$(MAKE) verify
+
+bundles: ## Rebuild the two Overleaf zips from thesis/
+	$(PYTHON) scripts/build_bundles.py
 
 thesis: ## Build the thesis PDF
 	@command -v latexmk >/dev/null || \
