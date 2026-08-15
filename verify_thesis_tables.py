@@ -14,6 +14,7 @@ Data sources, by table:
   tbl:table24           4-class vs 16-class @20 dB         <- results/all_relays_16class/all_relays_16class.json
   tbl:tableE6           unknown-channel BER                <- e6_unknown_channel_results/*.npy
   tbl:tableE6flat       flat-channel control BER           <- e6_unknown_channel_results/e6_flat_ported_results.npy
+  tbl:tableE6qpsk       QPSK unknown-channel BER           <- e6_unknown_channel_results/e6_qpsk_unknown_channel_results.npy
   tbl:table26           theoretical SNR @ BER=1e-3         <- closed-form (Q-function inversion)
   tab:ber_validation    theory-vs-sim BER                  <- closed-form theory column
   prose:E6blind         blind-regime prose claims          <- e6_unknown_channel_results/e6_blind_ported_results.npy
@@ -130,6 +131,7 @@ def data_rows(body):
 # display-rounding tolerance. JSON-backed tables (deterministic transcriptions)
 # and analytical tables keep the tight rounding tolerance.
 STOCHASTIC_TABLES = {"tbl:tableE6": 0.010, "tbl:tableE6flat": 0.010,
+                     "tbl:tableE6qpsk": 0.010,
                      "tbl:table24": 0.002,
                      # prose claims from the E6 blind/partial/composite studies
                      # (5-6 trials x 40k bits; the partial-posterior 5-pilot
@@ -424,6 +426,54 @@ def check_tableE6flat(tex, rep):
     rep.finish_table(T, before)
 
 
+def check_tableE6qpsk(tex, rep):
+    """QPSK unknown-channel BER (tbl:tableE6qpsk) vs e6_qpsk_unknown_channel_results.npy."""
+    T = "tbl:tableE6qpsk"; before = rep.checked
+    body = table_body(tex, T)
+    if body is None:
+        return rep.skip(T, "label not found in tex")
+    d = np.load(os.path.join(ROOT, "e6_unknown_channel_results",
+                              "e6_qpsk_unknown_channel_results.npy"),
+                allow_pickle=True).item()
+    snrs = list(d["snrs"])
+    col_snr = [(2, 8), (3, 12), (4, 16), (5, 20)]
+
+    setup_map = {"AWGN": "awgn", "Rayleigh": "rayleigh"}
+    relay_map = {"AF": "AF", "DF": "DF", "MLP-QPSK": "MLP-QPSK",
+                 "VITERBI": "Viterbi (genie CSI)"}
+    cur_setup = None
+    for row in data_rows(body):
+        if not row:
+            continue
+        first = row[0][0].strip()
+        if first:
+            cur_setup = None
+            for key, hop2 in setup_map.items():
+                if key.upper() in first.upper():
+                    cur_setup = hop2
+                    break
+        if cur_setup is None or len(row) < 2:
+            continue
+        relay = row[1][0].strip()
+        rkey = None
+        for needle, target in relay_map.items():
+            if needle in relay.upper():
+                rkey = target
+                break
+        if rkey is None:
+            continue
+        res = d["results"][cur_setup][rkey][0]  # row 0 = mean
+        for c, snr in col_snr:
+            if c >= len(row):
+                break
+            pub_text, pub_val = row[c]
+            if pub_val is None:
+                continue
+            si = snrs.index(snr)
+            rep.cell(T, f"{cur_setup}/{relay}/{snr}dB", pub_text, pub_val, res[si])
+    rep.finish_table(T, before)
+
+
 def _load_e6_npy(name):
     p = os.path.join(ROOT, "e6_unknown_channel_results", name)
     if not os.path.exists(p):
@@ -592,7 +642,7 @@ def main():
     tex = load_tex()
     rep = Report()
     checks = [check_ber_validation, check_table26, check_table2, check_table8,
-              check_table24, check_tableE6, check_tableE6flat,
+              check_table24, check_tableE6, check_tableE6flat, check_tableE6qpsk,
               check_E6blind_prose, check_E6partial_prose, check_E6composite_prose]
     for chk in checks:
         try:

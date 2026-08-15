@@ -23,6 +23,16 @@ the two steps can be separated.
 - **Appendix F**, absent from the Overleaf version, restored as
   `chapters/appendix_f_review.tex` and included after Appendix E. All 23 of its
   cross-references resolve against this version.
+- **A QPSK unknown-channel subsection** (`sec:qpsk-unknown-channel`, Table 7.3,
+  Figure 7.3), reporting the results of `e6_qpsk_unknown_channel.py` (10 x
+  100k, 2026-08-15). Repeats the BPSK unknown-ISI study of Section 7.1 with
+  Gray-coded QPSK: the memoryless-relay failure mode generalizes (AF/DF
+  plateau at an elevated, non-monotonic BER), but the BPSK ordering between
+  the learned relay and genie-CSI Viterbi MLSE does not — MLP-QPSK ends up
+  *below* Viterbi from about 2 dB upward, a reversal attributed to the
+  sequence-vs-bit-error-rate distinction in MLSE and flagged explicitly as an
+  unverified hypothesis, not a proven claim. Verified against the data source
+  (`verify_thesis_tables.py`, `tbl:tableE6qpsk`, 32 cells, 0 mismatches).
 
 ### Changed — from the Overleaf version
 
@@ -62,9 +72,6 @@ the two steps can be separated.
 
 ### Known issues
 
-- The QPSK unknown-channel results produced on 2026-08-15 (ISI hop 1, AWGN and
-  Rayleigh hop 2, 10 x 100k) are committed and verified but **not yet written
-  into the thesis**; this imported version predates them.
 - The VAE relay decodes stochastically at inference and the deterministic
   variant was not evaluated, so its weak result may be an inference-time
   artifact. Stated as open in the text.
