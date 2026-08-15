@@ -1,0 +1,221 @@
+\section{Appendix F: Independent Review Findings and Resolutions}\label{sec:appendix-review-resolutions}
+
+Following the revision documented in Appendix~E, the thesis underwent an
+independent technical review pass covering the communications theory, the
+machine-learning claims, the numerical results, and their internal consistency.
+The review raised twenty-four findings, which were recorded as inline
+annotations in the working draft. \textbf{Every finding has now been resolved
+directly in the text}; this appendix documents each one and the change made, so
+that the resolutions are auditable without reference to the annotated draft.
+
+Findings are grouped by type. ``Substantive'' denotes a change to a technical
+claim, a derivation, or a stated result; ``consistency'' denotes reconciliation
+of numbers or cross-references that disagreed between chapters; ``editorial''
+denotes typography, notation, or presentation.
+
+\subsection*{F.1 Substantive corrections}
+
+\begingroup\small
+\begin{enumerate}\setlength{\itemsep}{3pt}\setlength{\parskip}{1pt}
+
+\item \textbf{AF end-to-end SNR stated without attribution or assumptions}
+(Section~\ref{sec:classical-relay-strategies-af}). Equation~\ref{eq:af-snr} is a
+standard result but carried no citation, and the $+1$ term in its denominator is
+convention-dependent. \emph{Resolved:} the expression is now attributed, and the
+text states explicitly that it assumes CSI-assisted \emph{variable-gain} AF (the
+variant implemented here), explains the origin of the $+1$ term, and
+distinguishes it from the fixed-gain convention.
+
+\item \textbf{Overclaim on universal approximation}
+(Section~\ref{sec:theoretical-basis-universal-approximation-and-denoising}). The
+text asserted that a single-hidden-layer network with tanh output ``can represent
+this function exactly.'' This holds only for a \emph{fixed} noise variance, whereas
+the deployed relay is trained at $\{5,10,15\}$~dB and evaluated over $0$--$20$~dB,
+and on fading must cover a mixture of random effective SNRs. \emph{Resolved:} the
+claim is now split (exact representation for fixed $\sigma^2$, close
+\emph{approximation} of the multi-SNR family) and the latter is identified as an
+empirical finding rather than a theoretical consequence.
+
+\item \textbf{Unjustified contraction claim in the Mamba selectivity mechanism}
+(Section~\ref{sec:mamba-selective-state-spaces}). The step
+$\exp(\Delta_k\mathbf{A})\to\mathbf{0}$ for large $\Delta_k$ requires
+$\mathbf{A}$ to be Hurwitz, which was never stated. \emph{Resolved:} the text now
+states the parameterization $\mathbf{A}=-\exp(A_{\log})$ explicitly, notes that it
+makes $\mathbf{A}\prec 0$ diagonal, and derives the reset/retain behaviour from
+that property.
+
+\item \textbf{VAE result attributed to the generative paradigm without ruling out
+an inference-time cause} (Sections~\ref{sec:generative-vs.-discriminative-paradigms-for-relay-processing}
+and~\ref{sec:siso-bpsk-performance-baseline-relay-comparison}). The VAE relay is
+pinned near BER $0.25$--$0.40$ at all SNRs, and this was read as evidence about
+generative modelling as such. The relay samples $\mathbf{z}\sim q_\phi$
+stochastically at inference; the standard deterministic variant (posterior mean
+$\boldsymbol{\mu}$ at test time) was never evaluated. \emph{Resolved:} both the
+literature-review conclusion and the results discussion now state this caveat
+explicitly and report the VAE outcome as specific to the evaluated configuration,
+with the deterministic-decoding comparison identified as future work.
+
+\item \textbf{``Identifiability'' mischaracterized in the pilot-budget sweep}
+(Section~\ref{sec:partial-posterior}). The collapse of pilot-aided Viterbi at
+5~pilots was described as the channel becoming unidentifiable, but with
+5~observations and 3~complex taps the least-squares problem remains
+overdetermined. \emph{Resolved:} the mechanism is now correctly described as an
+\emph{estimation-variance} cliff (too few observations to average the noise, so
+occasional catastrophic fits dominate) and the confidence interval at that point
+($0.119\pm0.084$, versus $\pm0.002$ at 10~pilots) is reported in both the text and
+the figure caption as direct evidence.
+
+\item \textbf{Uniqueness overreach in the block-length discussion}
+(Section~\ref{sec:partial-posterior}). The learned relay was called ``the only
+option that remains reliable'' on short blocks, but blind CMA is also pilot-free
+and was not tested at $L=40$. \emph{Resolved:} the claim is narrowed to the only
+\emph{one-shot} option, the distinguishing property (zero per-block adaptation) is
+stated, and the untested CMA behaviour at short block length is flagged as open
+rather than asserted.
+
+\item \textbf{Wall-clock speed-up presented without implementation context}
+(Section~\ref{sec:complexity-viterbi-mlp}). The $30$--$90\times$ figure compares a
+vectorized NumPy matrix multiply against an interpreted Python trellis loop, so
+part of the ratio is interpreter overhead. \emph{Resolved:} the figure is now
+explicitly scoped to the reference implementations, notes that an optimized C or
+SIMD Viterbi would narrow the gap, and defers the load-bearing conclusion to the
+implementation-independent $M^{L}$-versus-constant scaling argument.
+
+\item \textbf{Scope statement contradicted the principal contribution}
+(Section~\ref{sec:scope-and-delimitations}). The delimitation ``perfect CSI is
+assumed; channel estimation errors are not modeled'' was stale, since
+Chapter~\ref{sec:unknown-channels} models finite-pilot LS estimation and a
+zero-CSI blind regime. \emph{Resolved:} the item is now scoped to the canonical
+core, and the lifted assumptions in the unknown-channel chapter are named.
+
+\item \textbf{Displayed system model showed the calibration case, not the
+canonical channel} (Section~\ref{sec:relay-processing-methods}).
+Equation~\ref{eq:relay-received-siso} showed a fixed noise variance although the
+canonical channel is Rayleigh, giving a random per-symbol effective SNR.
+\emph{Resolved:} the equation is rewritten in post-compensation form
+$\tilde{y}_R[i]=|h_1[i]|x[i]+\tilde{n}_1[i]$, the exponentially distributed
+effective SNR $|h_1|^2\gamma$ is stated, and the AWGN limit is identified as the
+$|h_1|\equiv 1$ special case.
+
+\item \textbf{Inexact DF error-composition formula}
+(Section~\ref{sec:classical-relay-strategies-df}). The chapter gave
+$P_{e,1}+(1-P_{e,1})P_{e,2}$ in one place and the exact
+$P_{e,1}+P_{e,2}-2P_{e,1}P_{e,2}$ in another. \emph{Resolved:} both now use the
+exact odd-flip form, with a sentence explaining that two errors cancel, so the two
+appearances agree by construction.
+
+\item \textbf{MIMO equalization section implied unreported experiments.} Chapter~2
+carried a ``Theoretical Foundations: MIMO Equalization'' section stating that three
+equalizers (ZF, LMMSE, LMMSE-SIC) ``were implemented,'' with speed-up figures,
+although MIMO is future work and no MIMO result appears anywhere in the thesis, and although the summary of removed material in Appendix~E already listed the
+$2\times2$ MIMO second hop and its equalization among the material deleted in the
+canonical restructure. The section had simply survived that deletion.
+\emph{Resolved:} the section is now \emph{removed}, matching what Appendix~E
+already recorded. The equalizer implementations themselves have since been deleted
+from the framework as well, so no unused MIMO code remains (Appendix~C), and with the
+section gone the equalizer-terminology question raised by the supervisor
+(Appendix~E, Chapter~2 comment~7) no longer arises: ``MMSE'' now appears in this
+thesis only in its correct non-linear sense, denoting the MMSE-optimal estimator
+$\mathbb{E}[x\mid y]$ of the relay denoising task.
+
+\end{enumerate}
+\endgroup
+
+\subsection*{F.2 Consistency corrections}
+
+\begingroup\small
+\begin{enumerate}\setlength{\itemsep}{3pt}\setlength{\parskip}{1pt}
+\setcounter{enumi}{11}
+
+\item \textbf{Missing English abstract.} \texttt{main.tex} included a nonexistent
+file, so the abstract never reached the compiled PDF. \emph{Resolved:} the include
+now points at \texttt{chapters/frontmatter.tex}.
+
+\item \textbf{Monte-Carlo budget stated as uniform.} The abstract claimed one
+budget for all results, but E1 uses $20\times50$k, E2--E3 $10\times10$k, and the
+unknown-channel study $5\times50$k. \emph{Resolved:} per-experiment budgets are
+tabulated in Section~\ref{sec:monte-carlo-ber-estimation}, the abstract is scoped
+accordingly, and the caveat that a $5$-trial Wilcoxon test cannot reach $p<0.05$
+is stated.
+
+\item \textbf{Discussion contradicted Table~\ref{tbl:table2}.} The low-SNR
+architecture ordering claimed the sequence models won, whereas the canonical table
+shows the minimal feedforward relays leading. \emph{Resolved:} the paragraph now
+matches the table, which also strengthens the H3/H4 narrative.
+
+\item \textbf{Training-time and unit drift.} Training times were quoted from a
+different run than Table~\ref{tbl:table13}; a normalized-comparison gap appeared
+as ``$\sim$1~dB'' in one chapter and ``$\sim$1\% BER'' in another; the MLP
+training time was rounded to ``under 3~seconds'' against a tabulated 4.9~s.
+\emph{Resolved:} Table~\ref{tbl:table13} is the single source of truth throughout,
+and the units and roundings now agree across chapters.
+
+\item \textbf{Orphaned results and conclusions.} A CSI/LayerNorm table and three
+conclusions referenced a 48-variant search, 16-PSK results, and a nonexistent
+section, all removed in the restructure. \emph{Resolved:} the table and the
+three conclusions were deleted (see Appendix~E).
+
+\item \textbf{Figure and table disagreed with the committed data.} The 16-class
+grouped-bar figure came from a superseded run, and several cells of
+Table~\ref{tbl:table24} traced to the same stale source. \emph{Resolved:} the
+figure was regenerated from the committed results file and every cell of the table
+was reset from it, so table, figure, and caption now share one source.
+
+\item \textbf{Bibliography defects.} One entry carried an incorrect author, title,
+and page range; two works appeared twice under different keys; and the Mamba
+architecture was attributed to the earlier S4 paper. \emph{Resolved:} the entry was
+corrected, the duplicates merged, and the citation repointed.
+
+\item \textbf{Imprecise figures in the summary.} The summary said ``a few dB
+behind a pilot-aided Viterbi receiver'' where the body reports $\approx$1--1.5~dB
+(pure ISI) and $\approx$2~dB (composite), and a reported confidence interval was
+quoted at the wrong SNR point. \emph{Resolved:} both are now stated precisely and
+consistently with the underlying results files.
+
+\end{enumerate}
+\endgroup
+
+\subsection*{F.3 Editorial corrections}
+
+\begingroup\small
+\begin{enumerate}\setlength{\itemsep}{3pt}\setlength{\parskip}{1pt}
+\setcounter{enumi}{19}
+
+\item \textbf{Misdirected equation pointers.} Several parenthetical
+``(Equation~$\ldots$)'' pointers referenced the wrong equation, notably the
+supervised-loss and $\beta$-VAE sentences. \emph{Resolved:} each now points at its
+intended target, or the pointer was removed where it served no purpose.
+
+\item \textbf{Noise-convention note could not be cross-referenced.} The note was a
+\texttt{quote} environment whose label resolved to the enclosing section number.
+\emph{Resolved:} it is promoted to a numbered remark
+(Remark~\ref{noise-convension}) and both citing sites reference it properly.
+
+\item \textbf{Malformed markup in the Mamba block.} A bare \texttt{\textbackslash
+ref}, a missing space, an \texttt{\textbackslash addcontentsline} placed inside an
+equation environment, and a duplicated entry. \emph{Resolved:} the block was
+rewritten with correct structure and complete sentences.
+
+\item \textbf{Broken enumeration and truncated caption.} The unknown-channel setup
+list ran (i), (ii), (iv), (v); a figure caption ended mid-sentence; stray
+characters and a double-encoded ``$\times$'' appeared in places; and one section
+label still read ``partially-confirmed'' after the finding was confirmed.
+\emph{Resolved:} all corrected.
+
+\item \textbf{Summary item too dense.} The unknown-channel summary item ran to
+roughly 250 words and buried the pilot-crossover and complexity results.
+\emph{Resolved:} it is split into three items mirroring the structure of
+Chapter~\ref{sec:unknown-channels}.
+
+\end{enumerate}
+\endgroup
+
+\noindent\textbf{Findings recorded but requiring no change.} The review also
+recorded points of agreement that entailed no edit: the symbol-wise-DF and
+window-causality remarks (Remarks~\ref{rem:df-terminology}
+and~\ref{rem:window-causality}) were noted as correctly pre-empting the obvious
+objections; the analytic $0.25$ error floor and its four slicer amplitudes were
+independently re-derived and confirmed; the flat-channel control was identified as
+the methodological highlight of the unknown-channel chapter; and the bounded
+phrasing of the H6 conclusions, never claiming superiority over a matched
+classical receiver, was endorsed as the defensible reading of the evidence.
