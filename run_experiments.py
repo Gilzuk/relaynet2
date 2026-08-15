@@ -53,11 +53,6 @@ from relaynet.simulation.runner import run_monte_carlo
 from relaynet.simulation.statistics import compute_confidence_interval
 from relaynet.channels.awgn import awgn_channel
 from relaynet.channels.fading import rayleigh_fading_channel, rician_fading_channel
-from relaynet.channels.mimo import (
-    mimo_2x2_channel,
-    mimo_2x2_mmse_channel,
-    mimo_2x2_sic_channel,
-)
 from relaynet.utils.activations import get_clip_range
 
 try:
@@ -974,18 +969,12 @@ _CHANNELS = {
     "awgn":         ("AWGN",             None),
     "rayleigh":     ("Rayleigh Fading",  rayleigh_fading_channel),
     "rician_k3":    ("Rician K=3",       lambda s, snr: rician_fading_channel(s, snr, k_factor=3.0)),
-    "mimo_zf":      ("2×2 MIMO ZF",      mimo_2x2_channel),
-    "mimo_mmse":    ("2×2 MIMO MMSE",    mimo_2x2_mmse_channel),
-    "mimo_sic":     ("2×2 MIMO SIC",     mimo_2x2_sic_channel),
 }
 
 _SECTION_MAP = {
     "awgn":      "7.2",
     "rayleigh":  "7.3",
     "rician_k3": "7.4",
-    "mimo_zf":   "7.5",
-    "mimo_mmse": "7.6",
-    "mimo_sic":  "7.7",
 }
 
 
@@ -1118,7 +1107,6 @@ def exp_7_9_master_chart(args):
     bpsk_dir = os.path.join(args.results_dir, "bpsk_comparison")
     panels = [
         ("awgn", "AWGN"), ("rayleigh", "Rayleigh"), ("rician_k3", "Rician K=3"),
-        ("mimo_zf", "MIMO ZF"), ("mimo_mmse", "MIMO MMSE"), ("mimo_sic", "MIMO SIC"),
     ]
     fig, axes = plt.subplots(2, 3, figsize=(18, 10))
     for ax, (ch_key, ch_name) in zip(axes.flat, panels):
@@ -2199,7 +2187,6 @@ def regenerate_all_charts(args):
         print("\n── §7.9 Master 2×3 Chart ──")
         panels = [
             ("awgn", "AWGN"), ("rayleigh", "Rayleigh"), ("rician_k3", "Rician K=3"),
-            ("mimo_zf", "MIMO ZF"), ("mimo_mmse", "MIMO MMSE"), ("mimo_sic", "MIMO SIC"),
         ]
         fig, axes = plt.subplots(2, 3, figsize=(18, 10))
         for ax, (ck, cn) in zip(axes.flat, panels):

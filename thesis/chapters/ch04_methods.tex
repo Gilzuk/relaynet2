@@ -228,7 +228,7 @@ All experiments use controlled random seeds at both the source (bit generation) 
 
 A \textbf{weight checkpoint system} saves trained model parameters to disk after training completes, enabling experiment resumption without retraining. This is particularly important for the CGAN (2-hour training time) and sequence models (24--37 minutes). The checkpoint system supports: - Automatic save after training with architecture metadata - Resume from saved weights with architecture validation - Seed-specific weight directories (e.g., \texttt{trained\_weights/seed\_42/})
 
-The framework includes 126 automated tests (pytest) covering all modules: channels, modulation, relay strategies, simulation, statistics, and weight management, with 100\% pass rate.
+The framework includes 108 automated tests (pytest) covering all modules: channels, modulation, relay strategies, simulation, statistics, and weight management, with 100\% pass rate.
 
 \section{Normalized Parameter Comparison}\label{sec:normalized-parameter-comparison}
 

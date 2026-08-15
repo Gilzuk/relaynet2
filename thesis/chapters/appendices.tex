@@ -102,9 +102,9 @@ PyTorch (CUDA) \\
 
 \noindent
 All numerical results reported in Chapter~\ref{sec:experiments} were generated using a single simulation framework, ensuring consistent evaluation across classical and learning-based relay architectures. The project is implemented as a modular Python package (\texttt{relaynet}).
-The framework uses object-oriented design with a common \texttt{Relay} base class, enabling polymorphic relay swapping. Monte Carlo simulation is implemented in \texttt{runner.py} with configurable trial count, bit count, and SNR range. All batched tensor operations use vectorized PyTorch for GPU acceleration. The framework additionally ships ZF/LMMSE/SIC equalizer implementations for a $2\times2$ MIMO topology (vectorized batched \texttt{torch.linalg.solve}). These are inactive code: MIMO is deferred to future work (Chapter~\ref{sec:discussion-and-conclusions}), and no experiment reported in this thesis exercises them.
+The framework uses object-oriented design with a common \texttt{Relay} base class, enabling polymorphic relay swapping. Monte Carlo simulation is implemented in \texttt{runner.py} with configurable trial count, bit count, and SNR range. All batched tensor operations use vectorized PyTorch for GPU acceleration. The framework contains only components exercised by the reported experiments: the $2\times2$ MIMO equalizers that earlier versions carried have been removed along with the MIMO thread itself, so no unused signal-processing code remains (MIMO is deferred to future work, Chapter~\ref{sec:discussion-and-conclusions}).
 
-\subsection{Testing} 126 automated tests (pytest) cover all channels, modulation, relay strategies, simulation, and statistics modules with 100\% pass rate.
+\subsection{Testing} 108 automated tests (pytest) cover the channels, modulation, relay-strategy, simulation and statistics modules with a 100\% pass rate. The suite requires only NumPy and SciPy; PyTorch is optional and needed solely by the neural relays that use it.
 
 \subsection{Reproducibility} Random seeds are controlled at the source (bit generation) and noise (per-trial seeding) levels to ensure reproducible results. 
 
@@ -337,7 +337,8 @@ although MIMO is future work and no MIMO result appears anywhere in the thesis, 
 $2\times2$ MIMO second hop and its equalization among the material deleted in the
 canonical restructure. The section had simply survived that deletion.
 \emph{Resolved:} the section is now \emph{removed}, matching what Appendix~E
-already recorded. The inactive equalizer code is noted in Appendix~C, and with the
+already recorded. The equalizer implementations themselves have since been deleted
+from the framework as well, so no unused MIMO code remains (Appendix~C), and with the
 section gone the equalizer-terminology question raised by the supervisor
 (Appendix~E, Chapter~2 comment~7) no longer arises: ``MMSE'' now appears in this
 thesis only in its correct non-linear sense, denoting the MMSE-optimal estimator
