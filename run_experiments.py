@@ -5,7 +5,7 @@ run_experiments.py
 Unified experiment runner for the thesis:
     "Neural Network-Based Relay Processing for Wireless Communications"
 
-Consolidates all 16 thesis experiments (§7.1–§7.16) into a single
+Consolidates the thesis experiments into a single
 reproducible script.  Every experiment:
   - Saves full BER results (mean, per-trial, 95 % CI) to JSON.
   - Generates publication-quality charts following CHART_GUIDELINES.md.
@@ -968,13 +968,11 @@ def exp_7_1_channel_analysis(args):
 _CHANNELS = {
     "awgn":         ("AWGN",             None),
     "rayleigh":     ("Rayleigh Fading",  rayleigh_fading_channel),
-    "rician_k3":    ("Rician K=3",       lambda s, snr: rician_fading_channel(s, snr, k_factor=3.0)),
 }
 
 _SECTION_MAP = {
     "awgn":      "7.2",
     "rayleigh":  "7.3",
-    "rician_k3": "7.4",
 }
 
 
@@ -1106,7 +1104,7 @@ def exp_7_9_master_chart(args):
         return
     bpsk_dir = os.path.join(args.results_dir, "bpsk_comparison")
     panels = [
-        ("awgn", "AWGN"), ("rayleigh", "Rayleigh"), ("rician_k3", "Rician K=3"),
+        ("awgn", "AWGN"), ("rayleigh", "Rayleigh"),
     ]
     fig, axes = plt.subplots(2, 3, figsize=(18, 10))
     for ax, (ch_key, ch_name) in zip(axes.flat, panels):
@@ -1241,91 +1239,6 @@ def exp_7_11_qam16_activation(args):
 
 # ── §7.12  LayerNorm study ─────────────────────────────────────────
 
-def exp_7_12_layernorm(args):
-    """§7.12 Input LayerNorm impact on sequence models."""
-    print("\n══ §7.12 LayerNorm Study ══")
-    if not _HAS_SEQ:
-        print("  [SKIP] Sequence model checkpoints unavailable")
-        return
-
-    snr_range = np.arange(args.snr_min, args.snr_max + 1, args.snr_step)
-    out = os.path.join(args.results_dir, "layernorm")
-    os.makedirs(out, exist_ok=True)
-
-    variants = {
-        "Baseline": {"ln": False, "act": "tanh"},
-        "+InputLN": {"ln": True, "act": "tanh"},
-        "+LN+Scaled": {"ln": True, "act": "scaled_tanh"},
-    }
-
-    seq_models = ["Transformer", "Mamba S6", "Mamba2 (SSD)"]
-    modulations = ["qpsk", "qam16"]
-    channels = [("awgn", None), ("rayleigh", rayleigh_fading_channel)]
-
-    for mod in modulations:
-        act_default = "tanh" if mod != "qam16" else "hardtanh"
-        cr = get_clip_range(mod) if mod == "qam16" else None
-
-        for ch_key, ch_fn in channels:
-            print(f"\n  {mod.upper()} × {ch_key.upper()}")
-            all_ber = {}
-            all_ci = {}
-
-            for var_name, cfg in variants.items():
-                act = cfg["act"] if mod != "qam16" else "hardtanh"
-                relays = build_base_relays(
-                    gpu=args.gpu, activation=act, clip_range=cr,
-                    layer_norm=cfg["ln"])
-
-                if not args.inference_only:
-                    subdir = f"layernorm/{var_name.strip('+').lower()}"
-                    samples = 5_000 if args.quick else 50_000
-                    epochs = 10 if args.quick else 100
-                    for name in seq_models:
-                        if name not in relays:
-                            continue
-                        print(f"    {name} {var_name} …", end=" ", flush=True)
-                        t0 = perf_counter()
-                        relays[name].train(
-                            training_snrs=[5, 10, 15], num_samples=samples,
-                            epochs=epochs, lr=0.001,
-                            training_modulation=mod)
-                        print(f"done ({perf_counter() - t0:.1f}s)")
-
-                # Evaluate only sequence models + baselines
-                eval_relays = {n: relays[n] for n in ["AF", "DF"] + seq_models
-                               if n in relays}
-                results = evaluate_relays(
-                    eval_relays, snr_range, channel_fn=ch_fn,
-                    modulation=mod,
-                    bits_per_trial=args.bits_per_trial,
-                    num_trials=args.num_trials,
-                )
-                for rname, rd in results.items():
-                    if rname in ("AF", "DF") and var_name != "Baseline":
-                        continue  # Only add baselines once
-                    label = f"{rname} {var_name}" if rname not in ("AF", "DF") else rname
-                    all_ber[label] = rd["ber_mean"]
-                    all_ci[label] = (rd["ci_lower"], rd["ci_upper"])
-
-            tag = f"{mod}_{ch_key}"
-            save_results_json(
-                os.path.join(out, f"layernorm_{tag}.json"),
-                snr_range,
-                {k: {"ber_mean": v} for k, v in all_ber.items()},
-                meta={"experiment": "7.12", "modulation": mod, "channel": ch_key},
-            )
-            plot_ber_chart(
-                snr_range, all_ber, all_ci,
-                title=f"LayerNorm Study — {mod.upper()} {ch_key.upper()} (§7.12)",
-                save_path=os.path.join(out, f"layernorm_{tag}.png"),
-            )
-
-    print(f"  §7.12 complete → {out}/")
-
-
-# ── §7.13  Activation comparison ──────────────────────────────────
-
 def exp_7_13_activation_comparison(args):
     """§7.13 Sigmoid vs hardtanh vs scaled_tanh across all relays."""
     print("\n══ §7.13 Activation Comparison ══")
@@ -1407,272 +1320,6 @@ def _build_csi_variant(model_name, cfg, gpu, constellation):
         return Mamba2RelayWrapper(d_state=16, prefer_gpu=gpu, **base_kw)
     return None
 
-
-def exp_7_14_csi_injection(args):
-    """§7.14 CSI injection experiment."""
-    print("\n══ §7.14 CSI Injection Experiment ══")
-    if not _HAS_SEQ:
-        print("  [SKIP] Sequence model checkpoints unavailable")
-        return
-
-    snr_range = np.arange(args.snr_min, args.snr_max + 1, args.snr_step)
-    out = os.path.join(args.results_dir, "csi")
-    os.makedirs(out, exist_ok=True)
-
-    constellations = ["qam16", "psk16"]
-    model_names = ["Mamba S6", "Transformer", "Mamba2 (SSD)"]
-    activations = ["hardtanh", "scaled_tanh", "tanh", "sigmoid"]
-    configs = {
-        "Baseline": {"csi": False, "ln": False},
-        "LN":       {"csi": False, "ln": True},
-        "CSI":      {"csi": True,  "ln": False},
-        "CSI+LN":   {"csi": True,  "ln": True},
-    }
-
-    train_samples = 1_000 if args.quick else 20_000
-    train_epochs = 5 if args.quick else 25
-
-    ch_fn = lambda s, snr: rayleigh_fading_channel(s, snr, return_channel=True)
-
-    for constellation in constellations:
-        print(f"\n  Constellation: {constellation.upper()}")
-        all_results = {"AF": None, "DF": None}
-        cr = get_clip_range(constellation)
-
-        # Evaluate AF/DF baselines
-        af = AmplifyAndForwardRelay()
-        df = DecodeAndForwardRelay()
-        for bname, relay in [("AF", af), ("DF", df)]:
-            print(f"    {bname} …", end=" ", flush=True)
-            _, ber, trials = run_monte_carlo(
-                relay, snr_range, channel_fn=ch_fn,
-                num_bits_per_trial=args.bits_per_trial,
-                num_trials=args.num_trials,
-                modulation=constellation)
-            ci_lo, ci_hi = compute_confidence_interval(trials)
-            all_results[bname] = {
-                "ber_mean": ber, "ber_trials": trials,
-                "ci_lower": ci_lo, "ci_upper": ci_hi,
-            }
-            print("done")
-
-        # Train and evaluate all variants
-        for model_name in model_names:
-            for act in activations:
-                for cfg_name, cfg_vals in configs.items():
-                    label = f"{model_name} {cfg_name} {act}"
-                    cfg = {**cfg_vals, "act": act}
-                    print(f"    {label} …", end=" ", flush=True)
-                    t0 = perf_counter()
-
-                    relay = _build_csi_variant(model_name, cfg, args.gpu,
-                                               constellation)
-                    if relay is None:
-                        print("SKIP")
-                        continue
-
-                    if not args.inference_only:
-                        relay.train(
-                            training_snrs=[5, 10, 15],
-                            num_samples=train_samples,
-                            epochs=train_epochs,
-                            training_modulation=constellation,
-                            use_rayleigh=True)
-
-                    _, ber, trials = run_monte_carlo(
-                        relay, snr_range, channel_fn=ch_fn,
-                        num_bits_per_trial=args.bits_per_trial,
-                        num_trials=args.num_trials,
-                        modulation=constellation)
-                    ci_lo, ci_hi = compute_confidence_interval(trials)
-                    all_results[label] = {
-                        "ber_mean": ber, "ber_trials": trials,
-                        "ci_lower": ci_lo, "ci_upper": ci_hi,
-                    }
-                    print(f"done ({perf_counter() - t0:.1f}s)")
-
-        # Save results
-        save_results_json(
-            os.path.join(out, f"csi_experiment_{constellation}_rayleigh.json"),
-            snr_range, all_results,
-            meta={"experiment": "7.14-7.15", "constellation": constellation},
-        )
-
-        # Plot all variants
-        ber_dict = {n: r["ber_mean"] for n, r in all_results.items()}
-        ci_dict = {n: (r["ci_lower"], r["ci_upper"]) for n, r in all_results.items()}
-        plot_ber_chart(
-            snr_range, ber_dict, ci_dict,
-            title=f"CSI Experiment — {constellation.upper()} Rayleigh (§7.14–7.15)",
-            save_path=os.path.join(out, f"csi_experiment_{constellation}_rayleigh.png"),
-        )
-        plot_top3_chart(
-            snr_range, all_results,
-            title=f"Top-3 CSI Variants — {constellation.upper()} Rayleigh",
-            save_path=os.path.join(out, f"top3_{constellation}_rayleigh.png"),
-        )
-
-    print(f"  §7.14–7.15 complete → {out}/")
-
-
-# ── §7.15  Multi-architecture CSI (uses same function as §7.14) ───
-
-def exp_7_15_multi_csi(args):
-    """§7.15 Multi-architecture CSI — results generated by §7.14."""
-    print("\n══ §7.15 Multi-Architecture CSI ══")
-    print("  Results combined with §7.14 (run --exp 7.14 to generate)")
-
-
-# ── §7.16  E2E autoencoder ─────────────────────────────────────────
-
-def exp_7_16_e2e(args):
-    """§7.16 End-to-End autoencoder experiment."""
-    print("\n══ §7.16 End-to-End Autoencoder ══")
-    if not _HAS_E2E:
-        print("  [SKIP] checkpoint_24_e2e_transmitter not available")
-        return
-
-    import torch
-    out = os.path.join(args.results_dir, "e2e")
-    os.makedirs(out, exist_ok=True)
-    wm = WeightManager(args.weights_dir, args.seed)
-
-    device = torch.device("cuda" if args.gpu and torch.cuda.is_available()
-                          else "cpu")
-    M = 16
-    hidden = 64
-    epochs = 500 if args.quick else 10_000
-
-    # ── Train E2E autoencoder ──
-    from checkpoints.checkpoint_24_e2e_transmitter import (
-        E2EReceiver, plot_constellation, plot_ber_with_ci as e2e_plot_ber,
-    )
-
-    tx = E2ETransmitter(M=M, hidden_dim=hidden).to(device)
-    channel = DifferentiableRayleighChannel(perfect_csi=True).to(device)
-    rx = E2EReceiver(M=M, hidden_dim=hidden).to(device)
-
-    weight_path = wm._path("e2e_transmitter", subdir="e2e")
-    if args.inference_only and os.path.exists(weight_path):
-        state = torch.load(weight_path, map_location=device, weights_only=False)
-        tx.load_state_dict(state["transmitter"])
-        rx.load_state_dict(state["receiver"])
-        print("  Loaded E2E weights")
-    else:
-        print(f"  Training E2E ({epochs} epochs) …")
-        t0 = perf_counter()
-        history = train_e2e(tx, channel, rx, epochs=epochs, seed=args.seed,
-                            device=device, verbose=True)
-        print(f"  Training done ({perf_counter() - t0:.1f}s)")
-
-        # Save weights
-        os.makedirs(os.path.dirname(weight_path), exist_ok=True)
-        torch.save({
-            "transmitter": tx.state_dict(),
-            "receiver": rx.state_dict(),
-            "M": M, "hidden_dim": hidden, "epochs": epochs,
-        }, weight_path)
-        print(f"  Weights → {weight_path}")
-
-        # Plot training loss
-        if _HAS_MPL and history:
-            fig, ax = plt.subplots(figsize=(8, 5))
-            ax.plot(history, linewidth=1.0)
-            ax.set_xlabel("Epoch", fontsize=14)
-            ax.set_ylabel("Loss", fontsize=14)
-            ax.set_title("E2E Training Loss", fontsize=16)
-            ax.grid(True, alpha=0.3)
-            plt.tight_layout()
-            plt.savefig(os.path.join(out, "e2e_training_loss.png"),
-                        dpi=150, bbox_inches="tight")
-            plt.close(fig)
-
-    # ── Evaluate BER ──
-    snr_eval = np.arange(0, 21, 1, dtype=float)
-    bits_per_sym = int(np.log2(M))
-    num_trials_e2e = 3 if args.quick else 10
-    num_symbols = 1_000 if args.quick else 5_000
-    snr_vals, mean_ber, ber_trials_arr = evaluate_ber(
-        tx, channel, rx, snr_range_db=snr_eval,
-        num_symbols=num_symbols, num_trials=num_trials_e2e,
-        device=device)
-
-    # ── Constellation metrics ──
-    metrics = constellation_metrics(tx)
-    print(f"  d_min = {metrics['d_min']:.4f}, PAPR = {metrics['papr']:.4f}")
-
-    # ── Relay comparison (AF vs DF vs E2E) ──
-    print("  Running relay comparison (AF vs DF vs E2E) …")
-    from relaynet.relays.e2e import E2ERelay
-    e2e_relay = E2ERelay(M=M, hidden_dim=hidden, prefer_gpu=args.gpu)
-    e2e_relay._transmitter = tx
-    e2e_relay._refresh_codebook()
-    e2e_relay.is_trained = True
-
-    snr_relay = np.arange(0, 22, 2, dtype=float)
-    relay_ch = rayleigh_fading_channel
-    relay_results = {}
-    for rname, relay in [("AF", AmplifyAndForwardRelay()),
-                          ("DF", DecodeAndForwardRelay()),
-                          ("E2E", e2e_relay)]:
-        print(f"    {rname} …", end=" ", flush=True)
-        _, ber, trials = run_monte_carlo(
-            relay, snr_relay, channel_fn=relay_ch,
-            num_bits_per_trial=args.bits_per_trial,
-            num_trials=args.num_trials,
-            modulation="qam16")
-        ci_lo, ci_hi = compute_confidence_interval(trials)
-        relay_results[rname] = {
-            "ber_mean": ber, "ber_trials": trials,
-            "ci_lower": ci_lo, "ci_upper": ci_hi,
-        }
-        print("done")
-
-    # Save all results
-    save_results_json(
-        os.path.join(out, "e2e_ber.json"), snr_vals,
-        {"E2E": {"ber_mean": mean_ber,
-                 "ber_trials": ber_trials_arr}},
-        meta={"experiment": "7.16", "M": M, "epochs": epochs,
-              "metrics": {k: float(v) if isinstance(v, (float, np.floating)) else v
-                          for k, v in metrics.items() if k != "points"}},
-    )
-    save_results_json(
-        os.path.join(out, "e2e_relay_comparison.json"), snr_relay, relay_results,
-        meta={"experiment": "7.16", "comparison": "AF vs DF vs E2E"},
-    )
-
-    # Plots
-    if _HAS_MPL:
-        # Constellation
-        if hasattr(plot_constellation, '__call__'):
-            try:
-                plot_constellation(tx,
-                                   save_path=os.path.join(out, "e2e_constellation.png"))
-            except Exception:
-                pass
-
-        # BER vs SNR
-        e2e_bers = np.asarray(mean_ber)
-        plot_ber_chart(
-            snr_eval, {"E2E Autoencoder": e2e_bers},
-            title="E2E BER vs SNR — Rayleigh Fading (§7.16)",
-            save_path=os.path.join(out, "e2e_ber_comparison.png"),
-        )
-
-        # Relay comparison
-        ber_dict = {n: r["ber_mean"] for n, r in relay_results.items()}
-        ci_dict = {n: (r["ci_lower"], r["ci_upper"]) for n, r in relay_results.items()}
-        plot_ber_chart(
-            snr_relay, ber_dict, ci_dict,
-            title="E2E vs AF/DF — 16-QAM Rayleigh (§7.16)",
-            save_path=os.path.join(out, "e2e_relay_comparison.png"),
-        )
-
-    print(f"  §7.16 complete → {out}/")
-
-
-# ── Constellation diagrams ─────────────────────────────────────────
 
 def exp_constellations(args):
     """Generate constellation diagrams for all 4 modulation schemes."""
@@ -2036,25 +1683,17 @@ EXPERIMENTS = {
     "7.1":  ("Channel Model Analysis",            exp_7_1_channel_analysis),
     "7.2":  ("BPSK AWGN Relay Comparison",         exp_7_2_to_7_7_relay_comparison),
     "7.3":  ("BPSK Rayleigh Relay Comparison",     exp_7_2_to_7_7_relay_comparison),
-    "7.4":  ("BPSK Rician K=3",                    exp_7_2_to_7_7_relay_comparison),
-    "7.5":  ("2×2 MIMO ZF",                        exp_7_2_to_7_7_relay_comparison),
-    "7.6":  ("2×2 MIMO MMSE",                      exp_7_2_to_7_7_relay_comparison),
-    "7.7":  ("2×2 MIMO SIC",                       exp_7_2_to_7_7_relay_comparison),
     "7.8":  ("Normalized 3K Comparison",            exp_7_8_normalized_3k),
     "7.9":  ("Master 2×3 Chart",                    exp_7_9_master_chart),
     "7.10": ("Modulation Comparison",               exp_7_10_modulation_comparison),
     "7.11": ("QAM16 Activation Study",              exp_7_11_qam16_activation),
-    "7.12": ("LayerNorm Study",                     exp_7_12_layernorm),
     "7.13": ("Activation Comparison",               exp_7_13_activation_comparison),
-    "7.14": ("CSI Injection",                       exp_7_14_csi_injection),
-    "7.15": ("Multi-Architecture CSI",              exp_7_15_multi_csi),
-    "7.16": ("E2E Autoencoder",                     exp_7_16_e2e),
     "7.17": ("16-Class 2D QAM16",                   exp_7_17_16class_2d),
     "constellations": ("Constellation Diagrams",    exp_constellations),
 }
 
 # §7.2–§7.7 share one function; avoid running it 6× when --all
-_RELAY_COMPARISON_SECTIONS = {"7.2", "7.3", "7.4", "7.5", "7.6", "7.7"}
+_RELAY_COMPARISON_SECTIONS = {"7.2", "7.3"}
 
 
 # ════════════════════════════════════════════════════════════════════
@@ -2186,7 +1825,7 @@ def regenerate_all_charts(args):
     if len(bpsk_multi) >= 2 and _HAS_MPL:
         print("\n── §7.9 Master 2×3 Chart ──")
         panels = [
-            ("awgn", "AWGN"), ("rayleigh", "Rayleigh"), ("rician_k3", "Rician K=3"),
+            ("awgn", "AWGN"), ("rayleigh", "Rayleigh"),
         ]
         fig, axes = plt.subplots(2, 3, figsize=(18, 10))
         for ax, (ck, cn) in zip(axes.flat, panels):
@@ -2364,7 +2003,7 @@ def parse_args():
 Examples:
   python run_experiments.py --list
   python run_experiments.py --all --quick
-  python run_experiments.py --exp 7.2 7.10 7.16
+  python run_experiments.py --exp 7.2 7.10 7.17
   python run_experiments.py --all --inference-only
   python run_experiments.py --regen-charts
 """)
