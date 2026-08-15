@@ -9,6 +9,7 @@ flagged.
 
 Data sources, by table:
   tbl:table2            canonical Rayleigh BER, 9 relays   <- results/bpsk_comparison/rayleigh.json
+  tbl:table14ray        QPSK vs BPSK on Rayleigh, 9 relays  <- results/modulation/{bpsk,qpsk}_rayleigh.json
   tbl:table8            normalized-3K Rayleigh BER         <- results/normalized_3k/3k_rayleigh.json
   tbl:table14           modulation BER (AWGN)              <- results/bpsk_comparison/awgn.json (+ modulation)
   tbl:table24           4-class vs 16-class @20 dB         <- results/all_relays_16class/all_relays_16class.json
@@ -231,6 +232,39 @@ def check_table2(tex, rep):
             pub_text, pub_val = row[c]
             src = d["results"][relay]["ber_mean"][si]
             rep.cell(T, f"{snr}dB/{relay}", pub_text, pub_val, src)
+    rep.finish_table(T, before)
+
+
+def check_table14ray(tex, rep):
+    """QPSK vs BPSK on canonical Rayleigh (tbl:table14ray) vs modulation/*.json."""
+    T = "tbl:table14ray"; before = rep.checked
+    body = table_body(tex, T)
+    if body is None:
+        return rep.skip(T, "label not found in tex")
+    b = json.load(open(os.path.join(ROOT, "results/modulation/bpsk_rayleigh.json")))
+    q = json.load(open(os.path.join(ROOT, "results/modulation/qpsk_rayleigh.json")))
+    snrs = b["snr_range"]
+    # tex row label -> json relay key
+    key = {"AF": "AF", "DF": "DF", "MLP (169p)": "GenAI (169p)", "Hybrid": "Hybrid",
+           "VAE": "VAE", "cGAN": "CGAN (WGAN-GP)", "Transformer": "Transformer",
+           "Mamba-S6": "Mamba S6", "Mamba-2 SSD": "Mamba2 (SSD)"}
+    # columns after the label: (BPSK,QPSK) at 0, 8, 16, 20 dB
+    col_snr = [(1, 0), (3, 8), (5, 16), (7, 20)]
+    for row in data_rows(body):
+        if not row:
+            continue
+        name = row[0][0].strip()
+        k = key.get(name)
+        if k is None:
+            continue
+        for c, snr in col_snr:
+            if c + 1 >= len(row):
+                break
+            si = snrs.index(snr)
+            pb, vb = row[c]
+            rep.cell(T, f"{name}/BPSK/{snr}dB", pb, vb, b["results"][k]["ber_mean"][si])
+            pq, vq = row[c + 1]
+            rep.cell(T, f"{name}/QPSK/{snr}dB", pq, vq, q["results"][k]["ber_mean"][si])
     rep.finish_table(T, before)
 
 
@@ -681,7 +715,7 @@ def main():
 
     tex = load_tex()
     rep = Report()
-    checks = [check_ber_validation, check_table26, check_table2, check_table8,
+    checks = [check_ber_validation, check_table26, check_table2, check_table14ray, check_table8,
               check_table24, check_tableE6, check_tableE6flat, check_tableE6qpsk,
               check_E6blind_prose, check_E6partial_prose, check_E6composite_prose]
     for chk in checks:
