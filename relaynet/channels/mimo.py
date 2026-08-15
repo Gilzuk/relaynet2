@@ -71,7 +71,29 @@ Author: GitHub Copilot
 """
 
 import numpy as np
-import torch
+
+# PyTorch is an optional dependency (see requirements.txt): it is needed only by
+# the MIMO equalizers in this module and by the CGAN/sequence relays. Importing
+# it at module level made it mandatory for the whole `relaynet.channels`
+# package, because __init__ imports this module -- which broke every
+# NumPy-only experiment on a machine without torch. Defer the import so the
+# package loads regardless, and fail only if a MIMO equalizer is actually used
+# (no experiment in the thesis uses them; MIMO is future work).
+try:  # pragma: no cover - trivial import guard
+    import torch
+except ModuleNotFoundError:  # pragma: no cover
+    torch = None
+
+
+def _require_torch():
+    """Raise a clear error if a MIMO equalizer is called without torch installed."""
+    if torch is None:
+        raise ModuleNotFoundError(
+            "PyTorch is required for the 2x2 MIMO equalizers in "
+            "relaynet.channels.mimo, but is not installed. Install it with "
+            "'pip install torch'. Note that no experiment reported in the "
+            "thesis uses these equalizers -- MIMO is future work."
+        )
 
 
 # ── Device selection ────────────────────────────────────────────────
@@ -82,6 +104,7 @@ def _get_device(device="auto"):
     * ``'auto'`` → CUDA if available, else CPU.
     * ``'cpu'`` / ``'cuda'`` → use as-is.
     """
+    _require_torch()
     if device == "auto":
         return torch.device("cuda" if torch.cuda.is_available() else "cpu")
     return torch.device(device)
