@@ -43,7 +43,9 @@ class ISIChannel:
         isi_output = np.convolve(signal, self.taps)[:signal.size]
 
         # Add AWGN
-        sigma = 10 ** (-snr_db / 20.0)
+        # sigma^2 = N0/2 per real dimension (N0 = Es/gamma), so snr_db is
+        # Eb/N0 on the same axis as fading.py and the textbook expressions.
+        sigma = 1.0 / np.sqrt(2.0 * 10 ** (snr_db / 10.0))
         noise = sigma * self.rng.standard_normal(signal.size)
 
         return isi_output + noise
@@ -133,7 +135,9 @@ class ComplexAWGNChannel:
         output : numpy.ndarray
             Noisy channel output.
         """
-        sigma = 10 ** (-snr_db / 20.0)
+        # sigma^2 = N0/2 per real dimension (N0 = Es/gamma), so snr_db is
+        # Eb/N0 on the same axis as fading.py and the textbook expressions.
+        sigma = 1.0 / np.sqrt(2.0 * 10 ** (snr_db / 10.0))
         if np.iscomplexobj(signal):
             noise = sigma * (
                 self.rng.standard_normal(signal.size) +
@@ -173,7 +177,10 @@ class ISIRayleighChannel:
              1j * self.rng.standard_normal(signal.size)) / np.sqrt(2)
         )
         faded = h * isi_output
-        sigma = 10 ** (-snr_db / 20.0)
+        # sigma^2 = N0/2 with N0 = Es/gamma, so snr_db is Eb/N0 and this
+        # channel is on the same axis as relaynet/channels/fading.py and the
+        # textbook Rayleigh expression. See the note in RayleighChannel.
+        sigma = 1.0 / np.sqrt(2.0 * 10 ** (snr_db / 10.0))
         noise = sigma * self.rng.standard_normal(signal.size)
         return faded + noise
 
@@ -241,7 +248,9 @@ class NonlinearBiasChannel:
         output : numpy.ndarray
         """
         nonlinear = np.tanh(self.saturation * signal) + self.dc_bias
-        sigma = 10 ** (-snr_db / 20.0)
+        # sigma^2 = N0/2 per real dimension (N0 = Es/gamma), so snr_db is
+        # Eb/N0 on the same axis as fading.py and the textbook expressions.
+        sigma = 1.0 / np.sqrt(2.0 * 10 ** (snr_db / 10.0))
         noise = sigma * self.rng.standard_normal(signal.size)
         return nonlinear + noise
 
@@ -283,8 +292,17 @@ class RayleighChannel:
         )
         faded = h * signal
 
-        # Add AWGN
-        sigma = 10 ** (-snr_db / 20.0)
+        # Add AWGN. The noise variance is N0/2 per real dimension with
+        # N0 = Es/gamma, i.e. sigma^2 = 1/(2*gamma), so that snr_db is the
+        # average Eb/N0 and the resulting BER is the textbook
+        # 0.5*(1 - sqrt(g/(1+g))). An earlier version used sigma^2 = 1/gamma,
+        # which put the whole of N0 into the single real dimension and so
+        # reported this channel 3 dB pessimistically: it produced
+        # 0.5*(1 - sqrt(g/(2+g))) and did not agree with the Rayleigh channel
+        # used in Chapters 5-6 (relaynet/channels/fading.py) even though the
+        # thesis presents the two as the same canonical channel.
+        gamma = 10 ** (snr_db / 10.0)
+        sigma = 1.0 / np.sqrt(2.0 * gamma)
         noise = sigma * self.rng.standard_normal(signal.size)
 
         return faded + noise
@@ -330,7 +348,9 @@ class AdaptiveRayleighChannel:
         )
         faded = h * signal
 
-        sigma = 10 ** (-snr_db / 20.0)
+        # sigma^2 = N0/2 per real dimension (N0 = Es/gamma), so snr_db is
+        # Eb/N0 on the same axis as fading.py and the textbook expressions.
+        sigma = 1.0 / np.sqrt(2.0 * 10 ** (snr_db / 10.0))
         if np.iscomplexobj(signal):
             noise = sigma * (
                 self.rng.standard_normal(signal.size) +
@@ -426,7 +446,9 @@ class FlatGainChannel:
         gained = g * signal
 
         # Add AWGN
-        sigma = 10 ** (-snr_db / 20.0)
+        # sigma^2 = N0/2 per real dimension (N0 = Es/gamma), so snr_db is
+        # Eb/N0 on the same axis as fading.py and the textbook expressions.
+        sigma = 1.0 / np.sqrt(2.0 * 10 ** (snr_db / 10.0))
         noise = sigma * self.rng.standard_normal(signal.size)
 
         return gained + noise
@@ -470,7 +492,9 @@ class BranchAsymmetryChannel:
         asym = np.where(signal > 0, a_plus, -a_minus)
 
         # Add AWGN
-        sigma = 10 ** (-snr_db / 20.0)
+        # sigma^2 = N0/2 per real dimension (N0 = Es/gamma), so snr_db is
+        # Eb/N0 on the same axis as fading.py and the textbook expressions.
+        sigma = 1.0 / np.sqrt(2.0 * 10 ** (snr_db / 10.0))
         noise = sigma * self.rng.standard_normal(signal.size)
 
         return asym + noise

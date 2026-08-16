@@ -11,6 +11,58 @@ produced it.
 
 ---
 
+## [SNR convention correction] — 2026-08-15
+
+### Fixed — a 3 dB channel convention error, found by checking against literature
+
+The Rayleigh channel used by Chapter 7 put the whole of N0 into its single
+real noise dimension instead of N0/2. The channel was therefore 3 dB
+pessimistic: it produced `0.5*(1 - sqrt(g/(2+g)))` where the textbook
+expression (Proakis, with g = Eb/N0) is `0.5*(1 - sqrt(g/(1+g)))`.
+
+The visible symptom was that Chapter 7's row labelled "control: canonical
+Rayleigh" did **not** reproduce Chapter 5's canonical numbers, despite the
+thesis presenting them as the same channel: DF read 0.1208 there against
+0.068 in Table 5.4 at the same 8 dB. Both simulators were internally
+consistent, which is why nothing flagged it; they simply implemented
+different models. Chapter 5's (`relaynet/channels/fading.py`, zero-forcing
+equalization with complex noise) was the one matching literature.
+
+Eight channels in `relaynet/channels/e6_channels.py` carrying real-valued
+noise are corrected to `sigma^2 = N0/2`, putting the whole thesis on the
+Eb/N0 axis. After the fix and a re-run, Chapter 7's control DF agrees with
+Chapter 5 and with theory at every point (0.0687 / 0.0683 / 0.0684 at 8 dB).
+AF still differs between the two chapters, which is expected rather than a
+defect: DF's `sign()` is scale invariant and so depends only on effective
+SNR, whereas AF forwards the analog waveform and is sensitive to whether the
+noise arrives through ZF amplification or magnitude compensation.
+
+`tests/test_snr_convention.py` pins every BPSK channel to its closed form so
+this cannot recur. The previous test asserted only that
+`sigma = 10**(-snr/20)` and `noise_power = P/10**(snr/10)` are the same
+expression, which they are; it never checked how many dimensions that power
+was spread over, which is where the 3 dB went. The new tests fail by 0.0288
+against a 0.004 tolerance under the old convention.
+
+### Known issues — follow-up required
+
+- **Chapter 7's committed data and reported numbers are now stale relative to
+  the corrected channels.** `e6_sim`, `e6_viterbi` and `e6_flat` have been
+  re-run and agree with theory, but their outputs are not yet promoted into
+  `e6_unknown_channel_results/`, and the composite, blind, partial-posterior
+  and QPSK studies are not yet re-run. Until that is completed and every
+  Chapter 7 number re-transcribed, `make repro-unknown` will not reproduce
+  the tables as printed.
+- **Chapters 5 and 6 cannot be re-run in this environment**: their nine-relay
+  tables need PyTorch for the VAE, cGAN, Transformer and Mamba relays, which
+  is unavailable here. `relaynet/channels/awgn.py` is therefore deliberately
+  left on its existing convention, so that the committed JSON and the code
+  that produced it stay consistent. Its real-valued branch is 3 dB above
+  Eb/N0 in the same way, and harmonizing it requires re-running those
+  experiments on a machine with torch.
+
+---
+
 ## [Overleaf import + fixes] — 2026-08-15
 
 The Overleaf project, carrying the accumulated supervisor iterations, was
