@@ -18,7 +18,7 @@ Data sources, by table:
   tbl:tableE6flat       flat-channel control BER           <- e6_unknown_channel_results/e6_flat_ported_results.npy
   tbl:tableE6qpsk       QPSK unknown-channel BER           <- e6_unknown_channel_results/e6_qpsk_unknown_channel_results.npy
   tbl:table26           theoretical SNR @ BER=1e-3         <- closed-form (Q-function inversion)
-  tab:ber_validation    theory-vs-sim BER                  <- closed-form theory column
+  tab:ber_validation    theory-vs-sim BER (both columns)   <- closed form + results/calibration.json
   prose:E6blind         blind-regime prose claims          <- e6_unknown_channel_results/e6_blind_ported_results.npy
   prose:E6partial       pilot-sweep prose claims           <- e6_unknown_channel_results/e6_partial_ported_results.npy
   prose:E6composite     composite-cascade prose claims     <- e6_unknown_channel_results/e6_composite_ported_results.npy
@@ -184,7 +184,12 @@ def qfunc(x):
     return 0.5 * math.erfc(x / math.sqrt(2))
 
 def ber_awgn(snr_db):
-    return qfunc(math.sqrt(10 ** (snr_db / 10.0)))
+    # Eb/N0 axis: noise variance N0/2 per real dimension, so BPSK is
+    # Q(sqrt(2*Eb/N0)). The earlier Q(sqrt(gamma)) form was the 3 dB
+    # pessimistic axis and disagreed with ber_rayleigh below, which was
+    # already on Eb/N0 -- the two rows of the calibration table were being
+    # checked against theory curves on different axes.
+    return qfunc(math.sqrt(2 * 10 ** (snr_db / 10.0)))
 
 def ber_rayleigh(snr_db):
     g = 10 ** (snr_db / 10.0)
@@ -681,14 +686,22 @@ def check_table26(tex, rep):
 
 
 def check_ber_validation(tex, rep):
-    """Theory-vs-sim table (tab:ber_validation_long): check theory columns."""
+    """Calibration table (tab:ber_validation_long).
+
+    Checks BOTH columns: the theory column against the closed form, and the
+    simulation column against results/calibration.json. Only the theory
+    columns were checked before, so the agreement the table exists to
+    demonstrate was itself unverified.
+    """
     T = "tab:ber_validation_long"; before = rep.checked
     body = table_body(tex, T)
     if body is None:
         return rep.skip(T, "label not found in tex")
     theo = {"awgn": ber_awgn, "rayleigh": ber_rayleigh}
+    cal_path = os.path.join(ROOT, "results", "calibration.json")
+    cal = json.load(open(cal_path)) if os.path.exists(cal_path) else None
     # columns: Chan & 4dB(Th) & 4dB(Sim) & 10dB(Th) & 10dB(Sim) & 16dB(Th) & 16dB(Sim)
-    th_cols = [(1, 4), (3, 10), (5, 16)]
+    pairs = [(1, 2, 4), (3, 4, 10), (5, 6, 16)]
     for row in data_rows(body):
         if not row:
             continue
@@ -696,20 +709,20 @@ def check_ber_validation(tex, rep):
         key = "awgn" if "awgn" in name else ("rayleigh" if "rayleigh" in name else None)
         if key is None:
             continue
-        for c, snr in th_cols:
-            if c >= len(row):
-                break
-            pub_text, pub_val = row[c]
-            if pub_val is None:
-                continue
-            src = theo[key](snr)
-            rep.cell(T, f"{key}/theory@{snr}dB", pub_text, pub_val, src)
+        for c_th, c_sim, snr in pairs:
+            if c_th < len(row):
+                pub_text, pub_val = row[c_th]
+                if pub_val is not None:
+                    rep.cell(T, f"{key}/theory@{snr}dB", pub_text, pub_val, theo[key](snr))
+            if cal is not None and c_sim < len(row):
+                pub_text, pub_val = row[c_sim]
+                entry = cal["results"].get(key, {}).get(str(snr))
+                # "n/r" cells carry no number and are skipped by rep.cell
+                if pub_val is not None and entry is not None and entry["resolvable"]:
+                    rep.cell(T, f"{key}/sim@{snr}dB", pub_text, pub_val, entry["sim_mean"])
     rep.finish_table(T, before)
 
 
-# ----------------------------------------------------------------------------
-# main
-# ----------------------------------------------------------------------------
 def main():
     global TEX_DIR, MC_SLACK
     ap = argparse.ArgumentParser()

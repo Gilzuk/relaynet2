@@ -23,7 +23,7 @@ Two distinct claims, checkable independently:
 
 1. **The thesis matches its data.** Every numerical table cell and every
    quantitative claim in the prose is compared against the file that produced
-   it. This is `make verify`: **358 values, 0 discrepancies**, exit code 1 on
+   it. This is `make verify`: **363 values, 0 discrepancies**, exit code 1 on
    any mismatch.
 2. **The data can be regenerated.** The experiments are re-runnable from
    scratch. The unknown-channel pipeline is fully seeded and reproduces its
@@ -119,6 +119,7 @@ relaynet/                     Simulation framework (channels, modulation, relays
 run_experiments.py            Unified runner for the main experiment sweep
 e6_*_ported.py                Unknown-channel study (Ch. 7), NumPy only
 e6_qpsk_unknown_channel.py    QPSK unknown-channel study, both hop-2 variants
+calibrate_simulator.py        E1 calibration: simulator vs closed-form BER (Eb/N0 axis)
 verify_thesis_tables.py       Checks the thesis against its data sources
 results/                      Committed experiment outputs (JSON + figures)
 e6_unknown_channel_results/   Committed unknown-channel outputs (.npy + figures)

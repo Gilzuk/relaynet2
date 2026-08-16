@@ -101,7 +101,7 @@ Prior to evaluating relay strategies, we first verify that the simulation framew
 \subsection{Results tables}
 
 \begin{longtable}{p{1cm}cccccc}
-\caption{BER comparison between theoretical analysis and simulation results at selected SNR values}
+\caption{Simulator calibration: closed-form versus simulated single-hop BPSK BER, $10\times2{,}000{,}000$ bits per point. The SNR axis is $E_b/N_0$ throughout, with noise variance $N_0/2$ per real dimension, so AWGN obeys $Q(\sqrt{2E_b/N_0})$ and Rayleigh $\tfrac12(1-\sqrt{\bar\gamma/(1+\bar\gamma)})$. Agreement is within $0.6\%$ at every point the budget resolves. ``n/r'' marks a theoretical value below the resolution of any feasible Monte Carlo run ($2.3\times10^{-19}$), reported from the closed form rather than as a measurement.}
 \label{tab:ber_validation_long} \\
 
 \toprule
@@ -135,14 +135,14 @@ Prior to evaluating relay strategies, we first verify that the simulation framew
 \endlastfoot
 
 \\ AWGN
-& 5.64E-2 & 5.62E-2
-& 7.83E-4 & 7.90E-4
-& 7.73E-8 & $\approx$0 \\
+& 1.25E-2 & 1.25E-2
+& 3.87E-6 & 3.85E-6
+& 2.27E-19 & n/r \\
 \hline
 \\  Rayleigh
 & 7.71E-2 & 7.72E-2
 & 2.33E-2 & 2.32E-2
-& 6.17E-3 & 6.10E-3 \\
+& 6.16E-3 & 6.15E-3 \\
 
 \end{longtable}
 
@@ -160,7 +160,7 @@ Channel & SNR for BER = \(10^{-3}\) & Diversity Order & High-SNR Slope \\
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-AWGN & \textasciitilde9.8 dB & -- (no fading) & Exponential \\
+AWGN & \textasciitilde6.8 dB & -- (no fading) & Exponential \\
 Rayleigh & \textasciitilde24 dB & 1 & \(1/(4\bar{\gamma})\) \\
 \end{longtable}
 \subsection{Results Figures}\label{sec:results-figures}
