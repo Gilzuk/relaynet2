@@ -23,7 +23,7 @@ Two distinct claims, checkable independently:
 
 1. **The thesis matches its data.** Every numerical table cell and every
    quantitative claim in the prose is compared against the file that produced
-   it. This is `make verify`: **376 values, 0 discrepancies**, exit code 1 on
+   it. This is `make verify`: **358 values, 0 discrepancies**, exit code 1 on
    any mismatch.
 2. **The data can be regenerated.** The experiments are re-runnable from
    scratch. The unknown-channel pipeline is fully seeded and reproduces its
@@ -131,6 +131,7 @@ thesis/                       LaTeX sources, figures, fonts, CHANGELOG
   chapters/_*.tex               Drafting history; not included by main.tex
 scripts/build_bundles.py      Rebuilds the two Overleaf zips from thesis/
 scripts/plot_e6_studies.py    Regenerates the Ch. 7 composite/blind/partial figures from .npy
+scripts/plot_awgn_companion.py Regenerates the Ch. 5 AWGN companion figure from JSON
 scripts/strip_rev.py          Brace-matching remover for inline REV annotations
 scripts/check_env.py          Environment doctor
 ```
