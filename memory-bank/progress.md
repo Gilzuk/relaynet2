@@ -92,6 +92,18 @@ All 7 PORTING.md experiments are ported, rescaled/bug-fixed, and now integrated 
 4. Update Appendix C reproducibility statement to state Chapter 7 results are relaynet-generated.
 5. Open a PR only if/when the user explicitly asks for one (per repo working agreement).
 
+## Thesis state — 2026-08-17 (canonical restructure)
+The thesis side has moved on past the E6 checklist above; current state:
+- **Canonical setup is now SISO / i.i.d. Rayleigh fast fading / complex baseband / BPSK **and** QPSK / uncoded BER.** Ch5 §5.3 carries both constellations on the canonical channel (QPSK table moved in from Ch6, now Table 5.6); Ch5 §5.2 is the AWGN *baseline* (calibration + a lean AF/DF/MLP/Transformer/Mamba-2 comparison, 0–8 dB, no ranking drawn from it); Ch6 is now 16-QAM only.
+- **Lean relay set for re-runs** is AF / DF / MLP / Transformer / Mamba-2 (cGAN, VAE, Hybrid, Mamba-S6 dropped from re-runs via `run_experiments.py --skip-relays`). Existing committed results for the dropped relays are untouched, not deleted.
+- **All channel SNR is on the Eb/N0 axis** after the 3 dB `sigma^2 = N0/2` correction; `tests/test_snr_convention.py` pins every BPSK channel to its closed form and fails if the old convention returns.
+- **Verification status:** cold `latexmk -xelatex` exit 0 / 149 pp / 0 undefined refs; `verify_thesis_tables.py` 352 cells / 0 inconsistencies; `pytest tests/` 119 passed.
+
+### Outstanding (do these next)
+1. **Ch6 AWGN tables `tbl:table14` / `table15` / `table24` still use the pre-correction AWGN convention** — must be re-run before submission. The verifier explicitly does not cover them.
+2. **Ch7 flat-channel control passes by only 0.0097 against a 0.010 tolerance** — margin too thin; needs a larger trial budget.
+3. **Overleaf sync unresolved** — the agent proxy 403s `git.overleaf.com` and Overleaf rejects force-push; project `69cd8f24043dbf2a2982370` also holds 163 objects of unrelated history. No in-container workaround found.
+
 ## Reference documents already in repo (don't duplicate, update instead)
 - `E6_PORTING_STATUS.md` — running progress tracker (slightly stale vs this file as of last edit; treat this `memory-bank/progress.md` as the live source of truth going forward and update `E6_PORTING_STATUS.md` in sync if it's kept)
 - `E6_VERIFICATION_REPORT.md` — full numeric verification writeup for the 3 completed experiments

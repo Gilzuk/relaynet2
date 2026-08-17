@@ -11,6 +11,55 @@ produced it.
 
 ---
 
+## [Canonical restructure: Rayleigh with BPSK and QPSK] — 2026-08-17
+
+### Changed — QPSK on Rayleigh moved into Chapter 5 as canonical; AWGN demoted to baseline
+
+The previous arrangement paired BPSK with AWGN in Chapter 5 and put QPSK on
+Rayleigh in Chapter 6. That made the canonical chapter's headline comparison
+run on the one channel the thesis explicitly does *not* draw conclusions from
+(Appendix E, comment 4), while the canonical channel's second constellation
+sat in an extension chapter. The two are now swapped:
+
+- **Section 5.2** is retitled *Simulation Baseline: AWGN Calibration*. Its
+  role is stated up front: AWGN is where closed forms exist, so it is what
+  the simulator is validated against, and the relay comparison reported there
+  (Table 5.5, lean set: AF / DF / MLP / Transformer / Mamba-2 at 0–8 dB) is a
+  baseline, not an operating point. No relay is ranked on it.
+- **Section 5.3** is retitled *Canonical Relay Comparison (SISO, Rayleigh,
+  BPSK and QPSK)* and now carries both constellations on the canonical
+  channel. The QPSK-vs-BPSK comparison moved here from Chapter 6 and is
+  Table 5.6.
+- **Chapter 6** is retitled *Extension: Multi-Level Modulation (16-QAM)* and
+  keeps only the constellation that genuinely requires a different relay
+  formulation. Its former QPSK block is replaced by a pointer to Section 5.3.
+
+### Changed — the canonical-setup statement, in all seven places that assert it
+
+`ch01_introduction.tex` (scope paragraph, scope-table caption, Channel row,
+Modulation row, and the E1/E2/E4 rows of the experiment summary),
+`ch03_objectives.tex`, `ch04_methods.tex`, `ch08_discussion.tex` and
+`ch09_summary.tex` all defined the canonical setup as BPSK-only; each now
+reads "complex baseband, BPSK and QPSK". Appendix E's response to comment 4
+states why this is still *one* setting rather than two: topology, channel
+model, and metric each remain single-valued, and QPSK is the two-axis use of
+the same complex baseband processed by the identical relays.
+
+### Verification
+
+Cold `latexmk -xelatex`: exit 0, 149 pages, **0 undefined references**.
+`verify_thesis_tables.py`: **352 cells, 0 inconsistencies**.
+`pytest tests/`: **119 passed**.
+
+### Known follow-ups (not done here)
+
+- Chapter 6's AWGN tables (`tbl:table14`, `tbl:table15`, `tbl:table24`) are
+  still on the pre-correction AWGN convention and need a re-run.
+- The Chapter 7 flat-channel control passes by 0.0097 against a 0.010
+  tolerance — too thin a margin; it needs a larger trial budget.
+
+---
+
 ## [SNR convention correction] — 2026-08-15
 
 ### Fixed — a 3 dB channel convention error, found by checking against literature

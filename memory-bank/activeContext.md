@@ -1,6 +1,21 @@
 # Active Context (update this file first, every session)
 
-_Last updated: 2026-07-21_
+_Last updated: 2026-08-17_
+
+## Latest: canonical restructure — Rayleigh carries BPSK **and** QPSK; AWGN is the baseline
+Swapped what Ch5 and Ch6 each own. Previously Ch5's headline comparison ran on AWGN/BPSK (the one channel Appendix E comment 4 says the thesis draws no conclusions from) while QPSK-on-the-canonical-channel sat in the extension chapter — backwards. Now:
+- **§5.2 "Simulation Baseline: AWGN Calibration"** — AWGN's role stated up front: it is where closed forms exist, so it is what the simulator is validated against. Its relay comparison (Table 5.5, **lean set AF/DF/MLP/Transformer/Mamba-2**, 0–8 dB) is a baseline; no relay is ranked on it. Cut at 8 dB because beyond that every relay reads zero at any feasible bit budget (20 dB AWGN needs ~6.6e24 bits).
+- **§5.3 "Canonical Relay Comparison (SISO, Rayleigh, BPSK and QPSK)"** — the QPSK-vs-BPSK block moved in from Ch6, now **Table 5.6**.
+- **Ch6 "Extension: Multi-Level Modulation (16-QAM)"** — keeps only the constellation needing a different relay formulation; its QPSK block replaced by a pointer to §5.3.
+
+**Seven places asserted the canonical setup as BPSK-only** and all now read "complex baseband, BPSK and QPSK": ch01 (scope para, scope-table caption, Channel row, Modulation row, E1/E2/E4 summary rows), ch03, ch04, ch08, ch09. Appendix E's AK#4 response argues why this is still *one* setting: topology/channel/metric each stay single-valued and QPSK is the two-axis use of the same baseband through identical relays.
+
+**Verified:** cold `latexmk -xelatex` exit 0, **149 pp, 0 undefined refs**; `verify_thesis_tables.py` **352 cells / 0 inconsistencies**; `pytest tests/` **119 passed**.
+
+**Open follow-ups (NOT done):**
+1. **Ch6's AWGN tables `tbl:table14`/`table15`/`table24` are still on the pre-correction AWGN convention** — they predate the 3 dB `sigma^2 = N0/2` fix and need a re-run (~1 h each even on the lean set). The verifier does not cover them (see its own "informational" footer).
+2. **Ch7 flat-channel control passes by 0.0097 against a 0.010 tolerance** — margin too thin to trust; needs a larger trial budget or a defended tighter tolerance.
+3. **Overleaf push still blocked** — the agent proxy 403s `git.overleaf.com`, Overleaf bans force-push, and project `69cd8f24043dbf2a2982370` carries 163 objects of unrelated history. Unresolved; no workaround found from inside the container.
 
 ## Latest: MIMO equalization section REMOVED (completing AK comments 2/4/6)
 Audited all 17 supervisor (AK) comments in `thesis/ak_comments.json` against Appendix E — all 17 documented, and the verifiable claims hold EXCEPT two gaps found:
