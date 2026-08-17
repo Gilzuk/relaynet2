@@ -33,12 +33,11 @@ The ladder proper resumes in Chapter~\ref{sec:unknown-channels}, which holds the
 
 \textbf{Goal:} Evaluate the generalizability of BPSK-trained relays to complex constellations and resolve the multi-level amplitude bottleneck.
 
-\textbf{Trials:} - \textbf{Topology:} SISO - \textbf{Modulation scheme:} QPSK, 16-QAM - \textbf{Channel:} AWGN, Rayleigh - \textbf{Equalizers:} None - \textbf{NN architecture:} Supervised (MLP, Hybrid), Generative (VAE, cGAN), Sequence (Transformer, Mamba-S6, Mamba-2 SSD) - \textbf{NN output activation (swept):} tanh, linear, clipped tanh (hardtanh), scaled tanh, scaled sigmoid (ReLU hidden throughout) - \textbf{Special case:} Constellation Aware training
+\textbf{Trials:} - \textbf{Topology:} SISO - \textbf{Modulation scheme:} 16-QAM - \textbf{Channel:} i.i.d.\ Rayleigh fast fading (canonical) - \textbf{Equalizers:} None - \textbf{NN architecture:} Supervised (MLP, Hybrid), Generative (VAE, cGAN), Sequence (Transformer, Mamba-S6, Mamba-2 SSD) - \textbf{NN output activation (swept):} tanh, linear, clipped tanh (hardtanh), scaled tanh, scaled sigmoid (ReLU hidden throughout) - \textbf{Special case:} Constellation Aware training
 
 \textbf{Conclusion:} 
 \begin{enumerate}
-    \item QPSK performance closely mirrors BPSK, as expected from I/Q independence. 
-    \item On 16-QAM, standard tanh compression causes a severe, near-irreducible BER floor (\textasciitilde0.22 at 16 dB).
+    \item On 16-QAM, standard tanh compression causes a severe, near-irreducible BER floor (\textasciitilde0.27 at 16 dB, against DF's 0.083 on the same channel; Table~\ref{tbl:table14}).
     \item Replacing tanh with constellation-aware bounded activations (hardtanh, scaled tanh) bounded to the precise signal amplitude (\(3/\sqrt{10}\)) and retraining \emph{largely removes} this floor.
     \item Sequence models benefit most: constellation-aware activations reduce their 16-QAM BER floor by roughly 5$\times$ (Table~\ref{tbl:table15}), narrowing the residual gap to DF from about 56$\times$ to about 10$\times$ (Figure~\ref{fig:fig28}). 
 \end{enumerate}
@@ -48,67 +47,26 @@ A gap to DF nonetheless persists due to per-axis error accumulation, the limitat
 
 \subsection{Results Tables}\label{sec:results-tables-3}
 
-\begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1250}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1250}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1250}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1250}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1250}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1250}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1250}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1250}}@{}}
-\caption{BER comparison across modulations at selected SNR points (AWGN channel). All nine relay strategies.}\label{tbl:table14}\tabularnewline
+\begin{longtable}[]{@{}lcccccc@{}}
+\caption{16-QAM under I/Q-split relay processing, on the canonical Rayleigh channel. The classical relays keep improving with SNR while every learned relay flattens near $0.25$--$0.26$: this is the structural floor the per-axis formulation imposes, not a training failure, and it is what Section~\ref{sec:d-joint-classification-as-an-alternative-to-iq-splitting} removes. The cGAN is excluded from the re-run, as in Table~\ref{tbl:table2}.}\label{tbl:table14}\tabularnewline
 \toprule\noalign{}
-\begin{minipage}[b]{\linewidth}\raggedright
-Relay
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-BPSK 0 dB
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-BPSK 10 dB
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-QPSK 0 dB
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-QPSK 10 dB
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-16-QAM 0 dB
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-16-QAM 10 dB
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-16-QAM 16 dB
-\end{minipage} \\
+Relay & 0 dB & 4 dB & 8 dB & 12 dB & 16 dB & 20 dB \\
 \midrule\noalign{}
 \endfirsthead
 \toprule\noalign{}
-\begin{minipage}[b]{\linewidth}\raggedright
-Relay
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-BPSK 0 dB
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-BPSK 10 dB
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-QPSK 0 dB
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-QPSK 10 dB
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-16-QAM 0 dB
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-16-QAM 10 dB
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-16-QAM 16 dB
-\end{minipage} \\
+Relay & 0 dB & 4 dB & 8 dB & 12 dB & 16 dB & 20 dB \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-AF & 0.2813 & 0.0141 & 0.2794 & 0.0142 & 0.3778 & 0.1244 & 0.0180 \\
-DF & 0.2651 & 0.0015 & 0.2644 & 0.0016 & 0.3811 & 0.1076 & 0.0038 \\
-MLP (169p) & 0.2589 & 0.0021 & 0.2563 & 0.0025 & 0.3907 & 0.2180 & 0.2180 \\
-Hybrid & 0.2573 & 0.0015 & 0.2644 & 0.0016 & 0.4000 & 0.2711 & 0.2512 \\
-VAE & 0.2611 & 0.0021 & 0.2597 & 0.0036 & 0.3945 & 0.2391 & 0.2231 \\
-cGAN (WGAN-GP) & 0.2633 & 0.0017 & 0.2621 & 0.0018 & 0.3976 & 0.2588 & 0.2486 \\
-Transformer & 0.2593 & 0.0024 & 0.2576 & 0.0036 & 0.3897 & 0.2042 & 0.1827 \\
-Mamba-S6 & 0.2585 & 0.0021 & 0.2560 & 0.0028 & 0.3894 & 0.2016 & 0.1935 \\
-Mamba-2 SSD & 0.2593 & 0.0023 & 0.2566 & 0.0034 & 0.3903 & 0.2032 & 0.1890 \\
+AF & 0.4502 & 0.3879 & 0.2982 & 0.1925 & 0.1009 & 0.0450 \\
+\textbf{DF} & \textbf{0.4197} & \textbf{0.3519} & \textbf{0.2600} & \textbf{0.1609} & \textbf{0.0828} & \textbf{0.0375} \\
+MLP (169p) & 0.4299 & 0.3806 & 0.3311 & 0.2927 & 0.2703 & 0.2590 \\
+Hybrid & 0.4261 & 0.3702 & 0.3284 & 0.2952 & 0.2723 & 0.2598 \\
+VAE & 0.4298 & 0.3804 & 0.3303 & 0.2908 & 0.2692 & 0.2579 \\
+Transformer & 0.4533 & 0.3939 & 0.3267 & 0.2796 & 0.2572 & 0.2489 \\
+Mamba-S6 & 0.4551 & 0.3944 & 0.3225 & 0.2745 & 0.2541 & 0.2486 \\
+Mamba-2 SSD & 0.4536 & 0.3933 & 0.3259 & 0.2811 & 0.2615 & 0.2537 \\
 \end{longtable}
 
 QPSK is not re-tabulated here: it is the canonical constellation and is reported in Chapter~\ref{sec:experiments} (Table~\ref{tbl:table2}), leaving this chapter the genuinely higher-order case, 16-QAM, where per-axis processing breaks down.

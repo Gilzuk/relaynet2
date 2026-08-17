@@ -1297,7 +1297,12 @@ def exp_7_11_qam16_activation(args):
         "hardtanh": {"act": "hardtanh", "cr": clip_range, "mod": "qam16"},
     }
 
-    for ch_key, ch_fn in [("awgn", None), ("rayleigh", rayleigh_fading_channel)]:
+    # Evaluation is 16-QAM throughout, so this study runs on 16-QAM's
+    # canonical channel only (CANONICAL_PAIRS). Sweeping AWGN as well would
+    # report a complex constellation on the calibration channel, which the
+    # thesis does not evaluate.
+    qam_channels = [(c, _CHANNELS[c][1]) for m, c in CANONICAL_PAIRS if m == "qam16"]
+    for ch_key, ch_fn in qam_channels:
         print(f"\n  Channel: {ch_key.upper()}")
         all_ber = {}
         all_ci = {}
@@ -1568,6 +1573,7 @@ def exp_7_17_16class_2d(args):
 
     training_snrs = [5, 10, 15, 20, 25]
     modulation = "qam16"
+    qam_channel = next(c for m, c in CANONICAL_PAIRS if m == "qam16")
 
     # Quick-mode reductions
     if args.quick:
@@ -1618,10 +1624,14 @@ def exp_7_17_16class_2d(args):
         # Evaluate
         print(f"    Evaluating BER …", end=" ", flush=True)
         t0 = perf_counter()
+        # Omitting channel_fn silently defaults to awgn_channel, which put
+        # this 16-QAM study on the calibration channel. It runs on 16-QAM's
+        # canonical channel (CANONICAL_PAIRS), like every other 16-QAM result.
         snrs, bers, trials = run_monte_carlo(
             relay, snr_range,
             num_bits_per_trial=args.bits_per_trial,
             num_trials=args.num_trials,
+            channel_fn=_CHANNELS[qam_channel][1],
             modulation=modulation,
         )
         ci_lo, ci_hi = compute_confidence_interval(trials)
