@@ -9,6 +9,7 @@ flagged.
 
 Data sources, by table:
   tbl:table2            canonical Rayleigh BER, 9 relays   <- results/bpsk_comparison/rayleigh.json
+  tbl:layers            four-layer argument summary        <- e6_{sim,viterbi,partial,blind} npy
   tbl:table14ray        QPSK vs BPSK on Rayleigh, 9 relays  <- results/modulation/{bpsk,qpsk}_rayleigh.json
   tbl:table8            normalized-3K Rayleigh BER         <- results/normalized_3k/3k_rayleigh.json
   tbl:table14           modulation BER (AWGN)              <- results/bpsk_comparison/awgn.json (+ modulation)
@@ -237,6 +238,82 @@ def check_table2(tex, rep):
             pub_text, pub_val = row[c]
             src = d["results"][relay]["ber_mean"][si]
             rep.cell(T, f"{snr}dB/{relay}", pub_text, pub_val, src)
+    rep.finish_table(T, before)
+
+
+def check_layers_table(tex, rep):
+    """The four-layer summary (tbl:layers) vs the data each layer cites.
+
+    This table restates numbers that live in four different result files, so
+    it is the single easiest place in the thesis for a figure to drift out of
+    step with its source -- which is exactly what happened once, when a
+    hand-copied layer-2 floor was written down at half its true value after
+    the (2, n_snr) e6_sim array was averaged over the wrong axis. Every cell
+    is therefore pinned here.
+    """
+    T = "tbl:layers"; before = rep.checked
+    body = table_body(tex, T)
+    if body is None:
+        return rep.skip(T, "label not found in tex")
+
+    sim = _load_e6_npy("e6_sim_ported_results.npy")
+    blind = _load_e6_npy("e6_blind_ported_results.npy")
+    partial = _load_e6_npy("e6_partial_ported_results.npy")
+    vit = _load_e6_npy("e6_viterbi_awgn.npy")
+    if sim is None or blind is None or partial is None or vit is None:
+        return rep.skip(T, "one or more e6 npy files missing")
+
+    snrs = list(sim["snrs"])
+    i8, i20 = snrs.index(8), snrs.index(20)
+    S1 = sim["results"]["S1: unknown ISI -> AWGN"]
+    S4 = sim["results"]["S4 control: Rayleigh -> Rayleigh (canonical)"]
+
+    # Layer 1: the canonical control -- DF vs MLP at 8 dB.
+    for label, key, src in [("L1/DF@8dB", r"DF \$([\d.]+)\$ against", S4["DF"][0][i8]),
+                            ("L1/MLP@8dB", r"MLP's \$([\d.]+)\$ at 8~dB", S4["MLP"][0][i8])]:
+        m = re.search(key, body)
+        if m:
+            rep.cell(T, label, m.group(1), float(m.group(1)), src)
+
+    # Layer 2: DF's non-monotonic rise, the MLP recovery, the Viterbi lead.
+    m = re.search(r"DF rising from \$([\d.]+)\$ at 8~dB to \$([\d.]+)\$ at 20~dB", body)
+    if m:
+        rep.cell(T, "L2/DF@8dB", m.group(1), float(m.group(1)), S1["DF"][0][i8])
+        rep.cell(T, "L2/DF@20dB", m.group(2), float(m.group(2)), S1["DF"][0][i20])
+    m = re.search(r"restores the link \(\$([\d.]+)\$ at 8~dB\)", body)
+    if m:
+        rep.cell(T, "L2/MLP@8dB", m.group(1), float(m.group(1)), S1["MLP"][0][i8])
+    m = re.search(r"ahead by 1--1\.5~dB \(\$([\d.]+)\$\)", body)
+    if m:
+        rep.cell(T, "L2/VITgenie@8dB", m.group(1), float(m.group(1)),
+                 np.array(vit["VIT-genie"])[i8])
+
+    # Layer 3: the pilot-budget crossover at the 10 dB operating point.
+    pa = partial["panel_a"]
+    m = re.search(r"holds \$([\d.]+)\$ on 200 pilots and \$([\d.]+)\$ on 20", body)
+    if m:
+        rep.cell(T, "L3/est-200pilot", m.group(1), float(m.group(1)), np.array(pa[200]).ravel()[0])
+        rep.cell(T, "L3/est-20pilot", m.group(2), float(m.group(2)), np.array(pa[20]).ravel()[0])
+    m = re.search(r"pilot-free MLP's \$([\d.]+)\$", body)
+    if m:
+        rep.cell(T, "L3/MLPref", m.group(1), float(m.group(1)),
+                 float(np.array(partial["mlp_ref"]).ravel()[0]))
+    m = re.search(r"by 10 pilots it has degraded to \$([\d.]+)\$", body)
+    if m:
+        rep.cell(T, "L3/est-10pilot", m.group(1), float(m.group(1)), np.array(pa[10]).ravel()[0])
+
+    # Layer 4: blind regime at 20 dB, plus the unstable DD-MLSE tail.
+    bs = blind["summary"]; bsnr = list(blind["snrs"])
+    b16, b20 = bsnr.index(16), bsnr.index(20)
+    m = re.search(r"MLP reaches \$([\d.]+)\$ against CMA's \$([\d.]+)\$", body)
+    if m:
+        rep.cell(T, "L4/MLP@20dB", m.group(1), float(m.group(1)), bs["MLP-169"][0][b20])
+        rep.cell(T, "L4/CMA@20dB", m.group(2), float(m.group(2)), bs["CMA-blind"][0][b20])
+    m = re.search(r"worse at 20~dB \(\$([\d.]+)\$\) than at 16~dB \(\$([\d.]+)\$\)", body)
+    if m:
+        rep.cell(T, "L4/VITblind@20dB", m.group(1), float(m.group(1)), bs["Viterbi-blind"][0][b20])
+        rep.cell(T, "L4/VITblind@16dB", m.group(2), float(m.group(2)), bs["Viterbi-blind"][0][b16])
+
     rep.finish_table(T, before)
 
 
@@ -728,7 +805,7 @@ def main():
 
     tex = load_tex()
     rep = Report()
-    checks = [check_ber_validation, check_table26, check_table2, check_table14ray, check_table8,
+    checks = [check_ber_validation, check_table26, check_table2, check_layers_table, check_table14ray, check_table8,
               check_table24, check_tableE6, check_tableE6flat, check_tableE6qpsk,
               check_E6blind_prose, check_E6partial_prose, check_E6composite_prose]
     for chk in checks:
