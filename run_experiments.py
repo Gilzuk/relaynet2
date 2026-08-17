@@ -1161,16 +1161,22 @@ def exp_7_8_normalized_3k(args):
         for name, relay in relays_3k.items():
             wm.load(name, relay, subdir="3k")
 
+    # Pair each channel with its canonical constellation (CANONICAL_PAIRS):
+    # Rayleigh carries QPSK, AWGN carries BPSK. Defaulting to BPSK here would
+    # evaluate the 3K models on BPSK-over-Rayleigh, a pairing the thesis does
+    # not report -- a real constellation on a complex channel.
     for ch_key, (ch_name, ch_fn) in _CHANNELS.items():
+        mod = next((m for m, c in CANONICAL_PAIRS if c == ch_key), "bpsk")
         print(f"  {ch_name} …")
         results = evaluate_relays(
             relays_3k, snr_range, channel_fn=ch_fn,
+            modulation=mod,
             bits_per_trial=args.bits_per_trial,
             num_trials=args.num_trials,
         )
         save_results_json(
             os.path.join(out, f"3k_{ch_key}.json"), snr_range, results,
-            meta={"experiment": "7.8", "channel": ch_name},
+            meta={"experiment": "7.8", "channel": ch_name, "modulation": mod},
         )
         ber_dict = {n: r["ber_mean"] for n, r in results.items()}
         ci_dict = {n: (r["ci_lower"], r["ci_upper"]) for n, r in results.items()}

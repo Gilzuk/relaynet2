@@ -8,9 +8,8 @@ cell by cell, against the numbers currently transcribed in the LaTeX
 flagged.
 
 Data sources, by table:
-  tbl:table2            canonical Rayleigh BER, 9 relays   <- results/bpsk_comparison/rayleigh.json
+  tbl:table2            canonical QPSK/Rayleigh BER        <- results/modulation/qpsk_rayleigh.json
   tbl:layers            four-layer argument summary        <- e6_{sim,viterbi,partial,blind} npy
-  tbl:table14ray        QPSK vs BPSK on Rayleigh, 9 relays  <- results/modulation/{bpsk,qpsk}_rayleigh.json
   tbl:table8            normalized-3K Rayleigh BER         <- results/normalized_3k/3k_rayleigh.json
   tbl:table14           modulation BER (AWGN)              <- results/bpsk_comparison/awgn.json (+ modulation)
   tbl:table24           4-class vs 16-class @20 dB         <- results/all_relays_16class/all_relays_16class.json
@@ -231,10 +230,13 @@ def check_table2(tex, rep):
     body = table_body(tex, T)
     if body is None:
         return rep.skip(T, "label not found in tex")
-    # tex column order (after SNR): AF DF MLP Hybrid VAE CGAN Transformer Mamba-S6 Mamba2
-    cols = ["AF", "DF", "GenAI (169p)", "Hybrid", "VAE",
-            "CGAN (WGAN-GP)", "Transformer", "Mamba S6", "Mamba2 (SSD)"]
-    d = json.load(open(os.path.join(ROOT, "results/bpsk_comparison/rayleigh.json")))
+    # tex column order (after SNR): AF DF MLP Hybrid VAE Transformer Mamba-S6 Mamba2.
+    # The canonical setup is QPSK on Rayleigh -- BPSK is paired with the AWGN
+    # calibration channel instead -- so this reads the QPSK result file. The
+    # cGAN was excluded from the re-run and has no column.
+    cols = ["AF", "DF", "MLP (169p)", "Hybrid", "VAE",
+            "Transformer", "Mamba S6", "Mamba2 (SSD)"]
+    d = json.load(open(os.path.join(ROOT, "results/modulation/qpsk_rayleigh.json")))
     snrs = d["snr_range"]
     for row in data_rows(body):
         if not row or row[0][1] is None:
@@ -330,62 +332,6 @@ def check_layers_table(tex, rep):
         rep.cell(T, "L4/VITblind@20dB", m.group(1), float(m.group(1)), bs["Viterbi-blind"][0][b20])
         rep.cell(T, "L4/VITblind@16dB", m.group(2), float(m.group(2)), bs["Viterbi-blind"][0][b16])
 
-    rep.finish_table(T, before)
-
-
-def check_table14ray(tex, rep):
-    """QPSK vs BPSK on canonical Rayleigh (tbl:table14ray) vs modulation/*.json."""
-    T = "tbl:table14ray"; before = rep.checked
-    body = table_body(tex, T)
-    if body is None:
-        return rep.skip(T, "label not found in tex")
-    b = json.load(open(os.path.join(ROOT, "results/modulation/bpsk_rayleigh.json")))
-    q = json.load(open(os.path.join(ROOT, "results/modulation/qpsk_rayleigh.json")))
-    snrs = b["snr_range"]
-    # tex row label -> candidate json relay keys, first present one wins.
-    # The minimal MLP is stored as "GenAI (169p)" in runs predating the
-    # rename and as "MLP (169p)" after it, so both spellings are accepted;
-    # a rename must not silently cost this check its coverage.
-    key = {"AF": ["AF"], "DF": ["DF"],
-           "MLP (169p)": ["MLP (169p)", "GenAI (169p)"], "Hybrid": ["Hybrid"],
-           "VAE": ["VAE"], "cGAN": ["CGAN (WGAN-GP)"],
-           "Transformer": ["Transformer"], "Mamba-S6": ["Mamba S6"],
-           "Mamba-2 SSD": ["Mamba2 (SSD)"]}
-    # columns after the label: (BPSK,QPSK) at 0, 8, 16, 20 dB
-    col_snr = [(1, 0), (3, 8), (5, 16), (7, 20)]
-    for row in data_rows(body):
-        if not row:
-            continue
-        name = row[0][0].strip()
-        cands = key.get(name)
-        if cands is None:
-            continue
-        # Resolve the key separately per file: the two files can be from
-        # different runs and so use different spellings for the same relay
-        # (bpsk_rayleigh.json predates the GenAI -> MLP rename that
-        # qpsk_rayleigh.json was written after). A relay dropped from a
-        # re-run (the cGAN, in the lean configuration) is absent rather than
-        # zero, so note the row instead of raising and aborting the table.
-        kb = next((c for c in cands if c in b["results"]), None)
-        kq = next((c for c in cands if c in q["results"]), None)
-        if kb is None and kq is None:
-            rep.note(T, f"{name}: absent from both result files, row not checked")
-            continue
-        if kb is None or kq is None:
-            missing = "BPSK" if kb is None else "QPSK"
-            rep.note(T, f"{name}: absent from the {missing} re-run, that half not checked")
-        for c, snr in col_snr:
-            if c + 1 >= len(row):
-                break
-            si = snrs.index(snr)
-            if kb is not None:
-                pb, vb = row[c]
-                rep.cell(T, f"{name}/BPSK/{snr}dB", pb, vb,
-                         b["results"][kb]["ber_mean"][si])
-            if kq is not None:
-                pq, vq = row[c + 1]
-                rep.cell(T, f"{name}/QPSK/{snr}dB", pq, vq,
-                         q["results"][kq]["ber_mean"][si])
     rep.finish_table(T, before)
 
 
@@ -885,7 +831,7 @@ def main():
 
     tex = load_tex()
     rep = Report()
-    checks = [check_ber_validation, check_table26, check_table2, check_layers_table, check_table14ray, check_table8,
+    checks = [check_ber_validation, check_table26, check_table2, check_layers_table, check_table8,
               check_table24, check_tableE6, check_tableE6flat, check_tableE6qpsk,
               check_E6blind_prose, check_E6partial_prose, check_E6composite_prose]
     for chk in checks:

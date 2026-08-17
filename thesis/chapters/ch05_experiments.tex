@@ -197,118 +197,40 @@ Rayleigh & \textasciitilde24 dB & 1 & \(1/(4\bar{\gamma})\) \\
 \subsection{Results Tables}\label{sec:results-tables}
 
 
-\begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}@{}}
-\caption{BER comparison on the Rayleigh fading channel (SISO).}\label{tbl:table2}\tabularnewline
+\begin{longtable}[]{@{}lcccccccc@{}}
+\caption{BER on the canonical setup: QPSK over i.i.d.\ Rayleigh fast fading, SISO on both hops, uncoded, $10\times10{,}000$ bits per SNR point. The cGAN column is absent because the relay was excluded from the re-run that produced this table (Table~\ref{tbl:table13} records it at $7{,}293$~s on a GPU); the omission drops its column rather than carrying forward a value measured on the earlier, $3$~dB-offset axis.}\label{tbl:table2}\tabularnewline
 \toprule\noalign{}
-\begin{minipage}[b]{\linewidth}\raggedright
-SNR (dB)
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-AF
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-DF
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-MLP (169p)
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Hybrid
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-VAE
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-cGAN
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Trans-\\former
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Mamba-S6
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Mamba-2\\SSD
-\end{minipage} \\
+SNR (dB) & AF & DF & MLP (169p) & Hybrid & VAE & Transformer & Mamba-S6 & Mamba-2 SSD \\
 \midrule\noalign{}
 \endfirsthead
 \toprule\noalign{}
-\begin{minipage}[b]{\linewidth}\raggedright
-SNR (dB)
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-AF
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-DF
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-MLP (169p)
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Hybrid
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-VAE
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-cGAN
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Trans-\\former
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Mamba-S6
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Mamba-2 SSD
-\end{minipage} \\
+SNR (dB) & AF & DF & MLP (169p) & Hybrid & VAE & Transformer & Mamba-S6 & Mamba-2 SSD \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-0 & 0.330 & \textbf{0.245} & 0.247 & 0.250 & 0.395 & 0.247 & 0.325 & 0.317 & 0.318 \\
-4 & 0.205 & 0.139 & 0.141 & 0.141 & 0.347 & \textbf{0.138} & 0.183 & 0.178 & 0.180 \\
-8 & 0.092 & \textbf{0.068} & 0.070 & 0.069 & 0.304 & 0.070 & 0.077 & 0.076 & 0.076 \\
-12 & 0.037 & \textbf{0.031} & 0.032 & 0.032 & 0.278 & 0.031 & 0.032 & 0.032 & 0.032 \\
-16 & 0.015 & 0.014 & 0.014 & 0.014 & 0.262 & 0.014 & 0.014 & \textbf{0.013} & 0.014 \\
-20 & 0.0053 & \textbf{0.0047} & \textbf{0.0047} & \textbf{0.0047} & 0.250 & 0.0052 & 0.0048 & 0.0052 & \textbf{0.0047} \\
+0 & 0.4076 & 0.3337 & 0.3349 & \textbf{0.3329} & 0.3359 & 0.4014 & 0.4071 & 0.4032 \\
+4 & 0.3129 & \textbf{0.2219} & 0.2233 & 0.2220 & 0.2254 & 0.2758 & 0.2812 & 0.2772 \\
+8 & 0.1852 & \textbf{0.1218} & 0.1229 & 0.1220 & 0.1235 & 0.1424 & 0.1448 & 0.1416 \\
+12 & 0.0822 & 0.0580 & 0.0586 & \textbf{0.0579} & 0.0589 & 0.0628 & 0.0637 & 0.0621 \\
+16 & 0.0309 & \textbf{0.0245} & 0.0247 & \textbf{0.0245} & 0.0247 & 0.0260 & 0.0259 & 0.0251 \\
+20 & 0.0110 & \textbf{0.0097} & 0.0099 & \textbf{0.0097} & \textbf{0.0097} & 0.0101 & 0.0100 & 0.0098 \\
 \end{longtable}
 
 Two features of Table~\ref{tbl:table2} deserve comment. First, the DF value at 20~dB ($0.0047$) matches the closed form $2P(1-P)$ with $P = \frac{1}{2}(1-\sqrt{100/101}) \approx 0.0025$ to two significant figures, providing an end-to-end validation of the simulator against the analysis of Section~\ref{sec:rayleigh-two-hop-df-ber}. Second, the VAE column is not merely an underperformer: it is pinned at $0.25$--$0.40$ at \emph{every} SNR, meaning it never learns the task at any operating point. This should not be read as a verdict on generative relaying as such. The VAE relay samples its latent $\mathbf{z}\sim q_\phi(\mathbf{z}\mid\mathbf{x})$ stochastically at inference; substituting the posterior mean $\boldsymbol{\mu}$ at test time (standard practice for deterministic reconstruction) was not evaluated in this work and could plausibly recover much of the gap. The VAE result is therefore reported as an observation about \emph{this} configuration, and the paradigm-level conclusion is correspondingly qualified in Section~\ref{sec:generative-vs.-discriminative-paradigms-for-relay-processing}.
 \REV{Fix applied: the VAE outcome was previously read as evidence about generative relaying as such. The relay decodes stochastically at inference and the standard deterministic variant was never evaluated, so the result is now reported as specific to this configuration, with the paradigm-level claim qualified in Section~\ref{sec:generative-vs.-discriminative-paradigms-for-relay-processing}.}
 
-The canonical setup fixes the channel, not the constellation. Because the complex baseband carries two independent axes, QPSK is the natural companion to BPSK on that same channel: it places one bit on each axis and is processed by the identical I/Q-split relays, so it tests whether the canonical findings depend on the constellation. Table~\ref{tbl:table14ray} therefore reports both modulations on the canonical Rayleigh channel side by side. The higher-order case that genuinely breaks per-axis processing, 16-QAM, is a separate study and is deferred to Chapter~\ref{sec:extensions}.
+Two comments on Table~\ref{tbl:table2}. First, symbol-wise DF is the best or tied-best relay at every tabulated point, and the learned relays sit within a few thousandths of it from 4~dB upward: on a matched, known channel the learned relay matches DF rather than beating it, at 169 parameters against DF's none. This is H2, and it is the result the rest of the thesis is measured against. Second, the two sequence models trail the feedforward relays at low SNR ($0.4014$ and $0.4032$ at 0~dB against the MLP's $0.3349$) and converge with them by 16~dB, so their extra capacity buys nothing on a memoryless channel; Section~\ref{sec:parameter-normalization-complexity-trade-off} separates that from the parameter-count confound.
 
-\begin{longtable}[]{@{}lcccccccc@{}}
-\caption{QPSK versus BPSK on the \emph{canonical Rayleigh} channel, all nine relay strategies at selected SNR points (I/Q-split processing, per-symbol SNR).}\label{tbl:table14ray}\tabularnewline
-\toprule\noalign{}
-& \multicolumn{2}{c}{0 dB} & \multicolumn{2}{c}{8 dB} & \multicolumn{2}{c}{16 dB} & \multicolumn{2}{c}{20 dB} \\
-Relay & BPSK & QPSK & BPSK & QPSK & BPSK & QPSK & BPSK & QPSK \\
-\midrule\noalign{}
-\endfirsthead
-\toprule\noalign{}
-& \multicolumn{2}{c}{0 dB} & \multicolumn{2}{c}{8 dB} & \multicolumn{2}{c}{16 dB} & \multicolumn{2}{c}{20 dB} \\
-Relay & BPSK & QPSK & BPSK & QPSK & BPSK & QPSK & BPSK & QPSK \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-AF & 0.3305 & 0.4037 & 0.0917 & 0.1873 & 0.0147 & 0.0350 & 0.0053 & 0.0130 \\
-\textbf{DF} & \textbf{0.2452} & \textbf{0.3302} & \textbf{0.0683} & \textbf{0.1242} & \textbf{0.0140} & \textbf{0.0243} & \textbf{0.0047} & \textbf{0.0118} \\
-MLP (169p) & 0.2485 & 0.3270 & 0.0698 & 0.1258 & 0.0138 & 0.0272 & 0.0050 & 0.0123 \\
-Hybrid & 0.2455 & 0.3240 & 0.0687 & 0.1273 & 0.0140 & 0.0243 & 0.0047 & 0.0118 \\
-VAE & 0.3327 & 0.3928 & 0.1625 & 0.2163 & 0.0673 & 0.0760 & 0.0467 & 0.0425 \\
-cGAN & 0.2498 & 0.3300 & 0.0688 & 0.1298 & 0.0138 & 0.0248 & 0.0052 & 0.0125 \\
-Transformer & 0.3302 & 0.4003 & 0.0798 & 0.1525 & 0.0142 & 0.0295 & 0.0052 & 0.0128 \\
-Mamba-S6 & 0.3195 & 0.3953 & 0.0758 & 0.1425 & 0.0137 & 0.0270 & 0.0048 & 0.0125 \\
-Mamba-2 SSD & 0.3182 & 0.3923 & 0.0755 & 0.1428 & 0.0143 & 0.0268 & 0.0047 & 0.0122 \\
-\end{longtable}
-
-\textbf{Conclusion (the ranking transfers to QPSK on Rayleigh; the absolute BER does not).} On the canonical Rayleigh channel the \emph{ordering} of relays under QPSK reproduces the BPSK ordering in its load-bearing respects: symbol-wise DF is again the best or tied-best relay at every tabulated point, AF and the VAE are again the two worst, and the learned relays again cluster between them, the middle of that cluster reshuffling only within its confidence intervals. The conclusions of the canonical benchmark (H1, H2) therefore carry over to QPSK on the canonical channel, which is what the modulation extension claims.
-
-What does \emph{not} carry over is the absolute error rate. At a fixed per-symbol SNR, QPSK BER is close to twice the BPSK value on this channel: $0.1242$ against $0.0683$ for DF at 8~dB, $0.0243$ against $0.0140$ at 16~dB, and the same factor across the other relays. This is expected rather than anomalous. QPSK carries two bits per symbol, so at equal symbol energy each bit receives half the energy, and the Rayleigh BER falls only as $1/\bar{\gamma}$ (Section~\ref{sec:channel-model-validation-simulative}), so halving the per-bit SNR doubles the error rate almost exactly. On AWGN (Table~\ref{tbl:table14}) the effect is absent because that comparison is made at matched per-bit rather than per-symbol SNR. The two tables are therefore consistent, but they are not plotted on a common abscissa, and the QPSK-versus-BPSK gap in Table~\ref{tbl:table14ray} should be read as a consequence of the SNR convention rather than as a penalty of the I/Q-split relay architecture.
-
+\paragraph{Why QPSK and not BPSK.} The canonical channel is complex, so the canonical constellation is complex: QPSK places one bit on each axis the Rayleigh coefficient acts in, and the I/Q-split relays process it without modification. BPSK on this channel would require discarding the imaginary part of the equalized sample, throwing away half the plane the channel acted in, which is why the real constellation is paired with the real channel in the calibration baseline of Section~\ref{sec:channel-model-validation-simulative} instead (Table~\ref{tbl:configurations}). One consequence must be kept in view when reading BER across the two: the SNR axis here is $E_s/N_0$, and QPSK carries two bits per symbol, so a given abscissa corresponds to an $E_b/N_0$ that is $3.01$~dB lower than the same number in the BPSK baseline. The constellations are not on a common axis and their error rates are not directly comparable.
 
 \subsection{Results Figures}\label{sec:results-figures-1}
 
 
 \begin{figure}[H]
 \centering
-\pandocbounded{\includegraphics[width=\linewidth,height=0.8\textheight,keepaspectratio]{results/fading_comparison.png}}
-\caption{Rayleigh fading: BER vs.~SNR for all nine relay strategies with 95\% CI.}\label{fig:fig10}
+\pandocbounded{\includegraphics[width=\linewidth,height=0.8\textheight,keepaspectratio]{results/canonical_qpsk_rayleigh_ci.png}}
+\caption{The canonical setup: QPSK over i.i.d.\ Rayleigh fast fading, BER vs.\ $E_s/N_0$ for the eight relays of Table~\ref{tbl:table2}, with 95\% confidence intervals. AF is uniformly worst; symbol-wise DF and the feedforward learned relays are indistinguishable from 4~dB upward; the two sequence models trail at low SNR and converge by 16~dB.}\label{fig:fig10}
 \end{figure}
 
 
