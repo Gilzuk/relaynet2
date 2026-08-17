@@ -246,8 +246,13 @@ def check_table2(tex, rep):
         for c, relay in enumerate(cols, start=1):
             if c >= len(row):
                 break
+            key = resolve(d["results"], relay)
+            if key is None:
+                if snr == snrs[0]:
+                    rep.note(T, f"{relay}: absent from the re-run, column not checked")
+                continue
             pub_text, pub_val = row[c]
-            src = d["results"][relay]["ber_mean"][si]
+            src = d["results"][key]["ber_mean"][si]
             rep.cell(T, f"{snr}dB/{relay}", pub_text, pub_val, src)
     rep.finish_table(T, before)
 
@@ -404,8 +409,13 @@ def check_table8(tex, rep):
         for c, relay in enumerate(cols, start=1):
             if c >= len(row):
                 break
+            key = resolve(d["results"], relay)
+            if key is None:
+                if snr == snrs[0]:
+                    rep.note(T, f"{relay}: absent from the re-run, column not checked")
+                continue
             pub_text, pub_val = row[c]
-            src = d["results"][relay]["ber_mean"][si]
+            src = d["results"][key]["ber_mean"][si]
             rep.cell(T, f"{snr}dB/{relay}", pub_text, pub_val, src)
     rep.finish_table(T, before)
 
@@ -419,25 +429,34 @@ def check_table24(tex, rep):
     d = json.load(open(os.path.join(ROOT, "results/all_relays_16class/all_relays_16class.json")))
     snrs = d["snr_range"]; i20 = snrs.index(20)
     # tex row label -> json key stem
-    stem = {"MLP": "MLP", "VAE": "VAE", "CGAN": "CGAN", "Hybrid": "Hybrid",
-            "trans-former": "Transformer", "Transformer": "Transformer",
-            "Mamba S6": "Mamba-S6", "Mamba2": "Mamba2", "Mamba2(ssd)": "Mamba2"}
+    # Row labels are matched case-insensitively with separators stripped, so
+    # that "Mamba-2 SSD" in the tex and "Mamba2" in the json line up. The
+    # previous literal map missed cGAN, Mamba-S6, Mamba-2 SSD, AF and DF --
+    # five of the nine rows -- and the table still reported OK on the four it
+    # did check.
+    stem = {"mlp": "MLP", "vae": "VAE", "cgan": "CGAN", "hybrid": "Hybrid",
+            "transformer": "Transformer", "mambas6": "Mamba-S6",
+            "mamba2": "Mamba2", "mamba2ssd": "Mamba2",
+            "af": "AF", "df": "DF"}
     for row in data_rows(body):
         if not row:
             continue
-        name = row[0][0].replace("\\\\", "").replace("\n", "").strip()
-        key = stem.get(name)
+        raw = row[0][0].replace("\\\\", "").replace("\n", "").strip()
+        norm = re.sub(r"[^a-z0-9]", "", raw.lower())
+        key = stem.get(norm)
         if key is None:
+            if raw and raw.lower() != "relay":
+                rep.note(T, f"row {raw!r}: no json mapping, not checked")
             continue
         # col1 = 4-cls @20, col2 = 16-cls @20
         for c, suff in ((1, "4-cls"), (2, "16-cls")):
             if c >= len(row):
                 break
             pub_text, pub_val = row[c]
-            jk = f"{key} {suff}"
+            jk = key if key in ("AF", "DF") else f"{key} {suff}"
             if jk in d["results"]:
                 src = d["results"][jk]["ber_mean"][i20]
-                rep.cell(T, f"{name}/{suff}@20dB", pub_text, pub_val, src)
+                rep.cell(T, f"{raw}/{suff}@20dB", pub_text, pub_val, src)
     rep.finish_table(T, before)
 
 
@@ -767,6 +786,33 @@ def check_table26(tex, rep):
             # these are quoted to ~1 dB; allow 1 dB tolerance
             rep.cell(T, f"{key}(SNR@1e-3, ~1dB tol)", pub_text + "0", pub_val, src[key])
     rep.finish_table(T, before)
+
+
+# ----------------------------------------------------------------------------
+# relay-name aliases
+# ----------------------------------------------------------------------------
+# The minimal MLP was renamed from "GenAI (169p)" to "MLP (169p)" (and
+# "GenAI-3K" to "MLP-3K"), so a result file's spelling depends on when it was
+# produced. Three separate checks have already been silently disabled by a
+# KeyError on the old name -- the table reports "skipped" and its cells stop
+# being counted, which is exactly the failure mode a verifier must not have.
+# Every lookup goes through resolve() so a rename costs nothing, and a relay
+# genuinely absent from a run (the cGAN in a lean re-run) is reported as
+# missing rather than raising.
+RELAY_ALIASES = {
+    "GenAI (169p)": ["GenAI (169p)", "MLP (169p)"],
+    "MLP (169p)":   ["MLP (169p)", "GenAI (169p)"],
+    "GenAI-3K":     ["GenAI-3K", "MLP-3K"],
+    "MLP-3K":       ["MLP-3K", "GenAI-3K"],
+}
+
+
+def resolve(results, name):
+    """Return the key *name* goes by in *results*, or None if absent."""
+    for cand in RELAY_ALIASES.get(name, [name]):
+        if cand in results:
+            return cand
+    return None
 
 
 def check_ber_validation(tex, rep):
