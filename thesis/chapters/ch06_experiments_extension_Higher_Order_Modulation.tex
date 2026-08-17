@@ -4,7 +4,9 @@ This chapter is about one constellation and nothing else: 16-QAM on the canonica
 
 Two studies are reported. The first evaluates 16-QAM under the I/Q-splitting formulation, exposing a structural BER floor for multi-level constellations; the second removes that floor by reformulating the relay as a joint $N$-class classifier over the full 2D constellation ($N=16$). MIMO, 16-PSK, CSI injection, and end-to-end learning remain future work.
 
-What this chapter does \emph{not} do is change the channel. The channel is still the canonical one, still known, still within the model class every classical relay assumes. That is why its conclusions remain confirmatory: raising the constellation order stresses the relay's \emph{output} formulation, not its knowledge of the channel. The question of what happens when the channel itself falls outside that model class, which is where learned relaying stops matching classical processing and starts beating it, is the subject of Chapter~\ref{sec:unknown-channels}.
+\paragraph{Where this chapter sits.} The thesis's argument is a ladder of assumptions, each layer removing one (Table~\ref{tbl:layers}). This chapter is \emph{not} a rung on that ladder: it is a branch off layer~1. It holds every channel assumption of the canonical setup fixed --- memoryless, known, perfect CSI --- and varies the constellation instead. Raising the constellation order stresses the relay's \emph{output} formulation, not its knowledge of the channel, which is why the conclusions here remain confirmatory in the same sense as Chapter~\ref{sec:experiments}: the learned relay earns its place by handling a representation classical per-axis processing cannot, not by outperforming a classical method on equal terms.
+
+The ladder proper resumes in Chapter~\ref{sec:unknown-channels}, which holds the constellation fixed and removes the channel assumptions one at a time. That is where learned relaying stops matching classical processing and starts beating it.
 
 \begin{figure}[t] 
 \noindent 
