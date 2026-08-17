@@ -15,7 +15,7 @@ Chapter~\ref{sec:unknown-channels} as deliberate departures from the
 canonical assumptions in order to study model mismatch and robustness.
 
 
-Following the single-model convention fixed in Chapter~\ref{sec:introduction}, this chapter evaluates all nine relay strategies on the \emph{canonical setup only}: a two-hop SISO link, i.i.d.\ Rayleigh fast fading on both hops, complex baseband, uncoded BER, on the two constellations that baseband natively supports, BPSK and QPSK. Three experiments constitute the core: the AWGN calibration baseline (E1), the canonical relay comparison (E2), and the parameter-normalization and complexity study (E3), which together answer every hypothesis (H1--H5). A scoped modulation extension (Chapter~\ref{sec:extensions}) carries the canonical findings to 16-QAM, where per-axis I/Q processing breaks down, including the joint 2D $N$-class classification formulation (E4--E5). The principal contribution (Chapter~\ref{sec:unknown-channels}) is the unknown-channel study (E6), which tests hypothesis H6. All other departures from the canonical setup are identified as future work in Chapter~\ref{sec:discussion-and-conclusions}.
+Following the single-model convention fixed in Chapter~\ref{sec:introduction}, this chapter evaluates the relay strategies on the \emph{canonical setup only}: a two-hop SISO link, i.i.d.\ Rayleigh fast fading on both hops, complex baseband, QPSK, uncoded BER. BPSK appears in this chapter solely on the AWGN calibration channel, where the closed forms live (Table~\ref{tbl:configurations}). Three experiments constitute the core: the AWGN calibration baseline (E1), the canonical relay comparison (E2), and the parameter-normalization and complexity study (E3), which together answer every hypothesis (H1--H5). A scoped modulation extension (Chapter~\ref{sec:extensions}) carries the canonical findings to 16-QAM, where per-axis I/Q processing breaks down, including the joint 2D $N$-class classification formulation (E4--E5). The principal contribution (Chapter~\ref{sec:unknown-channels}) is the unknown-channel study (E6), which tests hypothesis H6. All other departures from the canonical setup are identified as future work in Chapter~\ref{sec:discussion-and-conclusions}.
 The experimental configurations are summarised in the table below.
 
 Each experiment subsection reports the key results inline (BER tables and figures); supporting material and model hyperparameters are collected in the appendices (Appendices~\ref{sec:appendix-a-mathematical-notation}--\ref{sec:appendix-c-software-architecture}).
@@ -42,22 +42,22 @@ Each experiment subsection reports the key results inline (BER tables and figure
 \endhead
 
 E1 & SISO & BPSK &
-AWGN (simulation baseline); Rayleigh &
+AWGN (calibration baseline) &
 Calibration against closed-form BER \\
 \hline
 
-E2 & SISO & BPSK, QPSK &
-Rayleigh (canonical); AWGN companion &
+E2 & SISO & QPSK &
+Rayleigh (canonical) &
 Canonical relay comparison (H1, H2) \\
 \hline
 
-E3 & SISO & BPSK &
-Rayleigh &
+E3 & SISO & QPSK &
+Rayleigh (canonical) &
 Parameter normalization \& complexity (H3, H4); training-time benchmark (H5) \\
 \hline
 
 E4 & SISO & 16-QAM &
-AWGN, Rayleigh &
+Rayleigh (canonical) &
 Extension: higher-order modulation via I/Q splitting (Chapter~\ref{sec:extensions}) \\
 \hline
 
@@ -66,7 +66,7 @@ AWGN &
 Extension: joint 16-class 2D classification (Chapter~\ref{sec:extensions}) \\
 \hline
 
-E6 & SISO & BPSK &
+E6 & SISO & BPSK, QPSK &
 Unknown (ISI; composite; blind; partial-posterior); control: Rayleigh &
 Extension: unknown-channel failure of AF/DF and learned mitigation (H6) \\
 
@@ -249,68 +249,24 @@ This study tests H3 (U-shaped complexity in BER) and H4 (architecture convergenc
 \subsection{Results Tables}\label{sec:results-tables-2}
 
 
-\begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}@{}}
-\caption{Normalized 3K BER results: Rayleigh fading channel.}\label{tbl:table8}\tabularnewline
+\begin{longtable}[]{@{}lcccccccc@{}}
+\caption{Normalized 3K-parameter comparison on the canonical setup (QPSK over Rayleigh). Every learned model is scaled to approximately 3{,}000 parameters so that architecture, not capacity, is the variable; AF and DF are the unparameterized references. The cGAN is excluded, as in Table~\ref{tbl:table2}.}\label{tbl:table8}\tabularnewline
 \toprule\noalign{}
-\begin{minipage}[b]{\linewidth}\raggedright
-SNR (dB)
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-MLP-3K
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Hybrid-3K
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-VAE-3K
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Trans-\\former\\(3K)
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Mamba-S6\\(3K)
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Mamba-2\\SSD (3K)
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-AF
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-DF
-\end{minipage} \\
+SNR (dB) & MLP-3K & Hybrid-3K & VAE-3K & Transformer-3K & Mamba-S6 (3K) & Mamba-2 SSD (3K) & AF & DF \\
 \midrule\noalign{}
 \endfirsthead
 \toprule\noalign{}
-\begin{minipage}[b]{\linewidth}\raggedright
-SNR (dB)
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-MLP-3K
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Hybrid-3K
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-VAE-3K
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Trans-\\former\\(3K)
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Mamba-S6\\(3K)
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Mamba-2\\SSD (3K)
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-AF
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-DF
-\end{minipage} \\
+SNR (dB) & MLP-3K & Hybrid-3K & VAE-3K & Transformer-3K & Mamba-S6 (3K) & Mamba-2 SSD (3K) & AF & DF \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-0 & \textbf{0.252} & 0.258 & 0.411 & 0.329 & 0.320 & 0.320 & 0.330 & 0.245 \\
-4 & 0.146 & \textbf{0.145} & 0.375 & 0.181 & 0.180 & 0.179 & 0.205 & 0.139 \\
-10 & 0.049 & \textbf{0.047} & 0.315 & 0.050 & 0.049 & 0.049 & 0.058 & 0.044 \\
-16 & 0.015 & 0.014 & 0.289 & 0.014 & \textbf{0.014} & 0.014 & 0.015 & 0.014 \\
-20 & 0.0050 & \textbf{0.0047} & 0.279 & \textbf{0.0047} & \textbf{0.0047} & \textbf{0.0047} & 0.0053 & 0.0047 \\
+0 & 0.3361 & 0.3391 & 0.3424 & 0.4068 & 0.4007 & 0.4001 & 0.4076 & \textbf{0.3337} \\
+4 & 0.2244 & 0.2271 & 0.2291 & 0.2818 & 0.2751 & 0.2742 & 0.3129 & \textbf{0.2219} \\
+8 & 0.1229 & 0.1229 & 0.1267 & 0.1458 & 0.1406 & 0.1405 & 0.1852 & \textbf{0.1218} \\
+12 & 0.0586 & 0.0580 & 0.0604 & 0.0640 & 0.0620 & 0.0622 & 0.0822 & \textbf{0.0580} \\
+16 & 0.0247 & \textbf{0.0245} & 0.0251 & 0.0259 & 0.0250 & 0.0251 & 0.0309 & \textbf{0.0245} \\
+20 & 0.0099 & \textbf{0.0097} & 0.0101 & 0.0100 & 0.0097 & 0.0098 & 0.0110 & \textbf{0.0097} \\
 \end{longtable}
 
 
