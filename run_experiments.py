@@ -1145,8 +1145,12 @@ def exp_7_8_normalized_3k(args):
         for name, relay in relays_3k.items():
             if name in ("AF", "DF"):
                 continue
-            if wm.load(name, relay, subdir="3k"):
-                print(f"  Loaded {name}")
+            # --retrain must force training here as it does elsewhere; this
+            # branch used to consult the cache unconditionally, so a re-run
+            # asked to retrain silently reused old weights and finished in
+            # a fraction of the expected time.
+            if not args.retrain and wm.load(name, relay, subdir="3k"):
+                print(f"  Loaded {name} (cached; --retrain to force)")
                 continue
             print(f"  Training {name} …", end=" ", flush=True)
             t0 = perf_counter()
