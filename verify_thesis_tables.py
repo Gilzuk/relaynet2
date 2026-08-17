@@ -151,6 +151,7 @@ class Report:
         self.flags = []          # (table, where, published, source, diff)
         self.skipped = []        # (table, reason)
         self.tables = []         # (table, n_checked, n_flag)
+        self.notes = []          # (table, partial-coverage reason)
 
     def cell(self, table, where, pub_text, pub_val, src_val):
         # unresolved / non-numeric published cell -> skip silently
@@ -175,6 +176,16 @@ class Report:
 
     def skip(self, table, reason):
         self.skipped.append((table, reason))
+
+    def note(self, table, reason):
+        """Record a partial-coverage note without skipping the whole table.
+
+        Distinct from skip(): the table is still checked, but one row could
+        not be, typically because the relay was dropped from a lean re-run.
+        Recording it keeps the omission visible instead of letting the cell
+        count quietly shrink.
+        """
+        self.notes.append((table, reason))
 
 
 # ----------------------------------------------------------------------------
@@ -326,27 +337,50 @@ def check_table14ray(tex, rep):
     b = json.load(open(os.path.join(ROOT, "results/modulation/bpsk_rayleigh.json")))
     q = json.load(open(os.path.join(ROOT, "results/modulation/qpsk_rayleigh.json")))
     snrs = b["snr_range"]
-    # tex row label -> json relay key
-    key = {"AF": "AF", "DF": "DF", "MLP (169p)": "GenAI (169p)", "Hybrid": "Hybrid",
-           "VAE": "VAE", "cGAN": "CGAN (WGAN-GP)", "Transformer": "Transformer",
-           "Mamba-S6": "Mamba S6", "Mamba-2 SSD": "Mamba2 (SSD)"}
+    # tex row label -> candidate json relay keys, first present one wins.
+    # The minimal MLP is stored as "GenAI (169p)" in runs predating the
+    # rename and as "MLP (169p)" after it, so both spellings are accepted;
+    # a rename must not silently cost this check its coverage.
+    key = {"AF": ["AF"], "DF": ["DF"],
+           "MLP (169p)": ["MLP (169p)", "GenAI (169p)"], "Hybrid": ["Hybrid"],
+           "VAE": ["VAE"], "cGAN": ["CGAN (WGAN-GP)"],
+           "Transformer": ["Transformer"], "Mamba-S6": ["Mamba S6"],
+           "Mamba-2 SSD": ["Mamba2 (SSD)"]}
     # columns after the label: (BPSK,QPSK) at 0, 8, 16, 20 dB
     col_snr = [(1, 0), (3, 8), (5, 16), (7, 20)]
     for row in data_rows(body):
         if not row:
             continue
         name = row[0][0].strip()
-        k = key.get(name)
-        if k is None:
+        cands = key.get(name)
+        if cands is None:
             continue
+        # Resolve the key separately per file: the two files can be from
+        # different runs and so use different spellings for the same relay
+        # (bpsk_rayleigh.json predates the GenAI -> MLP rename that
+        # qpsk_rayleigh.json was written after). A relay dropped from a
+        # re-run (the cGAN, in the lean configuration) is absent rather than
+        # zero, so note the row instead of raising and aborting the table.
+        kb = next((c for c in cands if c in b["results"]), None)
+        kq = next((c for c in cands if c in q["results"]), None)
+        if kb is None and kq is None:
+            rep.note(T, f"{name}: absent from both result files, row not checked")
+            continue
+        if kb is None or kq is None:
+            missing = "BPSK" if kb is None else "QPSK"
+            rep.note(T, f"{name}: absent from the {missing} re-run, that half not checked")
         for c, snr in col_snr:
             if c + 1 >= len(row):
                 break
             si = snrs.index(snr)
-            pb, vb = row[c]
-            rep.cell(T, f"{name}/BPSK/{snr}dB", pb, vb, b["results"][k]["ber_mean"][si])
-            pq, vq = row[c + 1]
-            rep.cell(T, f"{name}/QPSK/{snr}dB", pq, vq, q["results"][k]["ber_mean"][si])
+            if kb is not None:
+                pb, vb = row[c]
+                rep.cell(T, f"{name}/BPSK/{snr}dB", pb, vb,
+                         b["results"][kb]["ber_mean"][si])
+            if kq is not None:
+                pq, vq = row[c + 1]
+                rep.cell(T, f"{name}/QPSK/{snr}dB", pq, vq,
+                         q["results"][kq]["ber_mean"][si])
     rep.finish_table(T, before)
 
 
@@ -826,6 +860,11 @@ def main():
     for name, reason in rep.skipped:
         print(f"{name:<24}{'-':>8}{'-':>10}   skipped: {reason}")
     print("-" * 74)
+    if rep.notes:
+        print("Partial coverage (table checked, some rows not):")
+        for name, reason in rep.notes:
+            print(f"  [{name}] {reason}")
+        print("-" * 74)
     print(f"cells checked: {rep.checked}   inconsistencies: {len(rep.flags)}")
 
     if rep.flags:
