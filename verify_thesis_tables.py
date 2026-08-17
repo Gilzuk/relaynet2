@@ -9,7 +9,7 @@ flagged.
 
 Data sources, by table:
   tbl:table2            canonical Rayleigh BER, 9 relays   <- results/bpsk_comparison/rayleigh.json
-  tbl:table2awgn        AWGN companion BER, 9 relays       <- results/bpsk_comparison/awgn.json
+  tbl:table2awgn        AWGN companion BER, lean 5-relay set <- results/bpsk_comparison/awgn.json
   tbl:table14ray        QPSK vs BPSK on Rayleigh, 9 relays  <- results/modulation/{bpsk,qpsk}_rayleigh.json
   tbl:table8            normalized-3K Rayleigh BER         <- results/normalized_3k/3k_rayleigh.json
   tbl:table14           modulation BER (AWGN)              <- results/bpsk_comparison/awgn.json (+ modulation)
@@ -247,8 +247,10 @@ def check_table2awgn(tex, rep):
     body = table_body(tex, T)
     if body is None:
         return rep.skip(T, "label not found in tex")
-    cols = ["AF", "DF", "GenAI (169p)", "Hybrid", "VAE",
-            "CGAN (WGAN-GP)", "Transformer", "Mamba S6", "Mamba2 (SSD)"]
+    # Lean relay set: the AWGN companion was regenerated on the corrected
+    # Eb/N0 axis with Hybrid, VAE, cGAN and Mamba-S6 skipped, so those
+    # columns are absent rather than carried over from the old convention.
+    cols = ["AF", "DF", "MLP (169p)", "Transformer", "Mamba2 (SSD)"]
     d = json.load(open(os.path.join(ROOT, "results/bpsk_comparison/awgn.json")))
     snrs = d["snr_range"]
     for row in data_rows(body):

@@ -270,75 +270,28 @@ Mamba-2 SSD
 Two features of Table~\ref{tbl:table2} deserve comment. First, the DF value at 20~dB ($0.0047$) matches the closed form $2P(1-P)$ with $P = \frac{1}{2}(1-\sqrt{100/101}) \approx 0.0025$ to two significant figures, providing an end-to-end validation of the simulator against the analysis of Section~\ref{sec:rayleigh-two-hop-df-ber}. Second, the VAE column is not merely an underperformer: it is pinned at $0.25$--$0.40$ at \emph{every} SNR, meaning it never learns the task at any operating point. This should not be read as a verdict on generative relaying as such. The VAE relay samples its latent $\mathbf{z}\sim q_\phi(\mathbf{z}\mid\mathbf{x})$ stochastically at inference; substituting the posterior mean $\boldsymbol{\mu}$ at test time (standard practice for deterministic reconstruction) was not evaluated in this work and could plausibly recover much of the gap. The VAE result is therefore reported as an observation about \emph{this} configuration, and the paradigm-level conclusion is correspondingly qualified in Section~\ref{sec:generative-vs.-discriminative-paradigms-for-relay-processing}.
 \REV{Fix applied: the VAE outcome was previously read as evidence about generative relaying as such. The relay decodes stochastically at inference and the standard deterministic variant was never evaluated, so the result is now reported as specific to this configuration, with the paradigm-level claim qualified in Section~\ref{sec:generative-vs.-discriminative-paradigms-for-relay-processing}.}
 
-\begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1000}}@{}}
-\caption{BER comparison on the AWGN channel (SISO), companion to Table~\ref{tbl:table2}. Tabulated only to 12~dB: above that the true BER falls below what this Monte Carlo budget can resolve, so higher-SNR entries would report the resolution floor rather than a measurement (see the text).}\label{tbl:table2awgn}\tabularnewline
+\begin{longtable}[]{@{}llllll@{}}
+\caption{BER on the AWGN calibration channel, lean relay set (SISO, BPSK), companion to Table~\ref{tbl:table2}. Tabulated to 8~dB: on the $E_b/N_0$ axis the AWGN BER falls so steeply that by 12~dB every relay is at the $10^{-5}$ resolution floor of the $100{,}000$-bit budget, and at 10~dB the estimates rest on only a couple of errors. Symbol-wise DF tracks the closed form $2P(1-P)$, $P=Q(\sqrt{2E_b/N_0})$, to within Monte Carlo noise at every point ($0.00038$ against $0.00038$ at 8~dB).}\label{tbl:table2awgn}\tabularnewline
 \toprule\noalign{}
-\begin{minipage}[b]{\linewidth}\raggedright
-SNR (dB)
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-AF
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-DF
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-MLP (169p)
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Hybrid
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-VAE
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-cGAN
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Trans-\\former
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Mamba-S6
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Mamba-2\\SSD
-\end{minipage} \\
+SNR (dB) & AF & DF & MLP (169p) & Transformer & Mamba-2 SSD \\
 \midrule\noalign{}
 \endfirsthead
 \toprule\noalign{}
-\begin{minipage}[b]{\linewidth}\raggedright
-SNR (dB)
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-AF
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-DF
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-MLP (169p)
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Hybrid
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-VAE
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-cGAN
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Trans-\\former
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Mamba-S6
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Mamba-2 SSD
-\end{minipage} \\
+SNR (dB) & AF & DF & MLP (169p) & Transformer & Mamba-2 SSD \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-0 & 0.291 & 0.268 & 0.264 & 0.262 & 0.376 & \textbf{0.261} & 0.267 & 0.269 & 0.270 \\
-4 & 0.154 & 0.112 & 0.112 & 0.113 & 0.330 & \textbf{0.111} & 0.114 & \textbf{0.111} & \textbf{0.111} \\
-8 & 0.044 & \textbf{0.010} & 0.015 & \textbf{0.010} & 0.291 & 0.013 & 0.014 & \textbf{0.010} & 0.012 \\
-12 & 0.0027 & \textbf{0.0002} & \textbf{0.0002} & \textbf{0.0002} & 0.2693 & 0.0003 & 0.0003 & \textbf{0.0002} & \textbf{0.0002} \\
+0 & 0.1845 & \textbf{0.1430} & 0.1444 & 0.1441 & 0.1443 \\
+2 & 0.1207 & \textbf{0.0706} & 0.0723 & 0.0730 & 0.0721 \\
+4 & 0.0649 & \textbf{0.0244} & 0.0263 & 0.0272 & 0.0256 \\
+6 & 0.0258 & \textbf{0.0047} & 0.0056 & 0.0059 & 0.0051 \\
+8 & 0.0065 & \textbf{0.00038} & 0.00058 & 0.00059 & 0.00048 \\
 \end{longtable}
 
-Table~\ref{tbl:table2awgn} reports the same nine-relay comparison on the AWGN channel, at the same $M{=}10\times N{=}10{,}000$ budget as Table~\ref{tbl:table2} (Section~\ref{sec:monte-carlo-ber-estimation}), included here as a full companion comparison rather than only the theory-vs-simulation calibration of Section~\ref{sec:channel-model-validation-simulative}. The ordering matches the canonical Rayleigh case in kind, DF, the learned relays, and cGAN cluster together and clearly separate from AF, but the picture is far more compressed in scale: without fading variance to average over, every relay except VAE collapses to the simulator's zero-error floor by 16~dB (the steep exponential AWGN tail predicted by Table~\ref{tbl:table26}), so the relays are effectively indistinguishable at high SNR and the comparison is informative mainly at 0--8~dB. VAE again fails to learn the task at any SNR, for the same stochastic-decoding reason noted for Table~\ref{tbl:table2}. The table stops at 12~dB deliberately. With $10\times10{,}000=100{,}000$ bits per SNR point the smallest resolvable BER is about $10^{-5}$ (Section~\ref{sec:monte-carlo-ber-estimation}), whereas the closed form of Section~\ref{sec:channel-model-validation-simulative} puts the two-hop DF BER on AWGN at $2.8\times10^{-10}$ at 16~dB and $1.5\times10^{-23}$ at 20~dB. Those points are not merely under-sampled at the present budget, they are beyond direct Monte Carlo estimation altogether: resolving 20~dB to a hundred errors would take of order $10^{24}$ bits. Reporting them as $0$ would state a measurement that was never made, so the comparison is confined to the range where every entry is an actual estimate, and the exponential tail above it is left to the analytical curve validated in Figure~\ref{fig:fig1}. The same limit does not arise on the canonical Rayleigh channel, whose BER decays only as $1/\bar{\gamma}$ and remains measurable ($0.0047$ for DF) at 20~dB. The scope of this companion is deliberately limited: AWGN is reported here for BPSK only, no hypothesis is tested and no relay is ranked or selected on it, and every conclusion in this chapter continues to rest on the canonical Rayleigh setup. It is included because the closed-form expressions validating the simulator in Section~\ref{sec:channel-model-validation-simulative} are AWGN expressions, so showing the full relay set on that same channel makes the calibration and the comparison directly commensurable.
+Table~\ref{tbl:table2awgn} reports the AWGN companion on a \emph{lean} relay set: the two classical baselines together with one representative from each learned family, the minimal MLP, the Transformer and Mamba-2 SSD. The Hybrid, VAE, cGAN and Mamba-S6 relays are omitted because regenerating them on the corrected axis is dominated by the cGAN, which Table~\ref{tbl:table13} records at $7{,}293$~s on a GPU. Omitting a relay drops its column rather than carrying forward a value measured on the earlier, $3$~dB-offset axis, so the table is internally consistent at the cost of being narrower. The canonical Rayleigh comparison of Table~\ref{tbl:table2} retains all nine relays and is unaffected, since the Rayleigh channel was already on the $E_b/N_0$ axis and never needed regenerating.
+
+The result is a direct check on the calibration rather than a new finding: symbol-wise DF reproduces the closed form $2P(1-P)$ with $P=Q(\sqrt{2E_b/N_0})$ to within Monte Carlo noise at every tabulated point, agreeing to $0.00038$ against $0.00038$ at 8~dB. AF is uniformly worst, and the three learned relays cluster just above DF, reproducing on AWGN the ordering the canonical channel shows. The scope of this companion is deliberately limited: no hypothesis is tested on it and no relay is ranked or selected by it, and every conclusion in this chapter continues to rest on the canonical Rayleigh setup.
 
 
 \subsection{Results Figures}\label{sec:results-figures-1}
@@ -353,7 +306,7 @@ Table~\ref{tbl:table2awgn} reports the same nine-relay comparison on the AWGN ch
 \begin{figure}[H]
 \centering
 \pandocbounded{\includegraphics[width=\linewidth,height=0.8\textheight,keepaspectratio]{results/awgn_comparison_ci.png}}
-\caption{AWGN channel: BER vs.~SNR for all nine relay strategies with 95\% CI, companion to Figure~\ref{fig:fig10} and Table~\ref{tbl:table2awgn}. Plotted only to 12~dB. The dash-dotted line marks the $10^{-5}$ Monte Carlo resolution floor set by the $100{,}000$-bit budget per SNR point; beyond 12~dB the true AWGN BER falls below it (analytically $2.8\times10^{-10}$ at 16~dB), so points there would trace the floor rather than the relays. The dotted grey curve is the closed-form two-hop DF BER, which the measured curves track.}\label{fig:fig10awgn}
+\caption{AWGN channel: BER vs.~$E_b/N_0$ for the lean relay set with 95\% CI, companion to Figure~\ref{fig:fig10} and Table~\ref{tbl:table2awgn}. Plotted only to 8~dB. The dash-dotted line marks the $10^{-5}$ Monte Carlo resolution floor set by the $100{,}000$-bit budget per SNR point; beyond 8~dB the estimates rest on a handful of errors and by 12~dB every relay is at the floor, so points there would trace the floor rather than the relays. The dotted grey curve is the closed-form two-hop DF BER, which the measured curves track.}\label{fig:fig10awgn}
 \end{figure}
 
 

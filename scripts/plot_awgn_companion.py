@@ -25,22 +25,18 @@ SRC = os.path.join(ROOT, "results", "bpsk_comparison", "awgn.json")
 OUT_DIRS = [os.path.join(ROOT, "results"), os.path.join(ROOT, "thesis", "results")]
 NAME = "awgn_comparison_ci.png"
 
-MAX_SNR = 12          # last SNR point the Monte Carlo budget can resolve
+MAX_SNR = 8           # last SNR point with a statistically meaningful estimate
 RESOLUTION = 1e-5     # 10 trials x 10,000 bits aggregate
 
+# Lean relay set, matching the regenerated awgn.json.
 RELAYS = [
     ("AF",               "tab:gray",   "o", "-"),
     ("DF",               "black",      "s", "-"),
-    ("GenAI (169p)",     "tab:blue",   "^", "-"),
-    ("Hybrid",           "tab:green",  "D", "-"),
-    ("VAE",              "tab:purple", "v", "--"),
-    ("CGAN (WGAN-GP)",   "tab:orange", "P", "-"),
+    ("MLP (169p)",       "tab:blue",   "^", "-"),
     ("Transformer",      "tab:red",    "X", "-"),
-    ("Mamba S6",         "tab:cyan",   "<", "-"),
     ("Mamba2 (SSD)",     "tab:pink",   ">", "-"),
 ]
-LABEL = {"GenAI (169p)": "MLP (169p)", "CGAN (WGAN-GP)": "cGAN (WGAN-GP)",
-         "Mamba S6": "Mamba-S6", "Mamba2 (SSD)": "Mamba-2 SSD"}
+LABEL = {"Mamba2 (SSD)": "Mamba-2 SSD"}
 
 
 def qfunc(x):
@@ -64,9 +60,14 @@ def main():
         ax.fill_between(x, np.maximum(lo, RESOLUTION / 10), np.maximum(hi, RESOLUTION / 10),
                         color=colour, alpha=0.15, lw=0)
 
-    # analytical two-hop DF reference, the curve the tail actually follows
-    th = [2 * qfunc(math.sqrt(10 ** (s / 10))) * (1 - qfunc(math.sqrt(10 ** (s / 10))))
-          for s in x]
+    # Analytical two-hop DF reference, the curve DF should sit on.
+    # P = Q(sqrt(2*Eb/N0)) -- the factor 2 matters: with Q(sqrt(Eb/N0)) this
+    # curve is the 3 dB pessimistic axis and floats above the measured DF
+    # instead of tracking it, which is how the error was spotted here.
+    def _p(s):
+        return qfunc(math.sqrt(2 * 10 ** (s / 10)))
+
+    th = [2 * _p(s) * (1 - _p(s)) for s in x]
     ax.semilogy(x, th, color="0.35", ls=":", lw=1.6, label="Two-hop DF (theory)")
 
     ax.axhline(RESOLUTION, color="0.6", ls="-.", lw=1.2)
@@ -79,7 +80,7 @@ def main():
     ax.set_xlim(x.min() - 0.5, x.max() + 0.5)
     ax.set_ylim(RESOLUTION / 2, 1.0)
     ax.grid(True, which="both", alpha=0.3)
-    ax.legend(loc="lower left", fontsize=8, ncol=2)
+    ax.legend(loc="lower left", fontsize=9)
     ax.annotate(f"plotted to {MAX_SNR} dB: above this the true BER\n"
                 f"is below the resolution floor, not measured",
                 xy=(0.985, 0.97), xycoords="axes fraction", ha="right", va="top",

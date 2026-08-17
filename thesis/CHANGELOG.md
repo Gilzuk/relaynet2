@@ -66,14 +66,39 @@ read 0.1208.
 
 ### Known issues — follow-up required
 
-- **The nine-relay AWGN tables have not been regenerated.** PyTorch is now
-  installed, so this is no longer blocked in principle, but it is a long job
-  on this machine: Table 5.3 records the cGAN alone at 7,293 s on CUDA and
-  only four CPU cores are available here. `results/bpsk_comparison/awgn.json`
-  and the Chapter 6 AWGN tables therefore still carry data produced under the
-  earlier AWGN convention, 3 dB from the axis the calibration now uses. The
-  Rayleigh tables (5.4, 5.6, 6.2 and the 3K study) are unaffected, since
-  `fading.py` was never changed.
+### Chapter 5's AWGN companion regenerated on a lean relay set
+
+`results/bpsk_comparison/awgn.json` is re-run on the corrected Eb/N0 axis with
+a lean relay set: AF and DF, plus one representative of each learned family
+(the minimal MLP, the Transformer, Mamba-2 SSD). Hybrid, VAE, cGAN and
+Mamba-S6 are omitted via the new `--skip-relays`, because the cGAN alone is
+7,293 s on CUDA and this machine has four CPU cores. The run took 56 minutes.
+
+Omitting a relay drops its column rather than carrying forward a value from
+the earlier 3 dB-offset axis, so the table is narrower but internally
+consistent. Table 5.4, the canonical Rayleigh comparison, keeps all nine
+relays and is untouched: the Rayleigh channel was already on the Eb/N0 axis.
+
+The regenerated table is a direct check on the calibration. Symbol-wise DF
+now reproduces the closed form 2P(1-P), P = Q(sqrt(2Eb/N0)), to within Monte
+Carlo noise at every point, agreeing to 0.00038 against 0.00038 at 8 dB.
+
+The table is cut at 8 dB rather than 12. On the corrected axis the AWGN BER
+falls faster, so the resolution floor bites sooner: at 10 dB the estimates
+rest on about two errors in 100,000 bits and by 12 dB every relay is at the
+floor. 8 dB is the last point carrying a meaningful number of errors (38).
+
+A caution worth recording: experiment 7.2 writes both `awgn.json` **and**
+`rayleigh.json`, so the lean re-run silently reduced the canonical Rayleigh
+file from nine relays to five. It was restored from a backup taken
+beforehand. Anyone re-running a subset must check which files an experiment
+touches, not only the one they mean to refresh.
+
+### Known issues — follow-up required
+
+- **Chapter 6's AWGN tables have not been regenerated** (`tbl:table14`,
+  `tbl:table15`, `tbl:table24`). They still carry data on the earlier AWGN
+  convention. Chapter 6's Rayleigh table (6.2) is unaffected.
 - **The flat-channel control passed only narrowly.** Its largest shift after
   the correction was 0.0097 against a 0.010 Monte Carlo tolerance, so it
   verifies clean by a margin thinner than is comfortable. Worth re-running at
