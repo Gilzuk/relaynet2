@@ -2,6 +2,30 @@
 
 _Last updated: 2026-08-17_
 
+## DECISION IN FORCE: thesis submitted — re-run data lands, thesis tables stay frozen
+User submitted the thesis, then instructed "Keep" in answer to a choice between (a) freeze the submitted tables and land the re-run as data only, and (b) carry on re-transcribing. Reading taken: **(a)**. Consistent with `.clinerules/90-safety.md` (never alter numerical results without explicit instruction), and the cheaper error to recover from if the reading is wrong.
+
+**So: commit re-run outputs under `results/`, do NOT re-transcribe any `chapters/*.tex` table.** The submitted PDF and the branch will therefore diverge on data — that is intended, not drift. Do not "fix" the mismatch by quietly updating tables; it needs a fresh instruction.
+
+**When integration is eventually authorised**, the affected surface is:
+- `tbl:table2` + `tbl:table2awgn` (ch05) ← `results/bpsk_comparison/{rayleigh,awgn}.json` — loses its cGAN column
+- `tbl:table14ray` (ch05 Table 5.6, canonical QPSK) + `tbl:table14` (ch06) ← `results/modulation/*.json`
+- `tbl:table24` (ch06) ← `results/all_relays_16class/` — loses its cGAN row; ch06 prose currently cites cGAN's 16-class failure (0.353/0.282) and must stop
+- `tbl:table15` (ch06) ← `results/qam16_activation/` — lean 5-relay set
+- `tbl:table8` (ch05, hypothesis H4) ← `results/normalized_3k/3k_rayleigh.json`
+- §5.2's lean-set paragraph, which was written when only the AWGN companion was lean
+Then: `python3 verify_thesis_tables.py`, cold `latexmk -xelatex`, `pytest tests/`.
+
+## Why the re-run covers everything, not just the AWGN/BPSK tables
+Two findings from scoping it, both worth not re-deriving:
+1. **Every learned relay trains through `awgn_channel`** (`relaynet/utils/activations.py:214`). The 3 dB fix therefore moved the trained *weights*, so Rayleigh and QPSK/16-QAM results are stale too — even though `fading.py` was never touched and complex modulations never hit the corrected real-noise branch. Do not assume "channel unchanged ⇒ results valid" in this repo.
+2. **`results/bpsk_comparison/rayleigh.json` (source of the canonical headline table) carried `created=2026-03-23`.** Its Aug-17 mtime was just the restore-copy made after an earlier lean run overwrote it. **Judge result freshness by the `created` field inside the JSON, never by file mtime** — a pre-fix backup copy looks fresh to `ls`.
+
+## Re-run in flight (`scripts/rerun_all_experiments.sh`, started 16:56Z)
+7 stages, sequential (4 cores, no CUDA). cGAN dropped everywhere per the lean instruction. Two tiers, deliberately not uniform: **breadth (8 relays)** for 7.2/7.3, 7.10, 7.8, 7.17 — those tables exist to compare architectures, and `tbl:table8` *is* hypothesis H4, so leaning them would delete findings rather than shrink them; **lean (AF/DF/MLP/Transformer/Mamba-2)** for the 7.11 and 7.13 activation ablations, where the variable is the activation and 7.13 is 12 combinations.
+Order: 7.1 ✅(7s) → 7.2 → 7.10 → 7.17 → 7.8 → 7.11 → 7.13, chosen so an interruption still leaves the load-bearing tables refreshed. Est. 12–16 h. Logs in `results/rerun_logs/`.
+`--skip-relays` had to be fixed first: it matched literal display names, but one relay appears as "MLP (169p)"/"MLP-3K"/"MLP 16-cls", so lean runs of 7.8 and 7.17 silently skipped nothing. Now family-based (`relay_family()`), mamba2 tested before mamba_s6.
+
 ## Latest: canonical restructure — Rayleigh carries BPSK **and** QPSK; AWGN is the baseline
 Swapped what Ch5 and Ch6 each own. Previously Ch5's headline comparison ran on AWGN/BPSK (the one channel Appendix E comment 4 says the thesis draws no conclusions from) while QPSK-on-the-canonical-channel sat in the extension chapter — backwards. Now:
 - **§5.2 "Simulation Baseline: AWGN Calibration"** — AWGN's role stated up front: it is where closed forms exist, so it is what the simulator is validated against. Its relay comparison (Table 5.5, **lean set AF/DF/MLP/Transformer/Mamba-2**, 0–8 dB) is a baseline; no relay is ranked on it. Cut at 8 dB because beyond that every relay reads zero at any feasible bit budget (20 dB AWGN needs ~6.6e24 bits).
