@@ -46,7 +46,7 @@ Swapped what Ch5 and Ch6 each own. Previously Ch5's headline comparison ran on A
 **Open follow-ups (NOT done):**
 1. **Ch6's AWGN tables `tbl:table14`/`table15`/`table24` are still on the pre-correction AWGN convention** — they predate the 3 dB `sigma^2 = N0/2` fix and need a re-run (~1 h each even on the lean set). The verifier does not cover them (see its own "informational" footer).
 2. **Ch7 flat-channel control passes by 0.0097 against a 0.010 tolerance** — margin too thin to trust; needs a larger trial budget or a defended tighter tolerance.
-3. **Overleaf push still blocked** — the agent proxy 403s `git.overleaf.com`, Overleaf bans force-push, and project `69cd8f24043dbf2a2982370` carries 163 objects of unrelated history. Unresolved; no workaround found from inside the container.
+3. ~~Overleaf push~~ — **CLOSED, do not attempt. The user syncs Overleaf manually** (instruction, 2026-08-17: "Stop overleaf sync I will do it manually"). The `overleaf` remote (`git.overleaf.com/69cd8f24043dbf2a2982370`) is deliberately left configured because the user needs it; its presence is **not** an invitation to push. Do not run `git push overleaf`, do not rebuild `git subtree` splits, and do not reopen the problem — the agent proxy 403s that host anyway, Overleaf bans the force-push the divergent history would need, and the project carries 163 objects of unrelated history. Deliver work by pushing to `claude/porting-md-file-l6xzsr` on GitHub and leave the Overleaf leg to the user.
 
 ## Latest: MIMO equalization section REMOVED (completing AK comments 2/4/6)
 Audited all 17 supervisor (AK) comments in `thesis/ak_comments.json` against Appendix E — all 17 documented, and the verifiable claims hold EXCEPT two gaps found:

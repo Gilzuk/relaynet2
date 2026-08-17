@@ -102,7 +102,7 @@ The thesis side has moved on past the E6 checklist above; current state:
 ### Outstanding (do these next)
 1. **Ch6 AWGN tables `tbl:table14` / `table15` / `table24` still use the pre-correction AWGN convention** — must be re-run before submission. The verifier explicitly does not cover them.
 2. **Ch7 flat-channel control passes by only 0.0097 against a 0.010 tolerance** — margin too thin; needs a larger trial budget.
-3. **Overleaf sync unresolved** — the agent proxy 403s `git.overleaf.com` and Overleaf rejects force-push; project `69cd8f24043dbf2a2982370` also holds 163 objects of unrelated history. No in-container workaround found.
+3. **Overleaf sync — OUT OF SCOPE, the user does it manually.** Per instruction 2026-08-17. Do not push to the `overleaf` remote, do not rebuild subtree splits, do not treat the divergence between the Overleaf project and this branch as a defect to fix. GitHub (`claude/porting-md-file-l6xzsr`) is the delivery target.
 
 ## Reference documents already in repo (don't duplicate, update instead)
 - `E6_PORTING_STATUS.md` — running progress tracker (slightly stale vs this file as of last edit; treat this `memory-bank/progress.md` as the live source of truth going forward and update `E6_PORTING_STATUS.md` in sync if it's kept)
