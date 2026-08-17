@@ -735,9 +735,22 @@ class WeightManager:
 # Relay factory
 # ════════════════════════════════════════════════════════════════════
 
+# Relay names excluded for this run, set from --skip-relays. Kept at module
+# scope because build_base_relays is called from many experiment functions
+# that do not thread ``args`` through.
+SKIP_RELAYS = set()
+
+
 def build_base_relays(gpu=False, activation="tanh", clip_range=None,
                       layer_norm=False):
-    """Build the 9-relay dictionary (untrained)."""
+    """Build the relay dictionary (untrained), minus any in SKIP_RELAYS.
+
+    Excluding a relay is a lean-run option, not a default: the cGAN dominates
+    wall-clock (Table 5.3 records 7,293 s on CUDA, roughly two thirds of a
+    full nine-relay pass), so leaving it out makes a re-run tractable on CPU.
+    Any table regenerated with a relay excluded loses that column rather than
+    carrying a stale value forward, so the omission is visible.
+    """
     relays = {
         "AF": AmplifyAndForwardRelay(),
         "DF": DecodeAndForwardRelay(),
@@ -771,6 +784,8 @@ def build_base_relays(gpu=False, activation="tanh", clip_range=None,
             d_state=16, num_layers=2, prefer_gpu=gpu,
             use_input_norm=layer_norm,
             output_activation=activation, clip_range=clip_range)
+    if SKIP_RELAYS:
+        relays = {k: v for k, v in relays.items() if k not in SKIP_RELAYS}
     return relays
 
 
@@ -2033,6 +2048,9 @@ Examples:
     p.add_argument("--snr-step", type=float, default=2)
     p.add_argument("--bits-per-trial", type=int, default=10_000)
     p.add_argument("--num-trials", type=int, default=10)
+    p.add_argument("--skip-relays", nargs="+", default=[], metavar="NAME",
+                   help="Relay names to omit, e.g. --skip-relays 'CGAN (WGAN-GP)'. "
+                        "Use for lean re-runs; the cGAN alone is ~2/3 of a full pass.")
     return p.parse_args()
 
 
@@ -2071,6 +2089,10 @@ def main():
     # Ensure --retrain attribute exists
     if not hasattr(args, "retrain"):
         args.retrain = False
+
+    if getattr(args, "skip_relays", None):
+        globals()["SKIP_RELAYS"] = set(args.skip_relays)
+        print(f"  Skipping relays: {', '.join(sorted(SKIP_RELAYS))}")
 
     # Setup logging
     log_file = setup_logging(args.results_dir)
