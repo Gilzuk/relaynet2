@@ -66,7 +66,9 @@ where \(\mathcal{H}(\cdot)\) denotes the canonical Rayleigh fast-fading channel 
 
 \subsection{Evaluated Configurations}\label{sec:evaluated-configurations}
 
-This thesis evaluates exactly three (constellation, channel) configurations, listed in Table~\ref{tbl:configurations}. They are not a cross product: each constellation is paired with the one channel on which it answers a distinct question, and the remaining combinations are deliberately not run.
+This thesis evaluates exactly three (constellation, channel) configurations, listed in Table~\ref{tbl:configurations}. They are not a cross product. The governing principle is that \textbf{a real channel is paired with a real constellation and a complex channel with a complex constellation}: the signal space the constellation lives in and the signal space the channel acts on are the same space. AWGN with BPSK is the real case, both living on the line; Rayleigh with QPSK and with 16-QAM are the complex cases, both living in the plane, where the fading coefficient \(h \sim \mathcal{CN}(0,1)\) rotates as well as scales and the constellation has a phase for it to act on.
+
+The pairings excluded by this principle are precisely the ones that would force the simulation to patch over a mismatch. A real constellation on the complex Rayleigh channel must discard the imaginary part of the equalized sample after dividing by \(h\), throwing away half the plane the channel acted in; a complex constellation on AWGN is not wrong, but it exercises none of what makes the complex channel interesting, since there is no phase rotation to undo. Neither is reported here.
 
 \begin{longtable}[]{@{}lllp{0.42\linewidth}@{}}
 \caption{The three evaluated configurations. The channel shown applies to both hops.}\label{tbl:configurations}\tabularnewline
@@ -80,12 +82,12 @@ Constellation & Channel & Role & Why this pairing \\
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-BPSK & AWGN & Calibration & AWGN is the only channel here with exact closed forms, \(Q(\sqrt{2E_b/N_0})\) single-hop and \(2P(1-P)\) two-hop DF, so it is where the simulator can be \emph{proved} correct rather than merely compared. BPSK is the constellation those closed forms describe. \\
-QPSK & Rayleigh & Canonical & Rayleigh fast fading is the channel this thesis draws its conclusions on. QPSK places one bit on each axis the complex baseband already carries, so the identical I/Q-split relays process it unchanged. \\
-16-QAM & Rayleigh & Extension & Four levels per axis break the per-axis relay formulation, which is precisely what Chapter~\ref{sec:extensions} studies; it is examined on the canonical channel, not on AWGN. \\
+BPSK (real) & AWGN (real) & Calibration & The real case. AWGN is the only channel here with exact closed forms, \(Q(\sqrt{2E_b/N_0})\) single-hop and \(2P(1-P)\) two-hop DF, so it is where the simulator can be \emph{proved} correct rather than merely compared, and BPSK is the constellation those closed forms describe. \\
+QPSK (complex) & Rayleigh (complex) & Canonical & The complex case, and the operating point this thesis draws its conclusions on. QPSK places one bit on each axis of the plane the channel acts in, so the identical I/Q-split relays process it unchanged. \\
+16-QAM (complex) & Rayleigh (complex) & Extension & The same complex channel, driven to four levels per axis, which breaks the per-axis relay formulation. That break is what Chapter~\ref{sec:extensions} studies, and it is studied on the canonical channel. \\
 \end{longtable}
 
-The three omitted pairings are omissions by design. QPSK and 16-QAM on AWGN are not reported because AWGN serves here as a measuring stick, and a measuring stick needs only the one constellation whose closed form is being checked; evaluating relays on AWGN at higher orders would invite conclusions from a channel the thesis deliberately draws none from (Appendix~\ref{sec:appendix-response-to-comments}). BPSK on Rayleigh is not reported because QPSK already occupies the canonical slot and is processed by the same relays, so the two would answer the same question twice.
+The same principle also keeps AWGN in its place. It is retained as a measuring stick and needs only the one constellation whose closed form is being checked; evaluating relays on AWGN at higher orders would invite conclusions from a channel the thesis deliberately draws none from (Appendix~\ref{sec:appendix-response-to-comments}).
 
 \textbf{A consequence worth stating plainly.} The SNR argument sets the noise power from the average \emph{symbol} energy, so it denotes \(E_s/N_0\) in every configuration. Since \(E_b = E_s/k\), the same numerical SNR corresponds to a different per-bit energy in each row of Table~\ref{tbl:configurations}: \(E_b/N_0\) equals the stated value for BPSK, is \(3.01\)~dB lower for QPSK and \(6.02\)~dB lower for 16-QAM. The three configurations are therefore \emph{not} on a common abscissa, and BER values must not be read across them without that conversion. Where a comparison across constellations is made, this is stated explicitly at the point of use.
 
