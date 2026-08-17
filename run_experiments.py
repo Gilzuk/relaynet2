@@ -25,6 +25,7 @@ import json
 import logging
 import math
 import os
+import re
 import sys
 import traceback
 from datetime import datetime
@@ -735,9 +736,64 @@ class WeightManager:
 # Relay factory
 # ════════════════════════════════════════════════════════════════════
 
+# Relay families excluded for this run, set from --skip-relays. Kept at module
+# scope because build_base_relays is called from many experiment functions
+# that do not thread ``args`` through.
+SKIP_RELAYS = set()
+
+# The same relay appears under different display names across experiments
+# ("MLP (169p)", "MLP-3K", "MLP 16-cls"; "Mamba S6", "Mamba-3K"), so skipping
+# by literal name would silently miss half the run. Names are mapped to a
+# family token first and the skip set is matched against that. Order matters:
+# mamba2 must be tested before mamba_s6, since "Mamba-2" also contains "mamba".
+_RELAY_FAMILY_PATTERNS = [
+    ("af",          r"^af\b"),
+    ("df",          r"^df\b"),
+    ("mlp",         r"mlp|genai"),
+    ("hybrid",      r"hybrid"),
+    ("vae",         r"vae"),
+    ("cgan",        r"cgan"),
+    ("transformer", r"transformer"),
+    ("mamba2",      r"mamba[-_ ]?2"),
+    ("mamba_s6",    r"mamba"),
+]
+
+
+def relay_family(name):
+    """Map a display name to its family token, or None if unrecognised."""
+    low = name.strip().lower()
+    for family, pattern in _RELAY_FAMILY_PATTERNS:
+        if re.search(pattern, low):
+            return family
+    return None
+
+
+def skipped(name):
+    """True if *name* belongs to a family excluded by --skip-relays.
+
+    Falls back to exact display-name matching so a caller can still exclude
+    one specific variant (e.g. "MLP 16-cls") without dropping its family.
+    """
+    if not SKIP_RELAYS:
+        return False
+    return name in SKIP_RELAYS or relay_family(name) in SKIP_RELAYS
+
+
+def apply_skip(relays):
+    """Drop excluded relays from a {name: relay} mapping."""
+    return {k: v for k, v in relays.items() if not skipped(k)}
+
+
 def build_base_relays(gpu=False, activation="tanh", clip_range=None,
                       layer_norm=False):
-    """Build the 9-relay dictionary (untrained)."""
+    """Build the relay dictionary (untrained), minus any in SKIP_RELAYS.
+
+    Excluding a relay is a lean-run option, not a default: the cGAN dominates
+    wall-clock (Table 5.3 records 7,293 s on CUDA, roughly two thirds of a
+    full nine-relay pass), so leaving it out makes a re-run tractable on CPU.
+    Any table regenerated with a relay excluded loses that column rather than
+    carrying a stale value forward, so the omission is visible.
+    """
     relays = {
         "AF": AmplifyAndForwardRelay(),
         "DF": DecodeAndForwardRelay(),
@@ -771,7 +827,7 @@ def build_base_relays(gpu=False, activation="tanh", clip_range=None,
             d_state=16, num_layers=2, prefer_gpu=gpu,
             use_input_norm=layer_norm,
             output_activation=activation, clip_range=clip_range)
-    return relays
+    return apply_skip(relays)
 
 
 def train_base_relays(relays, args, modulation="bpsk"):
@@ -1049,6 +1105,7 @@ def exp_7_8_normalized_3k(args):
     # Add baselines
     relays_3k["AF"] = AmplifyAndForwardRelay()
     relays_3k["DF"] = DecodeAndForwardRelay()
+    relays_3k = apply_skip(relays_3k)
 
     if not args.inference_only:
         epochs = 10 if args.quick else 100
@@ -1484,6 +1541,8 @@ def exp_7_17_16class_2d(args):
     all_results = {}
 
     for vname, relay_tag, rkw, tkw in _16CLS_VARIANTS:
+        if skipped(vname):
+            continue
         print(f"\n  {vname}")
         relay = _build_16cls_relay(relay_tag, rkw, args.gpu)
         if relay is None:
@@ -2033,6 +2092,13 @@ Examples:
     p.add_argument("--snr-step", type=float, default=2)
     p.add_argument("--bits-per-trial", type=int, default=10_000)
     p.add_argument("--num-trials", type=int, default=10)
+    p.add_argument("--skip-relays", nargs="+", default=[], metavar="NAME",
+                   help="Relay families to omit: af, df, mlp, hybrid, vae, cgan, "
+                        "transformer, mamba2, mamba_s6. A family token covers every "
+                        "display name that relay appears under (mlp also drops "
+                        "'MLP-3K' and 'MLP 16-cls'); an exact display name omits just "
+                        "that variant. Use for lean re-runs; the cGAN alone is ~2/3 "
+                        "of a full pass.")
     return p.parse_args()
 
 
@@ -2071,6 +2137,10 @@ def main():
     # Ensure --retrain attribute exists
     if not hasattr(args, "retrain"):
         args.retrain = False
+
+    if getattr(args, "skip_relays", None):
+        globals()["SKIP_RELAYS"] = set(args.skip_relays)
+        print(f"  Skipping relays: {', '.join(sorted(SKIP_RELAYS))}")
 
     # Setup logging
     log_file = setup_logging(args.results_dir)

@@ -1,40 +1,25 @@
-This is BibTeX, Version 0.99e
+This is BibTeX, Version 0.99d (TeX Live 2023/Debian)
 Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
 The top-level auxiliary file: thesis_tau.aux
-Reallocating 'name_of_file' (item size: 1) to 29 items.
 A level-1 auxiliary file: chapters/ch00_cover_page.aux
-Reallocating 'name_of_file' (item size: 1) to 29 items.
 A level-1 auxiliary file: chapters/ch00_front_page.aux
-Reallocating 'name_of_file' (item size: 1) to 30 items.
 A level-1 auxiliary file: chapters/ch00_frontmatter.aux
-Reallocating 'name_of_file' (item size: 1) to 31 items.
 A level-1 auxiliary file: chapters/ch01_introduction.aux
-Reallocating 'name_of_file' (item size: 1) to 36 items.
 A level-1 auxiliary file: chapters/ch02_literature_review.aux
-Reallocating 'name_of_file' (item size: 1) to 29 items.
 A level-1 auxiliary file: chapters/ch03_objectives.aux
-Reallocating 'name_of_file' (item size: 1) to 26 items.
 A level-1 auxiliary file: chapters/ch04_methods.aux
-Reallocating 'name_of_file' (item size: 1) to 30 items.
 A level-1 auxiliary file: chapters/ch05_experiments.aux
-Reallocating 'name_of_file' (item size: 1) to 29 items.
 A level-1 auxiliary file: chapters/ch06_discussion.aux
-Reallocating 'name_of_file' (item size: 1) to 31 items.
 A level-1 auxiliary file: chapters/ch07_equation_ref.aux
-Reallocating 'name_of_file' (item size: 1) to 29 items.
 A level-1 auxiliary file: chapters/ch08_references.aux
-Reallocating 'name_of_file' (item size: 1) to 9 items.
 The style file: IEEEtran.bst
-Reallocating 'name_of_file' (item size: 1) to 11 items.
-Reallocating 'name_of_file' (item size: 1) to 29 items.
 A level-1 auxiliary file: chapters/ch09_appendices.aux
-Reallocating 'name_of_file' (item size: 1) to 34 items.
 A level-1 auxiliary file: chapters/ch10_hebrew_abstract.aux
-Reallocating 'singl_function' (item size: 4) to 100 items.
-Reallocating 'singl_function' (item size: 4) to 100 items.
-Reallocating 'singl_function' (item size: 4) to 100 items.
-Reallocating 'wiz_functions' (item size: 4) to 6000 items.
-Reallocating 'singl_function' (item size: 4) to 100 items.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
 Database file #1: references.bib
 -- IEEEtran.bst version 1.14 (2015/08/26) by Michael Shell.
 -- http://www.michaelshell.org/tex/ieeetran/bibtex/

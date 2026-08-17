@@ -1,6 +1,6 @@
-\chapter{Extension: Higher-Order Modulations}\label{sec:extensions}
+\chapter{Extension: Multi-Level Modulation (16-QAM)}\label{sec:extensions}
 
-The core of this thesis (Chapter~\ref{sec:experiments}) answers hypotheses H1--H5 on the canonical setup. This chapter contains one scoped extension: whether the canonical BPSK conclusions generalize to complex constellations. Two studies are reported. The first evaluates QPSK and 16-QAM under the I/Q-splitting formulation, exposing a structural BER floor for multi-level constellations; the second removes that floor by reformulating the relay as a joint $N$-class classifier over the full 2D constellation ($N=16$ for 16-QAM). These analyses adopt the channel configurations under which they were conducted (AWGN and Rayleigh for the first study, AWGN for the second); MIMO, 16-PSK, CSI injection, and end-to-end learning remain future work. The separate question of how classical and learned relays behave when the \emph{channel itself} is unknown or mismatched, a more substantial investigation, forms the dedicated contribution of Chapter~\ref{sec:unknown-channels}.
+The core of this thesis (Chapter~\ref{sec:experiments}) answers hypotheses H1--H5 on the canonical setup, which spans both constellations the complex baseband natively carries: BPSK and QPSK, the latter reported on the canonical Rayleigh channel in Table~\ref{tbl:table14ray}. This chapter takes the one further step that the canonical formulation cannot absorb. QPSK still places a single bit on each axis, so I/Q-split relays handle it unchanged; 16-QAM places \emph{four} levels on each axis, and the per-axis formulation breaks down. Two studies are reported. The first evaluates 16-QAM under the I/Q-splitting formulation, exposing a structural BER floor for multi-level constellations; the second removes that floor by reformulating the relay as a joint $N$-class classifier over the full 2D constellation ($N=16$). These analyses adopt the channel configurations under which they were conducted (AWGN and Rayleigh for the first study, AWGN for the second); MIMO, 16-PSK, CSI injection, and end-to-end learning remain future work. The separate question of how classical and learned relays behave when the \emph{channel itself} is unknown or mismatched, a more substantial investigation, forms the dedicated contribution of Chapter~\ref{sec:unknown-channels}.
 
 \begin{figure}[t] 
 \noindent 
@@ -104,6 +104,9 @@ Transformer & 0.2593 & 0.0024 & 0.2576 & 0.0036 & 0.3897 & 0.2042 & 0.1827 \\
 Mamba-S6 & 0.2585 & 0.0021 & 0.2560 & 0.0028 & 0.3894 & 0.2016 & 0.1935 \\
 Mamba-2 SSD & 0.2593 & 0.0023 & 0.2566 & 0.0034 & 0.3903 & 0.2032 & 0.1890 \\
 \end{longtable}
+
+Table~\ref{tbl:table14} covers the AWGN channel. The corresponding comparison on the canonical Rayleigh channel is not repeated here: QPSK on Rayleigh is part of the canonical benchmark and is reported in Chapter~\ref{sec:experiments} (Table~\ref{tbl:table14ray}), leaving this chapter to the genuinely higher-order case, 16-QAM, where per-axis processing breaks down.
+
 
 Table \ref{tbl:table15} shows the BER at 16 dB for all relays across the three activation variants and both channel types.
 

@@ -23,7 +23,7 @@ Two distinct claims, checkable independently:
 
 1. **The thesis matches its data.** Every numerical table cell and every
    quantitative claim in the prose is compared against the file that produced
-   it. This is `make verify`: **198 values, 0 discrepancies**, exit code 1 on
+   it. This is `make verify`: **352 values, 0 discrepancies**, exit code 1 on
    any mismatch.
 2. **The data can be regenerated.** The experiments are re-runnable from
    scratch. The unknown-channel pipeline is fully seeded and reproduces its
@@ -119,6 +119,7 @@ relaynet/                     Simulation framework (channels, modulation, relays
 run_experiments.py            Unified runner for the main experiment sweep
 e6_*_ported.py                Unknown-channel study (Ch. 7), NumPy only
 e6_qpsk_unknown_channel.py    QPSK unknown-channel study, both hop-2 variants
+calibrate_simulator.py        E1 calibration: simulator vs closed-form BER (Eb/N0 axis)
 verify_thesis_tables.py       Checks the thesis against its data sources
 results/                      Committed experiment outputs (JSON + figures)
 e6_unknown_channel_results/   Committed unknown-channel outputs (.npy + figures)
@@ -130,6 +131,8 @@ thesis/                       LaTeX sources, figures, fonts, CHANGELOG
                                  ch07 unknown channels, ch08 discussion, ch09 summary)
   chapters/_*.tex               Drafting history; not included by main.tex
 scripts/build_bundles.py      Rebuilds the two Overleaf zips from thesis/
+scripts/plot_e6_studies.py    Regenerates the Ch. 7 composite/blind/partial figures from .npy
+scripts/plot_awgn_companion.py Regenerates the Ch. 5 AWGN companion figure from JSON
 scripts/strip_rev.py          Brace-matching remover for inline REV annotations
 scripts/check_env.py          Environment doctor
 ```
@@ -147,9 +150,10 @@ scripts/check_env.py          Environment doctor
   independent; only the timing tables move.
 - **Floating-point across platforms.** Different BLAS builds can perturb the
   last displayed digit. The verifier's rounding tolerance absorbs this.
-- **What is *not* reproduced.** Two experiments are deliberately not run and
-  are flagged as open in the thesis: the VAE with deterministic decoding, and
-  blind CMA at the shortest block length. See `thesis/CHANGELOG.md`.
+- **What is *not* reproduced.** One experiment is deliberately not run and is
+  flagged as open in the thesis: the VAE with deterministic decoding. Blind CMA
+  at short block lengths, previously also open, is now measured in the
+  partial-posterior sweep. See `thesis/CHANGELOG.md`.
 
 ---
 

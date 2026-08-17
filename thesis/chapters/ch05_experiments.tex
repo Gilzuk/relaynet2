@@ -15,7 +15,7 @@ Chapter~\ref{sec:unknown-channels} as deliberate departures from the
 canonical assumptions in order to study model mismatch and robustness.
 
 
-Following the single-model convention fixed in Chapter~\ref{sec:introduction}, this chapter evaluates all nine relay strategies on the \emph{canonical setup only}: a two-hop SISO link, i.i.d.\ Rayleigh fast fading on both hops, complex baseband, BPSK, uncoded BER. Three experiments constitute the core: the simulator validation (E1), the canonical relay comparison (E2), and the parameter-normalization and complexity study (E3), which together answer every hypothesis (H1--H5). A scoped modulation extension (Chapter~\ref{sec:extensions}) generalizes the canonical findings to QPSK and 16-QAM, including the joint 2D $N$-class classification formulation (E4--E5). The principal contribution (Chapter~\ref{sec:unknown-channels}) is the unknown-channel study (E6), which tests hypothesis H6. All other departures from the canonical setup are identified as future work in Chapter~\ref{sec:discussion-and-conclusions}.
+Following the single-model convention fixed in Chapter~\ref{sec:introduction}, this chapter evaluates all nine relay strategies on the \emph{canonical setup only}: a two-hop SISO link, i.i.d.\ Rayleigh fast fading on both hops, complex baseband, uncoded BER, on the two constellations that baseband natively supports, BPSK and QPSK. Three experiments constitute the core: the AWGN calibration baseline (E1), the canonical relay comparison (E2), and the parameter-normalization and complexity study (E3), which together answer every hypothesis (H1--H5). A scoped modulation extension (Chapter~\ref{sec:extensions}) carries the canonical findings to 16-QAM, where per-axis I/Q processing breaks down, including the joint 2D $N$-class classification formulation (E4--E5). The principal contribution (Chapter~\ref{sec:unknown-channels}) is the unknown-channel study (E6), which tests hypothesis H6. All other departures from the canonical setup are identified as future work in Chapter~\ref{sec:discussion-and-conclusions}.
 The experimental configurations are summarised in the table below.
 
 Each experiment subsection reports the key results inline (BER tables and figures); supporting material and model hyperparameters are collected in the appendices (Appendices~\ref{sec:appendix-a-mathematical-notation}--\ref{sec:appendix-c-software-architecture}).
@@ -42,12 +42,12 @@ Each experiment subsection reports the key results inline (BER tables and figure
 \endhead
 
 E1 & SISO & BPSK &
-Rayleigh (AWGN as analytical calibration) &
-Channel model validation \\
+AWGN (simulation baseline); Rayleigh &
+Calibration against closed-form BER \\
 \hline
 
-E2 & SISO & BPSK &
-Rayleigh &
+E2 & SISO & BPSK, QPSK &
+Rayleigh (canonical); AWGN companion &
 Canonical relay comparison (H1, H2) \\
 \hline
 
@@ -56,7 +56,7 @@ Rayleigh &
 Parameter normalization \& complexity (H3, H4); training-time benchmark (H5) \\
 \hline
 
-E4 & SISO & QPSK, 16-QAM &
+E4 & SISO & 16-QAM &
 AWGN, Rayleigh &
 Extension: higher-order modulation via I/Q splitting (Chapter~\ref{sec:extensions}) \\
 \hline
@@ -73,9 +73,9 @@ Extension: unknown-channel failure of AF/DF and learned mitigation (H6) \\
 \hline
 \end{longtable}
 
-\section{Channel Model Validation}\label{sec:channel-model-validation-simulative}
+\section{Simulation Baseline: AWGN Calibration}\label{sec:channel-model-validation-simulative}
 
-Prior to evaluating relay strategies, we first verify that the simulation framework produces bit error rate (BER) results consistent with theoretical predictions. The canonical channel of this thesis is Rayleigh fast fading, for which closed-form single-hop and two-hop BER expressions exist; the AWGN channel is additionally validated because it is the analytical limit underlying those expressions (and the noise convention), so agreement on both channels is the cleanest guarantee of baseline accuracy. The channel validation plots (Figures~\ref{fig:fig1}--\ref{fig:fig4}) confirm the following:
+Every number in this thesis is a Monte Carlo estimate, so the first task is to establish that the simulator reproduces results that are known in closed form. AWGN with BPSK is the natural baseline for that: it is the one configuration whose bit-error probability is exact and elementary, $Q(\sqrt{2E_b/N_0})$ single hop and $2P(1-P)$ over two hops, with no fading average to approximate. It therefore serves as the \emph{simulation baseline} of this chapter, the reference the framework is calibrated against before any relay is compared on it. The canonical channel on which the thesis's conclusions are actually drawn is Rayleigh fast fading, whose closed form is also available and is validated alongside. The channel validation plots (Figures~\ref{fig:fig1}--\ref{fig:fig4}) confirm the following:
 
 \begin{itemize}
   \item \textbf{AWGN channel:} Theoretical and simulated BER curves match exactly. The classical $Q(\sqrt{\gamma})$ expression (Remark~\ref{noise-convension}), as well as its two-hop extensions (including the effective SNR for amplify-and-forward (AF) relaying and the error-composition model for decode-and-forward (DF)) are validated within tight 95\% confidence intervals across all SNR points (Figure~\ref{fig:fig1}).
@@ -92,7 +92,7 @@ Prior to evaluating relay strategies, we first verify that the simulation framew
 
 \subsection{Experiments}\label{sec:experiments_channel_models_validation}
 
-\textbf{Goal:} Validate the simulation framework against closed-form theoretical BER expressions to ensure baseline accuracy before evaluating AI relays.
+\textbf{Goal:} Calibrate the simulation framework against closed-form BER, using AWGN/BPSK as the baseline, before any relay comparison is made on it.
 
 \textbf{Trials:} - \textbf{Topology:} SISO (both hops) - \textbf{Modulation scheme:} BPSK - \textbf{Channel:} i.i.d.\ Rayleigh fast fading (canonical), AWGN (analytical calibration) - \textbf{Equalizers:} None - \textbf{Demod:} Hard decision only
 
@@ -101,7 +101,7 @@ Prior to evaluating relay strategies, we first verify that the simulation framew
 \subsection{Results tables}
 
 \begin{longtable}{p{1cm}cccccc}
-\caption{BER comparison between theoretical analysis and simulation results at selected SNR values}
+\caption{Simulator calibration: closed-form versus simulated single-hop BPSK BER, $10\times2{,}000{,}000$ bits per point. The SNR axis is $E_b/N_0$ throughout, with noise variance $N_0/2$ per real dimension, so AWGN obeys $Q(\sqrt{2E_b/N_0})$ and Rayleigh $\tfrac12(1-\sqrt{\bar\gamma/(1+\bar\gamma)})$. Agreement is within $0.6\%$ at every point the budget resolves. ``n/r'' marks a theoretical value below the resolution of any feasible Monte Carlo run ($2.3\times10^{-19}$), reported from the closed form rather than as a measurement.}
 \label{tab:ber_validation_long} \\
 
 \toprule
@@ -135,14 +135,14 @@ Prior to evaluating relay strategies, we first verify that the simulation framew
 \endlastfoot
 
 \\ AWGN
-& 5.64E-2 & 5.62E-2
-& 7.83E-4 & 7.90E-4
-& 7.73E-8 & $\approx$0 \\
+& 1.25E-2 & 1.25E-2
+& 3.87E-6 & 3.85E-6
+& 2.27E-19 & n/r \\
 \hline
 \\  Rayleigh
 & 7.71E-2 & 7.72E-2
 & 2.33E-2 & 2.32E-2
-& 6.17E-3 & 6.10E-3 \\
+& 6.16E-3 & 6.15E-3 \\
 
 \end{longtable}
 
@@ -160,7 +160,7 @@ Channel & SNR for BER = \(10^{-3}\) & Diversity Order & High-SNR Slope \\
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-AWGN & \textasciitilde9.8 dB & -- (no fading) & Exponential \\
+AWGN & \textasciitilde6.8 dB & -- (no fading) & Exponential \\
 Rayleigh & \textasciitilde24 dB & 1 & \(1/(4\bar{\gamma})\) \\
 \end{longtable}
 \subsection{Results Figures}\label{sec:results-figures}
@@ -186,11 +186,11 @@ Rayleigh & \textasciitilde24 dB & 1 & \(1/(4\bar{\gamma})\) \\
 \REV{Compilation fix: the image path \texttt{results/Rayleigh plot.png} contained a space, which breaks \texttt{\string\includegraphics} unless \texttt{grffile} is loaded. Renamed the reference to \texttt{results/Rayleigh\_plot.png}; rename the file on disk to match (or load \texttt{grffile} and keep the space).}
 
 
-\section{Canonical Relay Comparison (SISO, Rayleigh, BPSK)}\label{sec:siso-bpsk-performance-baseline-relay-comparison}
+\section{Canonical Relay Comparison (SISO, Rayleigh, BPSK and QPSK)}\label{sec:siso-bpsk-performance-baseline-relay-comparison}
 
-\textbf{Goal:} Evaluate all nine classical and AI-based relay strategies on the canonical setup of this thesis.
+\textbf{Goal:} Evaluate all nine classical and AI-based relay strategies on the canonical setup of this thesis, on both constellations the canonical complex baseband supports.
 
-\textbf{Trials:} - \textbf{Topology:} SISO (both hops) - \textbf{Modulation scheme:} BPSK - \textbf{Channel:} i.i.d.\ Rayleigh fast fading (canonical) - \textbf{Equalizers:} None - \textbf{NN architecture:} Supervised (MLP, Hybrid), Generative (VAE, cGAN), Sequence (Transformer, Mamba-S6, Mamba-2 SSD) - \textbf{NN activation:} ReLU hidden, tanh output
+\textbf{Trials:} - \textbf{Topology:} SISO (both hops) - \textbf{Modulation scheme:} BPSK - \textbf{Channel:} i.i.d.\ Rayleigh fast fading (canonical), with an AWGN companion comparison (Table~\ref{tbl:table2awgn}) - \textbf{Equalizers:} None - \textbf{NN architecture:} Supervised (MLP, Hybrid), Generative (VAE, cGAN), Sequence (Transformer, Mamba-S6, Mamba-2 SSD) - \textbf{NN activation:} ReLU hidden, tanh output
 
 \textbf{Conclusion:} On the canonical Rayleigh channel, AI relays match but do not surpass symbol-wise DF: DF achieves the lowest or tied-lowest BER at essentially every SNR point, including the low-SNR regime, while the best neural relays (MLP, Hybrid, cGAN) track it within statistical uncertainty and clearly outperform AF. This confirms H1 (AI relays beat AF at low SNR) and H2 (DF dominance at $\geq 6$ dB with zero parameters) on the canonical channel.
 
@@ -270,6 +270,61 @@ Mamba-2 SSD
 Two features of Table~\ref{tbl:table2} deserve comment. First, the DF value at 20~dB ($0.0047$) matches the closed form $2P(1-P)$ with $P = \frac{1}{2}(1-\sqrt{100/101}) \approx 0.0025$ to two significant figures, providing an end-to-end validation of the simulator against the analysis of Section~\ref{sec:rayleigh-two-hop-df-ber}. Second, the VAE column is not merely an underperformer: it is pinned at $0.25$--$0.40$ at \emph{every} SNR, meaning it never learns the task at any operating point. This should not be read as a verdict on generative relaying as such. The VAE relay samples its latent $\mathbf{z}\sim q_\phi(\mathbf{z}\mid\mathbf{x})$ stochastically at inference; substituting the posterior mean $\boldsymbol{\mu}$ at test time (standard practice for deterministic reconstruction) was not evaluated in this work and could plausibly recover much of the gap. The VAE result is therefore reported as an observation about \emph{this} configuration, and the paradigm-level conclusion is correspondingly qualified in Section~\ref{sec:generative-vs.-discriminative-paradigms-for-relay-processing}.
 \REV{Fix applied: the VAE outcome was previously read as evidence about generative relaying as such. The relay decodes stochastically at inference and the standard deterministic variant was never evaluated, so the result is now reported as specific to this configuration, with the paradigm-level claim qualified in Section~\ref{sec:generative-vs.-discriminative-paradigms-for-relay-processing}.}
 
+\begin{longtable}[]{@{}llllll@{}}
+\caption{BER on the AWGN calibration channel, lean relay set (SISO, BPSK), companion to Table~\ref{tbl:table2}. Tabulated to 8~dB: on the $E_b/N_0$ axis the AWGN BER falls so steeply that by 12~dB every relay is at the $10^{-5}$ resolution floor of the $100{,}000$-bit budget, and at 10~dB the estimates rest on only a couple of errors. Symbol-wise DF tracks the closed form $2P(1-P)$, $P=Q(\sqrt{2E_b/N_0})$, to within Monte Carlo noise at every point ($0.00038$ against $0.00038$ at 8~dB).}\label{tbl:table2awgn}\tabularnewline
+\toprule\noalign{}
+SNR (dB) & AF & DF & MLP (169p) & Transformer & Mamba-2 SSD \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+SNR (dB) & AF & DF & MLP (169p) & Transformer & Mamba-2 SSD \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 0.1845 & \textbf{0.1430} & 0.1444 & 0.1441 & 0.1443 \\
+2 & 0.1207 & \textbf{0.0706} & 0.0723 & 0.0730 & 0.0721 \\
+4 & 0.0649 & \textbf{0.0244} & 0.0263 & 0.0272 & 0.0256 \\
+6 & 0.0258 & \textbf{0.0047} & 0.0056 & 0.0059 & 0.0051 \\
+8 & 0.0065 & \textbf{0.00038} & 0.00058 & 0.00059 & 0.00048 \\
+\end{longtable}
+
+Table~\ref{tbl:table2awgn} reports the AWGN companion on a \emph{lean} relay set: the two classical baselines together with one representative from each learned family, the minimal MLP, the Transformer and Mamba-2 SSD. The Hybrid, VAE, cGAN and Mamba-S6 relays are omitted because regenerating them on the corrected axis is dominated by the cGAN, which Table~\ref{tbl:table13} records at $7{,}293$~s on a GPU. Omitting a relay drops its column rather than carrying forward a value measured on the earlier, $3$~dB-offset axis, so the table is internally consistent at the cost of being narrower.
+
+The result is a direct check on the calibration rather than a new finding: symbol-wise DF reproduces the closed form $2P(1-P)$ with $P=Q(\sqrt{2E_b/N_0})$ to within Monte Carlo noise at every tabulated point, agreeing to $0.00038$ against $0.00038$ at 8~dB. AF is uniformly worst, and the three learned relays cluster just above DF, reproducing on AWGN the ordering the canonical channel shows. The scope of this companion is deliberately limited: no hypothesis is tested on it and no relay is ranked or selected by it, and every conclusion in this chapter continues to rest on the canonical Rayleigh setup.
+
+
+The canonical setup fixes the channel, not the constellation. Because the complex baseband carries two independent axes, QPSK is the natural companion to BPSK on that same channel: it places one bit on each axis and is processed by the identical I/Q-split relays, so it tests whether the canonical findings depend on the constellation. Table~\ref{tbl:table14ray} therefore reports both modulations on the canonical Rayleigh channel side by side. The higher-order case that genuinely breaks per-axis processing, 16-QAM, is a separate study and is deferred to Chapter~\ref{sec:extensions}.
+
+\begin{longtable}[]{@{}lcccccccc@{}}
+\caption{QPSK versus BPSK on the \emph{canonical Rayleigh} channel, all nine relay strategies at selected SNR points (I/Q-split processing, per-symbol SNR).}\label{tbl:table14ray}\tabularnewline
+\toprule\noalign{}
+& \multicolumn{2}{c}{0 dB} & \multicolumn{2}{c}{8 dB} & \multicolumn{2}{c}{16 dB} & \multicolumn{2}{c}{20 dB} \\
+Relay & BPSK & QPSK & BPSK & QPSK & BPSK & QPSK & BPSK & QPSK \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+& \multicolumn{2}{c}{0 dB} & \multicolumn{2}{c}{8 dB} & \multicolumn{2}{c}{16 dB} & \multicolumn{2}{c}{20 dB} \\
+Relay & BPSK & QPSK & BPSK & QPSK & BPSK & QPSK & BPSK & QPSK \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+AF & 0.3305 & 0.4037 & 0.0917 & 0.1873 & 0.0147 & 0.0350 & 0.0053 & 0.0130 \\
+\textbf{DF} & \textbf{0.2452} & \textbf{0.3302} & \textbf{0.0683} & \textbf{0.1242} & \textbf{0.0140} & \textbf{0.0243} & \textbf{0.0047} & \textbf{0.0118} \\
+MLP (169p) & 0.2485 & 0.3270 & 0.0698 & 0.1258 & 0.0138 & 0.0272 & 0.0050 & 0.0123 \\
+Hybrid & 0.2455 & 0.3240 & 0.0687 & 0.1273 & 0.0140 & 0.0243 & 0.0047 & 0.0118 \\
+VAE & 0.3327 & 0.3928 & 0.1625 & 0.2163 & 0.0673 & 0.0760 & 0.0467 & 0.0425 \\
+cGAN & 0.2498 & 0.3300 & 0.0688 & 0.1298 & 0.0138 & 0.0248 & 0.0052 & 0.0125 \\
+Transformer & 0.3302 & 0.4003 & 0.0798 & 0.1525 & 0.0142 & 0.0295 & 0.0052 & 0.0128 \\
+Mamba-S6 & 0.3195 & 0.3953 & 0.0758 & 0.1425 & 0.0137 & 0.0270 & 0.0048 & 0.0125 \\
+Mamba-2 SSD & 0.3182 & 0.3923 & 0.0755 & 0.1428 & 0.0143 & 0.0268 & 0.0047 & 0.0122 \\
+\end{longtable}
+
+\textbf{Conclusion (the ranking transfers to QPSK on Rayleigh; the absolute BER does not).} On the canonical Rayleigh channel the \emph{ordering} of relays under QPSK reproduces the BPSK ordering in its load-bearing respects: symbol-wise DF is again the best or tied-best relay at every tabulated point, AF and the VAE are again the two worst, and the learned relays again cluster between them, the middle of that cluster reshuffling only within its confidence intervals. The conclusions of the canonical benchmark (H1, H2) therefore carry over to QPSK on the canonical channel, which is what the modulation extension claims.
+
+What does \emph{not} carry over is the absolute error rate. At a fixed per-symbol SNR, QPSK BER is close to twice the BPSK value on this channel: $0.1242$ against $0.0683$ for DF at 8~dB, $0.0243$ against $0.0140$ at 16~dB, and the same factor across the other relays. This is expected rather than anomalous. QPSK carries two bits per symbol, so at equal symbol energy each bit receives half the energy, and the Rayleigh BER falls only as $1/\bar{\gamma}$ (Section~\ref{sec:channel-model-validation-simulative}), so halving the per-bit SNR doubles the error rate almost exactly. On AWGN (Table~\ref{tbl:table14}) the effect is absent because that comparison is made at matched per-bit rather than per-symbol SNR. The two tables are therefore consistent, but they are not plotted on a common abscissa, and the QPSK-versus-BPSK gap in Table~\ref{tbl:table14ray} should be read as a consequence of the SNR convention rather than as a penalty of the I/Q-split relay architecture.
+
 
 \subsection{Results Figures}\label{sec:results-figures-1}
 
@@ -278,6 +333,12 @@ Two features of Table~\ref{tbl:table2} deserve comment. First, the DF value at 2
 \centering
 \pandocbounded{\includegraphics[width=\linewidth,height=0.8\textheight,keepaspectratio]{results/fading_comparison.png}}
 \caption{Rayleigh fading: BER vs.~SNR for all nine relay strategies with 95\% CI.}\label{fig:fig10}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.8\textheight,keepaspectratio]{results/awgn_comparison_ci.png}}
+\caption{AWGN channel: BER vs.~$E_b/N_0$ for the lean relay set with 95\% CI, companion to Figure~\ref{fig:fig10} and Table~\ref{tbl:table2awgn}. Plotted only to 8~dB. The dash-dotted line marks the $10^{-5}$ Monte Carlo resolution floor set by the $100{,}000$-bit budget per SNR point; beyond 8~dB the estimates rest on a handful of errors and by 12~dB every relay is at the floor, so points there would trace the floor rather than the relays. The dotted grey curve is the closed-form two-hop DF BER, which the measured curves track.}\label{fig:fig10awgn}
 \end{figure}
 
 

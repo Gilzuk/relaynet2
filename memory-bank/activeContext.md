@@ -1,6 +1,21 @@
 # Active Context (update this file first, every session)
 
-_Last updated: 2026-07-21_
+_Last updated: 2026-08-17_
+
+## Latest: canonical restructure — Rayleigh carries BPSK **and** QPSK; AWGN is the baseline
+Swapped what Ch5 and Ch6 each own. Previously Ch5's headline comparison ran on AWGN/BPSK (the one channel Appendix E comment 4 says the thesis draws no conclusions from) while QPSK-on-the-canonical-channel sat in the extension chapter — backwards. Now:
+- **§5.2 "Simulation Baseline: AWGN Calibration"** — AWGN's role stated up front: it is where closed forms exist, so it is what the simulator is validated against. Its relay comparison (Table 5.5, **lean set AF/DF/MLP/Transformer/Mamba-2**, 0–8 dB) is a baseline; no relay is ranked on it. Cut at 8 dB because beyond that every relay reads zero at any feasible bit budget (20 dB AWGN needs ~6.6e24 bits).
+- **§5.3 "Canonical Relay Comparison (SISO, Rayleigh, BPSK and QPSK)"** — the QPSK-vs-BPSK block moved in from Ch6, now **Table 5.6**.
+- **Ch6 "Extension: Multi-Level Modulation (16-QAM)"** — keeps only the constellation needing a different relay formulation; its QPSK block replaced by a pointer to §5.3.
+
+**Seven places asserted the canonical setup as BPSK-only** and all now read "complex baseband, BPSK and QPSK": ch01 (scope para, scope-table caption, Channel row, Modulation row, E1/E2/E4 summary rows), ch03, ch04, ch08, ch09. Appendix E's AK#4 response argues why this is still *one* setting: topology/channel/metric each stay single-valued and QPSK is the two-axis use of the same baseband through identical relays.
+
+**Verified:** cold `latexmk -xelatex` exit 0, **149 pp, 0 undefined refs**; `verify_thesis_tables.py` **352 cells / 0 inconsistencies**; `pytest tests/` **119 passed**.
+
+**Open follow-ups (NOT done):**
+1. **Ch6's AWGN tables `tbl:table14`/`table15`/`table24` are still on the pre-correction AWGN convention** — they predate the 3 dB `sigma^2 = N0/2` fix and need a re-run (~1 h each even on the lean set). The verifier does not cover them (see its own "informational" footer).
+2. **Ch7 flat-channel control passes by 0.0097 against a 0.010 tolerance** — margin too thin to trust; needs a larger trial budget or a defended tighter tolerance.
+3. **Overleaf push still blocked** — the agent proxy 403s `git.overleaf.com`, Overleaf bans force-push, and project `69cd8f24043dbf2a2982370` carries 163 objects of unrelated history. Unresolved; no workaround found from inside the container.
 
 ## Latest: MIMO equalization section REMOVED (completing AK comments 2/4/6)
 Audited all 17 supervisor (AK) comments in `thesis/ak_comments.json` against Appendix E — all 17 documented, and the verifiable claims hold EXCEPT two gaps found:
@@ -188,3 +203,54 @@ Git push to `origin/claude/porting-md-file-l6xzsr` has been failing intermittent
 
 ## Repo hygiene
 `memory-bank/`, root `context.md`, and `CLAUDE.md` were set up earlier this session per user request — see `context.md` for the quick-start pointer. `.clinerules/` remains authoritative for anything touching the thesis LaTeX/citations/appendices.
+
+## Latest (2026-08-15): branch reconciliation, real LaTeX toolchain installed, QPSK results written into Ch7
+Note: the sections above describe an earlier arc of this branch (`ch09_appendices.tex`, Appendix A.14 supplementary section). That file no longer exists — the thesis was restructured (Overleaf import + fixes: `ch01`–`ch09` split into separate files, Appendix E/F, MIMO removed) on `main` in a separate, later work stream, then merged into `claude/porting-md-file-l6xzsr` this session (merge commit `1eac20b`; the branch's own 2 unique commits — a UTF-8 `×` fix and an old supplementary appendix — were confirmed superseded, not lost, by the restructure and Chapter 7 respectively). `claude/porting-md-file-l6xzsr` is now the current, authoritative branch; `main` is not being developed further per user instruction ("don't merge main, continue with port-md").
+
+- **Installed a full XeLaTeX toolchain** in this container (previously absent): `texlive-xetex`, `texlive-latex-extra`, `texlive-lang-arabic` (provides `bidi.sty`, needed by `polyglossia` for the Hebrew abstract), `texlive-publishers` (provides `IEEEtran.bst`), `latexmk`. `make thesis` now works end-to-end here. Confirmed clean compile: `latexmk` exit 0, 0 undefined references/citations, 137-page PDF. This is a stronger check than prior sessions could do (no LaTeX was ever available before).
+- **QPSK unknown-channel results written into the thesis** (previously computed and committed but flagged in `CHANGELOG.md` as "not yet written in"). Added `sec:qpsk-unknown-channel` (Table 7.3, Figure 7.3) to `chapters/ch07_unknown_and_mismatch_channels.tex`, right after the main BPSK unknown-ISI result. Key finding, reported plainly rather than smoothed over: the memoryless-relay failure mode (AF/DF plateau) generalizes to QPSK, but the BPSK ordering does not — MLP-QPSK (193p) ends up *below* genie-CSI Viterbi MLSE from ~2 dB upward (0.0508 vs 0.0618 at 20 dB, AWGN hop2), the reverse of BPSK where Viterbi wins by 1-1.5 dB. Traced this to a real, verified property of Viterbi MLSE (sequence-optimal, not bit-optimal — a Gray-coded QPSK trellis branch carries 2 bits, so a wrong branch can cost 1 or 2 bits, breaking the BPSK-case coincidence of sequence-ML and bit-ML) and explicitly flagged the explanation as an unverified hypothesis, not proven (no single/double-bit error decomposition was run). Also confirmed via code reading (`relaynet/channels/e6_channels.py`, `awgn.py`) that the QPSK study's SNR convention (`sigma = 10**(-snr_db/20)`) is identical to the documented `γ = 10^(SNR_dB/10)` project convention, but explicitly did **not** claim the QPSK AF/DF numbers should numerically match the BPSK table (they don't — likely from joint I+Q power normalization in the relay/AGC code path, not investigated further; flagged as an open question rather than asserted either way).
+- Extended `verify_thesis_tables.py` with `check_tableE6qpsk` (32 cells, `tbl:tableE6qpsk`, source `e6_unknown_channel_results/e6_qpsk_unknown_channel_results.npy`). Full suite now 230 cells, 0 inconsistencies (was 198). `REPRODUCE.md` cell count updated to match.
+- Copied `e6_unknown_channel_results/unkchan_qpsk.png` → `thesis/results/unkchan_qpsk.png` (figures must live under `thesis/results/` per `\graphicspath`).
+- Committed `thesis/main.pdf` rebuild separately (commit `7aad93c`) before the QPSK content change, confirming the Overleaf-imported bidi/package-ordering fix holds under a real toolchain, not just prior manual reasoning.
+
+## Latest (2026-08-15, cont'd): Monte Carlo scale audit across Ch7
+User asked to "make sure all runs ran with mc = 10 and with ci 95". Audited every `e6_*_ported.py`/`e6_qpsk_unknown_channel.py` script plus `run_experiments.py` (Ch5/6) for `N_TRIALS` and CI formula:
+- **Confirmed MC=10, 95% CI (1.96·σ/√n)**: `e6_sim_ported.py`, `e6_viterbi_ported.py`, `e6_flat_ported.py` (all rescaled 2026-07-14, commit `4928e65`), `e6_qpsk_unknown_channel.py`, and `run_experiments.py`'s default (`--num-trials 10`; `--quick` drops to 3 but that's smoke-test only, not used for thesis-integration runs). `relaynet/simulation/statistics.py`'s `compute_confidence_interval` also defaults to `confidence=0.95`.
+- **Found a stale-text bug**: `ch07_unknown_and_mismatch_channels.tex`'s "Trials" bullet and two table captions (tbl:tableE6, tbl:tableE6flat) still said "5 trials × 50,000 bits" — a leftover from *before* the July rescale that the 2026-08-15 Overleaf import never picked up (the Overleaf draft predates the rescale by a month but was imported after it). The numeric table cells were already correct/verified against the rescaled data; only the stated methodology text was wrong. Fixed in 3 places, re-verified (still 230/0), recompiled clean.
+- **Found a genuine (not textual) gap**: composite (§7.1.3), blind (§7.1.4), and partial-posterior (§7.1.5) sub-studies really do run at 5, 5, 6 trials × 40,000 bits — `e6_composite_ported.py`/`e6_blind_ported.py`/`e6_partial_ported.py` all carry a `# standalone's own dev budget` scale, never rescaled like sim/viterbi/flat were. Asked the user how to handle it (rerun+rewrite prose+new plotting code vs. rerun-data-only vs. disclose-only); **user chose disclose-only**. Added explicit trial-count/bit-budget statements to all 3 subsections' setup paragraphs and all 4 associated figure captions (composite, blind, 2x partial-posterior sweep). No data changed, no numbers in the prose changed — only truthful disclosure of the actual (smaller, already-CI95%-correct) Monte Carlo budget used for these three.
+- `thesis/main.pdf` rebuilt and committed after each round of ch07 edits (QPSK section, then this audit); still 0 undefined refs, 137 pages throughout.
+
+## Latest (2026-08-15, cont'd): closed 3 outstanding AK follow-up comments
+User: "Now you have all the data available apply the requested changes from AK." Audited every `\AK{` in the live (uncommented) document for ones with no subsequent `\GZ`/reply — found 3, all second-round pushbacks nested inside an earlier `\REV`:
+1. Abstract (`frontmatter.tex`): "AF outperforms DF at low SNR" — checked against `tbl:table2` (canonical Rayleigh) and its AWGN counterpart; DF beats AF at every SNR point 0-20dB on both channels, no crossover in the tested range. Resolved with the actual data rather than argument.
+2. Abstract: "You cannot refer to a model you've never mentioned" (re: MLSE) — rewrote the abstract sentence to name the ISI impairment inline instead of relying on a forward reference to Ch7.
+3. `ch01_introduction.tex` window-realizability remark: "either drop this or define the competing model" — kept scoped as architecture-only, pointed to Ch7's (now QPSK-inclusive) competing-model definition rather than duplicating it.
+All 3 closed inline with `\GZ{}` replies matching the document's existing annotation style (verified via page-render, they show as footnotes). `ak_response_appendix.tex` (Appendix E) itself was already fully paired (17 AK / 17 GZ) and untouched. Recompiled clean: 0 undefined refs, 138 pages (was 137).
+
+## Immediate next step
+None pending — awaiting user direction.
+
+## Latest (2026-08-15, cont'd): AWGN companion comparison added to Section 5.3
+User asked about the BPSK+AWGN trials and to list all experiments. Found: AWGN appears twice in the pipeline — (1) channel-model validation (E1, 20x50k, theory-vs-sim calibration, already in the thesis) and (2) a full 9-relay comparison (`results/bpsk_comparison/awgn.json`, MC=10x10k, generated but never used in any table — Ch1 explicitly said "AWGN appears only as the analytical calibration limit"). User then said "5.3 add instead of bpsk Rayleigh" — added AWGN as a companion table+figure in Section 5.3, alongside (not replacing) the Rayleigh one:
+- New `tbl:table2awgn` (Table 5.5) + `fig:fig10awgn` (Figure 5.5), same 9-relay/6-SNR format as `tbl:table2`/`fig:fig10`, sourced from the already-existing `awgn.json` and the already-existing (already-committed) `results/awgn_comparison_ci.png` figure — no new simulation needed.
+- Updated Ch1's now-inaccurate "AWGN retained as analytical calibration [only]" claims (scope table + System Model paragraph) since it's no longer calibration-only.
+- Added `check_table2awgn` to `verify_thesis_tables.py` (54 cells). Suite now 284 cells, 0 inconsistencies (was 230). `REPRODUCE.md` cell count updated.
+- Recompiled clean: 0 undefined refs, 139 pages (was 138). Visually confirmed both table and figure render correctly and cross-reference each other.
+
+## Immediate next step
+None pending — awaiting user direction.
+
+## Latest (2026-08-15, cont'd): Ch7 sub-studies rerun at full scale; CMA divergence bug found and fixed
+User gave broad latitude ("I don't mind rerun new experiments or restructuring... as long as the professor is pleased"), so the previously disclose-only gap (composite/blind/partial at 5-6x40k) was actually closed. Two REAL defects surfaced — both fixed rather than written up as findings:
+
+1. **CMA divergence (genuine bug).** `cma_dfe` used a fixed unnormalized step; the CMA error is cubic in |o|, so it's a positive-feedback loop. Proved directly: max|w| = 1.50 over 40k samples, `inf` over 100k. The first 10x100k rerun gave CMA 0.128 @20dB vs the old 0.0024 — which, taken at face value, would have been published as "CMA degrades". It was an overflow artifact. Fixed with NLMS normalization (`mu/(eps+<seg,seg>)`) in BOTH `e6_blind_ported.py` and `e6_partial_ported.py`; verified stable at 10k/20k/40k/100k. This is a *stronger* classical baseline, so the comparison got harder for the MLP, not easier. Disclosed in the thesis text as a correction.
+2. **Trials = channel draws.** `RandomISICompositeChannel` redraws ISI/PA/phase per `__call__` = per trial. So for blind/partial, bits-per-trial only sharpens ONE channel's estimate; only trial count averages the family. Nominal "10x100k" would have been scientifically worse than what it replaced. Chose **50x20k** (1M bits, 50 draws = 10x the old ensemble) for blind+partial; **10x100k** for composite (fixed taps, so bits do help). All studies now M>=10 → the Wilcoxon M=5 caveat in Ch4 is gone.
+
+Result changes (all updated + verified): pilot crossover moved from ~10 to ~20 pilots (Viterbi 0.0545 vs MLP 0.0487 at 10 pilots — it now LOSES there); 5-pilot collapse persists (0.1235±0.0304); composite MLP@8dB 0.130→0.126; the "MLP-large slightly worse at high SNR / mild overfitting" claim WITHDRAWN (now identical 0.0050, diffs both directions within CI — H3 still holds via a cleaner argument); blind CIs requoted at 8dB.
+**Open point CLOSED with data**: "whether CMA fails to converge at L=40 was not measured" → now measured: 0.1723 @L=40, 0.1653 @L=1000, vs 0.0645 with a 20k block. CMA does not converge within ≤1000-symbol blocks. Panel (b) is now a much sharper argument: Viterbi and MLP identical (~0.049) at every L, but Viterbi pays up to 25% overhead and the other pilot-free option (CMA) fails outright.
+Added `scripts/plot_e6_studies.py` — regenerates all 4 Ch7 figures from the npys, closing the "no regeneration path" gap flagged earlier (previously only cached .npy survived).
+Verifier: 284 → **304 cells, 0 inconsistencies**; prose coverage nearly tripled (blind 5→9, partial 4→13, composite 3→10) at 5x tighter tolerance (0.002-0.004 vs 0.010-0.030). Gotcha hit and fixed: rewriting the prose broke the old regex-based checkers, and a bad splice deleted `check_table26`/`check_ber_validation` — restored from git. **Always re-run the verifier after rewriting prose; the checks are regex-pinned to exact wording and silently drop to 0 cells otherwise.**
+Recompiled clean: 0 undefined refs, 142 pages (was 139).
+
+## Immediate next step
+Overleaf push still pending — `git.overleaf.com` is blocked by this environment's egress policy, and the user's local GitHub Desktop attempt hit `git subtree` ancestry errors (the Overleaf project has 163 objects of unrelated history) plus an Overleaf server-side force-push ban. Unresolved.

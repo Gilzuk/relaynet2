@@ -9,13 +9,16 @@ flagged.
 
 Data sources, by table:
   tbl:table2            canonical Rayleigh BER, 9 relays   <- results/bpsk_comparison/rayleigh.json
+  tbl:table2awgn        AWGN companion BER, lean 5-relay set <- results/bpsk_comparison/awgn.json
+  tbl:table14ray        QPSK vs BPSK on Rayleigh, 9 relays  <- results/modulation/{bpsk,qpsk}_rayleigh.json
   tbl:table8            normalized-3K Rayleigh BER         <- results/normalized_3k/3k_rayleigh.json
   tbl:table14           modulation BER (AWGN)              <- results/bpsk_comparison/awgn.json (+ modulation)
   tbl:table24           4-class vs 16-class @20 dB         <- results/all_relays_16class/all_relays_16class.json
   tbl:tableE6           unknown-channel BER                <- e6_unknown_channel_results/*.npy
   tbl:tableE6flat       flat-channel control BER           <- e6_unknown_channel_results/e6_flat_ported_results.npy
+  tbl:tableE6qpsk       QPSK unknown-channel BER           <- e6_unknown_channel_results/e6_qpsk_unknown_channel_results.npy
   tbl:table26           theoretical SNR @ BER=1e-3         <- closed-form (Q-function inversion)
-  tab:ber_validation    theory-vs-sim BER                  <- closed-form theory column
+  tab:ber_validation    theory-vs-sim BER (both columns)   <- closed form + results/calibration.json
   prose:E6blind         blind-regime prose claims          <- e6_unknown_channel_results/e6_blind_ported_results.npy
   prose:E6partial       pilot-sweep prose claims           <- e6_unknown_channel_results/e6_partial_ported_results.npy
   prose:E6composite     composite-cascade prose claims     <- e6_unknown_channel_results/e6_composite_ported_results.npy
@@ -130,13 +133,16 @@ def data_rows(body):
 # display-rounding tolerance. JSON-backed tables (deterministic transcriptions)
 # and analytical tables keep the tight rounding tolerance.
 STOCHASTIC_TABLES = {"tbl:tableE6": 0.010, "tbl:tableE6flat": 0.010,
+                     "tbl:tableE6qpsk": 0.010,
                      "tbl:table24": 0.002,
-                     # prose claims from the E6 blind/partial/composite studies
-                     # (5-6 trials x 40k bits; the partial-posterior 5-pilot
-                     # point is dominated by occasional catastrophic LS fits,
-                     # hence the wider slack)
-                     "prose:E6blind": 0.010, "prose:E6composite": 0.010,
-                     "prose:E6partial": 0.030}
+                     # Prose claims from the E6 blind/partial/composite studies.
+                     # These are now transcribed from the committed .npy at
+                     # 10x100k (composite) and 50x20k (blind, partial), so the
+                     # slack only needs to absorb display rounding plus a little
+                     # Monte-Carlo noise -- not the wide cross-run spread the
+                     # earlier 5-6 trial budgets required.
+                     "prose:E6blind": 0.002, "prose:E6composite": 0.002,
+                     "prose:E6partial": 0.004}
 
 
 class Report:
@@ -178,7 +184,12 @@ def qfunc(x):
     return 0.5 * math.erfc(x / math.sqrt(2))
 
 def ber_awgn(snr_db):
-    return qfunc(math.sqrt(10 ** (snr_db / 10.0)))
+    # Eb/N0 axis: noise variance N0/2 per real dimension, so BPSK is
+    # Q(sqrt(2*Eb/N0)). The earlier Q(sqrt(gamma)) form was the 3 dB
+    # pessimistic axis and disagreed with ber_rayleigh below, which was
+    # already on Eb/N0 -- the two rows of the calibration table were being
+    # checked against theory curves on different axes.
+    return qfunc(math.sqrt(2 * 10 ** (snr_db / 10.0)))
 
 def ber_rayleigh(snr_db):
     g = 10 ** (snr_db / 10.0)
@@ -227,6 +238,67 @@ def check_table2(tex, rep):
             pub_text, pub_val = row[c]
             src = d["results"][relay]["ber_mean"][si]
             rep.cell(T, f"{snr}dB/{relay}", pub_text, pub_val, src)
+    rep.finish_table(T, before)
+
+
+def check_table2awgn(tex, rep):
+    """AWGN companion BER, 9 relays x SNR (tbl:table2awgn) vs bpsk_comparison/awgn.json."""
+    T = "tbl:table2awgn"; before = rep.checked
+    body = table_body(tex, T)
+    if body is None:
+        return rep.skip(T, "label not found in tex")
+    # Lean relay set: the AWGN companion was regenerated on the corrected
+    # Eb/N0 axis with Hybrid, VAE, cGAN and Mamba-S6 skipped, so those
+    # columns are absent rather than carried over from the old convention.
+    cols = ["AF", "DF", "MLP (169p)", "Transformer", "Mamba2 (SSD)"]
+    d = json.load(open(os.path.join(ROOT, "results/bpsk_comparison/awgn.json")))
+    snrs = d["snr_range"]
+    for row in data_rows(body):
+        if not row or row[0][1] is None:
+            continue
+        snr = int(row[0][1])
+        if snr not in snrs:
+            continue
+        si = snrs.index(snr)
+        for c, relay in enumerate(cols, start=1):
+            if c >= len(row):
+                break
+            pub_text, pub_val = row[c]
+            src = d["results"][relay]["ber_mean"][si]
+            rep.cell(T, f"{snr}dB/{relay}", pub_text, pub_val, src)
+    rep.finish_table(T, before)
+
+
+def check_table14ray(tex, rep):
+    """QPSK vs BPSK on canonical Rayleigh (tbl:table14ray) vs modulation/*.json."""
+    T = "tbl:table14ray"; before = rep.checked
+    body = table_body(tex, T)
+    if body is None:
+        return rep.skip(T, "label not found in tex")
+    b = json.load(open(os.path.join(ROOT, "results/modulation/bpsk_rayleigh.json")))
+    q = json.load(open(os.path.join(ROOT, "results/modulation/qpsk_rayleigh.json")))
+    snrs = b["snr_range"]
+    # tex row label -> json relay key
+    key = {"AF": "AF", "DF": "DF", "MLP (169p)": "GenAI (169p)", "Hybrid": "Hybrid",
+           "VAE": "VAE", "cGAN": "CGAN (WGAN-GP)", "Transformer": "Transformer",
+           "Mamba-S6": "Mamba S6", "Mamba-2 SSD": "Mamba2 (SSD)"}
+    # columns after the label: (BPSK,QPSK) at 0, 8, 16, 20 dB
+    col_snr = [(1, 0), (3, 8), (5, 16), (7, 20)]
+    for row in data_rows(body):
+        if not row:
+            continue
+        name = row[0][0].strip()
+        k = key.get(name)
+        if k is None:
+            continue
+        for c, snr in col_snr:
+            if c + 1 >= len(row):
+                break
+            si = snrs.index(snr)
+            pb, vb = row[c]
+            rep.cell(T, f"{name}/BPSK/{snr}dB", pb, vb, b["results"][k]["ber_mean"][si])
+            pq, vq = row[c + 1]
+            rep.cell(T, f"{name}/QPSK/{snr}dB", pq, vq, q["results"][k]["ber_mean"][si])
     rep.finish_table(T, before)
 
 
@@ -424,6 +496,54 @@ def check_tableE6flat(tex, rep):
     rep.finish_table(T, before)
 
 
+def check_tableE6qpsk(tex, rep):
+    """QPSK unknown-channel BER (tbl:tableE6qpsk) vs e6_qpsk_unknown_channel_results.npy."""
+    T = "tbl:tableE6qpsk"; before = rep.checked
+    body = table_body(tex, T)
+    if body is None:
+        return rep.skip(T, "label not found in tex")
+    d = np.load(os.path.join(ROOT, "e6_unknown_channel_results",
+                              "e6_qpsk_unknown_channel_results.npy"),
+                allow_pickle=True).item()
+    snrs = list(d["snrs"])
+    col_snr = [(2, 8), (3, 12), (4, 16), (5, 20)]
+
+    setup_map = {"AWGN": "awgn", "Rayleigh": "rayleigh"}
+    relay_map = {"AF": "AF", "DF": "DF", "MLP-QPSK": "MLP-QPSK",
+                 "VITERBI": "Viterbi (genie CSI)"}
+    cur_setup = None
+    for row in data_rows(body):
+        if not row:
+            continue
+        first = row[0][0].strip()
+        if first:
+            cur_setup = None
+            for key, hop2 in setup_map.items():
+                if key.upper() in first.upper():
+                    cur_setup = hop2
+                    break
+        if cur_setup is None or len(row) < 2:
+            continue
+        relay = row[1][0].strip()
+        rkey = None
+        for needle, target in relay_map.items():
+            if needle in relay.upper():
+                rkey = target
+                break
+        if rkey is None:
+            continue
+        res = d["results"][cur_setup][rkey][0]  # row 0 = mean
+        for c, snr in col_snr:
+            if c >= len(row):
+                break
+            pub_text, pub_val = row[c]
+            if pub_val is None:
+                continue
+            si = snrs.index(snr)
+            rep.cell(T, f"{cur_setup}/{relay}/{snr}dB", pub_text, pub_val, res[si])
+    rep.finish_table(T, before)
+
+
 def _load_e6_npy(name):
     p = os.path.join(ROOT, "e6_unknown_channel_results", name)
     if not os.path.exists(p):
@@ -432,78 +552,116 @@ def _load_e6_npy(name):
 
 
 def check_E6blind_prose(tex, rep):
-    """Blind-regime prose claims (Section 'The Posterior-Free (Blind) Regime')
-    vs e6_blind_ported_results.npy: CMA/MLP BER at 20 dB and the mid-SNR
-    (10 dB) 95% CI instability comparison."""
+    """Blind-regime prose claims vs e6_blind_ported_results.npy."""
     T = "prose:E6blind"; before = rep.checked
     d = _load_e6_npy("e6_blind_ported_results.npy")
     if d is None:
         return rep.skip(T, "e6_blind_ported_results.npy not found (run e6_blind_ported.py)")
-    snrs = list(d["snrs"]); s20 = snrs.index(20)
-    sm = d["summary"]  # name -> (mean_per_snr, ci_per_snr)
+    snrs = list(d["snrs"])
+    sm = d["summary"]
+    i8, i16, i20 = snrs.index(8), snrs.index(16), snrs.index(20)
 
-    m = re.search(r"CMA converges smoothly to BER \$([\d.]+)\\times10\^\{-3\}\$ at 20 dB", tex)
+    m = re.search(r"corrected CMA converges smoothly to BER \$([\d.]+)\\times10\^\{-3\}\$ at 20 dB", tex)
     if m:
         rep.cell(T, "CMA-blind/20dB", m.group(1) + "e-3", float(m.group(1)) * 1e-3,
-                 sm["CMA-blind"][0][s20])
-    m = re.search(r"tracks it almost exactly \(\$([\d.]+)\\times10\^\{-3\}\$\)", tex)
+                 sm["CMA-blind"][0][i20])
+    m = re.search(r"MLP reaches \$([\d.]+)\\times10\^\{-3\}\$", tex)
     if m:
         rep.cell(T, "MLP-169/20dB", m.group(1) + "e-3", float(m.group(1)) * 1e-3,
-                 sm["MLP-169"][0][s20])
-    m = re.search(r"mid-SNR \((\d+) dB\) confidence interval of \$([\d.]+)\$ "
-                  r"\(versus \$([\d.]+)\$ for the MLP and \$([\d.]+)\$ for CMA\)", tex)
+                 sm["MLP-169"][0][i20])
+    m = re.search(r"\(\$([\d.]+)\$ vs\.\\ \$([\d.]+)\$ at 8 dB\)\. This is the correct answer", tex)
     if m:
-        sci = snrs.index(int(m.group(1)))
-        db = m.group(1)
-        rep.cell(T, f"Viterbi-blind CI/{db}dB", m.group(2), float(m.group(2)),
-                 sm["Viterbi-blind"][1][sci])
-        rep.cell(T, f"MLP CI/{db}dB", m.group(3), float(m.group(3)), sm["MLP-169"][1][sci])
-        rep.cell(T, f"CMA CI/{db}dB", m.group(4), float(m.group(4)), sm["CMA-blind"][1][sci])
+        rep.cell(T, "MLP-169/8dB", m.group(1), float(m.group(1)), sm["MLP-169"][0][i8])
+        rep.cell(T, "CMA-blind/8dB", m.group(2), float(m.group(2)), sm["CMA-blind"][0][i8])
+    m = re.search(r"falling to \$([\d.]+)\$ at 16 dB before rising again to \$([\d.]+)\$ at 20 dB", tex)
+    if m:
+        rep.cell(T, "Viterbi-blind/16dB", m.group(1), float(m.group(1)), sm["Viterbi-blind"][0][i16])
+        rep.cell(T, "Viterbi-blind/20dB", m.group(2), float(m.group(2)), sm["Viterbi-blind"][0][i20])
+    m = re.search(r"interval at 8 dB is \$\\pm([\d.]+)\$.*?MLP's \$\\pm([\d.]+)\$.*?CMA's \$\\pm([\d.]+)\$", tex, re.S)
+    if m:
+        rep.cell(T, "Viterbi-blind CI/8dB", m.group(1), float(m.group(1)), sm["Viterbi-blind"][1][i8])
+        rep.cell(T, "MLP CI/8dB", m.group(2), float(m.group(2)), sm["MLP-169"][1][i8])
+        rep.cell(T, "CMA CI/8dB", m.group(3), float(m.group(3)), sm["CMA-blind"][1][i8])
     rep.finish_table(T, before)
 
 
 def check_E6partial_prose(tex, rep):
-    """Partial-posterior prose claims (pilot-budget sweep at 10 dB) vs
-    e6_partial_ported_results.npy."""
+    """Partial-posterior prose claims (both panels) vs e6_partial_ported_results.npy."""
     T = "prose:E6partial"; before = rep.checked
     d = _load_e6_npy("e6_partial_ported_results.npy")
     if d is None:
         return rep.skip(T, "e6_partial_ported_results.npy not found (run e6_partial_ported.py)")
-    pa = d["panel_a"]  # n_pilots -> (mean, ci)
+    pa = d["panel_a"]
+    pb = d.get("panel_b", {})
+    pbc = d.get("panel_b_cma", {})
 
     m = re.search(r"payload BER \$([\d.]+)\$ at 800 pilots", tex)
     if m:
         rep.cell(T, "Viterbi/800 pilots", m.group(1), float(m.group(1)), pa[800][0])
-    m = re.search(r"down to \$([\d.]+)\$ at 10 pilots", tex)
+    m = re.search(r"down to \$([\d.]+)\$ at 20 pilots", tex)
     if m:
-        rep.cell(T, "Viterbi/10 pilots", m.group(1), float(m.group(1)), pa[10][0])
-    m = re.search(r"jumps to \$([\d.]+)\$", tex)
-    if m:
-        rep.cell(T, "Viterbi/5 pilots", m.group(1), float(m.group(1)), pa[5][0])
-    m = re.search(r"sweep at \$([\d.]+)\$", tex)
+        rep.cell(T, "Viterbi/20 pilots", m.group(1), float(m.group(1)), pa[20][0])
+    m = re.search(r"MLP's pilot-free \$([\d.]+)\$", tex)
     if m:
         rep.cell(T, "MLP pilot-free ref", m.group(1), float(m.group(1)), d["mlp_ref"][0])
+    m = re.search(r"At 10 pilots Viterbi has already lost its edge, \$([\d.]+)\$ against the MLP's \$([\d.]+)\$", tex)
+    if m:
+        rep.cell(T, "Viterbi/10 pilots", m.group(1), float(m.group(1)), pa[10][0])
+        rep.cell(T, "MLP ref (10-pilot cmp)", m.group(2), float(m.group(2)), d["mlp_ref"][0])
+    m = re.search(r"at 5 pilots it collapses to \$([\d.]+)\$", tex)
+    if m:
+        rep.cell(T, "Viterbi/5 pilots", m.group(1), float(m.group(1)), pa[5][0])
+    m = re.search(r"\(\$([\d.]+) \\pm ([\d.]+)\$, against \$\\pm ([\d.]+)\$ at 50 pilots\)", tex)
+    if m:
+        rep.cell(T, "Viterbi/5 pilots (CI ctx)", m.group(1), float(m.group(1)), pa[5][0])
+        rep.cell(T, "Viterbi CI/5 pilots", m.group(2), float(m.group(2)), pa[5][1])
+        rep.cell(T, "Viterbi CI/50 pilots", m.group(3), float(m.group(3)), pa[50][1])
+    m = re.search(r"flat across the entire sweep at \$([\d.]+)\$", tex)
+    if m:
+        rep.cell(T, "MLP flat ref", m.group(1), float(m.group(1)), d["mlp_ref"][0])
+    # panel (b): blind CMA per-block convergence failure
+    m = re.search(r"payload BER is \$([\d.]+)\$ at \$L=40\$ and only improves to \$([\d.]+)\$ at \$L=1000\$", tex)
+    if m and pbc:
+        rep.cell(T, "CMA/L=40", m.group(1), float(m.group(1)), pbc[40][0])
+        rep.cell(T, "CMA/L=1000", m.group(2), float(m.group(2)), pbc[1000][0])
+    m = re.search(r"against the \$([\d.]+)\$ it achieves when given a \$20\{,\}000\$-symbol block", tex)
+    if m:
+        rep.cell(T, "CMA/20k-block ref", m.group(1), float(m.group(1)), d["cma_ref"][0])
     rep.finish_table(T, before)
 
 
 def check_E6composite_prose(tex, rep):
-    """Composite-cascade prose claims vs e6_composite_ported_results.npy:
-    MLP-170 BER at 20 dB and the Viterbi-vs-MLP gap at 8 dB."""
+    """Composite-cascade prose claims vs e6_composite_ported_results.npy."""
     T = "prose:E6composite"; before = rep.checked
     d = _load_e6_npy("e6_composite_ported_results.npy")
     if d is None:
         return rep.skip(T, "e6_composite_ported_results.npy not found (run e6_composite_ported.py)")
-    snrs = list(d["snrs"]); s20 = snrs.index(20); s8 = snrs.index(8)
+    snrs = list(d["snrs"]); s8 = snrs.index(8); s10 = snrs.index(10); s20 = snrs.index(20)
     sm = d["summary"]
 
     m = re.search(r"reaching \$([\d.]+)\\times10\^\{-3\}\$ at 20 dB", tex)
     if m:
-        rep.cell(T, "MLP-170/20dB", m.group(1) + "e-3", float(m.group(1)) * 1e-3,
+        rep.cell(T, "MLP-169/20dB", m.group(1) + "e-3", float(m.group(1)) * 1e-3,
                  sm["MLP-169"][0][s20])
-    m = re.search(r"\(\$([\d.]+)\$ vs\.\\ \$([\d.]+)\$ at 8 dB\)", tex)
+    m = re.search(r"\(\$([\d.]+)\$ vs\.\\ \$([\d.]+)\$ at 8 dB\) and converges", tex)
     if m:
         rep.cell(T, "Viterbi-diff/8dB", m.group(1), float(m.group(1)), sm["Viterbi-diff"][0][s8])
-        rep.cell(T, "MLP-170/8dB", m.group(2), float(m.group(2)), sm["MLP-169"][0][s8])
+        rep.cell(T, "MLP-169/8dB", m.group(2), float(m.group(2)), sm["MLP-169"][0][s8])
+    m = re.search(r"indistinguishable at \$([\d.]+)\$ each at 20 dB", tex)
+    if m:
+        rep.cell(T, "MLP-169/20dB (tie)", m.group(1), float(m.group(1)), sm["MLP-169"][0][s20])
+        rep.cell(T, "Viterbi-diff/20dB (tie)", m.group(1), float(m.group(1)), sm["Viterbi-diff"][0][s20])
+    m = re.search(r"\(\$([\d.]+)\$ vs\.\\ \$([\d.]+)\$ at 10 dB for the larger network", tex)
+    if m:
+        rep.cell(T, "MLP-large/10dB", m.group(1), float(m.group(1)), sm["MLP-large"][0][s10])
+        rep.cell(T, "MLP-169/10dB", m.group(2), float(m.group(2)), sm["MLP-169"][0][s10])
+    m = re.search(r"\$([\d.]+)\$ vs\.\\ \$([\d.]+)\$ at 8 dB for the smaller", tex)
+    if m:
+        rep.cell(T, "MLP-large/8dB", m.group(1), float(m.group(1)), sm["MLP-large"][0][s8])
+        rep.cell(T, "MLP-169/8dB (cmp)", m.group(2), float(m.group(2)), sm["MLP-169"][0][s8])
+    m = re.search(r"ending at the identical \$([\d.]+)\$ at 20 dB", tex)
+    if m:
+        rep.cell(T, "MLP-large/20dB", m.group(1), float(m.group(1)), sm["MLP-large"][0][s20])
     rep.finish_table(T, before)
 
 
@@ -530,14 +688,22 @@ def check_table26(tex, rep):
 
 
 def check_ber_validation(tex, rep):
-    """Theory-vs-sim table (tab:ber_validation_long): check theory columns."""
+    """Calibration table (tab:ber_validation_long).
+
+    Checks BOTH columns: the theory column against the closed form, and the
+    simulation column against results/calibration.json. Only the theory
+    columns were checked before, so the agreement the table exists to
+    demonstrate was itself unverified.
+    """
     T = "tab:ber_validation_long"; before = rep.checked
     body = table_body(tex, T)
     if body is None:
         return rep.skip(T, "label not found in tex")
     theo = {"awgn": ber_awgn, "rayleigh": ber_rayleigh}
+    cal_path = os.path.join(ROOT, "results", "calibration.json")
+    cal = json.load(open(cal_path)) if os.path.exists(cal_path) else None
     # columns: Chan & 4dB(Th) & 4dB(Sim) & 10dB(Th) & 10dB(Sim) & 16dB(Th) & 16dB(Sim)
-    th_cols = [(1, 4), (3, 10), (5, 16)]
+    pairs = [(1, 2, 4), (3, 4, 10), (5, 6, 16)]
     for row in data_rows(body):
         if not row:
             continue
@@ -545,20 +711,20 @@ def check_ber_validation(tex, rep):
         key = "awgn" if "awgn" in name else ("rayleigh" if "rayleigh" in name else None)
         if key is None:
             continue
-        for c, snr in th_cols:
-            if c >= len(row):
-                break
-            pub_text, pub_val = row[c]
-            if pub_val is None:
-                continue
-            src = theo[key](snr)
-            rep.cell(T, f"{key}/theory@{snr}dB", pub_text, pub_val, src)
+        for c_th, c_sim, snr in pairs:
+            if c_th < len(row):
+                pub_text, pub_val = row[c_th]
+                if pub_val is not None:
+                    rep.cell(T, f"{key}/theory@{snr}dB", pub_text, pub_val, theo[key](snr))
+            if cal is not None and c_sim < len(row):
+                pub_text, pub_val = row[c_sim]
+                entry = cal["results"].get(key, {}).get(str(snr))
+                # "n/r" cells carry no number and are skipped by rep.cell
+                if pub_val is not None and entry is not None and entry["resolvable"]:
+                    rep.cell(T, f"{key}/sim@{snr}dB", pub_text, pub_val, entry["sim_mean"])
     rep.finish_table(T, before)
 
 
-# ----------------------------------------------------------------------------
-# main
-# ----------------------------------------------------------------------------
 def main():
     global TEX_DIR, MC_SLACK
     ap = argparse.ArgumentParser()
@@ -591,8 +757,8 @@ def main():
 
     tex = load_tex()
     rep = Report()
-    checks = [check_ber_validation, check_table26, check_table2, check_table8,
-              check_table24, check_tableE6, check_tableE6flat,
+    checks = [check_ber_validation, check_table26, check_table2, check_table2awgn, check_table14ray, check_table8,
+              check_table24, check_tableE6, check_tableE6flat, check_tableE6qpsk,
               check_E6blind_prose, check_E6partial_prose, check_E6composite_prose]
     for chk in checks:
         try:

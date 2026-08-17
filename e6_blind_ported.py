@@ -32,7 +32,13 @@ from relaynet.relays import MLPRelay
 W = 11
 SNRS = np.arange(0, 21, 2)
 TRAIN_SNRS = [5, 10, 15]
-N_TRIALS, N_BITS = 5, 40_000
+# The hop-1 channel here (RandomISICompositeChannel) redraws its ISI/PA/phase
+# realization on every call, i.e. once per trial. Trials are therefore CHANNEL
+# DRAWS, and the ensemble average over the impairment family is limited by the
+# trial count, not by bits per trial. 50 x 20k gives 1,000,000 bits (5x the old
+# 5 x 40k budget) over 50 channel realizations (10x the old ensemble), with
+# blocks still long enough for the blind equalizers to converge.
+N_TRIALS, N_BITS = 50, 20_000
 
 rng = np.random.default_rng(41)
 
@@ -56,7 +62,7 @@ def cwin(y, window=W):
     return np.concatenate([vi, vq], axis=1)
 
 
-def cma_dfe(y, taps=7, mu=1e-3, iters=2):
+def cma_dfe(y, taps=7, mu=1e-3, iters=2, eps=1e-6):
     """Blind constant-modulus linear equalizer (no pilots).
 
     Ported verbatim from experiments-standalone/e6_blind.py's cma_dfe().
@@ -73,7 +79,13 @@ def cma_dfe(y, taps=7, mu=1e-3, iters=2):
             o = np.vdot(w, seg)
             out[i] = o
             e = o * (np.abs(o) ** 2 - 1.0)  # CMA (R2=1 for unit-modulus)
-            w -= mu * e * np.conj(seg)
+            # NLMS-normalised step. The CMA error is cubic in |o|, so a fixed
+            # step size is a positive-feedback loop: the original unnormalised
+            # update stayed bounded over 40k samples but overflowed to inf over
+            # 100k, turning the equaliser output into noise. Dividing by the
+            # segment energy bounds the update and keeps CMA stable at any
+            # block length.
+            w -= (mu / (eps + np.vdot(seg, seg).real)) * e * np.conj(seg)
     return out
 
 
@@ -226,7 +238,8 @@ def main():
         print(f"    {name:>14}: {mu[mid_idx]:.4f} +/- {ci[mid_idx]:.4f}")
 
     output_path = '/tmp/e6_blind_ported_results.npy'
-    np.save(output_path, {'snrs': SNRS, 'summary': summary}, allow_pickle=True)
+    np.save(output_path, {'snrs': SNRS, 'summary': summary,
+                          'n_trials': N_TRIALS, 'n_bits': N_BITS}, allow_pickle=True)
     print(f"\nResults saved to {output_path}")
     print("\n" + "=" * 80)
     print("E6_BLIND: Complete")
