@@ -2,6 +2,13 @@
 
 _Last updated: 2026-08-17_
 
+## Latest: AWGN companion comparison removed from Ch5 — QPSK/Rayleigh takes its slot
+User: "move the qpsk Rayleigh to chapter 5 instead of awgn over Rayleigh". Ch5's canonical section had three tables (Rayleigh BPSK / AWGN companion / QPSK-vs-BPSK on Rayleigh); the AWGN companion is now deleted and QPSK/Rayleigh is the second table (**now Table 5.5**, renumbered from 5.6).
+Removed: `tbl:table2awgn` + its 2 paragraphs, `fig:fig10awgn`. `results/awgn_comparison_ci.png` and `scripts/plot_awgn_companion.py` are now orphaned — left in the repo, not referenced.
+**§5.2 (AWGN calibration) is untouched and must stay** — the closed forms the simulator validates against are AWGN expressions. What went away is any *relay* measured on AWGN in the canonical chapter. Appendix E's AK#4 response was updated accordingly; it had cited the companion table as part of AWGN's bounded role, so leaving it would have dangled a `\ref` and misdescribed the design.
+`check_table2awgn` deleted from `verify_thesis_tables.py` (source map + registry + function). **Verifier now 327 cells / 0 inconsistencies** (was 352; the 25 are the companion's). Cold build: exit 0, **146 pp**, 0 undefined refs.
+**Build gotcha reconfirmed:** deleting `main.aux` before `latexmk` makes bibtex exit 12 with "I found no \citation commands". Not a real failure — just run `latexmk` again (twice, to settle refs). Cost 2 extra passes to rediscover.
+
 ## DECISION IN FORCE: thesis submitted — re-run data lands, thesis tables stay frozen
 User submitted the thesis, then instructed "Keep" in answer to a choice between (a) freeze the submitted tables and land the re-run as data only, and (b) carry on re-transcribing. Reading taken: **(a)**. Consistent with `.clinerules/90-safety.md` (never alter numerical results without explicit instruction), and the cheaper error to recover from if the reading is wrong.
 
