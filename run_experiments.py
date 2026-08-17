@@ -1026,6 +1026,31 @@ _CHANNELS = {
     "rayleigh":     ("Rayleigh Fading",  rayleigh_fading_channel),
 }
 
+# The thesis evaluates exactly three (modulation, channel) configurations,
+# not the full 3x2 cross product. Each pairing is deliberate:
+#
+#   bpsk  x awgn      the calibration reference. AWGN is the only channel
+#                     with exact closed forms — Q(sqrt(2 Eb/N0)) single-hop,
+#                     2P(1-P) two-hop DF — so it is where the simulator can
+#                     be proved correct rather than merely compared.
+#   qpsk  x rayleigh  the canonical operating point. Rayleigh is the channel
+#                     the thesis draws conclusions on, and QPSK places one
+#                     bit on each axis the complex baseband already has, so
+#                     the identical I/Q-split relays handle it unchanged.
+#   qam16 x rayleigh  the extension. Four levels per axis break the per-axis
+#                     relay formulation, which is the whole reason 16-QAM
+#                     is studied separately — and it is studied on the
+#                     canonical channel, not on AWGN.
+#
+# The three omitted pairings (qpsk/qam16 on AWGN, bpsk on Rayleigh) are not
+# oversights. AWGN earns its place as a measuring stick, and a measuring
+# stick only needs the one constellation whose closed form is being checked.
+CANONICAL_PAIRS = [
+    ("bpsk",  "awgn"),
+    ("qpsk",  "rayleigh"),
+    ("qam16", "rayleigh"),
+]
+
 _SECTION_MAP = {
     "awgn":      "7.2",
     "rayleigh":  "7.3",
@@ -1058,7 +1083,14 @@ def exp_7_2_to_7_7_relay_comparison(args):
     out = os.path.join(args.results_dir, "bpsk_comparison")
     os.makedirs(out, exist_ok=True)
 
+    # BPSK is paired with AWGN only (see CANONICAL_PAIRS): AWGN is the
+    # calibration reference and BPSK is the constellation whose closed form
+    # is being checked. BPSK on Rayleigh was dropped from the thesis, so
+    # running it here would write a results file nothing reads.
     for ch_key, (ch_name, ch_fn) in _CHANNELS.items():
+        if ("bpsk", ch_key) not in CANONICAL_PAIRS:
+            print(f"\n  [skip] BPSK x {ch_name} — not a canonical pairing")
+            continue
         sec = _SECTION_MAP[ch_key]
         print(f"\n  §{sec} — {ch_name}")
         results = evaluate_relays(
@@ -1211,32 +1243,29 @@ def exp_7_10_modulation_comparison(args):
     else:
         train_base_relays(relays, args, modulation="bpsk")
 
-    modulations = ["bpsk", "qpsk", "qam16"]
-    channels = [("awgn", None), ("rayleigh", rayleigh_fading_channel)]
-
     all_results = {}
-    for mod in modulations:
-        for ch_key, ch_fn in channels:
-            tag = f"{mod}_{ch_key}"
-            print(f"\n  {mod.upper()} × {ch_key.upper()}")
-            results = evaluate_relays(
-                relays, snr_range, channel_fn=ch_fn,
-                modulation=mod,
-                bits_per_trial=args.bits_per_trial,
-                num_trials=args.num_trials,
-            )
-            all_results[tag] = results
-            save_results_json(
-                os.path.join(out, f"{tag}.json"), snr_range, results,
-                meta={"experiment": "7.10", "modulation": mod, "channel": ch_key},
-            )
-            ber_dict = {n: r["ber_mean"] for n, r in results.items()}
-            ci_dict = {n: (r["ci_lower"], r["ci_upper"]) for n, r in results.items()}
-            plot_ber_chart(
-                snr_range, ber_dict, ci_dict,
-                title=f"{mod.upper()} — {ch_key.upper()} (§7.10)",
-                save_path=os.path.join(out, f"{tag}_ci.png"),
-            )
+    for mod, ch_key in CANONICAL_PAIRS:
+        ch_fn = _CHANNELS[ch_key][1]
+        tag = f"{mod}_{ch_key}"
+        print(f"\n  {mod.upper()} × {ch_key.upper()}")
+        results = evaluate_relays(
+            relays, snr_range, channel_fn=ch_fn,
+            modulation=mod,
+            bits_per_trial=args.bits_per_trial,
+            num_trials=args.num_trials,
+        )
+        all_results[tag] = results
+        save_results_json(
+            os.path.join(out, f"{tag}.json"), snr_range, results,
+            meta={"experiment": "7.10", "modulation": mod, "channel": ch_key},
+        )
+        ber_dict = {n: r["ber_mean"] for n, r in results.items()}
+        ci_dict = {n: (r["ci_lower"], r["ci_upper"]) for n, r in results.items()}
+        plot_ber_chart(
+            snr_range, ber_dict, ci_dict,
+            title=f"{mod.upper()} — {ch_key.upper()} (§7.10)",
+            save_path=os.path.join(out, f"{tag}_ci.png"),
+        )
 
     print(f"\n  §7.10 complete → {out}/")
 

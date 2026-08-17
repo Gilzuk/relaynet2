@@ -43,7 +43,7 @@ SISO on both hops \emph{(future work: MIMO second hop)} \\
 
 Channel
 &
-i.i.d.\ Rayleigh fast fading (canonical); AWGN as the simulation baseline the framework is calibrated against (Section~\ref{sec:channel-model-validation-simulative}), with a companion relay comparison alongside the canonical one; unknown, mismatched, and time-varying channels are studied in the dedicated contribution (Chapter~\ref{sec:unknown-channels}) \emph{(future work: Rician and other channel families)} \\
+i.i.d.\ Rayleigh fast fading (canonical), applied identically on both hops; AWGN solely as the analytical baseline the simulator is calibrated against (Section~\ref{sec:channel-model-validation-simulative}); unknown, mismatched, and time-varying channels are studied in the dedicated contribution (Chapter~\ref{sec:unknown-channels}) \emph{(future work: Rician and other channel families)} \\
 
 Relay Function \emph{(the studied axis)}
 &
@@ -52,7 +52,7 @@ Relay Function \emph{(the studied axis)}
 
 Modulation
 &
-BPSK and QPSK, both canonical (Chapter~\ref{sec:experiments}); 16-QAM as a scoped extension (Chapter~\ref{sec:extensions}); QPSK is additionally re-checked under the unknown-ISI channel of Chapter~\ref{sec:unknown-channels} \emph{(future work: 16-PSK, 64-QAM and beyond)} \\
+Each constellation is paired with one channel, giving three configurations in total (Table~\ref{tbl:configurations}): BPSK on AWGN (calibration), QPSK on Rayleigh (canonical, Chapter~\ref{sec:experiments}), and 16-QAM on Rayleigh (scoped extension, Chapter~\ref{sec:extensions}); QPSK is additionally re-checked under the unknown-ISI channel of Chapter~\ref{sec:unknown-channels} \emph{(future work: 16-PSK, 64-QAM and beyond)} \\
 
 Performance Metric
 &
