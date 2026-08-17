@@ -44,22 +44,40 @@ expression, which they are; it never checked how many dimensions that power
 was spread over, which is where the 3 dB went. The new tests fail by 0.0288
 against a 0.004 tolerance under the old convention.
 
+### Chapter 7 re-run on the corrected channels
+
+Every Chapter 7 study has been re-run and its numbers re-transcribed: the main
+unknown-ISI table, the flat control, composite, blind, partial-posterior and
+the QPSK generalization. Table 7.1 and the composite prose moved substantially
+(the verifier flagged 36 stale values, now zero). The QPSK study is unchanged,
+as expected: its channel uses complex noise and was already Es/N0-consistent,
+so it was never on the wrong axis.
+
+The chapter's conclusions are unaffected, which is the point of the exercise.
+The 0.25 memoryless-relay floor is a property of the ISI tap structure rather
+than the noise scaling, and it is now approached more closely than before
+(DF reaches 0.246 at 20 dB against 0.234 previously). H6 stands, the MLP still
+restores reliable relaying where AF and DF fail, and genie-CSI Viterbi remains
+the bound.
+
+Most importantly, Chapter 7's "control: canonical Rayleigh" row now reproduces
+Chapter 5: DF reads 0.0687 against Table 5.4's 0.0683 at 8 dB, where before it
+read 0.1208.
+
 ### Known issues — follow-up required
 
-- **Chapter 7's committed data and reported numbers are now stale relative to
-  the corrected channels.** `e6_sim`, `e6_viterbi` and `e6_flat` have been
-  re-run and agree with theory, but their outputs are not yet promoted into
-  `e6_unknown_channel_results/`, and the composite, blind, partial-posterior
-  and QPSK studies are not yet re-run. Until that is completed and every
-  Chapter 7 number re-transcribed, `make repro-unknown` will not reproduce
-  the tables as printed.
-- **Chapters 5 and 6 cannot be re-run in this environment**: their nine-relay
-  tables need PyTorch for the VAE, cGAN, Transformer and Mamba relays, which
-  is unavailable here. `relaynet/channels/awgn.py` is therefore deliberately
-  left on its existing convention, so that the committed JSON and the code
-  that produced it stay consistent. Its real-valued branch is 3 dB above
-  Eb/N0 in the same way, and harmonizing it requires re-running those
-  experiments on a machine with torch.
+- **The nine-relay AWGN tables have not been regenerated.** PyTorch is now
+  installed, so this is no longer blocked in principle, but it is a long job
+  on this machine: Table 5.3 records the cGAN alone at 7,293 s on CUDA and
+  only four CPU cores are available here. `results/bpsk_comparison/awgn.json`
+  and the Chapter 6 AWGN tables therefore still carry data produced under the
+  earlier AWGN convention, 3 dB from the axis the calibration now uses. The
+  Rayleigh tables (5.4, 5.6, 6.2 and the 3K study) are unaffected, since
+  `fading.py` was never changed.
+- **The flat-channel control passed only narrowly.** Its largest shift after
+  the correction was 0.0097 against a 0.010 Monte Carlo tolerance, so it
+  verifies clean by a margin thinner than is comfortable. Worth re-running at
+  a larger budget, or tightening that tolerance, before submission.
 
 ---
 
