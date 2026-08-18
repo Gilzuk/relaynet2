@@ -2,6 +2,19 @@
 
 _Last updated: 2026-08-17_
 
+## DECISION IN FORCE: the cGAN stays out of the results
+
+Instruction 2026-08-18: "drop the cgan for now". The cGAN-inclusive re-run was stopped mid-flight and its driver deleted. **Do not re-add the cGAN without a fresh instruction.**
+
+Two findings from the attempt, both worth not rediscovering:
+
+1. **The surviving cGAN numbers cannot be reused.** `relaynet/relays/cgan.py` was created 2026-04-01; the cGAN results still in the repo are dated 2026-03-23, so they come from a superseded implementation. This is the same trap as the VAE: its March numbers (0.3928 at 0 dB) differ from the current implementation's (0.3359) by far more than the SNR-convention change explains, which `results/vae_convention_ab.json` demonstrates by controlled A/B. Splicing March cGAN values into tables measured with today's code would be mixing implementations, not filling a gap.
+2. **A cGAN column cannot be run separately and pasted in.** Training it consumes the shared RNG stream, so its presence shifts every other relay's numbers; a table assembled that way would have rows from two different draws. Adding the cGAN means re-running each affected study end to end and re-transcribing.
+
+**Cost, measured not guessed:** a probe at 2,000 samples x 5 epochs took 4.1 s, extrapolating to ~1.1 h per training at the production 50,000 x 200. The real run blew past that — over 1 h 50 m on a single training with no completion — so the linear extrapolation from a small probe understates it badly. Section 7.11 would need three trainings, one per activation, and is the stage to drop first if this is ever revisited.
+
+**State is unaffected.** The run was killed before writing any output; every result file is the one committed earlier, and the verifier is at 349 cells / 0 inconsistencies. Tables 2, 14, 15 and 24 report eight relays and say in their captions that the cGAN is excluded.
+
 ## Latest: AWGN companion comparison removed from Ch5 — QPSK/Rayleigh takes its slot
 User: "move the qpsk Rayleigh to chapter 5 instead of awgn over Rayleigh". Ch5's canonical section had three tables (Rayleigh BPSK / AWGN companion / QPSK-vs-BPSK on Rayleigh); the AWGN companion is now deleted and QPSK/Rayleigh is the second table (**now Table 5.5**, renumbered from 5.6).
 Removed: `tbl:table2awgn` + its 2 paragraphs, `fig:fig10awgn`. `results/awgn_comparison_ci.png` and `scripts/plot_awgn_companion.py` are now orphaned — left in the repo, not referenced.
