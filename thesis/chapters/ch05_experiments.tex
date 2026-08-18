@@ -186,11 +186,11 @@ Rayleigh & \textasciitilde24 dB & 1 & \(1/(4\bar{\gamma})\) \\
 \REV{Compilation fix: the image path \texttt{results/Rayleigh plot.png} contained a space, which breaks \texttt{\string\includegraphics} unless \texttt{grffile} is loaded. Renamed the reference to \texttt{results/Rayleigh\_plot.png}; rename the file on disk to match (or load \texttt{grffile} and keep the space).}
 
 
-\section{Canonical Relay Comparison (SISO, Rayleigh, BPSK and QPSK)}\label{sec:siso-bpsk-performance-baseline-relay-comparison}
+\section{Canonical Relay Comparison (SISO, Rayleigh, QPSK)}\label{sec:siso-bpsk-performance-baseline-relay-comparison}
 
 \textbf{Goal:} Evaluate the classical and AI-based relay strategies on the canonical setup of this thesis. Eight of the nine implemented relays are reported; the cGAN is excluded from the re-run that produced these numbers.
 
-\textbf{Trials:} - \textbf{Topology:} SISO (both hops) - \textbf{Modulation scheme:} BPSK and QPSK - \textbf{Channel:} i.i.d.\ Rayleigh fast fading (canonical) - \textbf{Equalizers:} None - \textbf{NN architecture:} Supervised (MLP, Hybrid), Generative (VAE, cGAN), Sequence (Transformer, Mamba-S6, Mamba-2 SSD) - \textbf{NN activation:} ReLU hidden, tanh output
+\textbf{Trials:} - \textbf{Topology:} SISO (both hops) - \textbf{Modulation scheme:} QPSK - \textbf{Channel:} i.i.d.\ Rayleigh fast fading (canonical) - \textbf{Equalizers:} None - \textbf{NN architecture:} Supervised (MLP, Hybrid), Generative (VAE, cGAN), Sequence (Transformer, Mamba-S6, Mamba-2 SSD) - \textbf{NN activation:} ReLU hidden, tanh output
 
 \textbf{Conclusion:} On the canonical Rayleigh channel, AI relays match but do not surpass symbol-wise DF: DF achieves the lowest or tied-lowest BER at essentially every SNR point, including the low-SNR regime, while the best neural relays (MLP, Hybrid, cGAN) track it within statistical uncertainty and clearly outperform AF. This confirms H1 (AI relays beat AF at low SNR) and H2 (DF dominance at $\geq 6$ dB with zero parameters) on the canonical channel.
 
@@ -242,7 +242,7 @@ This study tests H3 (U-shaped complexity in BER) and H4 (architecture convergenc
 
 \textbf{Goal:} Isolate architectural inductive biases from parameter count effects and characterize the complexity-performance trade-off for relay denoising.
 
-\textbf{Trials:} - \textbf{Topology:} SISO (both hops) - \textbf{Modulation scheme:} BPSK - \textbf{Channel:} i.i.d.\ Rayleigh fast fading (canonical) - \textbf{Equalizers:} None - \textbf{NN architecture:} All normalized to \textasciitilde3,000 parameters, plus original sizes (169 to 26K) - \textbf{NN activation:} ReLU hidden, tanh output
+\textbf{Trials:} - \textbf{Topology:} SISO (both hops) - \textbf{Modulation scheme:} QPSK - \textbf{Channel:} i.i.d.\ Rayleigh fast fading (canonical) - \textbf{Equalizers:} None - \textbf{NN architecture:} All normalized to \textasciitilde3,000 parameters, plus original sizes (169 to 26K) - \textbf{NN activation:} ReLU hidden, tanh output
 
 \textbf{Conclusion:} The relay denoising task exhibits a U-shaped complexity relationship in BER: a minimal 169-parameter MLP matches models roughly 140$\times$ larger, while excessive parameters (11K+) lead to overfitting. At a normalized scale of 3,000 parameters the gap between feedforward and sequence architectures is strongly SNR-dependent: it falls monotonically from $17.4\%$ at 0~dB to $4.1\%$ at 20~dB (Table~\ref{tbl:table8}). Parameter count therefore accounts for the comparison at high SNR, where architecture is nearly irrelevant, but not at low SNR, where the six equal-sized models separate cleanly into a feedforward group tracking DF and a sequence group tracking AF. Since all six carry the same budget, that separation is architectural choice is the primary performance driver. The generative VAE is a consistent underperformer in this configuration; as noted for Table~\ref{tbl:table2}, this may reflect the stochastic inference-time decoding used here rather than the generative paradigm itself (Section~\ref{sec:generative-vs.-discriminative-paradigms-for-relay-processing}).
 \REV{``inverted-U'' \(\to\) ``U-shaped \ldots in BER''; and the VAE conclusion softened from ``due to probabilistic overhead'' to the inference-time caveat, consistent with the qualification adopted for Table~\ref{tbl:table2} and the abstract.}
