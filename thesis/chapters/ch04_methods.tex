@@ -2,7 +2,7 @@
 
 \section{System Model}\label{sec:system-model-1}
 
-The system under study is a two-hop relay network with a single relay node. All methods in this chapter are described for the canonical setup of Chapter~\ref{sec:introduction}: SISO on both hops, i.i.d.\ Rayleigh fast fading, complex baseband, BPSK and QPSK, uncoded BER.
+The system under study is a two-hop relay network with a single relay node. All methods in this chapter are described for the canonical setup of Chapter~\ref{sec:introduction}: SISO on both hops, i.i.d.\ Rayleigh fast fading, complex baseband, QPSK, uncoded BER. BPSK appears only on the AWGN calibration channel, and 16-QAM only in the extension of Chapter~\ref{sec:extensions}; the three pairings are set out in Table~\ref{tbl:configurations}.
 
 \paragraph{Scope of the canonical system model.} The system model defined in this chapter serves as the canonical benchmark used throughout the core experiments of the thesis (Chapters~\ref{sec:experiments}--\ref{sec:extensions}). It assumes a memoryless two-hop relay channel with white noise, perfect receiver-side CSI, and uncoded transmission. Accordingly, all relay comparisons in the canonical study concern per-symbol processing and do not require sequence detection. Channel memory, intersymbol interference (ISI), pilot-based channel estimation, blind equalization, and sequence-detection techniques such as Viterbi MLSE are introduced only later in Chapter~\ref{sec:unknown-channels} as deliberate departures from the canonical assumptions in order to study robustness under model mismatch.
 
@@ -16,7 +16,7 @@ The system under study is a two-hop relay network with a single relay node. All 
   arr/.style={->, thick, >=stealth}
 ]
 \node[box] (src)   {Source\\tx bits};
-\node[box, right=1.2cm of src]  (mod)   {BPSK\\Mod.};
+\node[box, right=1.2cm of src]  (mod)   {QPSK\\Mod.};
 \node[box, right=1.2cm of mod]  (ch1)   {Hop 1\\Channel};
 \node[box, right=1.2cm of ch1]  (relay) {Relay\\$f_\theta$ / AF / DF};
 \node[box, right=1.2cm of relay](ch2)   {Hop 2\\Channel};
@@ -35,7 +35,7 @@ The system under study is a two-hop relay network with a single relay node. All 
 \end{figure}
 
 
-Source bits are BPSK-modulated, passed through Hop 1 (SISO Rayleigh), processed by the relay (classical or neural), transmitted over Hop 2 (SISO Rayleigh), and demodulated at the destination; no equalization is involved. Both hop channels are known perfectly at their respective receivers, per the conventions of Chapter~\ref{sec:introduction}.
+Source bits are QPSK-modulated on the canonical setup, passed through Hop 1 (SISO Rayleigh), processed by the relay (classical or neural), transmitted over Hop 2 (SISO Rayleigh), and demodulated at the destination; no equalization is involved. The same chain carries BPSK on the AWGN calibration channel and 16-QAM in the extension, with only the modulator and demodulator changing. Both hop channels are known perfectly at their respective receivers, per the conventions of Chapter~\ref{sec:introduction}.
 
 \begin{equation}\protect\phantomsection\label{eq:two-hop-system}{\text{Source} \xrightarrow{\text{Hop 1}} \text{Relay} \xrightarrow{\text{Hop 2}} \text{Destination}
 }\end{equation}

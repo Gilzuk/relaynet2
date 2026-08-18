@@ -101,31 +101,15 @@ Mamba-2 SSD & 0.2554 & 0.1109 & \textbf{0.1106} \\
 
 \begin{figure}[H]
 \centering
-\centering
-\pandocbounded{\includegraphics[width=\linewidth,height=0.8\textheight,keepaspectratio]{results/modulation/bpsk_awgn_ci.png}}
-\caption{BPSK on AWGN: all relay strategies with 95\% CI (baseline for modulation comparison).}\label{fig:fig21}
+\pandocbounded{\includegraphics[width=\linewidth,height=\textheight,keepaspectratio]{results/modulation/qam16_rayleigh_ci.png}}
+\caption{16-QAM under I/Q-split relay processing on the canonical Rayleigh channel, BER vs.\ $E_s/N_0$ with 95\% confidence intervals; the plotted form of Table~\ref{tbl:table14}. AF and DF descend with SNR while every learned relay flattens near $0.25$--$0.26$, which is the structural floor of the per-axis formulation.}\label{fig:fig25}
 \end{figure}
 
-\begin{figure}[H]
-\centering
-\centering
-\pandocbounded{\includegraphics[width=\linewidth,height=\textheight,keepaspectratio]{results/modulation/qpsk_awgn_ci.png}}
-\caption{QPSK on AWGN: BER curves closely match the BPSK baseline (Figure~\ref{fig:fig21}), confirming I/Q splitting validity.}\label{fig:fig23}
-\end{figure}
 
-\begin{figure}[H]
-\centering
-\centering
-\pandocbounded{\includegraphics[width=\linewidth,height=\textheight,keepaspectratio]{results/modulation/qam16__awgn_ci.png}}
-\caption{16-QAM on AWGN: AI relays hit a BER floor near 0.22 at medium-high SNR due to \(\tanh\) compression of multi-level signals; AF outperforms DF at low SNR.}\label{fig:fig25}
-\end{figure}
 
-\begin{figure}[H]
-\centering
-\centering
-\pandocbounded{\includegraphics[width=\linewidth,height=\textheight,keepaspectratio]{results/modulation/combined_modulation_awgn.png}}
-\caption{Combined modulation comparison (AWGN): all nine relays across BPSK (solid), QPSK (dashed, overlapping BPSK), and 16-QAM (dotted). The BPSK/QPSK overlap confirms I/Q splitting equivalence. The 16-QAM dotted curves reveal the AI relay BER floor: all AI relays plateau near 0.18--0.25 while DF and AF continue decreasing.}\label{fig:fig27}
-\end{figure}
+
+
+
 
 \begin{figure}[H]
     \centering
@@ -186,7 +170,7 @@ DF & 0.03748 & n/a & n/a \\
 \begin{figure}[H]
 \centering
 \centering
-\pandocbounded{\includegraphics[width=\linewidth,height=\textheight,keepaspectratio]{results/all_relays_16class/ber_all_relays_16class.png}}
+\pandocbounded{\includegraphics[width=\linewidth,height=\textheight,keepaspectratio]{results/all_relays_16class/ber_16class_ci.png}}
 \caption{16-QAM BER vs.~SNR for all relay variants (4-class and 16-class) on AWGN. The 4-class variants (dashed) plateau at BER $\approx 0.008$ while the successfully trained 16-class variants (solid) continue decreasing, approaching and matching the DF baseline.}\label{fig:fig50}
 \end{figure}
 
@@ -200,6 +184,6 @@ DF & 0.03748 & n/a & n/a \\
 \begin{figure}[H]
 \centering
 \centering
-\pandocbounded{\includegraphics[width=\linewidth,height=\textheight,keepaspectratio]{results/all_relays_16class/top3_16class.png}}
+\pandocbounded{\includegraphics[width=\linewidth,height=\textheight,keepaspectratio]{results/all_relays_16class/ber_16class_top3.png}}
 \caption{Top-3 16-class relay variants compared against AF and DF. VAE 16-cls, Transformer 16-cls, and MLP 16-cls all match or approach DF performance across the full SNR range.}\label{fig:fig53}
 \end{figure}
