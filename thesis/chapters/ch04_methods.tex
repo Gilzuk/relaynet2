@@ -82,7 +82,7 @@ Constellation & Channel & Role & Why this pairing \\
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-BPSK (real) & AWGN (real) & Calibration & The real case. AWGN is the only channel here with exact closed forms, \(Q(\sqrt{2E_b/N_0})\) single-hop and \(2P(1-P)\) two-hop DF, so it is where the simulator can be \emph{proved} correct rather than merely compared, and BPSK is the constellation those closed forms describe. \\
+BPSK (real) & AWGN (real) & Calibration & The real case. AWGN is the only channel here with exact closed forms, \(Q(\sqrt{2E_b/N_0})\) single-hop and \(2P(1-P)\) two-hop DF, so it is where the simulator can be checked against an exact result rather than only against another simulation, and BPSK is the constellation those closed forms describe. \\
 QPSK (complex) & Rayleigh (complex) & Canonical & The complex case, and the operating point this thesis draws its conclusions on. QPSK places one bit on each axis of the plane the channel acts in, so the identical I/Q-split relays process it unchanged. \\
 16-QAM (complex) & Rayleigh (complex) & Extension & The same complex channel, driven to four levels per axis, which breaks the per-axis relay formulation. That break is what Chapter~\ref{sec:extensions} studies, and it is studied on the canonical channel. \\
 \end{longtable}

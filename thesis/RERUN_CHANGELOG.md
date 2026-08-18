@@ -179,6 +179,69 @@ constellation higher.
 
 ---
 
+## Claim audit — statements checked against measurement
+
+A separate pass over the prose, looking for three faults the table verifier
+cannot catch: claims that contradict the measurements, claims stated more
+confidently than the evidence supports, and claims that conflict with each
+other. Seven were found and fixed. Numbers below are from the files named in
+the sections above.
+
+### Contradicted by measurement
+
+**1. The 3K architecture gap (§5.4).** Read "the performance gap between
+feedforward and sequence architectures narrows to ~1% BER". Measured spread is
+**17.4% at 0 dB and 4.1% at 20 dB** — the claim is wrong at every SNR, and
+wrong by a factor of seventeen at the low end. The same claim had already been
+corrected in Chapter 8 when H4 was revised; this instance was missed. Now
+states the SNR dependence and the feedforward/sequence split.
+
+**2. "Removes the floor entirely" (§8, §9).** Both chapters said joint
+16-class classification eliminates the per-axis floor and that the top variants
+match DF. Measured as excess over DF, which is the meaningful quantity because
+DF is itself channel-limited at 0.03748: per-axis relays carry 0.0161–0.0174,
+joint relays 0.0001–0.0019 — but **Mamba-2 SSD retains 0.0121** and does not
+reach parity. "Entirely" overstated it and the exception was unmentioned.
+
+**3. cGAN priority claim (§2.4).** Claimed "the first systematic comparison of
+VAE and cGAN-based relay processing". The cGAN is excluded from every table in
+the current revision, so the thesis reports no cGAN comparison to be first at.
+Rewritten to describe what is actually reported, with the exclusion stated.
+
+**4. QPSK framing (§9).** "The canonical findings generalized fully to QPSK"
+predates QPSK becoming the canonical constellation; there is no longer a
+separate thing for findings to generalise to.
+
+### Overconfident
+
+**5. "Proved correct" (§4.2).** AWGN calibration was said to be where the
+simulator "can be proved correct". Agreement within 0.6% against a closed form
+validates; it does not prove. Now "checked against an exact result rather than
+only against another simulation".
+
+**6. Timing speedup (§8.3).** The 10.7× Mamba-2 figure was stated as a property
+of the architecture. It is a wall-clock measurement of one reference
+implementation on one machine, and the timing tables were **not** re-measured
+in this revision. Now stated as such.
+
+### Conflicting between sections
+
+**7. "The only pilot-free option that remains reliable" (§7.5).** True at the
+block lengths of that study — CMA sits at 0.1723 on 40-symbol blocks and 0.1653
+at 1,000 — but it contradicted §7.6, where blocks are long enough for CMA to
+converge and it comes within a factor of 1.3 of the learned relay. The claim is
+now scoped to short blocks and the difference is stated.
+
+### Checked and left alone
+
+Uses of "optimal" for MAP and MLSE detection are technically correct and stay.
+"Fixed" is retained where literally true, as for the three-tap ISI filter whose
+taps genuinely do not change. The universal-approximation citation is a named
+theorem, not a claim about this work. The "169 parameters matching models 140×
+larger" ratio checks out against the recorded parameter counts.
+
+---
+
 ## Verification
 
 `verify_thesis_tables.py` checks every published cell against the file that
