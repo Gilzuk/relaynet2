@@ -309,9 +309,9 @@ Mamba-2-SSD-3K & 3,004 & Reduced d\_model (32$\to$15), d\_state (16$\to$6), laye
 
 This normalization isolates the effect of architectural choice from the confound of parameter count, providing insights into which inductive biases are most beneficial for the relay denoising task. If performance converges at equal parameter budgets, the conclusion is that parameter count (not architecture) is the dominant factor. If significant gaps persist, the conclusion is that architectural inductive biases provide meaningful advantages beyond raw capacity.
 
-\section{Extension Methods: QPSK and 16-QAM}\label{sec:modulation-schemes}
+\section{Modulation: QPSK and 16-QAM}\label{sec:modulation-schemes}
 
-The core experiments use BPSK exclusively, per the canonical setup. To test whether the canonical findings generalize to complex constellations, the extension study of Chapter~\ref{sec:extensions} evaluates QPSK and 16-QAM. This section defines the two constellations, the I/Q-splitting technique that lets real-valued relays process complex signals, and the joint 2D classification formulation that removes I/Q splitting's structural limitation.
+The core experiments use QPSK, the canonical constellation; BPSK is confined to the AWGN calibration channel of Section~\ref{sec:channel-model-validation-simulative}. To test whether the canonical findings generalize to a higher-order constellation, the extension study of Chapter~\ref{sec:extensions} evaluates 16-QAM. This section defines both complex constellations, the I/Q-splitting technique that lets real-valued relays process them, and the joint 2D classification formulation that removes I/Q splitting's structural limitation for 16-QAM.
 
 \subsection{QPSK: Gray-Coded Quadrature Phase-Shift Keying}\label{sec:qpsk-gray-coded-quadrature-phase-shift-keying}
 
