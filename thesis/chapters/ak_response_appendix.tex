@@ -71,4 +71,63 @@ Also removed outright and redesignated future work: the Rician robustness study,
 
 \end{enumerate}
 
+\subsection*{Second round: comments on the revised draft}
+
+The comments below were raised inline on the revised draft, in the abstract, Chapter~\ref{sec:introduction}, Chapter~\ref{sec:literature-review} and the front matter. They were previously answered as coloured margin notes in the document itself, which meant the review exchange was printed in the submitted text. Each is now resolved in place and recorded here instead; no annotation remains anywhere outside this appendix.
+
+\begin{enumerate}
+
+\item \AK{There are some compilation errors pertaining to Hebrew.}\\
+\GZ{Resolved. The Hebrew abstract compiles under XeLaTeX with \texttt{bidi} and renders right-to-left; the document builds with zero errors and zero undefined references.}
+
+\item \AK{What's a \underline{fixed} Rayleigh fading?}\\
+\GZ{Resolved. The word was meaningless and is gone. The abstract now says the channel is i.i.d.\ Rayleigh \emph{fast} fading applied identically on both hops.}
+
+\item \AK{DF is not symbolwise, unless you simple slicing.}\\
+\GZ{Resolved. DF is named \emph{symbol-wise} decode-and-forward at every occurrence in the abstract, and Remark~\ref{rem:df-terminology} separates it from information-theoretic block-DF.}
+
+\item \AK{What's compact?}\\
+\GZ{Resolved. The vague word is replaced by the number: ``an MLP of 169 trainable parameters''.}
+
+\item \AK{From a capacity standpoint, DF is optimal. At short blocklengths, DF should be suboptimal.}\\
+\GZ{Accepted. The abstract no longer implies DF is optimal in any general sense. It states that the information-theoretic results concern coded transmission at asymptotic blocklengths, that they do not transfer to the uncoded finite-length setting measured here, and that whether a coded or soft-information relay beats DF remains open.}
+
+\item \AK{In the matched case, according to your claims here, DF is optimal. For mismatched setting, why would one use DF?}\\
+\GZ{Accepted; the earlier answer defended keeping DF, which was the wrong response. One would \emph{not} use DF under mismatch, and the thesis does not propose it. DF appears in Chapter~\ref{sec:unknown-channels} only as the incumbent being tested, and the result is that it fails: its BER saturates and then rises with transmit power. That failure is the premise of the chapter, not a recommendation.}
+
+\item \AK{Please use AI to polish this abstract.}\\
+\GZ{Done. The abstract was rewritten in full.}
+
+\item \AK{Why? DF cuts the code blocklength by half. Can't this be beaten?}\\
+\GZ{Accepted. The claim was too strong and is withdrawn. The abstract now scopes DF's advantage to uncoded, per-symbol relaying over the SNR range actually measured, and states explicitly that neither the measurements nor the cited theory establish that DF cannot be beaten by a coded or soft-information relay.}
+
+\item \AK{AF outperforms DF for uncoded symbols for low SNR values. DF is not universally better across all SNR values.}\\
+\GZ{Accepted as a general statement, and the abstract no longer claims universality. For the record, no such crossover occurs within this thesis's own measurements: on the canonical channel DF is below AF at every tabulated point, $0.3337$ against $0.4076$ at 0~dB (Table~\ref{tbl:table2}). The mechanism the comment refers to is real, naive always-forward DF propagating its own decision errors at low SNR, and it is why selective DF exists; it simply does not appear in the range evaluated. The abstract is therefore worded as a statement about the results reported here.}
+
+\item \AK{MLSE w.r.t.\ what? Did you assume colored noise or a channel filter? Did you use convolutional codes? The system model in Chapter~1.1 appears memoryless with white noise.}\\
+\GZ{Resolved; the comment identified a genuine gap. MLSE was invoked without the channel that makes it meaningful. The abstract now introduces the three-tap intersymbol-interference filter first and then refers to Viterbi MLSE \emph{matched to that filter}. No convolutional code is used and the noise is white throughout; the memory is in the channel filter, not the noise. The canonical system model is indeed memoryless, which is precisely why the ISI study is a separate chapter.}
+
+\item \AK{This is unclear from the abstract. You cannot refer to a model that you've never mentioned.}\\
+\GZ{Resolved together with the item above: the ISI model is stated before anything that depends on it.}
+
+\item \AK{Since the channel is complex, you could've sent QPSK instead of BPSK.}\\
+\GZ{Accepted, and acted on rather than answered. QPSK \emph{is} now the canonical constellation, precisely because the channel is complex.}
+
+\item \AK{I am aware of that. In the abstract you talked about QPSK and larger QAM constellations, but you do not mention them here. What is the source of this mismatch? If you use complex channels, stick to 2D constellations or avoid talking about them in the sequel as well.}\\
+\GZ{Accepted in full. The instruction is followed literally: the complex channel now carries only two-dimensional constellations. QPSK is canonical and 16-QAM is the extension; BPSK, being one-dimensional, is confined to the real AWGN channel used to calibrate the simulator and is never transmitted over the fading channel. Table~\ref{tbl:configurations} states the three pairings. The mismatch the comment identified, between an abstract promising QPSK and a body delivering BPSK, no longer exists.}
+
+\item \AK{Since you assume uncoded transmission, what reason is there to use $\omega > 0$?}\\
+\GZ{Accepted; there is none, and the canonical relay no longer uses one. On a memoryless channel $y_R[i]$ is a sufficient statistic, so $w=0$. A window is used only in Chapter~\ref{sec:unknown-channels}, where the channel has memory to span.}
+
+\item \AK{The goal of the ``system model'' is to provide the model. Either drop this part from this section and define explicitly in Chapter 7 or define in detail what is the competing model you compare yourself against.}\\
+\GZ{Resolved by taking the first option. The system model no longer justifies a windowed relay by forward-reference; it states the canonical model, in which the relay is memoryless. The windowed relay is defined in Chapter~\ref{sec:unknown-channels} alongside the three-tap channel that motivates it, and the competing model there, pilot-aided Viterbi MLSE over that filter, is specified in full.}
+
+\item \AK{Didn't you assume white noise and i.i.d.\ Rayleigh fading? If so, why do you talk about correlation and how can $w>0$ help?}\\
+\GZ{Accepted; the passage was wrong and has been removed. Under white noise and i.i.d.\ fading there is no correlation for a window to exploit, so the claimed variance-reduction benefit did not hold. The window's justification now rests solely on channel \emph{memory}, which exists only in Chapter~\ref{sec:unknown-channels}.}
+
+\item \AK{You need to use square-brackets to display more concise table and figure titles in the corresponding lists.}\\
+\GZ{Resolved. Every caption whose full text ran long now carries a short-form optional argument, so the List of Tables and List of Figures show concise titles instead of full paragraphs; the handful of captions that were already a single short phrase are unchanged, since a short form would duplicate them.}
+
+\end{enumerate}
+
 \noindent\textbf{Summary of removed material.} In direct response to comment~4 above, the following were removed from the thesis and redesignated as future work: the Rician channel-robustness study; the $2\times2$ MIMO second hop and its ZF/LMMSE/SIC equalization; 16-PSK modulation; the CSI-injection ablation; and the end-to-end autoencoder. AWGN was \emph{not} removed but reduced to a single role, calibration against closed-form BER, with no relay compared on it; the BPSK relay comparison an earlier revision reported on AWGN was itself removed. Rician, the other channel family in the earlier draft, was removed outright. The diversity--multiplexing tradeoff discussion (comment~5) and the MIMO-capacity/equalization background passages (comments~2 and~6) were likewise deleted. All removals served the single-canonical-model discipline requested in comment~4, and none affects the validity of the retained results, which were re-run and re-derived entirely within the canonical setup.
