@@ -13,14 +13,14 @@ The main objective of this thesis is not to propose a new relay design, but to q
 \paragraph{Scope of this thesis.}
 This thesis studies a single, fixed communication problem, the classical
 source--relay--destination (two-hop) link, under \emph{one canonical setup}:
-SISO on both hops, i.i.d.\ Rayleigh fading, complex baseband, uncoded
-BER, on the two constellations that baseband natively carries, BPSK and
-QPSK. The only axis varied is the \emph{relay
-function}. A scoped extension to 16-QAM (Chapter~\ref{sec:extensions}) and a dedicated unknown-channel contribution (Chapter~\ref{sec:unknown-channels}) are included;
+SISO on both hops, i.i.d.\ Rayleigh fading, complex baseband, QPSK, uncoded
+BER. The only axis varied is the \emph{relay
+function}. BPSK appears solely on the AWGN channel used to calibrate the simulator against
+closed-form error probabilities. A scoped extension to 16-QAM (Chapter~\ref{sec:extensions}) and a dedicated unknown-channel contribution (Chapter~\ref{sec:unknown-channels}) are included;
 all other departures from the canonical setup are identified as future work in Chapter~\ref{sec:discussion-and-conclusions}:
 
 \begin{longtable}{@{}p{0.25\textwidth}p{0.71\textwidth}@{}}
-\caption{Scope of the thesis: the canonical setup (BPSK and QPSK on Rayleigh), the 16-QAM extension, and the unknown-channel contribution. No other topology, relay protocol, or performance metric is evaluated in the main line of this work; all such variations are deferred to future work.}
+\caption[Scope of the thesis]{Scope of the thesis: the canonical setup (QPSK on Rayleigh), the 16-QAM extension, and the unknown-channel contribution. No other topology, relay protocol, or performance metric is evaluated in the main line of this work; all such variations are deferred to future work.}
 \label{tbl:scope}\\
 
 \toprule
@@ -80,7 +80,7 @@ Everything else discussed in the literature review (the general relay channel wi
     }
 ]
 
-\node[block] (S) {Source\\BPSK};
+\node[block] (S) {Source\\QPSK};
 \node[relayblock, right=2.8cm of S] (R) {Relay\\$f_\theta(\cdot)$};
 \node[block, right=2.8cm of R] (D) {Destination\\Decision};
 
@@ -101,7 +101,7 @@ Everything else discussed in the literature review (the general relay channel wi
 
 \end{tikzpicture}%
 }
-\caption{Canonical two-hop relay benchmark used throughout the thesis.The source, both channels, and the destination are fixed; only the relay processing function $f_\theta(\cdot)$ (dashed) is varied among the nine candidate strategies. Observed BER differences are therefore attributable to the relay strategy alone.}
+\caption[Canonical two-hop relay benchmark used throughout the thesis.The]{Canonical two-hop relay benchmark used throughout the thesis.The source, both channels, and the destination are fixed; only the relay processing function $f_\theta(\cdot)$ (dashed) is varied among the nine candidate strategies. Observed BER differences are therefore attributable to the relay strategy alone.}
 \label{fig:canonical-relay-benchmark}
 \end{figure}
 
@@ -136,11 +136,11 @@ Because the fading coefficient is known at each receiver, coherent compensation 
 }\end{equation}
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad awgn-hop1}
 
-with $\tilde{n}[i] \sim \mathcal{N}(0, \sigma^2)$ real. \AK{Since the channel is complex, you could've sent QPSK instead of BPSK.}\REV{QPSK could place an independent bit on the quadrature axis, but for rectangular constellations the I and Q axes are independent, so QPSK is exactly two parallel BPSK channels and loses no generality. This is confirmed experimentally in (Chapter~\ref{sec:extensions}. BPSK is thus the minimal modulation that isolates the relay-denoising problem, the only varied axis in this thesis \AK{I am aware of that. In the abstract you talked about QPSK and larger QAM constellations, but you do not mention them here. What is the source of this mistmatch? If you use compelx channels, stick to 2D constellations or avoid talking about them in the sequel as well}.}\GZ{The distinction between the canonical benchmark and the modulation extension is now made explicit. BPSK remains the canonical modulation used to isolate relay processing, while QPSK and 16-QAM are defined and evaluated separately in Chapter~\ref{sec:extensions}. The earlier claim that BPSK ``loses no generality'' was removed because it was too broad: QPSK reproduces the BPSK behavior under independent I/Q processing, but 16-QAM requires a joint 2D formulation.}
+with $\tilde{n}[i] \sim \mathcal{N}(0, \sigma^2)$ real per axis. Because the channel is complex, the canonical constellation is two-dimensional: QPSK places one bit on each axis, so both dimensions the channel acts in are used and the relay processes the pair. The real reduction above then applies per axis rather than discarding one. BPSK, being one-dimensional, is used only on the real AWGN calibration channel of Section~\ref{sec:channel-model-validation-simulative}, where the closed forms it validates are defined; it is never transmitted over the complex fading channel, which would require discarding the quadrature component. The one constellation that breaks per-axis relay processing, 16-QAM, is treated separately in Chapter~\ref{sec:extensions}.
 The \emph{AWGN calibration limit} used to validate the simulator (Chapter~\ref{sec:literature-review}) is the special case $|h[i]| \equiv 1$, i.e.\ $y_R[i] = x[i] + n_1[i]$ and $y_D[i] = x_R[i] + n_2[i]$.
 
 \begin{remark}[Realizability of the symmetric window]\label{rem:window-causality}
-The window $y_R[i-w:i+w]$ uses look-ahead samples and is therefore non-causal in the \emph{streaming} sense. It is nonetheless fully realizable in the half-duplex protocol studied here: the relay buffers the \emph{entire} listening-phase block before the transmission phase begins, so by the time $x_R[i]$ is computed, all samples $y_R[i-w:i+w]$ have already been received \AK{Since you assume uncoded transmission, what reason is there to use $\omega > 0$?}\REV{Agreed. For the canonical memoryless channel, $w=0$ is sufficient because $y_R[i]$ is already a sufficient statistic for $x[i]$. The window is retained primarily for the unknown-channel study of Chapter~\ref{sec:unknown-channels}, where the relay must span channel memory (3-tap ISI). Using a common architecture throughout the thesis keeps the relay formulation fixed across experiments and isolates the effect of the channel assumptions rather than the network structure. \AK{The goal of the ``system model'' is to provide the model. Either drop this part from this section and define explicitly in Chapter 7 or define in detail what is the competing model you compare yourself against.}\GZ{Kept, but scoped explicitly rather than dropped: this remark defines only the \emph{architectural} convention, that a symmetric window is realizable because the half-duplex protocol buffers the entire listening-phase block, not a competing classical model. That convention applies uniformly to every windowed relay in the thesis, including the canonical setup where $w=0$, so it belongs here rather than being duplicated per chapter. The actual competing classical model against which the window is exercised, a 3-tap FIR/ISI channel with genie-CSI and pilot-LS Viterbi MLSE, is defined precisely, and only, in Chapter~\ref{sec:unknown-channels} (Section~\ref{sec:unknown-channel-experiment}), which now also reports the same comparison for QPSK (Section~\ref{sec:qpsk-unknown-channel}). No channel-memory model is introduced in this chapter.}}. The symmetric window is thus a block-level (store-and-forward) operation with a fixed processing latency of $w$ symbols. The classical baselines AF and DF are memoryless in their per-symbol operation ($w=0$) and are strictly causal.
+The window $y_R[i-w:i+w]$ uses look-ahead samples and is therefore \emph{not causal}. It is admissible in the half-duplex protocol studied here only because the relay buffers the entire listening-phase block before the transmission phase begins, so that when $x_R[i]$ is computed all of $y_R[i-w:i+w]$ has already arrived; the cost is a fixed processing latency of $w$ symbols. This is a limitation of the learned relays, not a property of the channel, and it is recorded as such. A strictly causal past-only window $y_R[i-2w:i]$ would remove it and is what a streaming deployment would require; that variant is not evaluated in this thesis and no claim is made for it. On the canonical memoryless channel $w=0$ would in any case suffice, since $y_R[i]$ is already a sufficient statistic for $x[i]$; the window is carried at $w>0$ so that the same relay architecture serves the unknown-channel study of Chapter~\ref{sec:unknown-channels}, where it must span the three-tap channel memory. AF and symbol-wise DF use $w=0$ and are strictly causal.
 \end{remark}
 
 The noise terms are independent and identically distributed with variance

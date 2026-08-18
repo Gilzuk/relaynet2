@@ -308,7 +308,7 @@ The Mamba architecture wraps the selective $S_6$ layer in a gated architecture: 
 \begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{results/mamba_ssd_s6.png}
-    \caption{Mamba: Linear-Time Sequence Modeling with Selective State Spaces. Structured SSMs independently map each channel (e.g.\ $D=5$) of an input $x$ to output $y$ through a higher dimensional latent state $h$ (e.g.\ state dimension $N=4$). Prior SSMs avoid materializing this large effective state ($DN$ times batch size $B$ and sequence length $L$) through clever alternate computation paths requiring time-invariance: the ($\Delta$, $A$, $B$, $C$) parameters are constant across time. The selection mechanism adds back input-dependent dynamics, which also requires a careful hardware-aware algorithm to only materialize the expanded states in more efficient levels of the GPU memory hierarchy.}
+    \caption[Mamba: Linear-Time Sequence Modeling with Selective State Spaces]{Mamba: Linear-Time Sequence Modeling with Selective State Spaces. Structured SSMs independently map each channel (e.g.\ $D=5$) of an input $x$ to output $y$ through a higher dimensional latent state $h$ (e.g.\ state dimension $N=4$). Prior SSMs avoid materializing this large effective state ($DN$ times batch size $B$ and sequence length $L$) through clever alternate computation paths requiring time-invariance: the ($\Delta$, $A$, $B$, $C$) parameters are constant across time. The selection mechanism adds back input-dependent dynamics, which also requires a careful hardware-aware algorithm to only materialize the expanded states in more efficient levels of the GPU memory hierarchy.}
     \label{fig:mamba_ssd_s6}
 \end{figure}
 \REV{Caption: the latent-state dimension is the SSM state size $N$, not $D$ (the number of channels); corrected ``$D=4$''$\to$``$N=4$'' to match the surrounding notation.}
@@ -350,7 +350,7 @@ Mamba-2 can be viewed as a streamlined evolution of Mamba-1: it restructures the
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\linewidth]{results/mamba2_ssd_2.png}
-    \caption{The Mamba-2 block simplifies the Mamba block by removing sequential linear projections; the SSM parameters $A,B,C$ are produced at the beginning of the block instead of as a function of the SSM input $X$. An additional normalization layer is added as in \emph{NormFormer} \cite{shleifer2021normformer}, improving stability. The $B$ and $C$ projections only have a single head shared across the $X$ heads, analogous to multi-value attention (MVA).}
+    \caption[The Mamba-2 SSD block]{The Mamba-2 block simplifies the Mamba block by removing sequential linear projections; the SSM parameters $A,B,C$ are produced at the beginning of the block instead of as a function of the SSM input $X$. An additional normalization layer is added as in \emph{NormFormer} \cite{shleifer2021normformer}, improving stability. The $B$ and $C$ projections only have a single head shared across the $X$ heads, analogous to multi-value attention (MVA).}
     \label{fig:mamba2-ssd-2}
 \end{figure}
 \subsection{State Space Models for Signal Processing}\label{sec:state-space-models-for-signal-processing}

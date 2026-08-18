@@ -11,7 +11,7 @@ Rather than a single comparison, the chapter is a systematic map, along every ax
 \paragraph{The argument as a ladder of assumptions.} The thesis as a whole is organised as a monotone sequence in which each layer removes exactly one assumption from the layer above, and the classical--learned comparison is repeated unchanged at every layer. Table~\ref{tbl:layers} is that sequence with its outcomes. Reading it downward is the thesis's argument in one page: classical processing is not beaten where it is well posed, and is beaten precisely where its preconditions fail.
 
 \begin{longtable}[]{@{}clp{0.30\linewidth}p{0.34\linewidth}@{}}
-\caption{The four layers of the argument. Each removes one assumption from the layer above; the relay comparison is otherwise identical. BER figures are the representative operating points cited in the sections named.}\label{tbl:layers}\tabularnewline
+\caption[The four layers of the argument]{The four layers of the argument. Each removes one assumption from the layer above; the relay comparison is otherwise identical. BER figures are the representative operating points cited in the sections named.}\label{tbl:layers}\tabularnewline
 \toprule\noalign{}
 Layer & Assumptions & Strongest classical & Outcome \\
 \midrule\noalign{}
@@ -46,7 +46,7 @@ The investigation is deliberately adversarial to the learned relay. Each classic
 \node[below=0.9cm of C, align=center, font=\footnotesize] (note) {Departure from the canonical model:\\ channel \emph{memory} (3-tap ISI), nonlinearity, unknown phase.\\ Noise remains white; only the \emph{channel} violates memorylessness.}; 
 \draw[dotted] (C.south) -- (note.north); 
 \end{tikzpicture}% 
-} \caption{Unknown/mismatched-channel study (Chapter~\ref{sec:unknown-channels}), a deliberate departure from the canonical benchmark of Figure~\ref{fig:canonical-relay-benchmark}. The Hop-1 channel is replaced by an unknown impairment (3-tap ISI, amplifier nonlinearity, and unknown phase) that is not disclosed to any relay. The noise remains white; only the channel violates the memoryless assumption, which is why sequence detection (Viterbi MLSE) becomes the relevant classical benchmark here and nowhere else in the thesis.} 
+} \caption[Unknown and mismatched-channel study]{Unknown/mismatched-channel study (Chapter~\ref{sec:unknown-channels}), a deliberate departure from the canonical benchmark of Figure~\ref{fig:canonical-relay-benchmark}. The Hop-1 channel is replaced by an unknown impairment (3-tap ISI, amplifier nonlinearity, and unknown phase) that is not disclosed to any relay. The noise remains white; only the channel violates the memoryless assumption, which is why sequence detection (Viterbi MLSE) becomes the relevant classical benchmark here and nowhere else in the thesis.} 
 \label{fig:ext-unknown}
 \end{figure}
 
@@ -97,7 +97,7 @@ These channels remain memoryless and therefore stay within the scope of the cano
 
 
 \begin{longtable}[]{@{}lllll@{}}
-\caption{Flat unknown channels: classical relay vs.\ MLP-169 BER at 8/12/16/20 dB (mean, 10 trials). The maximum DF--MLP gap over all cases and SNRs is $0.0036$, within statistical noise. Unknown parameters alone do not defeat classical relays; memory does.}\label{tbl:tableE6flat}\tabularnewline
+\caption[Flat unknown channels]{Flat unknown channels: classical relay vs.\ MLP-169 BER at 8/12/16/20 dB (mean, 10 trials). The maximum DF--MLP gap over all cases and SNRs is $0.0036$, within statistical noise. Unknown parameters alone do not defeat classical relays; memory does.}\label{tbl:tableE6flat}\tabularnewline
 \toprule\noalign{}
 Flat channel & Relay & 8 dB & 12 dB & 16/20 dB \\
 \midrule\noalign{}
@@ -119,7 +119,7 @@ Branch asymmetry & DF & 0.0760 & 0.0299 & 0.0125 / 0.0049 \\
 \textbf{Conclusion (H6: confirmed as stated, with two boundaries):} Against the flat-channel control of Section~\ref{sec:flat-unknown-channels}, where unknown parameters alone caused no classical failure, the memory case is qualitatively different. On the unknown ISI channel, both memoryless classical relays fail: DF's BER is \emph{non-monotonic}, bottoming out at $0.184$ around 8 dB and then rising toward the analytic $0.25$ floor, reaching $0.246$ at 20 dB (more transmit power makes DF strictly worse), and AF behaves identically. The 169-parameter MLP, whose window spans the 3-tap memory, learns a joint equalizer--detector and restores reliable relaying: BER falls monotonically below $5\times10^{-5}$ at 16 dB (AWGN second hop), and to $2.5\times10^{-3}$ at 20 dB (Rayleigh second hop). The Viterbi benchmarks set the first boundary honestly: classical theory \emph{does} solve this channel once its family is known, genie-CSI MLSE beats the MLP by 1--1.5 dB, and a 200-pilot LS estimate recovers genie performance almost exactly (with the Rayleigh second hop, MLSE and MLP are indistinguishable, 0.0024 vs.\ 0.0025 at 20 dB). The MLP's value is thus not optimality but \emph{family-agnosticism}: estimate-then-MLSE presupposes a linear FIR channel of known memory (trellis cost $M^{L-1}$), whereas the identical architecture also mitigates channels outside linear MLSE's model class, as the composite cascade below demonstrates, where an amplifier nonlinearity is stacked on the ISI. The control confirms the second boundary (H2): on the canonical Rayleigh channel the MLP only \emph{matches} DF. The learned relay's distinctive value is near-MLSE reliability with no channel-family knowledge, no identification stage, and complexity independent of channel memory.
 
 \begin{longtable}[]{@{}llllll@{}}
-\caption{Unknown-channel BER (mean over 10 trials). The ISI setups exhibit memoryless-relay error floors ($\approx 0.25$); the 169-parameter MLP restores reliable relaying within $\approx$1--1.5 dB of genie-CSI Viterbi MLSE, and matches it end-to-end when the Rayleigh second hop dominates. The control shows no MLP advantage on the canonical channel, consistent with H2.}\label{tbl:tableE6}\tabularnewline
+\caption[Unknown-channel BER (mean over 10 trials)]{Unknown-channel BER (mean over 10 trials). The ISI setups exhibit memoryless-relay error floors ($\approx 0.25$); the 169-parameter MLP restores reliable relaying within $\approx$1--1.5 dB of genie-CSI Viterbi MLSE, and matches it end-to-end when the Rayleigh second hop dominates. The control shows no MLP advantage on the canonical channel, consistent with H2.}\label{tbl:tableE6}\tabularnewline
 \toprule\noalign{}
 Setup & Relay & 8 dB & 12 dB & 16 dB & 20 dB \\
 \midrule\noalign{}
@@ -151,7 +151,7 @@ Control: canonical Rayleigh & AF & 0.1050 & 0.0559 & 0.0281 & 0.0136 \\
 \begin{figure}[H]
 \centering
 \pandocbounded{\includegraphics[width=\linewidth,height=0.24\textheight,keepaspectratio]{results/e6_unknown_channel.png}}
-\caption{Unknown-channel relaying, BER vs.\ SNR with 95\% CI bands. (a)--(b) On the unknown ISI channel, the memoryless AF/DF relays are pinned near the analytic $0.25$ floor (DF non-monotonic in SNR); the 169-parameter MLP restores monotonically decreasing BER within $\approx$1--1.5 dB of genie-CSI Viterbi MLSE, which a 200-pilot LS estimate matches almost exactly. With the Rayleigh second hop (b), MLSE and the MLP are statistically indistinguishable end-to-end. (c) Control: on the canonical Rayleigh channel the MLP only matches DF, consistent with H2.}\label{fig:figE6}
+\caption[Unknown-channel relaying, BER vs.\ SNR with 95\% CI bands]{Unknown-channel relaying, BER vs.\ SNR with 95\% CI bands. (a)--(b) On the unknown ISI channel, the memoryless AF/DF relays are pinned near the analytic $0.25$ floor (DF non-monotonic in SNR); the 169-parameter MLP restores monotonically decreasing BER within $\approx$1--1.5 dB of genie-CSI Viterbi MLSE, which a 200-pilot LS estimate matches almost exactly. With the Rayleigh second hop (b), MLSE and the MLP are statistically indistinguishable end-to-end. (c) Control: on the canonical Rayleigh channel the MLP only matches DF, consistent with H2.}\label{fig:figE6}
 \end{figure}
 
 \subsection{Does the Result Generalize to QPSK?}\label{sec:qpsk-unknown-channel}
@@ -159,7 +159,7 @@ Control: canonical Rayleigh & AF & 0.1050 & 0.0559 & 0.0281 & 0.0136 \\
 The unknown-ISI study above uses BPSK throughout, matching the canonical setup of Chapters~\ref{sec:experiments}--\ref{sec:extensions}. The $0.25$ floor derived in Section~\ref{sec:unknown-channel-experiment} is a property of the \emph{binary} slicer: it counts the $2^{3}=8$ equiprobable tap-sign patterns that flip a $\pm1$ decision. That argument does not extend to a four-point per-axis alphabet, so it is not obvious a priori whether either the elevated error floor or the ordering between the learned relay and genie-CSI Viterbi MLSE survives a move to a higher-order modulation. This subsection repeats the unknown-ISI study with Gray-coded QPSK in place of BPSK, keeping every other element fixed: the same $3$-tap ISI channel $h=[1.0,0.7,0.5]$ (normalized) on Hop 1, AWGN or canonical Rayleigh on Hop 2 at the same nominal per-hop SNR (identical convention, $\gamma=10^{\text{SNR}_{\text{dB}}/10}$, memory-bank/techContext.md), and the same relay set generalized to the complex alphabet: AF, symbol-wise DF (hard per-axis decision), a $193$-parameter $4$-class MLP-QPSK classifier (window 11, softmax cross-entropy, trained at SNR $\in\{5,10,15\}$ dB), and genie-CSI Viterbi MLSE generalized to the complex QPSK trellis ($4^{2}=16$ states, complex branch metrics). Evaluation uses $10$ trials $\times$ $100{,}000$ bits per SNR point over the same $0$--$20$ dB range. No closed-form floor is derived for QPSK, so the curves below are reported as measured, not fit to a predicted asymptote. Because the QPSK relays are applied jointly to the complex signal rather than decomposed into two independent BPSK problems, and the per-relay power normalization is computed on total (I+Q) power, the resulting AF/DF operating points are not required to, and empirically do not, numerically match the BPSK figures of Table~\ref{tbl:tableE6} at the same SNR label; no such match is claimed.
 
 \begin{longtable}[]{@{}llllll@{}}
-\caption{QPSK unknown-channel BER (mean over 10 trials). AF and DF plateau at an elevated, non-monotonic BER across the SNR range tabulated; the 193-parameter MLP-QPSK restores monotonically decreasing BER and, unlike the BPSK case, ends up \emph{below} genie-CSI Viterbi MLSE from about 2 dB upward.}\label{tbl:tableE6qpsk}\tabularnewline
+\caption[QPSK unknown-channel BER (mean over 10 trials)]{QPSK unknown-channel BER (mean over 10 trials). AF and DF plateau at an elevated, non-monotonic BER across the SNR range tabulated; the 193-parameter MLP-QPSK restores monotonically decreasing BER and, unlike the BPSK case, ends up \emph{below} genie-CSI Viterbi MLSE from about 2 dB upward.}\label{tbl:tableE6qpsk}\tabularnewline
 \toprule\noalign{}
 Setup & Relay & 8 dB & 12 dB & 16 dB & 20 dB \\
 \midrule\noalign{}
@@ -184,7 +184,7 @@ QPSK: ISI $\to$ Rayleigh & AF & 0.2715 & 0.2320 & 0.2137 & 0.2116 \\
 \begin{figure}[H]
 \centering
 \pandocbounded{\includegraphics[width=\linewidth,height=0.24\textheight,keepaspectratio]{results/unkchan_qpsk.png}}
-\caption{QPSK unknown-channel relaying, BER vs.\ SNR (10 trials, 100{,}000 bits/point). As with BPSK, AF and DF plateau far above the MLP and Viterbi curves. Unlike BPSK, the MLP-QPSK curve separates \emph{below} genie-CSI Viterbi MLSE beyond about 2 dB, and the gap widens with SNR.}\label{fig:figE6qpsk}
+\caption[QPSK unknown-channel relaying]{QPSK unknown-channel relaying, BER vs.\ SNR (10 trials, 100{,}000 bits/point). As with BPSK, AF and DF plateau far above the MLP and Viterbi curves. Unlike BPSK, the MLP-QPSK curve separates \emph{below} genie-CSI Viterbi MLSE beyond about 2 dB, and the gap widens with SNR.}\label{fig:figE6qpsk}
 \end{figure}
 
 \textbf{Conclusion (the ISI failure mode generalizes; the BPSK ordering does not):} The qualitative pattern of Section~\ref{sec:unknown-channel-experiment} survives the move to QPSK: AF and DF plateau at an elevated, non-monotonic BER (AF ranges $0.2024$--$0.2715$ and DF ranges $0.2024$--$0.2528$ across the four tabulated points, broadly similar in magnitude to BPSK's memoryless-relay floor of $0.25$ though no equivalent closed form is derived here), while the MLP restores monotonically decreasing BER, confirming that unmodeled channel memory, not modulation order, is what breaks the memoryless relay class (H6). What does \emph{not} generalize is the BPSK ordering between the learned relay and the optimal classical benchmark. In the BPSK study, genie-CSI Viterbi MLSE beat the MLP by 1--1.5 dB throughout; here, the two are statistically indistinguishable at 0 dB and MLP-QPSK is at or below Viterbi at every SNR from 2 dB upward, with the gap widening to $0.0508$ vs.\ $0.0618$ (AWGN) and $0.0553$ vs.\ $0.0662$ (Rayleigh) at 20 dB. This is not a violation of MLSE optimality: Viterbi MLSE minimizes the \emph{sequence} error probability under the assumed channel model, not the bit error rate directly. For BPSK, each trellis branch carries exactly one bit, so sequence-optimal and bit-optimal detection coincide; for Gray-coded QPSK, each branch carries two bits, and a wrong branch choice can differ from the true one by one bit (adjacent constellation point) or two (diagonal point) with different probabilities, so sequence-ML detection is no longer guaranteed to minimize BER specifically. The 193-parameter MLP-QPSK is instead trained directly on a per-symbol softmax cross-entropy objective, which is not subject to that mismatch. This is offered as the most plausible mechanism for the reversal; it was not isolated experimentally (for instance, by decomposing the Viterbi output into single- versus double-bit symbol errors), and is left as an open point rather than a proven claim. Either way, the practical conclusion sharpens rather than weakens H6 for higher-order modulation: on this unknown-memory channel, the fixed-complexity learned relay is not merely a family-agnostic near-optimal option, as in the BPSK case, but the best-performing option measured here among either family, at the same constant per-symbol cost quantified in Section~\ref{sec:complexity-viterbi-mlp}.
@@ -199,7 +199,7 @@ The preceding studies vary one impairment at a time. Real links stack several. T
 \begin{figure}[H]
 \centering
 \pandocbounded{\includegraphics[width=0.82\linewidth,height=0.32\textheight,keepaspectratio]{results/e6_composite.png}}
-\caption{Composite channel (ISI $\times$ PA-nonlinearity $\times$ unknown phase, DBPSK; mean over 10 trials, 100{,}000 bits/point, 95\% CI bands). Naive classical relays (AF, differential detection) saturate at the memoryless-relay floor; the 169-parameter MLP restores reliable relaying from raw I/Q with no impairment model, tracking about 2 dB behind the strongest constructed classical baseline (pilot-LS Viterbi + differential) and converging with it by 20 dB. The $1{,}153$-parameter MLP adds nothing (H3).}\label{fig:figE6comp}
+\caption[Composite multi-impairment channel]{Composite channel (ISI $\times$ PA-nonlinearity $\times$ unknown phase, DBPSK; mean over 10 trials, 100{,}000 bits/point, 95\% CI bands). Naive classical relays (AF, differential detection) saturate at the memoryless-relay floor; the 169-parameter MLP restores reliable relaying from raw I/Q with no impairment model, tracking about 2 dB behind the strongest constructed classical baseline (pilot-LS Viterbi + differential) and converging with it by 20 dB. The $1{,}153$-parameter MLP adds nothing (H3).}\label{fig:figE6comp}
 \end{figure}
 
 \subsection{Layer 3 --- CSI Uncertainty: The Pilot-Budget Crossover}\label{sec:partial-posterior}
@@ -216,14 +216,14 @@ The blind reference settles a question the earlier version of this study left op
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.85\linewidth]{results/e6_partial_pilot_budget_sweep.png}
-\caption{Pilot-budget sweep at 10~dB (mean over 50 channel draws, 20{,}000 bits/point). Pilot-aided Viterbi outperforms the pilot-free MLP down to approximately 20 pilots per block, loses its edge by 10 pilots, and collapses at 5 pilots when the least-squares channel estimate becomes too noisy to construct a reliable trellis ($0.1235 \pm 0.0304$). In contrast, the MLP remains flat across the sweep because it operates with an amortized posterior and requires no pilots.}
+\caption[Pilot-budget sweep at 10 dB]{Pilot-budget sweep at 10~dB (mean over 50 channel draws, 20{,}000 bits/point). Pilot-aided Viterbi outperforms the pilot-free MLP down to approximately 20 pilots per block, loses its edge by 10 pilots, and collapses at 5 pilots when the least-squares channel estimate becomes too noisy to construct a reliable trellis ($0.1235 \pm 0.0304$). In contrast, the MLP remains flat across the sweep because it operates with an amortized posterior and requires no pilots.}
 \label{fig:e6_partial_pilot_budget}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.85\linewidth]{results/e6_partial_short_blocks_overhead.png}
-\caption{Block-length sweep with 10 pilots per block (mean over 50 channel draws, 20{,}000 bits/point, subdivided into independent blocks of the swept length). Pilot-aided Viterbi and the pilot-free MLP are indistinguishable in payload BER at every block length (both $\approx 0.049$), but the classical receiver's pilot overhead grows from approximately 1\% at $L=1000$ to 25\% at $L=40$. The other pilot-free option, blind CMA, cannot converge within blocks this short and sits roughly three and a half times worse throughout. The MLP therefore matches the pilot-aided receiver's reliability at no overhead, and is the only pilot-free method that remains reliable for short packets.}
+\caption[Block-length sweep at 10 pilots]{Block-length sweep with 10 pilots per block (mean over 50 channel draws, 20{,}000 bits/point, subdivided into independent blocks of the swept length). Pilot-aided Viterbi and the pilot-free MLP are indistinguishable in payload BER at every block length (both $\approx 0.049$), but the classical receiver's pilot overhead grows from approximately 1\% at $L=1000$ to 25\% at $L=40$. The other pilot-free option, blind CMA, cannot converge within blocks this short and sits roughly three and a half times worse throughout. The MLP therefore matches the pilot-aided receiver's reliability at no overhead, and is the only pilot-free method that remains reliable for short packets.}
 \label{fig:e6_partial_short_blocks}
 \end{figure}
 
@@ -239,7 +239,7 @@ This is layer~4, the bottom of the ladder. Section~\ref{sec:partial-posterior} s
 \begin{figure}[H]
 \centering
 \pandocbounded{\includegraphics[width=0.82\linewidth,height=0.32\textheight,keepaspectratio]{results/e6_blind.png}}
-\caption{Posterior-free composite channel (no pilots, no channel prior, fresh realization per block; mean over 50 channel draws, 20{,}000 bits/point, 95\% CI bands). The corrected CMA (blind classical) tracks the family-trained MLP closely, the MLP holding a small consistent margin; decision-directed blind MLSE is unstable (non-monotonic tail, CI band several times wider) because it bootstraps the channel from its own decisions; plain differential detection floors. Without a posterior, learning only narrowly outperforms the best blind classical equalizer, but does so with one-shot, stable inference and no online adaptation.}\label{fig:figE6blind}
+\caption[Posterior-free (blind) composite channel]{Posterior-free composite channel (no pilots, no channel prior, fresh realization per block; mean over 50 channel draws, 20{,}000 bits/point, 95\% CI bands). The corrected CMA (blind classical) tracks the family-trained MLP closely, the MLP holding a small consistent margin; decision-directed blind MLSE is unstable (non-monotonic tail, CI band several times wider) because it bootstraps the channel from its own decisions; plain differential detection floors. Without a posterior, learning only narrowly outperforms the best blind classical equalizer, but does so with one-shot, stable inference and no online adaptation.}\label{fig:figE6blind}
 \end{figure}
 
 \subsection{Complexity: The Cost Side of the Trade-off}\label{sec:complexity-viterbi-mlp}
@@ -256,13 +256,13 @@ The experiments of this chapter deliberately extend the thesis beyond the canoni
 \begin{figure}[H]
 \centering
 \pandocbounded{\includegraphics[width=0.8\linewidth]{results/e6_per_symbol_cost_vs_modulation_memory.png}}
-\caption{Per-symbol computational cost versus modulation order $M$ and channel memory $L$. Per-symbol operations: Viterbi grows as $M^{L}$ (intractable by $M{=}16,L{=}5$), while the MLP is constant at $\sim$330 flops. On the small studied channel (BPSK, $L{=}3$) Viterbi is actually cheaper; the MLP wins on \emph{scaling}, not on the small case.}
+\caption[Per-symbol computational cost]{Per-symbol computational cost versus modulation order $M$ and channel memory $L$. Per-symbol operations: Viterbi grows as $M^{L}$ (intractable by $M{=}16,L{=}5$), while the MLP is constant at $\sim$330 flops. On the small studied channel (BPSK, $L{=}3$) Viterbi is actually cheaper; the MLP wins on \emph{scaling}, not on the small case.}
 \label{fig:figE6complexity}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \pandocbounded{\includegraphics[width=0.8\linewidth]{results/e6_right_clean.png}}
-\caption{Measured inference time for BPSK with $L=3$: the MLP is $30$--$90\times$ faster as a vectorized matmul versus Viterbi's interpreted sequential trellis scan.}
+\caption[Measured inference time for BPSK with $L=3$]{Measured inference time for BPSK with $L=3$: the MLP is $30$--$90\times$ faster as a vectorized matmul versus Viterbi's interpreted sequential trellis scan.}
 \label{fig:e6_inference_time}
 \end{figure}
