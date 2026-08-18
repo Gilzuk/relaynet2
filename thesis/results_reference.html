@@ -1,0 +1,337 @@
+<title>Relay BER Results Reference</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:ital,wght@0,400;0,500;1,400&display=swap">
+
+<style>
+  :root{
+    --paper:#F4F6F8; --card:#FFFFFF; --ink:#111A22; --ink-2:#3B4A57; --ink-3:#6B7B89;
+    --rule:#D8DFE5; --rule-2:#E9EEF2;
+    --accent:#0E6E72; --accent-soft:#DCEDED;
+    --flag:#9A6510; --flag-soft:#F6EBD9;
+    --bad:#8C2F39; --bad-soft:#F7E4E6;
+    --cfg-a:#1D4E7A; --cfg-b:#0E6E72; --cfg-c:#6A3B8F;
+    --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+    --sans:"IBM Plex Sans",system-ui,-apple-system,Segoe UI,sans-serif;
+    --serif:"IBM Plex Serif",Georgia,"Times New Roman",serif;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --paper:#0C1319; --card:#121C24; --ink:#E7EDF2; --ink-2:#AEBDC8; --ink-3:#7C8C99;
+      --rule:#243542; --rule-2:#1B2831;
+      --accent:#4FBFC2; --accent-soft:#123033;
+      --flag:#D69B4A; --flag-soft:#2E2415;
+      --bad:#E0808A; --bad-soft:#33191D;
+      --cfg-a:#6FA8DA; --cfg-b:#4FBFC2; --cfg-c:#B08CD4;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#0C1319; --card:#121C24; --ink:#E7EDF2; --ink-2:#AEBDC8; --ink-3:#7C8C99;
+    --rule:#243542; --rule-2:#1B2831;
+    --accent:#4FBFC2; --accent-soft:#123033;
+    --flag:#D69B4A; --flag-soft:#2E2415;
+    --bad:#E0808A; --bad-soft:#33191D;
+    --cfg-a:#6FA8DA; --cfg-b:#4FBFC2; --cfg-c:#B08CD4;
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:var(--serif); font-size:16px; line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1080px; margin:0 auto; padding:56px 28px 96px; display:flex; flex-direction:column; gap:44px}
+
+  header.masthead{display:flex; flex-direction:column; gap:14px; padding-bottom:28px; border-bottom:2px solid var(--ink)}
+  .kicker{font-family:var(--sans); font-size:11.5px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-3)}
+  h1{font-family:var(--sans); font-weight:700; font-size:clamp(30px,4.4vw,44px); line-height:1.1; letter-spacing:-.02em; margin:0; text-wrap:balance}
+  .standfirst{font-size:17.5px; color:var(--ink-2); max-width:68ch; margin:0}
+  .meta{display:flex; flex-wrap:wrap; gap:8px 22px; font-family:var(--mono); font-size:12.5px; color:var(--ink-3); margin-top:4px}
+  .meta b{color:var(--ink-2); font-weight:500}
+
+  h2{font-family:var(--sans); font-weight:600; font-size:22px; letter-spacing:-.01em; margin:0 0 6px; text-wrap:balance}
+  h3{font-family:var(--sans); font-weight:600; font-size:15.5px; margin:0 0 4px}
+  p{margin:0 0 12px; max-width:68ch}
+  p:last-child{margin-bottom:0}
+  a{color:var(--accent)}
+  code{font-family:var(--mono); font-size:.9em; background:var(--rule-2); padding:1px 5px; border-radius:3px}
+
+  section.block{display:flex; flex-direction:column; gap:18px}
+
+  .tbl-head{display:flex; flex-wrap:wrap; align-items:baseline; gap:10px 14px}
+  .label{font-family:var(--mono); font-size:12px; font-weight:500; color:var(--accent); background:var(--accent-soft); padding:2px 8px; border-radius:3px; white-space:nowrap}
+  .chip{font-family:var(--sans); font-size:11px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; padding:3px 9px; border-radius:999px; border:1px solid currentColor; white-space:nowrap}
+  .cfg-a{color:var(--cfg-a)} .cfg-b{color:var(--cfg-b)} .cfg-c{color:var(--cfg-c)}
+  .src{font-family:var(--mono); font-size:11.5px; color:var(--ink-3); margin-left:auto}
+
+  .scroll{overflow-x:auto; border:1px solid var(--rule); border-radius:6px; background:var(--card)}
+  table{border-collapse:collapse; width:100%; font-family:var(--mono); font-size:13px; font-variant-numeric:tabular-nums}
+  caption{caption-side:bottom; text-align:left; font-family:var(--sans); font-size:12.5px; color:var(--ink-3); padding:10px 14px; line-height:1.5}
+  th,td{padding:7px 14px; text-align:right; white-space:nowrap; border-bottom:1px solid var(--rule-2)}
+  th:first-child,td:first-child{text-align:left}
+  thead th{font-family:var(--sans); font-size:11.5px; font-weight:600; letter-spacing:.04em; text-transform:uppercase; color:var(--ink-3); border-bottom:1px solid var(--rule); position:sticky; top:0; background:var(--card)}
+  tbody tr:last-child td{border-bottom:none}
+  tbody tr.rule-top td{border-top:1px solid var(--rule)}
+  td.best{color:var(--accent); font-weight:600}
+  td.flag{color:var(--flag); font-weight:600}
+  td.bad{color:var(--bad); font-weight:600}
+  td.muted{color:var(--ink-3)}
+  tr.sub td{font-family:var(--sans); font-size:11.5px; font-weight:600; letter-spacing:.05em; text-transform:uppercase; color:var(--ink-3); background:var(--rule-2); padding-top:9px; padding-bottom:9px}
+
+  .note{border-left:3px solid var(--accent); background:var(--card); padding:14px 18px; border-radius:0 5px 5px 0}
+  .note.warn{border-left-color:var(--flag)}
+  .note.alert{border-left-color:var(--bad)}
+  .note h3{margin-bottom:6px}
+  .note p{font-size:15px}
+
+  .legend{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px}
+  .legend div{border:1px solid var(--rule); border-radius:6px; padding:13px 15px; background:var(--card)}
+  .legend .chip{margin-bottom:7px; display:inline-block}
+  .legend p{font-size:14px; color:var(--ink-2); margin:0}
+
+  footer{border-top:1px solid var(--rule); padding-top:20px; font-family:var(--sans); font-size:13px; color:var(--ink-3)}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important; transition:none!important}}
+</style>
+
+<div class="wrap">
+
+<header class="masthead">
+  <div class="kicker">relaynet · simulation results</div>
+  <h1>Relay BER Results Reference</h1>
+  <p class="standfirst">Every numerical table in the thesis, as measured by the current code on the corrected E<sub>b</sub>/N<sub>0</sub> axis. All figures are regenerated from the committed result files, not transcribed from the document.</p>
+  <div class="meta">
+    <span><b>Budget</b> 10 trials × 10,000 bits per SNR point</span>
+    <span><b>Verifier</b> 349 cells, 0 inconsistencies</span>
+    <span><b>Branch</b> claude/porting-md-file-l6xzsr</span>
+  </div>
+</header>
+
+<section class="block">
+  <h2>The three configurations</h2>
+  <p>A real channel takes a real constellation, a complex channel a complex one. Every table below sits in exactly one of these; nothing is measured outside them.</p>
+  <div class="legend">
+    <div><span class="chip cfg-a">BPSK · AWGN</span><p>Calibration. The only channel with exact closed forms, so it is where the simulator is proved correct. No relay is ranked on it.</p></div>
+    <div><span class="chip cfg-b">QPSK · Rayleigh</span><p>Canonical. The operating point every conclusion rests on. One bit per axis of the plane the channel acts in.</p></div>
+    <div><span class="chip cfg-c">16-QAM · Rayleigh</span><p>Extension. Four levels per axis, which breaks the per-axis relay formulation. Same channel as canonical.</p></div>
+  </div>
+  <div class="note">
+    <h3>Reading BER across configurations</h3>
+    <p>The SNR argument sets noise from average <em>symbol</em> energy, so it is E<sub>s</sub>/N<sub>0</sub> everywhere. E<sub>b</sub>/N<sub>0</sub> is the same number for BPSK, <strong>3.01 dB lower</strong> for QPSK and <strong>6.02 dB lower</strong> for 16-QAM. The three are not on a common abscissa.</p>
+  </div>
+</section>
+
+<section class="block">
+  <div class="tbl-head">
+    <span class="label">tbl:table2</span><span class="chip cfg-b">QPSK · Rayleigh</span>
+    <span class="src">results/modulation/qpsk_rayleigh.json</span>
+  </div>
+  <h2>Canonical relay comparison</h2>
+  <p>The headline table. Symbol-wise DF is best or tied-best at every point, with the feedforward learned relays within a few thousandths from 4 dB up — at 169 parameters against DF's none. This is H2.</p>
+  <div class="scroll"><table>
+    <caption>Teal marks the best value in each row. The two sequence models trail badly at low SNR and converge by 16 dB, so their extra capacity buys nothing on a memoryless channel.</caption>
+    <thead><tr><th>Relay</th><th>0 dB</th><th>4 dB</th><th>8 dB</th><th>12 dB</th><th>16 dB</th><th>20 dB</th></tr></thead>
+    <tbody>
+      <tr><td>AF</td><td>0.40761</td><td>0.31286</td><td>0.18525</td><td>0.08215</td><td>0.03093</td><td>0.01101</td></tr>
+      <tr><td>DF</td><td>0.33369</td><td class="best">0.22192</td><td class="best">0.12179</td><td>0.05795</td><td class="best">0.02451</td><td class="best">0.00972</td></tr>
+      <tr><td>MLP (169p)</td><td>0.33495</td><td>0.22335</td><td>0.12291</td><td>0.05861</td><td>0.02469</td><td>0.00992</td></tr>
+      <tr><td>Hybrid</td><td class="best">0.33290</td><td>0.22197</td><td>0.12198</td><td class="best">0.05790</td><td class="best">0.02451</td><td class="best">0.00972</td></tr>
+      <tr><td>VAE</td><td>0.33591</td><td>0.22543</td><td>0.12352</td><td>0.05886</td><td>0.02468</td><td class="best">0.00972</td></tr>
+      <tr><td>Transformer</td><td>0.40145</td><td>0.27584</td><td>0.14244</td><td>0.06281</td><td>0.02596</td><td>0.01014</td></tr>
+      <tr><td>Mamba-S6</td><td>0.40710</td><td>0.28121</td><td>0.14476</td><td>0.06369</td><td>0.02586</td><td>0.00997</td></tr>
+      <tr><td>Mamba-2 SSD</td><td>0.40319</td><td>0.27721</td><td>0.14161</td><td>0.06209</td><td>0.02508</td><td>0.00976</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="block">
+  <div class="tbl-head">
+    <span class="label">tbl:table8</span><span class="chip cfg-b">QPSK · Rayleigh</span>
+    <span class="src">results/normalized_3k/3k_rayleigh.json</span>
+  </div>
+  <h2>Normalized 3K-parameter comparison</h2>
+  <p>Every learned model scaled to ~3,000 parameters, so architecture rather than capacity is the variable. This is hypothesis H4, and the re-run changes its verdict.</p>
+  <div class="scroll"><table>
+    <caption>Spread across the six architectures falls monotonically with SNR: 17.4% at 0 dB → 9.3% at 12 dB → 4.1% at 20 dB. At low SNR they split cleanly into a feedforward group (near DF) and a sequence group (near AF) — architecture mattering, not capacity.</caption>
+    <thead><tr><th>Relay</th><th>0 dB</th><th>4 dB</th><th>8 dB</th><th>12 dB</th><th>16 dB</th><th>20 dB</th></tr></thead>
+    <tbody>
+      <tr><td>MLP-3K</td><td>0.33608</td><td>0.22444</td><td>0.12292</td><td>0.05864</td><td>0.02466</td><td>0.00990</td></tr>
+      <tr><td>Hybrid-3K</td><td>0.33913</td><td>0.22714</td><td>0.12291</td><td>0.05798</td><td class="best">0.02451</td><td class="best">0.00972</td></tr>
+      <tr><td>VAE-3K</td><td>0.34241</td><td>0.22908</td><td>0.12667</td><td>0.06043</td><td>0.02506</td><td>0.01014</td></tr>
+      <tr><td>Transformer-3K</td><td>0.40681</td><td>0.28180</td><td>0.14578</td><td>0.06395</td><td>0.02591</td><td>0.00998</td></tr>
+      <tr><td>Mamba-3K</td><td>0.40071</td><td>0.27509</td><td>0.14059</td><td>0.06201</td><td>0.02505</td><td>0.00975</td></tr>
+      <tr><td>Mamba2-3K</td><td>0.40011</td><td>0.27422</td><td>0.14045</td><td>0.06222</td><td>0.02512</td><td>0.00977</td></tr>
+      <tr class="rule-top"><td>AF</td><td class="muted">0.40761</td><td class="muted">0.31286</td><td class="muted">0.18525</td><td class="muted">0.08215</td><td class="muted">0.03093</td><td class="muted">0.01101</td></tr>
+      <tr><td>DF</td><td class="best">0.33369</td><td class="best">0.22192</td><td class="best">0.12179</td><td class="best">0.05795</td><td class="best">0.02451</td><td class="best">0.00972</td></tr>
+    </tbody>
+  </table></div>
+  <div class="note warn">
+    <h3>H4 revised in both halves</h3>
+    <p>The verdict read “confirmed: at 3K params, all methods within ~1% BER (except VAE)”. Neither half survives. The spread is SNR-dependent, not flat; and the VAE is no longer an exception, sitting inside the feedforward group at every SNR. H4 now reads <strong>confirmed at high SNR, rejected at low</strong>.</p>
+  </div>
+</section>
+
+<section class="block">
+  <div class="tbl-head">
+    <span class="label">tbl:table14</span><span class="chip cfg-c">16-QAM · Rayleigh</span>
+    <span class="src">results/modulation/qam16_rayleigh.json</span>
+  </div>
+  <h2>16-QAM under per-axis I/Q processing</h2>
+  <p>The classical relays keep improving with SNR while every learned relay flattens near 0.25–0.26. That is the structural floor the per-axis formulation imposes — not a training failure.</p>
+  <div class="scroll"><table>
+    <caption>Ochre marks the floor: from 12 dB on, the learned relays stop tracking SNR while AF and DF continue down.</caption>
+    <thead><tr><th>Relay</th><th>0 dB</th><th>4 dB</th><th>8 dB</th><th>12 dB</th><th>16 dB</th><th>20 dB</th></tr></thead>
+    <tbody>
+      <tr><td>AF</td><td>0.45017</td><td>0.38792</td><td>0.29819</td><td>0.19247</td><td>0.10093</td><td>0.04498</td></tr>
+      <tr><td>DF</td><td class="best">0.41971</td><td class="best">0.35189</td><td class="best">0.26004</td><td class="best">0.16092</td><td class="best">0.08285</td><td class="best">0.03748</td></tr>
+      <tr><td>MLP (169p)</td><td>0.42991</td><td>0.38060</td><td>0.33111</td><td class="flag">0.29267</td><td class="flag">0.27030</td><td class="flag">0.25899</td></tr>
+      <tr><td>Hybrid</td><td>0.42614</td><td>0.37016</td><td>0.32837</td><td class="flag">0.29516</td><td class="flag">0.27231</td><td class="flag">0.25978</td></tr>
+      <tr><td>VAE</td><td>0.42979</td><td>0.38039</td><td>0.33026</td><td class="flag">0.29077</td><td class="flag">0.26923</td><td class="flag">0.25792</td></tr>
+      <tr><td>Transformer</td><td>0.45325</td><td>0.39392</td><td>0.32666</td><td class="flag">0.27963</td><td class="flag">0.25723</td><td class="flag">0.24891</td></tr>
+      <tr><td>Mamba-S6</td><td>0.45509</td><td>0.39442</td><td>0.32252</td><td class="flag">0.27453</td><td class="flag">0.25412</td><td class="flag">0.24858</td></tr>
+      <tr><td>Mamba-2 SSD</td><td>0.45364</td><td>0.39330</td><td>0.32594</td><td class="flag">0.28114</td><td class="flag">0.26148</td><td class="flag">0.25367</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="block">
+  <div class="tbl-head">
+    <span class="label">tbl:table15</span><span class="chip cfg-c">16-QAM · Rayleigh</span>
+    <span class="src">results/qam16_activation/qam16_activation_rayleigh.json</span>
+  </div>
+  <h2>Output activation, at 16 dB</h2>
+  <p>Bounding the relay output to the 16-QAM per-axis range 3/√10 halves the sequence models' floor and leaves the feedforward relays untouched. The activation is a repair specific to models whose unbounded output was the binding constraint.</p>
+  <div class="scroll"><table>
+    <caption>AF and DF have no output activation and are shown once as references. Transformer 0.2595 → 0.1073 is a factor of 2.4, cutting its gap to DF from 3.1× to 1.3×.</caption>
+    <thead><tr><th>Relay</th><th>tanh</th><th>linear</th><th>hardtanh</th></tr></thead>
+    <tbody>
+      <tr><td>AF</td><td class="muted">0.10093</td><td class="muted">0.10093</td><td class="muted">0.10093</td></tr>
+      <tr><td>DF</td><td class="muted">0.08285</td><td class="muted">0.08285</td><td class="muted">0.08285</td></tr>
+      <tr class="rule-top"><td>MLP (169p)</td><td>0.26949</td><td class="best">0.25537</td><td>0.27006</td></tr>
+      <tr><td>Hybrid</td><td>0.27231</td><td>0.27231</td><td>0.27231</td></tr>
+      <tr><td>VAE</td><td>0.27109</td><td>0.27140</td><td>0.27114</td></tr>
+      <tr><td>Transformer</td><td>0.25945</td><td>0.11110</td><td class="best">0.10730</td></tr>
+      <tr><td>Mamba-S6</td><td>0.25293</td><td class="best">0.10881</td><td>0.10929</td></tr>
+      <tr><td>Mamba-2 SSD</td><td>0.25539</td><td>0.11095</td><td class="best">0.11064</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="block">
+  <div class="tbl-head">
+    <span class="label">tbl:table24</span><span class="chip cfg-c">16-QAM · Rayleigh</span>
+    <span class="src">results/all_relays_16class/all_relays_16class.json</span>
+  </div>
+  <h2>Per-axis versus joint 2D classification, at 20 dB</h2>
+  <p>Reformulating the relay as a joint 16-class classifier over the full constellation removes the per-axis floor. Measured properly — as excess over DF, since DF itself is channel-limited at 0.03748 — the excess falls from ~0.016 to ~0.001 for five of six architectures.</p>
+  <div class="scroll"><table>
+    <caption>The improvement factor is near-identical across five architectures, which is itself the evidence: what the joint head repairs is the formulation, not any architecture's capacity. Mamba-2 is the exception.</caption>
+    <thead><tr><th>Architecture</th><th>4-class</th><th>16-class</th><th>Ratio</th><th>Excess over DF</th></tr></thead>
+    <tbody>
+      <tr><td>MLP</td><td>0.05491</td><td>0.03840</td><td>1.43×</td><td>0.00092</td></tr>
+      <tr><td>VAE</td><td>0.05382</td><td>0.03762</td><td>1.43×</td><td>0.00014</td></tr>
+      <tr><td>Hybrid</td><td>0.05362</td><td class="best">0.03748</td><td>1.43×</td><td class="best">0.00000</td></tr>
+      <tr><td>Transformer</td><td>0.05360</td><td>0.03814</td><td>1.41×</td><td>0.00066</td></tr>
+      <tr><td>Mamba-S6</td><td>0.05421</td><td>0.03934</td><td>1.38×</td><td>0.00186</td></tr>
+      <tr><td>Mamba-2 SSD</td><td>0.05381</td><td class="flag">0.04953</td><td class="flag">1.09×</td><td class="flag">0.01205</td></tr>
+      <tr class="rule-top"><td>AF</td><td class="muted">0.04498</td><td class="muted">n/a</td><td class="muted">n/a</td><td class="muted">—</td></tr>
+      <tr><td>DF</td><td class="muted">0.03748</td><td class="muted">n/a</td><td class="muted">n/a</td><td class="muted">baseline</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="block">
+  <h2>Chapter 7 — the ladder of assumptions</h2>
+  <p>Each layer removes exactly one assumption from the layer above; the relay comparison is otherwise unchanged. Reading downward is the thesis's argument: classical processing is not beaten where it is well posed, and is beaten precisely where its preconditions fail.</p>
+
+  <div class="tbl-head">
+    <span class="label">tbl:tableE6</span><span class="chip cfg-a">BPSK</span>
+    <span class="src">e6_unknown_channel_results/e6_sim_ported_results.npy</span>
+  </div>
+  <div class="scroll"><table>
+    <caption>Layer 2 — channel memory with perfect CSI. Under unknown ISI the memoryless classical relays do not merely degrade, they get <em>worse</em> with SNR as hard decisions lock the interference in. S4 is the canonical control, where the learned relay only matches DF.</caption>
+    <thead><tr><th>Setup / relay</th><th>8 dB</th><th>12 dB</th><th>16 dB</th><th>20 dB</th></tr></thead>
+    <tbody>
+      <tr class="sub"><td colspan="5">S1 · unknown ISI → AWGN</td></tr>
+      <tr><td>AF</td><td class="bad">0.19193</td><td class="bad">0.17854</td><td class="bad">0.19564</td><td class="bad">0.22332</td></tr>
+      <tr><td>DF</td><td class="bad">0.18386</td><td class="bad">0.20104</td><td class="bad">0.22789</td><td class="bad">0.24618</td></tr>
+      <tr><td>MLP (169p)</td><td class="best">0.01233</td><td class="best">0.00016</td><td class="best">0.00000</td><td class="best">0.00000</td></tr>
+      <tr><td>Viterbi (genie CSI)</td><td>0.00718</td><td>0.00003</td><td>0.00000</td><td>0.00000</td></tr>
+      <tr><td>Viterbi (200-pilot LS)</td><td>0.00743</td><td>0.00005</td><td>0.00000</td><td>0.00000</td></tr>
+      <tr class="sub"><td colspan="5">S2 · unknown ISI → Rayleigh</td></tr>
+      <tr><td>AF</td><td class="bad">0.20468</td><td class="bad">0.19158</td><td class="bad">0.20303</td><td class="bad">0.22306</td></tr>
+      <tr><td>DF</td><td class="bad">0.20311</td><td class="bad">0.20982</td><td class="bad">0.23164</td><td class="bad">0.24705</td></tr>
+      <tr><td>MLP (169p)</td><td class="best">0.04118</td><td class="best">0.01497</td><td class="best">0.00607</td><td class="best">0.00254</td></tr>
+      <tr class="sub"><td colspan="5">S3 · nonlinear + bias → AWGN</td></tr>
+      <tr><td>AF</td><td>0.10900</td><td>0.05030</td><td>0.01070</td><td>0.00032</td></tr>
+      <tr><td>DF</td><td>0.04312</td><td>0.00568</td><td>0.00008</td><td class="best">0.00000</td></tr>
+      <tr><td>MLP (169p)</td><td class="best">0.00728</td><td class="best">0.00004</td><td class="best">0.00000</td><td class="best">0.00000</td></tr>
+      <tr class="sub"><td colspan="5">S4 · control — canonical Rayleigh (nothing should fail)</td></tr>
+      <tr><td>AF</td><td>0.10497</td><td>0.05591</td><td>0.02807</td><td>0.01361</td></tr>
+      <tr><td>DF</td><td class="best">0.06869</td><td class="best">0.02988</td><td class="best">0.01238</td><td class="best">0.00502</td></tr>
+      <tr><td>MLP (169p)</td><td>0.06906</td><td>0.03066</td><td>0.01331</td><td>0.00582</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="tbl-head" style="margin-top:8px">
+    <span class="label">prose:E6partial</span><span class="chip cfg-a">BPSK</span>
+    <span class="src">e6_partial_ported_results.npy</span>
+  </div>
+  <div class="scroll"><table>
+    <caption>Layer 3 — CSI uncertainty, at a 10 dB operating point. The classical advantage is real but purchased with pilots: below about 20 pilots the estimate degrades enough that the pilot-free learned relay takes the lead.</caption>
+    <thead><tr><th>Receiver</th><th>BER @ 10 dB</th><th>Beats the pilot-free MLP?</th></tr></thead>
+    <tbody>
+      <tr><td>Viterbi-est · 800 pilots</td><td class="best">0.02848</td><td>yes</td></tr>
+      <tr><td>Viterbi-est · 200 pilots</td><td class="best">0.02833</td><td>yes</td></tr>
+      <tr><td>Viterbi-est · 50 pilots</td><td class="best">0.02994</td><td>yes</td></tr>
+      <tr><td>Viterbi-est · 20 pilots</td><td class="best">0.03350</td><td>yes</td></tr>
+      <tr><td>Viterbi-est · 10 pilots</td><td class="flag">0.05445</td><td class="flag">no — crossover</td></tr>
+      <tr><td>Viterbi-est · 5 pilots</td><td class="bad">0.12345</td><td class="bad">no</td></tr>
+      <tr class="rule-top"><td>MLP (169p), pilot-free</td><td>0.04873</td><td class="muted">reference</td></tr>
+      <tr><td>CMA, blind</td><td>0.06448</td><td class="muted">—</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="tbl-head" style="margin-top:8px">
+    <span class="label">prose:E6blind</span><span class="chip cfg-a">BPSK</span>
+    <span class="src">e6_blind_ported_results.npy</span>
+  </div>
+  <div class="scroll"><table>
+    <caption>Layer 4 — unknown channel family, redrawn every block, no pilots and no prior. 50 trials × 20,000 bits, because a trial here is a draw from the impairment family. Decision-directed blind MLSE is <em>worse</em> at 20 dB than at 16 — it bootstraps the channel from its own decisions and intermittently locks onto the wrong hypothesis.</caption>
+    <thead><tr><th>Receiver</th><th>8 dB</th><th>12 dB</th><th>16 dB</th><th>20 dB</th></tr></thead>
+    <tbody>
+      <tr><td>Differential DF</td><td class="bad">0.20857</td><td class="bad">0.17026</td><td class="bad">0.12589</td><td class="bad">0.13828</td></tr>
+      <tr><td>CMA (blind classical)</td><td>0.11824</td><td>0.04425</td><td>0.01247</td><td>0.00329</td></tr>
+      <tr><td>Viterbi-blind (dec.-directed)</td><td>0.12762</td><td>0.10524</td><td>0.03735</td><td class="flag">0.04978</td></tr>
+      <tr><td>MLP (169p)</td><td class="best">0.09372</td><td class="best">0.02604</td><td class="best">0.00697</td><td class="best">0.00263</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="block">
+  <div class="tbl-head">
+    <span class="label">new</span><span class="chip cfg-b">QPSK · Rayleigh</span>
+    <span class="src">results/vae_convention_ab.json</span>
+  </div>
+  <h2>VAE convention A/B — a hypothesis refuted</h2>
+  <p>The thesis reports the VAE relay “pinned at 0.25–0.40 at every SNR, meaning it never learns the task”. That failure no longer reproduces anywhere. The working explanation was the 3 dB SNR-convention bug, since learned relays draw their training data through the corrected channel. This test isolates it: evaluation is on Rayleigh, untouched by the fix, so the only difference between arms is the convention used to synthesise training data.</p>
+  <div class="scroll"><table>
+    <caption>Both arms behave identically. Training on 3 dB-hot data does <strong>not</strong> break the VAE, so the convention bug is not the cause.</caption>
+    <thead><tr><th>VAE trained under</th><th>0 dB</th><th>4 dB</th><th>8 dB</th><th>12 dB</th><th>16 dB</th><th>20 dB</th></tr></thead>
+    <tbody>
+      <tr><td>Old convention (3 dB hot)</td><td>0.33486</td><td>0.22397</td><td>0.12531</td><td>0.05941</td><td>0.02534</td><td>0.01026</td></tr>
+      <tr><td>Corrected convention</td><td>0.33684</td><td>0.22555</td><td>0.12387</td><td>0.05883</td><td>0.02486</td><td>0.00984</td></tr>
+      <tr class="rule-top"><td>Published (failing) VAE</td><td class="bad">0.39280</td><td class="muted">—</td><td class="bad">0.21630</td><td class="muted">—</td><td class="bad">0.07600</td><td class="bad">0.04250</td></tr>
+    </tbody>
+  </table></div>
+  <div class="note alert">
+    <h3>What actually changed</h3>
+    <p>The published VAE numbers date from 23 March. <code>relaynet/relays/vae.py</code> — the implementation used today — was first committed on <strong>1 April</strong>. The failing result therefore came from a different VAE implementation entirely, one that predates the ported relay. The convention bug is exonerated; the reimplementation is the explanation.</p>
+    <p>This matters for the write-up: five passages in Chapters 2, 5 and 8 still argue from the VAE failure, including a paradigm-level caveat about generative relaying. They cannot be repaired by blaming the SNR bug.</p>
+  </div>
+</section>
+
+<footer>
+  <p>Not covered here: <code>tbl:table13</code> and <code>tbl:table25</code> report wall-clock timing, which is machine-dependent and measured on different hardware. The verifier checks their parameter counts but reports timings as informational rather than pass/fail.</p>
+</footer>
+
+</div>
