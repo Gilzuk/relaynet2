@@ -12,6 +12,7 @@ Data sources, by table:
   tbl:layers            four-layer argument summary        <- e6_{sim,viterbi,partial,blind} npy
   tbl:table8            normalized-3K Rayleigh BER         <- results/normalized_3k/3k_rayleigh.json
   tbl:table14           16-QAM on canonical Rayleigh       <- results/modulation/qam16_rayleigh.json
+  tbl:table15           16-QAM activation study @16 dB     <- results/qam16_activation/qam16_activation_rayleigh.json
   tbl:table24           4-class vs 16-class @20 dB         <- results/all_relays_16class/all_relays_16class.json
   tbl:tableE6           unknown-channel BER                <- e6_unknown_channel_results/*.npy
   tbl:tableE6flat       flat-channel control BER           <- e6_unknown_channel_results/e6_flat_ported_results.npy
@@ -364,6 +365,45 @@ def check_table14(tex, rep):
             pub_text, pub_val = row[c]
             rep.cell(T, f"{name}/{snr}dB", pub_text, pub_val,
                      d["results"][key]["ber_mean"][snrs.index(snr)])
+    rep.finish_table(T, before)
+
+
+def check_table15(tex, rep):
+    """16-QAM activation study at 16 dB (tbl:table15) vs qam16_activation_rayleigh.json.
+
+    This table had no coverage at all until now, which is why it sat on a
+    pre-correction AWGN run unnoticed while every covered table was caught.
+    """
+    T = "tbl:table15"; before = rep.checked
+    body = table_body(tex, T)
+    if body is None:
+        return rep.skip(T, "label not found in tex")
+    path = os.path.join(ROOT, "results/qam16_activation/qam16_activation_rayleigh.json")
+    if not os.path.exists(path):
+        return rep.skip(T, "qam16_activation_rayleigh.json not found (run exp 7.11)")
+    d = json.load(open(path))
+    i16 = d["snr_range"].index(16)
+    label = {"AF": "AF", "DF": "DF", "MLP (169p)": "MLP (169p)", "Hybrid": "Hybrid",
+             "VAE": "VAE", "Transformer": "Transformer",
+             "Mamba-S6": "Mamba S6", "Mamba-2 SSD": "Mamba2 (SSD)"}
+    acts = [(1, "tanh"), (2, "linear"), (3, "hardtanh")]
+    for row in data_rows(body):
+        if not row:
+            continue
+        name = row[0][0].strip()
+        base = label.get(name)
+        if base is None:
+            continue
+        for c, act in acts:
+            if c >= len(row):
+                break
+            jk = f"{base} ({act})"
+            if jk not in d["results"]:
+                rep.note(T, f"{name}/{act}: absent from the re-run")
+                continue
+            pub_text, pub_val = row[c]
+            rep.cell(T, f"{name}/{act}@16dB", pub_text, pub_val,
+                     d["results"][jk]["ber_mean"][i16])
     rep.finish_table(T, before)
 
 
@@ -863,7 +903,7 @@ def main():
 
     tex = load_tex()
     rep = Report()
-    checks = [check_ber_validation, check_table26, check_table2, check_layers_table, check_table14, check_table8,
+    checks = [check_ber_validation, check_table26, check_table2, check_layers_table, check_table14, check_table15, check_table8,
               check_table24, check_tableE6, check_tableE6flat, check_tableE6qpsk,
               check_E6blind_prose, check_E6partial_prose, check_E6composite_prose]
     for chk in checks:

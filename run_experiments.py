@@ -1649,10 +1649,14 @@ def exp_7_17_16class_2d(args):
     print("  Computing AF & DF baselines …")
     for bname, relay in [("AF", AmplifyAndForwardRelay()),
                           ("DF", DecodeAndForwardRelay())]:
+        # Same channel as the learned variants above. Omitting channel_fn
+        # here put the AF/DF baselines on AWGN while everything they are
+        # compared against ran on Rayleigh -- a table spanning two channels.
         _, bers, trials = run_monte_carlo(
             relay, snr_range,
             num_bits_per_trial=args.bits_per_trial,
             num_trials=args.num_trials,
+            channel_fn=_CHANNELS[qam_channel][1],
             modulation=modulation,
         )
         ci_lo, ci_hi = compute_confidence_interval(trials)

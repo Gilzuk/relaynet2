@@ -39,7 +39,7 @@ The ladder proper resumes in Chapter~\ref{sec:unknown-channels}, which holds the
 \begin{enumerate}
     \item On 16-QAM, standard tanh compression causes a severe, near-irreducible BER floor (\textasciitilde0.27 at 16 dB, against DF's 0.083 on the same channel; Table~\ref{tbl:table14}).
     \item Replacing tanh with constellation-aware bounded activations (hardtanh, scaled tanh) bounded to the precise signal amplitude (\(3/\sqrt{10}\)) and retraining \emph{largely removes} this floor.
-    \item Sequence models benefit most: constellation-aware activations reduce their 16-QAM BER floor by roughly 5$\times$ (Table~\ref{tbl:table15}), narrowing the residual gap to DF from about 56$\times$ to about 10$\times$ (Figure~\ref{fig:fig28}). 
+    \item The benefit is confined to the sequence models, and this is the sharpest result in the table. Bounding the output roughly halves their 16-QAM floor --- Transformer $0.2595\to0.1073$, Mamba-S6 $0.2529\to0.1088$, Mamba-2 $0.2554\to0.1106$, a factor of about $2.4$ --- which cuts their gap to DF from about $3.1\times$ to about $1.3\times$. The feedforward relays are unmoved: the MLP improves by $5\%$ at best and the Hybrid and VAE not at all, so the activation is not a general fix for the per-axis floor but a repair specific to models whose unbounded output was the binding constraint (Table~\ref{tbl:table15}). 
 \end{enumerate}
 
 A gap to DF nonetheless persists due to per-axis error accumulation, the limitation removed by the 2D classification study below (Section~\ref{sec:class-2d-classification-for-qam16}).
@@ -72,64 +72,28 @@ Mamba-2 SSD & 0.4536 & 0.3933 & 0.3259 & 0.2811 & 0.2615 & 0.2537 \\
 QPSK is not re-tabulated here: it is the canonical constellation and is reported in Chapter~\ref{sec:experiments} (Table~\ref{tbl:table2}), leaving this chapter the genuinely higher-order case, 16-QAM, where per-axis processing breaks down.
 
 
-Table \ref{tbl:table15} shows the BER at 16 dB for all relays across the three activation variants and both channel types.
+Table~\ref{tbl:table15} shows the BER at 16~dB for all relays across the three activation variants, on the canonical Rayleigh channel.
 
-\begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1429}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1429}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1429}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1429}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1429}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1429}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1429}}@{}}
-\caption{BER at 16 dB for all relay variants across activation functions and modulations (AWGN and Rayleigh).}\label{tbl:table15}\tabularnewline
+\begin{longtable}[]{@{}lccc@{}}
+\caption{16-QAM BER at 16~dB on the canonical Rayleigh channel, under three relay output activations. \texttt{tanh} is the BPSK-trained default; \texttt{linear} is unbounded; \texttt{hardtanh} clips to the 16-QAM per-axis range $3/\sqrt{10}$. AF and DF have no output activation and are shown once as references. The cGAN is excluded from the re-run, as in Table~\ref{tbl:table2}.}\label{tbl:table15}\tabularnewline
 \toprule\noalign{}
-\begin{minipage}[b]{\linewidth}\raggedright
-Relay
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-tanh (BPSK)
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-linear (QAM16)
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-hardtanh (QAM16)
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-tanh (BPSK)
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-linear (QAM16)
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-hardtanh (QAM16)
-\end{minipage} \\
+Relay & tanh & linear & hardtanh \\
 \midrule\noalign{}
 \endfirsthead
 \toprule\noalign{}
-\begin{minipage}[b]{\linewidth}\raggedright
-Relay
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-tanh (BPSK)
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-linear (QAM16)
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-hardtanh (QAM16)
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-tanh (BPSK)
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-linear (QAM16)
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-hardtanh (QAM16)
-\end{minipage} \\
+Relay & tanh & linear & hardtanh \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-\multicolumn{1}{@{}l}{} & \multicolumn{3}{c}{\textbf{AWGN}} & \multicolumn{3}{c}{\textbf{Rayleigh}} \\MLP & 0.2202 & 0.0721 & \textbf{0.0630} & 0.2375 & 0.1279 & \textbf{0.1247} \\
-Hybrid & 0.2512 & 0.2512 & 0.2512 & 0.2723 & 0.2723 & 0.2723 \\
-VAE & 0.2231 & 0.1111 & \textbf{0.1059} & 0.2462 & 0.1575 & \textbf{0.1573} \\
-cGAN & 0.2482 & 0.0973 & \textbf{0.0863} & 0.2666 & 0.1432 & \textbf{0.1383} \\
-Transformer & 0.2111 & \textbf{0.0453} & 0.0505 & 0.2305 & \textbf{0.1159} & 0.1194 \\
-Mamba-S6 & 0.2131 & 0.0422 & \textbf{0.0396} & 0.2333 & 0.1129 & \textbf{0.1108} \\
-Mamba-2 SSD & 0.2065 & 0.0471 & \textbf{0.0441} & 0.2273 & 0.1157 & \textbf{0.1145} \\
-AF & 0.0180 & -- & -- & 0.1009 & -- & -- \\
-DF & 0.0038 & -- & -- & 0.0828 & -- & -- \\
+AF & 0.1009 & 0.1009 & 0.1009 \\
+DF & 0.0828 & 0.0828 & 0.0828 \\
+MLP (169p) & 0.2695 & \textbf{0.2554} & 0.2701 \\
+Hybrid & 0.2723 & 0.2723 & 0.2723 \\
+VAE & 0.2711 & 0.2714 & 0.2711 \\
+Transformer & 0.2595 & 0.1111 & \textbf{0.1073} \\
+Mamba-S6 & 0.2529 & \textbf{0.1088} & 0.1093 \\
+Mamba-2 SSD & 0.2554 & 0.1109 & \textbf{0.1106} \\
 \end{longtable}
 
 
@@ -165,8 +129,8 @@ DF & 0.0038 & -- & -- & 0.0828 & -- & -- \\
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\linewidth]{results/qam16_activation/qam16_activation_awgn.png}
-    \caption{16-QAM activation experiment (AWGN). Each relay appears three times, once per output activation, tanh (the BPSK-trained baseline), linear, and hardtanh, distinguished by colour and marker in the legend. The tanh variants plateau near $0.2$; replacing the activation and retraining on 16-QAM removes the floor for every AI relay except Hybrid, whose curve is unchanged. Sequence models benefit most, narrowing the gap to DF from $\approx$56$\times$ to $\approx$10$\times$ (Table~\ref{tbl:table15}).}
+    \includegraphics[width=1\linewidth]{results/qam16_activation/qam16_activation_rayleigh.png}
+    \caption{16-QAM activation study on the canonical Rayleigh channel. Each relay appears three times, once per output activation --- tanh (the BPSK-trained baseline), linear, and hardtanh clipped to $3/\sqrt{10}$ --- distinguished by colour and marker. The separation is by model family rather than by activation: the three sequence models drop by roughly half when their output is bounded, while the feedforward relays are essentially unchanged (Table~\ref{tbl:table15}).}
     \label{fig:fig28}
 \end{figure}
 \REV{Compilation fix: the image path \texttt{results//qam16\_activation/...} had a double slash; corrected to a single slash. Also removed the duplicated commented-out copy of this figure (both carried \texttt{\string\label{fig:fig28}}) to avoid a duplicate-label risk if it were ever uncommented. Architecture names unified.}
@@ -183,9 +147,10 @@ DF & 0.0038 & -- & -- & 0.0828 & -- & -- \\
 
 \textbf{Goal:} Eliminate the structural BER floor imposed by per-axis I/Q splitting for 16-QAM by utilizing full 2D decision boundaries.
 
-\textbf{Trials:} - \textbf{Topology:} SISO - \textbf{Modulation scheme:} 16-QAM - \textbf{Channel:} AWGN - \textbf{Equalizers:} None - \textbf{NN architecture:} Supervised (MLP, Hybrid), Generative (VAE, cGAN), Sequence (Transformer, Mamba-S6, Mamba-2 SSD) - \textbf{NN activation:} None (Softmax implicitly via Cross-Entropy loss) - \textbf{Special case:} 16-class joint 2D classification
+\textbf{Trials:} - \textbf{Topology:} SISO - \textbf{Modulation scheme:} 16-QAM - \textbf{Channel:} i.i.d.\ Rayleigh fast fading (canonical) - \textbf{Equalizers:} None - \textbf{NN architecture:} Supervised (MLP, Hybrid), Generative (VAE, cGAN), Sequence (Transformer, Mamba-S6, Mamba-2 SSD) - \textbf{NN activation:} None (Softmax implicitly via Cross-Entropy loss) - \textbf{Special case:} 16-class joint 2D classification
 
-\textbf{Conclusion:} Treating the relay as a joint 16-point classifier over the full 2D constellation space removes the structural 4-class BER floor. In this formulation, several neural variants (VAE, Hybrid, Transformer, MLP) match classical DF performance at high SNR, achieving near-zero BER at 20 dB; only the cGAN fails to converge in either formulation. This indicates that the previous BER floor was an artifact of I/Q splitting, not a fundamental limitation (Equation~\ref{eq:iq-splitting}) of neural relays.
+\textbf{Conclusion:} Treating the relay as a joint 16-point classifier over the full 2D constellation lifts the structural 4-class floor, but on the canonical channel it does not remove it. Every architecture improves, and by a strikingly uniform amount: $1.38$--$1.43\times$ for five of the six, with only Mamba-2 lagging at $1.09\times$. That uniformity is itself the finding, since it points at the per-axis \emph{formulation} rather than any architecture's capacity as what the joint head repairs. The best 16-class relays land at $0.0375$--$0.0384$, level with symbol-wise DF's $0.03748$ and no better, so the joint formulation buys parity with the classical baseline on this channel rather than an advantage over it. This is the same boundary the canonical chapter reports (H2), reappearing one constellation higher.
+
 \REV{Overclaiming softened: ``completely eliminates'' \(\to\) ``removes''; ``For the first time, neural variants \ldots matched'' \(\to\) ``several neural variants match'' (drops the unqualified ``first time'' priority claim); ``This proves'' \(\to\) ``This indicates''. Architecture names unified.}
 
 \subsection{Results Tables}\label{sec:results-tables-5}
@@ -194,8 +159,8 @@ Table \ref{tbl:table24}
 \REV{Fix applied (data provenance): every cell of Table~\ref{tbl:table24} is now taken from the committed 16-class results file, and Figure~\ref{fig:fig51} was regenerated from that same file, both previously carried values from a superseded run, and the VAE and Hybrid cells were blank although the data existed. Table, figure, and captions now share one source. A former Table~16 (CSI/LayerNorm) and the three conclusions citing it were removed, since those experiments were cut in the restructure (Appendix~E).}
  presents the BER at 20 dB for all variants alongside the classical AF and DF baselines.
 
-\begin{longtable}[]{@{}llll@{}}
-\caption{BER at 20 dB for all relay variants: 4-class (I/Q split) vs.~16-class (joint 2D) classification for 16-QAM. Entries of 0.00000 correspond to zero errors observed within the trial budget (BER below the $\sim$$2\times10^{-4}$ resolution floor), so no finite improvement ratio is quoted for them.}\label{tbl:table24}\tabularnewline
+\begin{longtable}[]{@{}lccc@{}}
+\caption{16-QAM at 20~dB on the canonical Rayleigh channel: per-axis 4-class relays against joint 16-class 2D classifiers. The joint formulation improves every architecture, uniformly by about $1.4\times$, and brings the best learned relays level with DF ($0.03748$) rather than past it. The cGAN is excluded from the re-run, as in Table~\ref{tbl:table2}.}\label{tbl:table24}\tabularnewline
 \toprule\noalign{}
 Relay & 4-cls BER @ 20 dB & 16-cls BER @ 20 dB & Improvement \\
 \midrule\noalign{}
@@ -206,15 +171,14 @@ Relay & 4-cls BER @ 20 dB & 16-cls BER @ 20 dB & Improvement \\
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-MLP & 0.00867 & \textbf{0.00017} & 51$\times$ \\
-VAE & 0.00867 & \textbf{0.00000} & $\infty$ (converged to 0) \\
-cGAN & 0.3530 & 0.2817 & n/a (did not converged)  \\
-Hybrid & 0.00867 & \textbf{0.00000} & $\infty$ (converged to 0)\\
-Transformer & 0.00867 & \textbf{0.00000} & $\infty$  (converged to 0) \\
-Mamba-S6 & 0.00867 & \textbf{0.00033} & 26$\times$ \\
-Mamba-2 SSD & 0.00867 & \textbf{0.00167} & 5.2$\times$ \\
-AF & 0.00083 & n/a & n/a \\
-DF & 0.00000 & n/a & n/a \\
+MLP & 0.05491 & \textbf{0.03840} & 1.43$\times$ \\
+VAE & 0.05382 & \textbf{0.03762} & 1.43$\times$ \\
+Hybrid & 0.05362 & \textbf{0.03748} & 1.43$\times$ \\
+Transformer & 0.05360 & \textbf{0.03814} & 1.41$\times$ \\
+Mamba-S6 & 0.05421 & \textbf{0.03934} & 1.38$\times$ \\
+Mamba-2 SSD & 0.05381 & \textbf{0.04953} & 1.09$\times$ \\
+AF & 0.04498 & n/a & n/a \\
+DF & 0.03748 & n/a & n/a \\
 \end{longtable}
 
 \subsection{Results Figures}\label{sec:results-figures-6}
@@ -230,7 +194,7 @@ DF & 0.00000 & n/a & n/a \\
 \centering
 \centering
 \pandocbounded{\includegraphics[width=\linewidth,height=\textheight,keepaspectratio]{results/all_relays_16class/grouped_bar_16class.png}}
-\caption{Grouped bar comparison of 4-class vs.~16-class BER at 20 dB for each architecture. The joint 16-class formulation drives the BER to (near-)zero for every architecture except the cGAN, which fails to converge in both formulations (0.353 / 0.282) and dominates the plot at this scale.}\label{fig:fig51}
+\caption{4-class per-axis against joint 16-class 2D relays, 16-QAM at 20~dB on the canonical Rayleigh channel, regenerated from the same results file as Table~\ref{tbl:table24}. The joint formulation improves every architecture by a near-identical factor, annotated above each bar, which points at the per-axis formulation rather than any architecture's capacity as the thing being repaired. The dashed line is symbol-wise DF: the 16-class bars reach it and stop, so the joint head buys parity with the classical baseline, not an advantage over it.}\label{fig:fig51}
 \end{figure}
 
 \begin{figure}[H]
