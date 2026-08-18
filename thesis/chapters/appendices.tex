@@ -106,6 +106,10 @@ The framework uses object-oriented design with a common \texttt{Relay} base clas
 \subsection{Testing} 108 automated tests (pytest) cover the channels, modulation, relay-strategy, simulation and statistics modules with a 100\% pass rate. The suite requires only NumPy and SciPy; PyTorch is optional and needed solely by the neural relays that use it.
 
 \subsection{Reproducibility} Random seeds are controlled at the source (bit generation) and noise (per-trial seeding) levels to ensure reproducible results.
+
+\paragraph{Re-measurement of all results.} Every simulation result reported in this thesis was re-measured after three faults were found in the earlier data: a $3$~dB error in the noise convention of the AWGN channel, which propagated into the \emph{training} data of every learned relay and so moved results on channels the fault never touched; three tables measured on (constellation, channel) pairings the thesis had withdrawn, each traceable to an unexamined default argument; and result files predating the implementation of the relays they reported. The published numbers are those of the re-measurement, at $10$ trials $\times\ 10{,}000$ bits per SNR point.
+
+Three written conclusions changed as a consequence and are stated in their revised form in the body: hypothesis H4 is now confirmed at high SNR and rejected at low, rather than confirmed outright; the VAE relay does not fail, and the earlier failure is attributed to a superseded implementation rather than to the noise convention, which a controlled A/B rules out; and joint $16$-class classification is reported as restoring parity with decode-and-forward rather than as achieving near-zero error. A cell-by-cell record of the changes, the runtimes, and the reasoning is kept with the source as \texttt{thesis/RERUN\_CHANGELOG.md}, and \texttt{verify\_thesis\_tables.py} checks every published cell against the file that produced it.
 \begin{figure}[bt]
 \centering
 \includegraphics[width=\textwidth,scale=1.0]{results/relaynet_sw_architecture.png}
