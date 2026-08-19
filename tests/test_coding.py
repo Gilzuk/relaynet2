@@ -232,3 +232,69 @@ class TestSoftRelays:
         assert np.isclose(np.mean(np.abs(out_soft) ** 2), 1.0)
         # posterior mean is a genuinely different read-out, not the argmax
         assert not np.allclose(out_soft, out_hard)
+
+
+class TestPuncturing:
+    @pytest.mark.parametrize("rate", ["1/2", "2/3", "3/4"])
+    def test_zero_noise_round_trip(self, rate):
+        from relaynet.coding.puncturing import PuncturedCode
+        pc = PuncturedCode(rate=rate)
+        dec = ViterbiCodeDecoder()
+        rng = np.random.default_rng(hash(rate) % 1000)
+        for _ in range(5):
+            n = int(rng.integers(50, 250))
+            info = rng.integers(0, 2, n)
+            coded = pc.encode(info)
+            soft = 1.0 - 2.0 * coded.astype(float)
+            out = dec.decode(pc.depuncture(soft, pc.n_steps(n)))
+            assert np.array_equal(out, info)
+
+    @pytest.mark.parametrize("rate,expected", [("1/2", 0.5), ("2/3", 2/3), ("3/4", 0.75)])
+    def test_effective_rate_approaches_nominal(self, rate, expected):
+        from relaynet.coding.puncturing import PuncturedCode
+        pc = PuncturedCode(rate=rate)
+        n = 2000  # long frame -> tail overhead negligible
+        eff = n / len(pc.encode(np.zeros(n, dtype=int)))
+        assert abs(eff - expected) < 0.01
+
+    def test_rejects_unknown_rate(self):
+        from relaynet.coding.puncturing import PuncturedCode
+        with pytest.raises(ValueError):
+            PuncturedCode(rate="7/8")
+
+
+class TestBICM:
+    @pytest.mark.parametrize("mod", ["qpsk", "qam16"])
+    def test_noiseless_demap_is_exact(self, mod):
+        from relaynet.coding.bicm import modulate_bits, soft_demap
+        rng = np.random.default_rng(4)
+        bits = rng.integers(0, 2, 4000)
+        sym, _ = modulate_bits(bits, mod)
+        rec = (soft_demap(sym, mod, len(bits)) < 0).astype(int)
+        assert np.array_equal(rec, bits)
+
+    @pytest.mark.parametrize("mod", ["qpsk", "qam16"])
+    def test_constellation_is_unit_power(self, mod):
+        from relaynet.coding.bicm import _constellation
+        _, pts = _constellation(mod)
+        assert np.isclose(np.mean(np.abs(pts) ** 2), 1.0)
+
+    def test_padding_is_tracked_and_stripped(self):
+        from relaynet.coding.bicm import modulate_bits, soft_demap
+        bits = np.array([1, 0, 1])  # not a multiple of 4
+        sym, npad = modulate_bits(bits, "qam16")
+        assert npad == 1 and len(sym) == 1
+        assert len(soft_demap(sym, "qam16", len(bits))) == 3
+
+    def test_qam16_is_noisier_than_qpsk_at_equal_snr(self):
+        from relaynet.coding.bicm import modulate_bits, soft_demap
+        rng = np.random.default_rng(5)
+        bits = rng.integers(0, 2, 8000)
+        bers = {}
+        for mod in ("qpsk", "qam16"):
+            sym, _ = modulate_bits(bits, mod)
+            sigma = np.sqrt(1 / (2 * 10 ** (8 / 10)))
+            y = sym + sigma * (rng.standard_normal(len(sym))
+                               + 1j * rng.standard_normal(len(sym)))
+            bers[mod] = np.mean((soft_demap(y, mod, len(bits)) < 0).astype(int) != bits)
+        assert bers["qam16"] > bers["qpsk"]
