@@ -215,7 +215,47 @@ def plot_rate_adaptation():
     _save(fig, "coded_rate_adaptation.png")
 
 
+def plot_latency_capacity():
+    """Goodput vs. round-trip latency budget (results/coded_latency_capacity.json)."""
+    import os as _os
+    path = _os.path.join(ROOT, "results/coded_latency_capacity.json")
+    if not _os.path.exists(path):
+        print("  (skipped latency-capacity figure: results file not present)")
+        return
+    with open(path) as f:
+        d = json.load(f)
+
+    snr_colors = {"16": "tab:blue", "20": "tab:orange",
+                  "24": "tab:green", "28": "tab:red"}
+
+    fig, ax = plt.subplots(figsize=(9.5, 6))
+    for snr, color in snr_colors.items():
+        for relay, ls, marker in (("blockdf", "-", "v"), ("denoise", "--", "D")):
+            pts = d["curves"][relay][snr]
+            x = [p["l_max"] for p in pts]
+            y = [p["goodput"] for p in pts]
+            label = f"{snr} dB, " + ("block-DF" if relay == "blockdf" else "denoise-only")
+            ax.plot(x, y, color=color, ls=ls, marker=marker, markersize=5,
+                    lw=1.5, drawstyle="steps-post", label=label)
+
+    ax.axvline(d["table_budget"], color="0.4", ls=":", lw=1.0)
+    ax.text(d["table_budget"] + 4, ax.get_ylim()[1] * 0.03 if ax.get_ylim()[1] else 0.05,
+            f"Table~budget = {d['table_budget']} sym", fontsize=8.5, color="0.4")
+    ax.set_xlabel("Round-trip latency budget $L_{\\max}$ (symbols)", fontsize=13)
+    ax.set_ylabel("Best achievable goodput within $L_{\\max}$ [info bits/symbol]", fontsize=13)
+    ax.set_title("Capacity under a latency constraint: goodput vs. deadline", fontsize=14)
+    ax.grid(True, alpha=0.3)
+    ax.set_xlim(0, 420)
+    ax.legend(loc="upper left", fontsize=8.5, framealpha=0.9, ncol=2)
+    ax.annotate("solid = block-DF (2x frame round-trip)  |  dashed = denoise-only (~1x frame)",
+                xy=(0.98, 0.03), xycoords="axes fraction", fontsize=9,
+                color="0.35", ha="right")
+    fig.tight_layout()
+    _save(fig, "coded_latency_capacity.png")
+
+
 if __name__ == "__main__":
     main()
     plot_soft_decision()
     plot_rate_adaptation()
+    plot_latency_capacity()

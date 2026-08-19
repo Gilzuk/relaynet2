@@ -526,3 +526,45 @@ previously and now-incorrectly listed "adaptive code-rate-per-SNR scheme
 ... not attempted" -- corrected). Both abstracts updated. 13 new tests
 (tests/test_coding.py, punctured round trips, BICM demapping, 40 total
 in that file). Verifier: **497 cells, 0 inconsistencies** (was 479).
+
+## Capacity under a latency constraint (bounding the AMC bound)
+
+The AMC/goodput study (previous entry) optimizes rate with no bound on
+how long the relay may take to decide. A link with a deadline can't make
+that assumption, and "achievable rate under a fixed blocklength" is a
+standard question in the literature: finite-blocklength capacity
+(Polyanskiy, Poor & Verdu 2010) and delay-limited capacity (Hanly & Tse
+1998) for fading channels specifically. Re-derived the AMC envelope under
+a round-trip latency budget, using the same already-measured FER data
+(coded_rate_adaptation.json) -- no new simulation.
+
+Key accounting fact, not previously made explicit: the destination
+*always* buffers a full coded frame to decode, for either relay strategy.
+Block-DF adds a second full-frame buffer at the relay (decode, re-encode,
+forward), so its round-trip latency is the frame length twice. The
+denoise-only relay adds only its window (10 symbols, constant), so its
+round-trip latency is the frame length once.
+
+At a 150-symbol round-trip budget: denoise-only leads block-DF by 10.0x
+at 16 dB (0.372 vs 0.037) and 2.0x at 20 dB (0.916 vs 0.467) -- the
+unconstrained comparison showed these two within 6% of each other. At a
+tighter 100-symbol budget, block-DF has *no* coded option left at 16-28
+dB at all and is pinned to uncoded transmission throughout, while
+denoise-only still reaches 16-QAM 2/3 or 3/4; this reverses the ordering
+even at 24 and 28 dB, where the unconstrained envelope had favored
+block-DF -- denoise-only leads by 1.46x and 1.54x there under the
+100-symbol budget.
+
+All 4 illustrative ratios (10.0x, 2.0x, 1.46x, 1.54x) independently
+recomputed from the curve data before writing them into the thesis: 0
+mismatches.
+
+Written up as Section 5.5.5 (tbl:table43, fig:fig59), citing
+PolyanskiyPoorVerdu2010FiniteBlocklength and HanlyTse1998DelayLimited
+(both added to references.bib). Pointers extended in Ch1's system-model
+paragraph and Ch8 (both coding-caveat items, plus an explicit "not a
+URLLC reliability claim" note added to Ch8's open-items list -- the
+latency accounting here says nothing about the 1e-5-range block-error
+targets URLLC also requires, and that gap should stay visible rather
+than be implied away). Both abstracts updated. Verifier: **515 cells, 0
+inconsistencies** (was 497).

@@ -600,4 +600,45 @@ Two results follow, and the second qualifies the mechanism finding of Table~\ref
 
 This bounds the mechanism finding of Section~\ref{sec:coded-soft-decision} rather than reversing it. That the destination can repair a denoising relay's errors but not a re-encoding relay's remains true and remains the reason the two strategies differ at all -- but once the system is allowed to pick its own operating rate, the room that difference has to matter shrinks to a few percent of the achievable goodput, because the adaptive link mostly avoids operating in the regime (a fixed rate pushed past its comfortable threshold) where the mechanism produces a large gap in the first place. The practical recommendation this chapter's coded study converges on is therefore rate adaptation first: get the MCS right for the channel, and only then does it become worth asking which relay strategy to run within it.
 
+\subsection{Capacity Under a Latency Constraint}\label{sec:coded-latency-capacity}
+
+Section~\ref{sec:coded-rate-adaptation} optimizes goodput with no bound on how long the relay may take to decide. A link with a deadline cannot make that assumption, and the question it faces instead -- the achievable rate once blocklength (equivalently, latency) is fixed rather than left free -- is a standard one in the coding-theory literature: the finite-blocklength capacity of Polyanskiy, Poor and Verd\'{u} \cite{PolyanskiyPoorVerdu2010FiniteBlocklength}, and the delay-limited capacity of Hanly and Tse \cite{HanlyTse1998DelayLimited} for fading channels specifically. Both frame it the same way this section does: constraining the number of channel uses (Polyanskiy et al.) or imposing a hard per-block deadline (Hanly--Tse) costs achievable rate relative to the unconstrained (Shannon, or ergodic) capacity, and by how much is exactly the object of study.
+
+The two relay strategies differ in what they cost against such a deadline. The destination always buffers a full coded frame before it can decode, regardless of which relay handled the first hop -- that cost is unavoidable for any coded MCS and is shared by both strategies. Block-DF adds a second full-frame buffer at the relay itself, since it must decode, re-encode and only then forward, so its round-trip latency is the frame length \emph{twice}. The denoise-only relay adds only its window (Table~\ref{tbl:table41}'s 10 symbols, independent of frame length or code rate), so its round-trip latency is the frame length once. Re-deriving the goodput envelope of Table~\ref{tbl:table42} under a round-trip budget $L_{\max}$ -- the best goodput each relay strategy can still deliver using only MCS options whose round-trip latency does not exceed $L_{\max}$ -- therefore penalizes block-DF twice as hard per unit of code redundancy as it penalizes the denoise-only relay, using the same already-measured FER data as Table~\ref{tbl:table42} and no new simulation.
+
+\begin{longtable}[]{@{}lcccc@{}}
+\caption[Link-adaptation envelope under a 150-symbol latency budget]{Link-adaptation envelope re-derived under a 150-symbol round-trip latency budget, same layout and data source as Table~\ref{tbl:table42}.}\label{tbl:table43}\tabularnewline
+\toprule\noalign{}
+SNR (dB) & Best MCS (block-DF) & $G$ (block-DF) & Best MCS (denoise) & $G$ (denoise) \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+SNR (dB) & Best MCS (block-DF) & $G$ (block-DF) & Best MCS (denoise) & $G$ (denoise) \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+8 & QPSK uncoded & 0.0000 & QPSK uncoded & 0.0000 \\
+12 & QPSK uncoded & 0.0000 & QPSK 3/4 & \textbf{0.0089} \\
+16 & 16-QAM 3/4 & 0.0370 & QPSK 3/4 & \textbf{0.3719} \\
+20 & 16-QAM 3/4 & 0.4667 & QPSK 3/4 & \textbf{0.9156} \\
+24 & 16-QAM 3/4 & 1.5096 & 16-QAM 2/3 & \textbf{1.5129} \\
+28 & 16-QAM 3/4 & \textbf{2.3185} & 16-QAM 3/4 & 2.2993 \\
+32 & 16-QAM uncoded & 2.6800 & 16-QAM uncoded & 2.6800 \\
+36 & 16-QAM uncoded & 3.3840 & 16-QAM uncoded & 3.3840 \\
+40 & 16-QAM uncoded & 3.6980 & 16-QAM uncoded & 3.6980 \\
+\end{longtable}
+
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth]{results/coded_latency_capacity.png}}
+\caption[Goodput vs. round-trip latency budget]{Best achievable goodput as a function of the round-trip latency budget $L_{\max}$, at the four SNRs where the two relay strategies differ (16, 20, 24, 28~dB). Each curve is a step function: goodput jumps each time $L_{\max}$ crosses an MCS's round-trip latency. The denoise-only relay's steps (dashed) occur at roughly half the $L_{\max}$ of the block-DF relay's (solid) for a comparable rate, since block-DF pays the frame cost twice.}\label{fig:fig59}
+\end{figure}
+
+\textbf{Under a tight budget, block-DF can be locked out of coding altogether.} At $L_{\max}=150$ symbols (Table~\ref{tbl:table43}), block-DF's cheapest coded option (16-QAM~3/4, 136 symbols round-trip) barely clears the budget, while its next-cheapest (16-QAM~2/3, 154 symbols) does not -- forcing it down from the unconstrained envelope's choice at several SNRs. The denoise-only relay, whose round-trip cost for the same MCS is roughly half, still has QPSK~3/4 (146 symbols) and every 16-QAM rate available. The result is a gap the unconstrained comparison of Table~\ref{tbl:table42} understates by an order of magnitude at 16~dB: $10.0\times$ ($0.372$ vs.\ $0.037$ information bits/symbol) there, and $2.0\times$ at 20~dB, where the unconstrained envelope showed the two strategies within 6\% of each other.
+
+\textbf{Tighten the budget further and the reversal spreads to SNRs where block-DF led unconstrained.} At $L_{\max}=100$ symbols, block-DF has \emph{no} coded option left at any of these four SNRs -- every one of its coded MCS choices exceeds the budget -- so it is pinned to uncoded transmission throughout, while the denoise-only relay still reaches 16-QAM~2/3 or~3/4 at 20, 24 and 28~dB. At 24 and 28~dB, this is a direct reversal: Table~\ref{tbl:table42}'s unconstrained envelope has block-DF \emph{ahead} at both points, but under the 100-symbol budget denoise-only leads by $1.46\times$ and $1.54\times$ respectively, because the MCS that gave block-DF its unconstrained edge is no longer reachable in time.
+
+The mechanism finding of Section~\ref{sec:coded-soft-decision} was about which relay decodes better; Section~\ref{sec:coded-rate-adaptation} showed that once the rate is free to adapt, that question barely matters. This section adds the constraint a real deadline imposes and finds the opposite qualitative result: under a latency budget, which relay strategy is used matters again, and matters through an architectural fact -- how many times the frame must be fully buffered -- rather than through detection accuracy. A link with headroom to pick its own rate should do so per Section~\ref{sec:coded-rate-adaptation}; a link additionally bound by a hard deadline should prefer the relay strategy that does not double-buffer, independent of which one decodes more accurately.
+
 It is important to emphasize that all conclusions of this chapter are specific to the canonical memoryless channel model. Whether those conclusions remain valid when the underlying channel assumptions are violated is the subject of Chapter~\ref{sec:unknown-channels}.

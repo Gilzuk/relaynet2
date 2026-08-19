@@ -30,6 +30,7 @@ Data sources, by table:
   tbl:table39           soft- vs hard-decision relaying     <- results/coded_soft_decision.json
   tbl:table40           equal-throughput coded vs uncoded   <- results/coded_latency_throughput.json
   tbl:table42           link-adaptation envelope            <- results/coded_rate_adaptation.json
+  tbl:table43           envelope under a latency budget     <- results/coded_latency_capacity.json
 
 Timing tables (tbl:table13, tbl:table25) report machine-dependent wall-clock and
 are checked only for their deterministic content (parameter counts); the timing
@@ -683,6 +684,28 @@ def check_table42(tex, rep):
     rep.finish_table(T, before)
 
 
+def check_table43(tex, rep):
+    """Latency-constrained envelope (tbl:table43) vs coded_latency_capacity.json."""
+    T = "tbl:table43"; before = rep.checked
+    body = table_body(tex, T)
+    if body is None:
+        return rep.skip(T, "label not found in tex")
+    d = json.load(open(os.path.join(ROOT, "results/coded_latency_capacity.json")))
+    snap = {r["snr_db"]: r for r in d["snapshot"]}
+    for row in data_rows(body):
+        if not row or row[0][1] is None:
+            continue
+        snr = int(row[0][1])
+        if snr not in snap or len(row) < 5:
+            continue
+        rb, rd = snap[snr]["blockdf"], snap[snr]["denoise"]
+        if row[2][1] is not None:
+            rep.cell(T, f"{snr}dB/blockdf_goodput", row[2][0], row[2][1], rb["goodput"])
+        if row[4][1] is not None:
+            rep.cell(T, f"{snr}dB/denoise_goodput", row[4][0], row[4][1], rd["goodput"])
+    rep.finish_table(T, before)
+
+
 def _e6_grouped(tex, label, npy_map, rep, snr_cols):
     """Shared parser for the two Ch7 grouped tables (setup/relay rows).
 
@@ -1112,7 +1135,7 @@ def main():
               check_table24, check_tableE6, check_tableE6flat, check_tableE6qpsk,
               check_E6blind_prose, check_E6partial_prose, check_E6composite_prose,
               check_table34, check_table35, check_table36,
-              check_table37, check_table38, check_table39, check_table40, check_table42]
+              check_table37, check_table38, check_table39, check_table40, check_table42, check_table43]
     for chk in checks:
         try:
             chk(tex, rep)
