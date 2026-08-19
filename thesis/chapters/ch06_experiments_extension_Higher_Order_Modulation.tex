@@ -2,7 +2,7 @@
 
 This chapter is about one constellation and nothing else: 16-QAM on the canonical Rayleigh channel. The canonical comparison of Chapter~\ref{sec:experiments} answers hypotheses H1--H5 with QPSK, which places a single bit on each axis of the complex plane and is therefore absorbed by the I/Q-split relays without modification. 16-QAM places \emph{four} levels on each axis, and at that point the per-axis formulation breaks down. That breakdown, and its repair, are the whole content of this chapter.
 
-Two studies are reported. The first evaluates 16-QAM under the I/Q-splitting formulation, exposing a structural BER floor for multi-level constellations; the second removes that floor by reformulating the relay as a joint $N$-class classifier over the full 2D constellation ($N=16$). MIMO, 16-PSK, CSI injection, and end-to-end learning remain future work.
+This chapter reports one study: reformulating the relay as a joint $N$-class classifier over the full 2D constellation ($N=16$) removes the structural BER floor that per-axis I/Q-split processing imposes on multi-level constellations, measured directly against that per-axis baseline within the same experiment. MIMO, 16-PSK, CSI injection, and end-to-end learning remain future work.
 
 \paragraph{Where this chapter sits.} The thesis's argument is a ladder of assumptions, each layer removing one (Table~\ref{tbl:layers}). This chapter is \emph{not} a rung on that ladder: it is a branch off layer~1. It holds every channel assumption of the canonical setup fixed --- memoryless, known, perfect CSI --- and varies the constellation instead. Raising the constellation order stresses the relay's \emph{output} formulation, not its knowledge of the channel, which is why the conclusions here remain confirmatory in the same sense as Chapter~\ref{sec:experiments}: the learned relay earns its place by handling a representation classical per-axis processing cannot, not by outperforming a classical method on equal terms.
 
@@ -28,104 +28,6 @@ The ladder proper resumes in Chapter~\ref{sec:unknown-channels}, which holds the
 \end{figure}
 
 \paragraph{Scope relative to the canonical model.} This chapter extends the canonical study along the modulation axis only. The underlying channel model remains unchanged: the relay channel is memoryless, the noise is white, transmission is uncoded, and relay processing is evaluated on a per-symbol basis. Consequently, the experiments reported here continue to address matched-model relay processing rather than channel memory, sequence detection, or channel estimation. These effects are introduced only in the unknown-channel study of Chapter~\ref{sec:unknown-channels}, which deliberately departs from the canonical assumptions by introducing impairments such as intersymbol interference (ISI), nonlinear distortion, and unknown phase.
-
-\section{Higher-Order Modulation Scalability (Constellation-Aware Training)}\label{sec:higher-order-modulation-scalability-constellation-aware-training}
-
-\textbf{Goal:} Evaluate the generalizability of BPSK-trained relays to complex constellations and resolve the multi-level amplitude bottleneck.
-
-\textbf{Trials:} - \textbf{Topology:} SISO - \textbf{Modulation scheme:} 16-QAM - \textbf{Channel:} i.i.d.\ Rayleigh fast fading (canonical) - \textbf{Equalizers:} None - \textbf{NN architecture:} Supervised (MLP, Hybrid), Generative (VAE, cGAN), Sequence (Transformer, Mamba-S6, Mamba-2 SSD) - \textbf{NN output activation (swept):} tanh, linear, clipped tanh (hardtanh), scaled tanh, scaled sigmoid (ReLU hidden throughout) - \textbf{Special case:} Constellation Aware training
-
-\textbf{Conclusion:} 
-\begin{enumerate}
-    \item On 16-QAM, standard tanh compression causes a severe, near-irreducible BER floor (\textasciitilde0.27 at 16 dB, against DF's 0.083 on the same channel; Table~\ref{tbl:table14}).
-    \item Replacing tanh with constellation-aware bounded activations (hardtanh, scaled tanh) bounded to the precise signal amplitude (\(3/\sqrt{10}\)) and retraining \emph{largely removes} this floor.
-    \item The benefit is confined to the sequence models, and this is the sharpest result in the table. Bounding the output roughly halves their 16-QAM floor --- Transformer $0.2595\to0.1073$, Mamba-S6 $0.2529\to0.1088$, Mamba-2 $0.2554\to0.1106$, a factor of about $2.4$ --- which cuts their gap to DF from about $3.1\times$ to about $1.3\times$. The feedforward relays are unmoved: the MLP improves by $5\%$ at best and the Hybrid and VAE not at all, so the activation is not a general fix for the per-axis floor but a repair specific to models whose unbounded output was the binding constraint (Table~\ref{tbl:table15}). 
-\end{enumerate}
-
-A gap to DF nonetheless persists due to per-axis error accumulation, the limitation removed by the 2D classification study below (Section~\ref{sec:class-2d-classification-for-qam16}).
-
-
-\subsection{Results Tables}\label{sec:results-tables-3}
-
-\begin{longtable}[]{@{}lcccccc@{}}
-\caption[16-QAM under I/Q-split relay processing]{16-QAM under I/Q-split relay processing, on the canonical Rayleigh channel. The classical relays keep improving with SNR while every learned relay flattens near $0.25$--$0.26$: this is the structural floor the per-axis formulation imposes, not a training failure, and it is what Section~\ref{sec:d-joint-classification-as-an-alternative-to-iq-splitting} removes. The cGAN is excluded from the re-run, as in Table~\ref{tbl:table2}.}\label{tbl:table14}\tabularnewline
-\toprule\noalign{}
-Relay & 0 dB & 4 dB & 8 dB & 12 dB & 16 dB & 20 dB \\
-\midrule\noalign{}
-\endfirsthead
-\toprule\noalign{}
-Relay & 0 dB & 4 dB & 8 dB & 12 dB & 16 dB & 20 dB \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-AF & 0.4502 & 0.3879 & 0.2982 & 0.1925 & 0.1009 & 0.0450 \\
-\textbf{DF} & \textbf{0.4197} & \textbf{0.3519} & \textbf{0.2600} & \textbf{0.1609} & \textbf{0.0828} & \textbf{0.0375} \\
-MLP (169p) & 0.4299 & 0.3806 & 0.3311 & 0.2927 & 0.2703 & 0.2590 \\
-Hybrid & 0.4261 & 0.3702 & 0.3284 & 0.2952 & 0.2723 & 0.2598 \\
-VAE & 0.4298 & 0.3804 & 0.3303 & 0.2908 & 0.2692 & 0.2579 \\
-Transformer & 0.4533 & 0.3939 & 0.3267 & 0.2796 & 0.2572 & 0.2489 \\
-Mamba-S6 & 0.4551 & 0.3944 & 0.3225 & 0.2745 & 0.2541 & 0.2486 \\
-Mamba-2 SSD & 0.4536 & 0.3933 & 0.3259 & 0.2811 & 0.2615 & 0.2537 \\
-\end{longtable}
-
-QPSK is not re-tabulated here: it is the canonical constellation and is reported in Chapter~\ref{sec:experiments} (Table~\ref{tbl:table2}), leaving this chapter the genuinely higher-order case, 16-QAM, where per-axis processing breaks down.
-
-
-Table~\ref{tbl:table15} shows the BER at 16~dB for all relays across the three activation variants, on the canonical Rayleigh channel.
-
-\begin{longtable}[]{@{}lccc@{}}
-\caption[16-QAM BER at 16 dB by output activation]{16-QAM BER at 16~dB on the canonical Rayleigh channel, under three relay output activations. \texttt{tanh} is the BPSK-trained default; \texttt{linear} is unbounded; \texttt{hardtanh} clips to the 16-QAM per-axis range $3/\sqrt{10}$. AF and DF have no output activation and are shown once as references. The cGAN is excluded from the re-run, as in Table~\ref{tbl:table2}.}\label{tbl:table15}\tabularnewline
-\toprule\noalign{}
-Relay & tanh & linear & hardtanh \\
-\midrule\noalign{}
-\endfirsthead
-\toprule\noalign{}
-Relay & tanh & linear & hardtanh \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-AF & 0.1009 & 0.1009 & 0.1009 \\
-DF & 0.0828 & 0.0828 & 0.0828 \\
-MLP (169p) & 0.2695 & \textbf{0.2554} & 0.2701 \\
-Hybrid & 0.2723 & 0.2723 & 0.2723 \\
-VAE & 0.2711 & 0.2714 & 0.2711 \\
-Transformer & 0.2595 & 0.1111 & \textbf{0.1073} \\
-Mamba-S6 & 0.2529 & \textbf{0.1088} & 0.1093 \\
-Mamba-2 SSD & 0.2554 & 0.1109 & \textbf{0.1106} \\
-\end{longtable}
-
-
-\subsection{Results Figures}\label{sec:results-figures-4}
-
-\begin{figure}[H]
-\centering
-\pandocbounded{\includegraphics[width=\linewidth,height=\textheight,keepaspectratio]{results/modulation/qam16_rayleigh_ci.png}}
-\caption[16-QAM under I/Q-split relay processing]{16-QAM under I/Q-split relay processing on the canonical Rayleigh channel, BER vs.\ $E_s/N_0$ with 95\% confidence intervals; the plotted form of Table~\ref{tbl:table14}. AF and DF descend with SNR while every learned relay flattens near $0.25$--$0.26$, which is the structural floor of the per-axis formulation.}\label{fig:fig25}
-\end{figure}
-
-
-
-
-
-
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\linewidth]{results/qam16_activation/qam16_activation_rayleigh.png}
-    \caption[16-QAM activation study on the canonical Rayleigh channel]{16-QAM activation study on the canonical Rayleigh channel. Each relay appears three times, once per output activation --- tanh (the BPSK-trained baseline), linear, and hardtanh clipped to $3/\sqrt{10}$ --- distinguished by colour and marker. The separation is by model family rather than by activation: the three sequence models drop by roughly half when their output is bounded, while the feedforward relays are essentially unchanged (Table~\ref{tbl:table15}).}
-    \label{fig:fig28}
-\end{figure}
-\REV{Compilation fix: the image path \texttt{results//qam16\_activation/...} had a double slash; corrected to a single slash. Also removed the duplicated commented-out copy of this figure (both carried \texttt{\string\label{fig:fig28}}) to avoid a duplicate-label risk if it were ever uncommented. Architecture names unified.}
-
-\begin{figure}[H]
-
-\centering
-\pandocbounded{\includegraphics[width=0.8\linewidth,height=0.8\textheight,keepaspectratio]{results/activation_comparison/various_activation_functions.png}}
-\caption[Activation shapes and derivatives]{Comparison of activation function shapes (left) and their derivatives (right) for \(A_{\max} = 0.9487\) (16-QAM). Hardtanh has a sharp transition at the clip bounds; sigmoid and scaled tanh provide smooth saturation with non-zero gradients throughout.}\label{fig:fig36}
-\end{figure}
-
 
 \section{16-Class 2D Classification for QAM16}\label{sec:class-2d-classification-for-qam16}
 

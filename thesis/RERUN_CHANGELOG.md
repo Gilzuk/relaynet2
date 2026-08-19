@@ -568,3 +568,38 @@ latency accounting here says nothing about the 1e-5-range block-error
 targets URLLC also requires, and that gap should stay visible rather
 than be implied away). Both abstracts updated. Verifier: **515 cells, 0
 inconsistencies** (was 497).
+
+## Dropped the activation-function sweep (Ch.6, kept the 2D classifier)
+
+Removed §"Higher-Order Modulation Scalability (Constellation-Aware
+Training)" from Chapter 6 (16-QAM extension) at the user's request, to
+tighten the thesis to its coherent through-line: the section (Table 14,
+Table 15, Figures 25/28/36) swept relay output activations (tanh, linear,
+hardtanh, ...) as a partial fix for the 16-QAM per-axis BER floor. It's a
+real, previously-reviewed result, but the thesis's own abstract never
+cited it -- the joint 2D classifier in the section right after it (kept,
+untouched) removes the same floor outright and is what's actually load-
+bearing in the narrative. The 2D classifier section is self-contained: its
+own Table 24 already shows the per-axis ("4-cls") baseline alongside the
+16-class fix, so nothing further needed rescuing from the deleted section.
+
+Also dropped the now-stale "constellation-aware activations reduce but
+cannot eliminate" clause from Ch.8's discussion (the floor-generalization
+bullet), replaced with a plain statement that the floor exists under
+per-axis processing, and rewrote Ch.6's own intro paragraph from "two
+studies" to "one study."
+
+Noted for the record, not acted on: while reading Table 14 before
+deleting it, its MLP-169p value at 20 dB (0.2590, tanh, per-axis) does not
+match Table 24's "4-cls BER @ 20 dB" column for the same relay (0.05491)
+-- nominally the same measurement (4-class per-axis MLP, 16-QAM, Rayleigh,
+20 dB) under two different table sources. Table 24 was already corrected
+once for data-provenance issues (see its REV note); Table 14 was not.
+Since Table 14 is now removed, this discrepancy no longer appears in the
+thesis, but it's recorded here in case Table 24's own numbers are ever
+re-audited.
+
+Verifier: check_table14/check_table15 removed (both tables gone).
+**443 cells, 0 inconsistencies** (was 515; -72 cells from the two removed
+tables). Cold rebuild: **164 pages** (was 168), 0 undefined refs. Bundles
+rebuilt: 61 entries / 27 figures (was 64/30).
