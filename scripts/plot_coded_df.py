@@ -164,6 +164,58 @@ def plot_soft_decision():
     _save(fig, "coded_soft_decision.png")
 
 
+def plot_rate_adaptation():
+    """Link-adaptation envelope (results/coded_rate_adaptation.json)."""
+    import os as _os
+    path = _os.path.join(ROOT, "results/coded_rate_adaptation.json")
+    if not _os.path.exists(path):
+        print("  (skipped rate-adaptation figure: results file not present)")
+        return
+    with open(path) as f:
+        d = json.load(f)
+    snrs = np.asarray(d["snr_db"], dtype=float)
+
+    fig, ax = plt.subplots(figsize=(9.5, 6))
+
+    # every individual MCS, faint, so the envelope is visibly an upper hull
+    for key, v in sorted(d["mcs"].items()):
+        mod, rate, relay = key.split("|")
+        if relay == "blockdf" or rate == "uncoded":
+            ax.plot(snrs, v["goodput"], color="0.75", lw=0.9, zorder=1)
+
+    env_b = [r["goodput"] for r in d["envelope"]["blockdf"]]
+    env_n = [r["goodput"] for r in d["envelope"]["denoise"]]
+    ax.plot(snrs, env_b, color="tab:red", marker="v", ls="-", lw=2.0,
+            markersize=7, label="envelope, block-DF relay", zorder=3)
+    ax.plot(snrs, env_n, color="tab:green", marker="D", ls="--", lw=2.0,
+            markersize=6, label="envelope, denoise-only relay", zorder=3)
+
+    # annotate which MCS wins each point on the block-DF envelope
+    for r, g in zip(d["envelope"]["blockdf"], env_b):
+        if g > 0.3:
+            ax.annotate(r["mcs"].replace("qam16", "16QAM").replace("qpsk", "QPSK"),
+                        xy=(r["snr_db"], g), xytext=(0, 9),
+                        textcoords="offset points", fontsize=8,
+                        ha="center", color="tab:red")
+
+    ax.axhline(4.0, color="0.4", ls=":", lw=1.0)
+    ax.text(snrs[0] + 0.3, 4.05, "16-QAM raw rate (4 bits/symbol)",
+            fontsize=8.5, color="0.4")
+    ax.set_xlabel("SNR (dB)", fontsize=13)
+    ax.set_ylabel("Goodput  $R\\,(1-\\mathrm{FER})$  [info bits/symbol]", fontsize=13)
+    ax.set_title("Link-adaptation envelope: best MCS chosen per SNR point", fontsize=14)
+    ax.grid(True, alpha=0.3)
+    ax.set_ylim(0, 4.35)
+    ax.legend(loc="upper left", fontsize=10, framealpha=0.9)
+    ax.annotate(f"grey: individual MCS  |  {d['n_trials']} trials $\\times$ "
+                f"{d['n_frames']} frames/point",
+                xy=(0.98, 0.03), xycoords="axes fraction", fontsize=9,
+                color="0.35", ha="right")
+    fig.tight_layout()
+    _save(fig, "coded_rate_adaptation.png")
+
+
 if __name__ == "__main__":
     main()
     plot_soft_decision()
+    plot_rate_adaptation()

@@ -476,3 +476,53 @@ Written up as Section 5.5.3 (`tbl:table40`, `tbl:table41`), with the
 overclaim in Section 5.5 corrected in place and pointers added from Ch8's
 latency discussion and both abstracts. Verifier: **479 cells, 0
 inconsistencies**.
+
+## Adaptive modulation and coding: bounding the mechanism finding
+
+"Let's adjust the rate per SNR point to achieve maximal capacity" -- built
+punctured rates (2/3, 3/4 from the same K=3 mother code, standard
+max-free-distance patterns, decoder re-inserts deleted bits as soft zeros)
+and a BICM pipeline (relaynet/coding/puncturing.py, relaynet/coding/bicm.py)
+so puncturing, modulation and decoding are separable, then ran
+coded_rate_adaptation.py: goodput G = R*(1-FER) maximized over
+{QPSK,16-QAM} x {uncoded,1/2,2/3,3/4}, block-DF vs denoise-only relay, 10
+trials x 200 frames x 200 info bits per point.
+
+All 126 measured cells independently re-checked: goodput formula, envelope
+argmax selection, and range/monotonicity sanity all recomputed from raw FER
+and matched the stored values exactly (0 mismatches).
+
+The envelope is a real staircase:
+
+| SNR | best MCS (both strategies) | goodput |
+|---|---|---|
+| 8-16 dB | QPSK 1/2 | 0.00-0.60 |
+| 20 dB | QPSK 3/4 or 2/3 | ~0.93 |
+| 24-28 dB | 16-QAM 2/3 -> 3/4 | 1.5-2.3 |
+| 32+ dB | **16-QAM uncoded** | 2.68-3.70 |
+
+The top step is "turn the code off": once the channel is good enough,
+coding redundancy is pure overhead and the highest-goodput choice is raw
+16-QAM at zero coding loss -- the same conclusion the equal-throughput
+correction reached by hand, now reached by direct optimization.
+
+**This bounds the mechanism finding of the soft-decision section rather
+than reversing it.** The two relay strategies' envelopes are close at
+every SNR and identical for SNR >= 32 dB (both select uncoded, no code
+to differ over). Where they differ, block-DF leads at 8/12/24/28 dB,
+denoise-only leads at 16/20 dB, and the largest gap over the whole sweep
+is 0.095 info bits/symbol at 24 dB -- under 6% of the envelope value
+there. Compare to the MCS-choice spread at fixed relay strategy: 1.31 at
+24 dB (14x the relay-strategy gap), 1.71+ at 32 dB and above (relay gap
+exactly zero there). Rate adaptation dominates the relay-decoding
+decision by more than an order of magnitude across most of the sweep --
+the destination-repairability mechanism is real, but an adaptive link
+mostly avoids the regime where it produces a large gap in the first
+place.
+
+Written up as Section 5.5.4 (tbl:table42, fig:fig58), with pointers from
+Ch1's system-model paragraph and Ch8's future-work item (which
+previously and now-incorrectly listed "adaptive code-rate-per-SNR scheme
+... not attempted" -- corrected). Both abstracts updated. 13 new tests
+(tests/test_coding.py, punctured round trips, BICM demapping, 40 total
+in that file). Verifier: **497 cells, 0 inconsistencies** (was 479).
