@@ -350,6 +350,12 @@ SNR (dB) & uncoded DF & coded AF & coded DF & MLP-coded & Mamba-coded \\
 20 & 0.0099 & 0.0018 & 0.0013 & 0.0011 & \textbf{0.0009} \\
 \end{longtable}
 
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth]{results/coded_df_comparison.png}}
+\caption[Coded block-DF vs.\ uncoded DF and coded-aware learned relays]{The data of Table~\ref{tbl:table34} plotted: coded block-DF crosses below uncoded symbol-wise DF between 4 and 8~dB and stays below it thereafter; coded AF, which never decodes, never catches up. Both coded-aware learned relays track coded-DF closely from 12~dB up but are visibly worse at 4--8~dB.}\label{fig:fig54}
+\end{figure}
+
 Two findings, reported as measured rather than smoothed toward either a "coding always helps" or a "the learned relay wins" narrative:
 
 \textbf{The caveat holds precisely where it should, and no further.} Coded block-DF beats uncoded symbol-wise DF decisively from 8~dB upward -- a $5.6\times$ reduction in BER at 16~dB, $7.6\times$ at 20~dB -- closing the gap the remark left open. But below roughly 6~dB, coding \emph{hurts}: both coded AF and coded DF are worse than plain uncoded DF at 0 and 4~dB. This is the well-known convolutional-code error-propagation threshold, not an artifact: a fixed-rate code below its operating threshold produces decoding errors that cluster and propagate across the trellis, which a memoryless per-symbol slicer cannot do. The caveat is real, but it cuts both ways -- coded block-DF is a strictly stronger baseline only above its own threshold, which itself has to be measured, not assumed.
@@ -399,6 +405,18 @@ SNR (dB) & uncoded DF & $K{=}3$ & $K{=}5$ & $K{=}7$ \\
 16 & 0.0805 & \textbf{0.0269} & 0.0325 & 0.0344 \\
 20 & 0.0366 & \textbf{0.0074} & 0.0096 & 0.0095 \\
 \end{longtable}
+
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth]{results/coded_df_k_sweep_qpsk.png}}
+\caption[Coded-DF BER vs.\ constraint length, QPSK]{The data of Table~\ref{tbl:table35} plotted: $K{=}5$ and $K{=}7$ sit visibly above $K{=}3$ at 0--8~dB and only draw level by 16--20~dB, never separating out cleanly ahead of it within this SNR range.}\label{fig:fig55}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth]{results/coded_df_k_sweep_qam16.png}}
+\caption[Coded-DF BER vs.\ constraint length, 16-QAM]{The data of Table~\ref{tbl:table36} plotted: the same ordering as QPSK, with the coded/uncoded crossover pushed out to roughly 8--12~dB by 16-QAM's higher baseline uncoded BER, and $K{=}3$ remaining the best of the three constraint lengths at every tabulated point.}\label{fig:fig56}
+\end{figure}
 
 The answer is no, not monotonically, and not within the range measured here. On both constellations, the larger-$K$ codes are \emph{worse} than $K{=}3$ at low-to-mid SNR (0--8~dB on QPSK, 0--16~dB on 16-QAM) -- a sharper error-propagation cliff for the bigger trellis, the same threshold effect visible in Table~\ref{tbl:table34}, more pronounced the stronger the code. $K{=}7$ pulls very slightly ahead of $K{=}3$ at 16~dB on QPSK (0.0039 vs.\ 0.0042); by 20~dB all three constraint lengths are within trial-to-trial noise of each other on QPSK, and on 16-QAM $K{=}3$ remains the best of the three at every tabulated point up to 20~dB. Within this frame length (200 information bits) and trial budget, the larger codes' greater free distance never clearly pays off at any SNR point measured, only costing more at low-to-mid SNR where the crossover matters most. This does not mean stronger codes are never worthwhile -- a longer frame or a lower operating rate would very plausibly shift the picture -- only that constraint length is not a free knob to turn up: like every other axis in this thesis, its benefit is a boundary to be located, not a default to be assumed.
 
