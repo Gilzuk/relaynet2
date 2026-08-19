@@ -1,0 +1,75 @@
+{
+  "spectral_efficiency": {
+    "uncoded_qpsk": 2.0,
+    "coded_qpsk": 0.9900990099009901,
+    "coded_qam16": 1.9801980198019802
+  },
+  "equal_throughput": [
+    {
+      "snr_db": 0,
+      "uncoded_qpsk": 0.333562,
+      "coded_qam16": 0.46865300000000004,
+      "ratio_uncoded_over_coded": 0.7117462173505771
+    },
+    {
+      "snr_db": 4,
+      "uncoded_qpsk": 0.22132800000000002,
+      "coded_qam16": 0.42039100000000007,
+      "ratio_uncoded_over_coded": 0.5264812995520837
+    },
+    {
+      "snr_db": 8,
+      "uncoded_qpsk": 0.120357,
+      "coded_qam16": 0.27219899999999997,
+      "ratio_uncoded_over_coded": 0.44216547452415333
+    },
+    {
+      "snr_db": 12,
+      "uncoded_qpsk": 0.055771,
+      "coded_qam16": 0.09885,
+      "ratio_uncoded_over_coded": 0.5641982802225595
+    },
+    {
+      "snr_db": 16,
+      "uncoded_qpsk": 0.024184999999999998,
+      "coded_qam16": 0.026905000000000002,
+      "ratio_uncoded_over_coded": 0.8989035495261103
+    },
+    {
+      "snr_db": 20,
+      "uncoded_qpsk": 0.009948,
+      "coded_qam16": 0.007374,
+      "ratio_uncoded_over_coded": 1.3490642799023596
+    }
+  ],
+  "structural_latency_symbols": {
+    "AF / symbol-wise DF": 0,
+    "MLP / Mamba, window 21": 10,
+    "hard block-DF (Viterbi)": 202,
+    "soft block-DF (BCJR)": 202
+  },
+  "compute": {
+    "hard block-DF (Viterbi)": {
+      "total_s": 0.7519297640000104,
+      "us_per_symbol": 15.070544835050516,
+      "msym_per_s": 0.06635460170452744
+    },
+    "soft block-DF (BCJR)": {
+      "total_s": 1.4617593969999803,
+      "us_per_symbol": 29.297298212209487,
+      "msym_per_s": 0.03413284026249409
+    },
+    "MLP hard (756p)": {
+      "total_s": 0.014893051000001378,
+      "us_per_symbol": 0.2984938269130833,
+      "msym_per_s": 3.3501530344585126
+    },
+    "MLP soft (756p)": {
+      "total_s": 0.011004863999971803,
+      "us_per_symbol": 0.2205648775398205,
+      "msym_per_s": 4.533813411972
+    }
+  },
+  "n_symbols": 49894,
+  "frame_symbols": 202
+}

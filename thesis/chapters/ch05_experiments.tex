@@ -358,7 +358,7 @@ SNR (dB) & uncoded DF & coded AF & coded DF & MLP-coded & Mamba-coded \\
 
 Two findings, reported as measured rather than smoothed toward either a "coding always helps" or a "the learned relay wins" narrative:
 
-\textbf{The caveat holds precisely where it should, and no further.} Coded block-DF beats uncoded symbol-wise DF decisively from 8~dB upward -- a $5.6\times$ reduction in BER at 16~dB, $7.6\times$ at 20~dB -- closing the gap the remark left open. But below roughly 6~dB, coding \emph{hurts}: both coded AF and coded DF are worse than plain uncoded DF at 0 and 4~dB. This is the well-known convolutional-code error-propagation threshold, not an artifact: a fixed-rate code below its operating threshold produces decoding errors that cluster and propagate across the trellis, which a memoryless per-symbol slicer cannot do. The caveat is real, but it cuts both ways -- coded block-DF is a strictly stronger baseline only above its own threshold, which itself has to be measured, not assumed.
+\textbf{The caveat holds precisely where it should, and no further.} At equal $E_s/N_0$, coded block-DF beats uncoded symbol-wise DF decisively from 8~dB upward -- a $5.6\times$ reduction in BER at 16~dB, $7.6\times$ at 20~dB -- closing the gap the remark left open. Those factors are the right comparison for a detection question but the wrong one for a link budget, because the rate-1/2 code halves the information carried per channel use; Section~\ref{sec:coded-latency-throughput} redoes the comparison at equal throughput and the advantage largely disappears. But below roughly 6~dB, coding \emph{hurts} even on the favourable axis: both coded AF and coded DF are worse than plain uncoded DF at 0 and 4~dB. This is the well-known convolutional-code error-propagation threshold, not an artifact: a fixed-rate code below its operating threshold produces decoding errors that cluster and propagate across the trellis, which a memoryless per-symbol slicer cannot do. The caveat is real, but it cuts both ways -- coded block-DF is a strictly stronger baseline only above its own threshold, which itself has to be measured, not assumed.
 
 \textbf{At low-to-mid SNR the classical decoder is far ahead, and the learned relay's extra capacity buys nothing.} Unlike the canonical memoryless channel of Table~\ref{tbl:table2}, where Section~\ref{sec:parameter-normalization-complexity-trade-off} found "the memoryless channel simply offers no temporal structure for [the sequence models'] inductive bias to exploit," a convolutional code \emph{is} genuine temporal structure. It does not rescue the learned relays where the code is doing the most work: both are far behind coded-DF at 4--8~dB (Mamba-coded 0.1175 vs.\ 0.0638 at 8~dB). Nor does the 32$\times$-larger Mamba-S6 relay show a clear advantage over the 756-parameter MLP there, being worse at 4--8~dB (0.3216 vs.\ 0.2807 at 4~dB). Giving the sequence model a task with real memory to exploit therefore does not overturn the thesis's ``less is more'' finding (H3): extra capacity still buys no reliable advantage over the minimal architecture.
 
@@ -503,5 +503,58 @@ SNR (dB) & hard block-DF & soft block-DF & MLP hard & MLP soft & oracle \\
 What that correction exposes is the substantive point. Even properly calibrated, soft block-DF only \emph{ties} hard block-DF ($0.001367$ against $0.001367$ at 20~dB; $0.004304$ against $0.004313$ at 16~dB) -- it never beats it. The reason is that at high SNR the BCJR posteriors saturate, so the posterior mean degenerates to the constellation point and soft block-DF reproduces Viterbi's decisions; when a code-exploiting relay is wrong, it is confidently wrong whether or not it quantizes. The liability identified in Table~\ref{tbl:table38} is therefore \emph{not} hard quantization at the relay, as the soft-forwarding hypothesis assumed. It is consuming the code's redundancy at the relay at all. Any relay that decodes the code -- Viterbi or BCJR, hard or soft -- has spent that redundancy by the time it transmits, and whatever it got wrong arrives at the destination unrepairable. The learned relay's high-SNR advantage comes from the opposite discipline: it never decodes the code, only denoises symbol by symbol, so the full redundancy survives intact for the destination to spend. Soft read-out then adds a second, smaller gain on top by preserving the confidence that the destination can weigh.
 
 This sharpens the thesis's recurring claim rather than overturning it. A learned relay still does not out-decode a matched classical decoder: coded-DF remains far ahead through 12~dB and, per Table~\ref{tbl:table38}, is the more accurate decoder at every SNR measured. What the high-SNR reversal shows is an architectural point about \emph{where} in a two-hop chain the decoding should happen, and the answer that emerges -- leave the code alone at the relay, denoise only, and let the destination decode once -- is a system-design conclusion, not a statement about the relative power of Viterbi and neural networks.
+
+\subsection{Throughput and Latency: What the BER Tables Leave Out}\label{sec:coded-latency-throughput}
+
+Every table above compares relays at equal $E_s/N_0$. That is the correct axis for asking which relay detects better, and the wrong one for asking which relay a link should use, because it silently ignores two costs that differ by orders of magnitude across these designs.
+
+\textbf{Throughput: the coded comparison was not like-for-like.} A rate-1/2 code carries half the information per channel use. Concretely, the coded QPSK link spends $202$ symbols to deliver $200$ information bits ($0.99$ bits/symbol) where uncoded QPSK spends $100$ ($2.00$ bits/symbol). The ``$5.6\times$ better at 16~dB'' quoted above is therefore bought with half the data rate, and a link designer given that trade would not read it as a $5.6\times$ improvement at all. The honest comparison holds spectral efficiency fixed, and the measurements already collected supply it: rate-1/2 \emph{16-QAM} delivers $4 \times \tfrac12 = 1.98$ information bits per symbol, matching uncoded QPSK's $2.00$. Table~\ref{tbl:table40} places those two side by side.
+
+\begin{longtable}[]{@{}lccc@{}}
+\caption[Coded versus uncoded at equal spectral efficiency]{Coded versus uncoded at equal spectral efficiency ($\approx$2 information bits per channel symbol): uncoded QPSK against rate-1/2 $K{=}3$ 16-QAM, both on the canonical Rayleigh channel. Recomputed from the data of Tables~\ref{tbl:table34} and~\ref{tbl:table36}; no additional simulation.}\label{tbl:table40}\tabularnewline
+\toprule\noalign{}
+SNR (dB) & uncoded QPSK & rate-1/2 16-QAM & Coding gain \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+SNR (dB) & uncoded QPSK & rate-1/2 16-QAM & Coding gain \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & \textbf{0.3336} & 0.4687 & $0.71\times$ (worse) \\
+4 & \textbf{0.2213} & 0.4204 & $0.53\times$ (worse) \\
+8 & \textbf{0.1204} & 0.2722 & $0.44\times$ (worse) \\
+12 & \textbf{0.0558} & 0.0989 & $0.56\times$ (worse) \\
+16 & \textbf{0.0242} & 0.0269 & $0.90\times$ (worse) \\
+20 & 0.0099 & \textbf{0.0074} & $1.35\times$ (better) \\
+\end{longtable}
+
+The result is a substantial qualification of Section~\ref{sec:coded-block-df}. Held to equal throughput, the rate-1/2 code does not pay for itself anywhere below 20~dB, and where it finally does the gain is $1.35\times$, not the $5.6$--$7.6\times$ the equal-$E_s/N_0$ reading suggested. Coding is not free reliability: it is reliability bought with bandwidth, and on this channel, at this rate and frame length, the purchase is a poor one until the link is already operating well. This does not overturn the earlier section -- coded block-DF genuinely is the stronger \emph{detector}, and Remark~\ref{rem:df-terminology}'s caveat genuinely is real -- but it does bound how much the caveat matters in practice.
+
+\textbf{Latency: the block relays buffer three orders of magnitude more.} The relays also differ structurally in how much they must accumulate before emitting anything, which sets the delay the relay contributes independently of how fast its arithmetic is. Symbol-wise AF and DF emit per symbol. A windowed learned relay needs $w$ symbols of look-ahead, ten here, and that figure is a property of the architecture, constant in frame length. Block-DF cannot emit until it has decoded an entire frame, $202$ symbols; soft block-DF is worse still in kind rather than degree, since BCJR's backward recursion runs from the end of the frame and so structurally forbids emitting early even in principle. Frame length is a free parameter, so this is not a fixed penalty but a scaling one: the block relays' latency grows with the frame while the learned relay's does not.
+
+\begin{longtable}[]{@{}lccc@{}}
+\caption[Latency and compute cost of the coded relays]{Structural latency and measured compute cost. ``Buffer'' is the number of symbols the relay must accumulate before it can emit its first output. Compute is the median of 7 runs over $50{,}000$ symbols after a discarded warm-up, single-threaded CPU; as with Table~\ref{tbl:table13} these timings are machine-dependent and are reported as informational.}\label{tbl:table41}\tabularnewline
+\toprule\noalign{}
+Relay & Buffer (symbols) & $\mu$s/symbol & Relative to Viterbi \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+Relay & Buffer (symbols) & $\mu$s/symbol & Relative to Viterbi \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+AF / symbol-wise DF & \textbf{0} & --- & --- \\
+MLP hard (756p) & 10 & 0.30 & $50\times$ faster \\
+MLP soft (756p) & 10 & \textbf{0.22} & $68\times$ faster \\
+hard block-DF (Viterbi) & 202 & 15.07 & $1\times$ \\
+soft block-DF (BCJR) & 202 & 29.30 & $1.9\times$ slower \\
+\end{longtable}
+
+The compute column points the same way as the latency column. The 756-parameter relay costs $0.30\,\mu$s per symbol against Viterbi's $15.07$, a factor of $50$, and the soft variant is no more expensive than the hard one because replacing an \texttt{argmax} with a posterior-mean inner product is the cheaper of the two operations. BCJR costs roughly twice Viterbi, as its forward, backward and marginalization passes imply. These are single-machine wall-clock figures for reference implementations, not architectural constants, and the caveat attached to Table~\ref{tbl:table13} applies here unchanged; the ratios are nonetheless large enough, and the structural buffering figures exact enough, that the ordering is not in question.
+
+Taken together with Table~\ref{tbl:table40}, this reframes the coded study's practical conclusion. Where the code pays for itself at all, it does so at 20~dB, for a $1.35\times$ gain at equal throughput, while asking for $20\times$ the buffering latency and $50\times$ the arithmetic of the learned relay that comes within a few ten-thousandths of it there. The learned relay's case in this chapter, as in Chapter~\ref{sec:unknown-channels}, rests on cost and constancy rather than on a lower error floor.
 
 It is important to emphasize that all conclusions of this chapter are specific to the canonical memoryless channel model. Whether those conclusions remain valid when the underlying channel assumptions are violated is the subject of Chapter~\ref{sec:unknown-channels}.

@@ -28,6 +28,7 @@ Data sources, by table:
   tbl:table37           paired high-SNR re-measurement      <- results/coded_high_budget_test.json
   tbl:table38           relay-output error diagnostic       <- results/coded_error_mechanism.json
   tbl:table39           soft- vs hard-decision relaying     <- results/coded_soft_decision.json
+  tbl:table40           equal-throughput coded vs uncoded   <- results/coded_latency_throughput.json
 
 Timing tables (tbl:table13, tbl:table25) report machine-dependent wall-clock and
 are checked only for their deterministic content (parameter counts); the timing
@@ -639,6 +640,25 @@ def check_table39(tex, rep):
     rep.finish_table(T, before)
 
 
+def check_table40(tex, rep):
+    """Equal-throughput comparison (tbl:table40) vs coded_latency_throughput.json."""
+    T = "tbl:table40"; before = rep.checked
+    body = table_body(tex, T)
+    if body is None:
+        return rep.skip(T, "label not found in tex")
+    d = json.load(open(os.path.join(ROOT, "results/coded_latency_throughput.json")))
+    rows = {int(r["snr_db"]): r for r in d["equal_throughput"]}
+    for row in data_rows(body):
+        if not row or row[0][1] is None:
+            continue
+        snr = int(row[0][1])
+        if snr not in rows or len(row) < 3:
+            continue
+        rep.cell(T, f"{snr}dB/uncoded_qpsk", row[1][0], row[1][1], rows[snr]["uncoded_qpsk"])
+        rep.cell(T, f"{snr}dB/coded_qam16", row[2][0], row[2][1], rows[snr]["coded_qam16"])
+    rep.finish_table(T, before)
+
+
 def _e6_grouped(tex, label, npy_map, rep, snr_cols):
     """Shared parser for the two Ch7 grouped tables (setup/relay rows).
 
@@ -1068,7 +1088,7 @@ def main():
               check_table24, check_tableE6, check_tableE6flat, check_tableE6qpsk,
               check_E6blind_prose, check_E6partial_prose, check_E6composite_prose,
               check_table34, check_table35, check_table36,
-              check_table37, check_table38, check_table39]
+              check_table37, check_table38, check_table39, check_table40]
     for chk in checks:
         try:
             chk(tex, rep)

@@ -419,3 +419,60 @@ high SNR precisely because it never decodes.
 Written up in Chapter 5 (`tbl:table37`-`tbl:table39`, `fig:fig57`), with the
 Ch1/Ch8 pointers and both abstracts updated. Verifier: **467 cells, 0
 inconsistencies**. Tests: 146 passing.
+
+## Correction: the coding gain was quoted on the wrong axis
+
+The coded block-DF section reported coding as beating uncoded DF by 5.6x
+at 16 dB and 7.6x at 20 dB. Both figures are measured at equal Es/N0, and
+at equal Es/N0 the rate-1/2 coded QPSK link carries **half the
+information per channel use** (0.99 info bits/symbol against uncoded
+QPSK's 2.00). The comparison was therefore not like-for-like, and the
+quoted factors overstate what a link designer would get.
+
+The equal-spectral-efficiency comparison needs no new simulation: rate-1/2
+16-QAM delivers 1.98 info bits/symbol, matching uncoded QPSK's 2.00, and
+both were already measured.
+
+| SNR | uncoded QPSK | rate-1/2 16-QAM | coding gain |
+|---|---|---|---|
+| 0 dB | 0.3336 | 0.4687 | 0.71x (worse) |
+| 4 dB | 0.2213 | 0.4204 | 0.53x (worse) |
+| 8 dB | 0.1204 | 0.2722 | 0.44x (worse) |
+| 12 dB | 0.0558 | 0.0989 | 0.56x (worse) |
+| 16 dB | 0.0242 | 0.0269 | 0.90x (worse) |
+| 20 dB | 0.0099 | 0.0074 | **1.35x (better)** |
+
+Held to equal throughput the code does not pay for itself anywhere below
+20 dB, and where it finally does the gain is 1.35x rather than 5.6-7.6x.
+Coded block-DF remains genuinely the stronger *detector* and the
+Remark 1.2 caveat remains real -- but this bounds how much it matters.
+
+## Latency and compute, which the BER tables also omitted
+
+| relay | buffer before first output | us/symbol | vs Viterbi |
+|---|---|---|---|
+| AF / symbol-wise DF | 0 symbols | --- | --- |
+| MLP hard (756p) | 10 symbols | 0.30 | 50x faster |
+| MLP soft (756p) | 10 symbols | 0.22 | 68x faster |
+| hard block-DF (Viterbi) | 202 symbols | 15.07 | 1x |
+| soft block-DF (BCJR) | 202 symbols | 29.30 | 1.9x slower |
+
+Buffering is the structural cost: a block relay cannot emit until it has
+decoded a whole frame, and BCJR cannot even in principle, its backward
+recursion starting from the frame's end. That cost scales with frame
+length; the learned relay's w-symbol look-ahead does not. So where the
+code does pay for itself (20 dB, 1.35x), it asks 20x the latency and 50x
+the arithmetic of a learned relay that comes within a few ten-thousandths
+of it there.
+
+A measurement note: the first pass of this benchmark reported MLP-hard at
+0.88 us/symbol, making the soft variant look 4x cheaper than an
+essentially identical forward pass. That was cold BLAS/allocator state on
+the first relay benchmarked. Re-run with a discarded warm-up and 7
+repeats it is 0.30 us, and the two variants are comparable as they should
+be. The warm-up is now part of the harness.
+
+Written up as Section 5.5.3 (`tbl:table40`, `tbl:table41`), with the
+overclaim in Section 5.5 corrected in place and pointers added from Ch8's
+latency discussion and both abstracts. Verifier: **479 cells, 0
+inconsistencies**.
