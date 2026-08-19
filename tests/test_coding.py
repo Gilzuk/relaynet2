@@ -155,3 +155,80 @@ class TestCodedDecodeAndForwardRelayQAM16:
         from relaynet.relays.coded_df_qam16 import CodedDecodeAndForwardRelayQAM16
         with pytest.raises(ValueError):
             CodedDecodeAndForwardRelayQAM16(frame_info_bits=199, constraint_length=3)  # 199+2=201, odd
+
+
+class TestBCJRDecoder:
+    @pytest.mark.parametrize("K", [3, 5, 7])
+    def test_zero_noise_map_round_trip(self, K):
+        from relaynet.coding.bcjr import BCJRCodeDecoder
+        enc = ConvolutionalEncoder(constraint_length=K)
+        dec = BCJRCodeDecoder(constraint_length=K, noise_var=0.1)
+        rng = np.random.default_rng(K + 200)
+        for _ in range(8):
+            n = int(rng.integers(10, 80))
+            info = rng.integers(0, 2, n)
+            soft = 1.0 - 2.0 * enc.encode(info).astype(float)
+            assert np.array_equal(dec.decode(soft), info)
+
+    def test_posteriors_are_confident_and_correct_without_noise(self):
+        from relaynet.coding.bcjr import BCJRCodeDecoder
+        enc = ConvolutionalEncoder()
+        dec = BCJRCodeDecoder(noise_var=0.1)
+        rng = np.random.default_rng(7)
+        info = rng.integers(0, 2, 60)
+        coded = enc.encode(info)
+        p1 = dec.coded_bit_posteriors(1.0 - 2.0 * coded.astype(float))
+        truth = coded.reshape(-1, 2)
+        assert np.array_equal((p1 > 0.5).astype(int), truth)
+        # confidence on the true bit should be essentially 1
+        assert np.mean(np.where(truth == 1, p1, 1 - p1)) > 0.99
+
+    def test_posteriors_are_probabilities(self):
+        from relaynet.coding.bcjr import BCJRCodeDecoder
+        enc = ConvolutionalEncoder()
+        dec = BCJRCodeDecoder(noise_var=0.5)
+        rng = np.random.default_rng(8)
+        info = rng.integers(0, 2, 40)
+        soft = 1.0 - 2.0 * enc.encode(info).astype(float) + 0.5 * rng.standard_normal(2 * 42)
+        p1 = dec.coded_bit_posteriors(soft)
+        assert p1.shape == (42, 2)
+        assert np.all((p1 >= 0) & (p1 <= 1))
+
+
+class TestSoftRelays:
+    def test_soft_df_output_shape_and_power(self):
+        from relaynet.relays.soft_coded_df import SoftCodedDecodeAndForwardRelay
+        relay = SoftCodedDecodeAndForwardRelay(frame_info_bits=100)
+        relay.set_snr_db(16)
+        rng = np.random.default_rng(11)
+        n = 2 * relay.frame_symbols
+        x = (rng.standard_normal(n) + 1j * rng.standard_normal(n)) / np.sqrt(2)
+        out = relay.process(x)
+        assert out.shape == (n,)
+        assert np.isclose(np.mean(np.abs(out) ** 2), 1.0)
+
+    def test_soft_df_high_snr_approaches_constellation(self):
+        from relaynet.relays.soft_coded_df import SoftCodedDecodeAndForwardRelay
+        from relaynet.channels.fading import rayleigh_fading_channel as rfc
+        relay = SoftCodedDecodeAndForwardRelay(frame_info_bits=100)
+        relay.set_snr_db(30)
+        rng = np.random.default_rng(12)
+        info = rng.integers(0, 2, 100)
+        tx = qpsk_modulate(ConvolutionalEncoder().encode(info))
+        out = relay.process(rfc(tx, snr_db=30))
+        # confident posteriors => magnitudes near the unit-power constellation
+        assert np.mean(np.abs(out)) > 0.9
+
+    def test_soft_learned_relay_shares_weights_with_hard(self):
+        from relaynet.relays.soft_coded_df import SoftLearnedRelay
+        from relaynet.relays.mlp import MLPQPSKClassifierRelay
+        clf = MLPQPSKClassifierRelay(window_size=11, hidden_size=8, seed=3)
+        soft = SoftLearnedRelay(clf)
+        rng = np.random.default_rng(13)
+        y = (rng.standard_normal(200) + 1j * rng.standard_normal(200)) / np.sqrt(2)
+        out_soft = soft.process(y)
+        out_hard = clf.process(y)
+        assert out_soft.shape == out_hard.shape == y.shape
+        assert np.isclose(np.mean(np.abs(out_soft) ** 2), 1.0)
+        # posterior mean is a genuinely different read-out, not the argmax
+        assert not np.allclose(out_soft, out_hard)

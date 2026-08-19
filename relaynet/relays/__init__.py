@@ -12,6 +12,7 @@ from .e2e import E2ERelay
 from .mlp import MLPRelay, MLPQPSKClassifierRelay
 from .viterbi import ViterbiMLSERelay, ViterbiMLSEQPSKRelay
 from .coded_df import CodedDecodeAndForwardRelay
+from .soft_coded_df import SoftCodedDecodeAndForwardRelay, SoftLearnedRelay
 
 __all__ = [
     "Relay",
@@ -28,4 +29,6 @@ __all__ = [
     "ViterbiMLSERelay",
     "ViterbiMLSEQPSKRelay",
     "CodedDecodeAndForwardRelay",
+    "SoftCodedDecodeAndForwardRelay",
+    "SoftLearnedRelay",
 ]
