@@ -18,7 +18,7 @@ from relaynet.modulation.qpsk import qpsk_modulate
 
 
 class CodedDecodeAndForwardRelay(Relay):
-    """Block DF over a rate-1/2, K=3 convolutional code on QPSK.
+    """Block DF over a rate-1/2 convolutional code on QPSK.
 
     Each frame is `frame_info_bits` information bits, coded and mapped
     one-to-one onto QPSK symbols (each trellis step is exactly one
@@ -33,8 +33,8 @@ class CodedDecodeAndForwardRelay(Relay):
     frame_info_bits : int, optional
         Information bits per frame (default 100).
     constraint_length : int, optional
-        Passed through to the encoder/decoder (default 3; only K=3 is
-        implemented on either side).
+        Passed through to the encoder/decoder (default 3). One of
+        {3, 5, 7} -- see :data:`relaynet.coding.convolutional.STANDARD_GENERATORS`.
     """
 
     def __init__(self, frame_info_bits=100, constraint_length=3):

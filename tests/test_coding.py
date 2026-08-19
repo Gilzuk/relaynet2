@@ -4,9 +4,11 @@ import numpy as np
 import pytest
 
 from relaynet.coding.convolutional import ConvolutionalEncoder, ViterbiCodeDecoder
+from relaynet.coding.convolutional_qam16 import QAM16CodeDecoder, _PAM4_IDX_TO_LEVEL
 from relaynet.relays.coded_df import CodedDecodeAndForwardRelay
 from relaynet.channels.fading import rayleigh_fading_channel
 from relaynet.modulation.qpsk import qpsk_modulate
+from relaynet.modulation.qam import qam16_modulate
 
 
 class TestConvolutionalCode:
@@ -31,9 +33,27 @@ class TestConvolutionalCode:
 
     def test_rejects_unsupported_constraint_length(self):
         with pytest.raises(NotImplementedError):
-            ConvolutionalEncoder(constraint_length=7)
+            ConvolutionalEncoder(constraint_length=4)
         with pytest.raises(NotImplementedError):
-            ViterbiCodeDecoder(constraint_length=7)
+            ViterbiCodeDecoder(constraint_length=4)
+
+    @pytest.mark.parametrize("K", [3, 5, 7])
+    def test_zero_noise_round_trip_all_constraint_lengths(self, K):
+        enc = ConvolutionalEncoder(constraint_length=K)
+        dec = ViterbiCodeDecoder(constraint_length=K)
+        rng = np.random.default_rng(K)
+        for _ in range(10):
+            n_info = int(rng.integers(5, 100))
+            info = rng.integers(0, 2, n_info)
+            coded = enc.encode(info)
+            soft = 1.0 - 2.0 * coded.astype(float)
+            decoded = dec.decode(soft)
+            assert np.array_equal(decoded, info)
+
+    @pytest.mark.parametrize("K", [3, 5, 7])
+    def test_num_states_matches_constraint_length(self, K):
+        dec = ViterbiCodeDecoder(constraint_length=K)
+        assert dec.num_states == 2 ** (K - 1)
 
     def test_decoder_corrects_a_single_bit_flip(self):
         # A lone hard error should still be within the K=3 code's correction
@@ -82,3 +102,56 @@ class TestCodedDecodeAndForwardRelay:
              + 1j * rng.standard_normal(frame_symbols + 3))
         out = relay.process(x)
         assert len(out) == frame_symbols  # trailing partial frame dropped
+
+
+class TestQAM16CodeDecoder:
+    @pytest.mark.parametrize("K", [3, 5, 7])
+    def test_zero_noise_round_trip(self, K):
+        enc = ConvolutionalEncoder(constraint_length=K)
+        dec = QAM16CodeDecoder(constraint_length=K)
+        rng = np.random.default_rng(K + 50)
+        for _ in range(15):
+            n_info = int(rng.integers(6, 150))
+            info = rng.integers(0, 2, n_info)
+            coded = enc.encode(info)
+            idx = coded.reshape(-1, 2)
+            axis_vals = _PAM4_IDX_TO_LEVEL[idx[:, 0] * 2 + idx[:, 1]]
+            decoded = dec.decode(axis_vals)
+            assert np.array_equal(decoded, info)
+
+    def test_matches_qam16_modulate_bit_packing(self):
+        enc = ConvolutionalEncoder(constraint_length=3)
+        dec = QAM16CodeDecoder(constraint_length=3)
+        rng = np.random.default_rng(99)
+        n_info = 200  # + tail(2) = 202, divisible by 4 -> whole 16-QAM symbols
+        info = rng.integers(0, 2, n_info)
+        coded = enc.encode(info)
+        assert len(coded) % 4 == 0
+        symbols = qam16_modulate(coded)
+
+        axis_vals = np.empty(len(coded) // 2)
+        axis_vals[0::2] = symbols.real
+        axis_vals[1::2] = symbols.imag
+        decoded = dec.decode(axis_vals)
+        assert np.array_equal(decoded, info)
+
+
+class TestCodedDecodeAndForwardRelayQAM16:
+    def test_output_length_and_high_snr_fidelity(self):
+        from relaynet.relays.coded_df_qam16 import CodedDecodeAndForwardRelayQAM16
+        from relaynet.channels.fading import rayleigh_fading_channel as rfc
+        from relaynet.modulation.qam import qam16_modulate as qam_mod
+
+        relay = CodedDecodeAndForwardRelayQAM16(frame_info_bits=200)
+        rng = np.random.default_rng(5)
+        info = rng.integers(0, 2, 200)
+        coded = relay.encoder.encode(info)
+        tx = qam_mod(coded)
+        rx = rfc(tx, snr_db=30)
+        out = relay.process(rx)
+        assert out.shape == (relay.frame_symbols,)
+
+    def test_rejects_odd_frame_length(self):
+        from relaynet.relays.coded_df_qam16 import CodedDecodeAndForwardRelayQAM16
+        with pytest.raises(ValueError):
+            CodedDecodeAndForwardRelayQAM16(frame_info_bits=199, constraint_length=3)  # 199+2=201, odd
