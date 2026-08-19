@@ -347,3 +347,75 @@ python3 verify_thesis_tables.py
 
 `CANONICAL_PAIRS` in `run_experiments.py` is the single definition of which
 (constellation, channel) configurations are evaluated.
+
+## Follow-up: the high-SNR claim was wrong, and the mechanism behind it
+
+The section above reported the coded-aware learned relays as "within trial
+noise" of coded block-DF at 16-20 dB. That was a judgement on 10 unpaired
+trials, and it does not survive testing. Re-measured with **100 paired
+trials** (identical bits and identical channel realizations per trial across
+relays, so channel-draw variance cancels in the per-trial difference),
+Wilcoxon signed-rank:
+
+| SNR | relay | BER | diff vs coded-DF | W/L | p |
+|---|---|---|---|---|---|
+| 16 dB | coded-DF | 0.004245 | --- | --- | --- |
+| | MLP-coded | 0.004437 | +0.000192 | 23/77 | <1e-4 |
+| | Mamba-coded | 0.004124 | -0.000121 | 68/32 | <1e-4 |
+| 20 dB | coded-DF | 0.001362 | --- | --- | --- |
+| | MLP-coded | 0.001066 | -0.000295 | 99/1 | <1e-4 |
+| | Mamba-coded | 0.000967 | -0.000395 | 100/0 | <1e-4 |
+
+Both directions are real. At 20 dB both learned relays beat the classical
+decoder in essentially every trial; at 16 dB the result splits by
+architecture. The original call was wrong to dismiss the gaps, and it would
+have been equally wrong to upgrade it to "learned beats Viterbi" -- neither
+sentence describes the data.
+
+**Why it happens, and why it is not a decoding result.** Instrumenting the
+relay output (`coded_error_mechanism.py`, 20 trials x 500 frames):
+
+| SNR | relay | relay symbol ER | repaired downstream | final BER |
+|---|---|---|---|---|
+| 16 dB | coded-DF | 0.00507 | 15.5% | 0.004282 |
+| | MLP-coded | 0.01075 | 57.2% | 0.004603 |
+| | oracle | --- | --- | 0.002192 |
+| 20 dB | coded-DF | 0.00183 | 25.8% | 0.001355 |
+| | MLP-coded | 0.00390 | 74.4% | 0.001001 |
+| | oracle | --- | --- | 0.000655 |
+
+Viterbi is the better decoder, exactly as the optimality result says: it puts
+~2.1x *fewer* symbol errors on the air. It loses end-to-end because block-DF
+re-encodes, so a wrong decode leaves the relay as a valid-but-wrong codeword
+the destination cannot detect. This also explains the 16-vs-20 dB split: at
+16 dB the 2.1x raw-error penalty still outweighs the repair advantage, at
+20 dB it does not.
+
+**Soft decision** (`coded_soft_decision.py`, paired, 20 trials x 500 frames).
+Soft read-out helps the learned relay at every SNR on *identical weights*
+(argmax -> softmax posterior mean, no retraining): 0.4327/0.4424 at 0 dB,
+0.0849/0.0970 at 8 dB, 0.000885/0.001069 at 20 dB. At 16 dB it flips the MLP
+from significantly losing to block-DF (2/20) to significantly beating it
+(20/20).
+
+BCJR soft block-DF, by contrast, does **not** rescue block-DF -- contradicting
+the hypothesis that motivated building it. It ties hard block-DF at 8-16 dB
+and is worse at 20 dB (0.002379 vs 0.001376, 0/20). A variance sweep
+(`coded_soft_df_calibration.py`) shows the 20 dB degradation is
+mis-calibration: the relay assumes the nominal noise variance while
+post-equalization Rayleigh noise is 1/|h|^2 larger, and inflating the assumed
+variance 2x removes the entire gap (0.002394 -> 0.001367), every factor up to
+100x holding there. Viterbi is structurally immune, its squared-distance
+metric being invariant to uniform variance scaling.
+
+But even calibrated, soft block-DF only *ties* hard block-DF; it never beats
+it, because at high SNR the BCJR posteriors saturate and the posterior mean
+degenerates to the hard constellation point. **So the liability is not hard
+quantization at the relay -- it is consuming the code's redundancy at the
+relay at all.** Any relay that decodes the code, Viterbi or BCJR, hard or
+soft, has spent that redundancy before transmitting. The learned relay wins at
+high SNR precisely because it never decodes.
+
+Written up in Chapter 5 (`tbl:table37`-`tbl:table39`, `fig:fig57`), with the
+Ch1/Ch8 pointers and both abstracts updated. Verifier: **467 cells, 0
+inconsistencies**. Tests: 146 passing.

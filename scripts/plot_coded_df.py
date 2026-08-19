@@ -118,5 +118,52 @@ def main():
     )
 
 
+
+
+def plot_soft_decision():
+    """Soft- vs hard-decision relaying (results/coded_soft_decision.json)."""
+    import os as _os
+    path = _os.path.join(ROOT, "results/coded_soft_decision.json")
+    if not _os.path.exists(path):
+        print("  (skipped soft-decision figure: results file not present)")
+        return
+    with open(path) as f:
+        d = json.load(f)
+    snrs = np.asarray(d["snr_db"], dtype=float)
+    n = d["n_trials"] * d["n_frames"] * 200
+
+    def series(key):
+        return [d["summary"][str(int(s))][key]["mean"] for s in snrs]
+
+    fig, ax = plt.subplots(figsize=(9, 6))
+    spec = [
+        ("hard block-DF (Viterbi)", "coded_df", "tab:red", "v", "-"),
+        ("soft block-DF (BCJR)", "soft_df", "tab:orange", "s", "--"),
+        ("MLP hard (argmax)", "mlp_hard", "tab:blue", "^", "-."),
+        ("MLP soft (posterior mean)", "mlp_soft", "tab:green", "D", "-"),
+        ("oracle relay (hop-2 floor)", "oracle", "0.35", "o", ":"),
+    ]
+    ymin = min(min(series(k)) for _, k, *_ in spec)
+    for label, key, color, marker, ls in spec:
+        ber = np.asarray(series(key))
+        ci = 1.96 * np.sqrt(np.maximum(ber * (1 - ber), 0) / n)
+        ax.semilogy(snrs, ber, label=label, color=color, marker=marker,
+                    ls=ls, lw=1.5, markersize=6)
+        ax.fill_between(snrs, np.maximum(ber - ci, 1e-7), ber + ci,
+                        color=color, alpha=0.15, lw=0)
+    ax.set_xlabel("SNR (dB)", fontsize=13)
+    ax.set_ylabel("BER", fontsize=13)
+    ax.set_title("Soft- vs hard-decision relaying on the coded link (QPSK, K=3)", fontsize=14)
+    ax.set_ylim(bottom=10 ** (np.floor(np.log10(ymin)) - 1))
+    ax.grid(True, which="both", alpha=0.3)
+    ax.legend(loc="lower left", fontsize=10, framealpha=0.9)
+    ax.annotate(f"{d['n_trials']} paired trials $\\times$ {d['n_frames']*200:,} info bits/SNR point",
+                xy=(0.98, 0.97), xycoords="axes fraction", fontsize=9, color="0.35",
+                ha="right", va="top")
+    fig.tight_layout()
+    _save(fig, "coded_soft_decision.png")
+
+
 if __name__ == "__main__":
     main()
+    plot_soft_decision()

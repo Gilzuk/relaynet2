@@ -25,6 +25,9 @@ Data sources, by table:
   tbl:table34           coded block-DF vs uncoded/learned  <- results/coded_df_experiment.json
   tbl:table35           coded-DF K-sweep, QPSK              <- results/coded_df_experiment.json
   tbl:table36           coded-DF K-sweep, 16-QAM            <- results/coded_df_experiment.json
+  tbl:table37           paired high-SNR re-measurement      <- results/coded_high_budget_test.json
+  tbl:table38           relay-output error diagnostic       <- results/coded_error_mechanism.json
+  tbl:table39           soft- vs hard-decision relaying     <- results/coded_soft_decision.json
 
 Timing tables (tbl:table13, tbl:table25) report machine-dependent wall-clock and
 are checked only for their deterministic content (parameter counts); the timing
@@ -554,6 +557,88 @@ def check_table36(tex, rep):
     rep.finish_table(T, before)
 
 
+def check_table37(tex, rep):
+    """Paired high-SNR re-measurement (tbl:table37) vs coded_high_budget_test.json."""
+    T = "tbl:table37"; before = rep.checked
+    body = table_body(tex, T)
+    if body is None:
+        return rep.skip(T, "label not found in tex")
+    d = json.load(open(os.path.join(ROOT, "results/coded_high_budget_test.json")))
+    label_map = {"coded-df": "coded_df", "mlp-coded": "mlp_coded", "mamba-coded": "mamba_coded"}
+    snr = None
+    for row in data_rows(body):
+        if not row:
+            continue
+        # rows are either "16 dB & coded-DF & ..." or " & MLP-coded & ..."
+        first = row[0][0].strip()
+        m = re.match(r"(\d+)\s*dB", first)
+        if m:
+            snr = m.group(1)
+        if snr is None or len(row) < 3:
+            continue
+        name = re.sub(r"[^a-z0-9-]", "", row[1][0].strip().lower())
+        key = label_map.get(name)
+        if key is None or snr not in d["summary"]:
+            continue
+        src = float(np.mean(d["per_trial"][snr][key]))
+        pub_text, pub_val = row[2]
+        rep.cell(T, f"{snr}dB/{key}", pub_text, pub_val, src)
+    rep.finish_table(T, before)
+
+
+def check_table38(tex, rep):
+    """Error-location diagnostic (tbl:table38) vs coded_error_mechanism.json."""
+    T = "tbl:table38"; before = rep.checked
+    body = table_body(tex, T)
+    if body is None:
+        return rep.skip(T, "label not found in tex")
+    d = json.load(open(os.path.join(ROOT, "results/coded_error_mechanism.json")))["results"]
+    label_map = {"coded-df": "coded_df", "mlp-coded": "mlp_coded", "oracle": "oracle"}
+    snr = None
+    for row in data_rows(body):
+        if not row:
+            continue
+        first = row[0][0].strip()
+        m = re.match(r"(\d+)\s*dB", first)
+        if m:
+            snr = m.group(1)
+        if snr is None or len(row) < 5 or snr not in d:
+            continue
+        name = re.sub(r"[^a-z0-9-]", "", row[1][0].strip().lower())
+        key = label_map.get(name)
+        if key is None:
+            continue
+        src = d[snr][key]
+        # relay symbol ER (col 2) and final BER (col 4); "---" cells parse to None
+        if row[2][1] is not None:
+            rep.cell(T, f"{snr}dB/{key}/relay_sym_er", row[2][0], row[2][1], src["relay_sym_er"])
+        if row[4][1] is not None:
+            rep.cell(T, f"{snr}dB/{key}/ber", row[4][0], row[4][1], src["ber"])
+    rep.finish_table(T, before)
+
+
+def check_table39(tex, rep):
+    """Soft- vs hard-decision relaying (tbl:table39) vs coded_soft_decision.json."""
+    T = "tbl:table39"; before = rep.checked
+    body = table_body(tex, T)
+    if body is None:
+        return rep.skip(T, "label not found in tex")
+    d = json.load(open(os.path.join(ROOT, "results/coded_soft_decision.json")))["summary"]
+    cols = ["coded_df", "soft_df", "mlp_hard", "mlp_soft", "oracle"]
+    for row in data_rows(body):
+        if not row or row[0][1] is None:
+            continue
+        snr = str(int(row[0][1]))
+        if snr not in d:
+            continue
+        for c, key in enumerate(cols, start=1):
+            if c >= len(row):
+                break
+            pub_text, pub_val = row[c]
+            rep.cell(T, f"{snr}dB/{key}", pub_text, pub_val, d[snr][key]["mean"])
+    rep.finish_table(T, before)
+
+
 def _e6_grouped(tex, label, npy_map, rep, snr_cols):
     """Shared parser for the two Ch7 grouped tables (setup/relay rows).
 
@@ -982,7 +1067,8 @@ def main():
     checks = [check_ber_validation, check_table26, check_table2, check_layers_table, check_table14, check_table15, check_table8,
               check_table24, check_tableE6, check_tableE6flat, check_tableE6qpsk,
               check_E6blind_prose, check_E6partial_prose, check_E6composite_prose,
-              check_table34, check_table35, check_table36]
+              check_table34, check_table35, check_table36,
+              check_table37, check_table38, check_table39]
     for chk in checks:
         try:
             chk(tex, rep)

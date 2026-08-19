@@ -360,7 +360,53 @@ Two findings, reported as measured rather than smoothed toward either a "coding 
 
 \textbf{The caveat holds precisely where it should, and no further.} Coded block-DF beats uncoded symbol-wise DF decisively from 8~dB upward -- a $5.6\times$ reduction in BER at 16~dB, $7.6\times$ at 20~dB -- closing the gap the remark left open. But below roughly 6~dB, coding \emph{hurts}: both coded AF and coded DF are worse than plain uncoded DF at 0 and 4~dB. This is the well-known convolutional-code error-propagation threshold, not an artifact: a fixed-rate code below its operating threshold produces decoding errors that cluster and propagate across the trellis, which a memoryless per-symbol slicer cannot do. The caveat is real, but it cuts both ways -- coded block-DF is a strictly stronger baseline only above its own threshold, which itself has to be measured, not assumed.
 
-\textbf{The learned relay tracks but does not beat the classical decoder, even with real temporal structure to exploit.} Unlike the canonical memoryless channel of Table~\ref{tbl:table2}, where Section~\ref{sec:parameter-normalization-complexity-trade-off} found "the memoryless channel simply offers no temporal structure for [the sequence models'] inductive bias to exploit," a convolutional code \emph{is} genuine temporal structure. Both learned relays close to within noise of coded-DF at 16--20~dB (MLP-coded 0.0046 vs.\ 0.0043 at 16~dB; Mamba-coded 0.0009 vs.\ 0.0013 at 20~dB), but neither clearly exceeds it, and both are measurably worse at 4--8~dB (Mamba-coded 0.1175 vs.\ 0.0638 at 8~dB). Nor does the 32$\times$-larger Mamba-S6 relay show a clear advantage over the 756-parameter MLP here: it is worse at 4--8~dB (0.3216 vs.\ 0.2807 at 4~dB) and only marginally different at 16--20~dB, within likely trial-to-trial noise at this budget. Giving the sequence model a task with real memory to exploit does not change the thesis's ``less is more'' finding (H3): even here, extra capacity buys no measurable advantage over the minimal architecture, and neither learned relay beats the matched classical decoder, the same qualitative pattern as H2 on the uncoded canonical channel.
+\textbf{At low-to-mid SNR the classical decoder is far ahead, and the learned relay's extra capacity buys nothing.} Unlike the canonical memoryless channel of Table~\ref{tbl:table2}, where Section~\ref{sec:parameter-normalization-complexity-trade-off} found "the memoryless channel simply offers no temporal structure for [the sequence models'] inductive bias to exploit," a convolutional code \emph{is} genuine temporal structure. It does not rescue the learned relays where the code is doing the most work: both are far behind coded-DF at 4--8~dB (Mamba-coded 0.1175 vs.\ 0.0638 at 8~dB). Nor does the 32$\times$-larger Mamba-S6 relay show a clear advantage over the 756-parameter MLP there, being worse at 4--8~dB (0.3216 vs.\ 0.2807 at 4~dB). Giving the sequence model a task with real memory to exploit therefore does not overturn the thesis's ``less is more'' finding (H3): extra capacity still buys no reliable advantage over the minimal architecture.
+
+\textbf{At high SNR the ordering reverses, and it is not noise.} The differences at 16--20~dB in Table~\ref{tbl:table34} are small in absolute terms, and an earlier version of this section dismissed them as trial-to-trial variation. That was wrong, and the correction is worth stating explicitly because it changes the conclusion. Re-measuring those two points with \emph{paired} trials -- every relay driven by identical information bits and identical hop-1/hop-2 fading realizations within each trial, so the channel-draw variance that dominates an unpaired comparison cancels in the per-trial difference -- and testing with the Wilcoxon signed-rank test used elsewhere in this thesis gives Table~\ref{tbl:table37}. At 20~dB both learned relays beat coded-DF in essentially every one of 100 paired trials ($p<10^{-4}$). At 16~dB the result splits by architecture: Mamba-coded wins (68 of 100 trials) while the MLP significantly \emph{loses} (23 of 100), both at $p<10^{-4}$. The effects are real in both directions, and no single sentence of the form ``the learned relay beats/does not beat Viterbi'' describes them.
+
+\begin{longtable}[]{@{}lccccc@{}}
+\caption[Paired re-measurement of the high-SNR points]{Paired re-measurement of the two high-SNR points of Table~\ref{tbl:table34}, 100 paired trials $\times$ 100{,}000 information bits. ``Diff'' is the mean per-trial BER difference against coded-DF (negative favours the learned relay); ``W/L'' counts trials won/lost; $p$ is Wilcoxon signed-rank.}\label{tbl:table37}\tabularnewline
+\toprule\noalign{}
+SNR & Relay & BER & Diff vs.\ coded-DF & W/L & $p$ \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+SNR & Relay & BER & Diff vs.\ coded-DF & W/L & $p$ \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+16 dB & coded-DF & 0.004245 & --- & --- & --- \\
+ & MLP-coded & 0.004437 & $+0.000192$ & 23/77 & $<10^{-4}$ \\
+ & Mamba-coded & \textbf{0.004124} & $-0.000121$ & 68/32 & $<10^{-4}$ \\
+\hline
+20 dB & coded-DF & 0.001362 & --- & --- & --- \\
+ & MLP-coded & 0.001066 & $-0.000295$ & 99/1 & $<10^{-4}$ \\
+ & Mamba-coded & \textbf{0.000967} & $-0.000395$ & 100/0 & $<10^{-4}$ \\
+\end{longtable}
+
+\textbf{This is not a learned relay out-decoding Viterbi, and the mechanism says why.} Viterbi is the maximum-likelihood \emph{sequence} decoder for a known code on a known channel, so a learned decoder beating it at its own task would be a surprising claim requiring more than a BER table. It is not what happens here. Instrumenting the relay output directly (Table~\ref{tbl:table38}) shows coded-DF is the \emph{better} decoder by a wide margin: it puts roughly $2.1\times$ \emph{fewer} symbol errors on the air than the learned relay at both SNRs, exactly as the optimality result predicts. What separates them is what happens to those errors afterwards. Coded-DF decodes and then \emph{re-encodes}, so a frame it gets wrong leaves the relay as a different but perfectly \emph{valid} codeword: the code's redundancy has been spent and then regenerated around the error, and the destination's decoder has no way to detect or repair it. The learned relay never re-encodes, so its (more numerous) mistakes remain isolated bad symbols inside an otherwise-valid codeword, and the destination still holds the redundancy needed to fix them. Only 16--26\% of coded-DF's relay errors are repaired downstream against 57--74\% of the learned relay's. That also explains the SNR-dependent split above: at 16~dB the $2.1\times$ raw-error penalty still outweighs the repair advantage for the MLP, and by 20~dB it no longer does.
+
+\begin{longtable}[]{@{}lccccc@{}}
+\caption[Where the errors go: relay output versus destination output]{Where the errors go, 20 trials $\times$ 500 frames. ``Relay symbol ER'' counts symbols the relay put on the air that differ from the transmitted ones; ``repaired'' is the fraction of those that do not survive the destination's decoder. The oracle relay forwards the clean codeword and so isolates the hop-2-only floor.}\label{tbl:table38}\tabularnewline
+\toprule\noalign{}
+SNR & Relay & Relay symbol ER & Repaired & Final BER \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+SNR & Relay & Relay symbol ER & Repaired & Final BER \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+16 dB & coded-DF & \textbf{0.00507} & 15.5\% & 0.004282 \\
+ & MLP-coded & 0.01075 & \textbf{57.2\%} & 0.004603 \\
+ & oracle & --- & --- & 0.002192 \\
+\hline
+20 dB & coded-DF & \textbf{0.00183} & 25.8\% & 0.001355 \\
+ & MLP-coded & 0.00390 & \textbf{74.4\%} & 0.001001 \\
+ & oracle & --- & --- & 0.000655 \\
+\end{longtable}
 
 \subsection{Does a Stronger Code Help? A Constraint-Length Sweep}\label{sec:coded-k-sweep}
 
@@ -419,5 +465,43 @@ SNR (dB) & uncoded DF & $K{=}3$ & $K{=}5$ & $K{=}7$ \\
 \end{figure}
 
 The answer is no, not monotonically, and not within the range measured here. On both constellations, the larger-$K$ codes are \emph{worse} than $K{=}3$ at low-to-mid SNR (0--8~dB on QPSK, 0--16~dB on 16-QAM) -- a sharper error-propagation cliff for the bigger trellis, the same threshold effect visible in Table~\ref{tbl:table34}, more pronounced the stronger the code. $K{=}7$ pulls very slightly ahead of $K{=}3$ at 16~dB on QPSK (0.0039 vs.\ 0.0042); by 20~dB all three constraint lengths are within trial-to-trial noise of each other on QPSK, and on 16-QAM $K{=}3$ remains the best of the three at every tabulated point up to 20~dB. Within this frame length (200 information bits) and trial budget, the larger codes' greater free distance never clearly pays off at any SNR point measured, only costing more at low-to-mid SNR where the crossover matters most. This does not mean stronger codes are never worthwhile -- a longer frame or a lower operating rate would very plausibly shift the picture -- only that constraint length is not a free knob to turn up: like every other axis in this thesis, its benefit is a boundary to be located, not a default to be assumed.
+
+\subsection{Soft-Decision Relaying, and What the Liability Actually Is}\label{sec:coded-soft-decision}
+
+The mechanism of Table~\ref{tbl:table38} suggests an obvious repair. If the trouble with block-DF is that it commits to a codeword, replace the commitment with soft information: run BCJR (forward-backward MAP) at the relay instead of Viterbi and forward the posterior-mean symbol per trellis step, so a symbol the relay is unsure of is shrunk toward the origin rather than asserted. The same idea applies to the learned relay, whose softmax already carries a posterior it was throwing away: forwarding $\sum_k p_k s_k$ instead of $\arg\max_k p_k$ costs nothing, needs no retraining, and reuses the identical weights, so any difference isolates the read-out rule alone. Table~\ref{tbl:table39} evaluates both against their hard counterparts and against an oracle relay that forwards the clean codeword, on paired trials.
+
+\begin{longtable}[]{@{}lccccc@{}}
+\caption[Soft- versus hard-decision relaying on the coded link]{Soft- versus hard-decision relaying, canonical QPSK/Rayleigh, rate-1/2 $K{=}3$, 20 paired trials $\times$ 100{,}000 information bits. The MLP hard/soft pair shares one set of trained weights and differs only in the read-out. The oracle relay forwards the clean codeword, giving the hop-2-only floor.}\label{tbl:table39}\tabularnewline
+\toprule\noalign{}
+SNR (dB) & hard block-DF & soft block-DF & MLP hard & MLP soft & oracle \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+SNR (dB) & hard block-DF & soft block-DF & MLP hard & MLP soft & oracle \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 0.4207 & \textbf{0.4142} & 0.4424 & 0.4327 & 0.3012 \\
+4 & 0.2223 & \textbf{0.2210} & 0.2923 & 0.2715 & 0.1278 \\
+8 & \textbf{0.0642} & 0.0642 & 0.0970 & 0.0849 & 0.0332 \\
+12 & \textbf{0.01544} & 0.01546 & 0.02097 & 0.01729 & 0.00762 \\
+16 & 0.004140 & 0.004141 & 0.004355 & \textbf{0.003485} & 0.002106 \\
+20 & 0.001376 & 0.002379 & 0.001069 & \textbf{0.000885} & 0.000673 \\
+\end{longtable}
+
+\begin{figure}[H]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth]{results/coded_soft_decision.png}}
+\caption[Soft- versus hard-decision relaying on the coded link]{The data of Table~\ref{tbl:table39}. The soft learned relay (green) tracks the oracle floor most closely at high SNR; soft block-DF (orange) turns upward at 20~dB, an artefact of mis-calibration discussed in the text, not of soft forwarding itself.}\label{fig:fig57}
+\end{figure}
+
+\textbf{Soft read-out helps the learned relay everywhere.} At every SNR the posterior mean beats the argmax, on identical weights: $0.4327$ against $0.4424$ at 0~dB, $0.0849$ against $0.0970$ at 8~dB, $0.000885$ against $0.001069$ at 20~dB. The gain is largest exactly where the mechanism predicts, since a relay that reports its uncertainty gives the destination's decoder more to work with than one that reports a confident guess. It is enough to change a verdict: at 16~dB the hard MLP significantly \emph{loses} to block-DF (2 of 20 paired trials) while the soft MLP significantly \emph{beats} it (20 of 20), and at 20~dB the soft relay comes within $0.00021$ of the oracle floor that no relay of any kind can pass.
+
+\textbf{Soft block-DF does not rescue block-DF, and that is the more interesting result.} The prediction going in was that BCJR would combine the code-aware cleanup of Viterbi with the repairability of a non-committing relay, and therefore beat both. It does not. It edges hard block-DF at 0--4~dB, ties it from 8--16~dB, and at 20~dB is clearly worse ($0.002379$ against $0.001376$, losing all 20 paired trials). The 20~dB degradation turns out to be a calibration artefact rather than a property of soft forwarding: the relay is given the \emph{nominal} noise variance, but post-equalization Rayleigh noise has variance $1/(2\gamma|h|^2)$, so at high SNR, where the nominal value is small, BCJR becomes badly overconfident on deep-fade symbols. Viterbi is structurally immune, its squared-distance metric being invariant to any uniform scaling of the assumed variance. Deliberately inflating the assumed variance confirms this directly: at 20~dB a factor of two removes the entire gap ($0.002394 \to 0.001367$), and every larger factor up to $100\times$ holds there.
+
+What that correction exposes is the substantive point. Even properly calibrated, soft block-DF only \emph{ties} hard block-DF ($0.001367$ against $0.001367$ at 20~dB; $0.004304$ against $0.004313$ at 16~dB) -- it never beats it. The reason is that at high SNR the BCJR posteriors saturate, so the posterior mean degenerates to the constellation point and soft block-DF reproduces Viterbi's decisions; when a code-exploiting relay is wrong, it is confidently wrong whether or not it quantizes. The liability identified in Table~\ref{tbl:table38} is therefore \emph{not} hard quantization at the relay, as the soft-forwarding hypothesis assumed. It is consuming the code's redundancy at the relay at all. Any relay that decodes the code -- Viterbi or BCJR, hard or soft -- has spent that redundancy by the time it transmits, and whatever it got wrong arrives at the destination unrepairable. The learned relay's high-SNR advantage comes from the opposite discipline: it never decodes the code, only denoises symbol by symbol, so the full redundancy survives intact for the destination to spend. Soft read-out then adds a second, smaller gain on top by preserving the confidence that the destination can weigh.
+
+This sharpens the thesis's recurring claim rather than overturning it. A learned relay still does not out-decode a matched classical decoder: coded-DF remains far ahead through 12~dB and, per Table~\ref{tbl:table38}, is the more accurate decoder at every SNR measured. What the high-SNR reversal shows is an architectural point about \emph{where} in a two-hop chain the decoding should happen, and the answer that emerges -- leave the code alone at the relay, denoise only, and let the destination decode once -- is a system-design conclusion, not a statement about the relative power of Viterbi and neural networks.
 
 It is important to emphasize that all conclusions of this chapter are specific to the canonical memoryless channel model. Whether those conclusions remain valid when the underlying channel assumptions are violated is the subject of Chapter~\ref{sec:unknown-channels}.
