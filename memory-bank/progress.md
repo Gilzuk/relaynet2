@@ -108,3 +108,8 @@ The thesis side has moved on past the E6 checklist above; current state:
 - `E6_PORTING_STATUS.md` — running progress tracker (slightly stale vs this file as of last edit; treat this `memory-bank/progress.md` as the live source of truth going forward and update `E6_PORTING_STATUS.md` in sync if it's kept)
 - `E6_VERIFICATION_REPORT.md` — full numeric verification writeup for the 3 completed experiments
 - `E6_PORTING_COMPLETE.md` — final report snapshot for the 3/7 completed state
+
+## New: Coded block-DF experiment (2026-08-19) — complete
+Added as a supplementary study, not a re-run of existing results. Rate-1/2 convolutional code (K∈{3,5,7}) with soft-decision Viterbi decoding, genuine block-DF relay, on both canonical constellations (QPSK, 16-QAM); two coded-aware learned relays (MLP, Mamba-S6) trained on the same task for comparison. Full writeup: `activeContext.md` "Latest (2026-08-19)" entry. Code: `relaynet/coding/`, `relaynet/relays/coded_df*.py`. Results: `results/coded_df_experiment.json`. Thesis: new §5.x in `ch05_experiments.tex` + pointers from Ch1/Ch8/both abstracts. Tests: `tests/test_coding.py` (19, all passing). Verifier: 421/0 (was 349/0).
+
+Note found in passing: this file's "Thesis state — 2026-08-17 (canonical restructure)" section above is now stale (describes a BPSK+QPSK dual-canonical setup that was later corrected to QPSK-only canonical, BPSK confined to AWGN calibration) — not reconciled in this pass since it wasn't the ask; flagging so a future session doesn't trust it at face value.

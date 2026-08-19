@@ -242,11 +242,87 @@ larger" ratio checks out against the recorded parameter counts.
 
 ---
 
+## New experiment: coded block-DF (not a re-measurement — added this pass)
+
+Everything above re-measures results the thesis already claimed. This is
+different: a genuinely new experiment, added to close a caveat the thesis had
+only ever asserted, not measured. Remark `rem:df-terminology` (Ch1) states
+that the DF baseline used everywhere in this thesis is *symbol-wise* (uncoded,
+per-symbol hard slicing), not the *block* DF of the information-theoretic
+relay-channel literature, and cautions that "the reported DF results should
+not be read as bounds on coded block-DF performance." That sentence had no
+number behind it until now.
+
+**What was built** (`relaynet/coding/convolutional.py`,
+`relaynet/coding/convolutional_qam16.py`,
+`relaynet/relays/coded_df.py` / `coded_df_qam16.py`): a rate-1/2 convolutional
+code (constraint length `K ∈ {3, 5, 7}`, standard maximal-free-distance
+generators, zero-tail terminated per frame) with a soft-decision Viterbi
+decoder, and `CodedDecodeAndForwardRelay` — genuine block DF: decode the full
+frame, re-encode, re-modulate, forward, as opposed to the per-symbol slicing
+used everywhere else in this thesis. 16-QAM needed a separate decoder
+(`QAM16CodeDecoder`) rather than a parameter change, since its 2-bit Gray
+mapping onto one PAM-4 level is not decomposable into independent per-bit soft
+observations the way QPSK's is. Two coded-aware learned relays were trained on
+the same task for comparison: a windowed 756-parameter MLP and the Mamba-S6
+architecture already used in `tbl:table2` (24,084 parameters at this
+configuration) — reusing the existing architectures, not building new ones.
+
+**Where it's written up:** `thesis/chapters/ch05_experiments.tex`,
+§Coded Block-DF (new `tbl:table34`–`tbl:table36`); pointers added from the
+Ch1 remark, the Ch8 limitations/future-work items that used to name this as
+open, and both abstracts (English and Hebrew — the Hebrew abstract was found
+stale relative to the English one during this pass, missing the four-layer
+ladder framing added earlier, and was brought up to parity as part of this
+change, not only extended).
+
+**Two findings, reported as measured:**
+
+1. **The caveat holds only above a threshold, not everywhere.** Coded block-DF
+   beats uncoded symbol-wise DF decisively from ~8 dB up (5.6× lower BER at
+   16 dB, 7.6× at 20 dB) but is *worse* than uncoded DF below ~4–6 dB — the
+   well-known convolutional-code error-propagation threshold, sharper for
+   stronger codes. A constraint-length sweep (K=3,5,7, both QPSK and 16-QAM)
+   found larger K does **not** monotonically help within the measured frame
+   length (200 information bits) and trial budget (10×100,000 bits/point): K=3
+   remained competitive with or better than K=5/K=7 at nearly every SNR point
+   tested, the stronger codes only costing more at low-mid SNR.
+2. **Neither coded-aware learned relay beats the classical decoder, even with
+   real temporal structure to exploit** — unlike the canonical memoryless
+   channel, where §5's parameter-normalization study found "the memoryless
+   channel simply offers no temporal structure for [the sequence models']
+   inductive bias to exploit." Both the MLP-coded and Mamba-coded relays close
+   to within trial noise of coded-DF at 16–20 dB but are measurably worse at
+   4–8 dB, and the 32×-larger Mamba-S6 relay shows no clear advantage over the
+   756-parameter MLP anywhere in the sweep — the same H2/H3 pattern
+   ("matches, doesn't beat"; "less is more") that recurs throughout this
+   thesis, unchanged by giving the sequence model a task with genuine memory.
+
+Data: `results/coded_df_experiment.json`. Scripts:
+`coded_df_experiment.py`, `coded_learned_relay.py`, `coded_mamba_relay.py`,
+`coded_k_sweep_qpsk.py`, `coded_k_sweep_qam16.py`. Tests:
+`tests/test_coding.py` (19 tests: round trips for K∈{3,5,7} on both
+decoders, exact bit-packing cross-validation against `qam16_modulate`,
+relay-level shape/fidelity checks).
+
+Deliberately not attempted in this pass: retraining either learned relay per
+(K, modulation) combination (each training run too expensive to repeat
+six-fold — the classical Viterbi decoder was swept instead, and it is the one
+the learned relays are compared against); an adaptive rate/K selection scheme
+per SNR point; soft-information (LLR) learned relays, as opposed to the
+hard-decision ones built here. Recorded as open items in Ch8.
+
+---
+
 ## Verification
 
 `verify_thesis_tables.py` checks every published cell against the file that
-produced it: **349 cells, 0 inconsistencies**. Coverage was extended during
-this work, and three checks were found to be silently disabled:
+produced it: **421 cells, 0 inconsistencies** (349 before the coded-DF work;
+`check_table34`/`35`/`36` added, sourced from `results/coded_df_experiment.json`).
+One real transcription error was caught in the process — 0.157745 had been
+written as 0.1578, which rounds to 0.1577 — and fixed before it could ship.
+Coverage was extended earlier during this work too, and three checks were
+found to be silently disabled:
 
 - `check_table8` aborted on a `KeyError` for `GenAI-3K` after the relay was
   renamed `MLP-3K`, losing 40 cells while reporting "skipped".
