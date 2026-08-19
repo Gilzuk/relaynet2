@@ -22,6 +22,9 @@ Data sources, by table:
   prose:E6blind         blind-regime prose claims          <- e6_unknown_channel_results/e6_blind_ported_results.npy
   prose:E6partial       pilot-sweep prose claims           <- e6_unknown_channel_results/e6_partial_ported_results.npy
   prose:E6composite     composite-cascade prose claims     <- e6_unknown_channel_results/e6_composite_ported_results.npy
+  tbl:table34           coded block-DF vs uncoded/learned  <- results/coded_df_experiment.json
+  tbl:table35           coded-DF K-sweep, QPSK              <- results/coded_df_experiment.json
+  tbl:table36           coded-DF K-sweep, 16-QAM            <- results/coded_df_experiment.json
 
 Timing tables (tbl:table13, tbl:table25) report machine-dependent wall-clock and
 are checked only for their deterministic content (parameter counts); the timing
@@ -478,6 +481,79 @@ def check_table24(tex, rep):
     rep.finish_table(T, before)
 
 
+def check_table34(tex, rep):
+    """Coded block-DF vs. uncoded DF / learned relays (tbl:table34) vs coded_df_experiment.json."""
+    T = "tbl:table34"; before = rep.checked
+    body = table_body(tex, T)
+    if body is None:
+        return rep.skip(T, "label not found in tex")
+    d = json.load(open(os.path.join(ROOT, "results/coded_df_experiment.json")))
+    snrs = d["snr_db"]
+    cols = ["uncoded_df", "coded_af", "coded_df", "mlp_coded", "mamba_coded"]
+    for row in data_rows(body):
+        if not row or row[0][1] is None:
+            continue
+        snr = int(row[0][1])
+        if snr not in snrs:
+            continue
+        si = snrs.index(snr)
+        for c, key in enumerate(cols, start=1):
+            if c >= len(row):
+                break
+            pub_text, pub_val = row[c]
+            rep.cell(T, f"{snr}dB/{key}", pub_text, pub_val, d[key][si])
+    rep.finish_table(T, before)
+
+
+def check_table35(tex, rep):
+    """Coded-DF BER vs. constraint length, QPSK (tbl:table35) vs coded_df_experiment.json."""
+    T = "tbl:table35"; before = rep.checked
+    body = table_body(tex, T)
+    if body is None:
+        return rep.skip(T, "label not found in tex")
+    d = json.load(open(os.path.join(ROOT, "results/coded_df_experiment.json")))
+    snrs = d["snr_db"]
+    ks = ["K3", "K5", "K7"]
+    for row in data_rows(body):
+        if not row or row[0][1] is None:
+            continue
+        snr = int(row[0][1])
+        if snr not in snrs:
+            continue
+        si = snrs.index(snr)
+        for c, k in enumerate(ks, start=1):
+            if c >= len(row):
+                break
+            pub_text, pub_val = row[c]
+            rep.cell(T, f"{snr}dB/{k}", pub_text, pub_val, d["k_sweep"][k]["ber"][si])
+    rep.finish_table(T, before)
+
+
+def check_table36(tex, rep):
+    """Coded-DF BER vs. constraint length, 16-QAM (tbl:table36) vs coded_df_experiment.json."""
+    T = "tbl:table36"; before = rep.checked
+    body = table_body(tex, T)
+    if body is None:
+        return rep.skip(T, "label not found in tex")
+    d = json.load(open(os.path.join(ROOT, "results/coded_df_experiment.json")))
+    snrs = d["snr_db"]
+    for row in data_rows(body):
+        if not row or row[0][1] is None:
+            continue
+        snr = int(row[0][1])
+        if snr not in snrs:
+            continue
+        si = snrs.index(snr)
+        pub_text, pub_val = row[1]
+        rep.cell(T, f"{snr}dB/uncoded", pub_text, pub_val, d["qam16_uncoded_df"][si])
+        for c, k in enumerate(["K3", "K5", "K7"], start=2):
+            if c >= len(row):
+                break
+            pub_text, pub_val = row[c]
+            rep.cell(T, f"{snr}dB/{k}", pub_text, pub_val, d["qam16_k_sweep"][k]["ber"][si])
+    rep.finish_table(T, before)
+
+
 def _e6_grouped(tex, label, npy_map, rep, snr_cols):
     """Shared parser for the two Ch7 grouped tables (setup/relay rows).
 
@@ -905,7 +981,8 @@ def main():
     rep = Report()
     checks = [check_ber_validation, check_table26, check_table2, check_layers_table, check_table14, check_table15, check_table8,
               check_table24, check_tableE6, check_tableE6flat, check_tableE6qpsk,
-              check_E6blind_prose, check_E6partial_prose, check_E6composite_prose]
+              check_E6blind_prose, check_E6partial_prose, check_E6composite_prose,
+              check_table34, check_table35, check_table36]
     for chk in checks:
         try:
             chk(tex, rep)

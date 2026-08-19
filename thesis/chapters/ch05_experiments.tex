@@ -324,4 +324,82 @@ Transformer & 17,697 & CUDA & 474 s (\textasciitilde8 min) & 3.71 s \\
 \caption[Low-SNR versus high-SNR trade-off]{Low-SNR versus high-SNR trade-off. BER at 8~dB is plotted against BER at 0~dB.} \label{fig:low_snr_vs_high_snr_tradeoff}
 \end{figure}
 
+\section{Coded Block-DF: Measuring the Remark~\ref{rem:df-terminology} Caveat}\label{sec:coded-block-df}
+
+Remark~\ref{rem:df-terminology} draws a distinction the rest of this thesis relies on: the DF baseline used everywhere here is \emph{symbol-wise} (uncoded, per-symbol hard slicing), not the \emph{block} DF of the information-theoretic relay-channel literature, and the remark explicitly cautions that "the reported DF results should not be read as bounds on coded block-DF performance." That caveat was asserted, not measured. This section measures it: a real information-theoretic block-DF relay, built from a rate-1/2 convolutional code and a soft-decision Viterbi decoder, added as a supplementary study on the canonical channel rather than as a revision of the core comparison above.
+
+\textbf{Setup.} A standard rate-1/2 convolutional code (constraint length $K$, $2^{K-1}$ trellis states, zero-tail terminated per 200-information-bit frame) is applied before QPSK modulation on the canonical Rayleigh channel; \texttt{CodedDecodeAndForwardRelay} decodes the full frame at the relay via soft-decision Viterbi (squared-distance branch metric on the coherently-compensated I/Q samples), then re-encodes and re-modulates a fresh, clean codeword before forwarding -- genuine block DF, as opposed to the per-symbol slicing used elsewhere in this thesis. Two coded-aware learned relays are trained on the same task for comparison: a windowed 756-parameter MLP classifier (window 21, $\approx$5$\times K$ for $K=3$) and the Mamba-S6 architecture already used in Table~\ref{tbl:table2} (24,084 parameters at this configuration), both predicting the transmitted QPSK symbol from a window of noisy coded observations with no explicit knowledge of the code. All results use the thesis-standard budget of 10 trials $\times$ 100,000 information bits per SNR point.
+
+\begin{longtable}[]{@{}lcccccc@{}}
+\caption[Coded block-DF vs.\ uncoded DF and coded-aware learned relays]{Coded block-DF vs.\ uncoded symbol-wise DF and coded-aware learned relays, canonical QPSK/Rayleigh, rate-1/2 $K{=}3$ code. ``coded-AF'' forwards the noisy codeword unmodified (the relay does not decode), isolating the code's own gain from any relay intelligence.}\label{tbl:table34}\tabularnewline
+\toprule\noalign{}
+SNR (dB) & uncoded DF & coded AF & coded DF & MLP-coded & Mamba-coded \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+SNR (dB) & uncoded DF & coded AF & coded DF & MLP-coded & Mamba-coded \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & \textbf{0.3336} & 0.4904 & 0.4210 & 0.4381 & 0.4491 \\
+4 & \textbf{0.2213} & 0.4448 & 0.2231 & 0.2807 & 0.3216 \\
+8 & 0.1204 & 0.2904 & \textbf{0.0638} & 0.0917 & 0.1175 \\
+12 & 0.0558 & 0.0544 & \textbf{0.0152} & 0.0206 & 0.0225 \\
+16 & 0.0242 & 0.0088 & 0.0043 & 0.0046 & \textbf{0.0042} \\
+20 & 0.0099 & 0.0018 & 0.0013 & 0.0011 & \textbf{0.0009} \\
+\end{longtable}
+
+Two findings, reported as measured rather than smoothed toward either a "coding always helps" or a "the learned relay wins" narrative:
+
+\textbf{The caveat holds precisely where it should, and no further.} Coded block-DF beats uncoded symbol-wise DF decisively from 8~dB upward -- a $5.6\times$ reduction in BER at 16~dB, $7.6\times$ at 20~dB -- closing the gap the remark left open. But below roughly 6~dB, coding \emph{hurts}: both coded AF and coded DF are worse than plain uncoded DF at 0 and 4~dB. This is the well-known convolutional-code error-propagation threshold, not an artifact: a fixed-rate code below its operating threshold produces decoding errors that cluster and propagate across the trellis, which a memoryless per-symbol slicer cannot do. The caveat is real, but it cuts both ways -- coded block-DF is a strictly stronger baseline only above its own threshold, which itself has to be measured, not assumed.
+
+\textbf{The learned relay tracks but does not beat the classical decoder, even with real temporal structure to exploit.} Unlike the canonical memoryless channel of Table~\ref{tbl:table2}, where Section~\ref{sec:parameter-normalization-complexity-trade-off} found "the memoryless channel simply offers no temporal structure for [the sequence models'] inductive bias to exploit," a convolutional code \emph{is} genuine temporal structure. Both learned relays close to within noise of coded-DF at 16--20~dB (MLP-coded 0.0046 vs.\ 0.0043 at 16~dB; Mamba-coded 0.0009 vs.\ 0.0013 at 20~dB), but neither clearly exceeds it, and both are measurably worse at 4--8~dB (Mamba-coded 0.1175 vs.\ 0.0638 at 8~dB). Nor does the 32$\times$-larger Mamba-S6 relay show a clear advantage over the 756-parameter MLP here: it is worse at 4--8~dB (0.3216 vs.\ 0.2807 at 4~dB) and only marginally different at 16--20~dB, within likely trial-to-trial noise at this budget. Giving the sequence model a task with real memory to exploit does not change the thesis's ``less is more'' finding (H3): even here, extra capacity buys no measurable advantage over the minimal architecture, and neither learned relay beats the matched classical decoder, the same qualitative pattern as H2 on the uncoded canonical channel.
+
+\subsection{Does a Stronger Code Help? A Constraint-Length Sweep}\label{sec:coded-k-sweep}
+
+The $K{=}3$ code above is deliberately small (4 states, comparable to the smallest ISI channel studied in Chapter~\ref{sec:unknown-channels}). Whether a stronger code -- larger constraint length, larger free distance -- simply does better is not obvious given the threshold behaviour just observed, so it is measured rather than assumed: the classical coded-DF baseline (Viterbi decode only; the learned relays are not retrained per $K$, each training run being too expensive to repeat six-fold) is swept over $K \in \{3, 5, 7\}$ -- 4, 16, and 64 trellis states respectively, with $K{=}7$ the standard used in, e.g., the Voyager-era deep-space codes -- on both canonical constellations.
+
+\begin{longtable}[]{@{}lccc@{}}
+\caption[Coded-DF BER vs.\ constraint length, QPSK]{Coded-DF BER vs.\ constraint length $K$, canonical QPSK/Rayleigh, rate 1/2.}\label{tbl:table35}\tabularnewline
+\toprule\noalign{}
+SNR (dB) & $K{=}3$ (4 states) & $K{=}5$ (16 states) & $K{=}7$ (64 states) \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+SNR (dB) & $K{=}3$ (4 states) & $K{=}5$ (16 states) & $K{=}7$ (64 states) \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & \textbf{0.4212} & 0.4722 & 0.4892 \\
+4 & \textbf{0.2242} & 0.3009 & 0.3550 \\
+8 & \textbf{0.0633} & 0.0831 & 0.0884 \\
+12 & \textbf{0.0154} & 0.0192 & 0.0168 \\
+16 & 0.0042 & 0.0049 & \textbf{0.0039} \\
+20 & 0.0015 & \textbf{0.0013} & 0.0013 \\
+\end{longtable}
+
+\begin{longtable}[]{@{}lcccc@{}}
+\caption[Coded-DF BER vs.\ constraint length, 16-QAM]{Coded-DF BER vs.\ constraint length $K$, canonical 16-QAM/Rayleigh, rate 1/2, against the uncoded modulation-aware DF reference. Decoding uses the 16-QAM-specific branch metric of a joint PAM-4 Gray level per trellis step (two steps per symbol), not the independent per-axis metric that QPSK admits.}\label{tbl:table36}\tabularnewline
+\toprule\noalign{}
+SNR (dB) & uncoded DF & $K{=}3$ & $K{=}5$ & $K{=}7$ \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+SNR (dB) & uncoded DF & $K{=}3$ & $K{=}5$ & $K{=}7$ \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & \textbf{0.4180} & 0.4687 & 0.4954 & 0.4961 \\
+4 & \textbf{0.3505} & 0.4204 & 0.4771 & 0.4874 \\
+8 & \textbf{0.2572} & 0.2722 & 0.3546 & 0.4003 \\
+12 & 0.1577 & \textbf{0.0989} & 0.1290 & 0.1446 \\
+16 & 0.0805 & \textbf{0.0269} & 0.0325 & 0.0344 \\
+20 & 0.0366 & \textbf{0.0074} & 0.0096 & 0.0095 \\
+\end{longtable}
+
+The answer is no, not monotonically, and not within the range measured here. On both constellations, the larger-$K$ codes are \emph{worse} than $K{=}3$ at low-to-mid SNR (0--8~dB on QPSK, 0--16~dB on 16-QAM) -- a sharper error-propagation cliff for the bigger trellis, the same threshold effect visible in Table~\ref{tbl:table34}, more pronounced the stronger the code. $K{=}7$ pulls very slightly ahead of $K{=}3$ at 16~dB on QPSK (0.0039 vs.\ 0.0042); by 20~dB all three constraint lengths are within trial-to-trial noise of each other on QPSK, and on 16-QAM $K{=}3$ remains the best of the three at every tabulated point up to 20~dB. Within this frame length (200 information bits) and trial budget, the larger codes' greater free distance never clearly pays off at any SNR point measured, only costing more at low-to-mid SNR where the crossover matters most. This does not mean stronger codes are never worthwhile -- a longer frame or a lower operating rate would very plausibly shift the picture -- only that constraint length is not a free knob to turn up: like every other axis in this thesis, its benefit is a boundary to be located, not a default to be assumed.
+
 It is important to emphasize that all conclusions of this chapter are specific to the canonical memoryless channel model. Whether those conclusions remain valid when the underlying channel assumptions are violated is the subject of Chapter~\ref{sec:unknown-channels}.
