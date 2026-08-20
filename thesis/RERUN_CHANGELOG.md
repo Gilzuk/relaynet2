@@ -603,3 +603,60 @@ Verifier: check_table14/check_table15 removed (both tables gone).
 **443 cells, 0 inconsistencies** (was 515; -72 cells from the two removed
 tables). Cold rebuild: **164 pages** (was 168), 0 undefined refs. Bundles
 rebuilt: 61 entries / 27 figures (was 64/30).
+
+## Theoretical-bounds check, written into the charts and tables it applies to
+
+Compared measured results against theoretical bounds and added the
+comparison directly into the affected chart/table rather than leaving it
+as a one-off analysis, plus fixed the two loose ends the check surfaced.
+
+**Checked (all already-published prose claims re-derived independently,
+zero discrepancies found against the thesis's own numbers):**
+- Canonical DF (Table 2) vs. the closed-form two-hop composition
+  2P(1-P): matches to <1% at every SNR once the QPSK Es/N0->Eb/N0
+  (3.01 dB) conversion is applied -- this derivation was already in prose
+  (Section 2.5.2.2) but not visible in the table or figure.
+- Single-hop "oracle" floor (no relay may beat a genie that recovers hop
+  1 perfectly): zero violations across all 8 relays x 11 SNR points.
+- Ergodic Rayleigh (Shannon) capacity vs. the AMC goodput envelope
+  (Table 42): zero violations, large margin (e.g. 3.70 achieved vs.
+  12.46-bit ceiling at 40 dB -- the gap is the constellation/coding
+  constraint, not a bound violation). This check did not exist anywhere
+  in the thesis before.
+- The analytic 0.25 memoryless-relay error floor (unknown-ISI, BPSK):
+  independently re-derived from the stated taps h=[1.0,0.7,0.5] and
+  confirmed exact (already drawn as a reference line in fig:figE6).
+- Genie-CSI Viterbi MLSE vs. the MLP (Ch.7, unknown ISI): mostly holds
+  (1-1.5 dB Viterbi lead, 2-10 dB); raw npy data shows near-parity at the
+  0 dB floor and again from 12-18 dB (Rayleigh 2nd hop) that the prose
+  previously only called out at the single 20 dB endpoint -- differences
+  there are all smaller than the reported standard errors, not a real
+  reversal. Prose extended to state this precisely (not previously
+  false, just narrower than the underlying data supports).
+
+**Added to the thesis:**
+- Table 2: new "DF th." column (closed-form two-hop composition per SNR),
+  verified cell-by-cell against the same formula. Table wrapped in
+  \footnotesize with abbreviated headers after the extra column pushed it
+  past the page margin.
+- Figure 10 (fig:fig10) regenerated with two reference curves: "DF
+  (theory)" (dashed, tracks the measured DF curve almost exactly) and
+  "single-hop floor" (dotted, the physical minimum). New script:
+  scripts/plot_canonical_theory_overlay.py, reusing run_experiments.py's
+  own plot_ber_chart for pixel-identical styling on the 8 measured curves.
+- Table 42: new "C (Shannon)" column (ergodic Rayleigh capacity per SNR),
+  with a sentence noting the envelope sits well inside it throughout.
+- relaynet/modulation/qpsk.py docstring corrected: the "identical to BPSK
+  per bit" claim is only exact once Es/N0 (what `snr_db` actually is) is
+  converted to Eb/N0 -- this never produced a wrong published number
+  (QPSK and BPSK are never plotted on the same axis), but the docstring
+  was imprecise about which SNR convention it meant.
+- ch07_unknown_and_mismatch_channels.tex: the "genie-CSI MLSE beats the
+  MLP by 1-1.5 dB" claim now states precisely where that margin holds
+  (2-10 dB) and where it closes to noise level (0 dB, 12-18 dB Rayleigh),
+  instead of only flagging the single 20 dB indistinguishable point.
+
+check_table2 and check_table42 extended to verify the new closed-form
+columns cell-by-cell (58 + 27 cells respectively). Verifier: **458 cells,
+0 inconsistencies**. Cold rebuild: 158 pages (unchanged), 0 undefined
+refs. Bundles rebuilt.

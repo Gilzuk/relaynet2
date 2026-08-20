@@ -50,6 +50,7 @@ import subprocess
 import sys
 
 import numpy as np
+from scipy.special import exp1
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 TEX_DIR = os.path.join(ROOT, "thesis", "chapters")
@@ -233,16 +234,21 @@ def json_ber(path, relay, snr, snrs):
 
 
 def check_table2(tex, rep):
-    """Canonical Rayleigh BER, 9 relays x SNR (tbl:table2) vs rayleigh.json."""
+    """Canonical Rayleigh BER, 9 relays x SNR (tbl:table2) vs rayleigh.json.
+
+    Column 3, "DF (theory)", is not simulated data -- it is the closed-form
+    two-hop composition 2P(1-P), P = ber_rayleigh(snr_db - 3.0103dB), the
+    QPSK Es/N0 -> per-bit Eb/N0 correction (Section~sec:rayleigh-two-hop-df-ber).
+    """
     T = "tbl:table2"; before = rep.checked
     body = table_body(tex, T)
     if body is None:
         return rep.skip(T, "label not found in tex")
-    # tex column order (after SNR): AF DF MLP Hybrid VAE Transformer Mamba-S6 Mamba2.
+    # tex column order (after SNR): AF DF DF-theory MLP Hybrid VAE Transformer Mamba-S6 Mamba2.
     # The canonical setup is QPSK on Rayleigh -- BPSK is paired with the AWGN
     # calibration channel instead -- so this reads the QPSK result file. The
     # cGAN was excluded from the re-run and has no column.
-    cols = ["AF", "DF", "MLP (169p)", "Hybrid", "VAE",
+    cols = ["AF", "DF", None, "MLP (169p)", "Hybrid", "VAE",
             "Transformer", "Mamba S6", "Mamba2 (SSD)"]
     d = json.load(open(os.path.join(ROOT, "results/modulation/qpsk_rayleigh.json")))
     snrs = d["snr_range"]
@@ -256,6 +262,12 @@ def check_table2(tex, rep):
         for c, relay in enumerate(cols, start=1):
             if c >= len(row):
                 break
+            if relay is None:  # DF (theory) column
+                pub_text, pub_val = row[c]
+                p1 = ber_rayleigh(snr - 3.0103)
+                src = 2 * p1 * (1 - p1)
+                rep.cell(T, f"{snr}dB/DF(theory)", pub_text, pub_val, src)
+                continue
             key = resolve(d["results"], relay)
             if key is None:
                 if snr == snrs[0]:
@@ -588,8 +600,18 @@ def check_table40(tex, rep):
     rep.finish_table(T, before)
 
 
+def ergodic_rayleigh_capacity(snr_db):
+    """Ergodic Rayleigh (unconstrained-input Shannon) capacity, bits/complex use."""
+    g = 10 ** (snr_db / 10.0)
+    return math.log2(math.e) * math.exp(1.0 / g) * exp1(1.0 / g)
+
+
 def check_table42(tex, rep):
-    """Link-adaptation envelope (tbl:table42) vs coded_rate_adaptation.json."""
+    """Link-adaptation envelope (tbl:table42) vs coded_rate_adaptation.json.
+
+    Column 6, "C (Shannon)", is not simulated -- it is the closed-form
+    ergodic Rayleigh capacity, an upper-bound sanity ceiling on goodput.
+    """
     T = "tbl:table42"; before = rep.checked
     body = table_body(tex, T)
     if body is None:
@@ -608,6 +630,9 @@ def check_table42(tex, rep):
             rep.cell(T, f"{snr}dB/blockdf_goodput", row[2][0], row[2][1], rb["goodput"])
         if row[4][1] is not None:
             rep.cell(T, f"{snr}dB/denoise_goodput", row[4][0], row[4][1], rd["goodput"])
+        if len(row) >= 6 and row[5][1] is not None:
+            rep.cell(T, f"{snr}dB/capacity", row[5][0], row[5][1],
+                     ergodic_rayleigh_capacity(snr))
     rep.finish_table(T, before)
 
 

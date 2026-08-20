@@ -17,6 +17,13 @@ Adjacent symbols (in Gray code sense) differ in exactly one bit,
 minimising BER at moderate-to-high SNR.
 
 Theoretical BER (AWGN):  P_b = Q(√(2 E_b / N_0))  — identical to BPSK per bit.
+
+Note: the `snr_db` accepted by the channel functions in
+`relaynet.channels` is E_s/N_0 (total complex-symbol energy over noise),
+computed from this constellation's unit average power. Since QPSK carries
+2 bits/symbol, E_b/N_0 = E_s/N_0 - 3.01 dB; the formula above is exact
+once that conversion is applied, not at the same `snr_db` value passed to
+the channel. See thesis Section~sec:rayleigh-two-hop-df-ber (ch05_experiments.tex).
 """
 
 import numpy as np

@@ -197,27 +197,29 @@ Rayleigh & \textasciitilde24 dB & 1 & \(1/(4\bar{\gamma})\) \\
 \subsection{Results Tables}\label{sec:results-tables}
 
 
-\begin{longtable}[]{@{}lcccccccc@{}}
-\caption[BER on the canonical setup]{BER on the canonical setup: QPSK over i.i.d.\ Rayleigh fast fading, SISO on both hops, uncoded, $10\times10{,}000$ bits per SNR point. The cGAN column is absent because the relay was excluded from the re-run that produced this table (Table~\ref{tbl:table13} records it at $7{,}293$~s on a GPU); the omission drops its column rather than carrying forward a value measured on the earlier, $3$~dB-offset axis.}\label{tbl:table2}\tabularnewline
+\begingroup\footnotesize
+\begin{longtable}[]{@{}lccccccccc@{}}
+\caption[BER on the canonical setup]{BER on the canonical setup: QPSK over i.i.d.\ Rayleigh fast fading, SISO on both hops, uncoded, $10\times10{,}000$ bits per SNR point. The cGAN column is absent because the relay was excluded from the re-run that produced this table (Table~\ref{tbl:table13} records it at $7{,}293$~s on a GPU); the omission drops its column rather than carrying forward a value measured on the earlier, $3$~dB-offset axis. ``DF th.'' is the closed-form two-hop composition of Eq.~\ref{eq:df-ber-rayleigh} (Section~\ref{sec:rayleigh-two-hop-df-ber}), included for direct comparison against the measured DF column.}\label{tbl:table2}\tabularnewline
 \toprule\noalign{}
-SNR (dB) & AF & DF & MLP (169p) & Hybrid & VAE & Transformer & Mamba-S6 & Mamba-2 SSD \\
+SNR (dB) & AF & DF & DF th. & MLP & Hybrid & VAE & Transf. & Mamba-S6 & Mamba2 \\
 \midrule\noalign{}
 \endfirsthead
 \toprule\noalign{}
-SNR (dB) & AF & DF & MLP (169p) & Hybrid & VAE & Transformer & Mamba-S6 & Mamba-2 SSD \\
+SNR (dB) & AF & DF & DF th. & MLP & Hybrid & VAE & Transf. & Mamba-S6 & Mamba2 \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-0 & 0.4076 & 0.3337 & 0.3349 & \textbf{0.3329} & 0.3359 & 0.4014 & 0.4071 & 0.4032 \\
-4 & 0.3129 & \textbf{0.2219} & 0.2233 & 0.2220 & 0.2254 & 0.2758 & 0.2812 & 0.2772 \\
-8 & 0.1852 & \textbf{0.1218} & 0.1229 & 0.1220 & 0.1235 & 0.1424 & 0.1448 & 0.1416 \\
-12 & 0.0822 & 0.0580 & 0.0586 & \textbf{0.0579} & 0.0589 & 0.0628 & 0.0637 & 0.0621 \\
-16 & 0.0309 & \textbf{0.0245} & 0.0247 & \textbf{0.0245} & 0.0247 & 0.0260 & 0.0259 & 0.0251 \\
-20 & 0.0110 & \textbf{0.0097} & 0.0099 & \textbf{0.0097} & \textbf{0.0097} & 0.0101 & 0.0100 & 0.0098 \\
+0 & 0.4076 & 0.3337 & 0.3333 & 0.3349 & \textbf{0.3329} & 0.3359 & 0.4014 & 0.4071 & 0.4032 \\
+4 & 0.3129 & \textbf{0.2219} & 0.2216 & 0.2233 & 0.2220 & 0.2254 & 0.2758 & 0.2812 & 0.2772 \\
+8 & 0.1852 & \textbf{0.1218} & 0.1203 & 0.1229 & 0.1220 & 0.1235 & 0.1424 & 0.1448 & 0.1416 \\
+12 & 0.0822 & 0.0580 & 0.0560 & 0.0586 & \textbf{0.0579} & 0.0589 & 0.0628 & 0.0637 & 0.0621 \\
+16 & 0.0309 & \textbf{0.0245} & 0.0239 & 0.0247 & \textbf{0.0245} & 0.0247 & 0.0260 & 0.0259 & 0.0251 \\
+20 & 0.0110 & \textbf{0.0097} & 0.0098 & 0.0099 & \textbf{0.0097} & \textbf{0.0097} & 0.0101 & 0.0100 & 0.0098 \\
 \end{longtable}
+\endgroup
 
-Two features of Table~\ref{tbl:table2} deserve comment. First, symbol-wise DF tracks the closed form. Reading the abscissa as $E_s/N_0$ and converting to $E_b/N_0$ for QPSK ($k=2$, so $3.01$~dB lower), the two-hop expression $2P(1-P)$ with $P=\tfrac12\bigl(1-\sqrt{\bar\gamma/(1+\bar\gamma)}\bigr)$ gives $0.0098$ at 20~dB against a measured $0.00972$, and $0.0239$ at 16~dB against $0.02451$: agreement within one percent at both, which validates the simulator end to end against the analysis of Section~\ref{sec:rayleigh-two-hop-df-ber}.
+Two features of Table~\ref{tbl:table2} deserve comment. First, symbol-wise DF tracks the closed form (the ``DF th.'' column above): reading the abscissa as $E_s/N_0$ and converting to $E_b/N_0$ for QPSK ($k=2$, so $3.01$~dB lower), the two-hop expression $2P(1-P)$ with $P=\tfrac12\bigl(1-\sqrt{\bar\gamma/(1+\bar\gamma)}\bigr)$ gives $0.0098$ at 20~dB against a measured $0.00972$, and $0.0239$ at 16~dB against $0.02451$: agreement within one percent at every tabulated point, which validates the simulator end to end against the analysis of Section~\ref{sec:rayleigh-two-hop-df-ber}. Figure~\ref{fig:fig10} plots this closed form alongside the measured curves, together with the single-hop floor $P$ itself -- the BER a genie that recovered hop~1 perfectly would still incur on hop~2 -- which no relay may cross and none does at any SNR.
 
 Second, the relays divide by family rather than by paradigm. The three feedforward relays, the MLP, the Hybrid and the VAE, are statistically indistinguishable from DF from 4~dB upward and from each other throughout; the VAE reaches $0.00972$ at 20~dB, matching DF exactly at the resolution of this budget. The two sequence models are the ones that separate, trailing by roughly $0.07$ in BER at 0~dB before converging by 16~dB. Capacity is not the explanation, since the sequence models are the larger of the two groups; the memoryless channel simply offers no temporal structure for their inductive bias to exploit, a reading the equal-parameter comparison of Section~\ref{sec:parameter-normalization-complexity-trade-off} tests directly and confirms.
 
@@ -231,7 +233,7 @@ Two comments on Table~\ref{tbl:table2}. First, symbol-wise DF is the best or tie
 \begin{figure}[H]
 \centering
 \pandocbounded{\includegraphics[width=\linewidth,height=0.8\textheight,keepaspectratio]{results/canonical_qpsk_rayleigh_ci.png}}
-\caption[The canonical setup]{The canonical setup: QPSK over i.i.d.\ Rayleigh fast fading, BER vs.\ $E_s/N_0$ for the eight relays of Table~\ref{tbl:table2}, with 95\% confidence intervals. AF is uniformly worst; symbol-wise DF and the feedforward learned relays are indistinguishable from 4~dB upward; the two sequence models trail at low SNR and converge by 16~dB.}\label{fig:fig10}
+\caption[The canonical setup]{The canonical setup: QPSK over i.i.d.\ Rayleigh fast fading, BER vs.\ $E_s/N_0$ for the eight relays of Table~\ref{tbl:table2}, with 95\% confidence intervals, plus two theoretical reference curves: ``DF (theory)'' (dashed), the closed-form two-hop composition, which the measured DF curve tracks within one percent everywhere; and the ``single-hop floor'' (dotted), the BER a genie that recovered hop~1 perfectly would still incur on hop~2 -- a physical lower bound no relay crosses. AF is uniformly worst; symbol-wise DF and the feedforward learned relays are indistinguishable from 4~dB upward; the two sequence models trail at low SNR and converge by 16~dB.}\label{fig:fig10}
 \end{figure}
 
 
@@ -563,27 +565,27 @@ Every comparison above, including the equal-throughput one, holds the modulation
 
 The objective is \emph{goodput}, $G = R\,(1-\mathrm{FER})$, the information rate actually delivered once frames with any residual error are discarded, which is what any real protocol above the physical layer does. Maximizing $G$ over the MCS grid at each SNR traces the link-adaptation envelope, compared here for the two relay strategies the mechanism of Table~\ref{tbl:table38} contrasts directly: \emph{block-DF}, which decodes the code at the relay and so spends its redundancy before transmitting, against \emph{denoise-only}, which hard-decides each bit and re-modulates without ever invoking the code, leaving the redundancy intact for the destination and requiring no training and no code knowledge at the relay.
 
-\begin{longtable}[]{@{}lcccc@{}}
-\caption[Link-adaptation envelope: best MCS per SNR]{Link-adaptation envelope: the MCS maximizing goodput at each SNR, block-DF versus denoise-only relaying, canonical Rayleigh channel, 10 trials $\times$ 200 frames $\times$ 200 information bits per point.}\label{tbl:table42}\tabularnewline
+\begin{longtable}[]{@{}lccccc@{}}
+\caption[Link-adaptation envelope: best MCS per SNR]{Link-adaptation envelope: the MCS maximizing goodput at each SNR, block-DF versus denoise-only relaying, canonical Rayleigh channel, 10 trials $\times$ 200 frames $\times$ 200 information bits per point. $C$ is the ergodic Rayleigh (Shannon) capacity at that SNR, $C=\log_2(e)\,e^{1/\gamma}E_1(1/\gamma)$ -- an unconstrained-input upper bound no achievable goodput may exceed, included as a sanity ceiling rather than a target: the gap to it here is dominated by the finite constellation and coding loss, not by relay strategy.}\label{tbl:table42}\tabularnewline
 \toprule\noalign{}
-SNR (dB) & Best MCS (block-DF) & $G$ (block-DF) & Best MCS (denoise) & $G$ (denoise) \\
+SNR (dB) & Best MCS (block-DF) & $G$ (block-DF) & Best MCS (denoise) & $G$ (denoise) & $C$ (Shannon) \\
 \midrule\noalign{}
 \endfirsthead
 \toprule\noalign{}
-SNR (dB) & Best MCS (block-DF) & $G$ (block-DF) & Best MCS (denoise) & $G$ (denoise) \\
+SNR (dB) & Best MCS (block-DF) & $G$ (block-DF) & Best MCS (denoise) & $G$ (denoise) & $C$ (Shannon) \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-8 & QPSK 1/2 & \textbf{0.0040} & QPSK uncoded & 0.0000 \\
-12 & QPSK 1/2 & \textbf{0.1668} & QPSK 1/2 & 0.1282 \\
-16 & QPSK 1/2 & 0.5342 & QPSK 1/2 & \textbf{0.5995} \\
-20 & QPSK 3/4 & 0.9274 & QPSK 2/3 & \textbf{0.9287} \\
-24 & 16-QAM 2/3 & \textbf{1.6079} & 16-QAM 2/3 & 1.5129 \\
-28 & 16-QAM 3/4 & \textbf{2.3185} & 16-QAM 3/4 & 2.2993 \\
-32 & 16-QAM uncoded & 2.6800 & 16-QAM uncoded & 2.6800 \\
-36 & 16-QAM uncoded & 3.3840 & 16-QAM uncoded & 3.3840 \\
-40 & 16-QAM uncoded & 3.6980 & 16-QAM uncoded & 3.6980 \\
+8 & QPSK 1/2 & \textbf{0.0040} & QPSK uncoded & 0.0000 & 2.40 \\
+12 & QPSK 1/2 & \textbf{0.1668} & QPSK 1/2 & 0.1282 & 3.45 \\
+16 & QPSK 1/2 & 0.5342 & QPSK 1/2 & \textbf{0.5995} & 4.63 \\
+20 & QPSK 3/4 & 0.9274 & QPSK 2/3 & \textbf{0.9287} & 5.88 \\
+24 & 16-QAM 2/3 & \textbf{1.6079} & 16-QAM 2/3 & 1.5129 & 7.17 \\
+28 & 16-QAM 3/4 & \textbf{2.3185} & 16-QAM 3/4 & 2.2993 & 8.48 \\
+32 & 16-QAM uncoded & 2.6800 & 16-QAM uncoded & 2.6800 & 9.80 \\
+36 & 16-QAM uncoded & 3.3840 & 16-QAM uncoded & 3.3840 & 11.13 \\
+40 & 16-QAM uncoded & 3.6980 & 16-QAM uncoded & 3.6980 & 12.46 \\
 \end{longtable}
 
 \begin{figure}[H]
@@ -594,7 +596,7 @@ SNR (dB) & Best MCS (block-DF) & $G$ (block-DF) & Best MCS (denoise) & $G$ (deno
 
 Two results follow, and the second qualifies the mechanism finding of Table~\ref{tbl:table38} substantially.
 
-\textbf{The envelope is a real staircase, and its top step is ``turn the code off''.} Both relay strategies climb QPSK~1/2~$\to$~QPSK~3/4-or-2/3~$\to$~16-QAM~2/3~$\to$~16-QAM~3/4~$\to$~\emph{16-QAM uncoded} as SNR rises from 8 to 40~dB, each switch occurring once the next rate's threshold has cleared. The optimum at high SNR is no code at all: once the channel is good enough, coding redundancy is pure overhead, and the highest-goodput choice is the raw $4$~bits/symbol of 16-QAM with zero coding loss. This is the same lesson as the equal-throughput correction above, now reached by direct optimization over the grid rather than by hand-picking one comparison.
+\textbf{The envelope is a real staircase, and its top step is ``turn the code off''.} Both relay strategies climb QPSK~1/2~$\to$~QPSK~3/4-or-2/3~$\to$~16-QAM~2/3~$\to$~16-QAM~3/4~$\to$~\emph{16-QAM uncoded} as SNR rises from 8 to 40~dB, each switch occurring once the next rate's threshold has cleared. The optimum at high SNR is no code at all: once the channel is good enough, coding redundancy is pure overhead, and the highest-goodput choice is the raw $4$~bits/symbol of 16-QAM with zero coding loss. This is the same lesson as the equal-throughput correction above, now reached by direct optimization over the grid rather than by hand-picking one comparison. Table~\ref{tbl:table42}'s $C$ column confirms the envelope never approaches the information-theoretic ceiling: at 40~dB the achieved $3.70$ sits at $30\%$ of the $12.46$-bit Shannon capacity there, a gap set by the fixed 16-QAM constellation (itself capped at $4$ bits/symbol) and residual FER, not by anything a smarter relay strategy could close.
 
 \textbf{Once the rate adapts, which relay decodes the code barely matters.} The two envelopes in Table~\ref{tbl:table42} are close at every SNR and identical for $\mathrm{SNR}\geq 32$~dB, where both select 16-QAM uncoded and there is no code for the strategies to differ over. Where they do differ, the gap is small and does not consistently favor one side: block-DF leads at 8, 12, 24 and 28~dB, denoise-only leads at 16 and 20~dB, and the largest gap over the whole sweep is $0.095$ information bits/symbol at 24~dB, under $6\%$ of the envelope value there. Compare this to how much the \emph{MCS} choice moves goodput at fixed relay strategy: at 24~dB the spread across the seven block-DF MCS options is $1.31$, roughly $14\times$ the $0.095$ gap between relay strategies; at 32~dB and above the MCS spread exceeds $1.7$ while the relay-strategy gap is exactly zero. Rate adaptation, in other words, dominates the relay-decoding decision by more than an order of magnitude across most of this sweep.
 
