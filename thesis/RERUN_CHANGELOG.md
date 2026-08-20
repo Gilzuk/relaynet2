@@ -660,3 +660,26 @@ check_table2 and check_table42 extended to verify the new closed-form
 columns cell-by-cell (58 + 27 cells respectively). Verifier: **458 cells,
 0 inconsistencies**. Cold rebuild: 158 pages (unchanged), 0 undefined
 refs. Bundles rebuilt.
+
+## Abstract and introduction: fold in the theoretical-bounds additions
+
+The DF closed-form validation and the Shannon-capacity check on the AMC
+envelope (previous entry) were added to the relevant chapter table/figure
+but not yet to the top-level narrative documents. Added two sentences to
+each of frontmatter.tex, ch01_introduction.tex, and hebrew_abstract.tex:
+
+1. A second, independent simulator calibration point alongside the
+   existing BPSK/AWGN one: symbol-wise DF on the canonical Rayleigh
+   channel matches the closed-form two-hop composition to within 1% at
+   every measured SNR.
+2. The AMC goodput envelope's headroom to the channel's own ergodic
+   Shannon capacity: under a third of it even at the top of the swept
+   range, confirming the gap is set by the finite constellation and
+   coding grid, not by anything a different relay strategy could claim.
+
+Both are confirmatory/contextualizing facts, not new conclusions -- they
+strengthen claims already in the abstract rather than adding new ones.
+
+Verified: 458 cells / 0 inconsistencies (unchanged), 159 tests, cold
+rebuild 158 pages (unchanged) / 0 undefined refs, Hebrew renders cleanly
+(checked via direct page extraction). Bundles rebuilt.
