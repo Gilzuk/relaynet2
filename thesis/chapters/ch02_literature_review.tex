@@ -158,41 +158,9 @@ For relay signal processing, the VAE learns a compressed latent representation o
 
 \subsection{Conditional Generative Adversarial Networks}\label{sec:conditional-generative-adversarial-networks}
 
-\textbf{Conditional GANs (cGANs)} \cite{MirzaOsindero2014cGAN} learn signal denoising through adversarial training, building on the foundational GAN framework \cite{Goodfellow2014GAN}.\REV{ Unified naming ``CGANs''$\to$``cGANs'' (and all later ``CGAN''$\to$``cGAN'') to match the abstract's \texttt{cGAN}.} The original GAN formulates generative modeling as a two-player minimax game between a generator \(G\) and a discriminator \(D\): (Equation~\ref{eq:gan-minimax})
+\textbf{Conditional GANs (cGANs)} \cite{MirzaOsindero2014cGAN} learn a denoising map by adversarial training: a generator conditioned on the noisy observation produces a clean estimate, and a discriminator is trained to separate generated from true clean symbols, the two optimizing a minimax objective. The original formulation is unstable to train, because the divergence the discriminator implicitly minimizes saturates when the two distributions do not overlap and stops supplying useful gradients. The Wasserstein GAN with gradient penalty (WGAN-GP) \cite{Gulrajani2017WGANGP} replaces that objective with the Wasserstein distance, estimated through a critic constrained to be approximately 1-Lipschitz by penalizing the norm of its gradient at points interpolated between real and generated samples. This is the variant implemented in this thesis (Section~\ref{sec:relay-strategies}).
 
-\begin{equation}\protect\phantomsection\label{eq:gan-minimax}{\min_G \max_D \; \mathbb{E}_{\mathbf{x} \sim p_{\text{data}}}[\log D(\mathbf{x})] + \mathbb{E}_{\mathbf{z} \sim p_z}[\log(1 - D(G(\mathbf{z})))]
-}\end{equation}
-\addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad gan-minimax}
-
-At the Nash equilibrium, \(G\) generates samples indistinguishable from real data and \(D\) outputs 1/2 everywhere. The conditional variant conditions both \(G\) and \(D\) on auxiliary information (the noisy signal \(\mathbf{y}\)), enabling the generator to learn a noise-conditioned mapping.
-
-A fundamental challenge with the original GAN objective is \emph{training instability}: the Jensen-Shannon divergence that the discriminator implicitly estimates can produce vanishing gradients when the generator distribution and data distribution have disjoint supports (which is common early in training). The \emph{Wasserstein GAN (WGAN)} addresses this by replacing the JS divergence with the Earth Mover (Wasserstein-1) distance: (Equation~\ref{eq:wasserstein-distance})
-
-\begin{equation}\protect\phantomsection\label{eq:wasserstein-distance}{W(p_{\text{data}}, p_G) = \inf_{\gamma \in \Pi(p_{\text{data}}, p_G)} \mathbb{E}_{(\mathbf{x}, \mathbf{y}) \sim \gamma}[\|\mathbf{x} - \mathbf{y}\|]
-}\end{equation}
-\addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad wasserstein-distance}
-
-The Wasserstein distance provides meaningful gradients even when distributions do not overlap, enabling stable training. By the Kantorovich-Rubinstein duality, the Wasserstein distance can be computed via a supremum over 1-Lipschitz functions, which the critic network approximates. The \emph{gradient penalty (GP)} formulation \cite{Gulrajani2017WGANgp} enforces the Lipschitz constraint softly by penalizing the gradient norm of the critic at interpolated points: (Equation~\ref{eq:gradient-penalty})
-
-\begin{equation}\protect\phantomsection\label{eq:gradient-penalty}{\text{GP} = \mathbb{E}_{\hat{\mathbf{x}} \sim p_{\hat{\mathbf{x}}}}\left[\left(\|\nabla_{\hat{\mathbf{x}}} D(\hat{\mathbf{x}})\|_2 - 1\right)^2\right]
-}\end{equation}
-\addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad gradient-penalty}
-where
-\begin{equation}\protect\phantomsection\label{eq:x-hat}{\hat{\mathbf{x}} = \epsilon \mathbf{x}_{\text{real}} + (1-\epsilon) \mathbf{x}_{\text{fake}},  \epsilon \sim \text{Uniform}(0, 1). }
-\end{equation}
-\addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad x-hat}
-
-The full WGAN-GP training objectives used in this thesis are:
-
-\begin{equation}\protect\phantomsection\label{eq:wgan-gen-loss}{\mathcal{L}_G = -\mathbb{E}[D(G(\mathbf{y}, \mathbf{z}), \mathbf{y})] + \lambda_{{L_1}} \|\hat{\mathbf{x}} - \mathbf{x}\|_1
-}\end{equation}
-\addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad wgan-gen-loss}
-
-\begin{equation}\protect\phantomsection\label{eq:wgan-disc-loss}{\mathcal{L}_D = \mathbb{E}[D(G(\mathbf{y}, \mathbf{z}), \mathbf{y})] - \mathbb{E}[D(\mathbf{x}, \mathbf{y})] + \lambda_{\text{GP}} \cdot \text{GP}
-}\end{equation}
-\addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad wgan-disc-loss}
-
-The $L_1$ reconstruction loss in the generator objective serves a dual purpose: it provides a strong sample-level reconstruction signal (complementing the adversarial signal which provides a distributional match), and it prevents \emph{mode-collapse} (the generator converging to a single output regardless of input).\REV{ ``pixel-level'' $\to$ ``sample-level'': the relay operates on modulation symbols, not image pixels (register/precision).} For relay denoising, the $L_1$ term dominates at \(\lambda_{L_1} = 100\), making the cGAN behave primarily as a supervised denoiser with an adversarial regularizer that encourages outputs to lie on the manifold of clean signals.
+The cGAN is described here and in Chapter~\ref{sec:methods} for completeness, but it is \emph{excluded from every reported comparison} on cost grounds: training it took roughly two GPU-hours against the minimal MLP's few seconds on a CPU, which is not a defensible expenditure for a relay-denoising target this simple. No claim in this thesis rests on it, and the theory above is therefore kept deliberately brief.
 
 \subsection{Generative vs.~Discriminative Paradigms for Relay Processing}\label{sec:generative-vs.-discriminative-paradigms-for-relay-processing}
 
@@ -241,118 +209,37 @@ which injects position information into the embeddings, enabling the model to di
 
 \subsection{Structured State Space Models}\label{sec:structured-state-space-models}
 
-Structured state space models (SSMs) \cite{GuGoelRe2022SSM} are a class of sequence models derived from continuous-time linear dynamical systems. The continuous-time SSM maps an input signal \(u(t) \in \mathbb{R}\) to an output \(y(t) \in \mathbb{R}\) through a latent state \(\mathbf{x}(t) \in \mathbb{R}^N\):
-
-\begin{equation}\protect\phantomsection\label{eq:ssm-continuous}{\dot{\mathbf{x}}(t) = \mathbf{A}\mathbf{x}(t) + \mathbf{B}u(t), \quad y(t) = \mathbf{C}\mathbf{x}(t) + Du(t)
-}\end{equation}
-\addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad ssm-continuous}
-
-where \(\mathbf{A} \in \mathbb{R}^{N \times N}\) governs the state dynamics, \(\mathbf{B} \in \mathbb{R}^{N \times 1}\) controls input injection, \(\mathbf{C} \in \mathbb{R}^{1 \times N}\) is the output projection, and \(D \in \mathbb{R}\) is the feedthrough. The connection to classical signal processing is immediate: this is a linear time-invariant (LTI) filter, and the state space dimension \(N\) determines the order of the filter (number of poles/zeros in the transfer function).
-
-To process discrete-time sequences, the continuous SSM is \textbf{discretized} using a step size \(\Delta > 0\). Applying the zero-order hold (ZOH) discretization: (Equation~\ref{eq:ssm-zoh})
-
-\begin{equation}\protect\phantomsection\label{eq:ssm-zoh}{\bar{\mathbf{A}} = \exp(\Delta \mathbf{A}), \quad \bar{\mathbf{B}} = (\Delta \mathbf{A})^{-1}(\exp(\Delta \mathbf{A}) - \mathbf{I}) \cdot \Delta \mathbf{B} \approx \Delta \mathbf{B}
-}\end{equation}
-\addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad ssm-zoh}
-
-yields the discrete recurrence: (Equation~\ref{eq:ssm-discrete})
+Structured state space models (SSMs) \cite{GuGoelRe2022SSM} treat a sequence model as a discretized linear dynamical system. A continuous system $\dot{\mathbf{x}}(t)=\mathbf{A}\mathbf{x}(t)+\mathbf{B}u(t)$, $y(t)=\mathbf{C}\mathbf{x}(t)+Du(t)$ is discretized with a step size $\Delta$ (zero-order hold, $\bar{\mathbf{A}}=\exp(\Delta\mathbf{A})$) to give the recurrence
 
 \begin{equation}\protect\phantomsection\label{eq:ssm-discrete}{\mathbf{x}_k = \bar{\mathbf{A}} \mathbf{x}_{k-1} + \bar{\mathbf{B}} u_k, \quad y_k = \mathbf{C} \mathbf{x}_k + D u_k
 }\end{equation}
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad ssm-discrete}
 
-The \textbf{HiPPO (High-order Polynomial Projection Operators)} framework provides a principled initialization for \(\mathbf{A}\): the HiPPO-LegS matrix is designed so that the state \(\mathbf{x}_k\) stores a compressed representation of the input history as coefficients of a Legendre polynomial expansion. This initialization enables long-range memory without the vanishing gradient problems of standard RNNs.
+which is a linear recursive filter with a learned state transition. Two ingredients make this competitive with attention. The HiPPO framework supplies a principled initialization for $\mathbf{A}$ under which the state maintains a compressed polynomial approximation of the input history, and S4 \cite{GuGoelRe2022SSM} shows that a structured (diagonal or diagonal-plus-low-rank) $\mathbf{A}$ makes the recurrence cheap to evaluate. The resulting model is linear-time in sequence length, in contrast to attention's quadratic cost.
 
-The S4 model \cite{GuGoelRe2022SSM} introduced the key insight that structured (diagonal or low-rank) parameterizations of \(\mathbf{A}\) enable efficient computation. With a diagonal \(\mathbf{A} = \text{diag}(a_1, \dots, a_N)\), the recurrence decouples into \(N\) independent scalar recurrences, each computable in \(O(n)\) time. The total cost is \(O(nN)\) for a length-\(n\) sequence with state dimension \(N\): linear in sequence length.
+\subsection{Mamba and Mamba-2}\label{sec:mamba-selective-state-spaces}
 
-\subsection{Mamba: Selective State Spaces}\label{sec:mamba-selective-state-spaces}
-
-\textbf{Mamba} \cite{gu2023mamba} extends the SSM framework by making the parameters \textbf{input-dependent} (selective), transforming the LTI system into a linear time-varying (LTV) system:
+\textbf{Mamba} \cite{gu2023mamba} makes the SSM parameters \emph{input-dependent}, turning the time-invariant system into a time-varying one:
 
 \begin{equation}\protect\phantomsection\label{eq:mamba-selective}{\Delta_k = \text{softplus}(W_\Delta u_k + b_\Delta), \quad \mathbf{B}_k = W_B u_k, \quad \mathbf{C}_k = W_C u_k
 }\end{equation}
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad mamba-selective}
 
-where \(W_\Delta, W_B, W_C\) are learned projection matrices. Crucially, the state matrix is parameterized as \(\mathbf{A} = -\exp(A_{\log})\), so that \(\mathbf{A}\) is diagonal with strictly negative entries (Hurwitz, \(\mathbf{A} \prec 0\)) and the discretized transition \(\exp(\Delta_k \mathbf{A})\) is a contraction for every \(\Delta_k > 0\). This sign convention is what makes the selectivity mechanism well behaved: it lets the model dynamically control which inputs are stored in the state and which are forgotten.
-
-A \textbf{large \(\Delta_k\)} (triggered by a relevant input) drives the transition toward zero,
-\begin{equation}\protect\phantomsection\label{eq:mamba-selective-ak}{
-\bar{\mathbf{A}}_k = \exp(\Delta_k \mathbf{A}) \approx \mathbf{0},}
-\end{equation}
-\addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad mamba-selective-ak}
-
-which resets the state and lets the new input dominate via
-\begin{equation}\protect\phantomsection\label{eq:mamba-selective-bk}{
-\bar{\mathbf{B}}_k \approx \Delta_k \mathbf{B}_k.}
-\end{equation}
-\addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad mamba-selective-bk}
-
-Conversely, a \textbf{small \(\Delta_k\)} (triggered by an irrelevant or noisy input) makes the transition approximately the identity,
-\begin{equation}\protect\phantomsection\label{eq:mamba-selective-ak2}{
-\bar{\mathbf{A}}_k \approx \mathbf{I},}
-\end{equation}
-\addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad mamba-selective-ak2}
-
-thereby preserving the current state and ignoring the input.
-
-For relay signal processing, this selective mechanism is particularly well-suited: the model can learn to attend to the actual signal component of each received sample while suppressing the noise component, effectively implementing an \emph{adaptive filter} whose coefficients are conditioned on the input. This generalizes the Wiener filter, the optimal linear MMSE denoiser under wide-sense-stationary assumptions, which cannot adapt its coefficients on a per-sample basis.\REV{ Fixed the double ``which'' and the imprecise ``optimal LTI denoiser''; the Wiener filter is the optimal \emph{linear} (MMSE) estimator under WSS assumptions.}
+With $\mathbf{A}$ diagonal and negative, $\Delta_k$ acts as a learned gate: a large $\Delta_k$ drives $\bar{\mathbf{A}}_k=\exp(\Delta_k\mathbf{A})$ toward zero, resetting the state so the new input dominates, while a small $\Delta_k$ leaves $\bar{\mathbf{A}}_k\approx\mathbf{I}$, preserving the state and ignoring the input. This selectivity is the property of interest for relay processing: in principle the model can retain signal structure while suppressing noise, deciding per sample which of the two an observation carries. The selective layer is wrapped in a gated block with an expand-factor-2 projection and a short causal convolution.
 
 \begin{remark}
-These aforementioned adaptive-filtering connections become directly relevant only in the unknown-channel study of Chapter~\ref{sec:unknown-channels}; on the canonical memoryless channel the relay reduces to a per-symbol denoiser.
-    
+These adaptive-filtering connections become directly relevant only in the unknown-channel study of Chapter~\ref{sec:unknown-channels}; on the canonical memoryless channel the relay reduces to a per-symbol function and there is no temporal structure for a state to track.
 \end{remark}
-
-
-The Mamba architecture wraps the selective $S_6$ layer in a gated architecture: the input is projected to \(2 \times d_{\text{inner}}\) channels (expand factor 2), and split into two branches. The main branch passes through a causal 1D convolution (\emph{Conv1D}) to mix local temporal context, followed by a \emph{SiLU} activation and the $S_6$ selective scan. The second branch acts as a \emph{SiLU} gate. The two branches are then multiplicatively merged and contracted back to \(d_{\text{model}}\). This gating mechanism provides a multiplicative interaction that helps the model learn sharp non-linear decision boundaries.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{results/mamba_ssd_s6.png}
-    \caption[Mamba: Linear-Time Sequence Modeling with Selective State Spaces]{Mamba: Linear-Time Sequence Modeling with Selective State Spaces. Structured SSMs independently map each channel (e.g.\ $D=5$) of an input $x$ to output $y$ through a higher dimensional latent state $h$ (e.g.\ state dimension $N=4$). Prior SSMs avoid materializing this large effective state ($DN$ times batch size $B$ and sequence length $L$) through clever alternate computation paths requiring time-invariance: the ($\Delta$, $A$, $B$, $C$) parameters are constant across time. The selection mechanism adds back input-dependent dynamics, which also requires a careful hardware-aware algorithm to only materialize the expanded states in more efficient levels of the GPU memory hierarchy.}
+    \caption[Mamba: selective state spaces]{Structured SSMs map each channel independently through a higher-dimensional latent state; the selective variant makes the transition input-dependent so the state is reset or held per sample.}
     \label{fig:mamba_ssd_s6}
 \end{figure}
-\REV{Caption: the latent-state dimension is the SSM state size $N$, not $D$ (the number of channels); corrected ``$D=4$''$\to$``$N=4$'' to match the surrounding notation.}
 
-\subsection{Mamba-2: Structured State Space Duality}\label{sec:mamba-2-structured-state-space-duality}
+\textbf{Mamba-2 (SSD)} \cite{DaoGu2024TransformersSSM} reformulates the same computation through an algebraic duality between the linear recurrence and a structured matrix multiplication: the output can be written $\mathbf{y}=M\cdot(\mathbf{B}\odot\mathbf{u})$ for a lower-triangular semi-separable matrix $M$. The practical consequence is that the sequence can be processed in chunks, with a batched matrix multiply inside each chunk and a single state hand-off between chunks, so the number of sequential steps falls from one per sample to one per chunk. Mamba-2 also forms the state-space parameters at the start of the block rather than sequentially along it. Both variants are evaluated here; at the short relay windows this thesis uses, the distinction is architectural rather than a source of measured advantage.
 
-\textbf{Mamba-2 (SSD)} \cite{DaoGu2024TransformersSSM} reformulates the selective state space model through an algebraic duality between linear recurrences and structured matrix multiplications. The key theoretical insight is that the SSM output can be expressed as:
-
-\begin{equation}\protect\phantomsection\label{eq:mamba-ssd-output}{y_i = \sum_{j \leq i} \mathbf{C}_i^\top \left(\prod_{k=j+1}^{i} \bar{\mathbf{A}}_k\right) \mathbf{B}_j u_j
-}\end{equation}
-\addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad mamba-ssd-output}
-
-Defining the \textbf{SSM matrix} \(M \in \mathbb{R}^{n \times n}\) with entries:
-
-\begin{equation}\protect\phantomsection\label{eq:mamba-ssd-matrix}{M_{ij} = \begin{cases} \mathbf{C}_i^\top \bar{\mathbf{A}}_{j+1:i} \mathbf{B}_j & i \geq j \\ 0 & i < j \end{cases}
-}\end{equation}
-\addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad mamba-ssd-matrix}
-\REV{Restored the \texttt{cases} delimiters (\texttt{\&amp;}$\to$\texttt{\&}) and the inequality (\texttt{\&lt;}$\to$\(<\)) for compilation.}
-
-the output is \(\mathbf{y} = M \cdot (\mathbf{B} \odot \mathbf{u})\). The matrix \(M\) is lower-triangular (causal) and \textbf{semi-separable} (each entry factors as an outer product of left and right vectors with a diagonal product in between). This algebraic structure enables efficient chunk-parallel computation:
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  \textbf{Divide} the sequence into chunks of length \(L\).
-\item
-  \textbf{Within each chunk}, build the \(L \times L\) local SSM matrix and compute the output via a single batched matrix multiply.
-\item
-  \textbf{Between chunks}, propagate the state once per chunk (rather than once per time step).
-\end{enumerate}
-
-The per-chunk cost is \(O(L^2 N)\) for matrix construction and \(O(L^2 d)\) for the matrix-vector product, where \(N\) is the state dimension and \(d\) is the model dimension. With \(n/L\) chunks, the total cost is \(O(n \cdot L \cdot N + n \cdot L \cdot d)\), which for small \(L\) (e.g., \(L = 8\) or \(L = 32\)) is effectively \(O(n)\) with a favorable constant. The critical advantage over $S_6$ is that the intra-chunk computation is \textbf{fully parallel}: a batched matmul rather than a sequential scan: making it much faster on GPUs where parallelism is cheap and sequential operations incur kernel-launch overhead.
-
-The ``\emph{duality}'' in the name refers to the equivalence between the recurrent view (state propagation) and the matrix view (structured matmul): the same computation can be expressed either way, and the implementation can choose whichever is more efficient for the hardware and sequence length. This thesis demonstrates this duality empirically: at \(n = 11\), the recurrent $S_6$ view is faster; at \(n = 255\), the matrix SSD view dominates.
-
-Mamba-2 can be viewed as a streamlined evolution of Mamba-1: it restructures the block so that the state-space parameters are formed upfront (rather than being generated sequentially along the SSM pathway), and it further stabilizes training by adding an extra normalization stage in the spirit of \emph{NormFormer} \cite{shleifer2021normformer}. In addition, Mamba-2 emphasizes more parallel, consolidated parameter projection (e.g., producing multiple SSM-related tensors via fewer projections) and reduces per-head redundancy by sharing the $B$ and $C$ projections across heads, conceptually similar to multi-value attention.\REV{ ``BBB and CCC'' was a rendering artifact; corrected to the matrices $B$ and $C$ (consistent with Figure~\ref{fig:mamba2-ssd-2}).} Figure~\ref{fig:mamba2-ssd-2} presents a comparison of Mamba-S6 and Mamba-2 SSD \cite{DaoGu2024TransformersSSM}:\REV{ Unified architecture names to ``Mamba-S6'' and ``Mamba-2 SSD'' throughout (previously ``Mamba-SSM''/``Mamba-2-SSD'').}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\linewidth]{results/mamba2_ssd_2.png}
-    \caption[The Mamba-2 SSD block]{The Mamba-2 block simplifies the Mamba block by removing sequential linear projections; the SSM parameters $A,B,C$ are produced at the beginning of the block instead of as a function of the SSM input $X$. An additional normalization layer is added as in \emph{NormFormer} \cite{shleifer2021normformer}, improving stability. The $B$ and $C$ projections only have a single head shared across the $X$ heads, analogous to multi-value attention (MVA).}
-    \label{fig:mamba2-ssd-2}
-\end{figure}
 \subsection{State Space Models for Signal Processing}\label{sec:state-space-models-for-signal-processing}
 
 The application of state space models to physical-layer signal processing is, to the best of our knowledge, largely unexplored.\REV{ Softened the novelty claim with ``to the best of our knowledge''.} Classical signal processing relies extensively on LTI state space models (Kalman filters, Wiener filters), and the SSM framework provides a natural neural extension of these classical tools. The connection is direct: a trained SSM with fixed (input-independent) parameters implements a learnable linear filter, while the selective Mamba variant implements a learnable \emph{adaptive} filter. For the relay denoising task, this means Mamba can potentially learn the optimal filter structure from data, without requiring manual specification of filter order, cutoff frequencies, or adaptation algorithms.

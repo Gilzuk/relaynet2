@@ -971,3 +971,38 @@ named trails are now fully removed; the remaining gap cannot be closed from
 them without breaking the AMC study as described above. Options for the
 balance are prose condensation in Ch.2 (19 pp of background) and Ch.4
 (19 pp of methods), or removing a further study.
+
+## Further reduction: material not supporting the narrative (134 -> 128 pp)
+
+Continuing the same criterion, with model-runtime comparison as the named
+example.
+
+- **Table 13 (model complexity and timing) removed.** Machine-dependent
+  training/eval wall-clock per architecture, with the Mamba-S6 vs Mamba-2
+  training times bolded -- the runtime comparison that H5 rested on. The
+  verifier already treated it as informational rather than pass/fail. Three
+  dependent references reworded (the cGAN exclusion note now gives the cost
+  reason directly rather than citing a GPU-second figure).
+- **Two orphaned conclusions removed** that still asserted removed studies:
+  "Mamba-2 SSD trained 10.7x faster than S6 at longer contexts" and the
+  16-QAM joint-2D finding, plus the 16-QAM row of the deployment
+  recommendations table.
+- **Sequence-model background condensed** (Section 2.4): the S4 recurrence
+  derivation, the Mamba selective-scan internals and the SSD matrix algebra
+  existed largely to motivate the chunk-parallel runtime claim. Replaced by a
+  compact treatment that keeps the concepts, all citations, and one figure.
+- **cGAN background condensed** (Section 2.3.2): six equations of WGAN-GP
+  theory for a model excluded from every reported comparison, reduced to a
+  paragraph that states the method, the instability it addresses, and the
+  cost reason for its exclusion. The VAE subsection was left intact, since
+  the VAE is evaluated.
+- **Appendix C reduced** from "Software Architecture" to "Reproducibility":
+  the UML component diagram and framework description removed, the testing,
+  seeding and re-measurement material kept. Stale "108 automated tests"
+  corrected to 159.
+- **Two long discussion items condensed** where they restated their source
+  chapters nearly in full: the H6 conclusion (3,984 -> 1,650 characters) and
+  the coded block-DF future-work item (2,713 -> 1,365).
+
+Verified: 407 cells / 0 inconsistencies, 159 tests, cold rebuild 0 errors /
+0 undefined refs / 0 bidi errors, 128 pages.

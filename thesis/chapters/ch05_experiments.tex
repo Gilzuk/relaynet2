@@ -71,7 +71,7 @@ Extension: unknown-channel failure of AF/DF and learned mitigation (H6) \\
 
 \begingroup\footnotesize
 \begin{longtable}[]{@{}lccccccccc@{}}
-\caption[BER on the canonical setup]{BER on the canonical setup: QPSK over i.i.d.\ Rayleigh fast fading, SISO on both hops, uncoded, $10\times10{,}000$ bits per SNR point. The cGAN column is absent because the relay was excluded from the re-run that produced this table (Table~\ref{tbl:table13} records it at $7{,}293$~s on a GPU); the omission drops its column rather than carrying forward a value measured on the earlier, $3$~dB-offset axis. ``DF th.'' is the closed-form two-hop composition of Eq.~\ref{eq:df-ber-rayleigh} (Section~\ref{sec:rayleigh-two-hop-df-ber}), included for direct comparison against the measured DF column.}\label{tbl:table2}\tabularnewline
+\caption[BER on the canonical setup]{BER on the canonical setup: QPSK over i.i.d.\ Rayleigh fast fading, SISO on both hops, uncoded, $10\times10{,}000$ bits per SNR point. The cGAN column is absent because the relay was excluded from the re-run that produced this table on cost grounds (roughly two GPU-hours to train against the MLP's seconds on a CPU); the omission drops its column rather than carrying forward a value measured on the earlier, $3$~dB-offset axis. ``DF th.'' is the closed-form two-hop composition of Eq.~\ref{eq:df-ber-rayleigh} (Section~\ref{sec:rayleigh-two-hop-df-ber}), included for direct comparison against the measured DF column.}\label{tbl:table2}\tabularnewline
 \toprule\noalign{}
 SNR (dB) & AF & DF & DF th. & MLP & Hybrid & VAE & Transf. & Mamba-S6 & Mamba2 \\
 \midrule\noalign{}
@@ -147,34 +147,6 @@ SNR (dB) & MLP-3K & Hybrid-3K & VAE-3K & Transformer-3K & Mamba-S6 (3K) & Mamba-
 
 
 
-
-\begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.28}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.15}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.12}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.27}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.18}}@{}}
-\caption[Model complexity and timing comparison on the canonical setup]{Model complexity and timing comparison on the canonical setup (experiment-specific training settings; Monte Carlo evaluation over 11 SNR points $\times$ 10 trials $\times$ 10,000 bits). All inference uses batched window extraction and a single forward pass per signal block.}\label{tbl:table13}\tabularnewline
-\toprule\noalign{}
-Model & Parameters & Device & Training Time & Eval Time \\
-\midrule\noalign{}
-\endfirsthead
-\toprule\noalign{}
-Model & Parameters & Device & Training Time & Eval Time \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-AF & 0 & -- & 0 s & 0.80 s \\
-DF & 0 & -- & 0 s & 0.77 s \\
-MLP (169p) & 169 & CPU & 4.9 s & 1.57 s \\
-Hybrid & 169 & CPU & 4.6 s & 0.41 s \\
-VAE & 1,777 & CPU & 21.6 s & 1.81 s \\
-cGAN (WGAN-GP) & 2,946 & CUDA & 7,293 s (\textasciitilde2 h) & 1.14 s \\
-Transformer & 17,697 & CUDA & 474 s (\textasciitilde8 min) & 3.71 s \\
-\textbf{Mamba-S6} & \textbf{24,001} & \textbf{CUDA} & \textbf{2,141 s (\textasciitilde36 min)} & \textbf{1.88 s} \\
-\textbf{Mamba-2 SSD} & \textbf{26,179} & \textbf{CUDA} & \textbf{1,438 s (\textasciitilde24 min)} & \textbf{4.11 s} \\
-\end{longtable}
 
 \subsection{Results Figures}\label{sec:results-figures-3}
 
@@ -387,7 +359,7 @@ The result is a substantial qualification of Section~\ref{sec:coded-block-df}. H
 \textbf{Latency: the block relays buffer three orders of magnitude more.} The relays also differ structurally in how much they must accumulate before emitting anything, which sets the delay the relay contributes independently of how fast its arithmetic is. Symbol-wise AF and DF emit per symbol. A windowed learned relay needs $w$ symbols of look-ahead, ten here, and that figure is a property of the architecture, constant in frame length. Block-DF cannot emit until it has decoded an entire frame, $202$ symbols; soft block-DF is worse still in kind rather than degree, since BCJR's backward recursion runs from the end of the frame and so structurally forbids emitting early even in principle. Frame length is a free parameter, so this is not a fixed penalty but a scaling one: the block relays' latency grows with the frame while the learned relay's does not.
 
 \begin{longtable}[]{@{}lccc@{}}
-\caption[Latency and compute cost of the coded relays]{Structural latency and measured compute cost. ``Buffer'' is the number of symbols the relay must accumulate before it can emit its first output. Compute is the median of 7 runs over $50{,}000$ symbols after a discarded warm-up, single-threaded CPU; as with Table~\ref{tbl:table13} these timings are machine-dependent and are reported as informational.}\label{tbl:table41}\tabularnewline
+\caption[Latency and compute cost of the coded relays]{Structural latency and measured compute cost. ``Buffer'' is the number of symbols the relay must accumulate before it can emit its first output. Compute is the median of 7 runs over $50{,}000$ symbols after a discarded warm-up, single-threaded CPU; these timings are machine-dependent and are reported as informational.}\label{tbl:table41}\tabularnewline
 \toprule\noalign{}
 Relay & Buffer (symbols) & $\mu$s/symbol & Relative to Viterbi \\
 \midrule\noalign{}
@@ -405,7 +377,7 @@ hard block-DF (Viterbi) & 202 & 15.07 & $1\times$ \\
 soft block-DF (BCJR) & 202 & 29.30 & $1.9\times$ slower \\
 \end{longtable}
 
-The compute column points the same way as the latency column. The 756-parameter relay costs $0.30\,\mu$s per symbol against Viterbi's $15.07$, a factor of $50$, and the soft variant is no more expensive than the hard one because replacing an \texttt{argmax} with a posterior-mean inner product is the cheaper of the two operations. BCJR costs roughly twice Viterbi, as its forward, backward and marginalization passes imply. These are single-machine wall-clock figures for reference implementations, not architectural constants, and the caveat attached to Table~\ref{tbl:table13} applies here unchanged; the ratios are nonetheless large enough, and the structural buffering figures exact enough, that the ordering is not in question.
+The compute column points the same way as the latency column. The 756-parameter relay costs $0.30\,\mu$s per symbol against Viterbi's $15.07$, a factor of $50$, and the soft variant is no more expensive than the hard one because replacing an \texttt{argmax} with a posterior-mean inner product is the cheaper of the two operations. BCJR costs roughly twice Viterbi, as its forward, backward and marginalization passes imply. These are single-machine wall-clock figures for reference implementations, not architectural constants; the ratios are nonetheless large enough, and the structural buffering figures exact enough, that the ordering is not in question.
 
 Taken together with Table~\ref{tbl:table40}, this reframes the coded study's practical conclusion. Where the code pays for itself at all, it does so at 20~dB, for a $1.35\times$ gain at equal throughput, while asking for $20\times$ the buffering latency and $50\times$ the arithmetic of the learned relay that comes within a few ten-thousandths of it there. The learned relay's case in this chapter, as in Chapter~\ref{sec:unknown-channels}, rests on cost and constancy rather than on a lower error floor.
 
