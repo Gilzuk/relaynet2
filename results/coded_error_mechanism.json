@@ -20,7 +20,7 @@
       "oracle": {
         "ber": 0.002192,
         "relay_sym_er": 0.0,
-        "repaired_frac": NaN,
+        "repaired_frac": null,
         "fer": 0.265,
         "bit_err_per_failed_frame": 1.6543396226415095
       }
@@ -43,7 +43,7 @@
       "oracle": {
         "ber": 0.000655,
         "relay_sym_er": 0.0,
-        "repaired_frac": NaN,
+        "repaired_frac": null,
         "fer": 0.1031,
         "bit_err_per_failed_frame": 1.270611057225994
       }

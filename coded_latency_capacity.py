@@ -49,8 +49,7 @@ TABLE_BUDGET = 150  # illustrative round-trip budget for the snapshot table
 
 def frame_symbols(mod, rate):
     pc = PuncturedCode(rate=rate)
-    n_steps = pc.n_steps(FRAME_INFO_BITS)
-    coded_bits = pc.n_coded_bits(n_steps)
+    coded_bits = pc.n_coded_bits(FRAME_INFO_BITS)
     return math.ceil(coded_bits / BITS_PER_SYMBOL[mod])
 
 

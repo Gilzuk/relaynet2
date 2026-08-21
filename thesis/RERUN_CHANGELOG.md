@@ -793,3 +793,47 @@ Verified: 0 undefined refs, 458 cells / 0 inconsistencies (verifier
 unaffected -- no numeric tables changed), 159 tests. Cold rebuild:
 **150 pages** (was 158 before this entry; 164 at the start of this
 session), 0 undefined refs. Bundles rebuilt.
+
+## Act on the automated PR review (Copilot) on PR #15
+
+Three findings, all real, all fixed.
+
+**1. Tail double-counted in the latency-budget frame length (genuine bug).**
+`coded_latency_capacity.py:frame_symbols()` called
+`PuncturedCode.n_coded_bits(n_steps)` after already computing
+`n_steps = pc.n_steps(FRAME_INFO_BITS)`. But `n_coded_bits()` takes an
+*information-bit* count and applies `n_steps()` itself, so the 2-bit tail
+was added twice and every frame length came out 1-2 symbols too long.
+Fixed to `pc.n_coded_bits(FRAME_INFO_BITS)`; `results/coded_latency_capacity.json`
+and `results/coded_latency_capacity.png` regenerated (the script is a
+re-derivation over already-measured FER data -- no new simulation, and
+regenerating it before the fix reproduced the committed JSON exactly,
+confirming determinism).
+
+Effect on reported results: round-trip latencies drop by 1-2 symbols
+(e.g. 16-QAM 2/3 block-DF 154 -> 152, QPSK 3/4 denoise 146 -> 145).
+**No MCS selection flips and no goodput value changes** -- the 150-symbol
+budget snapshot (Table 43) is numerically identical, and every claim in
+Section~sec:coded-latency-capacity still holds, including "16-QAM 3/4
+(136 symbols) barely clears the budget while 16-QAM 2/3 does not" (152 is
+still over 150) and the 10.0x/2.0x gaps at 16 and 20 dB. Two quoted
+latency figures in Ch.5 updated to match.
+
+**2. Sentence fragment in Ch.2.** "...so no claim is made about it here.
+and the results show that..." -- an inserted cGAN-scope caveat had been
+dropped into the middle of an existing sentence. Reordered so the
+benchmark sentence completes and the caveat follows it.
+
+**3. `NaN` in `results/coded_error_mechanism.json`.** Not valid JSON per
+RFC 8259 (Python's `json` reads it, strict parsers do not).
+`coded_error_mechanism.py` now emits `None` -> `null` for `repaired_frac`
+when the relay makes zero symbol errors and the ratio is genuinely
+undefined; the committed JSON was patched in place rather than
+regenerated, because regenerating it would re-run a Monte Carlo and churn
+numbers the thesis already reports. Verified every other value is
+byte-for-byte identical and the file now parses under a strict
+(`parse_constant`-rejecting) reader. The verifier never read this field.
+
+Verified: 458 cells / 0 inconsistencies (Table 43 re-checked against the
+regenerated JSON), 159 tests, cold rebuild 0 errors / 0 undefined refs,
+150 pages. Bundles rebuilt.

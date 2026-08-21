@@ -132,8 +132,10 @@ def main():
             per_failed = (a["bit_err_in_failed"] / a["failed_frames"]) if a["failed_frames"] else 0.0
             # Fraction of the relay's own symbol errors that did NOT survive to
             # the output -- i.e. that the destination decoder repaired.
-            repaired = (1 - ber / rser) if rser > 0 else float("nan")
-            print(f"{name:14s} {ber:11.6f} {rser:13.6f} {repaired:9.1%} {fer:9.4f} {per_failed:21.1f}")
+            # None (-> JSON null) rather than NaN, which is not valid JSON.
+            repaired = (1 - ber / rser) if rser > 0 else None
+            shown = f"{repaired:9.1%}" if repaired is not None else f"{'n/a':>9s}"
+            print(f"{name:14s} {ber:11.6f} {rser:13.6f} {shown} {fer:9.4f} {per_failed:21.1f}")
             snr_out[name] = dict(ber=ber, relay_sym_er=rser, repaired_frac=repaired,
                                  fer=fer, bit_err_per_failed_frame=per_failed)
         out[str(snr_db)] = snr_out
