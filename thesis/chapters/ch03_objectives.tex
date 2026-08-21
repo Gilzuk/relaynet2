@@ -61,7 +61,7 @@ Statistical rigor & Often missing & Wilcoxon test, 95\% CI, 10 trials per point 
 
 \section{Research Hypotheses}\label{sec:research-hypotheses}
 
-Based on the theoretical background of Chapter \ref{sec:literature-review}, this thesis tests the following hypotheses. H1--H4 are posed and answered on the canonical setup; H5 is an architecture-level hypothesis concerning training compute. H6 is the central hypothesis of the thesis's principal contribution (Chapter~\ref{sec:unknown-channels}), posed on channels \emph{outside} the canonical family. The higher-order-modulation extension (Chapter~\ref{sec:extensions}) additionally probes the generalizability of H1--H3 to QPSK and 16-QAM and is reported descriptively:
+Based on the theoretical background of Chapter \ref{sec:literature-review}, this thesis tests the following hypotheses. H1--H4 are posed and answered on the canonical setup. H6 is the central hypothesis of the thesis's principal contribution (Chapter~\ref{sec:unknown-channels}), posed on channels \emph{outside} the canonical family:
 
 \begin{enumerate}
     \item \textbf{H1 (AI advantage over AF at low SNR).} On the canonical setup, some AI-based relay strategies achieve lower BER than AF at low SNR (0--4 dB), where the non-linear denoising learned by the neural network provides an advantage over AF's noise amplification.
@@ -80,12 +80,9 @@ Based on the theoretical background of Chapter \ref{sec:literature-review}, this
 
 \emph{Rationale:} All architectures are universal approximators and the target function is simple. At equal capacity, architectural inductive biases provide diminishing returns.
 
-\item \textbf{H5 (SSM speed advantage at long context).} Mamba-2 SSD trains significantly faster than Mamba-S6 at longer context lengths ($n \gg 11$) due to chunk-parallel computation, while Mamba-S6 is faster at the short relay window ($n = 11$).\REV{ Unified ``Mamba S6''$\to$``Mamba-S6''.}
-
-\emph{Rationale:} The crossover between sequential S6 ($O(n)$ serial steps) and chunk-parallel SSD ($O(n/L)$ parallel matmuls of size $L$) depends on the ratio of kernel-launch overhead to arithmetic cost.
 \end{enumerate}
 
-Unlike H1--H5, which assume the canonical memoryless channel throughout, H6 deliberately introduces impairments not present in the system model of Chapter~\ref{sec:introduction}, including channel memory, ISI, and nonlinear distortion.
+Unlike H1--H4, which assume the canonical memoryless channel throughout, H6 deliberately introduces impairments not present in the system model of Chapter~\ref{sec:introduction}, including channel memory, ISI, and nonlinear distortion.
 \begin{enumerate}
 \item \textbf{H6 (Principal contribution, unknown-channel mitigation).} On channels with structure unknown to the receiver chain, memory (intersymbol interference) or asymmetry (biased nonlinearity), the \emph{memoryless} classical relays (AF, symbol-wise DF) fail to relay reliably, exhibiting error floors or severe degradation, whereas the minimal 169-parameter MLP relay restores reliable relaying by learning the impairment from data, approaching the performance of the optimal model-aware detector without requiring knowledge of the channel family.
 
@@ -115,9 +112,9 @@ The following limitations define the scope of this study, which is confined enti
 \begin{itemize}
 \tightlist
 \item
-  \textbf{Modulation:} The core experiments use BPSK. A scoped extension (Chapter~\ref{sec:extensions}) evaluates QPSK and 16-QAM, including the joint 2D $N$-class classification formulation; 16-PSK, 64-QAM and denser constellations are deferred to future work.
+  \textbf{Modulation:} The experiments use QPSK on the canonical channel throughout. Higher-order constellations (16-QAM, 16-PSK, 64-QAM and denser), together with the joint 2D $N$-class relay formulation they require, are deferred to future work.
 \item
-  \textbf{Channel knowledge:} \emph{In the canonical core} (Chapters~\ref{sec:experiments}--\ref{sec:extensions}), perfect CSI is assumed at the receiver and channel estimation errors are not modeled. This limitation is deliberately lifted in the principal contribution: Chapter~\ref{sec:unknown-channels} models finite-pilot least-squares channel estimation (a 200-pilot Viterbi baseline and a swept pilot budget) and, in the blind regime, a fully zero-CSI setting with no channel prior at all.
+  \textbf{Channel knowledge:} \emph{In the canonical core} (Chapter~\ref{sec:experiments}), perfect CSI is assumed at the receiver and channel estimation errors are not modeled. This limitation is deliberately lifted in the principal contribution: Chapter~\ref{sec:unknown-channels} models finite-pilot least-squares channel estimation (a 200-pilot Viterbi baseline and a swept pilot budget) and, in the blind regime, a fully zero-CSI setting with no channel prior at all.
     \REV{Fix applied: this item previously read ``perfect CSI is assumed; channel estimation errors are not modeled'' without qualification, which contradicted the thesis's own principal contribution. It is now scoped to the canonical core, with the assumptions lifted in Chapter~\ref{sec:unknown-channels} named explicitly.}
 \item
   \textbf{Relay topology:} Single relay, two-hop, half-duplex. Multi-relay and full-duplex configurations are excluded.

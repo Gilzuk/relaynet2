@@ -920,3 +920,54 @@ real errors, so no change was made.
 
 Verified: 458 cells / 0 inconsistencies, 159 tests, cold rebuild 0 errors /
 0 undefined refs, 151 pages. Bundles rebuilt.
+
+## Scope reduction toward a 120-page budget: 16-QAM, Mamba-S6 study, AWGN study
+
+Removed, per instruction, the three named non-supporting trails.
+
+**16-QAM.** Chapter 6 (the 16-QAM extension) removed from the build; its
+`.tex` is retained in the repo. Section 4.5 reduced to QPSK only: the
+16-QAM constellation definition and the joint 2D $N$-class formulation are
+gone, and the I/Q-splitting limitation is now stated as a general
+"more than two levels per axis" caveat pointing at future work. The 16-QAM
+constraint-length sweep (Table 36 and its figure) removed from Chapter 5.
+Twenty-five narrative references to the extension chapter were rewritten
+across Ch.1-5, 7, 8 and 9 rather than merely relinked.
+
+*One deliberate exception, stated explicitly in the thesis:* 16-QAM
+survives as a rung of the modulation-and-coding ladder in the
+link-adaptation and latency studies (Tables 42, 43). Removing it there
+would not be a scope cut but a different experiment -- the AMC study
+selects 16-QAM at nearly every SNR at or above 16 dB, so a QPSK-only grid
+would change every reported number and reduce "adaptive modulation and
+coding" to rate adaptation alone. A scope note at the head of Section 5.4
+draws the line: 16-QAM is not studied as a relay-architecture question,
+only as a transmission mode the adaptation picks from.
+
+**Mamba-S6.** The Mamba-S6-specific study is gone: H5 (the S6-vs-SSD
+training-time crossover) removed from the hypothesis set, which now runs
+H1-H4 plus H6; Section 8.3 (State Space vs.\ Attention) removed; the H5 row
+removed from the outcome table; the two future-work and limitation items
+that referenced the context-length benchmark rewritten. Mamba-S6 is
+*retained* as one architecture among several in the canonical comparison
+(Tables 2 and 8). Deleting one architecture's measured data point while
+keeping its peers would be selective reporting, not a scope reduction;
+removing its dedicated study is the scope reduction.
+
+**AWGN.** Section 5.2 (the AWGN calibration baseline, E1) removed. The
+simulator is still calibrated, on the canonical channel itself: symbol-wise
+DF's measured BER against the closed-form two-hop composition (Table 2's
+DF-theory column). AWGN remains as the noise term of the Rayleigh model and
+in the closed-form background of Chapter 2, which is unavoidable and not a
+study. The configurations table now lists QPSK/Rayleigh (canonical) and
+BPSK/unknown-ISI (the extension's actual use of BPSK).
+
+Verifier: `check_ber_validation`, `check_table26`, `check_table24` and
+`check_table36` retired from the checks list (functions kept for
+restoration); 407 cells / 0 inconsistencies.
+
+**Page count: 151 -> 134.** Short of the 120 target by 14 pages. The three
+named trails are now fully removed; the remaining gap cannot be closed from
+them without breaking the AMC study as described above. Options for the
+balance are prose condensation in Ch.2 (19 pp of background) and Ch.4
+(19 pp of methods), or removing a further study.

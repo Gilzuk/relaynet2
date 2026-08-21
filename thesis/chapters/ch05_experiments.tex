@@ -15,7 +15,7 @@ Chapter~\ref{sec:unknown-channels} as deliberate departures from the
 canonical assumptions in order to study model mismatch and robustness.
 
 
-Following the single-model convention fixed in Chapter~\ref{sec:introduction}, this chapter evaluates the relay strategies on the \emph{canonical setup only}: a two-hop SISO link, i.i.d.\ Rayleigh fast fading on both hops, complex baseband, QPSK, uncoded BER. BPSK appears in this chapter solely on the AWGN calibration channel, where the closed forms live (Table~\ref{tbl:configurations}). Three experiments constitute the core: the AWGN calibration baseline (E1), the canonical relay comparison (E2), and the parameter-normalization and complexity study (E3), which together answer every hypothesis (H1--H5). A scoped modulation extension (Chapter~\ref{sec:extensions}) carries the canonical findings to 16-QAM, where per-axis I/Q processing breaks down, including the joint 2D $N$-class classification formulation (E4--E5). The principal contribution (Chapter~\ref{sec:unknown-channels}) is the unknown-channel study (E6), which tests hypothesis H6. All other departures from the canonical setup are identified as future work in Chapter~\ref{sec:discussion-and-conclusions}.
+Following the single-model convention fixed in Chapter~\ref{sec:introduction}, this chapter evaluates the relay strategies on the \emph{canonical setup only}: a two-hop SISO link, i.i.d.\ Rayleigh fast fading on both hops, complex baseband, QPSK, uncoded BER. BPSK appears in this chapter solely on the AWGN calibration channel, where the closed forms live (Table~\ref{tbl:configurations}). Two experiments constitute the core: the canonical relay comparison (E2) and the parameter-normalization and complexity study (E3), which together answer every canonical hypothesis (H1--H4). The principal contribution (Chapter~\ref{sec:unknown-channels}) is the unknown-channel study (E6), which tests hypothesis H6. All other departures from the canonical setup are identified as future work in Chapter~\ref{sec:discussion-and-conclusions}.
 The experimental configurations are summarised in the table below.
 
 Each experiment subsection reports the key results inline (BER tables and figures); supporting material and model hyperparameters are collected in the appendices (Appendices~\ref{sec:appendix-a-mathematical-notation}--\ref{sec:appendix-c-software-architecture}).
@@ -41,11 +41,6 @@ Each experiment subsection reports the key results inline (BER tables and figure
 \hline
 \endhead
 
-E1 & SISO & BPSK &
-AWGN (calibration baseline) &
-Calibration against closed-form BER \\
-\hline
-
 E2 & SISO & QPSK &
 Rayleigh (canonical) &
 Canonical relay comparison (H1, H2) \\
@@ -53,17 +48,7 @@ Canonical relay comparison (H1, H2) \\
 
 E3 & SISO & QPSK &
 Rayleigh (canonical) &
-Parameter normalization \& complexity (H3, H4); training-time benchmark (H5) \\
-\hline
-
-E4 & SISO & 16-QAM &
-Rayleigh (canonical) &
-Extension: higher-order modulation via I/Q splitting (Chapter~\ref{sec:extensions}) \\
-\hline
-
-E5 & SISO & 16-QAM &
-Rayleigh (canonical) &
-Extension: joint 16-class 2D classification (Chapter~\ref{sec:extensions}) \\
+Parameter normalization \& complexity (H3, H4) \\
 \hline
 
 E6 & SISO & BPSK, QPSK &
@@ -72,119 +57,6 @@ Extension: unknown-channel failure of AF/DF and learned mitigation (H6) \\
 
 \hline
 \end{longtable}
-
-\section{Simulation Baseline: AWGN Calibration}\label{sec:channel-model-validation-simulative}
-
-Every number in this thesis is a Monte Carlo estimate, so the first task is to establish that the simulator reproduces results that are known in closed form. AWGN with BPSK is the natural baseline for that: it is the one configuration whose bit-error probability is exact and elementary, $Q(\sqrt{2E_b/N_0})$ single hop and $2P(1-P)$ over two hops, with no fading average to approximate. It therefore serves as the \emph{simulation baseline} of this chapter, the reference the framework is calibrated against before any relay is compared on it. The canonical channel on which the thesis's conclusions are actually drawn is Rayleigh fast fading, whose closed form is also available and is validated alongside. The channel validation plots (Figures~\ref{fig:fig1}--\ref{fig:fig4}) confirm the following:
-
-\begin{itemize}
-  \item \textbf{AWGN channel:} Theoretical and simulated BER curves match exactly. The classical $Q(\sqrt{\gamma})$ expression (Remark~\ref{noise-convension}), as well as its two-hop extensions (including the effective SNR for amplify-and-forward (AF) relaying and the error-composition model for decode-and-forward (DF)) are validated within tight 95\% confidence intervals across all SNR points (Figure~\ref{fig:fig1}).
-
-  \item \textbf{Rayleigh fading:} The simulation confirms the high-SNR asymptotic behavior $\mathrm{BER} \sim \frac{1}{4\bar{\gamma}}$. The simulated BER closely follows the analytical curve (Figure~\ref{fig:fig2})
-  \[
-    \frac{1}{2}\!\left(1 - \sqrt{\frac{\bar{\gamma}}{1+\bar{\gamma}}}\right).
-  \]
-
-  \item \textbf{Fading statistics:} The empirical probability density function (PDF) confirms the assumed Rayleigh amplitude distribution: the Rayleigh magnitude exhibits a broad spread with a non-negligible probability of deep fades, consistent with the closed-form $f_{|h|}(x)=2xe^{-x^2}$ (Figure~\ref{fig:fig4}).
-\REV{Scope fix: the previous bullet claimed a Rician $K$-factor concentration effect and cited Figure~\ref{fig:fig4}, but that figure shows the Rayleigh amplitude only, and Rician fading is deferred to future work (cf.\ Chapter~\ref{sec:research-objectives}). The bullet is rescoped to the Rayleigh distribution actually plotted.}
-
-\end{itemize}
-
-\subsection{Experiments}\label{sec:experiments_channel_models_validation}
-
-\textbf{Goal:} Calibrate the simulation framework against closed-form BER, using AWGN/BPSK as the baseline, before any relay comparison is made on it.
-
-\textbf{Trials:} - \textbf{Topology:} SISO (both hops) - \textbf{Modulation scheme:} BPSK - \textbf{Channel:} i.i.d.\ Rayleigh fast fading (canonical), AWGN (analytical calibration) - \textbf{Equalizers:} None - \textbf{Demod:} Hard decision only
-
-\textbf{Conclusion:} Monte Carlo simulations match theoretical predictions within 95\% confidence intervals on both validated channels: AWGN follows the expected exponential decay (Equation~\ref{eq:awgn-ber}) and the canonical Rayleigh channel validates the \(1/(4\bar{\gamma})\) high-SNR slope (Equation~\ref{eq:rayleigh-ber-approx}).
-
-\subsection{Results tables}
-
-\begin{longtable}{p{1cm}cccccc}
-\caption[Simulator calibration]{Simulator calibration: closed-form versus simulated single-hop BPSK BER, $10\times2{,}000{,}000$ bits per point. The SNR axis is $E_b/N_0$ throughout, with noise variance $N_0/2$ per real dimension, so AWGN obeys $Q(\sqrt{2E_b/N_0})$ and Rayleigh $\tfrac12(1-\sqrt{\bar\gamma/(1+\bar\gamma)})$. Agreement is within $0.6\%$ at every point the budget resolves. ``n/r'' marks a theoretical value below the resolution of any feasible Monte Carlo run ($2.3\times10^{-19}$), reported from the closed form rather than as a measurement.}
-\label{tab:ber_validation_long} \\
-
-\toprule
-\textbf{Chan.} &
-\textbf{4dB(Th.)} &
-\textbf{4dB(Sim.)} &
-\textbf{10dB(Th.)} &
-\textbf{10dB(Sim.)} &
-\textbf{16dB(Th.)} &
-\textbf{16dB(Sim.)} \\
-\midrule
-\endfirsthead
-
-\multicolumn{7}{c}{\tablename\ \thetable\ -- continued from previous page} \\
-\toprule
-\textbf{Chan.} &
-\textbf{4 dB (Th.)} &
-\textbf{4 dB (Sim.)} &
-\textbf{10 dB (Th.)} &
-\textbf{10 dB (Sim.)} &
-\textbf{16 dB (Th.)} &
-\textbf{16 dB (Sim.)} \\
-\midrule
-\endhead
-
-\midrule
-\multicolumn{7}{r}{Continued on next page} \\
-\endfoot
-
-\bottomrule
-\endlastfoot
-
-\\ AWGN
-& 1.25E-2 & 1.25E-2
-& 3.87E-6 & 3.85E-6
-& 2.27E-19 & n/r \\
-\hline
-\\  Rayleigh
-& 7.71E-2 & 7.72E-2
-& 2.33E-2 & 2.32E-2
-& 6.16E-3 & 6.15E-3 \\
-
-\end{longtable}
-
-Table~\ref{tbl:table26} summarises the theoretical SNR required to reach a target BER of \(10^{-3}\) on each validated channel (single-hop BPSK), which fixes the operating range used throughout the experiments.
-
-\begin{longtable}[]{@{}llll@{}}
-\caption[Theoretical SNR at BER $=10^{-3}$]{Theoretical SNR required to achieve BER = \(10^{-3}\) on the canonical Rayleigh channel and the AWGN calibration channel (single-hop BPSK).}\label{tbl:table26}\tabularnewline
-\toprule\noalign{}
-Channel & SNR for BER = \(10^{-3}\) & Diversity Order & High-SNR Slope \\
-\midrule\noalign{}
-\endfirsthead
-\toprule\noalign{}
-Channel & SNR for BER = \(10^{-3}\) & Diversity Order & High-SNR Slope \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-AWGN & \textasciitilde6.8 dB & -- (no fading) & Exponential \\
-Rayleigh & \textasciitilde24 dB & 1 & \(1/(4\bar{\gamma})\) \\
-\end{longtable}
-\subsection{Results Figures}\label{sec:results-figures}
-
-\begin{figure}[H]
-\centering
-\pandocbounded{\includegraphics[width=\linewidth,height=0.8\textheight,keepaspectratio]{results/channel_theoretical_awgn.png}}
-\caption[AWGN Channel: Theoretical vs]{AWGN Channel: Theoretical vs.~Simulative BER. Single-hop, two-hop AF, and two-hop DF: closed-form theory (solid lines) versus Monte Carlo simulation (markers with 95\% CI). Theory and simulation match within the confidence interval at all SNR points.}\label{fig:fig1}
-\end{figure}
-
-\begin{figure}[H]
-\centering
-\pandocbounded{\includegraphics[width=\linewidth,height=0.8\textheight,keepaspectratio]{results/channel_theoretical_rayleigh.png}}
-\caption[Rayleigh fading: theory vs]{Rayleigh fading: theory vs.~simulation for single-hop and two-hop DF. The characteristic \(1/\text{SNR}\) slope (compared to the steeper exponential AWGN curve) is clearly visible.}\label{fig:fig2}
-\end{figure}
-
-
-\begin{figure}[H]
-\centering
-\pandocbounded{\includegraphics[width=\linewidth,height=0.8\textheight,keepaspectratio]{results/Rayleigh_plot.png}}
-\caption[Normalized Rayleigh fading amplitude distribution]{Normalized Rayleigh fading amplitude distribution. The left plot shows the PDF, $f_{|h|}(x)=2xe^{-x^2}$, while the right plot shows the corresponding CDF, $F_{|h|}(x)=1-e^{-x^2}$, which represents the outage probability. Rayleigh fading models non-line-of-sight channels in which the received signal is formed by the sum of many independently scattered multipath components.}\label{fig:fig4}
-\end{figure}
-\REV{Compilation fix: the image path \texttt{results/Rayleigh plot.png} contained a space, which breaks \texttt{\string\includegraphics} unless \texttt{grffile} is loaded. Renamed the reference to \texttt{results/Rayleigh\_plot.png}; rename the file on disk to match (or load \texttt{grffile} and keep the space).}
-
 
 \section{Canonical Relay Comparison (SISO, Rayleigh, QPSK)}\label{sec:siso-bpsk-performance-baseline-relay-comparison}
 
@@ -225,7 +97,7 @@ Second, the relays divide by family rather than by paradigm. The three feedforwa
 
 Two comments on Table~\ref{tbl:table2}. First, symbol-wise DF is the best or tied-best relay at every tabulated point, and the learned relays sit within a few thousandths of it from 4~dB upward: on a matched, known channel the learned relay matches DF rather than beating it, at 169 parameters against DF's none. This is H2, and it is the result the rest of the thesis is measured against. Second, the two sequence models trail the feedforward relays at low SNR ($0.4014$ and $0.4032$ at 0~dB against the MLP's $0.3349$) and converge with them by 16~dB, so their extra capacity buys nothing on a memoryless channel; Section~\ref{sec:parameter-normalization-complexity-trade-off} separates that from the parameter-count confound.
 
-\paragraph{Why QPSK and not BPSK.} The canonical channel is complex, so the canonical constellation is complex: QPSK places one bit on each axis the Rayleigh coefficient acts in, and the I/Q-split relays process it without modification. BPSK on this channel would require discarding the imaginary part of the equalized sample, throwing away half the plane the channel acted in, which is why the real constellation is paired with the real channel in the calibration baseline of Section~\ref{sec:channel-model-validation-simulative} instead (Table~\ref{tbl:configurations}). One consequence must be kept in view when reading BER across the two: the SNR axis here is $E_s/N_0$, and QPSK carries two bits per symbol, so a given abscissa corresponds to an $E_b/N_0$ that is $3.01$~dB lower than the same number in the BPSK baseline. The constellations are not on a common axis and their error rates are not directly comparable.
+\paragraph{Why QPSK and not BPSK.} The canonical channel is complex, so the canonical constellation is complex: QPSK places one bit on each axis the Rayleigh coefficient acts in, and the I/Q-split relays process it without modification. BPSK on this channel would require discarding the imaginary part of the equalized sample, throwing away half the plane the channel acted in, which is why BPSK is not used on this channel at all. One consequence must be kept in view when reading these BER figures against BPSK closed forms: the SNR axis here is $E_s/N_0$, and QPSK carries two bits per symbol, so a given abscissa corresponds to an $E_b/N_0$ that is $3.01$~dB lower than the same number on a BPSK axis. The constellations are not on a common axis and their error rates are not directly comparable.
 
 \subsection{Results Figures}\label{sec:results-figures-1}
 
@@ -327,6 +199,8 @@ Transformer & 17,697 & CUDA & 474 s (\textasciitilde8 min) & 3.71 s \\
 \end{figure}
 
 \section{Coded Block-DF: Measuring the Remark~\ref{rem:df-terminology} Caveat}\label{sec:coded-block-df}
+
+\paragraph{A note on constellation scope.} The relay comparisons of this thesis are conducted on QPSK throughout, and 16-QAM is not studied as a relay-architecture question (Section~\ref{sec:modulation-schemes}). It does appear below as one rung of the modulation-and-coding ladder that the link-adaptation study of Section~\ref{sec:coded-rate-adaptation} selects from, where the object of study is the \emph{rate-and-modulation choice} rather than the relay's ability to process a denser constellation. Nothing in that study rests on how a learned relay handles four levels per axis, which is the question left to future work.
 
 Remark~\ref{rem:df-terminology} draws a distinction the rest of this thesis relies on: the DF baseline used everywhere here is \emph{symbol-wise} (uncoded, per-symbol hard slicing), not the \emph{block} DF of the information-theoretic relay-channel literature, and the remark explicitly cautions that "the reported DF results should not be read as bounds on coded block-DF performance." That caveat was asserted, not measured. This section measures it: a real information-theoretic block-DF relay, built from a rate-1/2 convolutional code and a soft-decision Viterbi decoder, added as a supplementary study on the canonical channel rather than as a revision of the core comparison above.
 
@@ -434,25 +308,6 @@ SNR (dB) & $K{=}3$ (4 states) & $K{=}5$ (16 states) & $K{=}7$ (64 states) \\
 20 & 0.0015 & \textbf{0.0013} & 0.0013 \\
 \end{longtable}
 
-\begin{longtable}[]{@{}lcccc@{}}
-\caption[Coded-DF BER vs.\ constraint length, 16-QAM]{Coded-DF BER vs.\ constraint length $K$, canonical 16-QAM/Rayleigh, rate 1/2, against the uncoded modulation-aware DF reference. Decoding uses the 16-QAM-specific branch metric of a joint PAM-4 Gray level per trellis step (two steps per symbol), not the independent per-axis metric that QPSK admits.}\label{tbl:table36}\tabularnewline
-\toprule\noalign{}
-SNR (dB) & uncoded DF & $K{=}3$ & $K{=}5$ & $K{=}7$ \\
-\midrule\noalign{}
-\endfirsthead
-\toprule\noalign{}
-SNR (dB) & uncoded DF & $K{=}3$ & $K{=}5$ & $K{=}7$ \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-0 & \textbf{0.4180} & 0.4687 & 0.4954 & 0.4961 \\
-4 & \textbf{0.3505} & 0.4204 & 0.4771 & 0.4874 \\
-8 & \textbf{0.2572} & 0.2722 & 0.3546 & 0.4003 \\
-12 & 0.1577 & \textbf{0.0989} & 0.1290 & 0.1446 \\
-16 & 0.0805 & \textbf{0.0269} & 0.0325 & 0.0344 \\
-20 & 0.0366 & \textbf{0.0074} & 0.0096 & 0.0095 \\
-\end{longtable}
 
 \begin{figure}[H]
 \centering
@@ -460,13 +315,8 @@ SNR (dB) & uncoded DF & $K{=}3$ & $K{=}5$ & $K{=}7$ \\
 \caption[Coded-DF BER vs.\ constraint length, QPSK]{The data of Table~\ref{tbl:table35} plotted: $K{=}5$ and $K{=}7$ sit visibly above $K{=}3$ at 0--8~dB and only draw level by 16--20~dB, never separating out cleanly ahead of it within this SNR range.}\label{fig:fig55}
 \end{figure}
 
-\begin{figure}[H]
-\centering
-\pandocbounded{\includegraphics[width=\linewidth]{results/coded_df_k_sweep_qam16.png}}
-\caption[Coded-DF BER vs.\ constraint length, 16-QAM]{The data of Table~\ref{tbl:table36} plotted: the same ordering as QPSK, with the coded/uncoded crossover pushed out to roughly 8--12~dB by 16-QAM's higher baseline uncoded BER, and $K{=}3$ remaining the best of the three constraint lengths at every tabulated point.}\label{fig:fig56}
-\end{figure}
 
-The answer is no, not monotonically, and not within the range measured here. On both constellations, the larger-$K$ codes are \emph{worse} than $K{=}3$ at low-to-mid SNR (0--8~dB on QPSK, 0--16~dB on 16-QAM) -- a sharper error-propagation cliff for the bigger trellis, the same threshold effect visible in Table~\ref{tbl:table34}, more pronounced the stronger the code. $K{=}7$ pulls very slightly ahead of $K{=}3$ at 16~dB on QPSK (0.0039 vs.\ 0.0042); by 20~dB all three constraint lengths are within trial-to-trial noise of each other on QPSK, and on 16-QAM $K{=}3$ remains the best of the three at every tabulated point up to 20~dB. Within this frame length (200 information bits) and trial budget, the larger codes' greater free distance never clearly pays off at any SNR point measured, only costing more at low-to-mid SNR where the crossover matters most. This does not mean stronger codes are never worthwhile -- a longer frame or a lower operating rate would very plausibly shift the picture -- only that constraint length is not a free knob to turn up: like every other axis in this thesis, its benefit is a boundary to be located, not a default to be assumed.
+The answer is no, not monotonically, and not within the range measured here. The larger-$K$ codes are \emph{worse} than $K{=}3$ at low-to-mid SNR (0--8~dB) -- a sharper error-propagation cliff for the bigger trellis, the same threshold effect visible in Table~\ref{tbl:table34}, more pronounced the stronger the code. $K{=}7$ pulls very slightly ahead of $K{=}3$ at 16~dB (0.0039 vs.\ 0.0042); by 20~dB all three constraint lengths are within trial-to-trial noise of each other. Within this frame length (200 information bits) and trial budget, the larger codes' greater free distance never clearly pays off at any SNR point measured, only costing more at low-to-mid SNR where the crossover matters most. This does not mean stronger codes are never worthwhile -- a longer frame or a lower operating rate would very plausibly shift the picture -- only that constraint length is not a free knob to turn up: like every other axis in this thesis, its benefit is a boundary to be located, not a default to be assumed.
 
 \subsection{Soft-Decision Relaying, and What the Liability Actually Is}\label{sec:coded-soft-decision}
 
@@ -513,7 +363,7 @@ Every table above compares relays at equal $E_s/N_0$. That is the correct axis f
 \textbf{Throughput: the coded comparison was not like-for-like.} A rate-1/2 code carries half the information per channel use. Concretely, the coded QPSK link spends $202$ symbols to deliver $200$ information bits ($0.99$ bits/symbol) where uncoded QPSK spends $100$ ($2.00$ bits/symbol). The ``$5.6\times$ better at 16~dB'' quoted above is therefore bought with half the data rate, and a link designer given that trade would not read it as a $5.6\times$ improvement at all. The honest comparison holds spectral efficiency fixed, and the measurements already collected supply it: rate-1/2 \emph{16-QAM} delivers $4 \times \tfrac12 = 1.98$ information bits per symbol, matching uncoded QPSK's $2.00$. Table~\ref{tbl:table40} places those two side by side.
 
 \begin{longtable}[]{@{}lccc@{}}
-\caption[Coded versus uncoded at equal spectral efficiency]{Coded versus uncoded at equal spectral efficiency ($\approx$2 information bits per channel symbol): uncoded QPSK against rate-1/2 $K{=}3$ 16-QAM, both on the canonical Rayleigh channel. Recomputed from the data of Tables~\ref{tbl:table34} and~\ref{tbl:table36}; no additional simulation.}\label{tbl:table40}\tabularnewline
+\caption[Coded versus uncoded at equal spectral efficiency]{Coded versus uncoded at equal spectral efficiency ($\approx$2 information bits per channel symbol): uncoded QPSK against rate-1/2 $K{=}3$ 16-QAM, both on the canonical Rayleigh channel. Recomputed from the data of Table~\ref{tbl:table34} and \url{results/coded_df_experiment.json}; no additional simulation.}\label{tbl:table40}\tabularnewline
 \toprule\noalign{}
 SNR (dB) & uncoded QPSK & rate-1/2 16-QAM & Coding gain \\
 \midrule\noalign{}

@@ -2,9 +2,9 @@
 
 \section{System Model}\label{sec:system-model-1}
 
-The system under study is a two-hop relay network with a single relay node. All methods in this chapter are described for the canonical setup of Chapter~\ref{sec:introduction}: SISO on both hops, i.i.d.\ Rayleigh fast fading, complex baseband, QPSK, uncoded BER. BPSK appears only on the AWGN calibration channel, and 16-QAM only in the extension of Chapter~\ref{sec:extensions}; the three pairings are set out in Table~\ref{tbl:configurations}.
+The system under study is a two-hop relay network with a single relay node. All methods in this chapter are described for the canonical setup of Chapter~\ref{sec:introduction}: SISO on both hops, i.i.d.\ Rayleigh fast fading, complex baseband, QPSK, uncoded BER. QPSK on the canonical Rayleigh channel is the only pairing used; it is set out in Table~\ref{tbl:configurations}.
 
-\paragraph{Scope of the canonical system model.} The system model defined in this chapter serves as the canonical benchmark used throughout the core experiments of the thesis (Chapters~\ref{sec:experiments}--\ref{sec:extensions}). It assumes a memoryless two-hop relay channel with white noise, perfect receiver-side CSI, and uncoded transmission. Accordingly, all relay comparisons in the canonical study concern per-symbol processing and do not require sequence detection: the current observation $y_R[i]$ is already a sufficient statistic for detecting $x[i]$, and the classical AF and DF baselines operate per symbol. Some neural architectures nevertheless receive a finite window of neighboring observations (Section~\ref{sec:relay-strategies}); this is an architectural input convention for the evaluated feedforward and sequence models, and under the canonical i.i.d.\ assumptions it neither introduces channel memory nor supplies additional information about $x[i]$. Channel memory, intersymbol interference (ISI), pilot-based channel estimation, blind equalization, and sequence-detection techniques such as Viterbi MLSE are introduced only later in Chapter~\ref{sec:unknown-channels} as deliberate departures from the canonical assumptions in order to study robustness under model mismatch.
+\paragraph{Scope of the canonical system model.} The system model defined in this chapter serves as the canonical benchmark used throughout the core experiments of the thesis (Chapter~\ref{sec:experiments}). It assumes a memoryless two-hop relay channel with white noise, perfect receiver-side CSI, and uncoded transmission. Accordingly, all relay comparisons in the canonical study concern per-symbol processing and do not require sequence detection: the current observation $y_R[i]$ is already a sufficient statistic for detecting $x[i]$, and the classical AF and DF baselines operate per symbol. Some neural architectures nevertheless receive a finite window of neighboring observations (Section~\ref{sec:relay-strategies}); this is an architectural input convention for the evaluated feedforward and sequence models, and under the canonical i.i.d.\ assumptions it neither introduces channel memory nor supplies additional information about $x[i]$. Channel memory, intersymbol interference (ISI), pilot-based channel estimation, blind equalization, and sequence-detection techniques such as Viterbi MLSE are introduced only later in Chapter~\ref{sec:unknown-channels} as deliberate departures from the canonical assumptions in order to study robustness under model mismatch.
 
 \begin{figure}[H]
 \centering
@@ -47,7 +47,7 @@ Three constellations appear in this thesis. The base case is BPSK, which maps a 
 \begin{equation}\protect\phantomsection\label{eq:bpsk-mapping}{x = 1 - 2b, \quad b \in \{0, 1\} \implies x \in \{-1, +1\}}\end{equation}
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad bpsk-mapping}
 
-with hard-decision demodulation \(\hat{b} = \mathbb{1}[\hat{x} < 0]\) at the destination. QPSK and 16-QAM are defined in Section~\ref{sec:modulation-schemes}. All three are normalized to unit average symbol energy, \(E_s = 1\), so they differ in bits per symbol rather than in transmit power: \(k = 1\), \(2\) and \(4\) respectively, giving \(E_b = E_s/k\). Further constellations are future work.
+with hard-decision demodulation \(\hat{b} = \mathbb{1}[\hat{x} < 0]\) at the destination. QPSK is defined in Section~\ref{sec:modulation-schemes}. Both are normalized to unit average symbol energy, \(E_s = 1\), so they differ in bits per symbol rather than in transmit power: \(k = 1\) and \(2\) respectively, giving \(E_b = E_s/k\). Higher-order constellations are future work.
 
 
 
@@ -83,7 +83,7 @@ where \(\mathcal{H}(\cdot)\) denotes the canonical Rayleigh fast-fading channel 
 }\end{equation}
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad awgn-hop1}
 
-with $\tilde{n}[i] \sim \mathcal{N}(0, \sigma^2)$ real per axis. Because the channel is complex, the canonical constellation is two-dimensional: QPSK places one bit on each axis, so both dimensions the channel acts in are used and the relay processes the pair; the real reduction above then applies per axis rather than discarding one. BPSK, being one-dimensional, is used only on the real AWGN calibration channel of Section~\ref{sec:channel-model-validation-simulative}, where the closed forms it validates are defined; it is never transmitted over the complex fading channel, which would require discarding the quadrature component. The one constellation that breaks per-axis relay processing, 16-QAM, is treated separately in Chapter~\ref{sec:extensions}. The \emph{AWGN calibration limit} used to validate the simulator (Chapter~\ref{sec:literature-review}) is the special case $|h[i]| \equiv 1$, i.e.\ $y_R[i] = x[i] + n_1[i]$ and $y_D[i] = x_R[i] + n_2[i]$.
+with $\tilde{n}[i] \sim \mathcal{N}(0, \sigma^2)$ real per axis. Because the channel is complex, the canonical constellation is two-dimensional: QPSK places one bit on each axis, so both dimensions the channel acts in are used and the relay processes the pair; the real reduction above then applies per axis rather than discarding one. BPSK, being one-dimensional, is never transmitted over the complex fading channel, which would require discarding the quadrature component; it appears only in the closed-form expressions of Chapter~\ref{sec:literature-review}. The \emph{AWGN limit} referenced in those closed forms is the special case $|h[i]| \equiv 1$, i.e.\ $y_R[i] = x[i] + n_1[i]$ and $y_D[i] = x_R[i] + n_2[i]$.
 
 The noise terms are independent and identically distributed with variance
 
@@ -96,12 +96,12 @@ where \(P_s = \mathbb{E}[|x|^2]\) is the transmit symbol power (unit for every c
 
 \subsection{Evaluated Configurations}\label{sec:evaluated-configurations}
 
-This thesis evaluates exactly three (constellation, channel) configurations, listed in Table~\ref{tbl:configurations}. They are not a cross product. The governing principle is that \textbf{a real channel is paired with a real constellation and a complex channel with a complex constellation}: the signal space the constellation lives in and the signal space the channel acts on are the same space. AWGN with BPSK is the real case, both living on the line; Rayleigh with QPSK and with 16-QAM are the complex cases, both living in the plane, where the fading coefficient \(h \sim \mathcal{CN}(0,1)\) rotates as well as scales and the constellation has a phase for it to act on.
+This thesis evaluates one (constellation, channel) configuration, listed in Table~\ref{tbl:configurations}. The governing principle is that \textbf{a real channel is paired with a real constellation and a complex channel with a complex constellation}: the signal space the constellation lives in and the signal space the channel acts on are the same space. Rayleigh with QPSK is the complex case, both living in the plane, where the fading coefficient \(h \sim \mathcal{CN}(0,1)\) rotates as well as scales and the constellation has a phase for it to act on.
 
 The pairings excluded by this principle are precisely the ones that would force the simulation to patch over a mismatch. A real constellation on the complex Rayleigh channel must discard the imaginary part of the equalized sample after dividing by \(h\), throwing away half the plane the channel acted in; a complex constellation on AWGN is not wrong, but it exercises none of what makes the complex channel interesting, since there is no phase rotation to undo. Neither is reported here.
 
 \begin{longtable}[]{@{}lllp{0.42\linewidth}@{}}
-\caption[The three evaluated configurations]{The three evaluated configurations. The channel shown applies to both hops.}\label{tbl:configurations}\tabularnewline
+\caption[The evaluated configurations]{The evaluated configurations. The channel shown applies to both hops.}\label{tbl:configurations}\tabularnewline
 \toprule\noalign{}
 Constellation & Channel & Role & Why this pairing \\
 \midrule\noalign{}
@@ -112,14 +112,13 @@ Constellation & Channel & Role & Why this pairing \\
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-BPSK (real) & AWGN (real) & Calibration & The real case. AWGN is the only channel here with exact closed forms, \(Q(\sqrt{2E_b/N_0})\) single-hop and \(2P(1-P)\) two-hop DF, so it is where the simulator can be checked against an exact result rather than only against another simulation, and BPSK is the constellation those closed forms describe. \\
-QPSK (complex) & Rayleigh (complex) & Canonical & The complex case, and the operating point this thesis draws its conclusions on. QPSK places one bit on each axis of the plane the channel acts in, so the identical I/Q-split relays process it unchanged. \\
-16-QAM (complex) & Rayleigh (complex) & Extension & The same complex channel, driven to four levels per axis, which breaks the per-axis relay formulation. That break is what Chapter~\ref{sec:extensions} studies, and it is studied on the canonical channel. \\
+QPSK (complex) & Rayleigh (complex) & Canonical & The complex case, and the operating point this thesis draws its conclusions on. QPSK places one bit on each axis, so both dimensions the fading coefficient acts in carry information and none is discarded. \\
+BPSK (real) & Unknown 3-tap ISI & Extension & Used only in Chapter~\ref{sec:unknown-channels}, where the impairment under study is channel \emph{memory} rather than fading, and the one-dimensional alphabet keeps the trellis small enough for an exact Viterbi benchmark. \\
 \end{longtable}
 
-The same principle also keeps AWGN in its place. It is retained as a measuring stick and needs only the one constellation whose closed form is being checked; evaluating relays on AWGN at higher orders would invite conclusions from a channel the thesis deliberately draws none from.
+AWGN appears in this thesis only as the noise term of the channel model and in the closed-form expressions quoted as analytical background (Chapter~\ref{sec:literature-review}); no relay comparison is run on it, so no conclusion is drawn from a channel the thesis does not study.
 
-\textbf{A consequence worth stating plainly.} The SNR argument sets the noise power from the average \emph{symbol} energy, so it denotes \(E_s/N_0\) in every configuration. Since \(E_b = E_s/k\), the same numerical SNR corresponds to a different per-bit energy in each row of Table~\ref{tbl:configurations}: \(E_b/N_0\) equals the stated value for BPSK, is \(3.01\)~dB lower for QPSK and \(6.02\)~dB lower for 16-QAM. The three configurations are therefore \emph{not} on a common abscissa, and BER values must not be read across them without that conversion. Where a comparison across constellations is made, this is stated explicitly at the point of use.
+\textbf{A consequence worth stating plainly.} The SNR argument sets the noise power from the average \emph{symbol} energy, so it denotes \(E_s/N_0\) in every configuration. Since \(E_b = E_s/k\), \(E_b/N_0\) is \(3.01\)~dB below the stated value for QPSK. Where a BER figure is read against a BPSK closed form, this conversion is stated explicitly at the point of use.
 
 \textbf{Power Normalization.} All relay strategies normalize their output power to ensure fair comparison:
 
@@ -169,7 +168,7 @@ The selected nine relay strategies are drawn from four distinct architectural co
 
 \begin{enumerate}
 \item \textbf{Classical AF:} Gain amplification as shown in Equation~\ref{eq:af-gain}. AF serves as the minimal-processing classical baseline. It performs no learned processing and simply rescales the received signal, preserving both signal and noise. Its end-to-end effective SNR is given in Equation~\ref{eq:af-snr}.
-\item \textbf{Classical DF:} Demodulates, recovers bits, and re-modulates clean symbols (BPSK on the AWGN calibration channel; QPSK on the canonical channel; per-axis on 16-QAM). DF serves as the maximal-processing classical baseline. It performs full signal regeneration through symbol-wise demodulation and re-modulation. On the canonical matched channel and in the uncoded setting studied here, DF achieves the lowest BER among the classical baselines at medium-to-high SNR (see Remark~\ref{rem:df-terminology}). Its theoretical BER follows the error-composition formula of Equation~\ref{eq:df-ber-hops}.
+\item \textbf{Classical DF:} Demodulates, recovers bits, and re-modulates clean symbols (QPSK on the canonical channel, applied per axis). DF serves as the maximal-processing classical baseline. It performs full signal regeneration through symbol-wise demodulation and re-modulation. On the canonical matched channel and in the uncoded setting studied here, DF achieves the lowest BER among the classical baselines at medium-to-high SNR (see Remark~\ref{rem:df-terminology}). Its theoretical BER follows the error-composition formula of Equation~\ref{eq:df-ber-hops}.
 
 \item \textbf{Supervised MLP (Minimal):} A two-layer feedforward neural network (multilayer perceptron, MLP) with 169 parameters following the relay architecture defined in Equation~\ref{eq:mlp-relay},
 
@@ -181,7 +180,7 @@ where \(\mathbf{w} \in \mathbb{R}^5\) is a sliding window of received symbols (\
 
 \emph{Design rationale:} The tanh output activation naturally constrains the output to \([-1, +1]\), matching the BPSK symbol range.
 The ReLU hidden layer provides the non-linearity needed to approximate the Bayes-optimal soft threshold \(\tanh(y/\sigma^2)\). With 24 hidden neurons and a 5-dimensional input, the network has approximately 34 parameters per input dimension: sufficient for the low-complexity denoising task while avoiding overfitting. He initialization is used for ReLU layers to maintain proper gradient flow.
-\REV{Resolved: checked against the implementation, \texttt{MinimalGenAIRelay} (\texttt{relaynet/relays/genai.py}) uses a \emph{ReLU} hidden layer and a \emph{tanh} output, exactly as stated here and in Eq.~\ref{eq:mlp-relay}. The imprecise text was the experiment-configuration lines in Chapters~\ref{sec:experiments}--\ref{sec:extensions}, reworded to ``ReLU hidden, tanh output''. Parameter count $(5{\times}24+24)+(24{\times}1+1)=169$ confirmed.}
+\REV{Resolved: checked against the implementation, \texttt{MinimalGenAIRelay} (\texttt{relaynet/relays/genai.py}) uses a \emph{ReLU} hidden layer and a \emph{tanh} output, exactly as stated here and in Eq.~\ref{eq:mlp-relay}. The imprecise text was the experiment-configuration lines in Chapter~\ref{sec:experiments}, reworded to ``ReLU hidden, tanh output''. Parameter count $(5{\times}24+24)+(24{\times}1+1)=169$ confirmed.}
 
 Training uses MSE loss with multi-SNR training data (i.e., 5, 10, and 15 dB), 25,000 samples, and 100 epochs with a learning rate of 0.01.
 
@@ -265,7 +264,7 @@ where \(\bar{P}_e\) is the sample mean BER across trials, \(s\) is the sample st
 
 \textbf{BER resolution.} With \(N \cdot M = 100{,}000\) total bits per SNR point, the minimum detectable BER is approximately \(1/N = 10^{-4}\) per trial, or \(10^{-5}\) for the aggregate. BER values below this threshold are reported as 0.
 
-\textbf{Per-experiment simulation budgets.} The budget above ($M=10$ trials $\times\,N=10{,}000$ bits $=100{,}000$ bits per SNR point) applies to the canonical relay comparison and the parameter-normalization/complexity study (E2--E3). Other experiments use different budgets, stated in their respective sections: the channel-model validation (E1, Section~\ref{sec:channel-model-validation-simulative}) uses $20\times50{,}000 = 1{,}000{,}000$ bits per SNR point for tight validation intervals; the main unknown-ISI study, the flat-channel control, and the QPSK generalization check (Chapter~\ref{sec:unknown-channels}, Sections~\ref{sec:unknown-channel-experiment}, \ref{sec:flat-unknown-channels}, \ref{sec:qpsk-unknown-channel}) use $10\times100{,}000=1{,}000{,}000$ bits per SNR point, matching the project-wide $M=10$ standard; the composite cascade (Section~\ref{sec:composite-channel}) likewise uses $10\times100{,}000$; and the blind and partial-posterior sub-studies (Sections~\ref{sec:blind-channel}--\ref{sec:partial-posterior}) use $50\times20{,}000=1{,}000{,}000$ bits per SNR or operating point. The larger trial count in those last two is deliberate rather than incidental: their hop-1 channel redraws its ISI, amplifier and phase realization for every block, so a trial is a draw from the impairment family and the ensemble average is limited by the trial count, not by bits per trial. Increasing bits per trial sharpens the estimate for one particular channel; only increasing trials averages over the family the study is about. Every experiment therefore uses $M\geq10$ trials, so the Wilcoxon signed-rank test is attainable throughout (at $M=5$ its smallest two-sided $p$ is $2^{-4}=0.0625$, which could not reach $p<0.05$).
+\textbf{Per-experiment simulation budgets.} The budget above ($M=10$ trials $\times\,N=10{,}000$ bits $=100{,}000$ bits per SNR point) applies to the canonical relay comparison and the parameter-normalization/complexity study (E2--E3). Other experiments use different budgets, stated in their respective sections: the main unknown-ISI study, the flat-channel control, and the QPSK generalization check (Chapter~\ref{sec:unknown-channels}, Sections~\ref{sec:unknown-channel-experiment}, \ref{sec:flat-unknown-channels}, \ref{sec:qpsk-unknown-channel}) use $10\times100{,}000=1{,}000{,}000$ bits per SNR point, matching the project-wide $M=10$ standard; the composite cascade (Section~\ref{sec:composite-channel}) likewise uses $10\times100{,}000$; and the blind and partial-posterior sub-studies (Sections~\ref{sec:blind-channel}--\ref{sec:partial-posterior}) use $50\times20{,}000=1{,}000{,}000$ bits per SNR or operating point. The larger trial count in those last two is deliberate rather than incidental: their hop-1 channel redraws its ISI, amplifier and phase realization for every block, so a trial is a draw from the impairment family and the ensemble average is limited by the trial count, not by bits per trial. Increasing bits per trial sharpens the estimate for one particular channel; only increasing trials averages over the family the study is about. Every experiment therefore uses $M\geq10$ trials, so the Wilcoxon signed-rank test is attainable throughout (at $M=5$ its smallest two-sided $p$ is $2^{-4}=0.0625$, which could not reach $p<0.05$).
 \REV{Fix applied: the per-experiment budget paragraph above replaces a former blanket claim that one budget applied to all results (E1 $20\times50$k, E2--E3 $10\times10$k, unknown-channel $5\times50$k), and the $M=5$ Wilcoxon caveat is now stated explicitly. The abstract was reworded to match.} 
 
 
@@ -353,9 +352,9 @@ Mamba-2-SSD-3K & 3,004 & Reduced d\_model (32$\to$15), d\_state (16$\to$6), laye
 
 This normalization removes parameter count as an explanation for any residual gap, which is what makes the comparison informative: if performance converges at equal parameter budgets, the conclusion is that capacity (not architecture) was the dominant factor in the unnormalized comparison. If significant gaps persist, the conclusion is weaker than ``architectural inductive bias provides an advantage'', because the scaling changed more than the architecture label: it is that something other than raw parameter count accounts for the gap, with architecture, depth, width, state dimension and window size still confounded among themselves.
 
-\section{Modulation: QPSK and 16-QAM}\label{sec:modulation-schemes}
+\section{Modulation: QPSK}\label{sec:modulation-schemes}
 
-The core experiments use QPSK, the canonical constellation; BPSK is confined to the AWGN calibration channel of Section~\ref{sec:channel-model-validation-simulative}. To test whether the canonical findings generalize to a higher-order constellation, the extension study of Chapter~\ref{sec:extensions} evaluates 16-QAM. This section defines both complex constellations, the I/Q-splitting technique that lets real-valued relays process them, and the joint 2D classification formulation that removes I/Q splitting's structural limitation for 16-QAM.
+The experiments use QPSK, the canonical constellation. This section defines it and the I/Q-splitting technique that lets real-valued relays process a complex constellation.
 
 \subsection{QPSK: Gray-Coded Quadrature Phase-Shift Keying}\label{sec:qpsk-gray-coded-quadrature-phase-shift-keying}
 
@@ -395,47 +394,9 @@ Demodulation applies independent sign decisions on each component: \(\hat{b}_0 =
 
 The advantage of QPSK is doubled throughput for the same BER and per-bit energy.
 
-\subsection{16-QAM: Gray-Coded Quadrature Amplitude Modulation}\label{sec:qam-gray-coded-quadrature-amplitude-modulation}
-
-16-QAM maps groups of four bits \((b_0, b_1, b_2, b_3)\) to one of 16 complex constellation points arranged on a \(4 \times 4\) rectangular grid (Figure~\ref{fig:fig8}c). Each axis (I and Q) uses independent Gray-coded PAM-4 mapping \cite{ProakisSalehi2008DigitalComm}:
-
-\begin{equation}\protect\phantomsection\label{eq:qam16-mapping}{I = \frac{L(b_0, b_1)}{\sqrt{10}}, \quad Q = \frac{L(b_2, b_3)}{\sqrt{10}}, \quad x = I + jQ
-}\end{equation}
-\addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad qam16-mapping}
-
-where \(L(\cdot)\) maps bit pairs to PAM-4 levels using Gray coding:
-
-\begin{longtable}[]{@{}llll@{}}
-\caption[16-QAM Gray-coded level mapping]{16-QAM PAM-4 Gray-coded level mapping for in-phase and quadrature components.}\label{tbl:table30}\tabularnewline
-\toprule\noalign{}
-Bit pair & Level & Bit pair & Level \\
-\midrule\noalign{}
-\endfirsthead
-\toprule\noalign{}
-Bit pair & Level & Bit pair & Level \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-00 & \(+3\) & 11 & \(-1\) \\
-01 & \(+1\) & 10 & \(-3\) \\
-\end{longtable}
-
-The normalization factor \(\sqrt{10}\) ensures unit average symbol power: \(E[|x|^2] = \frac{2 \cdot (9+1+1+9)}{4 \cdot 10} = 1\). Adjacent constellation points differ by one bit (Gray property), minimizing the BER for a given symbol error rate.
-
-Demodulation quantises each received component to the nearest PAM-4 level using decision boundaries at \(\{-2, 0, +2\}/\sqrt{10}\) and maps back to bits via the inverse Gray table. The spectral efficiency is 4 bits/symbol.
-
-\textbf{Theoretical 16-QAM BER.} The approximate BER for 16-QAM over AWGN is: (Equation~\ref{eq:qam16-ber})
-
-\begin{equation}\protect\phantomsection\label{eq:qam16-ber}{P_b^{\text{16-QAM}} \approx \frac{3}{8} \operatorname{erfc}\!\left(\sqrt{\frac{2E_b}{5N_0}}\right)
-}\end{equation}
-\addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad qam16-ber}
-
-At the same \(E_b/N_0\), 16-QAM has a higher BER than BPSK or QPSK due to the reduced Euclidean distance between constellation points. The trade-off is 4$\times$ throughput improvement.
-
 \subsection{Constellation Diagram Summary}\label{sec:constellation-diagram-summary}
 
-Figure~\ref{fig:fig8} presents the constellation diagrams for the modulation schemes appearing in this thesis. The progression from BPSK (2 points on the real axis) through QPSK (4 points on the unit circle) to 16-QAM (16 points on a rectangular grid) illustrates the fundamental trade-off between spectral efficiency and noise robustness: higher-order constellations pack more bits per symbol but reduce the minimum Euclidean distance between points, increasing the BER at a given SNR.
+Figure~\ref{fig:fig8} presents the constellation diagrams for the modulation schemes appearing in this thesis. The progression from BPSK (2 points on the real axis) through QPSK (4 points on the unit circle) to denser grids illustrates the fundamental trade-off between spectral efficiency and noise robustness: higher-order constellations pack more bits per symbol but reduce the minimum Euclidean distance between points, increasing the BER at a given SNR. Only QPSK is evaluated in this thesis; the others are shown for orientation.
 
 \begin{figure}[H]
 \centering
@@ -450,7 +411,7 @@ Figure~\ref{fig:fig8} presents the constellation diagrams for the modulation sch
 }\end{equation}
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad iq-splitting}
 
-\textbf{Justification and caveat.} For rectangular constellations (QPSK, QAM), the I and Q components carry independent information and are corrupted by independent noise, so per-axis denoising with a shared real-valued function is a natural and parameter-efficient decomposition. It is, however, a \emph{restriction} of the hypothesis class to axis-separable functions, not an equivalence to joint 2D processing: per-axis errors accumulate independently, which is precisely the structural limitation quantified and then removed by the joint 2D classification formulation of Section~\ref{sec:d-joint-classification-as-an-alternative-to-iq-splitting}.
+\textbf{Justification and caveat.} For rectangular constellations (QPSK, QAM), the I and Q components carry independent information and are corrupted by independent noise, so per-axis denoising with a shared real-valued function is a natural and parameter-efficient decomposition. It is, however, a \emph{restriction} of the hypothesis class to axis-separable functions, not an equivalence to joint 2D processing: per-axis errors accumulate independently. For QPSK, where each axis carries a single binary decision, the restriction costs nothing; for denser constellations it becomes a structural limitation that a joint two-dimensional relay formulation would be needed to remove, which is left to future work.
 
 \textbf{Relay-specific handling:}
 
@@ -485,23 +446,7 @@ Rationale
 \textbf{AI relays} & I/Q splitting (process Re and Im separately) & Real-valued networks; independence of I/Q in rectangular constellations \\
 \end{longtable}
 
-\textbf{Limitation for 16-QAM with AI relays.} For 16-QAM, each I/Q component takes four amplitude levels (\(\{-3, -1, +1, +3\}/\sqrt{10}\)) rather than the binary \(\{\pm 1\}\) of BPSK. The BPSK-trained relays, which use \(\tanh\) activations bounded in \([-1, +1]\), may not faithfully reproduce the multi-level structure. This provides a natural test of generalization: if AI relays degrade significantly on 16-QAM but not on QPSK, it indicates that the BPSK training generalizes to binary-per-component signals (QPSK) but not to multi-level signals (16-QAM). Such a finding would motivate modulation-specific relay training.
+\textbf{Limitation beyond binary-per-axis constellations.} I/Q splitting works here because QPSK places a single binary decision on each axis, which is exactly what a \(\tanh\)-output relay trained on \(\{\pm 1\}\) represents. Constellations with more than two levels per axis (16-QAM and denser) break that correspondence and would require either modulation-specific retraining or a joint two-dimensional relay formulation; neither is evaluated here, and both are identified as future work.
 
-
-\subsection{2D Joint Classification as an Alternative to I/Q Splitting}\label{sec:d-joint-classification-as-an-alternative-to-iq-splitting}
-
-The I/Q splitting approach (Section~\ref{sec:iq-splitting-for-ai-relay-processing-of-complex-constellations}) treats each axis of the complex constellation independently, classifying each component into \(\sqrt{M}\) amplitude levels. For 16-QAM this yields two independent 4-class problems. While valid under the assumption of I/Q independence, this formulation introduces a \textbf{structural limitation}: (Equation~\ref{eq:joint-classification}) classification errors on the I and Q axes accumulate independently, producing a BER floor that cannot be reduced regardless of model capacity.
-
-An alternative formulation treats the relay as a \textbf{joint 2D classifier} over all \(M\) constellation points simultaneously. Instead of splitting the complex signal and classifying 4 levels per axis, the relay receives the full 2D input \((y_I, y_Q)\) and outputs \(M\) logits: one per constellation point. The predicted class index \(\hat{k} = \arg\max_k \, z_k\) is mapped back to the corresponding complex symbol \(s_{\hat{k}}\) for retransmission:
-
-\begin{equation}\protect\phantomsection\label{eq:joint-classification}{\hat{x}_R = s_{\hat{k}}, \quad \hat{k} = \arg\max_{k \in \{1, \dots, M\}} \, f_\theta(y_I, y_Q)_k
-}\end{equation}
-\addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad joint-classification}
-
-where \(f_\theta: \mathbb{R}^2 \to \mathbb{R}^M\) is the neural relay network with \(M\) output logits trained using cross-entropy loss against the true constellation index.
-
-\textbf{Advantages over I/Q splitting:} - \textbf{Joint decision boundaries.} The network learns decision regions in the full 2D constellation space, capturing the Voronoi structure of the constellation rather than axis-aligned partitions. - \textbf{No structural BER floor.} Because the classifier selects among all \(M\) points jointly, there is no independent per-axis error accumulation (Equation~\ref{eq:iq-splitting}). - \textbf{Minimal parameter overhead.} Only the final classification layer changes: from \(\sqrt{M}\) to \(M\) outputs: adding negligible parameters to the larger architectures (\textless{}1\% for Transformer, Mamba-S6, and Mamba-2 SSD).
-
-\textbf{Trade-off.} The 2D classifier requires training on 16-QAM data (it cannot reuse BPSK-pretrained weights), and the number of output classes grows as \(M\) rather than \(\sqrt{M}\), which may affect convergence for very high-order constellations. For 16-QAM (\(M = 16\)), this trade-off is favourable. The experimental evaluation is presented in Section \ref{sec:class-2d-classification-for-qam16}.
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
