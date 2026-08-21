@@ -107,21 +107,17 @@ Unlike H1--H4, which assume the canonical memoryless channel throughout, H6 deli
 
 \section{Scope and limitations}\label{sec:scope-and-delimitations}
 
-The following limitations define the scope of this study, which is confined entirely to the canonical setup (SISO, Rayleigh fast fading, complex baseband, QPSK, uncoded):
+The following limitations define the scope of this study, confined throughout to the canonical setup (SISO, Rayleigh fast fading, complex baseband, QPSK, uncoded):
 
 \begin{itemize}
 \tightlist
 \item
-  \textbf{Modulation:} The experiments use QPSK on the canonical channel throughout. Higher-order constellations (16-QAM, 16-PSK, 64-QAM and denser), together with the joint 2D $N$-class relay formulation they require, are deferred to future work.
+  \textbf{Modulation:} QPSK throughout. Higher-order constellations, and the joint 2D $N$-class relay formulation they require, are deferred to future work.
 \item
-  \textbf{Channel knowledge:} \emph{In the canonical core} (Chapter~\ref{sec:experiments}), perfect CSI is assumed at the receiver and channel estimation errors are not modeled. This limitation is deliberately lifted in the principal contribution: Chapter~\ref{sec:unknown-channels} models finite-pilot least-squares channel estimation (a 200-pilot Viterbi baseline and a swept pilot budget) and, in the blind regime, a fully zero-CSI setting with no channel prior at all.
+  \textbf{Channel knowledge:} Perfect CSI in the canonical core; estimation error is not modeled there. Chapter~\ref{sec:unknown-channels} lifts this with finite-pilot estimation, a swept pilot budget, and a zero-CSI blind regime.
     \REV{Fix applied: this item previously read ``perfect CSI is assumed; channel estimation errors are not modeled'' without qualification, which contradicted the thesis's own principal contribution. It is now scoped to the canonical core, with the assumptions lifted in Chapter~\ref{sec:unknown-channels} named explicitly.}
 \item
-  \textbf{Relay topology:} Single relay, two-hop, half-duplex. Multi-relay and full-duplex configurations are excluded.
-\item
-  \textbf{Topology:} SISO on both hops. Multi-antenna (MIMO) configurations are deferred to future work.
-\item
-  \textbf{Training regime:} Offline training on synthetic data. Online adaptation is not implemented.
+  \textbf{Topology:} A single relay, two hops, half-duplex, SISO on both hops. Multi-relay, full-duplex and multi-antenna (MIMO) configurations are deferred to future work.
 \end{itemize}
 
-These delimitations are chosen to enable a clean comparison of relay processing functions in isolation, without confounding factors from protocol-level or system-level complexity.
+These delimitations isolate the relay processing function from protocol- and system-level confounds.

@@ -1083,14 +1083,14 @@ def main():
 
     tex = load_tex()
     rep = Report()
-    # check_ber_validation / check_table26 / check_table24 / check_table36 retired: the AWGN
+    # check_ber_validation / check_table26 / check_table24 / check_table35 / check_table36 retired: the AWGN
     # calibration section and the 16-QAM extension chapter were removed from the
     # thesis (see thesis/RERUN_CHANGELOG.md). Their functions are kept below so
     # the checks can be restored if the material ever returns.
     checks = [check_table2, check_layers_table, check_table8,
               check_tableE6, check_tableE6flat, check_tableE6qpsk,
               check_E6blind_prose, check_E6partial_prose, check_E6composite_prose,
-              check_table34, check_table35,
+              check_table34,
               check_table37, check_table38, check_table39, check_table40, check_table42, check_table43]
     for chk in checks:
         try:

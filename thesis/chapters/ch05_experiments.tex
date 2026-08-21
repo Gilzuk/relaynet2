@@ -148,27 +148,6 @@ SNR (dB) & MLP-3K & Hybrid-3K & VAE-3K & Transformer-3K & Mamba-S6 (3K) & Mamba-
 
 
 
-\subsection{Results Figures}\label{sec:results-figures-3}
-
-
-
-% \begin{figure}[H]
-% \centering
-% \pandocbounded{\includegraphics[width=\linewidth,height=0.8\textheight,keepaspectratio]{results/complexity_comparison_all_relays.png}}
-% \caption[Complexity--performance trade-off]{Complexity--performance trade-off. Training time vs.~parameter count vs.~BER improvement over DF at low SNR. The Minimal MLP (169 params) achieves the best efficiency.}\label{fig:fig19}
-% \end{figure}
-
-\begin{figure}[H]
-\centering
-\pandocbounded{\includegraphics[width=\linewidth]{results/complexity_vs_low_snr.png}}
-\caption[Complexity versus low-SNR performance]{Complexity versus low-SNR performance. BER at 0~dB is shown as a function of model size.} \label{fig:complexity_vs_low_snr}
-\end{figure}
-
-\begin{figure}[H]
-\centering
-\pandocbounded{\includegraphics[width=\linewidth]{results/complexity_vs_high_snr_tradeoff.png}}
-\caption[Low-SNR versus high-SNR trade-off]{Low-SNR versus high-SNR trade-off. BER at 8~dB is plotted against BER at 0~dB.} \label{fig:low_snr_vs_high_snr_tradeoff}
-\end{figure}
 
 \section{Coded Block-DF: Measuring the Remark~\ref{rem:df-terminology} Caveat}\label{sec:coded-block-df}
 
@@ -198,11 +177,6 @@ SNR (dB) & uncoded DF & coded AF & coded DF & MLP-coded & Mamba-coded \\
 20 & 0.0099 & 0.0018 & 0.0013 & 0.0011 & \textbf{0.0009} \\
 \end{longtable}
 
-\begin{figure}[H]
-\centering
-\pandocbounded{\includegraphics[width=\linewidth]{results/coded_df_comparison.png}}
-\caption[Coded block-DF vs.\ uncoded DF and coded-aware learned relays]{The data of Table~\ref{tbl:table34} plotted: coded block-DF crosses below uncoded symbol-wise DF between 4 and 8~dB and stays below it thereafter; coded AF, which never decodes, never catches up. Both coded-aware learned relays track coded-DF closely from 12~dB up but are visibly worse at 4--8~dB.}\label{fig:fig54}
-\end{figure}
 
 Two findings, reported as measured rather than smoothed toward either a "coding always helps" or a "the learned relay wins" narrative:
 
@@ -256,39 +230,7 @@ SNR & Relay & Relay symbol ER & Repaired & Final BER \\
  & oracle & --- & --- & 0.000655 \\
 \end{longtable}
 
-\subsection{Does a Stronger Code Help? A Constraint-Length Sweep}\label{sec:coded-k-sweep}
-
-The $K{=}3$ code above is deliberately small (4 states, comparable to the smallest ISI channel studied in Chapter~\ref{sec:unknown-channels}). Whether a stronger code -- larger constraint length, larger free distance -- simply does better is not obvious given the threshold behaviour just observed, so it is measured rather than assumed: the classical coded-DF baseline (Viterbi decode only; the learned relays are not retrained per $K$, each training run being too expensive to repeat six-fold) is swept over $K \in \{3, 5, 7\}$ -- 4, 16, and 64 trellis states respectively, with $K{=}7$ the standard used in, e.g., the Voyager-era deep-space codes -- on both canonical constellations.
-
-\begin{longtable}[]{@{}lccc@{}}
-\caption[Coded-DF BER vs.\ constraint length, QPSK]{Coded-DF BER vs.\ constraint length $K$, canonical QPSK/Rayleigh, rate 1/2.}\label{tbl:table35}\tabularnewline
-\toprule\noalign{}
-SNR (dB) & $K{=}3$ (4 states) & $K{=}5$ (16 states) & $K{=}7$ (64 states) \\
-\midrule\noalign{}
-\endfirsthead
-\toprule\noalign{}
-SNR (dB) & $K{=}3$ (4 states) & $K{=}5$ (16 states) & $K{=}7$ (64 states) \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-0 & \textbf{0.4212} & 0.4722 & 0.4892 \\
-4 & \textbf{0.2242} & 0.3009 & 0.3550 \\
-8 & \textbf{0.0633} & 0.0831 & 0.0884 \\
-12 & \textbf{0.0154} & 0.0192 & 0.0168 \\
-16 & 0.0042 & 0.0049 & \textbf{0.0039} \\
-20 & 0.0015 & \textbf{0.0013} & 0.0013 \\
-\end{longtable}
-
-
-\begin{figure}[H]
-\centering
-\pandocbounded{\includegraphics[width=\linewidth]{results/coded_df_k_sweep_qpsk.png}}
-\caption[Coded-DF BER vs.\ constraint length, QPSK]{The data of Table~\ref{tbl:table35} plotted: $K{=}5$ and $K{=}7$ sit visibly above $K{=}3$ at 0--8~dB and only draw level by 16--20~dB, never separating out cleanly ahead of it within this SNR range.}\label{fig:fig55}
-\end{figure}
-
-
-The answer is no, not monotonically, and not within the range measured here. The larger-$K$ codes are \emph{worse} than $K{=}3$ at low-to-mid SNR (0--8~dB) -- a sharper error-propagation cliff for the bigger trellis, the same threshold effect visible in Table~\ref{tbl:table34}, more pronounced the stronger the code. $K{=}7$ pulls very slightly ahead of $K{=}3$ at 16~dB (0.0039 vs.\ 0.0042); by 20~dB all three constraint lengths are within trial-to-trial noise of each other. Within this frame length (200 information bits) and trial budget, the larger codes' greater free distance never clearly pays off at any SNR point measured, only costing more at low-to-mid SNR where the crossover matters most. This does not mean stronger codes are never worthwhile -- a longer frame or a lower operating rate would very plausibly shift the picture -- only that constraint length is not a free knob to turn up: like every other axis in this thesis, its benefit is a boundary to be located, not a default to be assumed.
+\paragraph{Does a stronger code help?} The $K{=}3$ code used above is deliberately small. Sweeping the constraint length to $K\in\{5,7\}$ on the same QPSK/Rayleigh link does \emph{not} improve matters: the larger-$K$ codes are worse than $K{=}3$ across 0--8~dB, a sharper error-propagation cliff for the bigger trellis, and by 20~dB all three are within trial-to-trial noise of one another (best values $0.0015$, $0.0013$, $0.0013$). Within this frame length and trial budget, the relay's re-encoding liability is therefore not something a stronger code repairs; the full sweep is available in \url{results/coded_df_experiment.json}.
 
 \subsection{Soft-Decision Relaying, and What the Liability Actually Is}\label{sec:coded-soft-decision}
 
@@ -314,11 +256,6 @@ SNR (dB) & hard block-DF & soft block-DF & MLP hard & MLP soft & oracle \\
 20 & 0.001376 & 0.002379 & 0.001069 & \textbf{0.000885} & 0.000673 \\
 \end{longtable}
 
-\begin{figure}[H]
-\centering
-\pandocbounded{\includegraphics[width=\linewidth]{results/coded_soft_decision.png}}
-\caption[Soft- versus hard-decision relaying on the coded link]{The data of Table~\ref{tbl:table39}. The soft learned relay (green) tracks the oracle floor most closely at high SNR; soft block-DF (orange) turns upward at 20~dB, an artefact of mis-calibration discussed in the text, not of soft forwarding itself.}\label{fig:fig57}
-\end{figure}
 
 \textbf{Soft read-out helps the learned relay everywhere.} At every SNR the posterior mean beats the argmax, on identical weights: $0.4327$ against $0.4424$ at 0~dB, $0.0849$ against $0.0970$ at 8~dB, $0.000885$ against $0.001069$ at 20~dB. The gain is largest exactly where the mechanism predicts, since a relay that reports its uncertainty gives the destination's decoder more to work with than one that reports a confident guess. It is enough to change a verdict: at 16~dB the hard MLP significantly \emph{loses} to block-DF (2 of 20 paired trials) while the soft MLP significantly \emph{beats} it (20 of 20), and at 20~dB the soft relay comes within $0.00021$ of the oracle floor that no relay of any kind can pass.
 

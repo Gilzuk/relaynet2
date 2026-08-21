@@ -210,13 +210,13 @@ Training uses MSE loss with multi-SNR training data (i.e., 5, 10, and 15 dB), 25
 
   Training points at the relay node: SNR = \textbf{5, 10, 15 dB}.
 
-  \emph{Design rationale:} The expand factor of 2 (\(32 \to 64\)) doubles the internal dimension during the S6 scan, providing richer state dynamics. The state dimension \(N = 16\) means each S6 layer implements a 16th-order adaptive filter: substantially more expressive than classical Wiener or matched filters. LayerNorm and residual connections prevent gradient degradation across layers. The SiLU gating provides multiplicative interactions that help the model learn sharp decision boundaries.
+  \emph{Design rationale:} The expand factor of 2 doubles the internal dimension during the S6 scan, and the state dimension $N=16$ makes each layer a 16th-order adaptive filter, more expressive than a classical Wiener or matched filter. LayerNorm, residual connections and SiLU gating are standard stabilizers carried over from the reference implementation.
 
 \item \textbf{Sequential models: Mamba-2 SSD} Structured State Space Duality model that replaces the sequential S6 recurrence with a chunk-parallel structured matrix multiply. Architecture: \(d_{\text{model}}=32\), \(d_{\text{state}}=16\), chunk size 8, 2 Mamba-2 blocks with SiLU gating and residual connections. Total: 26,179 parameters. Each block applies: LayerNorm $\to$ parallel gate/SSD branches $\to$ SiLU gate $\to$ contract (\(64 \to 32\)) $\to$ residual. The SSD layer builds a lower-triangular causal kernel \(M\) per chunk and applies it via batched matmul, with inter-chunk state passing for continuity. Trained for 100 epochs with Adam optimizer (\(\text{lr}=10^{-3}\)) and gradient clipping (\(\|\nabla\| \le 1\)).
 
   Training points at the relay node: SNR = \textbf{5, 10, 15 dB}.
 
-  \emph{Design rationale:} The chunk size of 8 is chosen to balance parallelism (larger chunks = fewer sequential inter-chunk passes) against memory cost (the \(L \times L\) SSM matrix scales quadratically with chunk size). At the 11-symbol window, this yields 2 chunks (8 + 3), with a single inter-chunk state pass. Gradient clipping at norm 1.0 prevents the exponential blowup of gradients through the cumulative matrix products in the SSD computation. The S4D-style initialization \(A_{\text{log}} = \log(1, 2, \dots, N)\) provides geometrically spaced decay rates, enabling the model to simultaneously capture short-range and medium-range dependencies.
+  \emph{Design rationale:} The chunk size of 8 balances parallelism against the quadratic memory cost of the $L\times L$ chunk matrix, giving two chunks at the 11-symbol window. Gradient clipping at norm 1.0 and the S4D-style initialization $A_{\log}=\log(1,2,\dots,N)$ are carried over from the reference implementation.
 
 \end{enumerate}
 

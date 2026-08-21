@@ -1006,3 +1006,44 @@ example.
 
 Verified: 407 cells / 0 inconsistencies, 159 tests, cold rebuild 0 errors /
 0 undefined refs / 0 bidi errors, 128 pages.
+
+## Reaching the 120-page target (128 -> 120)
+
+Same criterion, continued.
+
+- **Two supplementary complexity scatter figures removed** (complexity vs.
+  low-SNR BER, low-SNR vs. high-SNR trade-off): both re-plotted data already
+  tabulated in Tables 2 and 8, and both illustrated the U-shaped-complexity
+  reading that H3's downgrade no longer supports. The now-empty "Results
+  Figures" subsection was removed with them.
+- **Three figures that only re-plotted the adjacent table removed** (their
+  captions each began "The data of Table N plotted"): the coded-DF
+  comparison, the QPSK constraint-length sweep and the soft-decision plot.
+  The envelope and latency-budget figures were kept, since a step function
+  is not readable off a table.
+- **The constraint-length sweep folded into a paragraph.** Table 35 and its
+  discussion answered "does a stronger code help?" with "no, not
+  monotonically." The finding is retained in one paragraph with the closing
+  figures and a pointer to the result file; the table and its expansion are
+  gone. `check_table35` retired from the verifier.
+- **Two sequence-model design rationales condensed**; both justified
+  hyperparameters chosen for the removed runtime study.
+- **Consistency fix found while cutting:** Section 2.2 still explained the
+  U-shaped curve by overfitting, contradicting H3's downgrade. Rewritten to
+  present it as the standard argument and defer to Section 7.2's weaker,
+  measured claim. Similarly, the appendix's re-measurement note still listed
+  the 16-class conclusion as one of the three that changed; now two.
+- **A wasted page recovered in the Hebrew back matter.** The Hebrew abstract
+  opened its language environments before `\chapter*`, so the environments
+  started one page and the chapter heading immediately started another,
+  leaving a page containing only the running header. Reordered so the
+  heading comes first. Rendering verified visually: RTL layout, heading and
+  justification unchanged.
+- Small structural tidying to absorb two single-line spillover pages: the
+  two duplicate "topology" scope items in Chapter 3 merged, the "training
+  regime" bullet dropped (it is covered in the Limitations section), and the
+  appendix's closing sentence about the verifier removed as a duplicate of
+  the reproducibility paragraph in Chapter 4, which still names it.
+
+**Page count: 120.** Target met. Verified: 389 cells / 0 inconsistencies,
+159 tests, cold rebuild 0 errors / 0 undefined refs / 0 bidi errors.
