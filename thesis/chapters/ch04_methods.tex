@@ -4,7 +4,7 @@
 
 The system under study is a two-hop relay network with a single relay node. All methods in this chapter are described for the canonical setup of Chapter~\ref{sec:introduction}: SISO on both hops, i.i.d.\ Rayleigh fast fading, complex baseband, QPSK, uncoded BER. BPSK appears only on the AWGN calibration channel, and 16-QAM only in the extension of Chapter~\ref{sec:extensions}; the three pairings are set out in Table~\ref{tbl:configurations}.
 
-\paragraph{Scope of the canonical system model.} The system model defined in this chapter serves as the canonical benchmark used throughout the core experiments of the thesis (Chapters~\ref{sec:experiments}--\ref{sec:extensions}). It assumes a memoryless two-hop relay channel with white noise, perfect receiver-side CSI, and uncoded transmission. Accordingly, all relay comparisons in the canonical study concern per-symbol processing and do not require sequence detection. Channel memory, intersymbol interference (ISI), pilot-based channel estimation, blind equalization, and sequence-detection techniques such as Viterbi MLSE are introduced only later in Chapter~\ref{sec:unknown-channels} as deliberate departures from the canonical assumptions in order to study robustness under model mismatch.
+\paragraph{Scope of the canonical system model.} The system model defined in this chapter serves as the canonical benchmark used throughout the core experiments of the thesis (Chapters~\ref{sec:experiments}--\ref{sec:extensions}). It assumes a memoryless two-hop relay channel with white noise, perfect receiver-side CSI, and uncoded transmission. Accordingly, all relay comparisons in the canonical study concern per-symbol processing and do not require sequence detection: the current observation $y_R[i]$ is already a sufficient statistic for detecting $x[i]$, and the classical AF and DF baselines operate per symbol. Some neural architectures nevertheless receive a finite window of neighboring observations (Section~\ref{sec:relay-strategies}); this is an architectural input convention for the evaluated feedforward and sequence models, and under the canonical i.i.d.\ assumptions it neither introduces channel memory nor supplies additional information about $x[i]$. Channel memory, intersymbol interference (ISI), pilot-based channel estimation, blind equalization, and sequence-detection techniques such as Viterbi MLSE are introduced only later in Chapter~\ref{sec:unknown-channels} as deliberate departures from the canonical assumptions in order to study robustness under model mismatch.
 
 \begin{figure}[H]
 \centering
@@ -52,7 +52,20 @@ with hard-decision demodulation \(\hat{b} = \mathbb{1}[\hat{x} < 0]\) at the des
 
 
 
-\subsection{Hop Model}\label{sec:hop-model}
+\subsection{Hop Model}\label{sec:hop-model}\label{sec:two-hop-relay-model}
+
+In the half-duplex two-hop model studied in this thesis, the relay cannot transmit and receive simultaneously, and there is no direct source--destination link. The communication proceeds in two time slots. On the canonical Rayleigh fast-fading channel each hop applies an i.i.d.\ complex fading coefficient followed by complex AWGN:
+
+\textbf{Slot 1 (Source $\to$ Relay), listening phase:} \begin{equation}\protect\phantomsection\label{eq:rayleigh-hop1}{y_R[i] = h_1[i]\,x[i] + n_1[i], \quad h_1[i] \sim \mathcal{CN}(0, 1), \quad n_1[i] \sim \mathcal{CN}(0, \sigma^2)
+}\end{equation}
+\addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad rayleigh-hop1}
+
+\textbf{Slot 2 (Relay $\to$ Destination), transmission phase:} \begin{equation}\protect\phantomsection\label{eq:rayleigh-hop2}{y_D[i] = h_2[i]\,x_R[i] + n_2[i], \quad h_2[i] \sim \mathcal{CN}(0, 1), \quad n_2[i] \sim \mathcal{CN}(0, \sigma^2)
+}\end{equation}
+\addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad rayleigh-hop2}
+
+where \(x[i]\) is the complex symbol transmitted by the source at time~$i$ (QPSK on this canonical channel; the real BPSK alphabet $\{-1,+1\}$ applies only to the AWGN calibration special case below), \(y_R[i]\) is the signal received at the relay, \(x_R[i]\) is the signal transmitted by the relay, and \(y_D[i]\) is the signal received at the destination. The relay output is written generally as \[ x_R[i] = f_\theta\!\left(\mathcal{Y}_{R,i}\right), \] where \(\mathcal{Y}_{R,i}\) denotes the observation supplied to the relay-processing function; for AF and symbol-wise DF, \(\mathcal{Y}_{R,i}=y_R[i]\).
+
 Each hop applies a channel function followed by optional equalization (Equation~\ref{eq:hop-model-selection}):
 
 \begin{equation}\protect\phantomsection\label{eq:hop-model-selection}{y = \mathcal{H}(x, \text{SNR}) + n}
@@ -63,6 +76,23 @@ Each hop applies a channel function followed by optional equalization (Equation~
 where \(\mathcal{H}(\cdot)\) denotes the canonical Rayleigh fast-fading channel operator (the AWGN special case is retained for analytical calibration of the simulator). The calligraphic symbol distinguishes the channel \emph{operator} from the scalar fading \emph{coefficient} \(h\) used throughout the rest of this thesis.
 
 \textbf{Both hops use the same channel.} \(\mathcal{H}(\cdot)\) is applied identically on Hop~1 and Hop~2 at the same SNR: a configuration never mixes channel families across hops. A configuration is therefore specified completely by the pair (constellation, channel), and it is that pair which names each experiment below.
+
+\textbf{Coherent compensation.} Because the fading coefficient is known at each receiver, coherent compensation ($y \cdot h^*/|h|$ followed by $\Re\{\cdot\}$) reduces each hop to an equivalent real channel with a random per-symbol effective gain $|h[i]|$,
+
+\begin{equation}\protect\phantomsection\label{eq:awgn-hop1}{\tilde{y}_R[i] = |h_1[i]|\,x[i] + \tilde{n}_1[i], \qquad \tilde{y}_D[i] = |h_2[i]|\,x_R[i] + \tilde{n}_2[i],
+}\end{equation}
+\addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad awgn-hop1}
+
+with $\tilde{n}[i] \sim \mathcal{N}(0, \sigma^2)$ real per axis. Because the channel is complex, the canonical constellation is two-dimensional: QPSK places one bit on each axis, so both dimensions the channel acts in are used and the relay processes the pair; the real reduction above then applies per axis rather than discarding one. BPSK, being one-dimensional, is used only on the real AWGN calibration channel of Section~\ref{sec:channel-model-validation-simulative}, where the closed forms it validates are defined; it is never transmitted over the complex fading channel, which would require discarding the quadrature component. The one constellation that breaks per-axis relay processing, 16-QAM, is treated separately in Chapter~\ref{sec:extensions}. The \emph{AWGN calibration limit} used to validate the simulator (Chapter~\ref{sec:literature-review}) is the special case $|h[i]| \equiv 1$, i.e.\ $y_R[i] = x[i] + n_1[i]$ and $y_D[i] = x_R[i] + n_2[i]$.
+
+The noise terms are independent and identically distributed with variance
+
+\begin{equation}\protect\phantomsection\label{eq:awgn-sigma2}
+\sigma^2 = \frac{P_s}{\gamma}
+\end{equation}
+\addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad awgn-sigma2}
+
+where \(P_s = \mathbb{E}[|x|^2]\) is the transmit symbol power (unit for every constellation studied, per the normalization of Section~\ref{sec:modulation}) and \(\gamma\) denotes the per-hop linear signal-to-noise ratio (SNR), equal on both hops.
 
 \subsection{Evaluated Configurations}\label{sec:evaluated-configurations}
 
@@ -107,6 +137,10 @@ On Hop 1 the relay's single receive antenna observes, as shown in Equation~\ref{
 
 where the effective observation follows coherent compensation of the Rayleigh fading coefficient (Section~\ref{sec:system-model-1}). Note that the per-symbol effective SNR is \(|h_1[i]|^2\gamma\) (a random, exponentially distributed quantity) not a constant; the AWGN calibration limit is recovered by setting \(|h_1[i]| \equiv 1\). The relay applies its processing function to a sliding window of received samples and transmits a cleaner estimate \(\hat{x}_R = f_\theta(\tilde{y}_{R,i-w:i+w})\); classical AF/DF use \(w=0\). This is purely a noise-removal task: in the canonical SISO setup there is no inter-stream interference at any stage, and the destination demodulates the Hop-2 output directly with no equalizer.
 \REV{Fix applied: Eq.~\ref{eq:relay-received-siso} previously showed a \emph{fixed} noise variance, i.e.\ the AWGN calibration case, although the canonical channel is Rayleigh with a random per-symbol effective SNR. It is rewritten in post-compensation form with $|h_1|^2\gamma$ stated. Separately, the channel \emph{operator} in Eq.~\ref{eq:hop-model-selection} was renamed $\mathcal{H}(\cdot)$ to stop colliding with the fading \emph{coefficient} $h$.}
+
+\begin{remark}[Realizability of the symmetric window]\label{rem:window-causality}
+The canonical relay of this chapter is memoryless: on a memoryless channel $y_R[i]$ is already a sufficient statistic for $x[i]$, so $w=0$, and AF and symbol-wise DF are strictly causal. A relay with a symmetric window $y_R[i-w:i+w]$, $w>0$, is \emph{not} part of this system model. It is introduced in Chapter~\ref{sec:unknown-channels} together with the channel that motivates it, a three-tap intersymbol-interference filter, and is defined there. Where that window is used it is not causal, since it reads $w$ samples ahead; it is admissible in the half-duplex protocol only because the relay buffers the whole listening-phase block before transmitting, and it costs a fixed $w$-symbol processing latency. That non-causality is a limitation of the learned relays, recorded as such rather than justified: a strictly causal past-only window $y_R[i-2w:i]$ is what a streaming deployment would require, and it is not evaluated in this thesis.
+\end{remark}
 
 
 \section{Relay Strategies}\label{sec:relay-strategies}
@@ -184,6 +218,12 @@ Training uses MSE loss with multi-SNR training data (i.e., 5, 10, and 15 dB), 25
   \emph{Design rationale:} The chunk size of 8 is chosen to balance parallelism (larger chunks = fewer sequential inter-chunk passes) against memory cost (the \(L \times L\) SSM matrix scales quadratically with chunk size). At the 11-symbol window, this yields 2 chunks (8 + 3), with a single inter-chunk state pass. Gradient clipping at norm 1.0 prevents the exponential blowup of gradients through the cumulative matrix products in the SSD computation. The S4D-style initialization \(A_{\text{log}} = \log(1, 2, \dots, N)\) provides geometrically spaced decay rates, enabling the model to simultaneously capture short-range and medium-range dependencies.
 
 \end{enumerate}
+
+\begin{remark}[Terminology: symbol-wise DF vs.\ information-theoretic DF]\label{rem:df-terminology}
+The term ``decode-and-forward'' is used in two distinct senses in the literature, and the distinction matters for interpreting the results of this thesis. In its \emph{information-theoretic} sense \cite{CoverGamal1979RelayChannel,ElGamalKim2011NetworkIT}, DF is a \emph{block} strategy: the source protects each message block with a strong (ideally capacity-achieving) channel code, the relay decodes the entire block, and only then re-encodes and forwards the recovered message. This block-DF is inherently \emph{not} memoryless and, over a single link, can operate reliably at any rate below the first-hop capacity.
+
+The system studied in this thesis is \emph{uncoded}: one QPSK symbol carries two information bits, one per axis, and no outer error-correction code is applied. Consequently, the ``DF'' baseline throughout this work refers to \emph{symbol-wise slicing}: per-symbol demodulation followed by re-modulation, i.e., $f_{\text{DF}}(y_R[i]) = \operatorname{sign}(y_R[i])$ with $w=0$. This is the appropriate classical counterpart to the learned relays under the uncoded BER metric used here, but it is strictly weaker than block-DF with coding; the reported DF results should not be read as bounds on coded block-DF performance. This caveat is measured directly, not left as a standing assumption: Section~\ref{sec:coded-block-df} adds a real information-theoretic block-DF baseline (a rate-1/2 convolutional code with soft-decision Viterbi decoding, swept over constraint length and both canonical constellations) and reports where it does and does not beat the symbol-wise DF used elsewhere in this thesis.
+\end{remark}
 
 \section{Simulation Framework}\label{sec:simulation-framework}
 

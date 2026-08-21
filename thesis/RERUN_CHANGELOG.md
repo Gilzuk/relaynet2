@@ -683,3 +683,40 @@ strengthen claims already in the abstract rather than adding new ones.
 Verified: 458 cells / 0 inconsistencies (unchanged), 159 tests, cold
 rebuild 158 pages (unchanged) / 0 undefined refs, Hebrew renders cleanly
 (checked via direct page extraction). Bundles rebuilt.
+
+## Resolve the outstanding system-model duplication comment
+
+AK's comment on the system model being stated in both Ch.1 and Ch.4 --
+"either give it its own chapter, or state it once in Ch.4" -- was still
+open (not yet in Appendix E's log; this was a later comment). Resolved by
+the second option, consolidating into Chapter 4:
+
+- Ch.1 Section 1.1 (System Model) is now a short pointer paragraph: keeps
+  the motivating "canonical setup" narrative (why this configuration,
+  preview of extensions) but no equations. The "Scope of the canonical
+  model" paragraph and the entire "Two-Hop Relay Model" subsection --
+  both hop equations, the coherent-compensation reduction, the noise
+  variance, and both Remarks (window-causality, DF-terminology) -- moved
+  to Ch.4.
+- Ch.4 Section 4.1 (System Model) now states the complete model once:
+  its existing "Hop Model" subsection gained the concrete per-symbol
+  Rayleigh equations (previously only in Ch.1) ahead of its existing
+  abstract H(.) operator notation, plus the coherent-compensation
+  reduction and noise-variance equation; its "Relay Processing"
+  subsection gained Remark (window-causality) right where the window w
+  is defined; its "Relay Strategies" section gained Remark
+  (DF-terminology) right after DF is introduced. The existing
+  Eq. eq:relay-received-siso (which Appendix F's finding #9 specifically
+  discusses) was left untouched to avoid disturbing that already-resolved
+  finding.
+- All labels carried over unchanged (labels are document-global), so no
+  cross-reference elsewhere in the thesis needed updating -- including
+  Ch.8's existing reference to the "Two-Hop Relay Model" section, which
+  now resolves to its new home in Ch.4 via a second \label on the same
+  subsection.
+- Added as comment #33 in Appendix E (a later comment, not part of the
+  original 32).
+
+Verified: 0 undefined refs, 0 duplicate-label warnings, 159 tests,
+verify_thesis_tables clean (no numeric tables touched), cold rebuild 158
+pages (unchanged -- content moved, not added). Bundles rebuilt.
