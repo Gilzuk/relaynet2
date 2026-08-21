@@ -73,7 +73,7 @@ DF & 0.03748 & n/a & n/a \\
 \centering
 \centering
 \pandocbounded{\includegraphics[width=\linewidth,height=\textheight,keepaspectratio]{results/all_relays_16class/ber_16class_ci.png}}
-\caption[16-QAM BER vs]{16-QAM BER vs.~SNR for all relay variants (4-class and 16-class) on AWGN. The 4-class variants (dashed) plateau at BER $\approx 0.008$ while the successfully trained 16-class variants (solid) continue decreasing, approaching and matching the DF baseline.}\label{fig:fig50}
+\caption[16-QAM BER vs.\ SNR, 4-class against 16-class]{16-QAM BER vs.~SNR for all relay variants (4-class per-axis, dashed; joint 16-class 2D, solid) on the canonical Rayleigh channel, from the same results file as Table~\ref{tbl:table24}. The two formulations are indistinguishable below about 14~dB and separate only in the inset region: by 20~dB the 16-class variants reach $0.0376$--$0.0393$, matching symbol-wise DF's $0.03748$, while the 4-class variants stall around $0.054$. Mamba-2 SSD is the exception noted in Table~\ref{tbl:table24}, reaching only $0.0495$. The gap is a fixed offset in the high-SNR region rather than an error floor: every curve is still descending at the top of the swept range.}\label{fig:fig50}
 \end{figure}
 
 \begin{figure}[H]

@@ -837,3 +837,86 @@ byte-for-byte identical and the file now parses under a strict
 Verified: 458 cells / 0 inconsistencies (Table 43 re-checked against the
 regenerated JSON), 159 tests, cold rebuild 0 errors / 0 undefined refs,
 150 pages. Bundles rebuilt.
+
+## Second independent review round ("still not ready for submission")
+
+Five blocking items, four "major" items, and a set of presentation items.
+Verified each against the source before acting.
+
+**Blocking items -- all confirmed real, all fixed.**
+
+1. *Obsolete canonical BER numbers in Ch.8.* Section 8.1.1 quoted
+   MLP/cGAN/Hybrid $\approx$0.247 against DF 0.245, and Transformer/Mamba
+   0.317--0.325. None of these appear in the canonical dataset, which reads
+   (0 dB) AF 0.4076, DF 0.3337, MLP 0.3349, Hybrid 0.3329, VAE 0.3359,
+   Transformer 0.4014, Mamba-S6 0.4071, Mamba-2 0.4032. The stale figures
+   predate the SNR-convention correction; the paragraph also named the cGAN,
+   which is excluded, and called the VAE "worse still" when it is in fact in
+   the leading group. Rewritten from Table 2's 0 dB row. The qualitative
+   claim (minimal feedforward relays capture the AF advantage, sequence
+   models do not) survives and is in fact strengthened: the sequence models
+   sit essentially at AF's level.
+
+2. *Figure 50 captioned "on AWGN" in a Rayleigh chapter.* The figure is
+   Rayleigh, not AWGN: its DF value at 20 dB is 0.03748, identical to
+   Table 24's canonical-Rayleigh DF, and the decay is far too slow for AWGN.
+   So neither of the reviewer's proposed remedies (regenerate, or delete)
+   was right -- the data is correct and only the caption was stale. Caption
+   rewritten. It also claimed the 4-class variants "plateau at BER 0.008";
+   they reach 0.054 and are still descending, so that was corrected too, as
+   was a truncated short caption ("16-QAM BER vs").
+
+3. *Viterbi/BPSK claim technically wrong.* "For BPSK, each trellis branch
+   carries exactly one bit, so sequence-optimal and bit-optimal detection
+   coincide" is false: MLSE and bit-MAP are distinct criteria on any channel
+   with memory, independent of bits per branch. Corrected in Ch.7 and in the
+   Ch.8 future-work item that repeated it; the QPSK reversal is now reported
+   as a measurement with the criterion mismatch named as an unevaluated
+   candidate explanation pending the BCJR/APP run.
+
+4. *H3 overstated.* Downgraded from "Confirmed" to "Partially supported"
+   in the outcome table, the section heading, Ch.3, Ch.5 and Ch.9. The
+   claim carried forward is the measured one -- larger evaluated models did
+   not improve BER under the training protocol used. Stronger finding than
+   the reviewer reported: the 11,201-parameter "Maximum MLP" said to show
+   "clear overfitting" does not exist in any results file or in the
+   experiments chapter, so that claim was withdrawn rather than softened.
+   The bias-variance subsection is now explicitly framed as an
+   interpretation, not a measurement.
+
+5. *H4 overstated.* Renamed to an equal-parameter-budget comparison in
+   Ch.3, Ch.4, Table 8's caption and the Ch.8 outcome table. Table 28 shows
+   the budget was met by changing width, depth, state dimension and window
+   size together -- MLP-3K sees an 11-sample window against its canonical 5,
+   so the models are not even given the same input context. The comparison
+   controls capacity, not architecture.
+
+**Major items -- all confirmed, all fixed.**
+
+6. Causal-window contradiction reconciled: Remark 4.1 asserted a $w>0$
+   window "is not part of this system model" while the canonical MLP uses
+   $w=2$. Rewritten to state that learned relays use a redundant, non-causal
+   window everywhere as a fixed architectural input convention, that it is
+   redundant under the canonical assumptions, and that the look-ahead cost is
+   therefore only real in Ch.7.
+7. Complexity claim corrected: per-symbol cost is fixed for a *deployed*
+   architecture but the window grows with $L$ and the output head with $M$,
+   so the contrast with MLSE is linear-vs-exponential growth, not constant-
+   vs-growing. Fixed at all four sites.
+8. Hybrid recommendation conditioned on a usable operating-SNR estimate,
+   noting the threshold is fixed at the measured crossover and its
+   robustness to estimation error was never evaluated.
+9. Added the requested single-link caveat to Table 42's capacity column.
+
+**Presentation items -- one real, the rest not reproducible.**
+
+"high SNemerged" (real, fixed) and "(H2).." (real, fixed). But
+"AComparative Study", "SystemModel", "AConstraint-Length" and "AComposite"
+are **not** defects: the source reads "A Comparative Study", "System Model"
+and "A Constraint-Length Sweep", and pdftotext extracts all of them with
+correct spacing. These are artifacts of the reviewer's PDF extractor
+dropping spaces at kerning boundaries. Adding spaces would have introduced
+real errors, so no change was made.
+
+Verified: 458 cells / 0 inconsistencies, 159 tests, cold rebuild 0 errors /
+0 undefined refs, 151 pages. Bundles rebuilt.

@@ -6,13 +6,13 @@ The entire study is carried out on one canonical setup, fixed in advance and nev
 \REV{``two-hop cooperative communication'' \(\to\) ``two-hop relay communication'', consistent with the Introduction and Abstract: the studied system has no direct source--destination link, so ``cooperative'' (which conventionally implies a direct path combined with the relayed path) is replaced by ``relay''.}
 \begin{enumerate}
     \item Neural relays yield a consistent performance improvement over amplify-and-forward (AF) at low signal-to-noise ratio (SNR), where their learned soft denoising avoids AF's noise amplification (H1).
-    \item Classical \textit{decode-and-forward (DF)} matched or outperformed all neural approaches at \textbf{medium-to-high SNR} while requiring no trainable parameters, confirming that DF attains the lowest per-symbol BER in this regime (H2)..
+    \item Classical \textit{decode-and-forward (DF)} matched or outperformed all neural approaches at \textbf{medium-to-high SNR} while requiring no trainable parameters, confirming that DF attains the lowest per-symbol BER in this regime (H2).
     \item A systematic complexity analysis demonstrated that performance \textbf{does not improve monotonically with model size} (H3).
-    \item A \textbf{minimal neural relay} (169 parameters) achieved performance comparable to significantly larger models, while intermediate-sized networks exhibited overfitting.
+    \item A \textbf{minimal neural relay} (169 parameters) achieved performance comparable to significantly larger models; no larger model evaluated here improved on it, though the protocol used (one training run per model, no train/test-gap measurement) cannot attribute that to overfitting.
     \item When neural relays were evaluated under equal parameter budgets, architectural differences largely vanished, indicating that \textbf{model capacity}, rather than architectural class, dominates performance for this task (H4).
 
     \item Sequence-based neural relays such as structured state-space models achieved comparable error performance with improved training efficiency (H5).
-    \item From a deployment perspective, a \texttt{hybrid relay} combining neural processing at low SNR with DF at high SNemerged as the \textbf{recommended default}, achieving near-optimal performance across the SNR range with minimal overhead
+    \item From a deployment perspective, a \texttt{hybrid relay} combining neural processing at low SNR with DF at high SNR emerged as the \textbf{recommended default where the operating SNR can be estimated reliably}, achieving near-optimal performance across the SNR range with minimal overhead; the robustness of its switching threshold to SNR-estimation error was not evaluated
 \end{enumerate}    
     The first seven findings concern the canonical memoryless relay model; the remaining findings summarize the deliberate model-mismatch extension of Chapter~\ref{sec:unknown-channels}.
 \begin{enumerate}
