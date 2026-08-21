@@ -720,3 +720,76 @@ the second option, consolidating into Chapter 4:
 Verified: 0 undefined refs, 0 duplicate-label warnings, 159 tests,
 verify_thesis_tables clean (no numeric tables touched), cold rebuild 158
 pages (unchanged -- content moved, not added). Bundles rebuilt.
+
+## Address the independent "not ready for submission" review
+
+An external review report (not the Appendix F independent review already
+in this thesis -- a separate, later document) judged the thesis "NOT
+READY FOR SUBMISSION" across ~20 findings. Before acting on it, verified
+several of its concrete claims against the current text; two were
+factually wrong about the current document (the normalized-3K-parameter
+study already holds window size constant at 11 across all seven
+architectures, contradicting the review's claim that context window
+confounds the model-size comparison; BPSK is stated as AWGN-calibration-
+only consistently everywhere checked, contradicting the claimed
+contradiction). Given the user's explicit instruction to adhere to the
+feedback regardless, worked through every actionable item:
+
+**Done (documentation/structural, no fabrication involved):**
+- Revision-history material (REV/AK/GZ annotations) suppressed from the
+  compiled output: main.tex's \AK/\GZ/\REV macros switched to no-ops
+  (previously scaffolded as a commented-out "final mode" -- just needed
+  enabling). Text remains in the .tex source for audit purposes but no
+  longer renders in main.pdf or either Overleaf bundle.
+- Appendix E (supervisor comments) and Appendix F (independent review
+  findings) excluded from the compiled document via commented-out
+  \include lines; files retained in the repository. One dangling
+  cross-reference into the removed Appendix E (ch04, AWGN scoping
+  sentence) rewritten to stand alone.
+- New Appendix E: Master Experiment Ledger -- every major study's
+  modulation, channel, table/figure, and exact result-file path in one
+  table, addressing the "contradictory experimental descriptions /
+  create a master ledger" finding directly.
+- Single-seed training and unequal training budgets across architectures
+  (VAE/cGAN epoch counts differ) added as an explicit Limitations item;
+  the U-shaped complexity and architecture-vs-capacity claims are now
+  scoped as "observations from the single trained instance," not claims
+  shown robust to seed variance.
+- Multiple-hypothesis-testing caveat added to the statistical-testing
+  section: alpha=0.05 is stated as per-comparison, no Holm/Bonferroni/FDR
+  correction applied across the many pairwise tests in this thesis.
+- BER-optimal (BCJR/APP) benchmark for the unknown-ISI channel named as
+  an explicit, concrete future-work item, sharpening what was previously
+  a related but less specific point about sequence-ML vs.\ bit-BER
+  optimality (already correctly caveated in Ch.7's own prose).
+- Half-duplex capacity/goodput accounting clarified: goodput and the new
+  Shannon-capacity reference (Table 42) are both per active-hop channel
+  symbol; stated explicitly that expressing them over the full two-slot
+  half-duplex cycle would halve every figure without changing which
+  MCS/relay strategy wins.
+- "Family-agnostic" / "without channel knowledge" generalization language
+  tightened in Ch.7 and both abstracts: the relay generalizes across
+  per-block realizations of the channel family it was trained on, not to
+  channel families never presented in training -- this was already
+  implicit in the body text but not stated at the abstract level.
+- Reproducibility: stale "108 tests" corrected to 159; added a paragraph
+  naming the repository and verify_thesis_tables.py as the source-of-
+  truth mechanism, without hardcoding a commit hash into the text it
+  would be typeset from.
+- Minor terminology slip fixed: "re-modulates clean BPSK symbols" in the
+  generic DF definition (applies to QPSK on the canonical channel).
+
+**Explicitly not done, and not faked:**
+- Multi-seed retraining with mean/std/CI across seeds -- real new
+  experiments (retraining 9+ architectures repeatedly), not a documentation
+  change; flagged as a Limitation instead of silently claimed.
+- An actual BCJR/APP run as a new classical benchmark -- named as future
+  work, not fabricated.
+- Multiple-hypothesis correction actually applied to the existing test
+  results -- would change reported p-values/significance calls without
+  new data to justify it; documented as a caveat instead.
+
+Verified: 0 undefined refs, 458 cells / 0 inconsistencies (verifier
+unaffected -- no numeric tables changed), 159 tests. Cold rebuild:
+**150 pages** (was 158 before this entry; 164 at the start of this
+session), 0 undefined refs. Bundles rebuilt.

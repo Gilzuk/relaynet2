@@ -117,7 +117,7 @@ QPSK (complex) & Rayleigh (complex) & Canonical & The complex case, and the oper
 16-QAM (complex) & Rayleigh (complex) & Extension & The same complex channel, driven to four levels per axis, which breaks the per-axis relay formulation. That break is what Chapter~\ref{sec:extensions} studies, and it is studied on the canonical channel. \\
 \end{longtable}
 
-The same principle also keeps AWGN in its place. It is retained as a measuring stick and needs only the one constellation whose closed form is being checked; evaluating relays on AWGN at higher orders would invite conclusions from a channel the thesis deliberately draws none from (Appendix~\ref{sec:appendix-response-to-comments}).
+The same principle also keeps AWGN in its place. It is retained as a measuring stick and needs only the one constellation whose closed form is being checked; evaluating relays on AWGN at higher orders would invite conclusions from a channel the thesis deliberately draws none from.
 
 \textbf{A consequence worth stating plainly.} The SNR argument sets the noise power from the average \emph{symbol} energy, so it denotes \(E_s/N_0\) in every configuration. Since \(E_b = E_s/k\), the same numerical SNR corresponds to a different per-bit energy in each row of Table~\ref{tbl:configurations}: \(E_b/N_0\) equals the stated value for BPSK, is \(3.01\)~dB lower for QPSK and \(6.02\)~dB lower for 16-QAM. The three configurations are therefore \emph{not} on a common abscissa, and BER values must not be read across them without that conversion. Where a comparison across constellations is made, this is stated explicitly at the point of use.
 
@@ -167,7 +167,7 @@ The selected nine relay strategies are drawn from four distinct architectural co
 
 \begin{enumerate}
 \item \textbf{Classical AF:} Gain amplification as shown in Equation~\ref{eq:af-gain}. AF serves as the minimal-processing classical baseline. It performs no learned processing and simply rescales the received signal, preserving both signal and noise. Its end-to-end effective SNR is given in Equation~\ref{eq:af-snr}.
-\item \textbf{Classical DF:} Demodulates, recovers bits, and re-modulates clean BPSK symbols. DF serves as the maximal-processing classical baseline. It performs full signal regeneration through symbol-wise demodulation and re-modulation. On the canonical matched channel and in the uncoded setting studied here, DF achieves the lowest BER among the classical baselines at medium-to-high SNR (see Remark~\ref{rem:df-terminology}). Its theoretical BER follows the error-composition formula of Equation~\ref{eq:df-ber-hops}.
+\item \textbf{Classical DF:} Demodulates, recovers bits, and re-modulates clean symbols (BPSK on the AWGN calibration channel; QPSK on the canonical channel; per-axis on 16-QAM). DF serves as the maximal-processing classical baseline. It performs full signal regeneration through symbol-wise demodulation and re-modulation. On the canonical matched channel and in the uncoded setting studied here, DF achieves the lowest BER among the classical baselines at medium-to-high SNR (see Remark~\ref{rem:df-terminology}). Its theoretical BER follows the error-composition formula of Equation~\ref{eq:df-ber-hops}.
 
 \item \textbf{Supervised MLP (Minimal):} A two-layer feedforward neural network (multilayer perceptron, MLP) with 169 parameters following the relay architecture defined in Equation~\ref{eq:mlp-relay},
 
@@ -275,7 +275,7 @@ Differences between relay methods are assessed using the \textbf{Wilcoxon signed
 }\end{equation}
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad wilcoxon-test}
 
-The Wilcoxon test is preferred over the parametric paired \(t\)-test for two reasons: (i) BER distributions are bounded (\([0, 0.5]\)) and potentially skewed, violating the normality assumption, and (ii) the test is robust to outlier trials. The significance level is set at \(\alpha = 0.05\).
+The Wilcoxon test is preferred over the parametric paired \(t\)-test for two reasons: (i) BER distributions are bounded (\([0, 0.5]\)) and potentially skewed, violating the normality assumption, and (ii) the test is robust to outlier trials. The significance level is set at \(\alpha = 0.05\) \emph{per comparison}; no multiple-comparison correction (e.g.\ Holm or Bonferroni, or false-discovery-rate control) is applied across the many relay-pair and SNR-point comparisons made throughout this thesis, so the reported significance claims should be read at the per-comparison level rather than as holding jointly across the full set of tests performed.
 
 \subsection{Training Protocol}\label{sec:training-protocol}
 
@@ -297,7 +297,9 @@ All experiments use controlled random seeds at both the source (bit generation) 
 
 A \textbf{weight checkpoint system} saves trained model parameters to disk after training completes, enabling experiment resumption without retraining. This is particularly important for the cGAN (2-hour training time) and sequence models (24--37 minutes). The checkpoint system supports: - Automatic save after training with architecture metadata - Resume from saved weights with architecture validation - Seed-specific weight directories (e.g., \texttt{trained\_weights/seed\_42/})
 
-The framework includes 108 automated tests (pytest) covering all modules: channels, modulation, relay strategies, simulation, statistics, and weight management, with 100\% pass rate.
+The framework includes 159 automated tests (pytest) covering all modules: channels, modulation, coding, relay strategies, simulation, statistics, and weight management, with 100\% pass rate.
+
+\textbf{Code and reproducibility archive.} The complete simulation framework (\texttt{relaynet}), every experiment script, and the committed result files each figure and table is generated from are maintained under version control (git) in the \texttt{Gilzuk/relaynet2} repository; each numerical claim in this thesis traces to a specific committed script and result file rather than to an unarchived intermediate run, and \texttt{verify\_thesis\_tables.py} in that repository re-derives every numerical table from its source file and flags any mismatch. The exact commit this thesis was typeset from is recorded in the repository's history rather than reproduced here, since stating a fixed hash in the text it describes is self-referential; the repository's tags and commit log identify the revision corresponding to any given PDF build.
 
 \section{Normalized Parameter Comparison}\label{sec:normalized-parameter-comparison}
 

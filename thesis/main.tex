@@ -255,13 +255,15 @@
 % \counterwithout{footnote}{chapter}
 
 %-------------------------------------
-% reviewer mode :comment the two lines below for reviewing the thesis
-\newcommand{\AK}[1]{{\color{blue} \textbf{AK:} #1}}
-\newcommand{\GZ}[1]{{\color{red!70!black} \textbf{GZ:} #1}}
-\newcommand{\REV}[1]{{\color{teal!70!black} \footnote{\textbf{} #1}}}
-% Final mode: comment the two lines above and use: 
-% \newcommand{\AK}[1]{} 
-% \newcommand{\REV}[1]{}
+% Final submission mode: revision-history annotations (AK/GZ/REV) are
+% suppressed from the compiled output. Re-enable the block below (and
+% comment out the no-op definitions) to see them again while editing.
+% \newcommand{\AK}[1]{{\color{blue} \textbf{AK:} #1}}
+% \newcommand{\GZ}[1]{{\color{red!70!black} \textbf{GZ:} #1}}
+% \newcommand{\REV}[1]{{\color{teal!70!black} \footnote{\textbf{} #1}}}
+\newcommand{\AK}[1]{}
+\newcommand{\GZ}[1]{}
+\newcommand{\REV}[1]{}
 
 \newenvironment{revblock}%
   {\par\medskip\begingroup\color{teal!70!black}\noindent\textbf{REV (reviewer):}\space\ignorespaces}%
@@ -399,8 +401,12 @@ under the supervision of Dr. Anatoly Khina and Prof. Raja Giryes\\
 % \include{chapters/references}
 \bibliography{chapters/references.bib}
 \include{chapters/appendices}
-\include{chapters/ak_response_appendix}
-\include{chapters/appendix_f_review}
+% Review-response appendices (supervisor-comment log, independent review
+% findings) are retained in the repository for the audit trail but
+% excluded from the final submitted manuscript, which should read as a
+% clean scholarly record rather than carry its own revision history.
+% \include{chapters/ak_response_appendix}
+% \include{chapters/appendix_f_review}
 
 %% ── Title Page ───────────────────────────────────────────────
 \begin{titlepage}
