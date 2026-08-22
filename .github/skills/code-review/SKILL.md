@@ -57,16 +57,22 @@ them. Three cases, and conflating them is itself worth flagging:
   column with `\raggedright`. Long unbreakable `\texttt{}` paths overflow too —
   `\url{}` breaks at `/` and `_`.
 - Anything that would change the thesis page count. The cap is 120, set by the
-  author, and the document currently sits exactly at it — so a change that adds
-  a page is a finding. Note that older entries in `thesis/CHANGELOG.md` and
-  `memory-bank/activeContext.md` record builds at 146 and 149 pages; those
-  predate the 151→120 reduction and are not the current baseline.
+  author. Check the count against an actual build rather than against any
+  figure quoted in the repository: `thesis/CHANGELOG.md`, `memory-bank/
+  progress.md` and `memory-bank/activeContext.md` all record earlier builds at
+  146 and 149 pages, from before the 151→120 reduction.
 
 ## Conventions that are load-bearing
 
-- **SNR convention:** `γ = 10^(SNR_dB/10)`, and the SNR axis denotes `E_s/N_0`
-  throughout. QPSK carries 2 bits/symbol, so `E_b/N_0` is 3.01 dB below the
-  stated value. Mixing the two silently invalidates every comparison.
+- **SNR convention:** `γ = 10^(SNR_dB/10)`. The `snr_db` argument sets noise
+  power from the average *symbol* energy, so it is `E_s/N_0`. For BPSK (`k=1`)
+  that is numerically identical to `E_b/N_0`, which is how
+  `tests/test_snr_convention.py` states the convention and why the BPSK closed
+  forms match directly. For QPSK (`k=2`), `E_b/N_0` is 3.01 dB below the stated
+  value, and the thesis applies that conversion explicitly wherever a measured
+  QPSK BER is compared against a closed form. These are the same convention
+  seen at different `k`, not two conventions — but mixing the axes when
+  comparing across constellations silently invalidates the comparison.
 - **Relay interface:** relays expose `.process(received_signal)`; channels are
   callables `channel(signal, snr_db)`. New components should follow these
   rather than inventing conventions.
@@ -111,9 +117,13 @@ review rounds without improving the thesis.
 - **The cGAN is implemented but excluded from every reported comparison**, on
   cost grounds. It is described in the methods chapter; it has no results
   column anywhere.
-- **`main` is the authoritative branch.** `.clinerules/90-safety.md` still
-  names `clean-thesis` in its "Git Safety" section; that branch is stalled and
-  `main` contains everything it has. See `memory-bank/activeContext.md`.
+- **`main` is the authoritative branch.** Two places still say otherwise and
+  neither is current: `.clinerules/90-safety.md` names `clean-thesis` in its
+  "Git Safety" section, and older entries in `memory-bank/activeContext.md`
+  call `clean-thesis` "the actual authoritative thesis branch". That branch
+  has been stalled since 2026-07-18 and `main` contains everything it has. The
+  current-state header at the top of `activeContext.md` is authoritative over
+  both.
 
 ## Low value here
 
