@@ -35,7 +35,7 @@ The system under study is a two-hop relay network with a single relay node. All 
 \end{figure}
 
 
-Source bits are QPSK-modulated on the canonical setup, passed through Hop 1 (SISO Rayleigh), processed by the relay (classical or neural), transmitted over Hop 2 (SISO Rayleigh), and demodulated at the destination; no equalization is involved. The same chain carries BPSK in Chapter~\ref{sec:unknown-channels}'s unknown-channel study, with only the modulator and demodulator changing. Both hop channels are known perfectly at their respective receivers, per the conventions of Chapter~\ref{sec:introduction}.
+Source bits are QPSK-modulated on the canonical setup, passed through Hop 1 (SISO Rayleigh), processed by the relay (classical or neural), transmitted over Hop 2 (SISO Rayleigh), and demodulated at the destination; no equalization is involved. The same chain carries BPSK in the unknown-channel experiments of Chapter~\ref{sec:unknown-channels}, with only the modulator and demodulator changing. Both hop channels are known perfectly at their respective receivers, per the conventions of Chapter~\ref{sec:introduction}.
 
 \begin{equation}\protect\phantomsection\label{eq:two-hop-system}{\text{Source} \xrightarrow{\text{Hop 1}} \text{Relay} \xrightarrow{\text{Hop 2}} \text{Destination}
 }\end{equation}
@@ -64,7 +64,7 @@ In the half-duplex two-hop model studied in this thesis, the relay cannot transm
 }\end{equation}
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad rayleigh-hop2}
 
-where \(x[i]\) is the complex symbol transmitted by the source at time~$i$ (QPSK on this canonical channel; the real BPSK alphabet $\{-1,+1\}$ applies only to the AWGN special case below), \(y_R[i]\) is the signal received at the relay, \(x_R[i]\) is the signal transmitted by the relay, and \(y_D[i]\) is the signal received at the destination. The relay output is written generally as \[ x_R[i] = f_\theta\!\left(\mathcal{Y}_{R,i}\right), \] where \(\mathcal{Y}_{R,i}\) denotes the observation supplied to the relay-processing function; for AF and symbol-wise DF, \(\mathcal{Y}_{R,i}=y_R[i]\).
+where \(x[i]\) is the complex symbol transmitted by the source at time~$i$ (QPSK on this canonical channel; the real BPSK alphabet $\{-1,+1\}$ never rides this complex channel, and is used in the real AWGN special case below and in the Chapter~\ref{sec:unknown-channels} experiments), \(y_R[i]\) is the signal received at the relay, \(x_R[i]\) is the signal transmitted by the relay, and \(y_D[i]\) is the signal received at the destination. The relay output is written generally as \[ x_R[i] = f_\theta\!\left(\mathcal{Y}_{R,i}\right), \] where \(\mathcal{Y}_{R,i}\) denotes the observation supplied to the relay-processing function; for AF and symbol-wise DF, \(\mathcal{Y}_{R,i}=y_R[i]\).
 
 Each hop applies a channel function followed by optional equalization (Equation~\ref{eq:hop-model-selection}):
 
