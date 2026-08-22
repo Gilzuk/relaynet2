@@ -1,6 +1,75 @@
 # Active Context (update this file first, every session)
 
-_Last updated: 2026-08-17_
+_Last updated: 2026-08-22_
+
+## CURRENT STATE: merged to main; thesis at 120 pages
+
+PR #15 (`claude/porting-md-file-l6xzsr` -> `main`) merged 2026-08-22. **`main`
+is the base and the source of truth from here**; branch off it for new work and
+merge back through a pull request. Do not commit to `main` directly -- see the
+workflow note below. The old feature branch is fully contained in `main` and can
+be deleted.
+
+**Conflict you will hit, and how it resolves.** The "Git Safety" section of
+`.clinerules/90-safety.md` still reads "Always push to `clean-thesis` branch
+only." Do not follow it for new work. That instruction is superseded by fact,
+not by preference. As of this note (2026-08-22) `clean-thesis` had not moved
+since 2026-07-18, contained no commit `main` lacked, and `main` was 128
+commits ahead of it. Those counts drift; re-derive them with
+`git rev-list --count origin/clean-thesis..origin/main` and its reverse rather
+than trusting the numbers here. What does not drift is the direction: every
+`chapters/**` change through the 120-page reduction is on `main` and none of it
+is on `clean-thesis`, so pushing thesis edits there would fork the thesis onto
+a dead branch. The rule text was deliberately left in place by the repository
+owner, who confirmed `clean-thesis` is a stalled branch; it is recorded here as superseded rather
+than edited there. If the owner ever revives `clean-thesis`, this note is what
+needs revisiting first.
+
+**Workflow in force (owner instruction, 2026-08-22).** Every fix goes on a
+branch and returns through a pull request with a Copilot review requested; when
+the review posts, its findings are verified against the source, the real ones
+fixed, and the cycle repeats until the review is clean. Nothing is pushed
+straight to `main`.
+
+What landed after 2026-08-19, in order:
+
+1. **Theoretical-bounds verification.** DF-theory and single-hop-floor overlays
+   added to Fig. 10 and Table 2; ergodic Rayleigh (Shannon) capacity column
+   added to Table 42. `verify_thesis_tables.py` extended to check both.
+2. **Two rounds of independent review addressed.** Round 1: revision
+   annotations suppressed, master experiment ledger appendix, Limitations for
+   single-seed training and unequal training budgets, multiple-hypothesis
+   caveat, generalization language tightened. Round 2 (five blocking items):
+   stale canonical BERs in Ch.8 replaced from Table 2's 0 dB row; a figure
+   captioned AWGN in a Rayleigh chapter corrected; the false "sequence- and
+   bit-optimal detection coincide for BPSK" claim fixed in both places;
+   **H3 downgraded to Partially supported** and the 11,201-parameter
+   "overfitting" claim withdrawn (that model exists in no results file);
+   **H4 renamed to an equal-parameter-budget comparison**.
+3. **Copilot review.** Three findings, all real: a tail double-count in
+   `coded_latency_capacity.py` (frame lengths 1-2 symbols long; no MCS
+   selection flipped), `NaN` in a results JSON, a sentence fragment in Ch.2.
+   A second pass added two more, fixed here.
+4. **Scope reduction to 120 pages (from 151).** Removed: the 16-QAM extension
+   chapter, the Mamba-S6 study (**H5 dropped -- the thesis now poses H1-H4
+   plus H6**), the AWGN calibration study, the per-architecture runtime table,
+   the constraint-length sweep table (finding kept as a paragraph), and
+   figures that only re-plotted an adjacent table. 16-QAM survives *only* as
+   an MCS rung in the link-adaptation study, with a scope note saying so.
+   Mamba-S6 survives as a data point in the canonical comparison, since
+   dropping one architecture's measured result while keeping its peers would
+   be selective reporting.
+
+Standing verification gates, all green at the merge: `verify_thesis_tables.py`
+389 cells / 0 inconsistencies, 159 tests, cold XeLaTeX rebuild 0 errors /
+0 undefined refs / 0 bidi errors, 120 pages.
+
+**Outstanding follow-ups.** The Hebrew abstract is machine-produced and needs a
+native speaker. Supervisors last saw a six-hypothesis draft, so H5's removal
+needs flagging to them. Note that the "thesis submitted" decision recorded
+further down refers to an *earlier* version; whether this 120-page revision has
+been submitted has not been stated, so neither assume it has nor that it has
+not.
 
 ## DECISION IN FORCE: the cGAN stays out of the results
 
@@ -22,7 +91,18 @@ Removed: `tbl:table2awgn` + its 2 paragraphs, `fig:fig10awgn`. `results/awgn_com
 `check_table2awgn` deleted from `verify_thesis_tables.py` (source map + registry + function). **Verifier now 327 cells / 0 inconsistencies** (was 352; the 25 are the companion's). Cold build: exit 0, **146 pp**, 0 undefined refs.
 **Build gotcha reconfirmed:** deleting `main.aux` before `latexmk` makes bibtex exit 12 with "I found no \citation commands". Not a real failure — just run `latexmk` again (twice, to settle refs). Cost 2 extra passes to rediscover.
 
-## DECISION IN FORCE: thesis submitted — re-run data lands, thesis tables stay frozen
+## SUPERSEDED (2026-08-22): thesis tables stay frozen
+
+**This decision is no longer in force.** It is kept for history because it
+explains why `results/` and `chapters/` diverged for a period. It was overtaken
+by explicit later instructions that required editing chapter tables directly:
+adding the DF-theory and Shannon-capacity columns, correcting the stale Ch.8
+BER figures, and the scope reduction that removed several tables outright. Every
+such change was verified against its source file by `verify_thesis_tables.py`,
+which reports 389 cells and 0 inconsistencies. Do not re-freeze tables on the
+strength of the text below without a fresh instruction.
+
+### Original decision (historical)
 User submitted the thesis, then instructed "Keep" in answer to a choice between (a) freeze the submitted tables and land the re-run as data only, and (b) carry on re-transcribing. Reading taken: **(a)**. Consistent with `.clinerules/90-safety.md` (never alter numerical results without explicit instruction), and the cheaper error to recover from if the reading is wrong.
 
 **So: commit re-run outputs under `results/`, do NOT re-transcribe any `chapters/*.tex` table.** The submitted PDF and the branch will therefore diverge on data — that is intended, not drift. Do not "fix" the mismatch by quietly updating tables; it needs a fresh instruction.
