@@ -15,7 +15,7 @@ Chapter~\ref{sec:unknown-channels} as deliberate departures from the
 canonical assumptions in order to study model mismatch and robustness.
 
 
-Following the single-model convention fixed in Chapter~\ref{sec:introduction}, this chapter evaluates the relay strategies on the \emph{canonical setup only}: a two-hop SISO link, i.i.d.\ Rayleigh fast fading on both hops, complex baseband, QPSK, uncoded BER. BPSK appears in this chapter solely on the AWGN calibration channel, where the closed forms live (Table~\ref{tbl:configurations}). Two experiments constitute the core: the canonical relay comparison (E2) and the parameter-normalization and complexity study (E3), which together answer every canonical hypothesis (H1--H4). The principal contribution (Chapter~\ref{sec:unknown-channels}) is the unknown-channel study (E6), which tests hypothesis H6. All other departures from the canonical setup are identified as future work in Chapter~\ref{sec:discussion-and-conclusions}.
+Following the single-model convention fixed in Chapter~\ref{sec:introduction}, this chapter evaluates the relay strategies on the \emph{canonical setup only}: a two-hop SISO link, i.i.d.\ Rayleigh fast fading on both hops, complex baseband, QPSK, uncoded BER. Two experiments constitute the core: the canonical relay comparison (E2) and the parameter-normalization and complexity study (E3), which together answer every canonical hypothesis (H1--H4). The principal contribution (Chapter~\ref{sec:unknown-channels}) is the unknown-channel study (E6), which tests hypothesis H6. All other departures from the canonical setup are identified as future work in Chapter~\ref{sec:discussion-and-conclusions}.
 The experimental configurations are summarised in the table below.
 
 Each experiment subsection reports the key results inline (BER tables and figures); supporting material and model hyperparameters are collected in the appendices (Appendices~\ref{sec:appendix-a-mathematical-notation}--\ref{sec:appendix-c-software-architecture}).
@@ -64,7 +64,7 @@ Extension: unknown-channel failure of AF/DF and learned mitigation (H6) \\
 
 \textbf{Trials:} - \textbf{Topology:} SISO (both hops) - \textbf{Modulation scheme:} QPSK - \textbf{Channel:} i.i.d.\ Rayleigh fast fading (canonical) - \textbf{Equalizers:} None - \textbf{NN architecture:} Supervised (MLP, Hybrid), Generative (VAE, cGAN), Sequence (Transformer, Mamba-S6, Mamba-2 SSD) - \textbf{NN activation:} ReLU hidden, tanh output
 
-\textbf{Conclusion:} On the canonical Rayleigh channel, AI relays match but do not surpass symbol-wise DF: DF achieves the lowest or tied-lowest BER at essentially every SNR point, including the low-SNR regime, while the best neural relays (MLP, Hybrid, cGAN) track it within statistical uncertainty and clearly outperform AF. This confirms H1 (AI relays beat AF at low SNR) and H2 (DF dominance at $\geq 6$ dB with zero parameters) on the canonical channel.
+\textbf{Conclusion:} On the canonical Rayleigh channel, AI relays match but do not surpass symbol-wise DF: DF achieves the lowest or tied-lowest BER at essentially every SNR point, including the low-SNR regime, while the best neural relays (MLP, Hybrid, VAE) track it within statistical uncertainty and clearly outperform AF. This confirms H1 (AI relays beat AF at low SNR) and H2 (DF dominance at $\geq 6$ dB with zero parameters) on the canonical channel.
 
 \subsection{Results Tables}\label{sec:results-tables}
 
@@ -111,7 +111,7 @@ Two comments on Table~\ref{tbl:table2}. First, symbol-wise DF is the best or tie
 
 \section{Parameter Normalization \& Complexity Trade-off}\label{sec:parameter-normalization-complexity-trade-off}
 
-This study tests H3 (U-shaped complexity in BER) and H4 (architecture convergence at equal scale) on the canonical setup, and provides the training-time benchmark for H5.
+This study tests H3 (complexity versus BER) and H4 (architecture convergence at an equal parameter budget) on the canonical setup.
 \REV{``inverted-U'' \(\to\) ``U-shaped complexity in BER'', consistent with the retitled H3 in Chapter~\ref{sec:research-objectives} (BER is U-shaped in model size; equivalently, accuracy is inverted-U).}
 
 \textbf{Goal:} Isolate architectural inductive biases from parameter count effects and characterize the complexity-performance trade-off for relay denoising.
@@ -124,14 +124,15 @@ This study tests H3 (U-shaped complexity in BER) and H4 (architecture convergenc
 \subsection{Results Tables}\label{sec:results-tables-2}
 
 
+\begingroup\footnotesize
 \begin{longtable}[]{@{}lcccccccc@{}}
-\caption[Equal-parameter-budget comparison at 3K]{Equal-parameter-budget comparison on the canonical setup (QPSK over Rayleigh). Every learned model is scaled to approximately 3{,}000 parameters, so parameter count is removed as an explanation for the residual differences; width, depth, state dimension and window size still co-vary with architecture (Table~\ref{tbl:table28}). AF and DF are the unparameterized references. The cGAN is excluded, as in Table~\ref{tbl:table2}.}\label{tbl:table8}\tabularnewline
+\caption[Equal-parameter-budget comparison at 3K]{Equal-parameter-budget comparison on the canonical setup (QPSK over Rayleigh). All learned columns are the $\sim$3{,}000-parameter variants; every learned model is scaled to approximately 3{,}000 parameters, so parameter count is removed as an explanation for the residual differences; width, depth, state dimension and window size still co-vary with architecture (Table~\ref{tbl:table28}). AF and DF are the unparameterized references. The cGAN is excluded, as in Table~\ref{tbl:table2}.}\label{tbl:table8}\tabularnewline
 \toprule\noalign{}
-SNR (dB) & MLP-3K & Hybrid-3K & VAE-3K & Transformer-3K & Mamba-S6 (3K) & Mamba-2 SSD (3K) & AF & DF \\
+SNR (dB) & MLP & Hybrid & VAE & Transf. & Mamba-S6 & Mamba2 & AF & DF \\
 \midrule\noalign{}
 \endfirsthead
 \toprule\noalign{}
-SNR (dB) & MLP-3K & Hybrid-3K & VAE-3K & Transformer-3K & Mamba-S6 (3K) & Mamba-2 SSD (3K) & AF & DF \\
+SNR (dB) & MLP & Hybrid & VAE & Transf. & Mamba-S6 & Mamba2 & AF & DF \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
@@ -143,6 +144,7 @@ SNR (dB) & MLP-3K & Hybrid-3K & VAE-3K & Transformer-3K & Mamba-S6 (3K) & Mamba-
 16 & 0.0247 & \textbf{0.0245} & 0.0251 & 0.0259 & 0.0250 & 0.0251 & 0.0309 & \textbf{0.0245} \\
 20 & 0.0099 & \textbf{0.0097} & 0.0101 & 0.0100 & 0.0097 & 0.0098 & 0.0110 & \textbf{0.0097} \\
 \end{longtable}
+\endgroup
 
 
 
@@ -324,14 +326,15 @@ Every comparison above, including the equal-throughput one, holds the modulation
 
 The objective is \emph{goodput}, $G = R\,(1-\mathrm{FER})$, the information rate actually delivered once frames with any residual error are discarded, which is what any real protocol above the physical layer does. $G$ and $R$ are both measured per channel symbol transmitted on the active hop, matching the ergodic-capacity reference $C$ introduced below; because the relay is half-duplex, expressing goodput instead as a fraction of the total two-slot cycle (source-to-relay plus relay-to-destination) would halve every figure in this section without changing which MCS or relay strategy is preferred, since that factor of $\tfrac12$ applies identically to both. Maximizing $G$ over the MCS grid at each SNR traces the link-adaptation envelope, compared here for the two relay strategies the mechanism of Table~\ref{tbl:table38} contrasts directly: \emph{block-DF}, which decodes the code at the relay and so spends its redundancy before transmitting, against \emph{denoise-only}, which hard-decides each bit and re-modulates without ever invoking the code, leaving the redundancy intact for the destination and requiring no training and no code knowledge at the relay.
 
+\begingroup\footnotesize
 \begin{longtable}[]{@{}lccccc@{}}
-\caption[Link-adaptation envelope: best MCS per SNR]{Link-adaptation envelope: the MCS maximizing goodput at each SNR, block-DF versus denoise-only relaying, canonical Rayleigh channel, 10 trials $\times$ 200 frames $\times$ 200 information bits per point. $C$ is the ergodic Rayleigh (Shannon) capacity at that SNR, $C=\log_2(e)\,e^{1/\gamma}E_1(1/\gamma)$ -- an unconstrained-input upper bound no achievable goodput may exceed, included as a sanity ceiling rather than a target: the gap to it here is dominated by the finite constellation and coding loss, not by relay strategy. The capacity column is a \emph{single-link} reference evaluated per active-hop channel symbol; it is not a capacity bound for the half-duplex two-hop relay system studied here, whose own bound would additionally account for the two-slot cycle and the relay constraint.}\label{tbl:table42}\tabularnewline
+\caption[Link-adaptation envelope: best MCS per SNR]{Link-adaptation envelope: the MCS maximizing goodput at each SNR, block-DF versus denoise-only relaying, canonical Rayleigh channel, 10 trials $\times$ 200 frames $\times$ 200 information bits per point. Columns are SNR in dB, the goodput-maximizing MCS and its goodput $G$ for each relay, and $C$, the ergodic Rayleigh (Shannon) capacity at that SNR, $C=\log_2(e)\,e^{1/\gamma}E_1(1/\gamma)$ -- an unconstrained-input upper bound no achievable goodput may exceed, included as a sanity ceiling rather than a target: the gap to it here is dominated by the finite constellation and coding loss, not by relay strategy. The capacity column is a \emph{single-link} reference evaluated per active-hop channel symbol; it is not a capacity bound for the half-duplex two-hop relay system studied here, whose own bound would additionally account for the two-slot cycle and the relay constraint.}\label{tbl:table42}\tabularnewline
 \toprule\noalign{}
-SNR (dB) & Best MCS (block-DF) & $G$ (block-DF) & Best MCS (denoise) & $G$ (denoise) & $C$ (Shannon) \\
+SNR & MCS (block-DF) & $G$ & MCS (denoise) & $G$ & $C$ \\
 \midrule\noalign{}
 \endfirsthead
 \toprule\noalign{}
-SNR (dB) & Best MCS (block-DF) & $G$ (block-DF) & Best MCS (denoise) & $G$ (denoise) & $C$ (Shannon) \\
+SNR & MCS (block-DF) & $G$ & MCS (denoise) & $G$ & $C$ \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
@@ -346,6 +349,7 @@ SNR (dB) & Best MCS (block-DF) & $G$ (block-DF) & Best MCS (denoise) & $G$ (deno
 36 & 16-QAM uncoded & 3.3840 & 16-QAM uncoded & 3.3840 & 11.13 \\
 40 & 16-QAM uncoded & 3.6980 & 16-QAM uncoded & 3.6980 & 12.46 \\
 \end{longtable}
+\endgroup
 
 \begin{figure}[H]
 \centering

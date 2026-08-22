@@ -1080,3 +1080,41 @@ noise model in the Ch.2 theory and the MMSE-denoiser rationale are legitimate
 Verified: cold rebuild 0 errors / 0 undefined refs / 0 bidi errors, still
 **120 pages**; 389 cells / 0 inconsistencies; 159 tests. Hebrew abstract
 re-rendered and checked visually.
+
+## Submission-readiness audit: typography and residual scope claims
+
+A systematic audit of the compiled PDF, prompted by a request for a
+high-effort review. Two classes of defect found; no numerical result touched.
+
+**Tables running off the page (visible in the PDF, not just log warnings).**
+The build was emitting 55 overfull hboxes, the worst 309pt. Rendering the
+pages confirmed real damage: Table 6.1 ("the four layers of the argument")
+had its caption cut mid-word and two columns severed at the right margin.
+Cause: an unbounded `l` column holding sentence-length text. Fixed by making
+it a wrapped `p{}` column with `\raggedright`. Also fixed: Table 5.3
+(equal-parameter comparison, 175pt over) and Table 5.10 (link-adaptation
+envelope, 71pt over), both by abbreviating headers and applying
+`\footnotesize`, with the captions extended to define the abbreviated
+columns; a 130pt overflow from an unbreakable `\texttt{}` filename in
+appendix prose, fixed with `\url{}`; and a 22pt inline `enumerate*` in Ch.4
+converted to breakable prose.
+
+Result: **55 -> 41 overfull boxes, worst 309pt -> 15.8pt, boxes over 20pt
+14 -> 0.** Page count held at 120. All three restructured tables
+re-rendered and inspected visually.
+
+**Claims still pointing at removed studies.** Beyond the eight fixed in the
+previous entry, the rendered PDF still contained: two `H1--H5` hypothesis
+ranges and a "training-time benchmark for H5" (Ch.1, Ch.5); a deployment
+recommendation to use a joint 2D classifier "for 16-QAM deployments" (Ch.8);
+five uses of "AWGN calibration" of which two were outright false --
+"BPSK appears only on the separate AWGN calibration channel" (Ch.8
+conclusions) and "the same chain carries BPSK on the AWGN calibration
+channel and 16-QAM in the extension" (Ch.4); "Three constellations appear in
+this thesis" two lines above a sentence saying "Both"; and a claim that the
+best neural relays are "MLP, Hybrid, cGAN" when the cGAN has no column in
+that table.
+
+Verified: cold rebuild 0 errors / 0 undefined refs / 0 undefined citations /
+0 bidi errors, 120 pages, 389 cells / 0 inconsistencies, 159 tests. No
+annotation leakage into the PDF (REV/AK/GZ/TODO all absent).
