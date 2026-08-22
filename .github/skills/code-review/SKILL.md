@@ -70,12 +70,14 @@ them. Three cases, and conflating them is itself worth flagging:
   `relaynet/modulation/qpsk.py`. The per-bit axis then depends on the
   constellation: `E_b/N_0 = E_s/N_0 − 10·log₁₀(k)`, so it is the same number
   for BPSK (`k=1`) and 3.01 dB lower for QPSK (`k=2`).
-  `tests/test_snr_convention.py` describes the convention as `E_b/N_0`, which
-  is correct for what it tests — it exercises BPSK only, where the two
-  coincide. Do not generalise that label to QPSK. Comparing a measured QPSK
-  BER against a closed form without applying the 3.01 dB conversion is a real
-  error, and the thesis applies it explicitly wherever such a comparison is
-  made.
+  Two places in the repository label `snr_db` as `E_b/N_0`:
+  `tests/test_snr_convention.py` (docstring) and the comment at
+  `relaynet/channels/awgn.py:31`. Both are correct for their own scope — each
+  is BPSK-only, and at `k=1` the two quantities coincide, so neither is a
+  contradiction of the `E_s/N_0` definition above. Do not generalise that
+  label to QPSK. Comparing a measured QPSK BER against a closed form without
+  applying the 3.01 dB conversion is a real error, and the thesis applies it
+  explicitly wherever such a comparison is made.
 - **Relay interface:** relays expose `.process(received_signal)`; channels are
   callables `channel(signal, snr_db)`. New components should follow these
   rather than inventing conventions.
