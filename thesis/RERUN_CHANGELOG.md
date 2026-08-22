@@ -1053,7 +1053,8 @@ Same criterion, continued.
 The 151->120 page reduction removed the AWGN calibration study, the 16-QAM
 extension chapter and the Mamba-S6 crossover benchmark, but several claims
 elsewhere still promised them. An examiner following those pointers would
-find nothing. Eight sites corrected; no numerical result touched.
+find nothing. Eight sites corrected in this pass; no numerical result touched. (A
+further sweep, recorded in the next entry, found eleven more.)
 
 - **Both abstracts claimed a validation the thesis no longer contains.**
   English and Hebrew both stated the simulator is "first validated against
