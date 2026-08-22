@@ -84,11 +84,11 @@ review rounds without improving the thesis.
   symbol-wise DF against the closed-form two-hop composition (Table 2's
   "DF th." column). AWGN remains legitimately as the noise term of the channel
   model and in the closed-form background of Chapter~2 — those are not
-  residue. Note that older entries in `memory-bank/activeContext.md` predate
-  the removal and still say the calibration section "must stay"; the current-
-  state header at the top of that file is authoritative over them. If the
-  compiled PDF still refers to an AWGN calibration *study*, that is a real
-  finding worth raising.
+  residue. An older entry in `memory-bank/activeContext.md` predates the
+  removal and says the section "must stay"; it is marked SUPERSEDED in place,
+  and the current-state header at the top of that file is authoritative over
+  all such entries. If the compiled PDF ever refers to an AWGN calibration
+  *study* again, that is a real finding worth raising.
 - **The cGAN is implemented but excluded from every reported comparison**, on
   cost grounds. It is described in the methods chapter; it has no results
   column anywhere.
