@@ -4,8 +4,10 @@ _Last updated: 2026-08-22_
 
 ## CURRENT STATE: merged to main; thesis at 120 pages
 
-PR #15 (`claude/porting-md-file-l6xzsr` -> `main`) merged 2026-08-22. **Work
-on `main` from here** -- the feature branch is fully contained in main and can
+PR #15 (`claude/porting-md-file-l6xzsr` -> `main`) merged 2026-08-22. **`main`
+is the base and the source of truth from here**; branch off it for new work and
+merge back through a pull request. Do not commit to `main` directly -- see the
+workflow note below. The old feature branch is fully contained in `main` and can
 be deleted.
 
 **Conflict you will hit, and how it resolves.** `.clinerules/90-safety.md:30`
@@ -59,9 +61,12 @@ Standing verification gates, all green at the merge: `verify_thesis_tables.py`
 389 cells / 0 inconsistencies, 159 tests, cold XeLaTeX rebuild 0 errors /
 0 undefined refs / 0 bidi errors, 120 pages.
 
-**Outstanding before submission:** the Hebrew abstract is machine-produced and
-needs a native speaker; supervisors last saw a six-hypothesis draft, so H5's
-removal needs flagging to them.
+**Outstanding follow-ups.** The Hebrew abstract is machine-produced and needs a
+native speaker. Supervisors last saw a six-hypothesis draft, so H5's removal
+needs flagging to them. Note that the "thesis submitted" decision recorded
+further down refers to an *earlier* version; whether this 120-page revision has
+been submitted has not been stated, so neither assume it has nor that it has
+not.
 
 ## DECISION IN FORCE: the cGAN stays out of the results
 
@@ -83,7 +88,18 @@ Removed: `tbl:table2awgn` + its 2 paragraphs, `fig:fig10awgn`. `results/awgn_com
 `check_table2awgn` deleted from `verify_thesis_tables.py` (source map + registry + function). **Verifier now 327 cells / 0 inconsistencies** (was 352; the 25 are the companion's). Cold build: exit 0, **146 pp**, 0 undefined refs.
 **Build gotcha reconfirmed:** deleting `main.aux` before `latexmk` makes bibtex exit 12 with "I found no \citation commands". Not a real failure — just run `latexmk` again (twice, to settle refs). Cost 2 extra passes to rediscover.
 
-## DECISION IN FORCE: thesis submitted — re-run data lands, thesis tables stay frozen
+## SUPERSEDED (2026-08-22): thesis tables stay frozen
+
+**This decision is no longer in force.** It is kept for history because it
+explains why `results/` and `chapters/` diverged for a period. It was overtaken
+by explicit later instructions that required editing chapter tables directly:
+adding the DF-theory and Shannon-capacity columns, correcting the stale Ch.8
+BER figures, and the scope reduction that removed several tables outright. Every
+such change was verified against its source file by `verify_thesis_tables.py`,
+which reports 389 cells and 0 inconsistencies. Do not re-freeze tables on the
+strength of the text below without a fresh instruction.
+
+### Original decision (historical)
 User submitted the thesis, then instructed "Keep" in answer to a choice between (a) freeze the submitted tables and land the re-run as data only, and (b) carry on re-transcribing. Reading taken: **(a)**. Consistent with `.clinerules/90-safety.md` (never alter numerical results without explicit instruction), and the cheaper error to recover from if the reading is wrong.
 
 **So: commit re-run outputs under `results/`, do NOT re-transcribe any `chapters/*.tex` table.** The submitted PDF and the branch will therefore diverge on data — that is intended, not drift. Do not "fix" the mismatch by quietly updating tables; it needs a fresh instruction.
