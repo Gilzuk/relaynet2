@@ -49,7 +49,7 @@ This result has important theoretical and practical implications:
 
 \subsection{Information-Theoretic Perspective}\label{sec:information-theoretic-perspective}
 
-The canonical memoryless relay-denoising task maps a window  of \(2w+1\) real-valued noisy observations to a single real-valued clean estimate, applied per axis to the canonical QPSK symbol (equivalently, the real BPSK-over-AWGN form of the same problem). Each real axis carries exactly 1 bit of information, and the Bayes-optimal estimator \(f^*(\mathbf{y}) = \tanh(\mathbf{1}^T \mathbf{y} / \sigma^2)\) (for i.i.d. noise across the window) is a one-dimensional function of the sufficient statistic \(\sum_i y_i\). The \textbf{effective dimensionality} of this mapping is therefore 1: far below the \(2w+1 = 5\) or \(11\) input dimensions.
+The canonical memoryless relay-denoising task maps a window of \(2w+1\) real-valued noisy observations to a single real-valued clean estimate, applied per axis to the canonical QPSK symbol (equivalently, the real BPSK-over-AWGN form of the same problem). Each real axis carries exactly 1 bit of information, and the Bayes-optimal estimator \(f^*(\mathbf{y}) = \tanh(\mathbf{1}^T \mathbf{y} / \sigma^2)\) (for i.i.d. noise across the window) is a one-dimensional function of the sufficient statistic \(\sum_i y_i\). The \textbf{effective dimensionality} of this mapping is therefore 1: far below the \(2w+1 = 5\) or \(11\) input dimensions.
 
 As a heuristic, the minimum description length (MDL) principle suggests matching model complexity to the effective dimensionality of the target mapping. Since the target here is a one-dimensional monotone function of the sufficient statistic, even the 169-parameter network has capacity far in excess of what the mapping requires; this is offered as an intuition for why the smallest model suffices, not as a formal MDL bound.
 
@@ -191,7 +191,7 @@ Several directions warrant further investigation:
 
 \section{Conclusions}\label{sec:conclusions}
 
-This thesis presents a comprehensive comparative study of nine relay strategies: two classical (AF, DF) and seven AI-based (MLP, Hybrid, VAE, cGAN, Transformer, Mamba-S6, Mamba-2 SSD). All evaluated on one canonical setup (SISO on both hops, i.i.d.\ Rayleigh fast fading, complex baseband, QPSK, uncoded BER; BPSK appears only in the unknown-ISI study of Chapter~\ref{sec:unknown-channels}). The study addresses three identified research gaps (Section \ref{sec:research-gap-and-motivation}) through controlled experiments with statistical rigor (100,000 bits per SNR point, 10 independent trials, Wilcoxon significance testing). The following table summarizes the hypothesis outcomes:
+This thesis presents a comprehensive comparative study of nine relay strategies: two classical (AF, DF) and seven AI-based (MLP, Hybrid, VAE, cGAN, Transformer, Mamba-S6, Mamba-2 SSD). All evaluated on one canonical setup (SISO on both hops, i.i.d.\ Rayleigh fast fading, complex baseband, QPSK, uncoded BER; BPSK appears only in the unknown-channel study of Chapter~\ref{sec:unknown-channels}). The study addresses three identified research gaps (Section \ref{sec:research-gap-and-motivation}) through controlled experiments with statistical rigor (100,000 bits per SNR point, 10 independent trials, Wilcoxon significance testing). The following table summarizes the hypothesis outcomes:
 
 \begin{longtable}[]{@{}
   >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
