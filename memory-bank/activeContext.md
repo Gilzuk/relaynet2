@@ -13,13 +13,15 @@ be deleted.
 **Conflict you will hit, and how it resolves.** The "Git Safety" section of
 `.clinerules/90-safety.md` still reads "Always push to `clean-thesis` branch
 only." Do not follow it for new work. That instruction is superseded by fact,
-not by preference:
-`clean-thesis` last moved 2026-07-18, contains nothing `main` does not, and
-`main` is 128 commits ahead of it. Every `chapters/**` change through the
-120-page reduction is on `main` and none of it is on `clean-thesis`, so
-pushing thesis edits there would fork the thesis onto a dead branch. The rule
-text was deliberately left in place by the repository owner, who confirmed
-`clean-thesis` is a stalled branch; it is recorded here as superseded rather
+not by preference. As of this note (2026-08-22) `clean-thesis` had not moved
+since 2026-07-18, contained no commit `main` lacked, and `main` was 128
+commits ahead of it. Those counts drift; re-derive them with
+`git rev-list --count origin/clean-thesis..origin/main` and its reverse rather
+than trusting the numbers here. What does not drift is the direction: every
+`chapters/**` change through the 120-page reduction is on `main` and none of it
+is on `clean-thesis`, so pushing thesis edits there would fork the thesis onto
+a dead branch. The rule text was deliberately left in place by the repository
+owner, who confirmed `clean-thesis` is a stalled branch; it is recorded here as superseded rather
 than edited there. If the owner ever revives `clean-thesis`, this note is what
 needs revisiting first.
 
