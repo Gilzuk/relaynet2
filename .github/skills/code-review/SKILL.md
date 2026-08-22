@@ -24,12 +24,22 @@ every numerical table in the thesis from its committed result file and flags
 mismatches. A change that edits a table without updating the verifier, or
 retires a table without retiring its check, is a defect worth flagging.
 
-**3. Committed results are Monte Carlo outputs, not regenerable artifacts.**
-Files under `results/` were produced by seeded but expensive runs, and the
-thesis quotes them. Regenerating one re-rolls its randomness and silently
-changes published numbers. When a *generator* has a bug, the right fix is
-usually to correct the generator and patch the committed artifact in place,
-verifying that nothing except the intended value moved — not to re-run.
+**3. Treat `results/` files by what kind of defect they have.** The thesis
+quotes these files, so how they may be changed depends on what is wrong with
+them. Three cases, and conflating them is itself worth flagging:
+
+- *Encoding or representation* (a `NaN` where JSON requires `null`, a
+  formatting problem): patch the committed file in place, and verify that no
+  numeric value moved.
+- *A deterministic re-derivation* — a script that recomputes from already-
+  measured data with no randomness, such as the latency-budget envelope: fix
+  the script and re-run it. Confirm determinism first by reproducing the
+  committed output from the unfixed script; then any diff is attributable to
+  the fix.
+- *A Monte Carlo measurement*: never hand-edit it, and do not regenerate it
+  casually — a re-run re-rolls the randomness and changes what the thesis
+  reports. Correcting such a value is a decision for the author, not a
+  review suggestion. This is rule 1 restated at the file level.
 
 ## What is worth flagging
 
