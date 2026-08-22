@@ -10,9 +10,10 @@ merge back through a pull request. Do not commit to `main` directly -- see the
 workflow note below. The old feature branch is fully contained in `main` and can
 be deleted.
 
-**Conflict you will hit, and how it resolves.** `.clinerules/90-safety.md:30`
-still reads "Always push to `clean-thesis` branch only." Do not follow it for
-new work. That instruction is superseded by fact, not by preference:
+**Conflict you will hit, and how it resolves.** The "Git Safety" section of
+`.clinerules/90-safety.md` still reads "Always push to `clean-thesis` branch
+only." Do not follow it for new work. That instruction is superseded by fact,
+not by preference:
 `clean-thesis` last moved 2026-07-18, contains nothing `main` does not, and
 `main` is 128 commits ahead of it. Every `chapters/**` change through the
 120-page reduction is on `main` and none of it is on `clean-thesis`, so
