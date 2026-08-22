@@ -35,14 +35,14 @@ The system under study is a two-hop relay network with a single relay node. All 
 \end{figure}
 
 
-Source bits are QPSK-modulated on the canonical setup, passed through Hop 1 (SISO Rayleigh), processed by the relay (classical or neural), transmitted over Hop 2 (SISO Rayleigh), and demodulated at the destination; no equalization is involved. The same chain carries BPSK on the AWGN calibration channel and 16-QAM in the extension, with only the modulator and demodulator changing. Both hop channels are known perfectly at their respective receivers, per the conventions of Chapter~\ref{sec:introduction}.
+Source bits are QPSK-modulated on the canonical setup, passed through Hop 1 (SISO Rayleigh), processed by the relay (classical or neural), transmitted over Hop 2 (SISO Rayleigh), and demodulated at the destination; no equalization is involved. Chapter~\ref{sec:unknown-channels} reuses this chain with BPSK, but also replaces the hop channels themselves with unknown ISI, a composite cascade, or a per-block redraw. Both hop channels are known perfectly at their respective receivers, per the conventions of Chapter~\ref{sec:introduction}.
 
 \begin{equation}\protect\phantomsection\label{eq:two-hop-system}{\text{Source} \xrightarrow{\text{Hop 1}} \text{Relay} \xrightarrow{\text{Hop 2}} \text{Destination}
 }\end{equation}
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad two-hop-system}
 
 \subsection{Modulation}\label{sec:modulation}
-Three constellations appear in this thesis. The base case is BPSK, which maps a single bit to a real-valued symbol,
+Two constellations carry data in this thesis; denser ones appear in Figure~\ref{fig:fig8} for orientation only. The real-valued base case is BPSK, which maps a single bit to a real-valued symbol,
 
 \begin{equation}\protect\phantomsection\label{eq:bpsk-mapping}{x = 1 - 2b, \quad b \in \{0, 1\} \implies x \in \{-1, +1\}}\end{equation}
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad bpsk-mapping}
@@ -64,7 +64,7 @@ In the half-duplex two-hop model studied in this thesis, the relay cannot transm
 }\end{equation}
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad rayleigh-hop2}
 
-where \(x[i]\) is the complex symbol transmitted by the source at time~$i$ (QPSK on this canonical channel; the real BPSK alphabet $\{-1,+1\}$ applies only to the AWGN calibration special case below), \(y_R[i]\) is the signal received at the relay, \(x_R[i]\) is the signal transmitted by the relay, and \(y_D[i]\) is the signal received at the destination. The relay output is written generally as \[ x_R[i] = f_\theta\!\left(\mathcal{Y}_{R,i}\right), \] where \(\mathcal{Y}_{R,i}\) denotes the observation supplied to the relay-processing function; for AF and symbol-wise DF, \(\mathcal{Y}_{R,i}=y_R[i]\).
+where \(x[i]\) is the complex symbol transmitted by the source at time~$i$ (QPSK on this canonical channel; the real BPSK alphabet $\{-1,+1\}$ never rides this complex channel, and is used in the real AWGN special case below and in the Chapter~\ref{sec:unknown-channels} experiments), \(y_R[i]\) is the signal received at the relay, \(x_R[i]\) is the signal transmitted by the relay, and \(y_D[i]\) is the signal received at the destination. The relay output is written generally as \[ x_R[i] = f_\theta\!\left(\mathcal{Y}_{R,i}\right), \] where \(\mathcal{Y}_{R,i}\) denotes the observation supplied to the relay-processing function; for AF and symbol-wise DF, \(\mathcal{Y}_{R,i}=y_R[i]\).
 
 Each hop applies a channel function followed by optional equalization (Equation~\ref{eq:hop-model-selection}):
 
@@ -73,7 +73,7 @@ Each hop applies a channel function followed by optional equalization (Equation~
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad hop-model}
 
 
-where \(\mathcal{H}(\cdot)\) denotes the canonical Rayleigh fast-fading channel operator (the AWGN special case is retained for analytical calibration of the simulator). The calligraphic symbol distinguishes the channel \emph{operator} from the scalar fading \emph{coefficient} \(h\) used throughout the rest of this thesis.
+where \(\mathcal{H}(\cdot)\) denotes the canonical Rayleigh fast-fading channel operator (the AWGN special case, $|h|\equiv1$, is retained because the closed forms of Chapter~\ref{sec:literature-review} are stated in it). The calligraphic symbol distinguishes the channel \emph{operator} from the scalar fading \emph{coefficient} \(h\) used throughout the rest of this thesis.
 
 \textbf{Both hops use the same channel.} \(\mathcal{H}(\cdot)\) is applied identically on Hop~1 and Hop~2 at the same SNR: a configuration never mixes channel families across hops. A configuration is therefore specified completely by the pair (constellation, channel), and it is that pair which names each experiment below.
 
@@ -134,7 +134,7 @@ On Hop 1 the relay's single receive antenna observes, as shown in Equation~\ref{
 }\end{equation}
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad relay-received-siso}
 
-where the effective observation follows coherent compensation of the Rayleigh fading coefficient (Section~\ref{sec:system-model-1}). Note that the per-symbol effective SNR is \(|h_1[i]|^2\gamma\) (a random, exponentially distributed quantity) not a constant; the AWGN calibration limit is recovered by setting \(|h_1[i]| \equiv 1\). The relay applies its processing function to a sliding window of received samples and transmits a cleaner estimate \(\hat{x}_R = f_\theta(\tilde{y}_{R,i-w:i+w})\); classical AF/DF use \(w=0\). This is purely a noise-removal task: in the canonical SISO setup there is no inter-stream interference at any stage, and the destination demodulates the Hop-2 output directly with no equalizer.
+where the effective observation follows coherent compensation of the Rayleigh fading coefficient (Section~\ref{sec:system-model-1}). Note that the per-symbol effective SNR is \(|h_1[i]|^2\gamma\) (a random, exponentially distributed quantity) not a constant; the AWGN limit is recovered by setting \(|h_1[i]| \equiv 1\). The relay applies its processing function to a sliding window of received samples and transmits a cleaner estimate \(\hat{x}_R = f_\theta(\tilde{y}_{R,i-w:i+w})\); classical AF/DF use \(w=0\). This is purely a noise-removal task: in the canonical SISO setup there is no inter-stream interference at any stage, and the destination demodulates the Hop-2 output directly with no equalizer.
 \REV{Fix applied: Eq.~\ref{eq:relay-received-siso} previously showed a \emph{fixed} noise variance, i.e.\ the AWGN calibration case, although the canonical channel is Rayleigh with a random per-symbol effective SNR. It is rewritten in post-compensation form with $|h_1|^2\gamma$ stated. Separately, the channel \emph{operator} in Eq.~\ref{eq:hop-model-selection} was renamed $\mathcal{H}(\cdot)$ to stop colliding with the fading \emph{coefficient} $h$.}
 
 \begin{remark}[Realizability of the symmetric window]\label{rem:window-causality}
@@ -158,13 +158,9 @@ This section describes each strategy's architecture, training procedure, and the
 
 The selected nine relay strategies are drawn from four distinct architectural concepts:
 
-\begin{enumerate*}[label=(\roman*), itemjoin={{, }}, itemjoin*={{, and }}, afterlabel=\ ]
-\tightlist
-\item classical methods (AF and DF)
-\item supervised-learning models (MLP and hybrid MLP--DF)
-\item generative models (VAE and cGAN)
-\item sequence models (Transformer, Mamba-S6, and Mamba-2 SSD)
-\end{enumerate*}.
+(i)~classical methods (AF and DF); (ii)~supervised-learning models
+(MLP and hybrid MLP--DF); (iii)~generative models (VAE and cGAN); and
+(iv)~sequence models (Transformer, Mamba-S6, and Mamba-2 SSD).
 
 \begin{enumerate}
 \item \textbf{Classical AF:} Gain amplification as shown in Equation~\ref{eq:af-gain}. AF serves as the minimal-processing classical baseline. It performs no learned processing and simply rescales the received signal, preserving both signal and noise. Its end-to-end effective SNR is given in Equation~\ref{eq:af-snr}.
