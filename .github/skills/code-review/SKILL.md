@@ -121,9 +121,9 @@ review rounds without improving the thesis.
   denotes the thesis's principal contribution, not the withdrawn
   training-time claim. Two consequences for review: a reference to `H6` in a
   built chapter is a real finding, and the old numbering surviving in
-  `RERUN_CHANGELOG.md` and the `_`-prefixed chapter files is deliberate —
-  those are the historical record of the withdrawal and are not built, so do
-  not flag them as inconsistent.
+  `thesis/RERUN_CHANGELOG.md` and the `_`-prefixed files in
+  `thesis/chapters/` is deliberate — those are the historical record of the
+  withdrawal and are not built, so do not flag them as inconsistent.
 - **There is no 16-QAM relay study.** 16-QAM survives only as one rung of the
   modulation-and-coding ladder in the link-adaptation study, where the object
   of study is the rate-and-modulation choice, not the relay.
