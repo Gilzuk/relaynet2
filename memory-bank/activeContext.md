@@ -51,8 +51,9 @@ What landed after 2026-08-19, in order:
    selection flipped), `NaN` in a results JSON, a sentence fragment in Ch.2.
    A second pass added two more, fixed here.
 4. **Scope reduction to 120 pages (from 151).** Removed: the 16-QAM extension
-   chapter, the Mamba-S6 study (**H5 dropped -- the thesis now poses H1-H4
-   plus H6**), the AWGN calibration study, the per-architecture runtime table,
+   chapter, the Mamba-S6 study (**the old H5, the SSM training-speed
+   hypothesis, was dropped**), the AWGN calibration study, the
+   per-architecture runtime table,
    the constraint-length sweep table (finding kept as a paragraph), and
    figures that only re-plotted an adjacent table. 16-QAM survives *only* as
    an MCS rung in the link-adaptation study, with a scope note saying so.
@@ -64,9 +65,18 @@ Standing verification gates, all green at the merge: `verify_thesis_tables.py`
 389 cells / 0 inconsistencies, 159 tests, cold XeLaTeX rebuild 0 errors /
 0 undefined refs / 0 bidi errors, 120 pages.
 
+**Hypothesis numbering (renumbered 2026-08-22).** Dropping the old H5 left the
+thesis posing H1-H4 plus H6, with a visible gap at 5. The unknown-channel
+hypothesis has therefore been renumbered **H6 -> H5**, so the thesis now poses
+a contiguous **H1-H5** and the Chapter 3 list renders 1-5. No hypothesis
+statement, result or outcome changed -- only the label. Historical records
+(`RERUN_CHANGELOG.md`, the `_`-prefixed dead chapter files) still use the old
+numbering on purpose and must not be renumbered.
+
 **Outstanding follow-ups.** The Hebrew abstract is machine-produced and needs a
-native speaker. Supervisors last saw a six-hypothesis draft, so H5's removal
-needs flagging to them. Note that the "thesis submitted" decision recorded
+native speaker. Supervisors last saw a six-hypothesis draft in which H5 was the
+SSM training-speed hypothesis; they need telling both that it was withdrawn and
+that "H5" now denotes the unknown-channel hypothesis they knew as H6. Note that the "thesis submitted" decision recorded
 further down refers to an *earlier* version; whether this 120-page revision has
 been submitted has not been stated, so neither assume it has nor that it has
 not.
