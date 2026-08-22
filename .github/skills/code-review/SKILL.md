@@ -64,20 +64,30 @@ them. Three cases, and conflating them is itself worth flagging:
 
 ## Conventions that are load-bearing
 
-- **SNR convention:** `γ = 10^(SNR_dB/10)`. The `snr_db` passed to the channel
-  functions is always `E_s/N_0` — total symbol energy over noise, computed from
-  the constellation's unit average power. This is documented in
-  `relaynet/modulation/qpsk.py`. The per-bit axis then depends on the
-  constellation: `E_b/N_0 = E_s/N_0 − 10·log₁₀(k)`, so it is the same number
-  for BPSK (`k=1`) and 3.01 dB lower for QPSK (`k=2`).
-  Two places in the repository label `snr_db` as `E_b/N_0`:
-  `tests/test_snr_convention.py` (docstring) and the comment at
-  `relaynet/channels/awgn.py:31`. Both are correct for their own scope — each
-  is BPSK-only, and at `k=1` the two quantities coincide, so neither is a
-  contradiction of the `E_s/N_0` definition above. Do not generalise that
-  label to QPSK. Comparing a measured QPSK BER against a closed form without
-  applying the 3.01 dB conversion is a real error, and the thesis applies it
-  explicitly wherever such a comparison is made.
+- **SNR convention.** One invariant holds everywhere: `γ = 10^(SNR_dB/10)` and
+  the noise is set so that **`γ = E_s/N_0`, where `E_s` is the average energy
+  of the signal actually handed to the channel**. Per-bit follows from the
+  constellation: `E_b/N_0 = E_s/N_0 − 10·log₁₀(k)` — the same number for
+  1 bit/symbol, 3.01 dB lower for QPSK.
+
+  Many comments and test docstrings across `relaynet/channels/**`,
+  `relaynet/modulation/**` and `tests/**` label `snr_db` as `E_b/N_0`. Do not
+  read those as a competing convention, and do not "fix" them: each sits on a
+  1-bit-per-symbol path where `E_s = E_b` makes the two numerically identical.
+  The complex paths do not carry that label — `ComplexISIChannel` states
+  `gamma = 1/sigma^2`, and `tests/test_channels.py` calls the real branch
+  `Eb/N0` and the complex branch `Es/N0` in the same test, which is the
+  clearest statement of the rule in the repository.
+
+  Note that the label tracks the *code path*, not the file:
+  `relaynet/channels/awgn.py` carries an `E_b/N_0` comment and also has a
+  complex branch, where the same argument means `E_s/N_0`. So a file
+  containing that label is not thereby a BPSK-only file.
+
+  What is a real error: comparing a measured QPSK BER against a closed form
+  without applying the 3.01 dB conversion. The thesis applies it explicitly
+  wherever such a comparison is made. To check any individual label, read what
+  the signal on that path carries rather than trusting the wording.
 - **Relay interface:** relays expose `.process(received_signal)`; channels are
   callables `channel(signal, snr_db)`. New components should follow these
   rather than inventing conventions.
