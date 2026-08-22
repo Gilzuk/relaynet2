@@ -66,18 +66,29 @@ verifying that nothing except the intended value moved — not to re-run.
 These are deliberate and were each decided explicitly. Re-raising them costs
 review rounds without improving the thesis.
 
-- **Scope.** The canonical setup is QPSK over i.i.d. Rayleigh fast fading,
-  SISO on both hops, uncoded, half-duplex two-hop with no direct
-  source–destination path. It is never varied.
+- **Scope.** The canonical *benchmark* is QPSK over i.i.d. Rayleigh fast
+  fading, SISO on both hops, uncoded, half-duplex two-hop with no direct
+  source–destination path, and it is held fixed wherever it is used, so that
+  the relay function is the only variable. This does **not** mean non-Rayleigh
+  content is out of scope: Chapter~7 deliberately departs from the canonical
+  model — unknown 3-tap ISI, a composite impairment cascade, blind and
+  partial-CSI regimes — and that departure is the thesis's principal
+  contribution, not a scope violation.
 - **Hypotheses are H1–H4 and H6. There is no H5** — it was withdrawn together
   with the Mamba-S6 training-time study.
 - **There is no 16-QAM relay study.** 16-QAM survives only as one rung of the
   modulation-and-coding ladder in the link-adaptation study, where the object
   of study is the rate-and-modulation choice, not the relay.
-- **There is no AWGN calibration study.** The simulator is calibrated on the
-  canonical channel itself, by checking symbol-wise DF against the closed-form
-  two-hop composition. AWGN remains only as the noise term of the channel
-  model and in the closed-form background.
+- **The AWGN calibration study was removed** in the 151→120 page reduction.
+  The simulator is now calibrated on the canonical channel itself, by checking
+  symbol-wise DF against the closed-form two-hop composition (Table 2's
+  "DF th." column). AWGN remains legitimately as the noise term of the channel
+  model and in the closed-form background of Chapter~2 — those are not
+  residue. Note that older entries in `memory-bank/activeContext.md` predate
+  the removal and still say the calibration section "must stay"; the current-
+  state header at the top of that file is authoritative over them. If the
+  compiled PDF still refers to an AWGN calibration *study*, that is a real
+  finding worth raising.
 - **The cGAN is implemented but excluded from every reported comparison**, on
   cost grounds. It is described in the methods chapter; it has no results
   column anywhere.
