@@ -49,15 +49,15 @@ This Thesis
 \endlastfoot
 Relay strategies compared & 1--2 (typically AF vs.~DF, or one AI method) & 9 (2 classical + 7 AI) \\
 AI paradigms & Single (e.g., supervised only) & 4 (supervised, generative, adversarial, sequential) \\
-Evaluation discipline & Single ad-hoc configuration & One canonical setup (SISO, Rayleigh, QPSK), chosen in advance and never varied, with AWGN analytical calibration \\
+Evaluation discipline & Single ad-hoc configuration & One canonical setup (SISO, Rayleigh, QPSK), chosen in advance and never varied, calibrated against closed-form theory on that channel \\
 Complexity analysis & None & Normalized $\sim$3K-parameter comparison + complexity study (U-shaped BER vs.\ model size) \\
-State space models & None for relay/physical-layer & Mamba-S6, Mamba-2 SSD, with crossover benchmark \\
+State space models & None for relay/physical-layer & Mamba-S6, Mamba-2 SSD evaluated as relay processors \\
 Statistical rigor & Often missing & Wilcoxon test, 95\% CI, 10 trials per point \\
 \end{longtable}
 \REV{Table fixes: ``U-shaped study''$\to$``complexity study (U-shaped BER vs.\ model size)'' to stay consistent with the U-shaped-in-BER wording adopted in Chapter~\ref{sec:literature-review}; (3) unified ``Mamba $S_6$''$\to$``Mamba-S6''; (4) en-dash for the ``1--2'' range.}
 
 
-\paragraph{Relationship between the canonical study and the extension study.} Hypotheses H1--H5 concern the canonical relay scenario introduced in Chapter~\ref{sec:introduction}: a memoryless two-hop channel with white noise and uncoded transmission. Hypothesis H6 studies a deliberately different regime in which the canonical model no longer represents the true channel. It therefore serves as a robustness extension rather than a direct continuation of the canonical experiments.
+\paragraph{Relationship between the canonical study and the extension study.} Hypotheses H1--H4 concern the canonical relay scenario introduced in Chapter~\ref{sec:introduction}: a memoryless two-hop channel with white noise and uncoded transmission. Hypothesis H6 studies a deliberately different regime in which the canonical model no longer represents the true channel. It therefore serves as a robustness extension rather than a direct continuation of the canonical experiments.
 
 \section{Research Hypotheses}\label{sec:research-hypotheses}
 
@@ -96,7 +96,7 @@ Unlike H1--H4, which assume the canonical memoryless channel throughout, H6 deli
 \item
   \textbf{Implement and compare nine relay strategies} spanning four learning paradigms: no learning (AF, DF), supervised learning (MLP, Hybrid), generative modeling (VAE, cGAN), and sequence modeling (Transformer, Mamba-S6, Mamba-2 SSD).\REV{Unified ``CGAN''$\to$``cGAN'' and ``Mamba S6''$\to$``Mamba-S6'' to match the abstract and Chapter~\ref{sec:literature-review}.}
 \item
-  \textbf{Evaluate on the canonical setup:} SISO Rayleigh fast fading with QPSK, validated against closed-form theory (with AWGN/BPSK as the analytical calibration limit), and probe modulation generalizability in a scoped 16-QAM extension.
+  \textbf{Evaluate on the canonical setup:} SISO Rayleigh fast fading with QPSK, with symbol-wise DF checked against the closed-form two-hop composition on that same channel as the analytical calibration.
 \item
   \textbf{Investigate the complexity--performance trade-off} by testing model architectures ranging from 0 parameters (classical) to 26,179 parameters (Mamba-2 SSD), and by conducting a normalized comparison at approximately 3,000 parameters.
 \item
