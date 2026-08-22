@@ -56,7 +56,11 @@ them. Three cases, and conflating them is itself worth flagging:
   holding sentence-length text is the usual cause; prefer a wrapped `p{}`
   column with `\raggedright`. Long unbreakable `\texttt{}` paths overflow too —
   `\url{}` breaks at `/` and `_`.
-- Anything that would change the thesis page count. It is capped at 120.
+- Anything that would change the thesis page count. The cap is 120, set by the
+  author, and the document currently sits exactly at it — so a change that adds
+  a page is a finding. Note that older entries in `thesis/CHANGELOG.md` and
+  `memory-bank/activeContext.md` record builds at 146 and 149 pages; those
+  predate the 151→120 reduction and are not the current baseline.
 
 ## Conventions that are load-bearing
 
@@ -66,10 +70,15 @@ them. Three cases, and conflating them is itself worth flagging:
 - **Relay interface:** relays expose `.process(received_signal)`; channels are
   callables `channel(signal, snr_db)`. New components should follow these
   rather than inventing conventions.
-- **Build invariants:** a cold `xelatex → bibtex → xelatex → xelatex` must
-  produce 0 errors, 0 undefined references, 0 undefined citations and 0 bidi
-  errors. The thesis contains a Hebrew abstract, so RTL rendering must be
-  checked visually after any change near it.
+- **Build invariants:** validate with `latexmk -xelatex`, **not** a hand-rolled
+  pass sequence, and check the *final* pass — earlier passes always show
+  unresolved references while the `.aux` settles. This is a standing rule in
+  `memory-bank/techContext.md`: a forced manual four-pass run converges and
+  looks clean even when `bidi` package-order errors are present, which is how
+  a class of Overleaf-breaking failure once went unnoticed. A clean build is
+  exit 0 with 0 errors, 0 bidi errors and no undefined references or citations
+  in the final pass. The thesis contains a Hebrew abstract, so RTL rendering
+  must also be checked visually after any change near it.
 
 ## Settled decisions — please do not re-flag
 
