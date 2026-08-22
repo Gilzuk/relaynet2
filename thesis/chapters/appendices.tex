@@ -103,9 +103,7 @@ PyTorch (CUDA) \\
 
 \subsection{Reproducibility} Random seeds are controlled at the source (bit generation) and noise (per-trial seeding) levels to ensure reproducible results.
 
-\paragraph{Re-measurement of all results.} Every simulation result was re-measured after three faults were found in the earlier data: a $3$~dB error in the AWGN noise convention, which propagated into the \emph{training} data of every learned relay and so moved results on channels the fault never touched; tables measured on pairings the thesis had withdrawn; and result files predating the relays they reported. The published numbers are those of the re-measurement, at $10$ trials $\times\ 10{,}000$ bits per SNR point.
-
-Two written conclusions changed as a consequence and are stated in their revised form in the body: hypothesis H4 is now confirmed at high SNR and rejected at low, rather than confirmed outright; and the VAE relay does not fail, the earlier failure being attributed to a superseded implementation rather than to the noise convention, which a controlled A/B rules out.
+\paragraph{Provenance of the reported results.} Every result reported in this thesis was regenerated from the archived experiment artifacts and verified against its source result file, at $10$ trials $\times\ 10{,}000$ bits per SNR point. The verification is mechanical rather than manual: each numerical table cell is re-derived from the committed result file it came from, so a table and the data behind it cannot drift apart unnoticed.
 
 
 

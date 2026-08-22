@@ -73,6 +73,15 @@ statement, result or outcome changed -- only the label. Historical records
 (`RERUN_CHANGELOG.md`, the `_`-prefixed dead chapter files) still use the old
 numbering on purpose and must not be renumbered.
 
+**Supervisor review, 2026-08-22 — "READY WITH MINOR REQUIRED REVISIONS".** Six
+items actioned; two were not defects. Items 1 and 2 ("AComparative", "SystemModel")
+do not exist in the source or the rendered PDF and are artifacts of the reviewer's
+text extraction, most likely from the stale Overleaf copy -- do not "fix" them.
+Item 3 (script and JSON names in the ledger) was declined: those sit in Appendix C,
+which is where reproducibility artifacts belong. Item 8 (faculty page limit) needs
+a human against the formal regulations: 120 pages total = front matter 1-6, body
+7-109, references 110-112, appendices 113-117, Hebrew abstract 118-120.
+
 **Outstanding follow-ups.** The Hebrew abstract is machine-produced and needs a
 native speaker. Supervisors last saw a six-hypothesis draft in which H5 was the
 SSM training-speed hypothesis; they need telling both that it was withdrawn and
