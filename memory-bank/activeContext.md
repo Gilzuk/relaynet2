@@ -2,6 +2,50 @@
 
 _Last updated: 2026-08-17_
 
+## DECISION IN FORCE: the cGAN stays out of the results
+
+Instruction 2026-08-18: "drop the cgan for now". The cGAN-inclusive re-run was stopped mid-flight and its driver deleted. **Do not re-add the cGAN without a fresh instruction.**
+
+Two findings from the attempt, both worth not rediscovering:
+
+1. **The surviving cGAN numbers cannot be reused.** `relaynet/relays/cgan.py` was created 2026-04-01; the cGAN results still in the repo are dated 2026-03-23, so they come from a superseded implementation. This is the same trap as the VAE: its March numbers (0.3928 at 0 dB) differ from the current implementation's (0.3359) by far more than the SNR-convention change explains, which `results/vae_convention_ab.json` demonstrates by controlled A/B. Splicing March cGAN values into tables measured with today's code would be mixing implementations, not filling a gap.
+2. **A cGAN column cannot be run separately and pasted in.** Training it consumes the shared RNG stream, so its presence shifts every other relay's numbers; a table assembled that way would have rows from two different draws. Adding the cGAN means re-running each affected study end to end and re-transcribing.
+
+**Cost, measured not guessed:** a probe at 2,000 samples x 5 epochs took 4.1 s, extrapolating to ~1.1 h per training at the production 50,000 x 200. The real run blew past that — over 1 h 50 m on a single training with no completion — so the linear extrapolation from a small probe understates it badly. Section 7.11 would need three trainings, one per activation, and is the stage to drop first if this is ever revisited.
+
+**State is unaffected.** The run was killed before writing any output; every result file is the one committed earlier, and the verifier is at 349 cells / 0 inconsistencies. Tables 2, 14, 15 and 24 report eight relays and say in their captions that the cGAN is excluded.
+
+## Latest: AWGN companion comparison removed from Ch5 — QPSK/Rayleigh takes its slot
+User: "move the qpsk Rayleigh to chapter 5 instead of awgn over Rayleigh". Ch5's canonical section had three tables (Rayleigh BPSK / AWGN companion / QPSK-vs-BPSK on Rayleigh); the AWGN companion is now deleted and QPSK/Rayleigh is the second table (**now Table 5.5**, renumbered from 5.6).
+Removed: `tbl:table2awgn` + its 2 paragraphs, `fig:fig10awgn`. `results/awgn_comparison_ci.png` and `scripts/plot_awgn_companion.py` are now orphaned — left in the repo, not referenced.
+**§5.2 (AWGN calibration) is untouched and must stay** — the closed forms the simulator validates against are AWGN expressions. What went away is any *relay* measured on AWGN in the canonical chapter. Appendix E's AK#4 response was updated accordingly; it had cited the companion table as part of AWGN's bounded role, so leaving it would have dangled a `\ref` and misdescribed the design.
+`check_table2awgn` deleted from `verify_thesis_tables.py` (source map + registry + function). **Verifier now 327 cells / 0 inconsistencies** (was 352; the 25 are the companion's). Cold build: exit 0, **146 pp**, 0 undefined refs.
+**Build gotcha reconfirmed:** deleting `main.aux` before `latexmk` makes bibtex exit 12 with "I found no \citation commands". Not a real failure — just run `latexmk` again (twice, to settle refs). Cost 2 extra passes to rediscover.
+
+## DECISION IN FORCE: thesis submitted — re-run data lands, thesis tables stay frozen
+User submitted the thesis, then instructed "Keep" in answer to a choice between (a) freeze the submitted tables and land the re-run as data only, and (b) carry on re-transcribing. Reading taken: **(a)**. Consistent with `.clinerules/90-safety.md` (never alter numerical results without explicit instruction), and the cheaper error to recover from if the reading is wrong.
+
+**So: commit re-run outputs under `results/`, do NOT re-transcribe any `chapters/*.tex` table.** The submitted PDF and the branch will therefore diverge on data — that is intended, not drift. Do not "fix" the mismatch by quietly updating tables; it needs a fresh instruction.
+
+**When integration is eventually authorised**, the affected surface is:
+- `tbl:table2` + `tbl:table2awgn` (ch05) ← `results/bpsk_comparison/{rayleigh,awgn}.json` — loses its cGAN column
+- `tbl:table14ray` (ch05 Table 5.6, canonical QPSK) + `tbl:table14` (ch06) ← `results/modulation/*.json`
+- `tbl:table24` (ch06) ← `results/all_relays_16class/` — loses its cGAN row; ch06 prose currently cites cGAN's 16-class failure (0.353/0.282) and must stop
+- `tbl:table15` (ch06) ← `results/qam16_activation/` — lean 5-relay set
+- `tbl:table8` (ch05, hypothesis H4) ← `results/normalized_3k/3k_rayleigh.json`
+- §5.2's lean-set paragraph, which was written when only the AWGN companion was lean
+Then: `python3 verify_thesis_tables.py`, cold `latexmk -xelatex`, `pytest tests/`.
+
+## Why the re-run covers everything, not just the AWGN/BPSK tables
+Two findings from scoping it, both worth not re-deriving:
+1. **Every learned relay trains through `awgn_channel`** (`relaynet/utils/activations.py:214`). The 3 dB fix therefore moved the trained *weights*, so Rayleigh and QPSK/16-QAM results are stale too — even though `fading.py` was never touched and complex modulations never hit the corrected real-noise branch. Do not assume "channel unchanged ⇒ results valid" in this repo.
+2. **`results/bpsk_comparison/rayleigh.json` (source of the canonical headline table) carried `created=2026-03-23`.** Its Aug-17 mtime was just the restore-copy made after an earlier lean run overwrote it. **Judge result freshness by the `created` field inside the JSON, never by file mtime** — a pre-fix backup copy looks fresh to `ls`.
+
+## Re-run in flight (`scripts/rerun_all_experiments.sh`, started 16:56Z)
+7 stages, sequential (4 cores, no CUDA). cGAN dropped everywhere per the lean instruction. Two tiers, deliberately not uniform: **breadth (8 relays)** for 7.2/7.3, 7.10, 7.8, 7.17 — those tables exist to compare architectures, and `tbl:table8` *is* hypothesis H4, so leaning them would delete findings rather than shrink them; **lean (AF/DF/MLP/Transformer/Mamba-2)** for the 7.11 and 7.13 activation ablations, where the variable is the activation and 7.13 is 12 combinations.
+Order: 7.1 ✅(7s) → 7.2 → 7.10 → 7.17 → 7.8 → 7.11 → 7.13, chosen so an interruption still leaves the load-bearing tables refreshed. Est. 12–16 h. Logs in `results/rerun_logs/`.
+`--skip-relays` had to be fixed first: it matched literal display names, but one relay appears as "MLP (169p)"/"MLP-3K"/"MLP 16-cls", so lean runs of 7.8 and 7.17 silently skipped nothing. Now family-based (`relay_family()`), mamba2 tested before mamba_s6.
+
 ## Latest: canonical restructure — Rayleigh carries BPSK **and** QPSK; AWGN is the baseline
 Swapped what Ch5 and Ch6 each own. Previously Ch5's headline comparison ran on AWGN/BPSK (the one channel Appendix E comment 4 says the thesis draws no conclusions from) while QPSK-on-the-canonical-channel sat in the extension chapter — backwards. Now:
 - **§5.2 "Simulation Baseline: AWGN Calibration"** — AWGN's role stated up front: it is where closed forms exist, so it is what the simulator is validated against. Its relay comparison (Table 5.5, **lean set AF/DF/MLP/Transformer/Mamba-2**, 0–8 dB) is a baseline; no relay is ranked on it. Cut at 8 dB because beyond that every relay reads zero at any feasible bit budget (20 dB AWGN needs ~6.6e24 bits).
@@ -15,7 +59,7 @@ Swapped what Ch5 and Ch6 each own. Previously Ch5's headline comparison ran on A
 **Open follow-ups (NOT done):**
 1. **Ch6's AWGN tables `tbl:table14`/`table15`/`table24` are still on the pre-correction AWGN convention** — they predate the 3 dB `sigma^2 = N0/2` fix and need a re-run (~1 h each even on the lean set). The verifier does not cover them (see its own "informational" footer).
 2. **Ch7 flat-channel control passes by 0.0097 against a 0.010 tolerance** — margin too thin to trust; needs a larger trial budget or a defended tighter tolerance.
-3. **Overleaf push still blocked** — the agent proxy 403s `git.overleaf.com`, Overleaf bans force-push, and project `69cd8f24043dbf2a2982370` carries 163 objects of unrelated history. Unresolved; no workaround found from inside the container.
+3. ~~Overleaf push~~ — **CLOSED, do not attempt. The user syncs Overleaf manually** (instruction, 2026-08-17: "Stop overleaf sync I will do it manually"). The `overleaf` remote (`git.overleaf.com/69cd8f24043dbf2a2982370`) is deliberately left configured because the user needs it; its presence is **not** an invitation to push. Do not run `git push overleaf`, do not rebuild `git subtree` splits, and do not reopen the problem — the agent proxy 403s that host anyway, Overleaf bans the force-push the divergent history would need, and the project carries 163 objects of unrelated history. Deliver work by pushing to `claude/porting-md-file-l6xzsr` on GitHub and leave the Overleaf leg to the user.
 
 ## Latest: MIMO equalization section REMOVED (completing AK comments 2/4/6)
 Audited all 17 supervisor (AK) comments in `thesis/ak_comments.json` against Appendix E — all 17 documented, and the verifiable claims hold EXCEPT two gaps found:
@@ -254,3 +298,21 @@ Recompiled clean: 0 undefined refs, 142 pages (was 139).
 
 ## Immediate next step
 Overleaf push still pending — `git.overleaf.com` is blocked by this environment's egress policy, and the user's local GitHub Desktop attempt hit `git subtree` ancestry errors (the Overleaf project has 163 objects of unrelated history) plus an Overleaf server-side force-push ban. Unresolved.
+
+## Latest (2026-08-19): Coded block-DF added — new experiment, not a re-run
+User asked to actually measure the caveat Remark `rem:df-terminology` had only asserted ("the reported DF results should not be read as bounds on coded block-DF performance"), then to sweep constraint length "low to max K=7" across both QPSK and 16-QAM, then to write it into the thesis (abstract EN+HE, intro/system model, other chapters where applicable).
+
+**New code** (`relaynet/coding/`): `ConvolutionalEncoder`/`ViterbiCodeDecoder`, rate-1/2, generalized from a hardcoded K=3 to K∈{3,5,7} via standard maximal-free-distance generators. The Viterbi decode step was rewritten from a nested-Python-loop ACS to a fully vectorized one (every trellis state has exactly 2 predecessors sharing one input bit — a direct consequence of the generic shift-register update) — ~15-20x faster, needed to make K=7's 64-state trellis practical; verified numerically identical to the unvectorized version first. 16-QAM needed a genuinely separate decoder (`convolutional_qam16.py`, `QAM16CodeDecoder`): its 2-bit Gray mapping onto one PAM-4 level is not decomposable into independent per-bit soft observations the way QPSK's is, so this has its own joint-level branch metric, kept as a separate class rather than risk destabilizing the QPSK decoder while a background job depended on it. `CodedDecodeAndForwardRelay`/`...QAM16` implement genuine block DF (decode full frame, re-encode, re-modulate, forward) via the standard `.process()` relay interface.
+
+**Learned relays**: reused existing architectures on the new coded task rather than building new ones — `MLPQPSKClassifierRelay` (unchanged, retrained on coded windows, window widened to 21) and the Mamba-S6 module from `checkpoints/checkpoint_20_mamba_s6_relay.py` (raw `MambaRelay`, not `MambaRelayWrapper` — its `.train()`/`.process()` are hardcoded to per-axis real classification or the 16-QAM-only 2-D classifier, neither of which is a QPSK joint 4-class classifier over coded windows, so training/inference went directly against the underlying module).
+
+**Findings** (results/coded_df_experiment.json): (1) coded block-DF beats uncoded symbol-wise DF above ~8 dB but is *worse* below ~4-6 dB — the classic conv-code error-propagation threshold, sharper for stronger K; a K-sweep found larger K does NOT monotonically help within this frame length (200 info bits)/trial budget (K=3 stayed competitive with or ahead of K=5/K=7 almost everywhere). (2) Neither coded-aware learned relay beats the classical Viterbi decoder even with real temporal structure to exploit (unlike the canonical memoryless channel's "no temporal structure" finding) — same H2/H3 pattern, Mamba-S6 (24k params) showing no clear edge over the 756-param MLP.
+
+**Mistake made and caught**: the completed Mamba-S6-coded run's results were merged to disk but not committed before a later `git checkout` (reverting an unrelated smoke-test corruption) silently reverted the file to its pre-Mamba state. Caught by checking `git log` against the actual JSON keys before proceeding; restored from the completed run's own logged output (not recomputed/altered) and committed immediately. **Lesson: commit real experiment output the moment it's confirmed good, before doing any further `git checkout` on the same file for an unrelated reason** — checkout reverts to the last commit, not to "whatever's safe to discard."
+
+**Thesis integration**: new §5.x + subsection in `ch05_experiments.tex` (`tbl:table34`-`36`), forward-pointers from Ch1's remark and system-model paragraph, Ch8's limitations/future-work items rewritten from prospective to retrospective, English abstract extended, Hebrew abstract found stale (still on the pre-four-layer-ladder framing from earlier this session) and rewritten paragraph-for-paragraph to match — flagged to the user as machine-produced Hebrew needing native/domain review. Also fixed a second leftover BPSK-canonical error found along the way (Ch8 limitations list: "core experiments use BPSK" → QPSK is canonical). `verify_thesis_tables.py` extended with `check_table34/35/36`; caught one real rounding transcription error (0.157745 written as 0.1578, fixed to 0.1577) before it shipped.
+
+**Verification**: cold `xelatex→bibtex→xelatex→xelatex` exit 0, 150 pages (was 146 at session start), 0 undefined refs, 0 bidi errors, Hebrew pages visually inspected as rendered images. `verify_thesis_tables.py`: 421 cells, 0 inconsistencies (was 349). `pytest tests/`: 138 passing (was 119; +19 in `tests/test_coding.py`).
+
+## Immediate next step
+Overleaf bundles (`thesis_overleaf.zip`/`thesis_overleaf_clean.zip`) not yet rebuilt after this pass — do that next if the user wants updated zips. Otherwise none pending — awaiting user direction.

@@ -11,6 +11,40 @@ produced it.
 
 ---
 
+## [AWGN companion removed from Chapter 5] — 2026-08-17
+
+### Removed — the AWGN relay comparison in the canonical section
+
+Chapter 5's canonical section carried three tables: the canonical Rayleigh
+BPSK comparison, an AWGN companion comparison on a lean relay set, and
+QPSK-versus-BPSK on Rayleigh. The AWGN companion is now gone, and
+QPSK/Rayleigh takes its place as the canonical section's second table.
+
+Removed: `tbl:table2awgn` and its two paragraphs, and `fig:fig10awgn`
+(`results/awgn_comparison_ci.png`, which stays in the repo but is no longer
+referenced). The §5.3 configuration line no longer advertises an AWGN
+companion and now records the modulation as BPSK and QPSK.
+
+**AWGN's remaining role is calibration only.** Section 5.2 is unchanged: the
+theory-versus-simulation validation still runs on AWGN, because the closed
+forms the simulator is checked against are AWGN expressions. What is gone is
+any *relay* measured on AWGN in the canonical chapter. Appendix E's response
+to comment 4 is updated to say exactly that, since it previously cited the
+now-removed companion table as part of AWGN's bounded role.
+
+### Changed — verifier
+
+`check_table2awgn` removed from `verify_thesis_tables.py` along with its
+entry in the source map and the check registry. Suite goes from 352 to
+**327 cells, 0 inconsistencies** — the 25 lost cells are the companion's.
+
+### Verification
+
+Cold `latexmk -xelatex`: exit 0, **146 pages** (was 149), **0 undefined
+references**. `verify_thesis_tables.py`: 327 cells, 0 inconsistencies.
+
+---
+
 ## [Canonical restructure: Rayleigh with BPSK and QPSK] — 2026-08-17
 
 ### Changed — QPSK on Rayleigh moved into Chapter 5 as canonical; AWGN demoted to baseline

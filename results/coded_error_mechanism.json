@@ -1,0 +1,52 @@
+{
+  "n_trials": 20,
+  "n_frames": 500,
+  "results": {
+    "16": {
+      "coded_df": {
+        "ber": 0.004282,
+        "relay_sym_er": 0.005067326732673267,
+        "repaired_frac": 0.15497850722938644,
+        "fer": 0.461,
+        "bit_err_per_failed_frame": 1.857700650759219
+      },
+      "mlp_coded": {
+        "ber": 0.004603,
+        "relay_sym_er": 0.010750990099009901,
+        "repaired_frac": 0.5718533867477091,
+        "fer": 0.427,
+        "bit_err_per_failed_frame": 2.1559718969555037
+      },
+      "oracle": {
+        "ber": 0.002192,
+        "relay_sym_er": 0.0,
+        "repaired_frac": null,
+        "fer": 0.265,
+        "bit_err_per_failed_frame": 1.6543396226415095
+      }
+    },
+    "20": {
+      "coded_df": {
+        "ber": 0.0013555,
+        "relay_sym_er": 0.0018272277227722772,
+        "repaired_frac": 0.25816580872392303,
+        "fer": 0.1982,
+        "bit_err_per_failed_frame": 1.3678102926337032
+      },
+      "mlp_coded": {
+        "ber": 0.001001,
+        "relay_sym_er": 0.003902970297029703,
+        "repaired_frac": 0.7435286656519533,
+        "fer": 0.1373,
+        "bit_err_per_failed_frame": 1.458120903131828
+      },
+      "oracle": {
+        "ber": 0.000655,
+        "relay_sym_er": 0.0,
+        "repaired_frac": null,
+        "fer": 0.1031,
+        "bit_err_per_failed_frame": 1.270611057225994
+      }
+    }
+  }
+}

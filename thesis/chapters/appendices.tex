@@ -93,25 +93,19 @@ PyTorch (CUDA) \\
 \hline
 \end{tabularx}
 
-\caption{Comparison of relay models, training objectives, parameter counts, and implementations.}
+\caption[Relay models, objectives and parameter counts]{Comparison of relay models, training objectives, parameter counts, and implementations.}
 \label{tab:relay_comparison}
 \end{table}
 
-\section{Appendix C: Software Architecture}\label{sec:appendix-c-software-architecture}
+\section{Appendix C: Reproducibility}\label{sec:appendix-c-software-architecture}
 
-\noindent
-All numerical results reported in chapter \ref{sec:experiments} were generated using the framework shown in figure \ref{fig:relaynet_uml}, ensuring consistent evaluation across classical and learning-based relay architectures.The project is implemented as a modular Python package (\texttt{relaynet}).
-The framework uses object-oriented design with a common \texttt{Relay} base class, enabling polymorphic relay swapping. Monte Carlo simulation is implemented in \texttt{runner.py} with configurable trial count, bit count, and SNR range. All tensor operations use vectorized PyTorch for GPU acceleration.
-
-\subsection{Testing} 108 automated tests (pytest) cover the channels, modulation, relay-strategy, simulation and statistics modules with a 100\% pass rate. The suite requires only NumPy and SciPy; PyTorch is optional and needed solely by the neural relays that use it.
+\subsection{Testing} 159 automated tests (pytest) cover the channels, modulation, relay-strategy, simulation and statistics modules with a 100\% pass rate. The suite requires only NumPy and SciPy; PyTorch is optional and needed solely by the neural relays that use it.
 
 \subsection{Reproducibility} Random seeds are controlled at the source (bit generation) and noise (per-trial seeding) levels to ensure reproducible results.
-\begin{figure}[bt]
-\centering
-\includegraphics[width=\textwidth,scale=1.0]{results/relaynet_sw_architecture.png}
-\caption{UML-style component diagram of the \texttt{relaynet} simulation framework.}
-\label{fig:relaynet_uml}
-\end{figure}
+
+\paragraph{Re-measurement of all results.} Every simulation result was re-measured after three faults were found in the earlier data: a $3$~dB error in the AWGN noise convention, which propagated into the \emph{training} data of every learned relay and so moved results on channels the fault never touched; tables measured on pairings the thesis had withdrawn; and result files predating the relays they reported. The published numbers are those of the re-measurement, at $10$ trials $\times\ 10{,}000$ bits per SNR point.
+
+Two written conclusions changed as a consequence and are stated in their revised form in the body: hypothesis H4 is now confirmed at high SNR and rejected at low, rather than confirmed outright; and the VAE relay does not fail, the earlier failure being attributed to a superseded implementation rather than to the noise convention, which a controlled A/B rules out.
 
 
 
@@ -149,8 +143,46 @@ Mamba-2-3K & 3,004 & 11 & d\_model=15, d\_state=6, chunk\_size=8, layers=1 \\
 \end{longtable}
 }
 
-All 3K configurations use a window size of 11 (vs.~5 for the original MLP/Hybrid and 7 for the original VAE/cGAN); the original sequence models already used 11. 
+All 3K configurations use a window size of 11 (vs.~5 for the original MLP/Hybrid and 7 for the original VAE/cGAN); the original sequence models already used 11.
 The parameter counts are within ±1.2\% of the 3,000 target.
+
+\section{Appendix E: Master Experiment Ledger}\label{sec:appendix-e-master-experiment-ledger}
+
+Every numerical table and figure in this thesis traces to exactly one committed result file, verified cell-by-cell against that file by \texttt{verify\_thesis\_tables.py} in the code repository (Section~\ref{sec:reproducibility-and-weight-management}). This ledger lists the modulation, channel, and result source for each major study, grouped in the order they appear.
+
+{\footnotesize
+\begin{longtable}[]{@{}p{0.19\linewidth}p{0.11\linewidth}p{0.13\linewidth}p{0.09\linewidth}p{0.40\linewidth}@{}}
+\caption[Master experiment ledger]{Master experiment ledger: modulation, channel, and result-file provenance for every major study.}\label{tbl:ledger}\tabularnewline
+\toprule\noalign{}
+Study & Modulation & Channel & Tbl/Fig & Result source \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+Study & Modulation & Channel & Tbl/Fig & Result source \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Canonical benchmark & QPSK & Rayleigh & tbl:2, fig:10 & \url{results/modulation/qpsk_rayleigh.json} \\
+Normalized 3K-param.\ comparison & QPSK & Rayleigh & tbl:8 & \url{results/normalized_3k/3k_rayleigh.json} \\
+Coded block-DF, $K$-sweep & QPSK & Rayleigh & tbl:34, 35 & \url{results/coded_df_experiment.json} \\
+Coded high-SNR paired re-test & QPSK & Rayleigh & tbl:37 & \url{results/coded_high_budget_test.json} \\
+Coded relay-error mechanism & QPSK & Rayleigh & tbl:38 & \url{results/coded_error_mechanism.json} \\
+Coded soft-decision relaying & QPSK & Rayleigh & tbl:39 & \url{results/coded_soft_decision.json} \\
+Equal-throughput \& latency & QPSK, 16-QAM & Rayleigh & tbl:40, 41 & \url{results/coded_latency_throughput.json} \\
+Adaptive modulation/coding (AMC) & QPSK, 16-QAM & Rayleigh & tbl:42 & \url{results/coded_rate_adaptation.json} \\
+Capacity under a latency budget & QPSK, 16-QAM & Rayleigh & tbl:43 & \url{results/coded_latency_capacity.json} \\
+Unknown ISI (layer 2) & BPSK & AWGN / Rayleigh (2nd hop) & tbl:E6 & \url{e6_unknown_channel_results/e6_sim_ported_results.npy} + \url{e6_viterbi_*.npy} \\
+Flat-channel control & BPSK & AWGN / Rayleigh & tbl:E6flat & \url{e6_flat_ported_results.npy} \\
+Unknown ISI, QPSK generalization & QPSK & AWGN / Rayleigh & tbl:E6qpsk & \url{e6_qpsk_unknown_channel_results.npy} \\
+Composite impairment cascade & DBPSK & AWGN / Rayleigh & E6composite & \url{e6_composite_ported_results.npy} \\
+Partial posterior (pilot sweep) & BPSK & AWGN / Rayleigh & E6partial & \url{e6_partial_ported_results.npy} \\
+Blind channel (layer 4) & BPSK & AWGN / Rayleigh & E6blind & \url{e6_blind_ported_results.npy} \\
+Four-layer summary & mixed (above) & mixed (above) & tbl:layers & combination of the above \\
+\end{longtable}
+}
+
+The result files above are themselves generated by named, committed scripts (e.g.\ \texttt{coded\_rate\_adaptation.py} produces \texttt{coded\_rate\_adaptation.json}); the correspondence between script and output file is one-to-one and is not separately tabulated here since the filenames make it explicit.
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 

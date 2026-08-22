@@ -255,13 +255,15 @@
 % \counterwithout{footnote}{chapter}
 
 %-------------------------------------
-% reviewer mode :comment the two lines below for reviewing the thesis
-\newcommand{\AK}[1]{{\color{blue} \textbf{AK:} #1}}
-\newcommand{\GZ}[1]{{\color{red!70!black} \textbf{GZ:} #1}}
-\newcommand{\REV}[1]{{\color{teal!70!black} \footnote{\textbf{} #1}}}
-% Final mode: comment the two lines above and use: 
-% \newcommand{\AK}[1]{} 
-% \newcommand{\REV}[1]{}
+% Final submission mode: revision-history annotations (AK/GZ/REV) are
+% suppressed from the compiled output. Re-enable the block below (and
+% comment out the no-op definitions) to see them again while editing.
+% \newcommand{\AK}[1]{{\color{blue} \textbf{AK:} #1}}
+% \newcommand{\GZ}[1]{{\color{red!70!black} \textbf{GZ:} #1}}
+% \newcommand{\REV}[1]{{\color{teal!70!black} \footnote{\textbf{} #1}}}
+\newcommand{\AK}[1]{}
+\newcommand{\GZ}[1]{}
+\newcommand{\REV}[1]{}
 
 \newenvironment{revblock}%
   {\par\medskip\begingroup\color{teal!70!black}\noindent\textbf{REV (reviewer):}\space\ignorespaces}%
@@ -380,7 +382,6 @@ under the supervision of Dr. Anatoly Khina and Prof. Raja Giryes\\
 \phantomsection
 \addcontentsline{toc}{chapter}{\listtablename}
 \listoftables
-\AK{You need to use square-brackets to display more concise table and figure titles in the corresponding lists.}
 \clearpage
 
 % \usepackage[left]{lineno} 
@@ -392,7 +393,8 @@ under the supervision of Dr. Anatoly Khina and Prof. Raja Giryes\\
 \include{chapters/ch03_objectives}
 \include{chapters/ch04_methods}
 \include{chapters/ch05_experiments}
-\include{chapters/ch06_experiments_extension_Higher_Order_Modulation}
+% 16-QAM extension chapter removed to meet the page budget (see RERUN_CHANGELOG).
+% \include{chapters/ch06_experiments_extension_Higher_Order_Modulation}
 \include{chapters/ch07_unknown_and_mismatch_channels}
 \include{chapters/ch08_discussion}
 \include{chapters/ch09_summary}
@@ -400,36 +402,12 @@ under the supervision of Dr. Anatoly Khina and Prof. Raja Giryes\\
 % \include{chapters/references}
 \bibliography{chapters/references.bib}
 \include{chapters/appendices}
-\include{chapters/ak_response_appendix}
-\include{chapters/appendix_f_review}
-
-%% ── Title Page ───────────────────────────────────────────────
-\begin{titlepage}
-\begin{center}
-\vspace*{0.5cm}
-\begin{otherlanguage}{hebrew}
-
-{\LARGE\textbf{אוניברסיטת תל-אביב}}\\[6pt]
-{\large הפקולטה להנדסה ע"ש איבי ואלדר פליישמן}\\[4pt]
-{\large בית הספר להנדסת חשמל}\\[1.5cm]
-
-\noindent\rule{\textwidth}{2pt}\\[0.4cm]
-{\LARGE\bfseries
-ארכיטקטורות למידה עמוקה לתקשורת ממסר דו-קפיצתית: מחקר השוואתי של אסטרטגיות ממסר קלאסיות ומבוססות רשתות נוירונים}\\[6pt]
-\noindent\rule{\textwidth}{2pt}\\[1.2cm]
-
-{\large חיבור זה הוגש כעבודת גמר לקראת התואר "מוסמך אוניברסיטה"}\\[4pt]
-{\large בהנדסת חשמל ואלקטרוניקה באוניבסיטת תל-אביב}\\[1.5cm]
-
-{\large על-ידי}\\[6pt]
-{\Large\bfseries גיל צוקרמן}\\[1.5cm]
-
-{\large\textbf{ניסן תשפ"ו}}\\[1.5cm]
-
-\vfill
-\end{otherlanguage}
-\end{center}
-\end{titlepage}
+% Review-response appendices (supervisor-comment log, independent review
+% findings) are retained in the repository for the audit trail but
+% excluded from the final submitted manuscript, which should read as a
+% clean scholarly record rather than carry its own revision history.
+% \include{chapters/ak_response_appendix}
+% \include{chapters/appendix_f_review}
 
 %% ── Title Page ───────────────────────────────────────────────
 \begin{titlepage}

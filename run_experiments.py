@@ -1026,6 +1026,31 @@ _CHANNELS = {
     "rayleigh":     ("Rayleigh Fading",  rayleigh_fading_channel),
 }
 
+# The thesis evaluates exactly three (modulation, channel) configurations,
+# not the full 3x2 cross product. Each pairing is deliberate:
+#
+#   bpsk  x awgn      the calibration reference. AWGN is the only channel
+#                     with exact closed forms — Q(sqrt(2 Eb/N0)) single-hop,
+#                     2P(1-P) two-hop DF — so it is where the simulator can
+#                     be proved correct rather than merely compared.
+#   qpsk  x rayleigh  the canonical operating point. Rayleigh is the channel
+#                     the thesis draws conclusions on, and QPSK places one
+#                     bit on each axis the complex baseband already has, so
+#                     the identical I/Q-split relays handle it unchanged.
+#   qam16 x rayleigh  the extension. Four levels per axis break the per-axis
+#                     relay formulation, which is the whole reason 16-QAM
+#                     is studied separately — and it is studied on the
+#                     canonical channel, not on AWGN.
+#
+# The three omitted pairings (qpsk/qam16 on AWGN, bpsk on Rayleigh) are not
+# oversights. AWGN earns its place as a measuring stick, and a measuring
+# stick only needs the one constellation whose closed form is being checked.
+CANONICAL_PAIRS = [
+    ("bpsk",  "awgn"),
+    ("qpsk",  "rayleigh"),
+    ("qam16", "rayleigh"),
+]
+
 _SECTION_MAP = {
     "awgn":      "7.2",
     "rayleigh":  "7.3",
@@ -1058,7 +1083,14 @@ def exp_7_2_to_7_7_relay_comparison(args):
     out = os.path.join(args.results_dir, "bpsk_comparison")
     os.makedirs(out, exist_ok=True)
 
+    # BPSK is paired with AWGN only (see CANONICAL_PAIRS): AWGN is the
+    # calibration reference and BPSK is the constellation whose closed form
+    # is being checked. BPSK on Rayleigh was dropped from the thesis, so
+    # running it here would write a results file nothing reads.
     for ch_key, (ch_name, ch_fn) in _CHANNELS.items():
+        if ("bpsk", ch_key) not in CANONICAL_PAIRS:
+            print(f"\n  [skip] BPSK x {ch_name} — not a canonical pairing")
+            continue
         sec = _SECTION_MAP[ch_key]
         print(f"\n  §{sec} — {ch_name}")
         results = evaluate_relays(
@@ -1113,8 +1145,12 @@ def exp_7_8_normalized_3k(args):
         for name, relay in relays_3k.items():
             if name in ("AF", "DF"):
                 continue
-            if wm.load(name, relay, subdir="3k"):
-                print(f"  Loaded {name}")
+            # --retrain must force training here as it does elsewhere; this
+            # branch used to consult the cache unconditionally, so a re-run
+            # asked to retrain silently reused old weights and finished in
+            # a fraction of the expected time.
+            if not args.retrain and wm.load(name, relay, subdir="3k"):
+                print(f"  Loaded {name} (cached; --retrain to force)")
                 continue
             print(f"  Training {name} …", end=" ", flush=True)
             t0 = perf_counter()
@@ -1129,16 +1165,22 @@ def exp_7_8_normalized_3k(args):
         for name, relay in relays_3k.items():
             wm.load(name, relay, subdir="3k")
 
+    # Pair each channel with its canonical constellation (CANONICAL_PAIRS):
+    # Rayleigh carries QPSK, AWGN carries BPSK. Defaulting to BPSK here would
+    # evaluate the 3K models on BPSK-over-Rayleigh, a pairing the thesis does
+    # not report -- a real constellation on a complex channel.
     for ch_key, (ch_name, ch_fn) in _CHANNELS.items():
+        mod = next((m for m, c in CANONICAL_PAIRS if c == ch_key), "bpsk")
         print(f"  {ch_name} …")
         results = evaluate_relays(
             relays_3k, snr_range, channel_fn=ch_fn,
+            modulation=mod,
             bits_per_trial=args.bits_per_trial,
             num_trials=args.num_trials,
         )
         save_results_json(
             os.path.join(out, f"3k_{ch_key}.json"), snr_range, results,
-            meta={"experiment": "7.8", "channel": ch_name},
+            meta={"experiment": "7.8", "channel": ch_name, "modulation": mod},
         )
         ber_dict = {n: r["ber_mean"] for n, r in results.items()}
         ci_dict = {n: (r["ci_lower"], r["ci_upper"]) for n, r in results.items()}
@@ -1211,32 +1253,29 @@ def exp_7_10_modulation_comparison(args):
     else:
         train_base_relays(relays, args, modulation="bpsk")
 
-    modulations = ["bpsk", "qpsk", "qam16"]
-    channels = [("awgn", None), ("rayleigh", rayleigh_fading_channel)]
-
     all_results = {}
-    for mod in modulations:
-        for ch_key, ch_fn in channels:
-            tag = f"{mod}_{ch_key}"
-            print(f"\n  {mod.upper()} × {ch_key.upper()}")
-            results = evaluate_relays(
-                relays, snr_range, channel_fn=ch_fn,
-                modulation=mod,
-                bits_per_trial=args.bits_per_trial,
-                num_trials=args.num_trials,
-            )
-            all_results[tag] = results
-            save_results_json(
-                os.path.join(out, f"{tag}.json"), snr_range, results,
-                meta={"experiment": "7.10", "modulation": mod, "channel": ch_key},
-            )
-            ber_dict = {n: r["ber_mean"] for n, r in results.items()}
-            ci_dict = {n: (r["ci_lower"], r["ci_upper"]) for n, r in results.items()}
-            plot_ber_chart(
-                snr_range, ber_dict, ci_dict,
-                title=f"{mod.upper()} — {ch_key.upper()} (§7.10)",
-                save_path=os.path.join(out, f"{tag}_ci.png"),
-            )
+    for mod, ch_key in CANONICAL_PAIRS:
+        ch_fn = _CHANNELS[ch_key][1]
+        tag = f"{mod}_{ch_key}"
+        print(f"\n  {mod.upper()} × {ch_key.upper()}")
+        results = evaluate_relays(
+            relays, snr_range, channel_fn=ch_fn,
+            modulation=mod,
+            bits_per_trial=args.bits_per_trial,
+            num_trials=args.num_trials,
+        )
+        all_results[tag] = results
+        save_results_json(
+            os.path.join(out, f"{tag}.json"), snr_range, results,
+            meta={"experiment": "7.10", "modulation": mod, "channel": ch_key},
+        )
+        ber_dict = {n: r["ber_mean"] for n, r in results.items()}
+        ci_dict = {n: (r["ci_lower"], r["ci_upper"]) for n, r in results.items()}
+        plot_ber_chart(
+            snr_range, ber_dict, ci_dict,
+            title=f"{mod.upper()} — {ch_key.upper()} (§7.10)",
+            save_path=os.path.join(out, f"{tag}_ci.png"),
+        )
 
     print(f"\n  §7.10 complete → {out}/")
 
@@ -1258,7 +1297,12 @@ def exp_7_11_qam16_activation(args):
         "hardtanh": {"act": "hardtanh", "cr": clip_range, "mod": "qam16"},
     }
 
-    for ch_key, ch_fn in [("awgn", None), ("rayleigh", rayleigh_fading_channel)]:
+    # Evaluation is 16-QAM throughout, so this study runs on 16-QAM's
+    # canonical channel only (CANONICAL_PAIRS). Sweeping AWGN as well would
+    # report a complex constellation on the calibration channel, which the
+    # thesis does not evaluate.
+    qam_channels = [(c, _CHANNELS[c][1]) for m, c in CANONICAL_PAIRS if m == "qam16"]
+    for ch_key, ch_fn in qam_channels:
         print(f"\n  Channel: {ch_key.upper()}")
         all_ber = {}
         all_ci = {}
@@ -1529,6 +1573,7 @@ def exp_7_17_16class_2d(args):
 
     training_snrs = [5, 10, 15, 20, 25]
     modulation = "qam16"
+    qam_channel = next(c for m, c in CANONICAL_PAIRS if m == "qam16")
 
     # Quick-mode reductions
     if args.quick:
@@ -1579,10 +1624,14 @@ def exp_7_17_16class_2d(args):
         # Evaluate
         print(f"    Evaluating BER …", end=" ", flush=True)
         t0 = perf_counter()
+        # Omitting channel_fn silently defaults to awgn_channel, which put
+        # this 16-QAM study on the calibration channel. It runs on 16-QAM's
+        # canonical channel (CANONICAL_PAIRS), like every other 16-QAM result.
         snrs, bers, trials = run_monte_carlo(
             relay, snr_range,
             num_bits_per_trial=args.bits_per_trial,
             num_trials=args.num_trials,
+            channel_fn=_CHANNELS[qam_channel][1],
             modulation=modulation,
         )
         ci_lo, ci_hi = compute_confidence_interval(trials)
@@ -1600,10 +1649,14 @@ def exp_7_17_16class_2d(args):
     print("  Computing AF & DF baselines …")
     for bname, relay in [("AF", AmplifyAndForwardRelay()),
                           ("DF", DecodeAndForwardRelay())]:
+        # Same channel as the learned variants above. Omitting channel_fn
+        # here put the AF/DF baselines on AWGN while everything they are
+        # compared against ran on Rayleigh -- a table spanning two channels.
         _, bers, trials = run_monte_carlo(
             relay, snr_range,
             num_bits_per_trial=args.bits_per_trial,
             num_trials=args.num_trials,
+            channel_fn=_CHANNELS[qam_channel][1],
             modulation=modulation,
         )
         ci_lo, ci_hi = compute_confidence_interval(trials)

@@ -8,11 +8,9 @@ cell by cell, against the numbers currently transcribed in the LaTeX
 flagged.
 
 Data sources, by table:
-  tbl:table2            canonical Rayleigh BER, 9 relays   <- results/bpsk_comparison/rayleigh.json
-  tbl:table2awgn        AWGN companion BER, lean 5-relay set <- results/bpsk_comparison/awgn.json
-  tbl:table14ray        QPSK vs BPSK on Rayleigh, 9 relays  <- results/modulation/{bpsk,qpsk}_rayleigh.json
+  tbl:table2            canonical QPSK/Rayleigh BER        <- results/modulation/qpsk_rayleigh.json
+  tbl:layers            four-layer argument summary        <- e6_{sim,viterbi,partial,blind} npy
   tbl:table8            normalized-3K Rayleigh BER         <- results/normalized_3k/3k_rayleigh.json
-  tbl:table14           modulation BER (AWGN)              <- results/bpsk_comparison/awgn.json (+ modulation)
   tbl:table24           4-class vs 16-class @20 dB         <- results/all_relays_16class/all_relays_16class.json
   tbl:tableE6           unknown-channel BER                <- e6_unknown_channel_results/*.npy
   tbl:tableE6flat       flat-channel control BER           <- e6_unknown_channel_results/e6_flat_ported_results.npy
@@ -22,6 +20,15 @@ Data sources, by table:
   prose:E6blind         blind-regime prose claims          <- e6_unknown_channel_results/e6_blind_ported_results.npy
   prose:E6partial       pilot-sweep prose claims           <- e6_unknown_channel_results/e6_partial_ported_results.npy
   prose:E6composite     composite-cascade prose claims     <- e6_unknown_channel_results/e6_composite_ported_results.npy
+  tbl:table34           coded block-DF vs uncoded/learned  <- results/coded_df_experiment.json
+  tbl:table35           coded-DF K-sweep, QPSK              <- results/coded_df_experiment.json
+  tbl:table36           coded-DF K-sweep, 16-QAM            <- results/coded_df_experiment.json
+  tbl:table37           paired high-SNR re-measurement      <- results/coded_high_budget_test.json
+  tbl:table38           relay-output error diagnostic       <- results/coded_error_mechanism.json
+  tbl:table39           soft- vs hard-decision relaying     <- results/coded_soft_decision.json
+  tbl:table40           equal-throughput coded vs uncoded   <- results/coded_latency_throughput.json
+  tbl:table42           link-adaptation envelope            <- results/coded_rate_adaptation.json
+  tbl:table43           envelope under a latency budget     <- results/coded_latency_capacity.json
 
 Timing tables (tbl:table13, tbl:table25) report machine-dependent wall-clock and
 are checked only for their deterministic content (parameter counts); the timing
@@ -43,6 +50,7 @@ import subprocess
 import sys
 
 import numpy as np
+from scipy.special import exp1
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 TEX_DIR = os.path.join(ROOT, "thesis", "chapters")
@@ -151,6 +159,7 @@ class Report:
         self.flags = []          # (table, where, published, source, diff)
         self.skipped = []        # (table, reason)
         self.tables = []         # (table, n_checked, n_flag)
+        self.notes = []          # (table, partial-coverage reason)
 
     def cell(self, table, where, pub_text, pub_val, src_val):
         # unresolved / non-numeric published cell -> skip silently
@@ -175,6 +184,16 @@ class Report:
 
     def skip(self, table, reason):
         self.skipped.append((table, reason))
+
+    def note(self, table, reason):
+        """Record a partial-coverage note without skipping the whole table.
+
+        Distinct from skip(): the table is still checked, but one row could
+        not be, typically because the relay was dropped from a lean re-run.
+        Recording it keeps the omission visible instead of letting the cell
+        count quietly shrink.
+        """
+        self.notes.append((table, reason))
 
 
 # ----------------------------------------------------------------------------
@@ -215,15 +234,23 @@ def json_ber(path, relay, snr, snrs):
 
 
 def check_table2(tex, rep):
-    """Canonical Rayleigh BER, 9 relays x SNR (tbl:table2) vs rayleigh.json."""
+    """Canonical Rayleigh BER, 9 relays x SNR (tbl:table2) vs rayleigh.json.
+
+    Column 3, "DF (theory)", is not simulated data -- it is the closed-form
+    two-hop composition 2P(1-P), P = ber_rayleigh(snr_db - 3.0103dB), the
+    QPSK Es/N0 -> per-bit Eb/N0 correction (Section~sec:rayleigh-two-hop-df-ber).
+    """
     T = "tbl:table2"; before = rep.checked
     body = table_body(tex, T)
     if body is None:
         return rep.skip(T, "label not found in tex")
-    # tex column order (after SNR): AF DF MLP Hybrid VAE CGAN Transformer Mamba-S6 Mamba2
-    cols = ["AF", "DF", "GenAI (169p)", "Hybrid", "VAE",
-            "CGAN (WGAN-GP)", "Transformer", "Mamba S6", "Mamba2 (SSD)"]
-    d = json.load(open(os.path.join(ROOT, "results/bpsk_comparison/rayleigh.json")))
+    # tex column order (after SNR): AF DF DF-theory MLP Hybrid VAE Transformer Mamba-S6 Mamba2.
+    # The canonical setup is QPSK on Rayleigh -- BPSK is paired with the AWGN
+    # calibration channel instead -- so this reads the QPSK result file. The
+    # cGAN was excluded from the re-run and has no column.
+    cols = ["AF", "DF", None, "MLP (169p)", "Hybrid", "VAE",
+            "Transformer", "Mamba S6", "Mamba2 (SSD)"]
+    d = json.load(open(os.path.join(ROOT, "results/modulation/qpsk_rayleigh.json")))
     snrs = d["snr_range"]
     for row in data_rows(body):
         if not row or row[0][1] is None:
@@ -235,70 +262,96 @@ def check_table2(tex, rep):
         for c, relay in enumerate(cols, start=1):
             if c >= len(row):
                 break
+            if relay is None:  # DF (theory) column
+                pub_text, pub_val = row[c]
+                p1 = ber_rayleigh(snr - 3.0103)
+                src = 2 * p1 * (1 - p1)
+                rep.cell(T, f"{snr}dB/DF(theory)", pub_text, pub_val, src)
+                continue
+            key = resolve(d["results"], relay)
+            if key is None:
+                if snr == snrs[0]:
+                    rep.note(T, f"{relay}: absent from the re-run, column not checked")
+                continue
             pub_text, pub_val = row[c]
-            src = d["results"][relay]["ber_mean"][si]
+            src = d["results"][key]["ber_mean"][si]
             rep.cell(T, f"{snr}dB/{relay}", pub_text, pub_val, src)
     rep.finish_table(T, before)
 
 
-def check_table2awgn(tex, rep):
-    """AWGN companion BER, 9 relays x SNR (tbl:table2awgn) vs bpsk_comparison/awgn.json."""
-    T = "tbl:table2awgn"; before = rep.checked
+def check_layers_table(tex, rep):
+    """The four-layer summary (tbl:layers) vs the data each layer cites.
+
+    This table restates numbers that live in four different result files, so
+    it is the single easiest place in the thesis for a figure to drift out of
+    step with its source -- which is exactly what happened once, when a
+    hand-copied layer-2 floor was written down at half its true value after
+    the (2, n_snr) e6_sim array was averaged over the wrong axis. Every cell
+    is therefore pinned here.
+    """
+    T = "tbl:layers"; before = rep.checked
     body = table_body(tex, T)
     if body is None:
         return rep.skip(T, "label not found in tex")
-    # Lean relay set: the AWGN companion was regenerated on the corrected
-    # Eb/N0 axis with Hybrid, VAE, cGAN and Mamba-S6 skipped, so those
-    # columns are absent rather than carried over from the old convention.
-    cols = ["AF", "DF", "MLP (169p)", "Transformer", "Mamba2 (SSD)"]
-    d = json.load(open(os.path.join(ROOT, "results/bpsk_comparison/awgn.json")))
-    snrs = d["snr_range"]
-    for row in data_rows(body):
-        if not row or row[0][1] is None:
-            continue
-        snr = int(row[0][1])
-        if snr not in snrs:
-            continue
-        si = snrs.index(snr)
-        for c, relay in enumerate(cols, start=1):
-            if c >= len(row):
-                break
-            pub_text, pub_val = row[c]
-            src = d["results"][relay]["ber_mean"][si]
-            rep.cell(T, f"{snr}dB/{relay}", pub_text, pub_val, src)
-    rep.finish_table(T, before)
 
+    sim = _load_e6_npy("e6_sim_ported_results.npy")
+    blind = _load_e6_npy("e6_blind_ported_results.npy")
+    partial = _load_e6_npy("e6_partial_ported_results.npy")
+    vit = _load_e6_npy("e6_viterbi_awgn.npy")
+    if sim is None or blind is None or partial is None or vit is None:
+        return rep.skip(T, "one or more e6 npy files missing")
 
-def check_table14ray(tex, rep):
-    """QPSK vs BPSK on canonical Rayleigh (tbl:table14ray) vs modulation/*.json."""
-    T = "tbl:table14ray"; before = rep.checked
-    body = table_body(tex, T)
-    if body is None:
-        return rep.skip(T, "label not found in tex")
-    b = json.load(open(os.path.join(ROOT, "results/modulation/bpsk_rayleigh.json")))
-    q = json.load(open(os.path.join(ROOT, "results/modulation/qpsk_rayleigh.json")))
-    snrs = b["snr_range"]
-    # tex row label -> json relay key
-    key = {"AF": "AF", "DF": "DF", "MLP (169p)": "GenAI (169p)", "Hybrid": "Hybrid",
-           "VAE": "VAE", "cGAN": "CGAN (WGAN-GP)", "Transformer": "Transformer",
-           "Mamba-S6": "Mamba S6", "Mamba-2 SSD": "Mamba2 (SSD)"}
-    # columns after the label: (BPSK,QPSK) at 0, 8, 16, 20 dB
-    col_snr = [(1, 0), (3, 8), (5, 16), (7, 20)]
-    for row in data_rows(body):
-        if not row:
-            continue
-        name = row[0][0].strip()
-        k = key.get(name)
-        if k is None:
-            continue
-        for c, snr in col_snr:
-            if c + 1 >= len(row):
-                break
-            si = snrs.index(snr)
-            pb, vb = row[c]
-            rep.cell(T, f"{name}/BPSK/{snr}dB", pb, vb, b["results"][k]["ber_mean"][si])
-            pq, vq = row[c + 1]
-            rep.cell(T, f"{name}/QPSK/{snr}dB", pq, vq, q["results"][k]["ber_mean"][si])
+    snrs = list(sim["snrs"])
+    i8, i20 = snrs.index(8), snrs.index(20)
+    S1 = sim["results"]["S1: unknown ISI -> AWGN"]
+    S4 = sim["results"]["S4 control: Rayleigh -> Rayleigh (canonical)"]
+
+    # Layer 1: the canonical control -- DF vs MLP at 8 dB.
+    for label, key, src in [("L1/DF@8dB", r"DF \$([\d.]+)\$ against", S4["DF"][0][i8]),
+                            ("L1/MLP@8dB", r"MLP's \$([\d.]+)\$ at 8~dB", S4["MLP"][0][i8])]:
+        m = re.search(key, body)
+        if m:
+            rep.cell(T, label, m.group(1), float(m.group(1)), src)
+
+    # Layer 2: DF's non-monotonic rise, the MLP recovery, the Viterbi lead.
+    m = re.search(r"DF rising from \$([\d.]+)\$ at 8~dB to \$([\d.]+)\$ at 20~dB", body)
+    if m:
+        rep.cell(T, "L2/DF@8dB", m.group(1), float(m.group(1)), S1["DF"][0][i8])
+        rep.cell(T, "L2/DF@20dB", m.group(2), float(m.group(2)), S1["DF"][0][i20])
+    m = re.search(r"restores the link \(\$([\d.]+)\$ at 8~dB\)", body)
+    if m:
+        rep.cell(T, "L2/MLP@8dB", m.group(1), float(m.group(1)), S1["MLP"][0][i8])
+    m = re.search(r"ahead by 1--1\.5~dB \(\$([\d.]+)\$\)", body)
+    if m:
+        rep.cell(T, "L2/VITgenie@8dB", m.group(1), float(m.group(1)),
+                 np.array(vit["VIT-genie"])[i8])
+
+    # Layer 3: the pilot-budget crossover at the 10 dB operating point.
+    pa = partial["panel_a"]
+    m = re.search(r"holds \$([\d.]+)\$ on 200 pilots and \$([\d.]+)\$ on 20", body)
+    if m:
+        rep.cell(T, "L3/est-200pilot", m.group(1), float(m.group(1)), np.array(pa[200]).ravel()[0])
+        rep.cell(T, "L3/est-20pilot", m.group(2), float(m.group(2)), np.array(pa[20]).ravel()[0])
+    m = re.search(r"pilot-free MLP's \$([\d.]+)\$", body)
+    if m:
+        rep.cell(T, "L3/MLPref", m.group(1), float(m.group(1)),
+                 float(np.array(partial["mlp_ref"]).ravel()[0]))
+    m = re.search(r"by 10 pilots it has degraded to \$([\d.]+)\$", body)
+    if m:
+        rep.cell(T, "L3/est-10pilot", m.group(1), float(m.group(1)), np.array(pa[10]).ravel()[0])
+
+    # Layer 4: blind regime at 20 dB, plus the unstable DD-MLSE tail.
+    bs = blind["summary"]; bsnr = list(blind["snrs"])
+    b16, b20 = bsnr.index(16), bsnr.index(20)
+    m = re.search(r"MLP reaches \$([\d.]+)\$ against CMA's \$([\d.]+)\$", body)
+    if m:
+        rep.cell(T, "L4/MLP@20dB", m.group(1), float(m.group(1)), bs["MLP-169"][0][b20])
+        rep.cell(T, "L4/CMA@20dB", m.group(2), float(m.group(2)), bs["CMA-blind"][0][b20])
+    m = re.search(r"worse at 20~dB \(\$([\d.]+)\$\) than at 16~dB \(\$([\d.]+)\$\)", body)
+    if m:
+        rep.cell(T, "L4/VITblind@20dB", m.group(1), float(m.group(1)), bs["Viterbi-blind"][0][b20])
+        rep.cell(T, "L4/VITblind@16dB", m.group(2), float(m.group(2)), bs["Viterbi-blind"][0][b16])
+
     rep.finish_table(T, before)
 
 
@@ -322,8 +375,13 @@ def check_table8(tex, rep):
         for c, relay in enumerate(cols, start=1):
             if c >= len(row):
                 break
+            key = resolve(d["results"], relay)
+            if key is None:
+                if snr == snrs[0]:
+                    rep.note(T, f"{relay}: absent from the re-run, column not checked")
+                continue
             pub_text, pub_val = row[c]
-            src = d["results"][relay]["ber_mean"][si]
+            src = d["results"][key]["ber_mean"][si]
             rep.cell(T, f"{snr}dB/{relay}", pub_text, pub_val, src)
     rep.finish_table(T, before)
 
@@ -337,25 +395,266 @@ def check_table24(tex, rep):
     d = json.load(open(os.path.join(ROOT, "results/all_relays_16class/all_relays_16class.json")))
     snrs = d["snr_range"]; i20 = snrs.index(20)
     # tex row label -> json key stem
-    stem = {"MLP": "MLP", "VAE": "VAE", "CGAN": "CGAN", "Hybrid": "Hybrid",
-            "trans-former": "Transformer", "Transformer": "Transformer",
-            "Mamba S6": "Mamba-S6", "Mamba2": "Mamba2", "Mamba2(ssd)": "Mamba2"}
+    # Row labels are matched case-insensitively with separators stripped, so
+    # that "Mamba-2 SSD" in the tex and "Mamba2" in the json line up. The
+    # previous literal map missed cGAN, Mamba-S6, Mamba-2 SSD, AF and DF --
+    # five of the nine rows -- and the table still reported OK on the four it
+    # did check.
+    stem = {"mlp": "MLP", "vae": "VAE", "cgan": "CGAN", "hybrid": "Hybrid",
+            "transformer": "Transformer", "mambas6": "Mamba-S6",
+            "mamba2": "Mamba2", "mamba2ssd": "Mamba2",
+            "af": "AF", "df": "DF"}
     for row in data_rows(body):
         if not row:
             continue
-        name = row[0][0].replace("\\\\", "").replace("\n", "").strip()
-        key = stem.get(name)
+        raw = row[0][0].replace("\\\\", "").replace("\n", "").strip()
+        norm = re.sub(r"[^a-z0-9]", "", raw.lower())
+        key = stem.get(norm)
         if key is None:
+            if raw and raw.lower() != "relay":
+                rep.note(T, f"row {raw!r}: no json mapping, not checked")
             continue
         # col1 = 4-cls @20, col2 = 16-cls @20
         for c, suff in ((1, "4-cls"), (2, "16-cls")):
             if c >= len(row):
                 break
             pub_text, pub_val = row[c]
-            jk = f"{key} {suff}"
+            jk = key if key in ("AF", "DF") else f"{key} {suff}"
             if jk in d["results"]:
                 src = d["results"][jk]["ber_mean"][i20]
-                rep.cell(T, f"{name}/{suff}@20dB", pub_text, pub_val, src)
+                rep.cell(T, f"{raw}/{suff}@20dB", pub_text, pub_val, src)
+    rep.finish_table(T, before)
+
+
+def check_table34(tex, rep):
+    """Coded block-DF vs. uncoded DF / learned relays (tbl:table34) vs coded_df_experiment.json."""
+    T = "tbl:table34"; before = rep.checked
+    body = table_body(tex, T)
+    if body is None:
+        return rep.skip(T, "label not found in tex")
+    d = json.load(open(os.path.join(ROOT, "results/coded_df_experiment.json")))
+    snrs = d["snr_db"]
+    cols = ["uncoded_df", "coded_af", "coded_df", "mlp_coded", "mamba_coded"]
+    for row in data_rows(body):
+        if not row or row[0][1] is None:
+            continue
+        snr = int(row[0][1])
+        if snr not in snrs:
+            continue
+        si = snrs.index(snr)
+        for c, key in enumerate(cols, start=1):
+            if c >= len(row):
+                break
+            pub_text, pub_val = row[c]
+            rep.cell(T, f"{snr}dB/{key}", pub_text, pub_val, d[key][si])
+    rep.finish_table(T, before)
+
+
+def check_table35(tex, rep):
+    """Coded-DF BER vs. constraint length, QPSK (tbl:table35) vs coded_df_experiment.json."""
+    T = "tbl:table35"; before = rep.checked
+    body = table_body(tex, T)
+    if body is None:
+        return rep.skip(T, "label not found in tex")
+    d = json.load(open(os.path.join(ROOT, "results/coded_df_experiment.json")))
+    snrs = d["snr_db"]
+    ks = ["K3", "K5", "K7"]
+    for row in data_rows(body):
+        if not row or row[0][1] is None:
+            continue
+        snr = int(row[0][1])
+        if snr not in snrs:
+            continue
+        si = snrs.index(snr)
+        for c, k in enumerate(ks, start=1):
+            if c >= len(row):
+                break
+            pub_text, pub_val = row[c]
+            rep.cell(T, f"{snr}dB/{k}", pub_text, pub_val, d["k_sweep"][k]["ber"][si])
+    rep.finish_table(T, before)
+
+
+def check_table36(tex, rep):
+    """Coded-DF BER vs. constraint length, 16-QAM (tbl:table36) vs coded_df_experiment.json."""
+    T = "tbl:table36"; before = rep.checked
+    body = table_body(tex, T)
+    if body is None:
+        return rep.skip(T, "label not found in tex")
+    d = json.load(open(os.path.join(ROOT, "results/coded_df_experiment.json")))
+    snrs = d["snr_db"]
+    for row in data_rows(body):
+        if not row or row[0][1] is None:
+            continue
+        snr = int(row[0][1])
+        if snr not in snrs:
+            continue
+        si = snrs.index(snr)
+        pub_text, pub_val = row[1]
+        rep.cell(T, f"{snr}dB/uncoded", pub_text, pub_val, d["qam16_uncoded_df"][si])
+        for c, k in enumerate(["K3", "K5", "K7"], start=2):
+            if c >= len(row):
+                break
+            pub_text, pub_val = row[c]
+            rep.cell(T, f"{snr}dB/{k}", pub_text, pub_val, d["qam16_k_sweep"][k]["ber"][si])
+    rep.finish_table(T, before)
+
+
+def check_table37(tex, rep):
+    """Paired high-SNR re-measurement (tbl:table37) vs coded_high_budget_test.json."""
+    T = "tbl:table37"; before = rep.checked
+    body = table_body(tex, T)
+    if body is None:
+        return rep.skip(T, "label not found in tex")
+    d = json.load(open(os.path.join(ROOT, "results/coded_high_budget_test.json")))
+    label_map = {"coded-df": "coded_df", "mlp-coded": "mlp_coded", "mamba-coded": "mamba_coded"}
+    snr = None
+    for row in data_rows(body):
+        if not row:
+            continue
+        # rows are either "16 dB & coded-DF & ..." or " & MLP-coded & ..."
+        first = row[0][0].strip()
+        m = re.match(r"(\d+)\s*dB", first)
+        if m:
+            snr = m.group(1)
+        if snr is None or len(row) < 3:
+            continue
+        name = re.sub(r"[^a-z0-9-]", "", row[1][0].strip().lower())
+        key = label_map.get(name)
+        if key is None or snr not in d["summary"]:
+            continue
+        src = float(np.mean(d["per_trial"][snr][key]))
+        pub_text, pub_val = row[2]
+        rep.cell(T, f"{snr}dB/{key}", pub_text, pub_val, src)
+    rep.finish_table(T, before)
+
+
+def check_table38(tex, rep):
+    """Error-location diagnostic (tbl:table38) vs coded_error_mechanism.json."""
+    T = "tbl:table38"; before = rep.checked
+    body = table_body(tex, T)
+    if body is None:
+        return rep.skip(T, "label not found in tex")
+    d = json.load(open(os.path.join(ROOT, "results/coded_error_mechanism.json")))["results"]
+    label_map = {"coded-df": "coded_df", "mlp-coded": "mlp_coded", "oracle": "oracle"}
+    snr = None
+    for row in data_rows(body):
+        if not row:
+            continue
+        first = row[0][0].strip()
+        m = re.match(r"(\d+)\s*dB", first)
+        if m:
+            snr = m.group(1)
+        if snr is None or len(row) < 5 or snr not in d:
+            continue
+        name = re.sub(r"[^a-z0-9-]", "", row[1][0].strip().lower())
+        key = label_map.get(name)
+        if key is None:
+            continue
+        src = d[snr][key]
+        # relay symbol ER (col 2) and final BER (col 4); "---" cells parse to None
+        if row[2][1] is not None:
+            rep.cell(T, f"{snr}dB/{key}/relay_sym_er", row[2][0], row[2][1], src["relay_sym_er"])
+        if row[4][1] is not None:
+            rep.cell(T, f"{snr}dB/{key}/ber", row[4][0], row[4][1], src["ber"])
+    rep.finish_table(T, before)
+
+
+def check_table39(tex, rep):
+    """Soft- vs hard-decision relaying (tbl:table39) vs coded_soft_decision.json."""
+    T = "tbl:table39"; before = rep.checked
+    body = table_body(tex, T)
+    if body is None:
+        return rep.skip(T, "label not found in tex")
+    d = json.load(open(os.path.join(ROOT, "results/coded_soft_decision.json")))["summary"]
+    cols = ["coded_df", "soft_df", "mlp_hard", "mlp_soft", "oracle"]
+    for row in data_rows(body):
+        if not row or row[0][1] is None:
+            continue
+        snr = str(int(row[0][1]))
+        if snr not in d:
+            continue
+        for c, key in enumerate(cols, start=1):
+            if c >= len(row):
+                break
+            pub_text, pub_val = row[c]
+            rep.cell(T, f"{snr}dB/{key}", pub_text, pub_val, d[snr][key]["mean"])
+    rep.finish_table(T, before)
+
+
+def check_table40(tex, rep):
+    """Equal-throughput comparison (tbl:table40) vs coded_latency_throughput.json."""
+    T = "tbl:table40"; before = rep.checked
+    body = table_body(tex, T)
+    if body is None:
+        return rep.skip(T, "label not found in tex")
+    d = json.load(open(os.path.join(ROOT, "results/coded_latency_throughput.json")))
+    rows = {int(r["snr_db"]): r for r in d["equal_throughput"]}
+    for row in data_rows(body):
+        if not row or row[0][1] is None:
+            continue
+        snr = int(row[0][1])
+        if snr not in rows or len(row) < 3:
+            continue
+        rep.cell(T, f"{snr}dB/uncoded_qpsk", row[1][0], row[1][1], rows[snr]["uncoded_qpsk"])
+        rep.cell(T, f"{snr}dB/coded_qam16", row[2][0], row[2][1], rows[snr]["coded_qam16"])
+    rep.finish_table(T, before)
+
+
+def ergodic_rayleigh_capacity(snr_db):
+    """Ergodic Rayleigh (unconstrained-input Shannon) capacity, bits/complex use."""
+    g = 10 ** (snr_db / 10.0)
+    return math.log2(math.e) * math.exp(1.0 / g) * exp1(1.0 / g)
+
+
+def check_table42(tex, rep):
+    """Link-adaptation envelope (tbl:table42) vs coded_rate_adaptation.json.
+
+    Column 6, "C (Shannon)", is not simulated -- it is the closed-form
+    ergodic Rayleigh capacity, an upper-bound sanity ceiling on goodput.
+    """
+    T = "tbl:table42"; before = rep.checked
+    body = table_body(tex, T)
+    if body is None:
+        return rep.skip(T, "label not found in tex")
+    d = json.load(open(os.path.join(ROOT, "results/coded_rate_adaptation.json")))
+    env = {"blockdf": {r["snr_db"]: r for r in d["envelope"]["blockdf"]},
+           "denoise": {r["snr_db"]: r for r in d["envelope"]["denoise"]}}
+    for row in data_rows(body):
+        if not row or row[0][1] is None:
+            continue
+        snr = int(row[0][1])
+        if snr not in env["blockdf"] or len(row) < 5:
+            continue
+        rb, rd = env["blockdf"][snr], env["denoise"][snr]
+        if row[2][1] is not None:
+            rep.cell(T, f"{snr}dB/blockdf_goodput", row[2][0], row[2][1], rb["goodput"])
+        if row[4][1] is not None:
+            rep.cell(T, f"{snr}dB/denoise_goodput", row[4][0], row[4][1], rd["goodput"])
+        if len(row) >= 6 and row[5][1] is not None:
+            rep.cell(T, f"{snr}dB/capacity", row[5][0], row[5][1],
+                     ergodic_rayleigh_capacity(snr))
+    rep.finish_table(T, before)
+
+
+def check_table43(tex, rep):
+    """Latency-constrained envelope (tbl:table43) vs coded_latency_capacity.json."""
+    T = "tbl:table43"; before = rep.checked
+    body = table_body(tex, T)
+    if body is None:
+        return rep.skip(T, "label not found in tex")
+    d = json.load(open(os.path.join(ROOT, "results/coded_latency_capacity.json")))
+    snap = {r["snr_db"]: r for r in d["snapshot"]}
+    for row in data_rows(body):
+        if not row or row[0][1] is None:
+            continue
+        snr = int(row[0][1])
+        if snr not in snap or len(row) < 5:
+            continue
+        rb, rd = snap[snr]["blockdf"], snap[snr]["denoise"]
+        if row[2][1] is not None:
+            rep.cell(T, f"{snr}dB/blockdf_goodput", row[2][0], row[2][1], rb["goodput"])
+        if row[4][1] is not None:
+            rep.cell(T, f"{snr}dB/denoise_goodput", row[4][0], row[4][1], rd["goodput"])
     rep.finish_table(T, before)
 
 
@@ -687,6 +986,33 @@ def check_table26(tex, rep):
     rep.finish_table(T, before)
 
 
+# ----------------------------------------------------------------------------
+# relay-name aliases
+# ----------------------------------------------------------------------------
+# The minimal MLP was renamed from "GenAI (169p)" to "MLP (169p)" (and
+# "GenAI-3K" to "MLP-3K"), so a result file's spelling depends on when it was
+# produced. Three separate checks have already been silently disabled by a
+# KeyError on the old name -- the table reports "skipped" and its cells stop
+# being counted, which is exactly the failure mode a verifier must not have.
+# Every lookup goes through resolve() so a rename costs nothing, and a relay
+# genuinely absent from a run (the cGAN in a lean re-run) is reported as
+# missing rather than raising.
+RELAY_ALIASES = {
+    "GenAI (169p)": ["GenAI (169p)", "MLP (169p)"],
+    "MLP (169p)":   ["MLP (169p)", "GenAI (169p)"],
+    "GenAI-3K":     ["GenAI-3K", "MLP-3K"],
+    "MLP-3K":       ["MLP-3K", "GenAI-3K"],
+}
+
+
+def resolve(results, name):
+    """Return the key *name* goes by in *results*, or None if absent."""
+    for cand in RELAY_ALIASES.get(name, [name]):
+        if cand in results:
+            return cand
+    return None
+
+
 def check_ber_validation(tex, rep):
     """Calibration table (tab:ber_validation_long).
 
@@ -757,9 +1083,15 @@ def main():
 
     tex = load_tex()
     rep = Report()
-    checks = [check_ber_validation, check_table26, check_table2, check_table2awgn, check_table14ray, check_table8,
-              check_table24, check_tableE6, check_tableE6flat, check_tableE6qpsk,
-              check_E6blind_prose, check_E6partial_prose, check_E6composite_prose]
+    # check_ber_validation / check_table26 / check_table24 / check_table35 / check_table36 retired: the AWGN
+    # calibration section and the 16-QAM extension chapter were removed from the
+    # thesis (see thesis/RERUN_CHANGELOG.md). Their functions are kept below so
+    # the checks can be restored if the material ever returns.
+    checks = [check_table2, check_layers_table, check_table8,
+              check_tableE6, check_tableE6flat, check_tableE6qpsk,
+              check_E6blind_prose, check_E6partial_prose, check_E6composite_prose,
+              check_table34,
+              check_table37, check_table38, check_table39, check_table40, check_table42, check_table43]
     for chk in checks:
         try:
             chk(tex, rep)
@@ -778,6 +1110,11 @@ def main():
     for name, reason in rep.skipped:
         print(f"{name:<24}{'-':>8}{'-':>10}   skipped: {reason}")
     print("-" * 74)
+    if rep.notes:
+        print("Partial coverage (table checked, some rows not):")
+        for name, reason in rep.notes:
+            print(f"  [{name}] {reason}")
+        print("-" * 74)
     print(f"cells checked: {rep.checked}   inconsistencies: {len(rep.flags)}")
 
     if rep.flags:
@@ -790,8 +1127,6 @@ def main():
     print("\nInformational (not pass/fail):")
     print("  tbl:table13, tbl:table25 report machine-dependent wall-clock timing;")
     print("  re-run run_experiments.py / the sequence-model benchmark to refresh those.")
-    print("  tbl:table14/15 (modulation/activation) draw from results/qam16_activation/")
-    print("  and results/modulation/*.json; add mappings here if you change those tables.")
 
     return 1 if rep.flags else 0
 

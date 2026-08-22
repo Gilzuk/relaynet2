@@ -1,68 +1,54 @@
 \section{Appendix E: Response to Supervisor Comments}\label{sec:appendix-response-to-comments}
 
-This appendix reproduces each comment raised by the supervisor (\textbf{AK}) on the previous draft, together with its resolution (\textbf{GZ}). Because the revision restructured the thesis around a single canonical setup (Section~\ref{sec:introduction}) and, in doing so, \emph{removed} several sections that the earlier draft contained, resolutions that entailed deletion are flagged explicitly with \textbf{[SECTION REMOVED]} so that the change is transparent.
+This appendix records every comment raised by the supervisor (\textbf{AK}) on the previous draft, and its resolution (\textbf{GZ}), condensed to a paraphrase of each. Each comment was treated as a required change: where something was identified as wrong or out of scope it was corrected or removed, and where it could not be acted on within the uncoded, single-relay scope of this work, that is stated plainly and carried into future work rather than argued against. \textbf{[Removed]} marks a resolution that deleted material rather than fixing it; the restructure around one canonical setup (Section~\ref{sec:introduction}) removed the Rician-robustness study, the $2\times2$ MIMO second hop and its ZF/LMMSE/SIC equalization, 16-PSK, the CSI-injection ablation, the end-to-end autoencoder, and the diversity--multiplexing-tradeoff and MIMO-capacity background passages, all driven by the single comment (Ch.~2, \#4) asking for one fixed model instead of several mixed together.
 
-\subsection*{Chapter 1: Introduction}
-
-\begin{enumerate}
-
-\item \AK{Abstract is missing.}\\
-\GZ{Resolved. The English and Hebrew abstracts are included via \texttt{chapters/frontmatter.tex} and \texttt{chapters/hebrew\_abstract.tex} respectively, and both were rewritten to match the final (canonical) scope.}
-
-\item \AK{There are compilation errors. Would be good to resolve them.}\\
-\GZ{Resolved. The missing-brace errors and a duplicate \texttt{\textbackslash listoflistequations} were fixed; the project compiles cleanly under XeLaTeX with zero undefined references.}
-
-\item \AK{There are compilation errors. Would be good to resolve them. (second instance)}\\
-\GZ{Resolved together with the item above; the second flagged location shared the same root cause.}
-
-\item \AK{Unusual citation.}\\
-\GZ{Resolved. The inline \texttt{source: [\ldots]} annotations placed under equations were removed throughout, and equation attributions now use standard \texttt{\textbackslash cite} references (e.g.\ Proakis, Goodfellow et al.).}
-
-\item \AK{This is not causal\ldots{} [regarding the symmetric relay window $x_R[i]=f_\theta(y_R[i-w:i+w])$]}\\
-\GZ{Addressed and formalised as Remark~\ref{rem:window-causality}. The symmetric window is non-causal in the streaming sense but fully realizable in the half-duplex, store-and-forward setting: the relay buffers the entire listening-phase block before transmitting, so by the time $x_R[i]$ is computed all samples $y_R[i-w:i+w]$ have been received. The window costs a fixed processing latency of $w$ symbols; AF/DF use $w=0$ (strictly causal). This is analysed quantitatively in the latency discussion of Section~\ref{sec:latency-and-adaptivity-considerations}.}
-
-\item \AK{This is the transmitted signal by the relay.}\\
-\GZ{Resolved; the surrounding sentence was corrected and the time index restored.}
-
-\item \AK{The time axis is missing. Aggregation of information can be useful, especially when incorporating an error correction code. Do you allow only scalar operations at the relay?}\\
-\GZ{Resolved. The time index is restored, and the relay is explicitly \emph{not} restricted to scalar processing: learned relays use a length-$2w+1$ sliding window ($w>0$), while AF and symbol-wise DF are memoryless ($w=0$). The uncoded setting is stated up front; the value of temporal aggregation is in fact a central theme of the principal contribution (Chapter~\ref{sec:unknown-channels}), where the window is what allows the learned relay to equalise unknown intersymbol interference.}
-
-\item \AK{I agree that AF is memoryless but DF is not. Information-theoretic DF works in blocks to incorporate a strong (capacity-achieving over a single link) code and recovers the message at the end of the time block. You may of course use simple slicing, but this won't do much good.}\\
-\GZ{Addressed and formalised as Remark~\ref{rem:df-terminology}. The thesis studies \emph{symbol-wise} (slicing) DF and now states this explicitly wherever DF appears, distinguishing it from information-theoretic block-DF. The distinction is load-bearing in the results: the high-SNR optimality of symbol-wise DF (H2) is explicitly \emph{not} claimed to carry over to the coded block-DF setting, and a coded block-DF comparison is identified as the leading item of future work (Chapter~\ref{sec:discussion-and-conclusions}).}
-
-\end{enumerate}
-
-\subsection*{Chapter 2: Literature Review}
-
-\begin{enumerate}
-
-\item \AK{You haven't defined the system model so this discussion seems out of place.}\\
-\GZ{Resolved. The system-model definition was moved to Chapter~\ref{sec:introduction}; Chapter~\ref{sec:literature-review} is now a pure literature review, and the MIMO background section carries a one-sentence pointer noting it supports only the deferred material.}
-
-\item \AK{The relevance to this equation is not clear. Also, what do you mean by scaling? Isn't that the capacity for any SNR?}\\
-\textbf{[SECTION REMOVED]} \GZ{The capacity/scaling passage was part of the MIMO capacity discussion. In the canonical restructure the entire MIMO thread was removed from the main line of the thesis (see comment~4 below), so the unclear equation no longer appears. The residual capacity material retained as background was corrected to avoid the ambiguous ``scaling'' phrasing.}
-
-\item \AK{Here you introduce fading for the first time. You could've done that already in the SISO case. Also, now the channels are complex whereas up until now they were real (and with fixed known gains).}\\
-\GZ{Resolved. The model conventions were unified: the canonical channel is i.i.d.\ Rayleigh fast fading in complex baseband from the outset. For SISO Hop~1, BPSK is transmitted on the real axis and the receiver applies coherent compensation and takes $\Re\{\cdot\}$, which is the sufficient statistic; this reconciles the earlier real-valued derivations with the complex model and is stated once in Chapter~\ref{sec:introduction}.}
-
-\item \AK{Why not recovering both then? You keep jumping between multiple settings: no-fading/slow-fading/fast-fading, real/complex, SISO/MIMO. Please define one model that you've tackled and stick to it, unless you've actually tackled several settings. Then, each of them deserves a separate chapter.}\\
-\textbf{[SECTION REMOVED]} \GZ{This was the decisive comment behind the restructure. The thesis now fixes \emph{one} canonical setup (SISO on both hops, i.i.d.\ Rayleigh fast fading, complex baseband, uncoded BER) and varies only the relay function. The canonical setup reports both constellations the complex baseband natively carries, BPSK and QPSK, on that single fixed channel; this is not a second setting in the sense of the comment, since the topology, channel model, and metric each remain single-valued and QPSK is simply the two-axis use of the same baseband, processed by the identical relays. The one constellation that does require a different relay formulation, 16-QAM, is given its own chapter, exactly as requested. The Rician robustness study, the $2\times2$ MIMO second hop with ZF/LMMSE/SIC equalization, the 16-PSK modulation, the CSI-injection study, and the end-to-end autoencoder were all \emph{removed} from the thesis; each is now listed as future work. The two threads that survive as deliberate, separately-chaptered studies are the higher-order-modulation extension (Chapter~\ref{sec:extensions}) and the unknown-channel contribution (Chapter~\ref{sec:unknown-channels}), each with its own clearly stated configuration, exactly as requested. AWGN is the one channel besides the canonical Rayleigh that is still evaluated, and its role is deliberately bounded: it is the analytical calibration limit against which the simulator is validated (Section~\ref{sec:channel-model-validation-simulative}), and, for BPSK only, a companion relay comparison reported alongside the canonical one (Table~\ref{tbl:table2awgn}). It is not treated as an alternative operating point from which any conclusion is drawn, and no relay is selected or ranked on the basis of it; the canonical setup remains Rayleigh throughout. Retaining AWGN in this bounded role is what makes the calibration of Section~\ref{sec:channel-model-validation-simulative} meaningful, since the closed forms the simulator is checked against are AWGN expressions.}
-
-\item \AK{The diversity--multiplexing tradeoff (DMT) is irrelevant in the ergodic setting. DMT assumes slow fading and discusses performance in the presence of some outage probability.}\\
-\textbf{[SECTION REMOVED]} \GZ{The DMT discussion was removed. The canonical setting is ergodic fast fading with an uncoded-BER metric, for which DMT does not apply; only a single background sentence remains, with no DMT-based claims.}
-
-\item \AK{Why is it needed at all?}\\
-\textbf{[SECTION REMOVED]} \GZ{The flagged passage belonged to the MIMO-equalization background that supported the now-removed MIMO study. With the MIMO thread deferred to future work, the passage was deleted; the remaining equalization background is confined to a clearly-labelled subsection and kept only to the extent needed to define terms used in the future-work discussion.}
-
-\item \AK{It's linear MMSE (LMMSE) unless you work with a Gaussian codebook, which I suspect you do not.}\\
-\GZ{Resolved. All references to ``MMSE'' equalization were corrected to ``LMMSE'' (linear MMSE), since the system uses a BPSK constellation rather than a Gaussian codebook. Note that the MIMO equalization material itself is now future work (comment~4); the terminology was corrected in the retained background nonetheless.}
-
-\item \AK{Again, you can construct a variant that recovers a block code, cancels it out from the measurements, then recovers the next block code, etc.\ [coded SIC]}\\
-\GZ{Acknowledged and scoped. As with block-DF (Ch.~1, comment~8), the thesis studies uncoded, symbol-level processing; coded per-layer SIC is outside the uncoded scope and is named explicitly in the future-work discussion. Since the MIMO study itself is now deferred (comment~4), coded SIC is doubly future work.}
-
-\item \AK{I thought the goal was to replace the various classical strategies with a neural net that would learn what's the best strategy.}\\
-\GZ{This comment reshaped the thesis's central claim, and the response is now the thesis's main finding rather than a rebuttal. The honest result is that a learned relay does \emph{not} universally replace classical strategies: on a matched, known channel symbol-wise DF is at least as good at zero parameter cost (H2). What the learned relay \emph{does} provide (and this is the principal contribution (Chapter~\ref{sec:unknown-channels})) is family-agnostic mitigation when the channel is unknown or mismatched: it restores reliable relaying where memoryless classical relays fail, approaches the model-aware optimum (Viterbi) without knowing the channel family, and does so at constant, parallelizable complexity. The framing is therefore ``characterise when learning helps,'' not ``replace classical processing everywhere'', a change made directly in response to this comment.}
-
-\end{enumerate}
-
-\noindent\textbf{Summary of removed material.} In direct response to comment~4 above, the following were removed from the thesis and redesignated as future work: the Rician channel-robustness study; the $2\times2$ MIMO second hop and its ZF/LMMSE/SIC equalization; 16-PSK modulation; the CSI-injection ablation; and the end-to-end autoencoder. AWGN was \emph{not} removed but confined to the bounded role set out under comment~4 above (calibration, plus a BPSK-only companion comparison); Rician, the other channel family in the earlier draft, was removed outright. The diversity--multiplexing tradeoff discussion (comment~5) and the MIMO-capacity/equalization background passages (comments~2 and~6) were likewise deleted. All removals served the single-canonical-model discipline requested in comment~4, and none affects the validity of the retained results, which were re-run and re-derived entirely within the canonical setup.
+\begin{longtable}[]{@{}p{0.5cm}p{6.3cm}p{7.2cm}@{}}
+\caption[Supervisor comments and resolutions]{Supervisor comments (paraphrased) and their resolutions.}\label{tbl:appE}\tabularnewline
+\toprule\noalign{}
+\# & Comment & Resolution \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\# & Comment & Resolution \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\multicolumn{3}{@{}l}{\textbf{Chapter 1: Introduction}}\\
+1 & Abstract is missing. & Added (\texttt{frontmatter.tex}, \texttt{hebrew\_abstract.tex}). \\
+2 & Compilation errors (two instances). & Fixed; missing braces and a duplicate \texttt{\textbackslash listoflistequations}. \\
+3 & Unusual citation style under equations. & Inline \texttt{source:} annotations replaced with standard \texttt{\textbackslash cite}. \\
+4 & The relay window $y_R[i{-}w{:}i{+}w]$ is not causal. & Accepted. Remark~\ref{rem:window-causality} now states it outright, justified only by half-duplex buffering, with cost quantified as fixed $w$-symbol latency; the causal past-only alternative is named as untested. \\
+5 & Wrong signal labeled as the relay's transmitted signal. & Corrected; time index restored. \\
+6 & Time axis missing; does the relay allow only scalar ops? & Time index restored; relay explicitly not scalar-only ($w{>}0$ window for learned relays, $w{=}0$ for AF/DF). Temporal aggregation is the theme of Chapter~\ref{sec:unknown-channels}. \\
+7 & DF is not symbol-wise unless you mean simple slicing; block-DF uses a capacity-achieving code. & Formalised as Remark~\ref{rem:df-terminology}: the thesis studies symbol-wise DF only, stated wherever DF appears; H2's optimality claim is scoped away from coded block-DF, later measured directly (Section~\ref{sec:coded-block-df}). \\
+\multicolumn{3}{@{}l}{\textbf{Chapter 2: Literature Review}}\\
+8 & System model undefined before this discussion. & Moved to Chapter~\ref{sec:introduction}; Ch.~2 is now pure literature review. \\
+9 & Relevance of a capacity/scaling equation unclear. & \textbf{[Removed]} with the MIMO-capacity thread (see \#11); residual background reworded. \\
+10 & Fading introduced late; real vs.\ complex channel inconsistency. & Unified: i.i.d.\ Rayleigh fast fading, complex baseband throughout; BPSK/real-axis case reconciled as the SISO Hop-1 special case. \\
+11 & Model jumps between no-/slow-/fast-fading, real/complex, SISO/MIMO -- fix one, or give each its own chapter. & Accepted; drove the full restructure. One canonical setup fixed (Table~\ref{tbl:configurations}); MIMO, Rician, and mixed-fading variants removed; 16-QAM and unknown channels each given their own chapter. \\
+12 & DMT is irrelevant under ergodic fading. & \textbf{[Removed]}; one background sentence retained, no DMT-based claims. \\
+13 & Why is [MIMO equalization background] needed at all? & \textbf{[Removed]} with the deferred MIMO thread. \\
+14 & ``MMSE'' should be ``LMMSE'' without a Gaussian codebook. & Corrected throughout the retained background. \\
+15 & A coded successive-interference-cancellation variant is possible. & Acknowledged, named in future work; doubly so once MIMO itself was deferred. \\
+16 & Goal was framed as learning replacing classical strategies. & Reframed: DF matches learned relays at zero cost on a matched channel (H2); the contribution is family-agnostic mitigation under unknown/mismatched channels (Chapter~\ref{sec:unknown-channels}). \\
+\multicolumn{3}{@{}l}{\textbf{Second round (abstract, Ch.~1, Ch.~2, front matter)}}\\
+17 & Hebrew compilation errors. & Resolved; builds under XeLaTeX/\texttt{bidi}, 0 errors. \\
+18 & What is ``fixed'' Rayleigh fading? & Reworded throughout to ``i.i.d.\ Rayleigh fast fading, held unchanged across experiments''; per-symbol coefficients $h_1[i],h_2[i]$ are redrawn every symbol -- no link is static. ``Fixed'' retained only for the literally-fixed ISI taps (Ch.~7). \\
+19 & DF is not symbol-wise unless simple slicing. & Same fix as \#7, applied to the abstract; Remark~\ref{rem:df-terminology} referenced. \\
+20 & What's ``compact''? & Replaced with the number: 169 trainable parameters. \\
+21 & DF is capacity-optimal; short blocklengths should be suboptimal. & Accepted; abstract no longer implies general DF optimality, scopes the info-theoretic result to asymptotic coded blocklengths. \\
+22 & Under mismatch, why use DF? & Accepted; DF appears in Ch.~7 only as the incumbent that is shown to fail, not a recommendation. \\
+23 & Please polish the abstract. & Rewritten in full. \\
+24 & Block-DF halves the code blocklength -- can't this be beaten? & Accepted; claim withdrawn, scoped to the uncoded, measured SNR range; whether a coded/soft relay beats DF is stated as open (later measured, Section~\ref{sec:coded-block-df}). \\
+25 & AF beats DF at low SNR; DF is not universally best. & Accepted as general statement; no such crossover occurs in this thesis's own data (DF $0.3337$ vs.\ AF $0.4076$ at 0~dB, Table~\ref{tbl:table2}), stated as such. \\
+26 & MLSE w.r.t.\ what channel? Model in Ch.~1 looks memoryless. & Abstract now introduces the 3-tap ISI filter before invoking Viterbi MLSE matched to it; no code, white noise throughout. \\
+27 & QPSK could replace BPSK on the complex channel. & Accepted; QPSK is now canonical. \\
+28 & QPSK/QAM mentioned in the abstract but not the body. & Accepted; complex channel now carries only 2D constellations (Table~\ref{tbl:configurations}); BPSK confined to the real AWGN calibration channel. \\
+29 & Why use $w{>}0$ under uncoded transmission? & Accepted; canonical relay uses $w{=}0$ ($y_R[i]$ is sufficient on a memoryless channel); $w{>}0$ confined to Ch.~7. \\
+30 & System-model section should either drop the windowed-relay justification or define the competing model in full. & Resolved by the first option; windowed relay and its Viterbi competitor both defined in Ch.~7 instead. \\
+31 & Under white noise and i.i.d.\ fading, how does $w{>}0$ exploit correlation? & Accepted; the passage was wrong and removed -- no correlation exists to exploit under the canonical model; the window's justification is channel memory only (Ch.~7). \\
+32 & Use short-form captions for the Lists of Tables/Figures. & Resolved; long captions given short optional-argument forms. \\
+\multicolumn{3}{@{}l}{\textbf{Later comment (system model)}}\\
+33 & The system model is stated twice (Ch.~1 and Ch.~4) -- either give it a separate chapter or state it once in Ch.~4. & Resolved by the second option: Ch.~1's system-model section is now a short pointer paragraph; the complete model (both hop equations, the coherent-compensation reduction, the noise-variance convention, and both terminology remarks) is stated once, in Section~\ref{sec:system-model-1}. \\
+\end{longtable}
