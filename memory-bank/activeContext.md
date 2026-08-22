@@ -1,52 +1,6 @@
 # Active Context (update this file first, every session)
 
-_Last updated: 2026-08-22_
-
-## CURRENT STATE: merged to main; thesis at 120 pages
-
-PR #15 (`claude/porting-md-file-l6xzsr` -> `main`) merged 2026-08-22. **Work
-on `main` from here** -- the feature branch is fully contained in main and can
-be deleted. Note that `.clinerules/90-safety.md` still names `clean-thesis` as
-the authoritative branch for `chapters/**`; that branch last moved 2026-07-18
-and main is 128 commits ahead of it, so the rule is stale in practice. Left
-unchanged by instruction.
-
-What landed after 2026-08-19, in order:
-
-1. **Theoretical-bounds verification.** DF-theory and single-hop-floor overlays
-   added to Fig. 10 and Table 2; ergodic Rayleigh (Shannon) capacity column
-   added to Table 42. `verify_thesis_tables.py` extended to check both.
-2. **Two rounds of independent review addressed.** Round 1: revision
-   annotations suppressed, master experiment ledger appendix, Limitations for
-   single-seed training and unequal training budgets, multiple-hypothesis
-   caveat, generalization language tightened. Round 2 (five blocking items):
-   stale canonical BERs in Ch.8 replaced from Table 2's 0 dB row; a figure
-   captioned AWGN in a Rayleigh chapter corrected; the false "sequence- and
-   bit-optimal detection coincide for BPSK" claim fixed in both places;
-   **H3 downgraded to Partially supported** and the 11,201-parameter
-   "overfitting" claim withdrawn (that model exists in no results file);
-   **H4 renamed to an equal-parameter-budget comparison**.
-3. **Copilot review.** Three findings, all real: a tail double-count in
-   `coded_latency_capacity.py` (frame lengths 1-2 symbols long; no MCS
-   selection flipped), `NaN` in a results JSON, a sentence fragment in Ch.2.
-   A second pass added two more, fixed here.
-4. **Scope reduction to 120 pages (from 151).** Removed: the 16-QAM extension
-   chapter, the Mamba-S6 study (**H5 dropped -- the thesis now poses H1-H4
-   plus H6**), the AWGN calibration study, the per-architecture runtime table,
-   the constraint-length sweep table (finding kept as a paragraph), and
-   figures that only re-plotted an adjacent table. 16-QAM survives *only* as
-   an MCS rung in the link-adaptation study, with a scope note saying so.
-   Mamba-S6 survives as a data point in the canonical comparison, since
-   dropping one architecture's measured result while keeping its peers would
-   be selective reporting.
-
-Standing verification gates, all green at the merge: `verify_thesis_tables.py`
-389 cells / 0 inconsistencies, 159 tests, cold XeLaTeX rebuild 0 errors /
-0 undefined refs / 0 bidi errors, 120 pages.
-
-**Outstanding before submission:** the Hebrew abstract is machine-produced and
-needs a native speaker; supervisors last saw a six-hypothesis draft, so H5's
-removal needs flagging to them.
+_Last updated: 2026-08-17_
 
 ## DECISION IN FORCE: the cGAN stays out of the results
 

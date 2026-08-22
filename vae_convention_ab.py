@@ -107,8 +107,7 @@ def main():
                    "eval_channel": "rayleigh (untouched by the fix)",
                    "old_arm_reproduces_plateau": bool(plateau)}
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
-    with open(OUT, "w") as fh:
-        json.dump(res, fh, indent=2)
+    json.dump(res, open(OUT, "w"), indent=2)
     print(f"  wrote {OUT}")
 
 
