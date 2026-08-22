@@ -58,21 +58,24 @@ them. Three cases, and conflating them is itself worth flagging:
   `\url{}` breaks at `/` and `_`.
 - Anything that would change the thesis page count. The cap is 120, set by the
   author. Check the count against an actual build rather than against any
-  figure quoted in the repository: `thesis/CHANGELOG.md`, `memory-bank/
-  progress.md` and `memory-bank/activeContext.md` all record earlier builds at
-  146 and 149 pages, from before the 151→120 reduction.
+  figure quoted in the repository: `thesis/CHANGELOG.md`,
+  `memory-bank/progress.md` and `memory-bank/activeContext.md` all record
+  earlier builds at 146 and 149 pages, from before the 151→120 reduction.
 
 ## Conventions that are load-bearing
 
-- **SNR convention:** `γ = 10^(SNR_dB/10)`. The `snr_db` argument sets noise
-  power from the average *symbol* energy, so it is `E_s/N_0`. For BPSK (`k=1`)
-  that is numerically identical to `E_b/N_0`, which is how
-  `tests/test_snr_convention.py` states the convention and why the BPSK closed
-  forms match directly. For QPSK (`k=2`), `E_b/N_0` is 3.01 dB below the stated
-  value, and the thesis applies that conversion explicitly wherever a measured
-  QPSK BER is compared against a closed form. These are the same convention
-  seen at different `k`, not two conventions — but mixing the axes when
-  comparing across constellations silently invalidates the comparison.
+- **SNR convention:** `γ = 10^(SNR_dB/10)`. The `snr_db` passed to the channel
+  functions is always `E_s/N_0` — total symbol energy over noise, computed from
+  the constellation's unit average power. This is documented in
+  `relaynet/modulation/qpsk.py`. The per-bit axis then depends on the
+  constellation: `E_b/N_0 = E_s/N_0 − 10·log₁₀(k)`, so it is the same number
+  for BPSK (`k=1`) and 3.01 dB lower for QPSK (`k=2`).
+  `tests/test_snr_convention.py` describes the convention as `E_b/N_0`, which
+  is correct for what it tests — it exercises BPSK only, where the two
+  coincide. Do not generalise that label to QPSK. Comparing a measured QPSK
+  BER against a closed form without applying the 3.01 dB conversion is a real
+  error, and the thesis applies it explicitly wherever such a comparison is
+  made.
 - **Relay interface:** relays expose `.process(received_signal)`; channels are
   callables `channel(signal, snr_db)`. New components should follow these
   rather than inventing conventions.
