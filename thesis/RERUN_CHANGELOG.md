@@ -1047,3 +1047,36 @@ Same criterion, continued.
 
 **Page count: 120.** Target met. Verified: 389 cells / 0 inconsistencies,
 159 tests, cold rebuild 0 errors / 0 undefined refs / 0 bidi errors.
+
+## Consistency sweep: claims left dangling by the scope reduction
+
+The 151->120 page reduction removed the AWGN calibration study, the 16-QAM
+extension chapter and the Mamba-S6 crossover benchmark, but several claims
+elsewhere still promised them. An examiner following those pointers would
+find nothing. Eight sites corrected; no numerical result touched.
+
+- **Both abstracts claimed a validation the thesis no longer contains.**
+  English and Hebrew both stated the simulator is "first validated against
+  closed-form BPSK error probabilities on an AWGN channel." That section was
+  removed. Both now rest the calibration on the check the thesis does report:
+  symbol-wise DF against the closed-form two-hop composition on the canonical
+  channel, matching to within one percent (Table 2's "DF th." column).
+- **Ch.3 objectives** promised validation "with AWGN/BPSK as the analytical
+  calibration limit" and a "scoped 16-QAM extension"; both removed.
+- **Ch.3 positioning table** claimed "AWGN analytical calibration" and a
+  state-space "crossover benchmark" -- the latter was H5, dropped.
+- **Ch.3** still scoped the canonical hypotheses as H1--H5.
+- **Ch.1 figure caption** listed "the 16-QAM extension" as part of the scope.
+- **Ch.8** described the canonical setup as having "two scoped extensions",
+  and a future-work item asserted "the extension shows joint N-class 2D
+  classification eliminates the 16-QAM floor" -- reworded to pose higher-order
+  constellations as an open question rather than citing a removed result.
+
+Checked and left alone: "nine relay strategies" is still correct (the cGAN is
+described but excluded from results, as both abstracts state), and the AWGN
+noise model in the Ch.2 theory and the MMSE-denoiser rationale are legitimate
+-- they are the noise term, not the removed study.
+
+Verified: cold rebuild 0 errors / 0 undefined refs / 0 bidi errors, still
+**120 pages**; 389 cells / 0 inconsistencies; 159 tests. Hebrew abstract
+re-rendered and checked visually.

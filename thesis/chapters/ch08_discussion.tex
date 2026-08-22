@@ -6,7 +6,7 @@ The canonical core (Chapter~\ref{sec:experiments}) settles hypotheses H1--H4 and
 
 \section{Interpretation of Results}\label{sec:interpretation-of-results}
 
-The experimental results reveal several consistent patterns across the canonical setup and its two scoped extensions. This section interprets these patterns through the lens of the theoretical framework established in Section \ref{sec:theoretical-foundations-channel-models}  and evaluates each research hypothesis.
+The experimental results reveal several consistent patterns across the canonical setup, its supplementary coded-link study, and the unknown-channel contribution. This section interprets these patterns through the lens of the theoretical framework established in Section \ref{sec:theoretical-foundations-channel-models}  and evaluates each research hypothesis.
 
 \subsection{Low-SNR Advantage of Neural Relays over AF (H1: Confirmed)}\label{sec:low-snr-advantage-of-neural-relays-h1-confirmed}
 
@@ -170,7 +170,7 @@ Several directions warrant further investigation:
 \item
   \textbf{Time-selective fading.} The present study addresses channels that are static within a block. Extending the learned relay to time-selective fading with continuously varying unknown phase (e.g.\ Jakes/Clarke Doppler) is a natural next step, likely requiring explicitly phase-aware architectures (complex-valued state, learned phase unwrapping, or a training objective aligned with noncoherent detection rather than symbol MSE) evaluated against prediction-based noncoherent receivers.
 \item
-  \textbf{Denser constellations (64-QAM, 256-QAM).} The extension shows joint $N$-class 2D classification eliminates the 16-QAM floor; scaling the formulation to 64 or 256 classes may require deeper networks or hierarchical (coarse-to-fine) classification, and whether the U-shaped complexity curve (H3) shifts rightward with constellation density is a key open question.
+  \textbf{Higher-order constellations (16-QAM and denser).} Constellations with more than two levels per axis break the per-axis relay formulation and need a joint $N$-class 2D relay whose output dimension grows with $M$; that reformulation, and whether the complexity ordering discussed under H3 shifts with constellation density, are open questions this thesis does not address.
 \item
   \textbf{Imperfect CSI.} Introduce channel estimation errors to assess robustness of AI relay processing under realistic conditions.
 \item
