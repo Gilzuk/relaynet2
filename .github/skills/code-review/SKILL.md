@@ -104,8 +104,16 @@ review rounds without improving the thesis.
   model — unknown 3-tap ISI, a composite impairment cascade, blind and
   partial-CSI regimes — and that departure is the thesis's principal
   contribution, not a scope violation.
-- **Hypotheses are H1–H4 and H6. There is no H5** — it was withdrawn together
-  with the Mamba-S6 training-time study.
+- **The thesis poses H1–H5, and there is no H6.** The original H5, the
+  Mamba-S6 training-time hypothesis, was withdrawn with that study in the
+  151→120 page reduction. That left a gap at 5, so the unknown-channel
+  hypothesis was renumbered H6→H5 into the empty slot. `H5` therefore now
+  denotes the thesis's principal contribution, not the withdrawn
+  training-time claim. Two consequences for review: a reference to `H6` in a
+  built chapter is a real finding, and the old numbering surviving in
+  `RERUN_CHANGELOG.md` and the `_`-prefixed chapter files is deliberate —
+  those are the historical record of the withdrawal and are not built, so do
+  not flag them as inconsistent.
 - **There is no 16-QAM relay study.** 16-QAM survives only as one rung of the
   modulation-and-coding ladder in the link-adaptation study, where the object
   of study is the rate-and-modulation choice, not the relay.
