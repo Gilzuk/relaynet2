@@ -6,10 +6,25 @@ _Last updated: 2026-08-22_
 
 PR #15 (`claude/porting-md-file-l6xzsr` -> `main`) merged 2026-08-22. **Work
 on `main` from here** -- the feature branch is fully contained in main and can
-be deleted. Note that `.clinerules/90-safety.md` still names `clean-thesis` as
-the authoritative branch for `chapters/**`; that branch last moved 2026-07-18
-and main is 128 commits ahead of it, so the rule is stale in practice. Left
-unchanged by instruction.
+be deleted.
+
+**Conflict you will hit, and how it resolves.** `.clinerules/90-safety.md:30`
+still reads "Always push to `clean-thesis` branch only." Do not follow it for
+new work. That instruction is superseded by fact, not by preference:
+`clean-thesis` last moved 2026-07-18, contains nothing `main` does not, and
+`main` is 128 commits ahead of it. Every `chapters/**` change through the
+120-page reduction is on `main` and none of it is on `clean-thesis`, so
+pushing thesis edits there would fork the thesis onto a dead branch. The rule
+text was deliberately left in place by the repository owner, who confirmed
+`clean-thesis` is a stalled branch; it is recorded here as superseded rather
+than edited there. If the owner ever revives `clean-thesis`, this note is what
+needs revisiting first.
+
+**Workflow in force (owner instruction, 2026-08-22).** Every fix goes on a
+branch and returns through a pull request with a Copilot review requested; when
+the review posts, its findings are verified against the source, the real ones
+fixed, and the cycle repeats until the review is clean. Nothing is pushed
+straight to `main`.
 
 What landed after 2026-08-19, in order:
 
