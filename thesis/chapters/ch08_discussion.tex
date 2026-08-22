@@ -144,7 +144,7 @@ Several limitations of this study should be acknowledged, as they define the bou
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
 \item
-  \textbf{Modulation scope.} All experiments use QPSK, the canonical constellation. Higher-order constellations are not investigated: 16-QAM and denser grids break the per-axis relay formulation and require a joint $N$-class 2D relay whose output dimension scales with $M$, which is left to future work.
+  \textbf{Modulation scope.} All relay comparisons use QPSK; 16-QAM enters only as a modulation-and-coding rung in the link-adaptation study, never as a relay-architecture question. In that sense higher-order constellations are not investigated: 16-QAM and denser grids break the per-axis relay formulation and require a joint $N$-class 2D relay whose output dimension scales with $M$, which is left to future work.
 \item
   \textbf{Perfect CSI.} We assume perfect channel state information at each receiver. In practice, channel estimation errors would affect the coherent compensation step and hence relay performance. Imperfect CSI introduces a model mismatch between the assumed and actual channel, which could differentially impact the relay strategies: AI relays might be more robust (having learned from noisy data) or less robust (having not been exposed to estimation errors during training).
 \item
