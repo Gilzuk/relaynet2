@@ -238,6 +238,30 @@ SNR & Relay & Relay symbol ER & Repaired & Final BER \\
 
 \paragraph{Does a stronger code help?} The $K{=}3$ code used above is deliberately small. Sweeping the constraint length to $K\in\{5,7\}$ on the same QPSK/Rayleigh link does \emph{not} improve matters: the larger-$K$ codes are worse than $K{=}3$ across 0--8~dB, a sharper error-propagation cliff for the bigger trellis, and by 20~dB all three are within trial-to-trial noise of one another (best values $0.0015$, $0.0013$, $0.0013$). Within this frame length and trial budget, the relay's re-encoding liability is therefore not something a stronger code repairs; the full sweep is available in \url{results/coded_df_experiment.json}.
 
+\paragraph{Does reliable decoding remove it?} Remark~\ref{rem:df-terminology} defines block-DF with ``a strong (ideally capacity-achieving) channel code'', which the measurements above do not approach: at $20$~dB the destination fails on $19.98\%$ of frames under coded-DF and on $10.39\%$ even under an \emph{oracle} relay forwarding the clean codeword, so one frame in ten is lost for reasons unrelated to the relay. Since the liability tracks the relay's frame-error rate rather than the code family behind it, the link is extended up the SNR axis, code fixed, until decoding is reliable (Table~\ref{tbl:table44}); two learned relays are run, one on the recipe above and one retrained across the extended range, so no high-SNR reading rests on a train/test mismatch.
+
+\begingroup\footnotesize
+\begin{longtable}[]{@{}lccccc@{}}
+\caption[Block-DF into the reliable-decoding regime]{Block-DF into the reliable-decoding regime: the rate-1/2 $K{=}3$ code and canonical QPSK/Rayleigh link of Table~\ref{tbl:table34}, extended up the SNR axis, $10$ trials $\times$ $1{,}000$ frames ($2{,}000{,}000$ information bits) per point. ``MLP (5/10/15)'' uses that table's training recipe; ``MLP (5--30)'' is the same architecture retrained over the evaluated range, hence a different instance whose $20$~dB entry need not reproduce it. The oracle relay forwards the clean codeword, giving the single-decode floor.}\label{tbl:table44}\tabularnewline
+\toprule\noalign{}
+SNR (dB) & coded-DF & MLP (5/10/15) & MLP (5--30) & oracle & coded-DF FER \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+SNR (dB) & coded-DF & MLP (5/10/15) & MLP (5--30) & oracle & coded-DF FER \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+20 & 0.001402 & 0.001081 & 0.001150 & \textbf{0.000676} & 0.1998 \\
+24 & 0.000486 & 0.000345 & 0.000311 & \textbf{0.000236} & 0.0822 \\
+28 & 0.000199 & 0.000111 & 0.000109 & \textbf{0.000101} & 0.0336 \\
+32 & 0.000072 & 0.000035 & \textbf{0.000032} & 0.000039 & 0.0130 \\
+\end{longtable}
+\endgroup
+
+\textbf{The liability does not dissolve.} Across $20$--$32$~dB coded-DF's frame-error rate falls $15.4\times$ ($0.1998$ to $0.0130$), yet its BER holds at a near-constant multiple of the oracle floor ($2.07$, $2.06$, $1.97$, $1.82$), while the learned relay converges onto that floor ($1.70$, $1.32$, $1.07$, $0.82$), becoming indistinguishable from it by $32$~dB ($58$ against $73$ frame errors in $10{,}000$, $z=-1.3$) while still beating coded-DF decisively there ($z=+5.3$). The cause is structural, not code strength: block-DF decodes once per hop, so two independent frame-error events accumulate and neither decoder repairs the other's, whereas denoising leaves a single decoding operation at the destination. The reversal is thus no artefact of a weak code or short frame; it survives, and relatively widens, as decoding becomes reliable. One limit stays out of reach: driving per-hop failure to zero makes the sum of two vanishing terms vanish, so a capacity-achieving code at long blocklength would recover the floor. No operating point here does, even at $32$~dB, where each hop still fails on $0.6\%$ of frames.
+
 \subsection{Soft-Decision Relaying, and What the Liability Actually Is}\label{sec:coded-soft-decision}
 
 The mechanism of Table~\ref{tbl:table38} suggests an obvious repair. If the trouble with block-DF is that it commits to a codeword, replace the commitment with soft information: run BCJR (forward-backward MAP) at the relay instead of Viterbi and forward the posterior-mean symbol per trellis step, so a symbol the relay is unsure of is shrunk toward the origin rather than asserted. The same idea applies to the learned relay, whose softmax already carries a posterior it was throwing away: forwarding $\sum_k p_k s_k$ instead of $\arg\max_k p_k$ costs nothing, needs no retraining, and reuses the identical weights, so any difference isolates the read-out rule alone. Table~\ref{tbl:table39} evaluates both against their hard counterparts and against an oracle relay that forwards the clean codeword, on paired trials.
