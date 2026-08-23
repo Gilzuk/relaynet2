@@ -35,14 +35,14 @@ The system under study is a two-hop relay network with a single relay node. All 
 \end{figure}
 
 
-Source bits are QPSK-modulated on the canonical setup, passed through Hop 1 (SISO Rayleigh), processed by the relay (classical or neural), transmitted over Hop 2 (SISO Rayleigh), and demodulated at the destination; no equalization is involved. Chapter~\ref{sec:unknown-channels} reuses this chain with BPSK, but also replaces the hop channels themselves with unknown ISI, a composite cascade, or a per-block redraw. In the canonical setup, both hop channels are known perfectly at their respective receivers, per the conventions of Chapter~\ref{sec:introduction}; the departures introduced in Chapter~\ref{sec:unknown-channels} relax this assumption, as described there.
+Source bits are QPSK-modulated on the canonical setup, passed through Hop 1 (SISO Rayleigh), processed by the relay (classical or neural), transmitted over Hop 2 (SISO Rayleigh), and demodulated at the destination; no equalization is involved. Chapter~\ref{sec:unknown-channels} reuses this chain with BPSK, but also replaces Hop 1 with unknown ISI, a composite cascade, or a per-block redraw, while Hop 2 remains AWGN or canonical Rayleigh. In the canonical setup, both hop channels are known perfectly at their respective receivers, per the conventions of Chapter~\ref{sec:introduction}; the finite-pilot and blind departures introduced in Chapter~\ref{sec:unknown-channels} relax this assumption, while its unknown-ISI departure keeps perfect CSI, as described there.
 
 \begin{equation}\protect\phantomsection\label{eq:two-hop-system}{\text{Source} \xrightarrow{\text{Hop 1}} \text{Relay} \xrightarrow{\text{Hop 2}} \text{Destination}
 }\end{equation}
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad two-hop-system}
 
 \subsection{Modulation}\label{sec:modulation}
-QPSK carries data in every canonical relay comparison; BPSK carries data only in the unknown-channel study (Chapter~\ref{sec:unknown-channels}), 16-QAM additionally carries data as a rung of the coded link-adaptation study (Section~\ref{sec:coded-block-df}), and denser constellations appear in Figure~\ref{fig:fig8} for orientation only. The real-valued base case is BPSK, which maps a single bit to a real-valued symbol,
+QPSK carries data in every canonical relay comparison; BPSK carries data mainly in the unknown-channel study (Chapter~\ref{sec:unknown-channels}), which also re-checks the unknown-ISI result with QPSK (Section~\ref{sec:qpsk-unknown-channel}), 16-QAM additionally carries data as a rung of the coded link-adaptation study (Section~\ref{sec:coded-block-df}), and denser constellations appear in Figure~\ref{fig:fig8} for orientation only. The real-valued base case is BPSK, which maps a single bit to a real-valued symbol,
 
 \begin{equation}\protect\phantomsection\label{eq:bpsk-mapping}{x = 1 - 2b, \quad b \in \{0, 1\} \implies x \in \{-1, +1\}}\end{equation}
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad bpsk-mapping}

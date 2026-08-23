@@ -112,7 +112,7 @@ The following limitations define the scope of the canonical comparison, confined
 \begin{itemize}
 \tightlist
 \item
-  \textbf{Modulation:} QPSK for the canonical relay comparison; the unknown-channel study (Chapter~\ref{sec:unknown-channels}) uses BPSK, and 16-QAM enters only as a modulation-and-coding rung in the link-adaptation study. Higher-order constellations as a relay design question, and the joint 2D $N$-class formulation they require, are deferred to future work.
+  \textbf{Modulation:} QPSK for the canonical relay comparison; the unknown-channel study (Chapter~\ref{sec:unknown-channels}) mainly uses BPSK, with a QPSK re-check of the unknown-ISI result (Section~\ref{sec:qpsk-unknown-channel}), and 16-QAM enters only as a modulation-and-coding rung in the link-adaptation study. Higher-order constellations as a relay design question, and the joint 2D $N$-class formulation they require, are deferred to future work.
 \item
   \textbf{Channel knowledge:} Perfect CSI in the canonical core; estimation error is not modeled there. Chapter~\ref{sec:unknown-channels} lifts this with finite-pilot estimation, a swept pilot budget, and a zero-CSI blind regime.
     \REV{Fix applied: this item previously read ``perfect CSI is assumed; channel estimation errors are not modeled'' without qualification, which contradicted the thesis's own principal contribution. It is now scoped to the canonical core, with the assumptions lifted in Chapter~\ref{sec:unknown-channels} named explicitly.}
