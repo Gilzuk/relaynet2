@@ -8,7 +8,7 @@ strong code the relay recovers the message, so re-encoding costs nothing.
 
 The coded study of Section~sec:coded-block-df does not reach that regime.
 Its rate-1/2, K=3 code at a 200-information-bit frame leaves a *frame*
-error rate of 0.198 for coded-DF at 20 dB, and 0.103 even for an oracle
+error rate of 0.2023 for coded-DF at 20 dB, and 0.1058 even for an oracle
 relay that forwards the clean codeword -- so roughly one frame in ten
 fails for reasons that have nothing to do with the relay at all. The
 measured reversal (a denoising relay overtaking block-DF at 20 dB) is
