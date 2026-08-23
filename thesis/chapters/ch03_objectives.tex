@@ -18,7 +18,7 @@ Despite growing interest in AI for wireless communication, a systematic comparis
 \REV{Fix applied: the Mamba architecture was previously attributed to the earlier S4 paper; it now cites \cite{gu2023mamba}, and the novelty claim is scoped to relay-level processing rather than all of physical-layer communication (and softened with ``to the best of our knowledge'').}
 \end{enumerate}
 
-This thesis addresses all three gaps through a unified framework that implements nine relay strategies and compares eight of them on the canonical setup, with both original and normalized parameter counts, full statistical analysis, and a dedicated complexity study. The following table summarizes the positioning of this work relative to the literature:
+This thesis addresses all three gaps through a unified framework that implements nine relay strategies and compares eight of them on the canonical setup, with both original and normalized parameter counts, full statistical analysis, and a dedicated complexity study; Gap 1's adversarial paradigm (cGAN) is implemented but, being excluded from the canonical comparison on cost grounds, is addressed qualitatively rather than quantitatively. The following table summarizes the positioning of this work relative to the literature:
 
 \begin{longtable}[]{@{}
   >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
@@ -49,7 +49,7 @@ This Thesis
 \endlastfoot
 Relay strategies compared & 1--2 (typically AF vs.~DF, or one AI method) & 8 compared (2 classical + 6 AI); a ninth, cGAN, is implemented but excluded on cost grounds \\
 AI paradigms & Single (e.g., supervised only) & 4 implemented (supervised, generative, adversarial, sequential); adversarial (cGAN) excluded from the canonical comparison on cost grounds \\
-Evaluation discipline & Single ad-hoc configuration & One canonical setup (SISO, Rayleigh, QPSK), chosen in advance and never varied, calibrated against closed-form theory on that channel \\
+Evaluation discipline & Single ad-hoc configuration & One canonical setup (SISO, Rayleigh, QPSK) for the eight-relay comparison, chosen in advance and never varied there, calibrated against closed-form theory on that channel; a supplementary coded study deliberately varies the code, rate, and modulation against this baseline \\
 Complexity analysis & None & Normalized $\sim$3K-parameter comparison + complexity study (U-shaped BER vs.\ model size) \\
 State space models & None for relay/physical-layer & Mamba-S6, Mamba-2 SSD evaluated as relay processors \\
 Statistical rigor & Often missing & Wilcoxon test, 95\% CI, 10 trials per point \\
