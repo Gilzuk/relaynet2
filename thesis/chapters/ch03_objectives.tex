@@ -18,7 +18,7 @@ Despite growing interest in AI for wireless communication, a systematic comparis
 \REV{Fix applied: the Mamba architecture was previously attributed to the earlier S4 paper; it now cites \cite{gu2023mamba}, and the novelty claim is scoped to relay-level processing rather than all of physical-layer communication (and softened with ``to the best of our knowledge'').}
 \end{enumerate}
 
-This thesis addresses all three gaps through a unified framework that implements and compares nine relay strategies on the canonical setup, with both original and normalized parameter counts, full statistical analysis, and a dedicated complexity study. The following table summarizes the positioning of this work relative to the literature:
+This thesis addresses all three gaps through a unified framework that implements nine relay strategies and compares eight of them on the canonical setup, with both original and normalized parameter counts, full statistical analysis, and a dedicated complexity study. The following table summarizes the positioning of this work relative to the literature:
 
 \begin{longtable}[]{@{}
   >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
@@ -94,7 +94,7 @@ Unlike H1--H4, which assume the canonical memoryless channel throughout, H5 deli
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
 \item
-  \textbf{Implement and compare nine relay strategies} spanning four learning paradigms: no learning (AF, DF), supervised learning (MLP, Hybrid), generative modeling (VAE, cGAN), and sequence modeling (Transformer, Mamba-S6, Mamba-2 SSD).\REV{Unified ``CGAN''$\to$``cGAN'' and ``Mamba S6''$\to$``Mamba-S6'' to match the abstract and Chapter~\ref{sec:literature-review}.}
+  \textbf{Implement nine relay strategies and compare eight of them} spanning four learning paradigms: no learning (AF, DF), supervised learning (MLP, Hybrid), generative modeling (VAE, cGAN), and sequence modeling (Transformer, Mamba-S6, Mamba-2 SSD).\REV{Unified ``CGAN''$\to$``cGAN'' and ``Mamba S6''$\to$``Mamba-S6'' to match the abstract and Chapter~\ref{sec:literature-review}.}
 \item
   \textbf{Evaluate on the canonical setup:} SISO Rayleigh fast fading with QPSK, with symbol-wise DF checked against the closed-form two-hop composition on that same channel as the analytical calibration.
 \item
@@ -107,7 +107,7 @@ Unlike H1--H4, which assume the canonical memoryless channel throughout, H5 deli
 
 \section{Scope and limitations}\label{sec:scope-and-delimitations}
 
-The following limitations define the scope of this study, confined throughout to the canonical setup (SISO, Rayleigh fast fading, complex baseband, QPSK, uncoded):
+The following limitations define the scope of the canonical comparison, confined throughout to the setup below (SISO, Rayleigh fast fading, complex baseband, QPSK, uncoded); the supplementary coded and unknown-channel studies depart from it deliberately, as noted where relevant:
 
 \begin{itemize}
 \tightlist
