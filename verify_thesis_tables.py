@@ -572,12 +572,15 @@ def check_table44(tex, rep):
     d = json.load(open(os.path.join(ROOT, "results/coded_reliable_regime.json")))
     idx = {int(s): i for i, s in enumerate(d["snr_db"])}
     cols = ["coded_df", "mlp_thesis", "mlp_ext", "oracle"]
+    found = set()
     for row in data_rows(body):
         if not row or row[0][1] is None:
             continue
         snr = int(row[0][1])
         if snr not in idx:
+            rep.note(T, f"{snr}dB: no json mapping, not checked")
             continue
+        found.add(snr)
         i = idx[snr]
         for c, key in enumerate(cols, start=1):
             if c >= len(row):
@@ -585,6 +588,9 @@ def check_table44(tex, rep):
             rep.cell(T, f"{snr}dB/{key}", row[c][0], row[c][1], d[key][i])
         if len(row) > 5:
             rep.cell(T, f"{snr}dB/coded_df_fer", row[5][0], row[5][1], d["coded_df_fer"][i])
+    missing = sorted(set(idx) - found)
+    if missing:
+        rep.note(T, f"json has {missing} dB with no matching table row")
     rep.finish_table(T, before)
 
 
