@@ -18,7 +18,7 @@ Despite growing interest in AI for wireless communication, a systematic comparis
 \REV{Fix applied: the Mamba architecture was previously attributed to the earlier S4 paper; it now cites \cite{gu2023mamba}, and the novelty claim is scoped to relay-level processing rather than all of physical-layer communication (and softened with ``to the best of our knowledge'').}
 \end{enumerate}
 
-This thesis addresses all three gaps through a unified framework that implements and compares nine relay strategies on the canonical setup, with both original and normalized parameter counts, full statistical analysis, and a dedicated complexity study. The following table summarizes the positioning of this work relative to the literature:
+This thesis addresses all three gaps through a unified framework that implements nine relay strategies and compares eight of them on the canonical setup, with both original and normalized parameter counts, full statistical analysis, and a dedicated complexity study; Gap 1's adversarial paradigm (cGAN) is implemented but, being excluded from the canonical comparison on cost grounds, is addressed qualitatively rather than quantitatively. The following table summarizes the positioning of this work relative to the literature:
 
 \begin{longtable}[]{@{}
   >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
@@ -47,9 +47,9 @@ This Thesis
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-Relay strategies compared & 1--2 (typically AF vs.~DF, or one AI method) & 9 (2 classical + 7 AI) \\
-AI paradigms & Single (e.g., supervised only) & 4 (supervised, generative, adversarial, sequential) \\
-Evaluation discipline & Single ad-hoc configuration & One canonical setup (SISO, Rayleigh, QPSK), chosen in advance and never varied, calibrated against closed-form theory on that channel \\
+Relay strategies compared & 1--2 (typically AF vs.~DF, or one AI method) & 8 compared (2 classical + 6 AI); a ninth, cGAN, is implemented but excluded on cost grounds \\
+AI paradigms & Single (e.g., supervised only) & 4 implemented (supervised, generative, adversarial, sequential); adversarial (cGAN) excluded from the canonical comparison on cost grounds \\
+Evaluation discipline & Single ad-hoc configuration & One canonical setup (SISO, Rayleigh, QPSK) for the eight-relay comparison, chosen in advance and never varied there, calibrated against closed-form theory on that channel; a supplementary coded study deliberately varies the code, rate, and modulation against this baseline \\
 Complexity analysis & None & Normalized $\sim$3K-parameter comparison + complexity study (U-shaped BER vs.\ model size) \\
 State space models & None for relay/physical-layer & Mamba-S6, Mamba-2 SSD evaluated as relay processors \\
 Statistical rigor & Often missing & Wilcoxon test, 95\% CI, 10 trials per point \\
@@ -94,7 +94,7 @@ Unlike H1--H4, which assume the canonical memoryless channel throughout, H5 deli
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
 \item
-  \textbf{Implement and compare nine relay strategies} spanning four learning paradigms: no learning (AF, DF), supervised learning (MLP, Hybrid), generative modeling (VAE, cGAN), and sequence modeling (Transformer, Mamba-S6, Mamba-2 SSD).\REV{Unified ``CGAN''$\to$``cGAN'' and ``Mamba S6''$\to$``Mamba-S6'' to match the abstract and Chapter~\ref{sec:literature-review}.}
+  \textbf{Implement nine relay strategies and compare eight of them} spanning four learning paradigms: no learning (AF, DF), supervised learning (MLP, Hybrid), generative modeling (VAE), and sequence modeling (Transformer, Mamba-S6, Mamba-2 SSD); the ninth, a conditional GAN (cGAN), is implemented but excluded from the comparison on cost grounds.\REV{Unified ``CGAN''$\to$``cGAN'' and ``Mamba S6''$\to$``Mamba-S6'' to match the abstract and Chapter~\ref{sec:literature-review}.}
 \item
   \textbf{Evaluate on the canonical setup:} SISO Rayleigh fast fading with QPSK, with symbol-wise DF checked against the closed-form two-hop composition on that same channel as the analytical calibration.
 \item
@@ -107,12 +107,12 @@ Unlike H1--H4, which assume the canonical memoryless channel throughout, H5 deli
 
 \section{Scope and limitations}\label{sec:scope-and-delimitations}
 
-The following limitations define the scope of this study, confined throughout to the canonical setup (SISO, Rayleigh fast fading, complex baseband, QPSK, uncoded):
+The following limitations define the scope of the canonical comparison, confined throughout to the setup below (SISO, Rayleigh fast fading, complex baseband, QPSK, uncoded); the supplementary coded and unknown-channel studies depart from it deliberately, as noted where relevant:
 
 \begin{itemize}
 \tightlist
 \item
-  \textbf{Modulation:} QPSK throughout. Higher-order constellations, and the joint 2D $N$-class relay formulation they require, are deferred to future work.
+  \textbf{Modulation:} QPSK for the canonical relay comparison; the unknown-channel study (Chapter~\ref{sec:unknown-channels}) mainly uses BPSK, with a QPSK re-check of the unknown-ISI result (Section~\ref{sec:qpsk-unknown-channel}), and 16-QAM enters only as a modulation-and-coding rung in the link-adaptation study. Higher-order constellations as a relay design question, and the joint 2D $N$-class formulation they require, are deferred to future work.
 \item
   \textbf{Channel knowledge:} Perfect CSI in the canonical core; estimation error is not modeled there. Chapter~\ref{sec:unknown-channels} lifts this with finite-pilot estimation, a swept pilot budget, and a zero-CSI blind regime.
     \REV{Fix applied: this item previously read ``perfect CSI is assumed; channel estimation errors are not modeled'' without qualification, which contradicted the thesis's own principal contribution. It is now scoped to the canonical core, with the assumptions lifted in Chapter~\ref{sec:unknown-channels} named explicitly.}

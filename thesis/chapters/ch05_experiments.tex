@@ -3,25 +3,29 @@
 \section{Experiments summary}\label{sec:experiments-summary}
 
 \paragraph{Scope relative to the system model.}
-All experiments in this chapter are conducted under the canonical
+The core experiments in this chapter (E2, E3) are conducted under the canonical
 system model defined in Chapter~\ref{sec:methods}. In particular,
 the channel remains memoryless, the noise is white, transmission is
 uncoded, and relay processing is evaluated on a per-symbol basis.
-Consequently, the objective of this chapter is to compare relay
+Consequently, the objective of that core is to compare relay
 functions under matched-model conditions rather than to address
 channel estimation, sequence detection, or channels with memory.
-Such effects are introduced only later in
+Channel memory and channel estimation are introduced only later in
 Chapter~\ref{sec:unknown-channels} as deliberate departures from the
 canonical assumptions in order to study model mismatch and robustness.
+Coding is introduced earlier, within this chapter, by the supplementary
+coded study of Section~\ref{sec:coded-block-df}, which deliberately
+departs from the uncoded, symbol-wise core to measure the
+Remark~\ref{rem:df-terminology} caveat directly.
 
 
-Following the single-model convention fixed in Chapter~\ref{sec:introduction}, this chapter evaluates the relay strategies on the \emph{canonical setup only}: a two-hop SISO link, i.i.d.\ Rayleigh fast fading on both hops, complex baseband, QPSK, uncoded BER. Two experiments constitute the core: the canonical relay comparison (E2) and the parameter-normalization and complexity study (E3), which together answer every canonical hypothesis (H1--H4). The principal contribution (Chapter~\ref{sec:unknown-channels}) is the unknown-channel study (E6), which tests hypothesis H5. All other departures from the canonical setup are identified as future work in Chapter~\ref{sec:discussion-and-conclusions}.
-The experimental configurations are summarised in the table below.
+Following the single-model convention fixed in Chapter~\ref{sec:introduction}, the core of this chapter evaluates the relay strategies on the \emph{canonical setup}: a two-hop SISO link, i.i.d.\ Rayleigh fast fading on both hops, complex baseband, QPSK, uncoded BER. A supplementary coded study (Section~\ref{sec:coded-block-df}) deliberately departs from that setup within this same chapter, adding a rate-1/2 convolutional code, a block-DF relay, and an adaptive modulation-and-coding scheme. Two experiments constitute the core: the canonical relay comparison (E2) and the parameter-normalization and complexity study (E3), which together answer every canonical hypothesis (H1--H4). The principal contribution (Chapter~\ref{sec:unknown-channels}) is the unknown-channel study (E6), which tests hypothesis H5. All other departures from the canonical setup are identified as future work in Chapter~\ref{sec:discussion-and-conclusions}.
+The core (E2, E3) and unknown-channel (E6) experimental configurations are summarised in the table below; the supplementary coded study's configuration is described separately in Section~\ref{sec:coded-block-df}.
 
 Each experiment subsection reports the key results inline (BER tables and figures); supporting material and model hyperparameters are collected in the appendices (Appendices~\ref{sec:appendix-a-mathematical-notation}--\ref{sec:appendix-c-software-architecture}).
 
 \begin{longtable}{p{0.6cm} p{2.2cm} p{2.1cm} p{3.6cm} p{3.9cm}}
-\caption{Summary of experimental configurations}
+\caption[Summary of experimental configurations]{Summary of core and unknown-channel experimental configurations}
 \label{tab:experiment-summary}\\
 \hline
 \textbf{Exp.} &
@@ -153,7 +157,7 @@ SNR (dB) & MLP & Hybrid & VAE & Transf. & Mamba-S6 & Mamba2 & AF & DF \\
 
 \section{Coded Block-DF: Measuring the Remark~\ref{rem:df-terminology} Caveat}\label{sec:coded-block-df}
 
-\paragraph{A note on constellation scope.} The relay comparisons of this thesis are conducted on QPSK throughout, and 16-QAM is not studied as a relay-architecture question (Section~\ref{sec:modulation-schemes}). It does appear below as one rung of the modulation-and-coding ladder that the link-adaptation study of Section~\ref{sec:coded-rate-adaptation} selects from, where the object of study is the \emph{rate-and-modulation choice} rather than the relay's ability to process a denser constellation. Nothing in that study rests on how a learned relay handles four levels per axis, which is the question left to future work.
+\paragraph{A note on constellation scope.} The canonical and coded-study fixed-MCS relay-decoding comparisons of this thesis (block-DF vs.\ the learned relay at a fixed code rate and constellation) are conducted on QPSK throughout; the unknown-channel study's relay comparisons mainly use BPSK (Chapter~\ref{sec:unknown-channels}), with one exception (Section~\ref{sec:qpsk-unknown-channel}) that repeats the unknown-ISI relay comparison with QPSK in place of BPSK. 16-QAM is not studied as a relay-architecture question (Section~\ref{sec:modulation-schemes}): it does appear as one rung of the modulation-and-coding ladder that the link-adaptation study of Section~\ref{sec:coded-rate-adaptation} selects from, and that study does compare the block-DF and denoise-only relay strategies at 16-QAM rungs (e.g.\ Table~\ref{tbl:table42}), but the object of study there is the \emph{rate-and-modulation choice} rather than the relay's ability to process a denser constellation. Nothing in that study rests on how a learned relay handles four levels per axis, which is the question left to future work.
 
 Remark~\ref{rem:df-terminology} draws a distinction the rest of this thesis relies on: the DF baseline used everywhere here is \emph{symbol-wise} (uncoded, per-symbol hard slicing), not the \emph{block} DF of the information-theoretic relay-channel literature, and the remark explicitly cautions that "the reported DF results should not be read as bounds on coded block-DF performance." That caveat was asserted, not measured. This section measures it: a real information-theoretic block-DF relay, built from a rate-1/2 convolutional code and a soft-decision Viterbi decoder, added as a supplementary study on the canonical channel rather than as a revision of the core comparison above.
 
@@ -406,4 +410,4 @@ SNR (dB) & Best MCS (block-DF) & $G$ (block-DF) & Best MCS (denoise) & $G$ (deno
 
 The mechanism finding of Section~\ref{sec:coded-soft-decision} was about which relay decodes better; Section~\ref{sec:coded-rate-adaptation} showed that once the rate is free to adapt, that question barely matters. This section adds the constraint a real deadline imposes and finds the opposite qualitative result: under a latency budget, which relay strategy is used matters again, and matters through an architectural fact -- how many times the frame must be fully buffered -- rather than through detection accuracy. A link with headroom to pick its own rate should do so per Section~\ref{sec:coded-rate-adaptation}; a link additionally bound by a hard deadline should prefer the relay strategy that does not double-buffer, independent of which one decodes more accurately.
 
-It is important to emphasize that all conclusions of this chapter are specific to the canonical memoryless channel model. Whether those conclusions remain valid when the underlying channel assumptions are violated is the subject of Chapter~\ref{sec:unknown-channels}.
+It is important to emphasize that the core relay-comparison conclusions of this chapter (E2, E3) are specific to the canonical memoryless channel model; whether those conclusions remain valid when the underlying channel assumptions are violated is the subject of Chapter~\ref{sec:unknown-channels}. The supplementary coded study's conclusions are scoped separately, to coding, rate adaptation, and latency constraints on that same canonical Rayleigh channel, and are not revisited under channel mismatch.

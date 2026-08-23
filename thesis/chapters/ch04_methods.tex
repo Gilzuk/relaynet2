@@ -2,9 +2,9 @@
 
 \section{System Model}\label{sec:system-model-1}
 
-The system under study is a two-hop relay network with a single relay node. All methods in this chapter are described for the canonical setup of Chapter~\ref{sec:introduction}: SISO on both hops, i.i.d.\ Rayleigh fast fading, complex baseband, QPSK, uncoded BER. QPSK on the canonical Rayleigh channel is the only pairing used; it is set out in Table~\ref{tbl:configurations}.
+The system under study is a two-hop relay network with a single relay node. All methods in this chapter are described for the canonical setup of Chapter~\ref{sec:introduction}: SISO on both hops, i.i.d.\ Rayleigh fast fading, complex baseband, QPSK, uncoded BER. QPSK on the canonical Rayleigh channel is the pairing used here and throughout the canonical comparison; the coded and unknown-channel studies additionally use the pairings set out in Table~\ref{tbl:configurations}.
 
-\paragraph{Scope of the canonical system model.} The system model defined in this chapter serves as the canonical benchmark used throughout the core experiments of the thesis (Chapter~\ref{sec:experiments}). It assumes a memoryless two-hop relay channel with white noise, perfect receiver-side CSI, and uncoded transmission. Accordingly, all relay comparisons in the canonical study concern per-symbol processing and do not require sequence detection: the current observation $y_R[i]$ is already a sufficient statistic for detecting $x[i]$, and the classical AF and DF baselines operate per symbol. Some neural architectures nevertheless receive a finite window of neighboring observations (Section~\ref{sec:relay-strategies}); this is an architectural input convention for the evaluated feedforward and sequence models, and under the canonical i.i.d.\ assumptions it neither introduces channel memory nor supplies additional information about $x[i]$. Channel memory, intersymbol interference (ISI), pilot-based channel estimation, blind equalization, and sequence-detection techniques such as Viterbi MLSE are introduced only later in Chapter~\ref{sec:unknown-channels} as deliberate departures from the canonical assumptions in order to study robustness under model mismatch.
+\paragraph{Scope of the canonical system model.} The system model defined in this chapter serves as the canonical benchmark used throughout the core experiments of the thesis (Chapter~\ref{sec:experiments}). It assumes a memoryless two-hop relay channel with white noise, perfect receiver-side CSI, and uncoded transmission. Accordingly, all relay comparisons in the canonical study concern per-symbol processing and do not require sequence detection: the current observation $y_R[i]$ is already a sufficient statistic for detecting $x[i]$, and the classical AF and DF baselines operate per symbol. Some neural architectures nevertheless receive a finite window of neighboring observations (Section~\ref{sec:relay-strategies}); this is an architectural input convention for the evaluated feedforward and sequence models, and under the canonical i.i.d.\ assumptions it neither introduces channel memory nor supplies additional information about $x[i]$. Channel memory, intersymbol interference (ISI), pilot-based channel estimation, blind equalization, and sequence-detection techniques such as Viterbi MLSE are introduced only later in Chapter~\ref{sec:unknown-channels} as deliberate departures from the canonical assumptions in order to study robustness under model mismatch. Channel coding is the other deliberate departure: the coded chain and its block-DF relay are specified where they are measured, in Section~\ref{sec:coded-block-df}, rather than in this chapter.
 
 \begin{figure}[H]
 \centering
@@ -35,19 +35,19 @@ The system under study is a two-hop relay network with a single relay node. All 
 \end{figure}
 
 
-Source bits are QPSK-modulated on the canonical setup, passed through Hop 1 (SISO Rayleigh), processed by the relay (classical or neural), transmitted over Hop 2 (SISO Rayleigh), and demodulated at the destination; no equalization is involved. Chapter~\ref{sec:unknown-channels} reuses this chain with BPSK, but also replaces the hop channels themselves with unknown ISI, a composite cascade, or a per-block redraw. Both hop channels are known perfectly at their respective receivers, per the conventions of Chapter~\ref{sec:introduction}.
+Source bits are QPSK-modulated on the canonical setup, passed through Hop 1 (SISO Rayleigh), processed by the relay (classical or neural), transmitted over Hop 2 (SISO Rayleigh), and demodulated at the destination; no equalization is involved. Chapter~\ref{sec:unknown-channels} reuses this chain with BPSK, but also replaces Hop 1 with unknown ISI, a composite cascade, or a per-block redraw, while Hop 2 remains AWGN or canonical Rayleigh. In the canonical setup, both hop channels are known perfectly at their respective receivers, per the conventions of Chapter~\ref{sec:introduction}; the finite-pilot and blind departures introduced in Chapter~\ref{sec:unknown-channels} relax this assumption, while its unknown-ISI departure keeps perfect CSI, as described there.
 
 \begin{equation}\protect\phantomsection\label{eq:two-hop-system}{\text{Source} \xrightarrow{\text{Hop 1}} \text{Relay} \xrightarrow{\text{Hop 2}} \text{Destination}
 }\end{equation}
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad two-hop-system}
 
 \subsection{Modulation}\label{sec:modulation}
-Two constellations carry data in this thesis; denser ones appear in Figure~\ref{fig:fig8} for orientation only. The real-valued base case is BPSK, which maps a single bit to a real-valued symbol,
+QPSK carries data in every canonical relay comparison; BPSK carries data mainly in the unknown-channel study (Chapter~\ref{sec:unknown-channels}), which also re-checks the unknown-ISI result with QPSK (Section~\ref{sec:qpsk-unknown-channel}), 16-QAM additionally carries data as a rung of the coded link-adaptation study (Section~\ref{sec:coded-block-df}), and denser constellations appear in Figure~\ref{fig:fig8} for orientation only. The real-valued base case is BPSK, which maps a single bit to a real-valued symbol,
 
 \begin{equation}\protect\phantomsection\label{eq:bpsk-mapping}{x = 1 - 2b, \quad b \in \{0, 1\} \implies x \in \{-1, +1\}}\end{equation}
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad bpsk-mapping}
 
-with hard-decision demodulation \(\hat{b} = \mathbb{1}[\hat{x} < 0]\) at the destination. QPSK is defined in Section~\ref{sec:modulation-schemes}. Both are normalized to unit average symbol energy, \(E_s = 1\), so they differ in bits per symbol rather than in transmit power: \(k = 1\) and \(2\) respectively, giving \(E_b = E_s/k\). Higher-order constellations are future work.
+with hard-decision demodulation \(\hat{b} = \mathbb{1}[\hat{x} < 0]\) at the destination. QPSK is defined in Section~\ref{sec:modulation-schemes}. Both are normalized to unit average symbol energy, \(E_s = 1\), so they differ in bits per symbol rather than in transmit power: \(k = 1\) and \(2\) respectively, giving \(E_b = E_s/k\). Higher-order constellations as a relay design question are future work; 16-QAM appears only as a link-adaptation rung.
 
 
 
@@ -75,7 +75,7 @@ Each hop applies a channel function followed by optional equalization (Equation~
 
 where \(\mathcal{H}(\cdot)\) denotes the canonical Rayleigh fast-fading channel operator (the AWGN special case, $|h|\equiv1$, is retained because the closed forms of Chapter~\ref{sec:literature-review} are stated in it). The calligraphic symbol distinguishes the channel \emph{operator} from the scalar fading \emph{coefficient} \(h\) used throughout the rest of this thesis.
 
-\textbf{Both hops use the same channel.} \(\mathcal{H}(\cdot)\) is applied identically on Hop~1 and Hop~2 at the same SNR: a configuration never mixes channel families across hops. A configuration is therefore specified completely by the pair (constellation, channel), and it is that pair which names each experiment below.
+\textbf{Both hops use the same channel, canonically.} \(\mathcal{H}(\cdot)\) applies identically to both hops there, so a configuration is named by the pair (constellation, channel). The unknown-channel study is the exception, pairing an impaired Hop~1 with an unrelated AWGN or Rayleigh Hop~2 (Chapter~\ref{sec:unknown-channels}).
 
 \textbf{Coherent compensation.} Because the fading coefficient is known at each receiver, coherent compensation ($y \cdot h^*/|h|$ followed by $\Re\{\cdot\}$) reduces each hop to an equivalent real channel with a random per-symbol effective gain $|h[i]|$,
 
@@ -83,7 +83,7 @@ where \(\mathcal{H}(\cdot)\) denotes the canonical Rayleigh fast-fading channel 
 }\end{equation}
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad awgn-hop1}
 
-with $\tilde{n}[i] \sim \mathcal{N}(0, \sigma^2)$ real per axis. Because the channel is complex, the canonical constellation is two-dimensional: QPSK places one bit on each axis, so both dimensions the channel acts in are used and the relay processes the pair; the real reduction above then applies per axis rather than discarding one. BPSK, being one-dimensional, is never transmitted over the complex fading channel, which would require discarding the quadrature component; it appears only in the closed-form expressions of Chapter~\ref{sec:literature-review}. The \emph{AWGN limit} referenced in those closed forms is the special case $|h[i]| \equiv 1$, i.e.\ $y_R[i] = x[i] + n_1[i]$ and $y_D[i] = x_R[i] + n_2[i]$.
+with $\tilde{n}[i] \sim \mathcal{N}(0, \sigma^2)$ real per axis. Because the channel is complex, the canonical constellation is two-dimensional: QPSK places one bit on each axis, so both dimensions the channel acts in are used and the relay processes the pair; the real reduction above then applies per axis rather than discarding one. BPSK, being one-dimensional, is never transmitted over this complex canonical fading channel, which would require discarding the quadrature component; besides its use as the transmitted alphabet of the real-valued unknown-channel study (Chapter~\ref{sec:unknown-channels}), it appears only in the real AWGN special case below and the closed-form expressions of Chapter~\ref{sec:literature-review}. The \emph{AWGN limit} referenced in those closed forms is the special case $|h[i]| \equiv 1$, i.e.\ $y_R[i] = x[i] + n_1[i]$ and $y_D[i] = x_R[i] + n_2[i]$.
 
 The noise terms are independent and identically distributed with variance
 
@@ -96,12 +96,12 @@ where \(P_s = \mathbb{E}[|x|^2]\) is the transmit symbol power (unit for every c
 
 \subsection{Evaluated Configurations}\label{sec:evaluated-configurations}
 
-This thesis evaluates one (constellation, channel) configuration, listed in Table~\ref{tbl:configurations}. The governing principle is that \textbf{a real channel is paired with a real constellation and a complex channel with a complex constellation}: the signal space the constellation lives in and the signal space the channel acts on are the same space. Rayleigh with QPSK is the complex case, both living in the plane, where the fading coefficient \(h \sim \mathcal{CN}(0,1)\) rotates as well as scales and the constellation has a phase for it to act on.
+This thesis evaluates the primary (constellation, channel) configurations listed in Table~\ref{tbl:configurations}, plus the QPSK/unknown-ISI generalization of Section~\ref{sec:qpsk-unknown-channel} noted there. The governing principle is that \textbf{a real channel is paired with a real constellation and a complex channel with a complex constellation}: the signal space the constellation lives in and the signal space the channel acts on are the same space. Rayleigh with QPSK is the complex case, both living in the plane, where the fading coefficient \(h \sim \mathcal{CN}(0,1)\) rotates as well as scales and the constellation has a phase for it to act on.
 
 The pairings excluded by this principle are precisely the ones that would force the simulation to patch over a mismatch. A real constellation on the complex Rayleigh channel must discard the imaginary part of the equalized sample after dividing by \(h\), throwing away half the plane the channel acted in; a complex constellation on AWGN is not wrong, but it exercises none of what makes the complex channel interesting, since there is no phase rotation to undo. Neither is reported here.
 
 \begin{longtable}[]{@{}lllp{0.42\linewidth}@{}}
-\caption[The evaluated configurations]{The evaluated configurations. The channel shown applies to both hops.}\label{tbl:configurations}\tabularnewline
+\caption[The evaluated configurations]{The primary evaluated (constellation, channel) pairings. The canonical and coded rows use the same channel on both hops; the unknown-channel row's Hop-1 filter is fixed and untold to AF/DF/MLP per block, though the MLP is trained on it, matching the genie-CSI/pilot-aided Viterbi baselines; Hop-2 is AWGN or canonical Rayleigh (Chapter~\ref{sec:unknown-channels}). A QPSK generalization of the unknown-ISI study, with the same Hop-1/Hop-2 split, is reported separately in Section~\ref{sec:qpsk-unknown-channel}.}\label{tbl:configurations}\tabularnewline
 \toprule\noalign{}
 Constellation & Channel & Role & Why this pairing \\
 \midrule\noalign{}
@@ -114,9 +114,10 @@ Constellation & Channel & Role & Why this pairing \\
 \endlastfoot
 QPSK (complex) & Rayleigh (complex) & Canonical & The complex case, and the operating point this thesis draws its conclusions on. QPSK places one bit on each axis, so both dimensions the fading coefficient acts in carry information and none is discarded. \\
 BPSK (real) & Unknown 3-tap ISI & Extension & Used only in Chapter~\ref{sec:unknown-channels}, where the impairment under study is channel \emph{memory} rather than fading, and the one-dimensional alphabet keeps the trellis small enough for an exact Viterbi benchmark. \\
+16-QAM (complex) & Rayleigh (complex) & Coded MCS rung & Used only as one rung of the modulation-and-coding grid of the coded study (Section~\ref{sec:coded-block-df}), where the object of study is the rate-and-modulation choice rather than the relay's ability to process a denser constellation. \\
 \end{longtable}
 
-AWGN appears in this thesis only as the noise term of the channel model and in the closed-form expressions quoted as analytical background (Chapter~\ref{sec:literature-review}); no relay comparison is run on it, so no conclusion is drawn from a channel the thesis does not study.
+Beyond its role as the noise term of every channel model and its use in the closed-form expressions quoted as analytical background (Chapter~\ref{sec:literature-review}), AWGN also appears as the Hop-2 channel of one unknown-channel relay comparison (Chapter~\ref{sec:unknown-channels}); no standalone AWGN-only relay study is run.
 
 \textbf{A consequence worth stating plainly.} The SNR argument sets the noise power from the average \emph{symbol} energy, so it denotes \(E_s/N_0\) in every configuration. Since \(E_b = E_s/k\), \(E_b/N_0\) is \(3.01\)~dB below the stated value for QPSK. Where a BER figure is read against a BPSK closed form, this conversion is stated explicitly at the point of use.
 
@@ -219,7 +220,7 @@ Training uses MSE loss with multi-SNR training data (i.e., 5, 10, and 15 dB), 25
 \begin{remark}[Terminology: symbol-wise DF vs.\ information-theoretic DF]\label{rem:df-terminology}
 The term ``decode-and-forward'' is used in two distinct senses in the literature, and the distinction matters for interpreting the results of this thesis. In its \emph{information-theoretic} sense \cite{CoverGamal1979RelayChannel,ElGamalKim2011NetworkIT}, DF is a \emph{block} strategy: the source protects each message block with a strong (ideally capacity-achieving) channel code, the relay decodes the entire block, and only then re-encodes and forwards the recovered message. This block-DF is inherently \emph{not} memoryless and, over a single link, can operate reliably at any rate below the first-hop capacity.
 
-The system studied in this thesis is \emph{uncoded}: one QPSK symbol carries two information bits, one per axis, and no outer error-correction code is applied. Consequently, the ``DF'' baseline throughout this work refers to \emph{symbol-wise slicing}: per-symbol demodulation followed by re-modulation, i.e., $f_{\text{DF}}(y_R[i]) = \operatorname{sign}(y_R[i])$ with $w=0$. This is the appropriate classical counterpart to the learned relays under the uncoded BER metric used here, but it is strictly weaker than block-DF with coding; the reported DF results should not be read as bounds on coded block-DF performance. This caveat is measured directly, not left as a standing assumption: Section~\ref{sec:coded-block-df} adds a real information-theoretic block-DF baseline (a rate-1/2 convolutional code with soft-decision Viterbi decoding, swept over constraint length and both canonical constellations) and reports where it does and does not beat the symbol-wise DF used elsewhere in this thesis.
+The canonical system studied in the core of this thesis is \emph{uncoded}: one QPSK symbol carries two information bits, one per axis, and no outer error-correction code is applied there. Consequently, the ``DF'' baseline throughout the canonical comparison refers to \emph{symbol-wise slicing}: per-symbol demodulation followed by re-modulation, i.e., $f_{\text{DF}}(y_R[i]) = \operatorname{sign}(y_R[i])$ with $w=0$. This is the appropriate classical counterpart to the learned relays under the uncoded BER metric used there, but it is strictly weaker than block-DF with coding; the reported DF results should not be read as bounds on coded block-DF performance. This caveat is measured directly, not left as a standing assumption: Section~\ref{sec:coded-block-df} adds a real information-theoretic block-DF baseline (a rate-1/2 convolutional code with soft-decision Viterbi decoding, swept over constraint length on the QPSK/Rayleigh link) and reports where it does and does not beat the symbol-wise DF used elsewhere in this thesis.
 \end{remark}
 
 \section{Simulation Framework}\label{sec:simulation-framework}
@@ -363,7 +364,7 @@ Quadrature Phase-Shift Keying maps pairs of bits \((b_0, b_1)\) to complex symbo
 yielding four constellation points at \(\{(\pm 1 \pm j)/\sqrt{2}\}\) with unit average power (\(E_s = 1\)). The Gray coding ensures that adjacent constellation points differ by exactly one bit:
 
 \begin{longtable}[]{@{}lll@{}}
-\caption{QPSK Gray-coded symbol mapping: bit pairs to complex symbols.}\label{tbl:table29}\tabularnewline
+\caption[QPSK Gray-coded symbol mapping]{QPSK Gray-coded symbol mapping: bit pairs to complex symbols.}\label{tbl:table29}\tabularnewline
 \toprule\noalign{}
 Bit pair \((b_0, b_1)\) & Symbol & Quadrant \\
 \midrule\noalign{}
@@ -392,7 +393,7 @@ The advantage of QPSK is doubled throughput for the same BER and per-bit energy.
 
 \subsection{Constellation Diagram Summary}\label{sec:constellation-diagram-summary}
 
-Figure~\ref{fig:fig8} presents the constellation diagrams for the modulation schemes appearing in this thesis. The progression from BPSK (2 points on the real axis) through QPSK (4 points on the unit circle) to denser grids illustrates the fundamental trade-off between spectral efficiency and noise robustness: higher-order constellations pack more bits per symbol but reduce the minimum Euclidean distance between points, increasing the BER at a given SNR. Only QPSK is evaluated in this thesis; the others are shown for orientation.
+Figure~\ref{fig:fig8} presents the constellation diagrams for the modulation schemes appearing in this thesis. The progression from BPSK (2 points on the real axis) through QPSK (4 points on the unit circle) to denser grids illustrates the fundamental trade-off between spectral efficiency and noise robustness: higher-order constellations pack more bits per symbol but reduce the minimum Euclidean distance between points, increasing the BER at a given SNR. QPSK is the constellation used in every canonical relay-architecture comparison; 16-QAM appears only as a rung of the coded link-adaptation study (Section~\ref{sec:coded-block-df}), and BPSK only in the unknown-channel study's relay comparisons (Chapter~\ref{sec:unknown-channels}). The others are shown for orientation.
 
 \begin{figure}[H]
 \centering
@@ -415,7 +416,7 @@ Figure~\ref{fig:fig8} presents the constellation diagrams for the modulation sch
   >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
   >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
   >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
-\caption{Relay-specific complex signal handling strategies and rationale.}\label{tbl:table31}\tabularnewline
+\caption[Relay-specific complex-signal handling]{Relay-specific complex signal handling strategies and rationale.}\label{tbl:table31}\tabularnewline
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 Relay type
