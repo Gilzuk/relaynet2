@@ -101,7 +101,7 @@ This thesis evaluates the primary (constellation, channel) configurations listed
 The pairings excluded by this principle are precisely the ones that would force the simulation to patch over a mismatch. A real constellation on the complex Rayleigh channel must discard the imaginary part of the equalized sample after dividing by \(h\), throwing away half the plane the channel acted in; a complex constellation on AWGN is not wrong, but it exercises none of what makes the complex channel interesting, since there is no phase rotation to undo. Neither is reported here.
 
 \begin{longtable}[]{@{}lllp{0.42\linewidth}@{}}
-\caption[The evaluated configurations]{The primary evaluated (constellation, channel) pairings. The canonical and coded rows use the same channel on both hops; the unknown-channel row's Hop-1 channel is shown (unknown to all relays), while Hop-2 uses AWGN or canonical Rayleigh (Chapter~\ref{sec:unknown-channels}). A QPSK generalization of the unknown-ISI study, with the same Hop-1/Hop-2 split, is reported separately in Section~\ref{sec:qpsk-unknown-channel}.}\label{tbl:configurations}\tabularnewline
+\caption[The evaluated configurations]{The primary evaluated (constellation, channel) pairings. The canonical and coded rows use the same channel on both hops; the unknown-channel row's Hop-1 channel is shown (unknown to the AF/DF/MLP relays; informed for the genie-CSI and pilot-aided Viterbi baselines), Hop-2 being AWGN or canonical Rayleigh (Chapter~\ref{sec:unknown-channels}). A QPSK generalization of the unknown-ISI study, with the same Hop-1/Hop-2 split, is reported separately in Section~\ref{sec:qpsk-unknown-channel}.}\label{tbl:configurations}\tabularnewline
 \toprule\noalign{}
 Constellation & Channel & Role & Why this pairing \\
 \midrule\noalign{}
@@ -117,7 +117,7 @@ BPSK (real) & Unknown 3-tap ISI & Extension & Used only in Chapter~\ref{sec:unkn
 16-QAM (complex) & Rayleigh (complex) & Coded MCS rung & Used only as one rung of the modulation-and-coding grid of the coded study (Section~\ref{sec:coded-block-df}), where the object of study is the rate-and-modulation choice rather than the relay's ability to process a denser constellation. \\
 \end{longtable}
 
-AWGN appears in this thesis only as the noise term of the channel model and in the closed-form expressions quoted as analytical background (Chapter~\ref{sec:literature-review}); no relay comparison is run on it, so no conclusion is drawn from a channel the thesis does not study.
+Beyond its role as the noise term of every channel model and its use in the closed-form expressions quoted as analytical background (Chapter~\ref{sec:literature-review}), AWGN also appears as the Hop-2 channel of one unknown-channel relay comparison (Chapter~\ref{sec:unknown-channels}); no standalone AWGN-only relay study is run.
 
 \textbf{A consequence worth stating plainly.} The SNR argument sets the noise power from the average \emph{symbol} energy, so it denotes \(E_s/N_0\) in every configuration. Since \(E_b = E_s/k\), \(E_b/N_0\) is \(3.01\)~dB below the stated value for QPSK. Where a BER figure is read against a BPSK closed form, this conversion is stated explicitly at the point of use.
 
