@@ -79,6 +79,10 @@ def make_training_data(encoder, relay, train_snrs, n_frames_per_snr, seed=0):
     """Same construction as coded_learned_relay.generate_coded_training_data,
     with the SNR list as a parameter so the two relays differ only in it."""
     rng = np.random.default_rng(seed)
+    # rayleigh_fading_channel draws from the global RNG, so seeding only the
+    # bit generator above would leave the fading and noise irreproducible.
+    # Same convention as coded_error_mechanism.py / coded_soft_decision.py.
+    np.random.seed(seed % (2 ** 31))
     frame_symbols = FRAME_INFO_BITS + encoder.num_tail
     X_list, T_list = [], []
     for snr_db in train_snrs:
@@ -107,6 +111,10 @@ def train_mlp(encoder, train_snrs, label):
 
 def run_trial(relay, snr_db, seed, encoder, decoder, frame_symbols, is_oracle=False):
     rng = np.random.default_rng(seed)
+    # Both RNGs must be seeded: the bit generator below, and the global one the
+    # channel draws its fading and noise from. Without the second, the seed
+    # arithmetic in main() would not make a trial reproducible.
+    np.random.seed(seed % (2 ** 31))
     info_bits = rng.integers(0, 2, N_FRAMES * FRAME_INFO_BITS)
     coded = np.concatenate([
         encoder.encode(info_bits[f * FRAME_INFO_BITS:(f + 1) * FRAME_INFO_BITS])
