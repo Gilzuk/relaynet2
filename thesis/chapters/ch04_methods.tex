@@ -35,7 +35,7 @@ The system under study is a two-hop relay network with a single relay node. All 
 \end{figure}
 
 
-Source bits are QPSK-modulated on the canonical setup, passed through Hop 1 (SISO Rayleigh), processed by the relay (classical or neural), transmitted over Hop 2 (SISO Rayleigh), and demodulated at the destination; no equalization is involved. Chapter~\ref{sec:unknown-channels} reuses this chain with BPSK, but also replaces the hop channels themselves with unknown ISI, a composite cascade, or a per-block redraw. Both hop channels are known perfectly at their respective receivers, per the conventions of Chapter~\ref{sec:introduction}.
+Source bits are QPSK-modulated on the canonical setup, passed through Hop 1 (SISO Rayleigh), processed by the relay (classical or neural), transmitted over Hop 2 (SISO Rayleigh), and demodulated at the destination; no equalization is involved. Chapter~\ref{sec:unknown-channels} reuses this chain with BPSK, but also replaces the hop channels themselves with unknown ISI, a composite cascade, or a per-block redraw. In the canonical setup, both hop channels are known perfectly at their respective receivers, per the conventions of Chapter~\ref{sec:introduction}; the departures introduced in Chapter~\ref{sec:unknown-channels} relax this assumption, as described there.
 
 \begin{equation}\protect\phantomsection\label{eq:two-hop-system}{\text{Source} \xrightarrow{\text{Hop 1}} \text{Relay} \xrightarrow{\text{Hop 2}} \text{Destination}
 }\end{equation}
@@ -96,7 +96,7 @@ where \(P_s = \mathbb{E}[|x|^2]\) is the transmit symbol power (unit for every c
 
 \subsection{Evaluated Configurations}\label{sec:evaluated-configurations}
 
-This thesis evaluates one (constellation, channel) configuration, listed in Table~\ref{tbl:configurations}. The governing principle is that \textbf{a real channel is paired with a real constellation and a complex channel with a complex constellation}: the signal space the constellation lives in and the signal space the channel acts on are the same space. Rayleigh with QPSK is the complex case, both living in the plane, where the fading coefficient \(h \sim \mathcal{CN}(0,1)\) rotates as well as scales and the constellation has a phase for it to act on.
+This thesis evaluates the (constellation, channel) configurations listed in Table~\ref{tbl:configurations}. The governing principle is that \textbf{a real channel is paired with a real constellation and a complex channel with a complex constellation}: the signal space the constellation lives in and the signal space the channel acts on are the same space. Rayleigh with QPSK is the complex case, both living in the plane, where the fading coefficient \(h \sim \mathcal{CN}(0,1)\) rotates as well as scales and the constellation has a phase for it to act on.
 
 The pairings excluded by this principle are precisely the ones that would force the simulation to patch over a mismatch. A real constellation on the complex Rayleigh channel must discard the imaginary part of the equalized sample after dividing by \(h\), throwing away half the plane the channel acted in; a complex constellation on AWGN is not wrong, but it exercises none of what makes the complex channel interesting, since there is no phase rotation to undo. Neither is reported here.
 
@@ -114,6 +114,7 @@ Constellation & Channel & Role & Why this pairing \\
 \endlastfoot
 QPSK (complex) & Rayleigh (complex) & Canonical & The complex case, and the operating point this thesis draws its conclusions on. QPSK places one bit on each axis, so both dimensions the fading coefficient acts in carry information and none is discarded. \\
 BPSK (real) & Unknown 3-tap ISI & Extension & Used only in Chapter~\ref{sec:unknown-channels}, where the impairment under study is channel \emph{memory} rather than fading, and the one-dimensional alphabet keeps the trellis small enough for an exact Viterbi benchmark. \\
+16-QAM (complex) & Rayleigh (complex) & Coded MCS rung & Used only as one rung of the modulation-and-coding grid of the coded study (Section~\ref{sec:coded-block-df}), where the object of study is the rate-and-modulation choice rather than the relay's ability to process a denser constellation. \\
 \end{longtable}
 
 AWGN appears in this thesis only as the noise term of the channel model and in the closed-form expressions quoted as analytical background (Chapter~\ref{sec:literature-review}); no relay comparison is run on it, so no conclusion is drawn from a channel the thesis does not study.
