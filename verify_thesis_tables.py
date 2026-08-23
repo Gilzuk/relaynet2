@@ -588,6 +588,8 @@ def check_table44(tex, rep):
             rep.cell(T, f"{snr}dB/{key}", row[c][0], row[c][1], d[key][i])
         if len(row) > 5:
             rep.cell(T, f"{snr}dB/coded_df_fer", row[5][0], row[5][1], d["coded_df_fer"][i])
+        else:
+            rep.note(T, f"{snr}dB: coded-DF FER column missing, not checked")
     missing = sorted(set(idx) - found)
     if missing:
         rep.note(T, f"json has {missing} dB with no matching table row")
