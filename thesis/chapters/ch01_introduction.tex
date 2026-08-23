@@ -6,7 +6,7 @@ Recent advances in machine learning have motivated the application of neural net
 
 This motivates the central question of this thesis: \emph{under what conditions can neural network--based relays improve upon or complement classical relay strategies in two-hop relay communication?}
 
-This thesis answers that question within a unified simulation framework in which the relay function is the only variable. Nine relay methods are implemented, of which eight are evaluated in the canonical comparison (Section~\ref{sec:relay-strategies}): two classical relay strategies (\texttt{AF} and \texttt{DF}) and seven neural relays spanning supervised learning (\texttt{MLP}, SNR-adaptive \texttt{Hybrid} relay), generative modeling (variational autoencoder \texttt{VAE} and conditional GAN, \texttt{cGAN}, with \texttt{WGAN-GP}), and sequence-based architectures (\texttt{Transformer}, \texttt{Mamba-S6}, and \texttt{Mamba-2 SSD} with structured state-space duality).
+This thesis answers that question within a unified simulation framework in which the relay function is the only variable. Nine relay methods are implemented (Section~\ref{sec:relay-strategies}), of which eight are evaluated in the canonical comparison (Section~\ref{sec:siso-bpsk-performance-baseline-relay-comparison}): two classical relay strategies (\texttt{AF} and \texttt{DF}) and six neural relays spanning supervised learning (\texttt{MLP}, SNR-adaptive \texttt{Hybrid} relay), generative modeling (variational autoencoder \texttt{VAE}), and sequence-based architectures (\texttt{Transformer}, \texttt{Mamba-S6}, and \texttt{Mamba-2 SSD} with structured state-space duality); a conditional GAN (\texttt{cGAN} with \texttt{WGAN-GP}) is implemented but excluded from the canonical comparison on cost grounds.
 
 The objective is not to propose a new relay design but to answer the question above with a boundary rather than a verdict: to say where learning helps, where it does not, and why. Existing studies typically vary several things at once, a set of architectures and a set of channel models together, which makes it difficult to attribute a difference in error rate to model structure, to parameter count, or to the channel.
 
@@ -25,8 +25,7 @@ function}. BPSK is never transmitted on the canonical channel; it is the
 transmitted alphabet only in the unknown-channel experiments of
 Chapter~\ref{sec:unknown-channels}, where the one-dimensional alphabet keeps the
 trellis small enough for an exact Viterbi benchmark, and it otherwise appears
-only in the closed-form expressions those chapters quote. A dedicated unknown-channel contribution (Chapter~\ref{sec:unknown-channels}) is included;
-all other departures from the canonical setup are identified as future work in Chapter~\ref{sec:discussion-and-conclusions}:
+only in the closed-form expressions those chapters quote. Two dedicated departures from it are included: a supplementary coded study (Section~\ref{sec:coded-block-df}) that measures a block-DF relay, soft-information forwarding, and an adaptive modulation-and-coding scheme against this baseline, and the unknown-channel contribution (Chapter~\ref{sec:unknown-channels}). Other departures from the canonical setup are identified as future work in Chapter~\ref{sec:discussion-and-conclusions}:
 
 \begin{longtable}{@{}p{0.25\textwidth}p{0.71\textwidth}@{}}
 \caption[Scope of the thesis]{Scope of the thesis: the canonical setup (QPSK on Rayleigh) and the unknown-channel contribution. No other topology, relay protocol, or performance metric is evaluated in the main line of this work; all such variations are deferred to future work.}
