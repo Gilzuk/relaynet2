@@ -75,7 +75,7 @@ Each hop applies a channel function followed by optional equalization (Equation~
 
 where \(\mathcal{H}(\cdot)\) denotes the canonical Rayleigh fast-fading channel operator (the AWGN special case, $|h|\equiv1$, is retained because the closed forms of Chapter~\ref{sec:literature-review} are stated in it). The calligraphic symbol distinguishes the channel \emph{operator} from the scalar fading \emph{coefficient} \(h\) used throughout the rest of this thesis.
 
-\textbf{Both hops use the same channel.} \(\mathcal{H}(\cdot)\) is applied identically on Hop~1 and Hop~2 at the same SNR: a configuration never mixes channel families across hops. A configuration is therefore specified completely by the pair (constellation, channel), and it is that pair which names each experiment below.
+\textbf{Both hops use the same channel, canonically.} \(\mathcal{H}(\cdot)\) applies identically to both hops there, so a configuration is named by the pair (constellation, channel). The unknown-channel study is the exception, pairing an impaired Hop~1 with an unrelated AWGN or Rayleigh Hop~2 (Chapter~\ref{sec:unknown-channels}).
 
 \textbf{Coherent compensation.} Because the fading coefficient is known at each receiver, coherent compensation ($y \cdot h^*/|h|$ followed by $\Re\{\cdot\}$) reduces each hop to an equivalent real channel with a random per-symbol effective gain $|h[i]|$,
 
@@ -101,7 +101,7 @@ This thesis evaluates the primary (constellation, channel) configurations listed
 The pairings excluded by this principle are precisely the ones that would force the simulation to patch over a mismatch. A real constellation on the complex Rayleigh channel must discard the imaginary part of the equalized sample after dividing by \(h\), throwing away half the plane the channel acted in; a complex constellation on AWGN is not wrong, but it exercises none of what makes the complex channel interesting, since there is no phase rotation to undo. Neither is reported here.
 
 \begin{longtable}[]{@{}lllp{0.42\linewidth}@{}}
-\caption[The evaluated configurations]{The primary evaluated (constellation, channel) pairings. The canonical and coded rows use the same channel on both hops; the unknown-channel row's Hop-1 channel is shown (unknown to the AF/DF/MLP relays; informed for the genie-CSI and pilot-aided Viterbi baselines), Hop-2 being AWGN or canonical Rayleigh (Chapter~\ref{sec:unknown-channels}). A QPSK generalization of the unknown-ISI study, with the same Hop-1/Hop-2 split, is reported separately in Section~\ref{sec:qpsk-unknown-channel}.}\label{tbl:configurations}\tabularnewline
+\caption[The evaluated configurations]{The primary evaluated (constellation, channel) pairings. The canonical and coded rows use the same channel on both hops; the unknown-channel row's Hop-1 filter is fixed and untold to AF/DF/MLP per block, though the MLP is trained on it, matching the genie-CSI/pilot-aided Viterbi baselines; Hop-2 is AWGN or canonical Rayleigh (Chapter~\ref{sec:unknown-channels}). A QPSK generalization of the unknown-ISI study, with the same Hop-1/Hop-2 split, is reported separately in Section~\ref{sec:qpsk-unknown-channel}.}\label{tbl:configurations}\tabularnewline
 \toprule\noalign{}
 Constellation & Channel & Role & Why this pairing \\
 \midrule\noalign{}
