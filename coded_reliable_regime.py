@@ -29,8 +29,10 @@ training artefact:
 
   mlp_thesis  trained on the thesis recipe (SNRs 5/10/15), so at 28--32 dB
               it is extrapolating far outside its training range;
-  mlp_ext     identical architecture and hyperparameters, retrained over
-              the evaluated range (5..30), so any residual gap is not a
+  mlp_ext     identical architecture and hyperparameters, retrained on
+              5..30 dB, which brackets three of the four evaluated points
+              (20/24/28) and leaves only 32 dB as a mild, 2 dB
+              extrapolation -- so any residual gap there is not a large
               train/test mismatch.
 
 Because mlp_ext is a differently-trained instance, this script's 20 dB
