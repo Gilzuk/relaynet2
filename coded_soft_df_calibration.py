@@ -36,7 +36,7 @@ from relaynet.modulation.qpsk import qpsk_modulate
 from coded_df_experiment import FRAME_INFO_BITS, decode_all_frames
 
 SNRS = [16, 20]
-N_TRIALS = 15
+N_TRIALS = 100
 N_FRAMES = 500
 # Multiples of the nominal per-real-dimension noise variance.
 FACTORS = [1.0, 2.0, 5.0, 10.0, 25.0, 50.0, 100.0]
