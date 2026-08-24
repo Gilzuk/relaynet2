@@ -35,7 +35,7 @@ The system under study is a two-hop relay network with a single relay node. All 
 \end{figure}
 
 
-Source bits are QPSK-modulated on the canonical setup, passed through Hop 1 (SISO Rayleigh), processed by the relay (classical or neural), transmitted over Hop 2 (SISO Rayleigh), and demodulated at the destination; no equalization is involved. Chapter~\ref{sec:unknown-channels} reuses this chain with BPSK, replacing Hop 1 with unknown ISI, a composite cascade, or a per-block redraw; Hop 2 is AWGN for the unknown-ISI comparison, Rayleigh otherwise. In the canonical setup, both hop channels are known perfectly at their respective receivers (Chapter~\ref{sec:introduction}); the unknown-ISI departure keeps perfect CSI, while the finite-pilot and blind departures relax it.
+Source bits are QPSK-modulated on the canonical setup, passed through Hop 1 (SISO Rayleigh), processed by the relay (classical or neural), transmitted over Hop 2 (SISO Rayleigh), and demodulated at the destination; no equalization is involved. Chapter~\ref{sec:unknown-channels} reuses this chain with BPSK (DBPSK where phase must be removed by differencing), replacing Hop 1 with unknown ISI, a composite cascade, or a per-block redraw; Hop 2 is AWGN for the unknown-ISI comparison, Rayleigh otherwise. In the canonical setup, both hop channels are known perfectly at their respective receivers (Chapter~\ref{sec:introduction}); the unknown-ISI departure keeps perfect CSI, while the finite-pilot and blind departures relax it.
 
 \begin{equation}\protect\phantomsection\label{eq:two-hop-system}{\text{Source} \xrightarrow{\text{Hop 1}} \text{Relay} \xrightarrow{\text{Hop 2}} \text{Destination}
 }\end{equation}
