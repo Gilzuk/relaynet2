@@ -38,8 +38,9 @@ def main():
     fig, ax = plt.subplots(figsize=(7, 5.5))
     for name, (mu, ci) in summary.items():
         mu, ci = np.asarray(mu, dtype=float), np.asarray(ci, dtype=float)
-        ax.semilogy(snrs, np.maximum(mu, 1e-5), marker="o", label=name)
-        ax.fill_between(snrs, np.maximum(mu - ci, 1e-6), np.maximum(mu + ci, 1e-6), alpha=0.15)
+        line, = ax.semilogy(snrs, np.maximum(mu, 1e-5), marker="o", label=name)
+        ax.fill_between(snrs, np.maximum(mu - ci, 1e-6), np.maximum(mu + ci, 1e-6),
+                        color=line.get_color(), alpha=0.15)
 
     ax.set_title("QPSK: unknown ISI $\\to$ AWGN hop 2")
     ax.set_xlabel("SNR (dB)")
