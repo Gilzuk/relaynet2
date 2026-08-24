@@ -29,7 +29,7 @@ from relaynet.modulation.qpsk import qpsk_modulate
 from e6_sim_enhanced_multimod import DFHardRelay
 
 SNRS = np.arange(0, 21, 4)
-N_TRIALS = 10
+N_TRIALS = 100
 FRAME_INFO_BITS = 200
 N_FRAMES = 500  # 500 * 200 = 100,000 info bits/trial, matching the thesis-standard scale
 MODULATION = "qpsk"

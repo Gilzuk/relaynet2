@@ -44,6 +44,10 @@ def decode_all_frames_qam16(rx_symbols, decoder, frame_symbols):
 
 def run_coded_trial(relay, encoder, decoder, snr_db, seed, frame_symbols):
     rng = np.random.default_rng(seed)
+    # rayleigh_fading_channel draws from the global RNG, so seeding only the
+    # bit generator above would leave the fading and noise irreproducible.
+    # Same convention as coded_reliable_regime.py / coded_error_mechanism.py.
+    np.random.seed(seed % (2 ** 31))
     info_bits = rng.integers(0, 2, N_FRAMES * FRAME_INFO_BITS)
     coded = np.concatenate([
         encoder.encode(info_bits[f * FRAME_INFO_BITS:(f + 1) * FRAME_INFO_BITS])

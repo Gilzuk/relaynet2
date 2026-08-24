@@ -51,7 +51,7 @@ RATES = ["uncoded", "1/2", "2/3", "3/4"]
 MODS = ["qpsk", "qam16"]
 FRAME_INFO_BITS = 200
 N_FRAMES = 200
-N_TRIALS = 10
+N_TRIALS = 100
 
 
 def build(mod, rate, info_bits):

@@ -44,7 +44,7 @@ from coded_learned_relay import (
 )
 
 SNRS = [0, 4, 8, 12, 16, 20]
-N_TRIALS = 20
+N_TRIALS = 100
 N_FRAMES = 500
 ORDER = ["coded_df", "soft_df", "mlp_hard", "mlp_soft", "oracle"]
 

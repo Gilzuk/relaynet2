@@ -86,6 +86,10 @@ class CodedMambaRelay(Relay):
 
 def generate_coded_training_data(encoder, n_frames_per_snr, window_size, seed=0):
     rng = np.random.default_rng(seed)
+    # rayleigh_fading_channel draws from the global RNG, so seeding only the
+    # bit generator above would leave the fading and noise irreproducible.
+    # Same convention as coded_reliable_regime.py / coded_error_mechanism.py.
+    np.random.seed(seed % (2 ** 31))
     X_list, T_list = [], []
     for snr_db in TRAIN_SNRS:
         info = rng.integers(0, 2, n_frames_per_snr * FRAME_INFO_BITS)
@@ -158,7 +162,11 @@ def main():
     for snr_db in SNRS:
         trial_bers, trial_fers = [], []
         for t in range(N_TRIALS):
-            rng = np.random.default_rng(6000 * int(snr_db) + t)
+            seed = 6000 * int(snr_db) + t
+            rng = np.random.default_rng(seed)
+            # rayleigh_fading_channel draws from the global RNG; see the note
+            # in generate_coded_training_data above.
+            np.random.seed(seed % (2 ** 31))
             info_bits = rng.integers(0, 2, N_FRAMES * FRAME_INFO_BITS)
             coded = np.concatenate([
                 encoder.encode(info_bits[f * FRAME_INFO_BITS:(f + 1) * FRAME_INFO_BITS])

@@ -59,7 +59,7 @@ from coded_learned_relay import WINDOW as MLP_WINDOW
 # the code decodes reliably, so the FER-driven mechanism can be read off
 # directly against the BER ordering.
 SNRS = [20, 24, 28, 32]
-N_TRIALS = 10
+N_TRIALS = 100
 N_FRAMES = 1000  # 1000 * 200 = 200,000 info bits per trial
 
 TRAIN_SNRS_THESIS = [5, 10, 15]
