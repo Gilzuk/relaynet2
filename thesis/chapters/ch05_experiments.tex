@@ -213,10 +213,10 @@ SNR & Relay & BER & Diff vs.\ coded-DF & W/L & $p$ \\
  & Mamba-coded & \textbf{0.000967} & $-0.000395$ & 100/0 & $<10^{-4}$ \\
 \end{longtable}
 
-\textbf{This is not a learned relay out-decoding Viterbi, and the mechanism says why.} Viterbi is the maximum-likelihood \emph{sequence} decoder for a known code on a known channel, so a learned decoder beating it at its own task would be a surprising claim requiring more than a BER table. It is not what happens here. Instrumenting the relay output directly (Table~\ref{tbl:table38}) shows coded-DF is the \emph{better} decoder by a wide margin: it puts roughly $2.1\times$ \emph{fewer} symbol errors on the air than the learned relay at both SNRs, exactly as the optimality result predicts. What separates them is what happens to those errors afterwards. Coded-DF decodes and then \emph{re-encodes}, so a frame it gets wrong leaves the relay as a different but perfectly \emph{valid} codeword: the code's redundancy has been spent and then regenerated around the error, and the destination's decoder has no way to detect or repair it. The learned relay never re-encodes, so its (more numerous) mistakes remain isolated bad symbols inside an otherwise-valid codeword, and the destination still holds the redundancy needed to fix them. Only 16--26\% of coded-DF's relay errors are repaired downstream against 57--74\% of the learned relay's. That also explains the SNR-dependent split above: at 16~dB the $2.1\times$ raw-error penalty still outweighs the repair advantage for the MLP, and by 20~dB it no longer does.
+\textbf{This is not a learned relay out-decoding Viterbi, and the mechanism says why.} Viterbi is the maximum-likelihood \emph{sequence} decoder for a known code on a known channel, so a learned decoder beating it at its own task would be a surprising claim requiring more than a BER table. It is not what happens here. Instrumenting the relay output directly (Table~\ref{tbl:table38}) shows coded-DF is the \emph{better} decoder by a wide margin: it puts roughly $2.1\times$ \emph{fewer} symbol errors on the air than the learned relay at both SNRs, exactly as the optimality result predicts. What separates them is what happens to those errors afterwards. Coded-DF decodes and then \emph{re-encodes}, so a frame it gets wrong leaves the relay as a different but perfectly \emph{valid} codeword: the code's redundancy has been spent and then regenerated around the error, and the destination's decoder has no way to detect or repair it. The learned relay never re-encodes, so its (more numerous) mistakes remain isolated bad symbols inside an otherwise-valid codeword, and the destination still holds the redundancy needed to fix them. Only 16--25\% of coded-DF's relay errors are repaired downstream against 58--73\% of the learned relay's. That also explains the SNR-dependent split above: at 16~dB the $2.1\times$ raw-error penalty still outweighs the repair advantage for the MLP, and by 20~dB it no longer does.
 
 \begin{longtable}[]{@{}lccccc@{}}
-\caption[Where the errors go: relay output versus destination output]{Where the errors go, 20 trials $\times$ 500 frames. ``Relay symbol ER'' counts symbols the relay put on the air that differ from the transmitted ones; ``repaired'' is the fraction of those that do not survive the destination's decoder. The oracle relay forwards the clean codeword and so isolates the hop-2-only floor.}\label{tbl:table38}\tabularnewline
+\caption[Where the errors go: relay output versus destination output]{Where the errors go, 100 trials $\times$ 500 frames. ``Relay symbol ER'' counts symbols the relay put on the air that differ from the transmitted ones; ``repaired'' is the fraction of those that do not survive the destination's decoder. The oracle relay forwards the clean codeword and so isolates the hop-2-only floor.}\label{tbl:table38}\tabularnewline
 \toprule\noalign{}
 SNR & Relay & Relay symbol ER & Repaired & Final BER \\
 \midrule\noalign{}
@@ -227,13 +227,13 @@ SNR & Relay & Relay symbol ER & Repaired & Final BER \\
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-16 dB & coded-DF & \textbf{0.00507} & 15.5\% & 0.004282 \\
- & MLP-coded & 0.01075 & \textbf{57.2\%} & 0.004603 \\
- & oracle & --- & --- & 0.002192 \\
+16 dB & coded-DF & \textbf{0.00505} & 15.7\% & 0.004257 \\
+ & MLP-coded & 0.01065 & \textbf{57.9\%} & 0.004487 \\
+ & oracle & --- & --- & 0.002140 \\
 \hline
-20 dB & coded-DF & \textbf{0.00183} & 25.8\% & 0.001355 \\
- & MLP-coded & 0.00390 & \textbf{74.4\%} & 0.001001 \\
- & oracle & --- & --- & 0.000655 \\
+20 dB & coded-DF & \textbf{0.00182} & 24.7\% & 0.001369 \\
+ & MLP-coded & 0.00385 & \textbf{73.0\%} & 0.001039 \\
+ & oracle & --- & --- & 0.000668 \\
 \end{longtable}
 
 \paragraph{Does a stronger code help?} The $K{=}3$ code used above is deliberately small. Sweeping the constraint length to $K\in\{5,7\}$ on the same QPSK/Rayleigh link does \emph{not} improve matters: the larger-$K$ codes are worse than $K{=}3$ across 0--8~dB, a sharper error-propagation cliff for the bigger trellis, and by 20~dB all three are within trial-to-trial noise of one another (best values $0.0015$, $0.0013$, $0.0013$). Within this frame length and trial budget, the relay's re-encoding liability is therefore not something a stronger code repairs; the full sweep is available in \url{results/coded_df_experiment.json}.
