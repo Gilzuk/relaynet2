@@ -1,8 +1,16 @@
 # Active Context (update this file first, every session)
 
-_Last updated: 2026-08-22_
+_Last updated: 2026-08-24_
 
 ## CURRENT STATE: merged to main; thesis at 120 pages
+
+PR #23 (`claude/porting-md-file-l6xzsr` -> `main`) merged 2026-08-23/24 on top
+of PR #15 below: block-DF reliable-decoding-regime study (new Table 5.7),
+AK #33 fix, abstract reconciliation, and an Appendix E repair (chapter-
+numbering drift from the 16-QAM removal below). Full writeup at the bottom of
+this file, "Latest (2026-08-24)". A further branch restart after that merge
+removed every BPSK-with-Rayleigh configuration from Ch.6 (unknown-channel
+chapter), per author instruction -- see the same bottom entry.
 
 PR #15 (`claude/porting-md-file-l6xzsr` -> `main`) merged 2026-08-22. **`main`
 is the base and the source of truth from here**; branch off it for new work and
@@ -417,3 +425,76 @@ User asked to actually measure the caveat Remark `rem:df-terminology` had only a
 
 ## Immediate next step
 Overleaf bundles (`thesis_overleaf.zip`/`thesis_overleaf_clean.zip`) not yet rebuilt after this pass — do that next if the user wants updated zips. Otherwise none pending — awaiting user direction.
+
+## Latest (2026-08-24): PR #23 merged, then all BPSK+Rayleigh removed from Ch.6
+
+**PR #23** (already merged before this entry): the block-DF study extended into
+the reliable-decoding regime (new `coded_reliable_regime.py` + Table 5.7),
+fixing an overclaim (block-DF's "ideally capacity-achieving code" premise was
+never actually reached by the coded-study measurements it was cited against).
+AK #33 (system model stated twice) fixed via a Ch.1 trim. Both abstracts
+reconciled to match `ch09_summary.tex`'s established wording, which
+incidentally brought the page count back to 120 from a temporary 121.
+Appendix E (excluded from the build, audit-log only) repaired: the 16-QAM
+chapter removal below had silently shifted every chapter after it up by one,
+so five "Ch.~7" references there were actually Ch.~6 — replaced with
+`\ref{sec:unknown-channels}` so it can't drift again.
+
+**Follow-up (this branch, post-merge restart)**: author noticed BPSK-with-
+Rayleigh configurations still present in Ch.6 and asked for all of them
+removed. Three distinct occurrences existed, all removed:
+1. Table `tbl:tableE6`'s "Unknown ISI -> Rayleigh" row/curve (BPSK study).
+2. Table `tbl:tableE6`'s "Control: canonical Rayleigh" row/curve (BPSK, no
+   ISI -- the H2 sanity check for this chapter).
+3. Table `tbl:tableE6qpsk`'s "QPSK: ISI -> Rayleigh" row/curve (the QPSK
+   repeat of the same study).
+
+Only the AWGN variant of each survives. Consequences traced and fixed:
+- Ch.6's own setup bullets and H5 conclusion paragraph (the "two boundaries"
+  framing was literally built around the removed control being the "second
+  boundary" -- retitled "with one boundary" rather than leaving a dangling
+  reference).
+- Ch.4's configurations table caption and two prose sentences that said
+  "Hop-2 is AWGN or canonical Rayleigh".
+- Ch.8's H5 outcome-table row (dropped "indistinguishable from it under the
+  Rayleigh second hop" and "on the canonical control it only matches DF
+  (H2)").
+- `appendices.tex`'s master experiment ledger, rows for `tbl:E6`/`tbl:E6qpsk`
+  (left the other ledger rows alone -- flat/composite/partial/blind never
+  actually used Rayleigh despite also saying "AWGN / Rayleigh" there; that
+  looks like a pre-existing copy-paste inaccuracy, out of scope for this ask).
+
+**No plotting script existed** for `results/e6_unknown_channel.png` (the
+figure predates any committed regeneration path -- unlike
+`scripts/plot_e6_studies.py`'s four figures, this one's only survivor was the
+PNG itself). Wrote `scripts/plot_e6_unknown_channel_awgn.py` and
+`scripts/plot_e6_qpsk_unknown_channel_awgn.py`, both re-plotting the single
+surviving AWGN panel from the *already-committed* `.npy` data (no
+re-simulation), writing to both `results/` and `thesis/results/` per the
+existing dual-location convention. Verified the re-plotted curves match the
+table numbers exactly before wiring them into the tex.
+
+`verify_thesis_tables.py`'s `check_tableE6`/`check_tableE6qpsk` needed zero
+code changes -- both are already table-row-driven (they only process setup
+labels actually present in the tex), so deleting rows just means fewer cells
+get checked. Confirmed: 409 -> 361 cells, 0 inconsistencies.
+
+Verification: `latexmk` clean (0 errors/undefined refs, still 120 pages),
+`verify_thesis_tables.py` 361/0, `pytest` 159 passed, both regenerated
+figures and all touched pages rendered to image and read back.
+
+Committed and pushed as PR #24, then carried through several Copilot-review
+rounds on the same branch: a real scope regression (an earlier fix in this
+same round had wrongly generalized "Hop-2 is AWGN" to the whole chapter,
+when only the unknown-ISI comparison actually changed -- flat/composite/
+blind studies still use genuine Rayleigh), a wrong "170 params" figure
+label, six ledger paths missing their result-directory prefix, a Hebrew
+typo, BPSK/DBPSK imprecision, an ambiguous bare "Mamba" (now "Mamba-S6"),
+an ambiguous ISI-filter-timing caption clause, and -- most substantively --
+the two new plotting scripts initially dropped the Viterbi MLSE baseline
+curves (genie CSI, 200-pilot LS) that the thesis table and figure caption
+both reference; both scripts now plot all five curves the table reports.
+Also caught and fixed a self-inflicted repeat of the exact Ch.7-vs-Ch.6
+chapter-numbering mistake this PR's own predecessor (PR #23) had fixed in
+Appendix E -- this time in this PR's own new memory-bank notes and script
+docstrings.

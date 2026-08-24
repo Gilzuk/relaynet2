@@ -113,3 +113,16 @@ The thesis side has moved on past the E6 checklist above; current state:
 Added as a supplementary study, not a re-run of existing results. Rate-1/2 convolutional code (K∈{3,5,7}) with soft-decision Viterbi decoding, genuine block-DF relay, on both canonical constellations (QPSK, 16-QAM); two coded-aware learned relays (MLP, Mamba-S6) trained on the same task for comparison. Full writeup: `activeContext.md` "Latest (2026-08-19)" entry. Code: `relaynet/coding/`, `relaynet/relays/coded_df*.py`. Results: `results/coded_df_experiment.json`. Thesis: new §5.x in `ch05_experiments.tex` + pointers from Ch1/Ch8/both abstracts. Tests: `tests/test_coding.py` (19, all passing). Verifier: 421/0 (was 349/0).
 
 Note found in passing: this file's "Thesis state — 2026-08-17 (canonical restructure)" section above is now stale (describes a BPSK+QPSK dual-canonical setup that was later corrected to QPSK-only canonical, BPSK confined to AWGN calibration) — not reconciled in this pass since it wasn't the ask; flagging so a future session doesn't trust it at face value.
+
+## 2026-08-24: E6_SIM's S2/S4 (Rayleigh variants) removed from the thesis
+
+The "Done" row above for `e6_sim_ported.py` describes all four S1-S4 setups
+(S2 = unknown ISI -> Rayleigh, S4 = canonical-Rayleigh control) as verified —
+that remains true of the underlying simulation/data, which is untouched. What
+changed is which of them the thesis *reports*: per author instruction, every
+BPSK-with-Rayleigh configuration was removed from Ch.6 (`tbl:tableE6`'s S2
+and S4 rows, and `tbl:tableE6qpsk`'s QPSK-Rayleigh row), leaving only the S1
+(ISI -> AWGN) variant in each table. The `.npy` data files still contain
+S2/S4/Rayleigh — nothing was deleted from `e6_unknown_channel_results/` —
+only the thesis's *use* of them was cut. Full detail in `activeContext.md`,
+"Latest (2026-08-24)".
