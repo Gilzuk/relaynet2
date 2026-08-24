@@ -8,12 +8,16 @@ Rayleigh, (c) control: canonical Rayleigh. Per author instruction, panels
 variants specific to this figure and Table tbl:tableE6 -- are being removed,
 which leaves only panel (a). Other Rayleigh hop-2 studies in the same
 chapter (flat unknown channels, composite cascade) are unaffected. This
-script rebuilds panel (a) alone from the same
-committed data the three-panel figure used
-(e6_unknown_channel_results/e6_sim_ported_results.npy, setup "S1: unknown
-ISI -> AWGN"), so the curves are pixel-for-pixel the same data already
+script rebuilds panel (a) alone from the same committed data the
+three-panel figure used: AF/DF/MLP from
+e6_unknown_channel_results/e6_sim_ported_results.npy (setup "S1: unknown
+ISI -> AWGN"), plus the two Viterbi MLSE baselines (genie CSI and 200-pilot
+LS) from e6_unknown_channel_results/e6_viterbi_awgn.npy -- the same source
+verify_thesis_tables.py's check_tableE6 checks the table's Viterbi rows
+against. All five curves are pixel-for-pixel the same data already
 verified against Table tbl:tableE6's surviving AWGN row -- nothing is
-re-simulated or touched numerically.
+re-simulated or touched numerically. The Viterbi arrays carry no stored
+confidence interval, so only AF/DF/MLP get a shaded CI band.
 
 Figures are written to BOTH results/ and thesis/results/ so the repository
 copy and the copy main.tex compiles against never drift apart, matching the
@@ -32,7 +36,9 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-NPY_PATH = os.path.join(ROOT, "e6_unknown_channel_results", "e6_sim_ported_results.npy")
+NPY_DIR = os.path.join(ROOT, "e6_unknown_channel_results")
+SIM_PATH = os.path.join(NPY_DIR, "e6_sim_ported_results.npy")
+VITERBI_PATH = os.path.join(NPY_DIR, "e6_viterbi_awgn.npy")
 OUT_DIRS = [os.path.join(ROOT, "results"), os.path.join(ROOT, "thesis", "results")]
 SETUP = "S1: unknown ISI -> AWGN"
 
@@ -41,12 +47,17 @@ STYLE = {
     "DF":  dict(color="firebrick",  marker="o", ls="-",  label="DF"),
     "MLP": dict(color="tab:blue",   marker="^", ls="-",  label="MLP (169 params)"),
 }
+VITERBI_STYLE = {
+    "VIT-genie": dict(color="tab:green", marker="v", ls="-.", label="Viterbi (genie CSI)"),
+    "VIT-est":   dict(color="tab:purple", marker="D", ls=":", label="Viterbi (200-pilot LS)"),
+}
 
 
 def main():
-    d = np.load(NPY_PATH, allow_pickle=True).item()
+    d = np.load(SIM_PATH, allow_pickle=True).item()
     snrs = np.asarray(d["snrs"], dtype=float)
     r = d["results"][SETUP]
+    vg = np.load(VITERBI_PATH, allow_pickle=True).item()
 
     fig, ax = plt.subplots(figsize=(7, 5.5))
     for key, st in STYLE.items():
@@ -54,6 +65,9 @@ def main():
         ax.semilogy(snrs, np.maximum(mu, 1e-5), markersize=6, **st)
         ax.fill_between(snrs, np.maximum(mu - ci, 1e-6), np.maximum(mu + ci, 1e-6),
                         color=st["color"], alpha=0.18, lw=0)
+    for key, st in VITERBI_STYLE.items():
+        mu = np.asarray(vg[key], dtype=float)
+        ax.semilogy(snrs, np.maximum(mu, 1e-5), markersize=6, **st)
 
     ax.axhline(0.25, color="0.4", ls=":", lw=1.2)
     ax.text(0.3, 0.25 * 1.06, "memoryless floor = 0.25", color="0.4", fontsize=9)

@@ -483,5 +483,18 @@ Verification: `latexmk` clean (0 errors/undefined refs, still 120 pages),
 `verify_thesis_tables.py` 361/0, `pytest` 159 passed, both regenerated
 figures and all touched pages rendered to image and read back.
 
-Not yet done: commit and push this branch (restarted from `main` after PR
-#23's merge, since a merged PR cannot carry new commits).
+Committed and pushed as PR #24, then carried through several Copilot-review
+rounds on the same branch: a real scope regression (an earlier fix in this
+same round had wrongly generalized "Hop-2 is AWGN" to the whole chapter,
+when only the unknown-ISI comparison actually changed -- flat/composite/
+blind studies still use genuine Rayleigh), a wrong "170 params" figure
+label, six ledger paths missing their result-directory prefix, a Hebrew
+typo, BPSK/DBPSK imprecision, an ambiguous bare "Mamba" (now "Mamba-S6"),
+an ambiguous ISI-filter-timing caption clause, and -- most substantively --
+the two new plotting scripts initially dropped the Viterbi MLSE baseline
+curves (genie CSI, 200-pilot LS) that the thesis table and figure caption
+both reference; both scripts now plot all five curves the table reports.
+Also caught and fixed a self-inflicted repeat of the exact Ch.7-vs-Ch.6
+chapter-numbering mistake this PR's own predecessor (PR #23) had fixed in
+Appendix E -- this time in this PR's own new memory-bank notes and script
+docstrings.
