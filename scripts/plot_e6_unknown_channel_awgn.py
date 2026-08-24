@@ -3,10 +3,12 @@
 
 The original figure (never checked in with a regeneration script -- only its
 data survived) had three panels: (a) unknown ISI -> AWGN, (b) unknown ISI ->
-Rayleigh, (c) control: canonical Rayleigh. Per author instruction, every
-BPSK-with-Rayleigh configuration in the unknown/mismatched-channels chapter
-is being removed, which leaves
-only panel (a). This script rebuilds that single panel from the same
+Rayleigh, (c) control: canonical Rayleigh. Per author instruction, panels
+(b) and (c) -- the unknown-ISI-to-Rayleigh and canonical-Rayleigh-control
+variants specific to this figure and Table tbl:tableE6 -- are being removed,
+which leaves only panel (a). Other Rayleigh hop-2 studies in the same
+chapter (flat unknown channels, composite cascade) are unaffected. This
+script rebuilds panel (a) alone from the same
 committed data the three-panel figure used
 (e6_unknown_channel_results/e6_sim_ported_results.npy, setup "S1: unknown
 ISI -> AWGN"), so the curves are pixel-for-pixel the same data already
