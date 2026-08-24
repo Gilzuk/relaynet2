@@ -146,7 +146,7 @@ The parameter counts are within ±1.2\% of the 3,000 target.
 
 \section{Appendix E: Master Experiment Ledger}\label{sec:appendix-e-master-experiment-ledger}
 
-Every numerical table and figure in this thesis traces to exactly one committed result file, verified cell-by-cell against that file by \texttt{verify\_thesis\_tables.py} in the code repository (Section~\ref{sec:reproducibility-and-weight-management}). This ledger lists the modulation, channel, and result source for each major study, grouped in the order they appear.
+Every numerical table and figure in this thesis traces to exactly one committed result file, verified cell-by-cell against that file by \texttt{verify\_thesis\_tables.py} in the code repository (Section~\ref{sec:reproducibility-and-weight-management}). This ledger lists the modulation, channel, and result source for each major study, grouped in the order they appear. Result-source filenames matching \texttt{e6\_*.npy} are relative to \texttt{e6\_unknown\_channel\_results/}.
 
 {\footnotesize
 \begin{longtable}[]{@{}p{0.19\linewidth}p{0.11\linewidth}p{0.13\linewidth}p{0.09\linewidth}p{0.40\linewidth}@{}}
@@ -170,7 +170,7 @@ Coded soft-decision relaying & QPSK & Rayleigh & tbl:39 & \url{results/coded_sof
 Equal-throughput \& latency & QPSK, 16-QAM & Rayleigh & tbl:40, 41 & \url{results/coded_latency_throughput.json} \\
 Adaptive modulation/coding (AMC) & QPSK, 16-QAM & Rayleigh & tbl:42 & \url{results/coded_rate_adaptation.json} \\
 Capacity under a latency budget & QPSK, 16-QAM & Rayleigh & tbl:43 & \url{results/coded_latency_capacity.json} \\
-Unknown ISI (layer 2) & BPSK & AWGN (2nd hop) & tbl:E6 & \url{e6_unknown_channel_results/e6_sim_ported_results.npy} + \url{e6_viterbi_*.npy} \\
+Unknown ISI (layer 2) & BPSK & AWGN (2nd hop) & tbl:E6 & \url{e6_sim_ported_results.npy} + \url{e6_viterbi_*.npy} \\
 Flat-channel control & BPSK & Rayleigh & tbl:E6flat & \url{e6_flat_ported_results.npy} \\
 Unknown ISI, QPSK generalization & QPSK & AWGN & tbl:E6qpsk & \url{e6_qpsk_unknown_channel_results.npy} \\
 Composite impairment cascade & DBPSK & Rayleigh & E6composite & \url{e6_composite_ported_results.npy} \\

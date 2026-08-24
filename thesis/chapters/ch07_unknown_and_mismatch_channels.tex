@@ -63,14 +63,13 @@ MLSE is introduced here solely because the channel now contains memory. In the c
 \begin{itemize} 
  \item \textbf{Topology:} SISO (both hops) 
     \item \textbf{Modulation:} BPSK 
-    \item \textbf{Hop-1 channel (unknown to all relays):} 
-    \begin{itemize} 
-        \item 3-tap ISI, $h=[1.0,0.7,0.5]/\lVert h\rVert$
-        \item Flat unknown channels (block phase, gain, per-branch asymmetry; Section~\ref{sec:flat-unknown-channels})
-        \item Composite cascade of ISI, amplifier nonlinearity, and unknown phase (Section~\ref{sec:composite-channel})
+    \item \textbf{Hop-1 channel (unknown to all relays); Hop-2 (equal SNR per hop):}
+    \begin{itemize}
+        \item 3-tap ISI, $h=[1.0,0.7,0.5]/\lVert h\rVert$ (Hop 2: AWGN)
+        \item Flat unknown channels (phase, gain, asymmetry; Section~\ref{sec:flat-unknown-channels}) (Hop 2: Rayleigh)
+        \item Composite cascade of ISI, amplifier nonlinearity, and unknown phase (Section~\ref{sec:composite-channel}) (Hop 2: Rayleigh)
     \end{itemize}
-    \item \textbf{Hop-2 channel:} AWGN, equal SNR per hop
-    \item \textbf{Relays:} 
+    \item \textbf{Relays:}
     \begin{itemize} 
         \item AF 
         \item Symbol-wise DF 

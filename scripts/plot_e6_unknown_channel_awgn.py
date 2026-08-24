@@ -36,7 +36,7 @@ SETUP = "S1: unknown ISI -> AWGN"
 STYLE = {
     "AF":  dict(color="tab:orange", marker="s", ls="--", label="AF"),
     "DF":  dict(color="firebrick",  marker="o", ls="-",  label="DF"),
-    "MLP": dict(color="tab:blue",   marker="^", ls="-",  label="MLP (170 params)"),
+    "MLP": dict(color="tab:blue",   marker="^", ls="-",  label="MLP (169 params)"),
 }
 
 
