@@ -133,7 +133,7 @@ def main():
     try:
         with open(out_path) as fh:
             merged = json.load(fh)
-    except FileNotFoundError:
+    except (FileNotFoundError, json.JSONDecodeError):
         merged = {}
     merged.update(results)
     with open(out_path, "w") as fh:
