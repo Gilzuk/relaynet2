@@ -4,7 +4,8 @@
 The original figure (never checked in with a regeneration script -- only its
 data survived) had three panels: (a) unknown ISI -> AWGN, (b) unknown ISI ->
 Rayleigh, (c) control: canonical Rayleigh. Per author instruction, every
-BPSK-with-Rayleigh configuration in Chapter 7 is being removed, which leaves
+BPSK-with-Rayleigh configuration in the unknown/mismatched-channels chapter
+is being removed, which leaves
 only panel (a). This script rebuilds that single panel from the same
 committed data the three-panel figure used
 (e6_unknown_channel_results/e6_sim_ported_results.npy, setup "S1: unknown

@@ -9,7 +9,7 @@ of PR #15 below: block-DF reliable-decoding-regime study (new Table 5.7),
 AK #33 fix, abstract reconciliation, and an Appendix E repair (chapter-
 numbering drift from the 16-QAM removal below). Full writeup at the bottom of
 this file, "Latest (2026-08-24)". A further branch restart after that merge
-removed every BPSK-with-Rayleigh configuration from Ch.7 (unknown-channel
+removed every BPSK-with-Rayleigh configuration from Ch.6 (unknown-channel
 chapter), per author instruction -- see the same bottom entry.
 
 PR #15 (`claude/porting-md-file-l6xzsr` -> `main`) merged 2026-08-22. **`main`
@@ -426,7 +426,7 @@ User asked to actually measure the caveat Remark `rem:df-terminology` had only a
 ## Immediate next step
 Overleaf bundles (`thesis_overleaf.zip`/`thesis_overleaf_clean.zip`) not yet rebuilt after this pass — do that next if the user wants updated zips. Otherwise none pending — awaiting user direction.
 
-## Latest (2026-08-24): PR #23 merged, then all BPSK+Rayleigh removed from Ch.7
+## Latest (2026-08-24): PR #23 merged, then all BPSK+Rayleigh removed from Ch.6
 
 **PR #23** (already merged before this entry): the block-DF study extended into
 the reliable-decoding regime (new `coded_reliable_regime.py` + Table 5.7),
@@ -441,7 +441,7 @@ so five "Ch.~7" references there were actually Ch.~6 — replaced with
 `\ref{sec:unknown-channels}` so it can't drift again.
 
 **Follow-up (this branch, post-merge restart)**: author noticed BPSK-with-
-Rayleigh configurations still present in Ch.7 and asked for all of them
+Rayleigh configurations still present in Ch.6 and asked for all of them
 removed. Three distinct occurrences existed, all removed:
 1. Table `tbl:tableE6`'s "Unknown ISI -> Rayleigh" row/curve (BPSK study).
 2. Table `tbl:tableE6`'s "Control: canonical Rayleigh" row/curve (BPSK, no
@@ -450,7 +450,7 @@ removed. Three distinct occurrences existed, all removed:
    repeat of the same study).
 
 Only the AWGN variant of each survives. Consequences traced and fixed:
-- Ch.7's own setup bullets and H5 conclusion paragraph (the "two boundaries"
+- Ch.6's own setup bullets and H5 conclusion paragraph (the "two boundaries"
   framing was literally built around the removed control being the "second
   boundary" -- retitled "with one boundary" rather than leaving a dangling
   reference).

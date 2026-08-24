@@ -3,8 +3,8 @@
 
 The original figure (e6_qpsk_unknown_channel.py's plot()) had two panels,
 AWGN and Rayleigh hop-2. Per author instruction, every BPSK/QPSK-with-Rayleigh
-configuration in Chapter 7 is being removed, which leaves only the AWGN
-panel. This script re-plots that panel from the already-committed
+configuration in the unknown/mismatched-channels chapter is being removed,
+which leaves only the AWGN panel. This script re-plots that panel from the already-committed
 e6_qpsk_unknown_channel_results.npy -- the same data Table tbl:tableE6qpsk's
 surviving AWGN row is checked against -- without re-running the Monte Carlo
 study (which e6_qpsk_unknown_channel.py's main() would do).

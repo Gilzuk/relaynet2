@@ -120,7 +120,7 @@ The "Done" row above for `e6_sim_ported.py` describes all four S1-S4 setups
 (S2 = unknown ISI -> Rayleigh, S4 = canonical-Rayleigh control) as verified —
 that remains true of the underlying simulation/data, which is untouched. What
 changed is which of them the thesis *reports*: per author instruction, every
-BPSK-with-Rayleigh configuration was removed from Ch.7 (`tbl:tableE6`'s S2
+BPSK-with-Rayleigh configuration was removed from Ch.6 (`tbl:tableE6`'s S2
 and S4 rows, and `tbl:tableE6qpsk`'s QPSK-Rayleigh row), leaving only the S1
 (ISI -> AWGN) variant in each table. The `.npy` data files still contain
 S2/S4/Rayleigh — nothing was deleted from `e6_unknown_channel_results/` —
