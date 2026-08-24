@@ -29,6 +29,7 @@ Data sources, by table:
   tbl:table40           equal-throughput coded vs uncoded   <- results/coded_latency_throughput.json
   tbl:table42           link-adaptation envelope            <- results/coded_rate_adaptation.json
   tbl:table43           envelope under a latency budget     <- results/coded_latency_capacity.json
+  tbl:table44           reliable-decoding regime            <- results/coded_reliable_regime.json
 
 Timing tables (tbl:table13, tbl:table25) report machine-dependent wall-clock and
 are checked only for their deterministic content (parameter counts); the timing
@@ -556,6 +557,42 @@ def check_table38(tex, rep):
             rep.cell(T, f"{snr}dB/{key}/relay_sym_er", row[2][0], row[2][1], src["relay_sym_er"])
         if row[4][1] is not None:
             rep.cell(T, f"{snr}dB/{key}/ber", row[4][0], row[4][1], src["ber"])
+    rep.finish_table(T, before)
+
+
+def check_table44(tex, rep):
+    """Reliable-decoding regime (tbl:table44) vs coded_reliable_regime.json.
+
+    Columns: SNR | coded-DF | MLP(thesis recipe) | MLP(retrained) | oracle | coded-DF FER.
+    """
+    T = "tbl:table44"; before = rep.checked
+    body = table_body(tex, T)
+    if body is None:
+        return rep.skip(T, "label not found in tex")
+    d = json.load(open(os.path.join(ROOT, "results/coded_reliable_regime.json")))
+    idx = {int(s): i for i, s in enumerate(d["snr_db"])}
+    cols = ["coded_df", "mlp_thesis", "mlp_ext", "oracle"]
+    found = set()
+    for row in data_rows(body):
+        if not row or row[0][1] is None:
+            continue
+        snr = int(row[0][1])
+        if snr not in idx:
+            rep.note(T, f"{snr}dB: no json mapping, not checked")
+            continue
+        found.add(snr)
+        i = idx[snr]
+        for c, key in enumerate(cols, start=1):
+            if c >= len(row):
+                break
+            rep.cell(T, f"{snr}dB/{key}", row[c][0], row[c][1], d[key][i])
+        if len(row) > 5:
+            rep.cell(T, f"{snr}dB/coded_df_fer", row[5][0], row[5][1], d["coded_df_fer"][i])
+        else:
+            rep.note(T, f"{snr}dB: coded-DF FER column missing, not checked")
+    missing = sorted(set(idx) - found)
+    if missing:
+        rep.note(T, f"json has {missing} dB with no matching table row")
     rep.finish_table(T, before)
 
 
@@ -1091,7 +1128,8 @@ def main():
               check_tableE6, check_tableE6flat, check_tableE6qpsk,
               check_E6blind_prose, check_E6partial_prose, check_E6composite_prose,
               check_table34,
-              check_table37, check_table38, check_table39, check_table40, check_table42, check_table43]
+              check_table37, check_table38, check_table39, check_table40, check_table42, check_table43,
+              check_table44]
     for chk in checks:
         try:
             chk(tex, rep)
