@@ -51,7 +51,7 @@ def main():
     for out_dir in OUT_DIRS:
         os.makedirs(out_dir, exist_ok=True)
         path = os.path.join(out_dir, "unkchan_qpsk.png")
-        fig.savefig(path, dpi=150)
+        fig.savefig(path, dpi=150, bbox_inches="tight")
         print(f"  wrote {path}")
     plt.close(fig)
 
