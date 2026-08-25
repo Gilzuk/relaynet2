@@ -325,28 +325,30 @@ The result is a substantial qualification of Section~\ref{sec:coded-block-df}. H
 
 \textbf{Latency: the block relays buffer three orders of magnitude more.} The relays also differ structurally in how much they must accumulate before emitting anything, which sets the delay the relay contributes independently of how fast its arithmetic is. Symbol-wise AF and DF emit per symbol. A windowed learned relay needs $w$ symbols of look-ahead, ten here, and that figure is a property of the architecture, constant in frame length. Block-DF cannot emit until it has decoded an entire frame, $202$ symbols; soft block-DF is worse still in kind rather than degree, since BCJR's backward recursion runs from the end of the frame and so structurally forbids emitting early even in principle. Frame length is a free parameter, so this is not a fixed penalty but a scaling one: the block relays' latency grows with the frame while the learned relay's does not.
 
-\begin{longtable}[]{@{}lccc@{}}
-\caption[Latency and compute cost of the coded relays]{Structural latency and measured compute cost. ``Buffer'' is the number of symbols the relay must accumulate before it can emit its first output. Compute is the median of 7 runs over $50{,}000$ symbols after a discarded warm-up, single-threaded CPU; these timings are machine-dependent and are reported as informational.}\label{tbl:table41}\tabularnewline
+\begin{longtable}[]{@{}lccccc@{}}
+\caption[Latency and compute cost of the coded relays]{Structural latency and measured compute cost. ``Buffer'' is the number of symbols the relay must accumulate before it can emit its first output, and is architectural. Compute is the median of 7 runs over $49{,}894$ symbols after a discarded warm-up, single-threaded CPU. The identical benchmark was run on two different machines, both reported here: neither is more correct than the other, and the pair is the evidence that the absolute figures are machine-dependent while the ratios are not (\url{results/coded_latency_compute_machines.json}).}\label{tbl:table41}\tabularnewline
 \toprule\noalign{}
-Relay & Buffer (symbols) & $\mu$s/symbol & Relative to Viterbi \\
+ &  & \multicolumn{2}{c}{$\mu$s/symbol} &  \\
+Relay & Buffer (symbols) & Machine A & Machine B & Relative to Viterbi \\
 \midrule\noalign{}
 \endfirsthead
 \toprule\noalign{}
-Relay & Buffer (symbols) & $\mu$s/symbol & Relative to Viterbi \\
+ &  & \multicolumn{2}{c}{$\mu$s/symbol} &  \\
+Relay & Buffer (symbols) & Machine A & Machine B & Relative to Viterbi \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-AF / symbol-wise DF & \textbf{0} & --- & --- \\
-MLP hard (756p) & 10 & 0.30 & $50\times$ faster \\
-MLP soft (756p) & 10 & \textbf{0.22} & $68\times$ faster \\
-hard block-DF (Viterbi) & 202 & 15.07 & $1\times$ \\
-soft block-DF (BCJR) & 202 & 29.30 & $1.9\times$ slower \\
+AF / symbol-wise DF & \textbf{0} & --- & --- & --- \\
+MLP hard (756p) & 10 & 0.30 & 0.34 & $50$--$63\times$ faster \\
+MLP soft (756p) & 10 & 0.22 & 0.35 & $61$--$68\times$ faster \\
+hard block-DF (Viterbi) & 202 & 15.07 & 21.23 & $1\times$ \\
+soft block-DF (BCJR) & 202 & 29.30 & 41.21 & $1.94\times$ slower \\
 \end{longtable}
 
-The compute column points the same way as the latency column. The 756-parameter relay costs $0.30\,\mu$s per symbol against Viterbi's $15.07$, a factor of $50$, and the soft variant is no more expensive than the hard one because replacing an \texttt{argmax} with a posterior-mean inner product is the cheaper of the two operations. BCJR costs roughly twice Viterbi, as its forward, backward and marginalization passes imply. These are single-machine wall-clock figures for reference implementations, not architectural constants; the ratios are nonetheless large enough, and the structural buffering figures exact enough, that the ordering is not in question.
+The compute column points the same way as the latency column, and the two machines make clear which parts of it can be relied on. Machine B is uniformly about $40\%$ slower than Machine A -- Viterbi costs $21.23\,\mu$s per symbol there against $15.07$ -- so no absolute figure in this table should be read as a property of the algorithms. What survives the change of machine is the structure. The learned relay is faster than Viterbi by $50\times$ on Machine A and $63\times$ on Machine B: the factor moves, the order of magnitude does not. BCJR costs $1.944\times$ Viterbi on Machine A and $1.941\times$ on Machine B, a ratio reproduced to three decimal places across hardware that differs by $40\%$ in absolute speed, exactly as its forward, backward and marginalization passes imply. The two MLP read-outs, by contrast, are \emph{not} separable: hard is cheaper on Machine B and soft is cheaper on Machine A, and repeat runs on one machine flip the ordering as well, so the correct statement is that replacing an \texttt{argmax} with a posterior-mean inner product costs nothing measurable -- not that either is faster. Taken together with the buffering column, which is exact and architectural rather than measured, the ordering is not in question even though the absolute timings clearly are.
 
-Taken together with Table~\ref{tbl:table40}, this reframes the coded study's practical conclusion. Where the code pays for itself at all, it does so at 20~dB, for a $1.35\times$ gain at equal throughput, while asking for $20\times$ the buffering latency and $50\times$ the arithmetic of the learned relay that comes within a few ten-thousandths of it there. The learned relay's case in this chapter, as in Chapter~\ref{sec:unknown-channels}, rests on cost and constancy rather than on a lower error floor.
+Taken together with Table~\ref{tbl:table40}, this reframes the coded study's practical conclusion. Where the code pays for itself at all, it does so at 20~dB, for a $1.29\times$ gain at equal throughput, while asking for $20\times$ the buffering latency and at least $50\times$ the arithmetic of the learned relay that comes within a few ten-thousandths of it there. The learned relay's case in this chapter, as in Chapter~\ref{sec:unknown-channels}, rests on cost and constancy rather than on a lower error floor.
 
 \subsection{Adaptive Modulation and Coding: Choosing the Rate, Not Just the Relay}\label{sec:coded-rate-adaptation}
 
