@@ -100,7 +100,7 @@ Unlike H1--H4, which assume the canonical memoryless channel throughout, H5 deli
 \item
   \textbf{Investigate the complexity--performance trade-off} by testing model architectures ranging from 0 parameters (classical) to 26,179 parameters (Mamba-2 SSD), and by conducting a normalized comparison at approximately 3,000 parameters.
 \item
-  \textbf{Determine whether state space models outperform attention mechanisms} for relay signal processing by comparing Mamba-S6 and Transformer architectures at both original and normalized parameter counts, and by benchmarking at extended context lengths.\REV{ Unified ``Mamba S6''$\to$``Mamba-S6''.}
+  \textbf{Determine whether state space models outperform attention mechanisms} for relay signal processing by comparing Mamba-S6 and Transformer architectures at both original and normalized parameter counts.\REV{ Unified ``Mamba S6''$\to$``Mamba-S6''. Removed ``and by benchmarking at extended context lengths'': the context-length benchmark was cut in the 151$\to$120 page reduction, so the objective promised evidence the built document no longer contains.}
 \item
   \textbf{Identify practical deployment recommendations} for selecting the appropriate relay strategy given specific operational constraints (SNR range, computational budget, channel environment).
 \end{enumerate}
