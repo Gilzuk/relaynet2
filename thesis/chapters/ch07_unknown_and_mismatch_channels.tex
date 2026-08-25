@@ -202,16 +202,16 @@ The blind reference settles a question the earlier version of this study left op
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.85\linewidth]{results/e6_partial_pilot_budget_sweep.png}
-\caption[Pilot-budget sweep at 10 dB]{Pilot-budget sweep at 10~dB (mean over 50 channel draws, 20{,}000 bits/point). Pilot-aided Viterbi outperforms the pilot-free MLP down to approximately 20 pilots per block, loses its edge by 10 pilots, and collapses at 5 pilots when the least-squares channel estimate becomes too noisy to construct a reliable trellis ($0.1235 \pm 0.0304$). In contrast, the MLP remains flat across the sweep because it operates with an amortized posterior and requires no pilots.}
+\begin{minipage}[t]{0.49\linewidth}\centering
+  \includegraphics[width=\linewidth]{results/e6_partial_pilot_budget_sweep.png}\\[2pt]
+  {\small (a) pilot-budget sweep at 10~dB}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.49\linewidth}\centering
+  \includegraphics[width=\linewidth]{results/e6_partial_short_blocks_overhead.png}\\[2pt]
+  {\small (b) block-length sweep at 10 pilots}
+\end{minipage}
+\caption[Partial-posterior sweeps: pilot budget and block length]{Partial-posterior regime; both panels are means over 50 channel draws at 20{,}000 bits/point. \textbf{(a)} Pilot-aided Viterbi outperforms the pilot-free MLP down to approximately 20 pilots per block, loses its edge by 10 pilots, and collapses at 5 pilots when the least-squares estimate becomes too noisy to construct a reliable trellis ($0.1235 \pm 0.0304$); the MLP is flat across the sweep, operating with an amortized posterior and requiring no pilots. \textbf{(b)} With 10 pilots per block, pilot-aided Viterbi and the MLP are indistinguishable in payload BER at every block length (both $\approx 0.049$), but the classical receiver's pilot overhead grows from approximately 1\% at $L=1000$ to 25\% at $L=40$. Blind CMA, the other pilot-free option, cannot converge within blocks this short and sits roughly three and a half times worse throughout. The MLP therefore matches the pilot-aided receiver's reliability at no overhead, and is the only pilot-free method that stays reliable for short packets.}
 \label{fig:e6_partial_pilot_budget}
-\end{figure}
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.85\linewidth]{results/e6_partial_short_blocks_overhead.png}
-\caption[Block-length sweep at 10 pilots]{Block-length sweep with 10 pilots per block (mean over 50 channel draws, 20{,}000 bits/point, subdivided into independent blocks of the swept length). Pilot-aided Viterbi and the pilot-free MLP are indistinguishable in payload BER at every block length (both $\approx 0.049$), but the classical receiver's pilot overhead grows from approximately 1\% at $L=1000$ to 25\% at $L=40$. The other pilot-free option, blind CMA, cannot converge within blocks this short and sits roughly three and a half times worse throughout. The MLP therefore matches the pilot-aided receiver's reliability at no overhead, and is the only pilot-free method that remains reliable for short packets.}
-\label{fig:e6_partial_short_blocks}
 \end{figure}
 
 
