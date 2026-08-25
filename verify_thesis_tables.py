@@ -643,6 +643,74 @@ def ergodic_rayleigh_capacity(snr_db):
     return math.log2(math.e) * math.exp(1.0 / g) * exp1(1.0 / g)
 
 
+def check_table41(tex, rep):
+    """Latency and compute cost (tbl:table41) vs its two committed sources.
+
+    Two different kinds of number live in this table and they are checked
+    against different files. The Buffer column is architectural -- the
+    relay's structural latency in symbols -- and comes from
+    coded_latency_throughput.json. The two us/symbol columns are wall-clock
+    measurements from two different machines, deliberately reported side by
+    side as the evidence that the absolute figures are machine-dependent
+    while the ratios are not; both readouts are pinned in
+    coded_latency_compute_machines.json.
+
+    Timings are machine-dependent, so this check does NOT assert that the
+    thesis figures are reproducible on the machine running the verifier --
+    only that they still match the readouts committed alongside them. That
+    is the property that can actually drift silently when the table is
+    edited, and it is the reason the table is checked at all: it was the
+    last numerical table in Chapter 5 with no coverage.
+    """
+    T = "tbl:table41"; before = rep.checked
+    body = table_body(tex, T)
+    if body is None:
+        return rep.skip(T, "label not found in tex")
+
+    lat = json.load(open(os.path.join(ROOT, "results/coded_latency_throughput.json")))
+    mach = json.load(open(os.path.join(ROOT, "results/coded_latency_compute_machines.json")))
+    buf = lat["structural_latency_symbols"]
+    ca, cb = mach["machine_A"]["compute"], mach["machine_B"]["compute"]
+
+    # tex row label -> (buffer key, compute key). The AF/DF row has no
+    # compute entry: it is per-symbol classical processing, dashed in the tex.
+    rows = {
+        "af / symbol-wise df":     ("AF / symbol-wise DF", None),
+        "mlp hard (756p)":         ("MLP / Mamba, window 21", "MLP hard (756p)"),
+        "mlp soft (756p)":         ("MLP / Mamba, window 21", "MLP soft (756p)"),
+        "hard block-df (viterbi)": ("hard block-DF (Viterbi)", "hard block-DF (Viterbi)"),
+        "soft block-df (bcjr)":    ("soft block-DF (BCJR)", "soft block-DF (BCJR)"),
+    }
+
+    for row in data_rows(body):
+        if not row or len(row) < 4:
+            continue
+        name = re.sub(r"\\textbf|[{}]", "", row[0][0]).strip().lower()
+        if name not in rows:
+            continue
+        bkey, ckey = rows[name]
+        pub_text, pub_val = row[1]
+        rep.cell(T, f"{name}/buffer", pub_text, pub_val, float(buf[bkey]))
+        if ckey is None:
+            continue
+        for col, comp, tag in ((2, ca, "machineA"), (3, cb, "machineB")):
+            if col >= len(row):
+                break
+            pub_text, pub_val = row[col]
+            rep.cell(T, f"{name}/{tag}", pub_text, pub_val,
+                     comp[ckey]["us_per_symbol"])
+
+    # The ratio the surrounding prose leans on, on both machines. This is the
+    # claim that survives the change of hardware, so it is the one worth
+    # pinning: if either readout is ever replaced, the "1.94x" must move too.
+    for comp, tag in ((ca, "machineA"), (cb, "machineB")):
+        ratio = comp["soft block-DF (BCJR)"]["us_per_symbol"] / \
+                comp["hard block-DF (Viterbi)"]["us_per_symbol"]
+        rep.cell(T, f"BCJR/Viterbi ratio ({tag})", "1.94", 1.94, ratio)
+
+    rep.finish_table(T, before)
+
+
 def check_table42(tex, rep):
     """Link-adaptation envelope (tbl:table42) vs coded_rate_adaptation.json.
 
@@ -1128,7 +1196,8 @@ def main():
               check_tableE6, check_tableE6flat, check_tableE6qpsk,
               check_E6blind_prose, check_E6partial_prose, check_E6composite_prose,
               check_table34,
-              check_table37, check_table38, check_table39, check_table40, check_table42, check_table43,
+              check_table37, check_table38, check_table39, check_table40,
+              check_table41, check_table42, check_table43,
               check_table44]
     for chk in checks:
         try:

@@ -48,7 +48,7 @@ from coded_learned_relay import (
 )
 
 SNRS = [16, 20]
-N_TRIALS = 20
+N_TRIALS = 100
 N_FRAMES = 500
 
 ALPHABET = np.array([1 + 1j, 1 - 1j, -1 + 1j, -1 - 1j]) / np.sqrt(2)

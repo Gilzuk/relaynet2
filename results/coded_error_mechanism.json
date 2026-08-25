@@ -1,51 +1,51 @@
 {
-  "n_trials": 20,
+  "n_trials": 100,
   "n_frames": 500,
   "results": {
     "16": {
       "coded_df": {
-        "ber": 0.004282,
-        "relay_sym_er": 0.005067326732673267,
-        "repaired_frac": 0.15497850722938644,
-        "fer": 0.461,
-        "bit_err_per_failed_frame": 1.857700650759219
+        "ber": 0.0042567,
+        "relay_sym_er": 0.005051584158415842,
+        "repaired_frac": 0.15735344270006457,
+        "fer": 0.45594,
+        "bit_err_per_failed_frame": 1.8672193709698643
       },
       "mlp_coded": {
-        "ber": 0.004603,
-        "relay_sym_er": 0.010750990099009901,
-        "repaired_frac": 0.5718533867477091,
-        "fer": 0.427,
-        "bit_err_per_failed_frame": 2.1559718969555037
+        "ber": 0.0044867,
+        "relay_sym_er": 0.010654257425742573,
+        "repaired_frac": 0.5788819604490372,
+        "fer": 0.42088,
+        "bit_err_per_failed_frame": 2.132056643223722
       },
       "oracle": {
-        "ber": 0.002192,
+        "ber": 0.0021404,
         "relay_sym_er": 0.0,
         "repaired_frac": null,
-        "fer": 0.265,
-        "bit_err_per_failed_frame": 1.6543396226415095
+        "fer": 0.26192,
+        "bit_err_per_failed_frame": 1.6343921808185706
       }
     },
     "20": {
       "coded_df": {
-        "ber": 0.0013555,
-        "relay_sym_er": 0.0018272277227722772,
-        "repaired_frac": 0.25816580872392303,
-        "fer": 0.1982,
-        "bit_err_per_failed_frame": 1.3678102926337032
+        "ber": 0.001369,
+        "relay_sym_er": 0.0018175247524752475,
+        "repaired_frac": 0.24677779593615512,
+        "fer": 0.19924,
+        "bit_err_per_failed_frame": 1.374222043766312
       },
       "mlp_coded": {
-        "ber": 0.001001,
-        "relay_sym_er": 0.003902970297029703,
-        "repaired_frac": 0.7435286656519533,
-        "fer": 0.1373,
-        "bit_err_per_failed_frame": 1.458120903131828
+        "ber": 0.0010394,
+        "relay_sym_er": 0.003850990099009901,
+        "repaired_frac": 0.7300953850109269,
+        "fer": 0.13968,
+        "bit_err_per_failed_frame": 1.4882588774341352
       },
       "oracle": {
-        "ber": 0.000655,
+        "ber": 0.0006676,
         "relay_sym_er": 0.0,
         "repaired_frac": null,
         "fer": 0.1031,
-        "bit_err_per_failed_frame": 1.270611057225994
+        "bit_err_per_failed_frame": 1.2950533462657614
       }
     }
   }

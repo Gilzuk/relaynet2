@@ -29,7 +29,7 @@ from relaynet.modulation.qpsk import qpsk_modulate
 from e6_sim_enhanced_multimod import DFHardRelay
 
 SNRS = np.arange(0, 21, 4)
-N_TRIALS = 10
+N_TRIALS = 100
 FRAME_INFO_BITS = 200
 N_FRAMES = 500  # 500 * 200 = 100,000 info bits/trial, matching the thesis-standard scale
 MODULATION = "qpsk"
@@ -50,6 +50,10 @@ def decode_all_frames(rx_symbols, decoder, frame_symbols):
 def run_coded_trial(relay, snr_db, seed, encoder, decoder, frame_symbols):
     """One trial of coded transmission: encode -> hop1 -> relay -> hop2 -> decode."""
     rng = np.random.default_rng(seed)
+    # rayleigh_fading_channel draws from the global RNG, so seeding only the
+    # bit generator above would leave the fading and noise irreproducible.
+    # Same convention as coded_reliable_regime.py / coded_error_mechanism.py.
+    np.random.seed(seed % (2 ** 31))
     info_bits = rng.integers(0, 2, N_FRAMES * FRAME_INFO_BITS)
 
     coded_list = [encoder.encode(info_bits[f * FRAME_INFO_BITS:(f + 1) * FRAME_INFO_BITS])
@@ -122,9 +126,19 @@ def main():
 
         print(f"{snr_db:>5} {unc_ber:>12.5f} {af_ber:>12.5f} {df_ber:>12.5f} {af_fer:>10.4f} {df_fer:>10.4f}")
 
-    with open("results/coded_df_experiment.json", "w") as fh:
-        json.dump(results, fh, indent=2)
-    print("\nSaved results/coded_df_experiment.json")
+    # Other scripts (coded_learned_relay.py, the K-sweep, the Mamba-coded
+    # relay, the 16-QAM variants) merge their own keys into this same file.
+    # A blind overwrite here would silently discard them; merge instead.
+    out_path = "results/coded_df_experiment.json"
+    try:
+        with open(out_path) as fh:
+            merged = json.load(fh)
+    except (FileNotFoundError, json.JSONDecodeError):
+        merged = {}
+    merged.update(results)
+    with open(out_path, "w") as fh:
+        json.dump(merged, fh, indent=2)
+    print(f"\nSaved {out_path}")
 
 
 if __name__ == "__main__":

@@ -27,6 +27,6 @@
 - Run `python find_referenced_figs.py` before removing any figure file.
 
 ## Git Safety
-- Always push to `clean-thesis` branch only.
+- Always work on a feature branch off `main`; open a pull request back into `main`. Do not push to `clean-thesis` — it has been stalled since 2026-07-18 and `main` is the sole source of truth for `chapters/**`.
 - Never force-push (`git push --force`) without explicit user approval.
 - Commit message must describe what changed (e.g., "fix: resolve undefined references in ch04").

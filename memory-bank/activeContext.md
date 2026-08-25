@@ -1,8 +1,73 @@
 # Active Context (update this file first, every session)
 
-_Last updated: 2026-08-24_
+_Last updated: 2026-08-25_
 
-## CURRENT STATE: merged to main; thesis at 120 pages
+## CURRENT STATE: PR #25 open on `claude/porting-md-file-l6xzsr`; thesis at 124 pages
+
+The 120-page figure below is superseded. The coded family was re-measured at
+100 trials and Chapter 2 gained a channel-coding background section; the author
+accepted 124 pages on 2026-08-25 ("124 is ok I will review later"). Full
+writeup: "Latest (2026-08-25)" immediately below. Everything before that entry
+is history and may quote the old page count.
+
+### Latest (2026-08-25): 100-trial re-run of the coded family + Ch2 coding background
+
+**Branch policy settled.** `clean-thesis` is gone from all live guidance.
+`CLAUDE.md`, `.clinerules/90-safety.md`, `.clinerules/00-general.md` and
+`.github/skills/code-review/SKILL.md` now say the same thing: branch off `main`,
+PR back into `main`. Remaining `clean-thesis` mentions in this file and in
+`progress.md` are historical journal entries, marked superseded in place — not
+guidance, and not defects to "fix". The conflict note further down this file is
+one of them.
+
+**Re-ran the whole coded family at 100 trials** (author's instruction: update
+only where the delta exceeds 5%). Regenerated `coded_reliable_regime`,
+`coded_soft_decision`, `coded_rate_adaptation`, `coded_latency_capacity`,
+`coded_k_sweep_qpsk`, `coded_k_sweep_qam16`, `coded_learned_relay`,
+`coded_mamba_relay`, `coded_latency_throughput`. Tables 5.4, 5.7, 5.9, 40, 42,
+43 and the K-sweep prose updated. **Verifier: 361 cells, 2 inconsistencies**
+(both 5.5e-07 rounding artifacts at `tbl:table44` 20 dB — 0.0010925 and
+0.00070345 round half-up to the published 0.001093 and 0.000704, so the
+published cells are correct as printed and should NOT be "fixed"). pytest 159
+passed.
+
+**Same unseeded-RNG bug found in three more scripts** (`coded_k_sweep_qpsk`,
+`coded_k_sweep_qam16`, `coded_mamba_relay`): `rayleigh_fading_channel()` draws
+from the global `np.random`, so `np.random.seed(seed % (2**31))` must follow
+every `np.random.default_rng(seed)`. That is now nine scripts carrying this fix.
+**Check any new script for it before trusting a re-run.**
+
+**Table 41 now reports two machines, deliberately.** Its timings were measured
+on a container ~40% faster than the current one (Viterbi 15.07 vs 21.23
+µs/symbol). An idle re-measure (load 0.28) reproduced 21.23, ruling out
+contention. Rather than pick a winner, both readouts are reported side by side
+as the evidence for the machine-dependence the caption already claimed, with
+provenance in `results/coded_latency_compute_machines.json`. The invariant that
+carries the argument: **BCJR/Viterbi = 1.944× on A, 1.941× on B**. Dropped the
+claim that the soft MLP read-out is cheaper than hard — soft wins on A, hard on
+B, and repeat runs on one machine flip it, so that difference is inside the
+noise floor. If timings are ever re-measured, add the machine rather than
+overwrite.
+
+**Ch2 gained §2.6, channel-coding background** (convolutional codes, Viterbi,
+BCJR, puncturing/spectral-efficiency/AMC) — Ch5's coded study previously used
+all of it with no grounding, against the "theory lives in Ch1/Ch2" rule. Added
+`BahlCockeJelinekRaviv1974BCJR` to `thesis/chapters/references.bib` (note: that
+is the bib `main.tex` actually uses; the root `references.bib` is a stale
+duplicate with different keys). A self-audit of that new section against
+`relaynet/coding/*` caught three real errors before review — see
+`techContext.md` gotcha #6.
+
+**Gap worth knowing: `verify_thesis_tables.py` checks table cells only, so any
+figure quoted in prose is unguarded.** A stale 10-trial `1.35×` survived four
+commits of table updates in §5.4.2 before being caught by hand; the 100-trial
+value is 1.29×, which the table and the paragraph above it already stated. When
+re-running anything, grep the prose for the old values too.
+
+**Open:** author will review the 124-page document later; PR #25 has not had a
+fresh Copilot review since all of the above landed.
+
+## SUPERSEDED (2026-08-24): merged to main; thesis at 120 pages
 
 PR #23 (`claude/porting-md-file-l6xzsr` -> `main`) merged 2026-08-23/24 on top
 of PR #15 below: block-DF reliable-decoding-regime study (new Table 5.7),
@@ -218,9 +283,9 @@ User asked for a general quality/correctness review of `chapters/*.tex`. Ran exi
 
 User approved fixing #1. **This was a mistake** — the 8 figures were deliberately added by the user on `clean-thesis` (the actual authoritative thesis branch per `.clinerules/90-safety.md`) in commit `d5912c2` ("add 1 fig/experiment in ch05"). This session's branch forked directly from `clean-thesis`'s current tip, so the `.clinerules` docs (which say "no figures in Ch5") are simply stale relative to that deliberate restructure. Caught when user said "compare this with the last commits from the Claude chat" — reverted immediately (`5248440`), confirmed byte-identical to `origin/clean-thesis` for that file afterward. Full writeup: `techContext.md` gotcha #5.
 
-**Findings #2-4 were never acted on and still need the same clean-thesis-history cross-check before anyone (including a future session) treats them as real bugs** — do not assume they're valid just because they came from the same review pass as the reverted #1.
+**Findings #2-4 were never acted on**; at the time this cross-check pointed at `clean-thesis`, but see the 2026-08-22 resolution above — `clean-thesis` is now confirmed stalled and `main` is the source of truth, so any remaining review of these findings should be done against `main`'s current `chapters/**`, not `clean-thesis`.
 
-**Structural note for any future thesis work**: `chapters/**` is governed by the separate `clean-thesis` branch, not this session's `claude/porting-md-file-l6xzsr`. See updated `CLAUDE.md` scope-boundary section.
+**Superseded 2026-08-25**: the structural note that used to sit here (pointing at `clean-thesis` as the authoritative branch for `chapters/**`) was corrected once `main` was confirmed to strictly contain `clean-thesis`'s full history plus a month of further work. `CLAUDE.md`'s scope-boundary section, `.clinerules/90-safety.md`, and `.clinerules/00-general.md` now all say the same thing: `main` is authoritative, branch off it, push there via PR, never push to `clean-thesis`.
 
 ## Latest: rescaled Tier-1 findings to project-standard scale (10×100k) — thesis integration EXPLICITLY DEFERRED
 Asked to review all QPSK/symmetric-hop findings from this thread and propose which are thesis-ready. Assessment: three "Tier 1" results were solid/mechanism-confirmed but only run at dev scale (5×50k) — (1) symmetric-hop relay comparison, (2) MLP-QPSK-classifier vs Viterbi-Genie (BER + latency), (3) worst/medium/ideal CSI pilot-tier comparison. User said "Do so" (rescale + integrate into thesis).

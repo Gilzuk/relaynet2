@@ -353,3 +353,49 @@ The two-hop DF relay over Rayleigh fading follows the same composition rule as A
 \begin{equation}\protect\phantomsection\label{eq:df-ber-rayleigh}{P_e^{\text{DF,Rayleigh}} = 2P_e^{\text{Rayleigh}}(1 - P_e^{\text{Rayleigh}})
 }\end{equation}
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad df-ber-rayleigh}
+
+\section{Channel Coding: Convolutional Codes and Trellis Decoding}\label{sec:channel-coding-convolutional-codes}
+
+The channel models above assume an uncoded link. Chapter~\ref{sec:experiments}'s supplementary coded study (Section~\ref{sec:coded-block-df}) departs from that assumption, adding a convolutional code and a block-DF relay that decodes it. This section gives the minimal background needed to follow that study: what a convolutional code's rate and constraint length mean, how a receiver recovers the transmitted sequence from a noisy one, and how a single code is stretched across several rates.
+
+\subsection{Convolutional Encoding: Rate and Constraint Length}\label{sec:convolutional-encoding-rate-constraint-length}
+
+A convolutional encoder maps each group of $k$ input bits to $n$ coded output bits using a shift register of \emph{constraint length} $K$ -- the number of $k$-bit input groups (including the current one) that influence each output. The code \emph{rate} \cite{ProakisSalehi2008DigitalComm} is
+\begin{equation}\protect\phantomsection\label{eq:conv-code-rate}{R = \frac{k}{n}}\end{equation}
+\addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad conv-code-rate}
+
+so a rate-$1/2$ code, the mother code used throughout Chapter~\ref{sec:experiments}, emits two coded bits per information bit. This thesis uses $k=1$ throughout, one information bit per trellis step; the encoder's output then depends on the current bit and the $K-1$ preceding ones held in the shift register, so its evolution is a finite-state machine with \cite{ProakisSalehi2008DigitalComm}
+\begin{equation}\protect\phantomsection\label{eq:conv-trellis-states}{S = 2^{K-1}}\end{equation}
+\addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad conv-trellis-states}
+
+states, and the resulting state diagram unrolled over time is the code's \emph{trellis}: every valid coded sequence corresponds to exactly one path through it. A larger $K$ gives the code more memory to spread redundancy across, at the cost of a larger trellis to search; Chapter~\ref{sec:experiments} measures this trade-off directly by sweeping $K \in \{3, 5, 7\}$, i.e.\ $4$, $16$ and $64$ states (Section~\ref{sec:coded-block-df}). A frame is conventionally \emph{zero-tail terminated}: $K-1$ zero bits are appended after the information bits to drive the encoder back to the all-zero state, so the trellis both starts and ends at a known point rather than an unknown one.
+
+\subsection{Maximum-Likelihood Sequence Decoding: The Viterbi Algorithm}\label{sec:viterbi-ml-decoding}
+
+Because every valid coded sequence is one path through the trellis, recovering the most likely transmitted sequence from a noisy received one is a shortest-path problem: find the trellis path whose hypothesized coded symbols are collectively closest to what was received. A brute-force search is infeasible -- an $L$-bit information frame admits $2^{L}$ trellis paths. The Viterbi algorithm nonetheless solves the problem exactly, in time linear in $L$, by a dynamic-programming recursion over the trellis states: at each step it extends every surviving path by one branch and keeps only the lowest-cost path into each of the $S$ states (add-compare-select), so the cost per step depends on $S$ rather than on the number of paths \cite{Forney1972MLSE, ProakisSalehi2008DigitalComm}. For a memoryless channel with an appropriate branch metric -- squared Euclidean distance to the received sample under AWGN, as used by Chapter~\ref{sec:experiments}'s coded block-DF relay \cite{Forney1972MLSE} -- the recovered sequence is
+\begin{equation}\protect\phantomsection\label{eq:viterbi-ml-metric}{\hat{c} = \operatorname*{arg\,min}_{c \in \mathcal{C}} \sum_{k} \left| y_k - x(c_k) \right|^2}\end{equation}
+\addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad viterbi-ml-metric}
+
+where $\mathcal{C}$ is the set of trellis-valid coded sequences and $x(c_k)$ the modulated symbol for coded bits $c_k$ -- exactly the maximum-likelihood sequence estimate for the channel, with no approximation. Optimality is over the sequence, however, not over each bit independently, and this shapes how the decoder fails. When noise makes an incorrect path cheaper than the transmitted one, that path typically diverges from the correct path for several trellis steps before merging back, so a single decoding failure corrupts a \emph{run} of information bits rather than an isolated one. Residual errors therefore arrive in bursts, and below the code's operating threshold these events become frequent enough that the burst penalty outweighs the coding gain. This is the mechanism behind the low-SNR coding penalty Chapter~\ref{sec:experiments} measures (Section~\ref{sec:coded-block-df}), where a fixed-rate code performs worse than no coding at all -- a memoryless per-symbol slicer has no trellis to diverge along, and so cannot fail this way.
+
+\subsection{Soft-Decision Decoding: The Forward-Backward (BCJR) Algorithm}\label{sec:soft-decision-bcjr-decoding}
+
+Viterbi decoding returns one hard path through the trellis and discards how close the alternatives were. The BCJR algorithm \cite{BahlCockeJelinekRaviv1974BCJR} instead computes, for every trellis transition, its posterior probability given the \emph{entire} received sequence, using both a forward recursion $\alpha_k(s)$ (the likelihood of reaching state $s$ at step $k$ from everything received so far) and a backward recursion $\beta_k(s)$ (the likelihood of everything still to come, given state $s$ at step $k$):
+\begin{equation}\protect\phantomsection\label{eq:bcjr-posterior}{P(s_{k-1}=s',\, s_k=s \mid \mathbf{y}) \propto \alpha_{k-1}(s')\,\gamma_k(s',s)\,\beta_k(s)}\end{equation}
+\addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad bcjr-posterior}
+
+where $\gamma_k(s',s)$ is the branch's transition-and-observation probability. Where Viterbi minimizes the probability of choosing the wrong \emph{sequence}, BCJR minimizes the error probability of each \emph{symbol} individually \cite{BahlCockeJelinekRaviv1974BCJR}; the two optimize different criteria, which is why neither dominates the other in Chapter~\ref{sec:experiments}'s measurements. Marginalizing these joint probabilities over the transitions consistent with each coded bit or symbol gives a \emph{soft} estimate -- a posterior mean or log-likelihood ratio -- in place of Viterbi's hard decision. This is the read-out Chapter~\ref{sec:experiments} calls \emph{soft block-DF} (Section~\ref{sec:coded-block-df}): the relay forwards the BCJR posterior mean instead of committing to the single most likely codeword.
+
+\subsection{Puncturing, Spectral Efficiency, and Rate Adaptation}\label{sec:puncturing-spectral-efficiency}
+
+A code's rate and the modulation's constellation size $M$ together set how much information it carries per channel use, its spectral efficiency \cite{ProakisSalehi2008DigitalComm}:
+\begin{equation}\protect\phantomsection\label{eq:spectral-efficiency}{\eta = R \cdot \log_2 M \quad \text{[bits/symbol]}}\end{equation}
+\addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad spectral-efficiency}
+
+so a rate-$1/2$ code halves the information rate of whatever modulation carries it, and comparing a coded link against an uncoded one at the same SNR without accounting for this is not a like-for-like comparison (Section~\ref{sec:coded-latency-throughput} revisits Chapter~\ref{sec:experiments}'s coded-versus-uncoded comparison on this basis). Rates other than a code's native $k/n$ are obtained by \emph{puncturing}: deleting a fixed, periodic subset of the encoder's output bits according to a puncturing pattern, and at the decoder re-inserting those positions as erasures (soft value zero) before running the identical trellis search -- so one Viterbi or BCJR decoder implementation serves every punctured rate from the same mother code. This is how Chapter~\ref{sec:experiments}'s rate-$1/2$ mother code is stretched to rates $2/3$ and $3/4$ for its link-adaptation study (Section~\ref{sec:coded-rate-adaptation}).
+
+Spectral efficiency alone is not the quantity a link adapts on, because it counts bits that were transmitted rather than bits that arrived. A higher-rate choice buys more bits per symbol but raises the frame error rate, and any real protocol discards a frame with residual errors. The operative objective is therefore \emph{goodput}, the information rate actually delivered:
+\begin{equation}\protect\phantomsection\label{eq:goodput}{G = \eta \cdot (1 - \mathrm{FER}) \quad \text{[information bits/symbol]}}\end{equation}
+\addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad goodput}
+
+Maximizing $G$ over a grid of modulation-and-coding schemes at each SNR -- the standard adaptive modulation and coding (AMC) problem -- traces the link-adaptation envelope that Section~\ref{sec:coded-rate-adaptation} measures. The maximization is unconstrained: the FER penalty in Equation~\ref{eq:goodput} already prices in unreliability, so no separate reliability constraint is imposed.
