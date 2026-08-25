@@ -2,7 +2,7 @@
 
 \section{Main Objective}\label{sec:main-objective}
 
-To systematically evaluate and compare classical and AI-based relay strategies for two-hop communication on a single canonical setup (SISO on both hops, i.i.d.\ Rayleigh fast fading, complex baseband, QPSK, uncoded BER) and to determine the most effective relay strategy as a function of SNR regime and computational constraints.
+To determine \emph{under which conditions} a learned relay surpasses classical relay processing in two-hop communication, and where it does not. A single canonical setup (SISO on both hops, i.i.d.\ Rayleigh fast fading, complex baseband, QPSK, uncoded BER) serves as the controlled baseline on which classical and AI-based strategies are compared as a function of SNR regime and computational constraints. Two deliberate departures from that baseline then locate the boundary the canonical comparison cannot reach: a coded chain, which tests whether the conclusion survives when the classical relay is allowed to decode a channel code (Section~\ref{sec:coded-block-df}), and channels whose structure lies outside the model class the classical relays assume, which is where the learned relay's value is actually established (Chapter~\ref{sec:unknown-channels}). The canonical setup is therefore the control, not the scope.
 \REV{Relocated the revision note out of the middle of the objective sentence (it previously split ``To systematically \ldots evaluate''), so the main objective now reads cleanly. Note content preserved below.}
 \REV{Fix applied: Chapter~\ref{sec:literature-review} was reduced to a literature review only. Removed duplicate E1 channel-validation material (including relocated theoretical-SNR results), duplicated validation figures, the Rician fading distribution discussion (future work only), the relay-positioning table duplicated from Chapter~\ref{sec:research-objectives}, and the unused MIMO equalization section (ZF/LMMSE/LMMSE-SIC), since no MIMO experiment appears in the thesis. The term MMSE is now used only in its estimator-theoretic sense, consistent with the canonical-study scope and supervisor comments documented in Appendix~E.}
 
@@ -97,6 +97,10 @@ Unlike H1--H4, which assume the canonical memoryless channel throughout, H5 deli
   \textbf{Evaluate on the canonical setup:} SISO Rayleigh fast fading with QPSK, with symbol-wise DF checked against the closed-form two-hop composition on that same channel as the analytical calibration.
 \item
   \textbf{Investigate the complexity--performance trade-off} by testing model architectures ranging from 0 parameters (classical) to 26,179 parameters (Mamba-2 SSD), and by conducting a normalized comparison at approximately 3,000 parameters.
+\item
+  \textbf{Test whether the canonical conclusion survives a coded chain} by replacing the uncoded symbol-wise DF baseline with a genuine block-DF relay --- a convolutional code decoded and re-encoded at the relay --- and comparing it against coded-aware learned relays at equal $E_s/N_0$ and again at equal throughput, since a code that halves the information rate changes what ``better'' means (Section~\ref{sec:coded-block-df}).
+\item
+  \textbf{Delineate the conditions under which a learned relay surpasses classical processing} on channels whose structure the classical relays do not model --- unknown memory, nonlinear asymmetry, and composite cascades of both --- by locating the boundary rather than demonstrating a capability: a memoryless control where learning is expected to buy nothing, a matched-receiver bound (Viterbi MLSE with genie CSI), a pilot-budget sweep to find the crossover, and a blind regime where no channel posterior exists (Chapter~\ref{sec:unknown-channels}).
 \item
   \textbf{Identify practical deployment recommendations} for selecting the appropriate relay strategy given specific operational constraints (SNR range, computational budget, channel environment).
 \end{enumerate}
