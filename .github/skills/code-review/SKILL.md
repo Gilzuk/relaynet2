@@ -140,13 +140,15 @@ review rounds without improving the thesis.
 - **The cGAN is implemented but excluded from every reported comparison**, on
   cost grounds. It is described in the methods chapter; it has no results
   column anywhere.
-- **`main` is the authoritative branch.** Two places still say otherwise and
-  neither is current: `.clinerules/90-safety.md` names `clean-thesis` in its
-  "Git Safety" section, and older entries in `memory-bank/activeContext.md`
-  call `clean-thesis` "the actual authoritative thesis branch". That branch
-  has been stalled since 2026-07-18 and `main` contains everything it has. The
-  current-state header at the top of `activeContext.md` is authoritative over
-  both.
+- **`main` is the authoritative branch.** `clean-thesis` has been stalled
+  since 2026-07-18 and `main` contains everything it has plus a month of
+  further work. `CLAUDE.md`, `.clinerules/90-safety.md`, and
+  `.clinerules/00-general.md` were all corrected on 2026-08-25 to say so —
+  none of them name `clean-thesis` as authoritative any more. Older entries in
+  `memory-bank/activeContext.md` still call `clean-thesis` "the actual
+  authoritative thesis branch"; those are historical journal entries about a
+  past incident, explicitly marked superseded in place, not current guidance
+  — do not flag them as a defect.
 
 ## Low value here
 
