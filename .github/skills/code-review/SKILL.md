@@ -56,11 +56,17 @@ them. Three cases, and conflating them is itself worth flagging:
   holding sentence-length text is the usual cause; prefer a wrapped `p{}`
   column with `\raggedright`. Long unbreakable `\texttt{}` paths overflow too —
   `\url{}` breaks at `/` and `_`.
-- Anything that would change the thesis page count. The cap is 120, set by the
-  author. Check the count against an actual build rather than against any
-  figure quoted in the repository: `thesis/CHANGELOG.md`,
-  `memory-bank/progress.md` and `memory-bank/activeContext.md` all record
-  earlier builds at 146 and 149 pages, from before the 151→120 reduction.
+- Anything that would change the thesis page count. **Report the change; do not
+  treat exceeding any particular number as a defect on its own.** The document
+  built at 120 pages after the 151→120 reduction, and that figure was once
+  described here as a cap, but the author accepted growth to 125 on 2026-08-25
+  when Chapter 2 gained its channel-coding background and Chapter 4 its
+  per-axis paragraph. Each increase is the author's call, so the useful review
+  action is to say what the count became and why. Check it against an actual
+  build rather than against any figure quoted in the repository:
+  `thesis/CHANGELOG.md`, `memory-bank/progress.md` and
+  `memory-bank/activeContext.md` all record earlier builds at 146 and 149
+  pages, from before the reduction.
 
 ## Conventions that are load-bearing
 
@@ -91,6 +97,14 @@ them. Three cases, and conflating them is itself worth flagging:
 - **Relay interface:** relays expose `.process(received_signal)`; channels are
   callables `channel(signal, snr_db)`. New components should follow these
   rather than inventing conventions.
+- **The committed PDF must not lag its sources.** `thesis/main.pdf` is the
+  deliverable. A diff that changes `thesis/chapters/**`, `thesis/main.tex`,
+  `references.bib` or an included figure **without** a rebuilt
+  `thesis/main.pdf` in the same change is a real finding: the merged document
+  will not contain the merged edit, and no test catches it. PR #25 shipped
+  exactly this way — five chapters of edits against a PDF still at its
+  pre-session 120-page build. Conversely, do not ask for a rebuild on
+  Python-, `results/*.json`- or notes-only diffs; nothing re-renders.
 - **Build invariants:** validate with `latexmk -xelatex`, **not** a hand-rolled
   pass sequence, and check the *final* pass — earlier passes always show
   unresolved references while the `.aux` settles. This is a standing rule in
