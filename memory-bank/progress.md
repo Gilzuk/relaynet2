@@ -126,3 +126,31 @@ and S4 rows, and `tbl:tableE6qpsk`'s QPSK-Rayleigh row), leaving only the S1
 S2/S4/Rayleigh — nothing was deleted from `e6_unknown_channel_results/` —
 only the thesis's *use* of them was cut. Full detail in `activeContext.md`,
 "Latest (2026-08-24)".
+
+## 2026-08-25: coded family re-measured at 100 trials; Ch2 coding background added
+
+The coded study above was re-run end to end at 100 trials (author's bar:
+update only where the delta exceeds 5%). Nine scripts regenerated; Tables 5.4,
+5.7, 5.9, 40, 42, 43 and the K-sweep prose updated to match. **Verifier now
+reports 361 cells / 2 inconsistencies** — both are 5.5e-07 rounding artifacts
+at `tbl:table44` 20 dB where the published cells are correct as printed (see
+`activeContext.md`); they are not defects and should not be "corrected".
+pytest 159 passed. The 421/0 figure quoted in the 2026-08-19 entry above
+predates several table retirements and is no longer the current count.
+
+Three more scripts needed the unseeded-global-RNG fix (`coded_k_sweep_qpsk`,
+`coded_k_sweep_qam16`, `coded_mamba_relay`), bringing that total to nine.
+
+Ch2 gained §2.6 (convolutional codes, Viterbi, BCJR, puncturing/AMC), which
+Ch5's coded study had been relying on without ever introducing. Thesis is now
+**124 pages**, up from 120; the author accepted this on 2026-08-25 and will
+review the document later.
+
+Two things a future session should not have to rediscover:
+- `verify_thesis_tables.py` checks table cells only. Figures quoted in
+  **prose** are unguarded, and a stale 10-trial `1.35×` survived four commits
+  of table updates because of it. After any re-run, grep the prose for the old
+  values as well as running the verifier.
+- Table 41's compute timings are now reported for **two machines** on purpose,
+  as the evidence for their machine-dependence. Add a machine rather than
+  overwriting if they are ever measured again.
