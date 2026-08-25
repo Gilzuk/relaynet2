@@ -97,6 +97,14 @@ them. Three cases, and conflating them is itself worth flagging:
 - **Relay interface:** relays expose `.process(received_signal)`; channels are
   callables `channel(signal, snr_db)`. New components should follow these
   rather than inventing conventions.
+- **The committed PDF must not lag its sources.** `thesis/main.pdf` is the
+  deliverable. A diff that changes `thesis/chapters/**`, `thesis/main.tex`,
+  `references.bib` or an included figure **without** a rebuilt
+  `thesis/main.pdf` in the same change is a real finding: the merged document
+  will not contain the merged edit, and no test catches it. PR #25 shipped
+  exactly this way — five chapters of edits against a PDF still at its
+  pre-session 120-page build. Conversely, do not ask for a rebuild on
+  Python-, `results/*.json`- or notes-only diffs; nothing re-renders.
 - **Build invariants:** validate with `latexmk -xelatex`, **not** a hand-rolled
   pass sequence, and check the *final* pass — earlier passes always show
   unresolved references while the `.aux` settles. This is a standing rule in

@@ -20,6 +20,16 @@
   `xelatex → bibtex → xelatex → xelatex`
 - After compile, run `python check_log.py` — must show `Undefined References: None`.
 - If compilation fails, fix errors before committing to git.
+- **Commit the rebuilt `thesis/main.pdf` in the same commit as the source change.**
+  The PDF is the deliverable; a commit that updates the LaTeX and leaves the PDF
+  behind ships a document missing the change, and nothing in CI catches it. This
+  has happened: PR #25 merged five chapters' worth of edits while the committed
+  PDF stayed at its pre-session 120-page build. Applies to any change that
+  re-renders — `chapters/**`, `main.tex`, `references.bib`, or an included figure
+  — and not to Python-, results- or notes-only commits.
+- Validate with `latexmk -xelatex`, not a hand-rolled pass sequence, and check the
+  *final* pass (see `memory-bank/techContext.md` on the bidi failure the manual
+  sequence hides). Report the page count whenever it moves.
 
 ## File Safety
 - Never edit `overleaf_thesis/` files directly — always edit `chapters/*.tex` and run `python sync_overleaf.py`.
