@@ -56,11 +56,17 @@ them. Three cases, and conflating them is itself worth flagging:
   holding sentence-length text is the usual cause; prefer a wrapped `p{}`
   column with `\raggedright`. Long unbreakable `\texttt{}` paths overflow too —
   `\url{}` breaks at `/` and `_`.
-- Anything that would change the thesis page count. The cap is 120, set by the
-  author. Check the count against an actual build rather than against any
-  figure quoted in the repository: `thesis/CHANGELOG.md`,
-  `memory-bank/progress.md` and `memory-bank/activeContext.md` all record
-  earlier builds at 146 and 149 pages, from before the 151→120 reduction.
+- Anything that would change the thesis page count. **Report the change; do not
+  treat exceeding any particular number as a defect on its own.** The document
+  built at 120 pages after the 151→120 reduction, and that figure was once
+  described here as a cap, but the author accepted growth to 125 on 2026-08-25
+  when Chapter 2 gained its channel-coding background and Chapter 4 its
+  per-axis paragraph. Each increase is the author's call, so the useful review
+  action is to say what the count became and why. Check it against an actual
+  build rather than against any figure quoted in the repository:
+  `thesis/CHANGELOG.md`, `memory-bank/progress.md` and
+  `memory-bank/activeContext.md` all record earlier builds at 146 and 149
+  pages, from before the reduction.
 
 ## Conventions that are load-bearing
 
