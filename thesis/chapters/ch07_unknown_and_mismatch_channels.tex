@@ -58,6 +58,10 @@ Unlike the canonical experiments, where each transmitted symbol can be processed
 
 MLSE is introduced here solely because the channel now contains memory. In the canonical memoryless setting of Chapter~\ref{sec:experiments}, per-symbol detection is sufficient and sequence detection provides no additional benefit. The need for MLSE therefore arises from the deliberate introduction of ISI in this chapter rather than from the system model studied elsewhere in the thesis.
 
+\paragraph{Relation to data-driven detection, and what is claimed here.} That a learned detector can approach model-aware performance without channel state information is not a new result and is not claimed as one. ViterbiNet \cite{Shlezinger2020ViterbiNet} establishes it directly: by replacing only the channel-dependent computation inside the Viterbi recursion with a neural network, it attains near-CSI-based Viterbi performance while remaining ignorant of the channel, and it does so with a considerably more sophisticated, model-based architecture than the minimal feedforward relay used here. Learned detection has likewise been applied within relay channels, including DNN detectors for MIMO decode-and-forward relaying. The present chapter therefore does not ask \emph{whether} learning can substitute for channel knowledge; that question is settled.
+
+What it asks instead is \emph{when} doing so is worth anything, which the prior work does not address, because a method demonstrated at one operating point does not delineate its own boundary. Three elements of the design serve that question and none of them is a capability demonstration. The flat-channel control (Section~\ref{sec:flat-unknown-channels}) is deliberately a \emph{negative} result: against unknown phase, gain and per-branch asymmetry --- all memoryless --- the learned relay merely matches symbol-wise DF, so parameter uncertainty alone turns out not to be what learning mitigates. The pilot-budget sweep locates the crossover quantitatively rather than asserting it, showing classical estimate-then-MLSE ahead until the identifiability threshold and the learned relay indifferent to it. And where the channel family \emph{is} known and adequately pilots, classical detection stays ahead by $1$--$1.5$~dB, which is reported here rather than omitted. The contribution is the boundary these three locate together, not the fact that a network can be trained on an impairment.
+
 
 \paragraph{\textbf{Trials.}} 
 \begin{itemize} 
@@ -198,16 +202,16 @@ The blind reference settles a question the earlier version of this study left op
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.85\linewidth]{results/e6_partial_pilot_budget_sweep.png}
-\caption[Pilot-budget sweep at 10 dB]{Pilot-budget sweep at 10~dB (mean over 50 channel draws, 20{,}000 bits/point). Pilot-aided Viterbi outperforms the pilot-free MLP down to approximately 20 pilots per block, loses its edge by 10 pilots, and collapses at 5 pilots when the least-squares channel estimate becomes too noisy to construct a reliable trellis ($0.1235 \pm 0.0304$). In contrast, the MLP remains flat across the sweep because it operates with an amortized posterior and requires no pilots.}
+\begin{minipage}[t]{0.49\linewidth}\centering
+  \includegraphics[width=\linewidth]{results/e6_partial_pilot_budget_sweep.png}\\[2pt]
+  {\small (a) pilot-budget sweep at 10~dB}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.49\linewidth}\centering
+  \includegraphics[width=\linewidth]{results/e6_partial_short_blocks_overhead.png}\\[2pt]
+  {\small (b) block-length sweep at 10 pilots}
+\end{minipage}
+\caption[Partial-posterior sweeps: pilot budget and block length]{Partial-posterior regime; both panels are means over 50 channel draws at 20{,}000 bits/point. \textbf{(a)} Pilot-aided Viterbi outperforms the pilot-free MLP down to approximately 20 pilots per block, loses its edge by 10 pilots, and collapses at 5 pilots when the least-squares estimate becomes too noisy to construct a reliable trellis ($0.1235 \pm 0.0304$); the MLP is flat across the sweep, operating with an amortized posterior and requiring no pilots. \textbf{(b)} With 10 pilots per block, pilot-aided Viterbi and the MLP are indistinguishable in payload BER at every block length (both $\approx 0.049$), but the classical receiver's pilot overhead grows from approximately 1\% at $L=1000$ to 25\% at $L=40$. Blind CMA, the other pilot-free option, cannot converge within blocks this short and sits roughly three and a half times worse throughout. The MLP therefore matches the pilot-aided receiver's reliability at no overhead, and is the only pilot-free method that stays reliable for short packets.}
 \label{fig:e6_partial_pilot_budget}
-\end{figure}
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.85\linewidth]{results/e6_partial_short_blocks_overhead.png}
-\caption[Block-length sweep at 10 pilots]{Block-length sweep with 10 pilots per block (mean over 50 channel draws, 20{,}000 bits/point, subdivided into independent blocks of the swept length). Pilot-aided Viterbi and the pilot-free MLP are indistinguishable in payload BER at every block length (both $\approx 0.049$), but the classical receiver's pilot overhead grows from approximately 1\% at $L=1000$ to 25\% at $L=40$. The other pilot-free option, blind CMA, cannot converge within blocks this short and sits roughly three and a half times worse throughout. The MLP therefore matches the pilot-aided receiver's reliability at no overhead, and is the only pilot-free method that remains reliable for short packets.}
-\label{fig:e6_partial_short_blocks}
 \end{figure}
 
 

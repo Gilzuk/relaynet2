@@ -12,10 +12,14 @@ ok I will review later") and has not yet read the document itself. PR #25
 merged as `85c44a5`. Full writeup: "Latest (2026-08-25)" immediately below.
 Everything before that entry is history and may quote the old page count.
 
-**The 120-page cap is retired.** `.github/skills/code-review/SKILL.md` used to
-state it as a hard cap; it now records 125 as the accepted count. Do not treat
-a build over 120 as a defect on its own, but do keep reporting the count when
-it moves, since the author decides each increase.
+**The 120-page target still stands, and the thesis is currently 5 over it.**
+This was briefly misrecorded here as "the cap is retired" after the author said
+"124 is ok" — that was tolerance for work in progress, not a new target. The
+author corrected it the same day: **120 pages is the requirement for final
+review.** At 125 the document is over budget by exactly this session's two
+additions, Chapter 2's channel-coding background (+4) and Chapter 4's per-axis
+paragraph (+1). Closing the gap is outstanding work and the decision about what
+to cut belongs to the author, since it touches what the thesis argues.
 
 ### Latest (2026-08-25): 100-trial re-run of the coded family + Ch2 coding background
 

@@ -56,17 +56,21 @@ them. Three cases, and conflating them is itself worth flagging:
   holding sentence-length text is the usual cause; prefer a wrapped `p{}`
   column with `\raggedright`. Long unbreakable `\texttt{}` paths overflow too —
   `\url{}` breaks at `/` and `_`.
-- Anything that would change the thesis page count. **Report the change; do not
-  treat exceeding any particular number as a defect on its own.** The document
-  built at 120 pages after the 151→120 reduction, and that figure was once
-  described here as a cap, but the author accepted growth to 125 on 2026-08-25
-  when Chapter 2 gained its channel-coding background and Chapter 4 its
-  per-axis paragraph. Each increase is the author's call, so the useful review
-  action is to say what the count became and why. Check it against an actual
-  build rather than against any figure quoted in the repository:
-  `thesis/CHANGELOG.md`, `memory-bank/progress.md` and
+- Anything that would change the thesis page count. **120 pages is the target
+  for final review, set by the author, and it is a submission constraint rather
+  than a preference.** The document currently builds at **125** and is
+  therefore over budget: Chapter 2's channel-coding background (+4) and
+  Chapter 4's per-axis paragraph (+1) were added on 2026-08-25 with the author
+  tolerating the overshoot as work in progress, not as a new target. Treat the
+  gap as debt that must be paid down before final review.
+
+  So: report every change to the count, and flag additions that widen the gap.
+  Do **not** silently propose cutting content to close it — what gets cut is
+  the author's call and touches the scientific narrative. Check the count
+  against an actual build rather than against any figure quoted in the
+  repository: `thesis/CHANGELOG.md`, `memory-bank/progress.md` and
   `memory-bank/activeContext.md` all record earlier builds at 146 and 149
-  pages, from before the reduction.
+  pages, from before the 151→120 reduction.
 
 ## Conventions that are load-bearing
 
