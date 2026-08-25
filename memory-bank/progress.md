@@ -154,3 +154,33 @@ Two things a future session should not have to rediscover:
 - Table 41's compute timings are now reported for **two machines** on purpose,
   as the evidence for their machine-dependence. Add a machine rather than
   overwriting if they are ever measured again.
+
+## 2026-08-25 (later): evidence audit, objectives restructure, page-budget findings
+
+Three PRs merged (#25, #26, #27); `main` at `8a4306a`. Beyond the 100-trial
+re-run recorded above:
+
+- **Chapter 3 restructured.** The main objective scoped itself to "a single
+  canonical setup" while 30% of the body — the 14-page coded study and the
+  20-page unknown-channel chapter, the latter being the principal
+  contribution — sat under no objective at all. Reframed to the question the
+  thesis answers (under which conditions a learned relay surpasses classical
+  processing), canonical setup named as control rather than scope, two
+  objectives added. Objective 4 (SSMs vs attention) removed as an NN-vs-NN
+  question that serves no part of the main objective.
+- **Gap 3 removed, folded into Gap 1; Gap 2 narrowed.** Both had claims that
+  a literature check falsifies. Both now concede prior work *with* citations.
+- **ViterbiNet cited.** Chapter 6 previously cited one work, Forney 1972, and
+  did not engage the data-driven-detection literature it sits inside.
+  Shlezinger et al. already establish H5's capability statement; the chapter
+  now concedes that and claims the boundary instead, which is what it
+  actually measured.
+
+**Page budget: 125 against a 120 target.** See `activeContext.md` for the
+measured list of what does and does not recover pages — the short version is
+that only figure merging works, and it is nearly exhausted. Do not re-try
+prose trimming, table merging, the equation list, or font/margin changes.
+
+**Citations added this session were verified against search results, not
+publishers** — `arxiv.org` and `link.springer.com` are blocked by the egress
+proxy. Worth one verification pass before submission.

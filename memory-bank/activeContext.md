@@ -2,15 +2,44 @@
 
 _Last updated: 2026-08-25_
 
-## CURRENT STATE: merged to main (PR #25); thesis at 125 pages
+## CURRENT STATE: merged to main (PRs #25, #26, #27); thesis at 125 pages, five over target
 
-The 120-page figure below is superseded. The coded family was re-measured at
-100 trials, Chapter 2 gained a channel-coding background section, and Chapter 4
-gained a paragraph on how the real-valued canonical MLP is applied to the
-complex channel. The author accepted the growth past 120 on 2026-08-25 ("124 is
-ok I will review later") and has not yet read the document itself. PR #25
-merged as `85c44a5`. Full writeup: "Latest (2026-08-25)" immediately below.
-Everything before that entry is history and may quote the old page count.
+`main` is at `8a4306a`. Three PRs merged on 2026-08-25: #25 (`85c44a5`, the
+100-trial re-run and the Ch2/Ch4 additions), #26 (`0627cd4`, records and the
+PDF-tracks-sources rule), #27 (`8a4306a`, evidence corrections, objectives,
+citations, one figure merge).
+
+**120 pages is the requirement for final review, and the thesis is at 125.**
+This was briefly misrecorded as "the cap is retired" after the author said
+"124 is ok" — that was tolerance for a work-in-progress build, corrected the
+same day. Closing the five-page gap is outstanding work, and what to cut is
+the author's decision because it touches what the thesis argues.
+
+**Do not re-attempt these page-reduction routes; each was measured at zero.**
+Prose edits reflow and save nothing. Merging Tables 5.4+5.9 saves nothing and
+pushes the table past the right margin. The equation list is already absent
+(`\listoflistequations` is commented out in `main.tex:380`, and no `main.equ`
+is generated — only 49 dead `\addcontentsline{equ}` calls remain in the
+sources). Font, spacing and margins are already at the thesis format spec
+(12 pt, `\onehalfspacing`, 3.5 cm binding edge / 2.5 cm elsewhere) and must
+not be changed to gain pages, since the 120 limit is defined against that
+layout.
+
+**What does work: merging figures**, because a figure holds fixed vertical
+space that text cannot reflow into. Combining Figures 6.5 and 6.6 recovered
+one page (`14bd1a3`). That route is now largely exhausted: of three
+candidates, 6.8+6.9 recovered zero and was reverted, and 6.2+6.3 was rejected
+because each figure sits beneath its own results table. The remaining five
+pages would have to come from cutting §2.6 Channel Coding (4 pages) or §2.4
+Sequence Models (3 pages).
+
+**Two traps that cost real time this session.** (1) The container reset four
+times, silently reverting the working tree to `8273c82` while leaving edits in
+place; two page-count measurements were taken on the wrong tree and reported
+before the reset was noticed. **Check `git rev-parse HEAD` before trusting any
+build measurement.** All commits were safe on the remote every time. (2)
+`subcaption` is loaded but unusable — it errors under `bidi`, which must load
+last for the Hebrew abstract. Use `minipage` for side-by-side figures.
 
 **The 120-page target still stands, and the thesis is currently 5 over it.**
 This was briefly misrecorded here as "the cap is retired" after the author said
