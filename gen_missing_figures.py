@@ -17,6 +17,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
+from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 RESULTS = os.path.join(ROOT, "results")
@@ -29,6 +30,62 @@ PALETTE = [
 MARKERS = ["o", "s", "^", "D", "v", "P", "X", "<", ">", "h"]
 
 FIG_W, FIG_H = 9, 5
+
+
+def _add_zoom_inset(ax, snr, series, snr_lo, snr_hi,
+                    loc="lower left", width="38%", height="35%",
+                    pad=1.2, ber_margin=0.35):
+    """Add a zoom inset covering snr_lo..snr_hi.
+
+    Parameters
+    ----------
+    ax       : parent Axes
+    snr      : array-like of SNR values
+    series   : dict  name -> {"ber": array, "color": str, "marker": str,
+                               "ls": str, "lw": float}
+    snr_lo/hi: SNR range to zoom into
+    loc      : inset anchor location string
+    ber_margin: multiplicative padding on ber y-axis (fraction)
+    """
+    snr = np.asarray(snr)
+    mask = (snr >= snr_lo) & (snr <= snr_hi)
+    if not np.any(mask):
+        return
+    snr_z = snr[mask]
+
+    # Collect all BER values in the zoom window
+    vals = []
+    for info in series.values():
+        ber = np.asarray(info["ber"])
+        v = ber[mask]
+        vals.extend(v[v > 0].tolist())
+    if not vals:
+        return
+
+    ber_lo = min(vals) * (1 - ber_margin)
+    ber_hi = max(vals) * (1 + ber_margin)
+
+    axins = inset_axes(ax, width=width, height=height, loc=loc,
+                       borderpad=pad)
+    for name, info in series.items():
+        ber = np.asarray(info["ber"])
+        ber_z = np.where(ber[mask] > 0, ber[mask], 1e-12)
+        axins.semilogy(snr_z, ber_z,
+                       color=info["color"],
+                       marker=info.get("marker", "o"),
+                       ls=info.get("ls", "-"),
+                       lw=info.get("lw", 1.2),
+                       markersize=4,
+                       alpha=0.9)
+
+    axins.set_xlim(snr_z[0] - 0.3, snr_z[-1] + 0.3)
+    axins.set_ylim(ber_lo, ber_hi)
+    axins.tick_params(labelsize=7)
+    axins.grid(True, which="both", ls="--", alpha=0.25, lw=0.4)
+    try:
+        ax.indicate_inset_zoom(axins, edgecolor="grey", alpha=0.55)
+    except Exception:
+        pass
 
 
 def _save(fig, path):
@@ -86,6 +143,20 @@ def fig_3k_budget():
     ax.grid(True, which="both", ls="--", alpha=0.4)
     ax.set_xticks(snr[::2])
 
+    # Zoom inset: high-SNR region where 6 AI curves + DF converge tightly
+    zoom_series = {}
+    for name, st in [("AF", AF_style), ("DF", DF_style)]:
+        zoom_series[name] = {"ber": relays[name]["ber_mean"],
+                             "color": st["color"], "marker": st["marker"],
+                             "ls": st["ls"], "lw": st["lw"]}
+    for name, st in ai_styles.items():
+        if name in relays:
+            zoom_series[name] = {"ber": relays[name]["ber_mean"],
+                                 "color": st["color"], "marker": st["marker"],
+                                 "ls": "-", "lw": 1.3}
+    _add_zoom_inset(ax, snr, zoom_series, snr_lo=14, snr_hi=20,
+                    loc="lower left", width="38%", height="38%", pad=1.0)
+
     _save(fig, os.path.join(RESULTS, "normalized_3k_rayleigh_ber.png"))
 
 
@@ -98,10 +169,10 @@ def fig_coded_df():
 
     snr = d["snr_db"]
     series = {
-        "Uncoded DF":   (d["uncoded_df"],  {"color": "black", "marker": "s", "ls": "--"}),
+        "Uncoded DF":   (d["uncoded_df"],  {"color": "black",     "marker": "s", "ls": "--"}),
         "Coded DF":     (d["coded_df"],    {"color": "steelblue", "marker": "^", "ls": "-"}),
-        "MLP (coded)":  (d["mlp_coded"],   {"color": PALETTE[0], "marker": "o", "ls": "-"}),
-        "Mamba (coded)":(d["mamba_coded"], {"color": PALETTE[4], "marker": "D", "ls": "-"}),
+        "MLP (coded)":  (d["mlp_coded"],   {"color": PALETTE[0],  "marker": "o", "ls": "-"}),
+        "Mamba (coded)":(d["mamba_coded"], {"color": PALETTE[4],  "marker": "D", "ls": "-"}),
     }
 
     fig, ax = plt.subplots(figsize=(FIG_W, FIG_H))
@@ -115,6 +186,13 @@ def fig_coded_df():
     ax.set_title("Coded block-DF vs uncoded DF vs coded-aware learned relays (QPSK / Rayleigh, rate-1/2 K=3)")
     ax.legend(fontsize=9)
     ax.grid(True, which="both", ls="--", alpha=0.4)
+
+    # Zoom inset: SNR 12–20 dB where coded DF, MLP, Mamba converge
+    zoom_series = {label: {"ber": vals, "color": st["color"],
+                            "marker": st["marker"], "ls": st["ls"], "lw": 1.4}
+                   for label, (vals, st) in series.items()}
+    _add_zoom_inset(ax, snr, zoom_series, snr_lo=12, snr_hi=20,
+                    loc="lower left", width="38%", height="38%", pad=1.0)
 
     _save(fig, os.path.join(RESULTS, "coded_df_ber.png"))
 
@@ -147,6 +225,14 @@ def fig_reliable_regime():
     ax.grid(True, which="both", ls="--", alpha=0.4)
     ax.set_xticks(snr)
 
+    # Zoom inset: 28–32 dB where all 4 curves are extremely close
+    zoom_series = {label: {"ber": vals, "color": st["color"],
+                            "marker": st["marker"], "ls": st["ls"], "lw": 1.4}
+                   for label, (vals, st) in series.items()}
+    _add_zoom_inset(ax, snr, zoom_series, snr_lo=28, snr_hi=32,
+                    loc="upper right", width="38%", height="38%", pad=1.0,
+                    ber_margin=0.5)
+
     _save(fig, os.path.join(RESULTS, "coded_reliable_regime.png"))
 
 
@@ -173,6 +259,15 @@ def fig_equal_throughput():
     ax.set_title("Coded vs uncoded at equal spectral efficiency (≈2 information bits per channel symbol)")
     ax.legend(fontsize=9)
     ax.grid(True, which="both", ls="--", alpha=0.4)
+
+    # Zoom inset: SNR 14–20 dB — crossover zone where lines nearly converge then swap
+    zoom_series = {
+        "Uncoded QPSK": {"ber": unc, "color": "black",     "marker": "s", "ls": "--", "lw": 1.4},
+        "Rate-1/2 16-QAM": {"ber": cod, "color": "steelblue", "marker": "^", "ls": "-",  "lw": 1.4},
+    }
+    _add_zoom_inset(ax, snr, zoom_series, snr_lo=14, snr_hi=20,
+                    loc="lower left", width="38%", height="38%", pad=1.0,
+                    ber_margin=0.4)
 
     _save(fig, os.path.join(RESULTS, "coded_equal_throughput.png"))
 
