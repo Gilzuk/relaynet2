@@ -35,7 +35,7 @@ The investigation is deliberately adversarial to the learned relay. Each classic
 
 \paragraph{Relationship to the canonical model.} The canonical setup of this thesis (Chapter~\ref{sec:experiments}) assumes a memoryless two-hop relay channel with white noise, perfect receiver-side CSI, and uncoded transmission. The present chapter deliberately departs from those assumptions by introducing impairments that are not part of the canonical model, including channel memory (3-tap intersymbol interference), amplifier nonlinearity, unknown phase, and channel-model mismatch. Consequently, sequence-detection and equalization techniques such as Viterbi MLSE, pilot-aided channel estimation, and blind equalization become relevant only in this chapter. The goal is not to replace the canonical study, but to evaluate whether the conclusions established under matched memoryless conditions remain valid when the underlying channel model no longer represents the true channel.
 
-\begin{figure}[t] \noindent \makebox[\textwidth][l]{% 
+\begin{figure}[H] \noindent \makebox[\textwidth][l]{% 
 \begin{tikzpicture}[ >=latex, node distance=2.3cm, block/.style={rectangle, draw, thick, minimum width=2.0cm, minimum height=1.0cm, align=center}, imp/.style={rectangle, draw, very thick, fill=black!6, minimum width=2.4cm, minimum height=1.1cm, align=center}, relayblock/.style={rectangle, draw, very thick, dashed, minimum width=2.0cm, minimum height=1.1cm, align=center} ] 
 \node[block] (S) {Source\\BPSK}; 
 \node[imp, right=2.0cm of S] (C) {Unknown Hop-1\\ISI $\times$ PA $\times$ phase}; 
