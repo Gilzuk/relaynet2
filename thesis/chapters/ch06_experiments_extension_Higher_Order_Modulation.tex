@@ -23,7 +23,7 @@ The ladder proper resumes in Chapter~\ref{sec:unknown-channels}, which holds the
 \draw[dotted] (R.south) -- (note.north); 
 \end{tikzpicture}% 
 } 
-\caption[Modulation extension]{Modulation extension (Chapter~\ref{sec:extensions}). The canonical memoryless benchmark of Figure~\ref{fig:canonical-relay-benchmark} is retained; only the constellation (QPSK/16-QAM) and the relay output formulation change: (a) per-axis I/Q splitting versus (b) a joint $N$-class 2D classifier over the full constellation.} 
+\caption[Modulation extension]{Modulation extension (Chapter~\ref{sec:extensions}). The canonical memoryless benchmark of Figure~\ref{fig:canonical-relay-benchmark} is retained; only the constellation (QPSK/16-QAM) and the relay output formulation change: (a) per-axis I/Q splitting versus (b) a joint $N$-class 2D classifier over the full constellation} 
 \label{fig:ext-modulation} 
 \end{figure}
 
@@ -46,7 +46,7 @@ Table \ref{tbl:table24}
  presents the BER at 20 dB for all variants alongside the classical AF and DF baselines.
 
 \begin{longtable}[]{@{}lccc@{}}
-\caption[16-QAM at 20 dB on the canonical Rayleigh channel]{16-QAM at 20~dB on the canonical Rayleigh channel: per-axis 4-class relays against joint 16-class 2D classifiers. The joint formulation improves every architecture and brings five of the six level with DF ($0.03748$), cutting their excess over it from about $0.016$ to $0.001$ or less; Mamba-2 SSD is the exception.}\label{tbl:table24}\tabularnewline
+\caption[16-QAM at 20 dB on the canonical Rayleigh channel]{16-QAM at 20~dB on the canonical Rayleigh channel: per-axis 4-class relays against joint 16-class 2D classifiers. The joint formulation improves every architecture and brings five of the six level with DF ($0.03748$), cutting their excess over it from about $0.016$ to $0.001$ or less; Mamba-2 SSD is the exception}\label{tbl:table24}\tabularnewline
 \toprule\noalign{}
 Relay & 4-cls BER @ 20 dB & 16-cls BER @ 20 dB & Improvement \\
 \midrule\noalign{}
@@ -73,19 +73,19 @@ DF & 0.03748 & n/a & n/a \\
 \centering
 \centering
 \pandocbounded{\includegraphics[width=\linewidth,height=\textheight,keepaspectratio]{results/all_relays_16class/ber_16class_ci.png}}
-\caption[16-QAM BER vs.\ SNR, 4-class against 16-class]{16-QAM BER vs.~SNR for all relay variants (4-class per-axis, dashed; joint 16-class 2D, solid) on the canonical Rayleigh channel, from the same results file as Table~\ref{tbl:table24}. The two formulations are indistinguishable below about 14~dB and separate only in the inset region: by 20~dB the 16-class variants reach $0.0376$--$0.0393$, matching symbol-wise DF's $0.03748$, while the 4-class variants stall around $0.054$. Mamba-2 SSD is the exception noted in Table~\ref{tbl:table24}, reaching only $0.0495$. The gap is a fixed offset in the high-SNR region rather than an error floor: every curve is still descending at the top of the swept range.}\label{fig:fig50}
+\caption[16-QAM BER vs.\ SNR, 4-class against 16-class]{16-QAM BER vs.~SNR for all relay variants (4-class per-axis, dashed; joint 16-class 2D, solid) on the canonical Rayleigh channel, from the same results file as Table~\ref{tbl:table24}. The two formulations are indistinguishable below about 14~dB and separate only in the inset region: by 20~dB the 16-class variants reach $0.0376$--$0.0393$, matching symbol-wise DF's $0.03748$, while the 4-class variants stall around $0.054$. Mamba-2 SSD is the exception noted in Table~\ref{tbl:table24}, reaching only $0.0495$. The gap is a fixed offset in the high-SNR region rather than an error floor: every curve is still descending at the top of the swept range}\label{fig:fig50}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \centering
 \pandocbounded{\includegraphics[width=\linewidth,height=\textheight,keepaspectratio]{results/all_relays_16class/grouped_bar_16class.png}}
-\caption[Per-axis versus joint 2D classification, 16-QAM]{4-class per-axis against joint 16-class 2D relays, 16-QAM at 20~dB on the canonical Rayleigh channel, regenerated from the same results file as Table~\ref{tbl:table24}. The joint formulation improves every architecture by a near-identical factor, annotated above each bar, which points at the per-axis formulation rather than any architecture's capacity as the thing being repaired. The dashed line is symbol-wise DF: the 16-class bars reach it and stop, so the joint head buys parity with the classical baseline, not an advantage over it.}\label{fig:fig51}
+\caption[Per-axis versus joint 2D classification, 16-QAM]{4-class per-axis against joint 16-class 2D relays, 16-QAM at 20~dB on the canonical Rayleigh channel, regenerated from the same results file as Table~\ref{tbl:table24}. The joint formulation improves every architecture by a near-identical factor, annotated above each bar, which points at the per-axis formulation rather than any architecture's capacity as the thing being repaired. The dashed line is symbol-wise DF: the 16-class bars reach it and stop, so the joint head buys parity with the classical baseline, not an advantage over it}\label{fig:fig51}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \centering
 \pandocbounded{\includegraphics[width=\linewidth,height=\textheight,keepaspectratio]{results/all_relays_16class/ber_16class_top3.png}}
-\caption[Top-3 16-class relay variants]{Top-3 16-class relay variants compared against AF and DF. VAE 16-cls, Transformer 16-cls, and MLP 16-cls all match or approach DF performance across the full SNR range.}\label{fig:fig53}
+\caption[Top-3 16-class relay variants]{Top-3 16-class relay variants compared against AF and DF. VAE 16-cls, Transformer 16-cls, and MLP 16-cls all match or approach DF performance across the full SNR range}\label{fig:fig53}
 \end{figure}
