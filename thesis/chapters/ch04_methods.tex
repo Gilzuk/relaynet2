@@ -6,7 +6,7 @@ The system under study is a two-hop relay network with a single relay node. All 
 
 \paragraph{Scope of the canonical system model.} The system model defined in this chapter serves as the canonical benchmark used throughout the core experiments of the thesis (Chapter~\ref{sec:experiments}). It assumes a memoryless two-hop relay channel with white noise, perfect receiver-side CSI, and uncoded transmission. Accordingly, all relay comparisons in the canonical study concern per-symbol processing and do not require sequence detection: the current observation $y_R[i]$ is already a sufficient statistic for detecting $x[i]$, and the classical AF and DF baselines operate per symbol. Some neural architectures nevertheless receive a finite window of neighboring observations (Section~\ref{sec:relay-strategies}); this is an architectural input convention for the evaluated feedforward and sequence models, and under the canonical i.i.d.\ assumptions it neither introduces channel memory nor supplies additional information about $x[i]$. Channel memory, intersymbol interference (ISI), pilot-based channel estimation, blind equalization, and sequence-detection techniques such as Viterbi MLSE are introduced only later in Chapter~\ref{sec:unknown-channels} as deliberate departures from the canonical assumptions in order to study robustness under model mismatch. Channel coding is the other deliberate departure: the coded chain and its block-DF relay are specified where they are measured, in Section~\ref{sec:coded-block-df}, rather than in this chapter.
 
-\begin{figure}[H]
+\begin{figure}[htbp]
 \centering
 \resizebox{\textwidth}{!}{%
 \begin{tikzpicture}[
@@ -399,7 +399,7 @@ The advantage of QPSK is doubled throughput for the same BER and per-bit energy.
 
 Figure~\ref{fig:fig8} presents the constellation diagrams for the modulation schemes appearing in this thesis. The progression from BPSK (2 points on the real axis) through QPSK (4 points on the unit circle) to denser grids illustrates the fundamental trade-off between spectral efficiency and noise robustness: higher-order constellations pack more bits per symbol but reduce the minimum Euclidean distance between points, increasing the BER at a given SNR. QPSK is the constellation used in every canonical relay-architecture comparison; 16-QAM appears only as a rung of the coded link-adaptation study (Section~\ref{sec:coded-block-df}), and BPSK only in the unknown-channel study's relay comparisons (Chapter~\ref{sec:unknown-channels}). The others are shown for orientation.
 
-\begin{figure}[H]
+\begin{figure}[htbp]
 \centering
 \pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/modulation/constellation_diagrams.png}}
 \caption[Constellation diagrams]{Constellation diagrams. (a) BPSK: 2 real-valued symbols at \(\pm 1\). (b) QPSK: 4 Gray-coded symbols on the unit circle. (c) 16-QAM: 16 Gray-coded symbols on a \(4 \times 4\) rectangular grid with decision boundaries (dotted lines). (d) 16-PSK, shown for completeness only; it is not studied in this work. All constellations are normalised to unit average power}\label{fig:fig8}
