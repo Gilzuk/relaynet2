@@ -2,6 +2,12 @@
 
 Branch: `claude/porting-md-file-l6xzsr`. Reference spec: `experiments-standalone/PORTING.md`.
 
+Session note (2026-08-26): thesis theory wording was corrected in the compiled
+chapter files and `thesis/main.pdf` was rebuilt to 128 pages. A new general
+rule now lives in `.clinerules/00-general.md`: check theory claims against
+standard textbooks or primary sources and narrow wording to the conditions they
+actually support.
+
 ## Done ✅ (verified at 5 trials × 50k bits, SNR 0–20dB/2dB)
 
 | Experiment | Ported file | Status | Key numeric checks |

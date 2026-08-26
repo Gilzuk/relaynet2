@@ -20,7 +20,7 @@ Under this benchmark the best learned relays outperform AF at low SNR; at medium
 
 
 
-The principal contribution is a ladder of four layers of progressively relaxed channel assumptions. At layer~1 classical processing wins: on a memoryless matched channel hard slicing is the optimal per-symbol relay function. Layer~2 adds an unknown three-tap ISI filter: the memoryless classical relays fail, DF's error rate rising with transmit power; a $169$-parameter windowed MLP restores the link at constant per-symbol cost, $1$--$1.5$~dB behind an exponential-cost Viterbi detector. Layer~3 degrades the channel estimate: the classical advantage holds to twenty pilots, lost by ten. Layer~4 redraws the channel every block, where the learned relay leads the best blind classical equaliser.
+The principal contribution is a ladder of four layers of progressively relaxed channel assumptions. At layer~1 classical processing wins: on a memoryless matched channel the MAP symbol decision --- and hence the optimal hard symbol-regenerating DF rule --- is componentwise slicing after coherent equalization. Layer~2 adds an unknown three-tap ISI filter: the memoryless classical relays fail, DF's error rate rising with transmit power; a $169$-parameter windowed MLP restores the link at constant per-symbol cost, $1$--$1.5$~dB behind an exponential-cost Viterbi detector. Layer~3 degrades the channel estimate: the classical advantage holds to twenty pilots, lost by ten. Layer~4 redraws the channel every block, where the learned relay leads the best blind classical equaliser.
 
 The results delineate operating regimes: classical processing where the model matches the channel, the learned relay where the channel has unmodeled structure, is poorly estimated, or is missing per block.
 % \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
@@ -46,5 +46,4 @@ The results delineate operating regimes: classical processing where the model ma
 
 I would like to thank my supervisors, Dr. Anatoly Khina and Prof. Raja Giryes at Tel Aviv University, for their guidance and support throughout this research.
 This work was conducted in the School of Electrical and Electronic Engineering, Tel Aviv University.
-
 

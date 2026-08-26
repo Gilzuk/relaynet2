@@ -1,6 +1,28 @@
 # Active Context (update this file first, every session)
 
-_Last updated: 2026-08-25_
+_Last updated: 2026-08-26_
+
+### Latest (2026-08-26): textbook-theory wording audit applied to thesis chapters
+
+Applied a narrow theory-text correction pass against standard textbook framing,
+limited to the passages that had overclaimed beyond the canonical model.
+Updated `thesis/chapters/ch01_introduction.tex`, `frontmatter.tex`,
+`ch04_methods.tex`, `ch08_discussion.tex`, and the legacy mirror
+`_ch06_discussion.tex` to do four things only: (1) replace the incorrect
+windowed-Bayes-denoiser claim with the single-observation posterior mean
+`tanh(y_i/\sigma^2)` appropriate to the memoryless canonical model; (2) narrow
+"hard slicing is optimal" to the MAP symbol decision / optimal hard
+symbol-regenerating DF rule under the matched uncoded setting; (3) replace the
+QPSK shorthand `sign(y_R[i])` with componentwise Gray demodulation/remodulation
+after coherent equalization; and (4) harmonize the CSI front-end terminology to
+"one-tap coherent equalization" instead of mixing that operation with claims
+that "no equalization is involved."
+
+Also added an explicit repository rule in `.clinerules/00-general.md`: theory
+claims, equations, and terminology should be checked against standard textbooks
+or primary sources, and the wording should be narrowed to the conditions those
+sources actually support. Rebuilt `thesis/main.pdf` with `latexmk -xelatex`;
+the PDF now reflects these source edits and moved from 127 to 128 pages.
 
 ## CURRENT STATE: merged to main (PRs #25, #26, #27); thesis at 125 pages, five over target
 
