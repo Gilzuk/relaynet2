@@ -1,16 +1,89 @@
 # Active Context (update this file first, every session)
 
-_Last updated: 2026-08-25_
+_Last updated: 2026-08-26_
 
-## CURRENT STATE: merged to main (PR #25); thesis at 125 pages
+### Latest (2026-08-26): removed near-empty pages + stripped cGAN re-run commentary
 
-The 120-page figure below is superseded. The coded family was re-measured at
-100 trials, Chapter 2 gained a channel-coding background section, and Chapter 4
-gained a paragraph on how the real-valued canonical MLP is applied to the
-complex channel. The author accepted the growth past 120 on 2026-08-25 ("124 is
-ok I will review later") and has not yet read the document itself. PR #25
-merged as `85c44a5`. Full writeup: "Latest (2026-08-25)" immediately below.
-Everything before that entry is history and may quote the old page count.
+Cleaned up three layout/text issues in the thesis front matter and early chapters.
+First, reduced `\cftbeforechapskip` in `thesis/main.tex` from 6pt to 2pt, which
+pulled the table of contents back to a single compact block instead of leaving an
+almost-empty spill page. Second, tightened the live abstract wording in
+`thesis/chapters/frontmatter.tex` and the closing sentence of
+`thesis/chapters/ch03_objectives.tex`, which removed the abstract continuation
+page and the one-word spill page at the end of Chapter 3 without changing any
+claim or result. Third, removed stale cGAN re-run commentary from the thesis
+text: deleted old commented-out abstract drafts in `frontmatter.tex` and removed
+the cGAN re-run/exclusion explanations from the relevant prose/captions in
+`thesis/chapters/ch05_experiments.tex` and
+`thesis/chapters/ch06_experiments_extension_Higher_Order_Modulation.tex`.
+
+Rebuilt `thesis/main.pdf` with `latexmk -xelatex`; the PDF now has 125 pages
+(down from 128 after the theory-wording pass, and from 127 immediately before
+the final tightening in this session). Spot-check via text extraction confirms
+the previous almost-empty pages are gone: the abstract now fits on one page,
+the contents no longer leaves a one-line spill page, and Chapter 3 no longer
+pushes a single trailing word to the next page.
+
+### Latest (2026-08-26): textbook-theory wording audit applied to thesis chapters
+
+Applied a narrow theory-text correction pass against standard textbook framing,
+limited to the passages that had overclaimed beyond the canonical model.
+Updated `thesis/chapters/ch01_introduction.tex`, `frontmatter.tex`,
+`ch04_methods.tex`, `ch08_discussion.tex`, and the legacy mirror
+`_ch06_discussion.tex` to do four things only: (1) replace the incorrect
+windowed-Bayes-denoiser claim with the single-observation posterior mean
+`tanh(y_i/\sigma^2)` appropriate to the memoryless canonical model; (2) narrow
+"hard slicing is optimal" to the MAP symbol decision / optimal hard
+symbol-regenerating DF rule under the matched uncoded setting; (3) replace the
+QPSK shorthand `sign(y_R[i])` with componentwise Gray demodulation/remodulation
+after coherent equalization; and (4) harmonize the CSI front-end terminology to
+"one-tap coherent equalization" instead of mixing that operation with claims
+that "no equalization is involved."
+
+Also added an explicit repository rule in `.clinerules/00-general.md`: theory
+claims, equations, and terminology should be checked against standard textbooks
+or primary sources, and the wording should be narrowed to the conditions those
+sources actually support. Rebuilt `thesis/main.pdf` with `latexmk -xelatex`;
+the PDF now reflects these source edits and moved from 127 to 128 pages.
+
+## CURRENT STATE: merged to main (PRs #25, #26, #27); thesis at 125 pages, five over target
+
+`main` is at `8a4306a`. Three PRs merged on 2026-08-25: #25 (`85c44a5`, the
+100-trial re-run and the Ch2/Ch4 additions), #26 (`0627cd4`, records and the
+PDF-tracks-sources rule), #27 (`8a4306a`, evidence corrections, objectives,
+citations, one figure merge).
+
+**120 pages is the requirement for final review, and the thesis is at 125.**
+This was briefly misrecorded as "the cap is retired" after the author said
+"124 is ok" — that was tolerance for a work-in-progress build, corrected the
+same day. Closing the five-page gap is outstanding work, and what to cut is
+the author's decision because it touches what the thesis argues.
+
+**Do not re-attempt these page-reduction routes; each was measured at zero.**
+Prose edits reflow and save nothing. Merging Tables 5.4+5.9 saves nothing and
+pushes the table past the right margin. The equation list is already absent
+(`\listoflistequations` is commented out in `main.tex:380`, and no `main.equ`
+is generated — only 49 dead `\addcontentsline{equ}` calls remain in the
+sources). Font, spacing and margins are already at the thesis format spec
+(12 pt, `\onehalfspacing`, 3.5 cm binding edge / 2.5 cm elsewhere) and must
+not be changed to gain pages, since the 120 limit is defined against that
+layout.
+
+**What does work: merging figures**, because a figure holds fixed vertical
+space that text cannot reflow into. Combining Figures 6.5 and 6.6 recovered
+one page (`14bd1a3`). That route is now largely exhausted: of three
+candidates, 6.8+6.9 recovered zero and was reverted, and 6.2+6.3 was rejected
+because each figure sits beneath its own results table. The remaining five
+pages would have to come from cutting §2.6 Channel Coding (4 pages) or §2.4
+Sequence Models (3 pages).
+
+**Two traps that cost real time this session.** (1) The container reset four
+times, silently reverting the working tree to `8273c82` while leaving edits in
+place; two page-count measurements were taken on the wrong tree and reported
+before the reset was noticed. **Check `git rev-parse HEAD` before trusting any
+build measurement.** All commits were safe on the remote every time. (2)
+`subcaption` is loaded but unusable — it errors under `bidi`, which must load
+last for the Hebrew abstract. Use `minipage` for side-by-side figures.
 
 **The 120-page target still stands, and the thesis is currently 5 over it.**
 This was briefly misrecorded here as "the cap is retired" after the author said

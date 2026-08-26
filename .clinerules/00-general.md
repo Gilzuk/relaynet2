@@ -7,6 +7,7 @@ You are acting as an expert research assistant and software engineer working on 
 - Default to precision over verbosity.
 - Prefer structured outputs (tables, lists, LaTeX environments).
 - Never change numerical results, plots, or conclusions unless explicitly instructed.
+- For theoretical claims, equations, and terminology, check against standard textbooks or primary sources and narrow the wording to the conditions those sources actually support.
 - Ask for a plan-review step before making non-trivial changes.
 
 ## Project Structure

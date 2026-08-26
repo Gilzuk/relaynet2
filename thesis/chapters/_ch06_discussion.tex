@@ -46,9 +46,9 @@ This result has important theoretical and practical implications:
 
 \subsection{Information-Theoretic Perspective}\label{sec:information-theoretic-perspective}
 
-The relay denoising task maps a window of \(2w+1\) real-valued noisy observations to a single real-valued clean estimate. For BPSK, the transmitted symbol carries exactly 1 bit of information, and the Bayes-optimal estimator \(f^*(\mathbf{y}) = \tanh(\mathbf{1}^T \mathbf{y} / \sigma^2)\) (for i.i.d. noise across the window) is a one-dimensional function of the sufficient statistic \(\sum_i y_i\). The \textbf{effective dimensionality} of this mapping is therefore 1 : far below the \(2w+1 = 5\) or \(11\) input dimensions.
+The relay denoising task maps a window of \(2w+1\) real-valued noisy observations to a single real-valued clean estimate. For BPSK, the transmitted symbol carries exactly 1 bit of information, and under the canonical i.i.d.\ model the sufficient statistic for the current bit is the current observation alone, with Bayes-optimal posterior mean \(f^*(y_i) = \tanh(y_i / \sigma^2)\). The neighboring window samples are therefore redundant architectural inputs in this setting rather than part of the sufficient statistic, so the \textbf{effective dimensionality} of the target mapping is still 1: far below the \(2w+1 = 5\) or \(11\) input dimensions.
 
-As a heuristic, the minimum description length (MDL) principle suggests matching model complexity to the effective dimensionality of the target mapping. Since the target here is a one-dimensional monotone function of the sufficient statistic, even the 169-parameter network has capacity far in excess of what the mapping requires; this is offered as an intuition for why the smallest model suffices, not as a formal MDL bound.
+As a heuristic, the minimum description length (MDL) principle suggests matching model complexity to the effective dimensionality of the target mapping. Since the target here is a one-dimensional monotone function of the current sufficient statistic, even the 169-parameter network has capacity far in excess of what the mapping requires; this is offered as an intuition for why the smallest model suffices, not as a formal MDL bound.
 
 \subsection{Bias-Variance Analysis}\label{sec:bias-variance-analysis}
 
@@ -362,5 +362,4 @@ The unknown-channel contribution (Chapter~\ref{sec:unknown-channels}) settles th
 These findings demonstrate that neural network-based relay processing is a viable complement to classical approaches in the low-SNR regime, matching --- though not surpassing --- the per-symbol-optimal DF baseline everywhere else at negligible computational cost. The overarching insight is that \textbf{model complexity should be matched to task complexity}: for the canonical relay denoising task, minimal architectures suffice, and the choice between neural network paradigms : feedforward or sequential : matters less than proper model sizing and regularization. The practical recommendation is to deploy a Hybrid relay with a 169-parameter MLP sub-network, which combines the neural low-SNR advantage over AF with DF's zero-parameter reliability at high SNR; for 16-QAM deployments, the relay should be formulated as a joint $N$-class 2D classifier rather than a per-axis I/Q-split denoiser; and on links with unmodeled impairments (memory, bias, hardware nonlinearity), a minimal learned relay delivers near-MLSE reliability without channel identification, where the memoryless classical relays fail outright (H6).
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
-
 

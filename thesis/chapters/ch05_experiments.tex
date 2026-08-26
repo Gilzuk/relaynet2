@@ -64,9 +64,9 @@ Extension: unknown-channel failure of AF/DF and learned mitigation (H5) \\
 
 \section{Canonical Relay Comparison (SISO, Rayleigh, QPSK)}\label{sec:siso-bpsk-performance-baseline-relay-comparison}
 
-\textbf{Goal:} Evaluate the classical and AI-based relay strategies on the canonical setup of this thesis. Eight of the nine implemented relays are reported; the cGAN is excluded from the re-run that produced these numbers.
+\textbf{Goal:} Evaluate the classical and AI-based relay strategies on the canonical setup of this thesis.
 
-\textbf{Trials:} - \textbf{Topology:} SISO (both hops) - \textbf{Modulation scheme:} QPSK - \textbf{Channel:} i.i.d.\ Rayleigh fast fading (canonical) - \textbf{Equalizers:} None - \textbf{NN architecture:} Supervised (MLP, Hybrid), Generative (VAE, cGAN), Sequence (Transformer, Mamba-S6, Mamba-2 SSD) - \textbf{NN activation:} ReLU hidden, tanh output
+\textbf{Trials:} - \textbf{Topology:} SISO (both hops) - \textbf{Modulation scheme:} QPSK - \textbf{Channel:} i.i.d.\ Rayleigh fast fading (canonical) - \textbf{Equalizers:} None - \textbf{Reported learned relay architectures (six):} Supervised (MLP, Hybrid), Generative (VAE), Sequence (Transformer, Mamba-S6, Mamba-2 SSD) - \textbf{NN activation:} ReLU hidden, tanh output
 
 \textbf{Conclusion:} On the canonical Rayleigh channel, AI relays match but do not surpass symbol-wise DF: DF achieves the lowest or tied-lowest BER at essentially every SNR point, including the low-SNR regime, while the best neural relays (MLP, Hybrid, VAE) track it within statistical uncertainty and clearly outperform AF. This confirms H1 (AI relays beat AF at low SNR) and H2 (DF dominance at $\geq 6$ dB with zero parameters) on the canonical channel.
 
@@ -75,7 +75,7 @@ Extension: unknown-channel failure of AF/DF and learned mitigation (H5) \\
 
 \begingroup\footnotesize
 \begin{longtable}[]{@{}lccccccccc@{}}
-\caption[BER on the canonical setup]{BER on the canonical setup: QPSK over i.i.d.\ Rayleigh fast fading, SISO on both hops, uncoded, $10\times10{,}000$ bits per SNR point. The cGAN column is absent because the relay was excluded from the re-run that produced this table on cost grounds (roughly two GPU-hours to train against the MLP's seconds on a CPU); the omission drops its column rather than carrying forward a value measured on the earlier, $3$~dB-offset axis. ``DF th.'' is the closed-form two-hop composition of Eq.~\ref{eq:df-ber-rayleigh} (Section~\ref{sec:rayleigh-two-hop-df-ber}), included for direct comparison against the measured DF column. Column abbreviations: Transf.\ is the Transformer relay, Mamba2 the Mamba-2 SSD relay.}\label{tbl:table2}\tabularnewline
+\caption[BER on the canonical setup]{BER on the canonical setup: QPSK over i.i.d.\ Rayleigh fast fading, SISO on both hops, uncoded, $10\times10{,}000$ bits per SNR point. ``DF th.'' is the closed-form two-hop composition of Eq.~\ref{eq:df-ber-rayleigh} (Section~\ref{sec:rayleigh-two-hop-df-ber}), included for direct comparison against the measured DF column. Column abbreviations: Transf.\ is the Transformer relay, Mamba2 the Mamba-2 SSD relay.}\label{tbl:table2}\tabularnewline
 \toprule\noalign{}
 SNR (dB) & AF & DF & DF th. & MLP & Hybrid & VAE & Transf. & Mamba-S6 & Mamba2 \\
 \midrule\noalign{}
@@ -130,7 +130,7 @@ This study tests H3 (complexity versus BER) and H4 (architecture convergence at 
 
 \begingroup\footnotesize
 \begin{longtable}[]{@{}lcccccccc@{}}
-\caption[Equal-parameter-budget comparison at 3K]{Equal-parameter-budget comparison on the canonical setup (QPSK over Rayleigh). All learned columns are the $\sim$3{,}000-parameter variants; every learned model is scaled to approximately 3{,}000 parameters, so parameter count is removed as an explanation for the residual differences; width, depth, state dimension and window size still co-vary with architecture (Table~\ref{tbl:table28}). AF and DF are the unparameterized references. The cGAN is excluded, as in Table~\ref{tbl:table2}. Column abbreviations: Transf.\ is the Transformer relay, Mamba2 the Mamba-2 SSD relay.}\label{tbl:table8}\tabularnewline
+\caption[Equal-parameter-budget comparison at 3K]{Equal-parameter-budget comparison on the canonical setup (QPSK over Rayleigh). All learned columns are the $\sim$3{,}000-parameter variants; every learned model is scaled to approximately 3{,}000 parameters, so parameter count is removed as an explanation for the residual differences; width, depth, state dimension and window size still co-vary with architecture (Table~\ref{tbl:table28}). AF and DF are the unparameterized references. Column abbreviations: Transf.\ is the Transformer relay, Mamba2 the Mamba-2 SSD relay.}\label{tbl:table8}\tabularnewline
 \toprule\noalign{}
 SNR (dB) & MLP & Hybrid & VAE & Transf. & Mamba-S6 & Mamba2 & AF & DF \\
 \midrule\noalign{}

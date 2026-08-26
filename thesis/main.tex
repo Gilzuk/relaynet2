@@ -43,8 +43,8 @@
 \fi
 \usepackage[normalem]{ulem}
 % \usepackage{lineno}
-\usepackage[left]{lineno} 
-\pretocmd{\chapter}{\resetlinenumber[1]}{}{}
+% \usepackage[left]{lineno}   % draft review aid; disabled for submission
+% \pretocmd{\chapter}{\resetlinenumber[1]}{}{}
 
 \usepackage[inline]{enumitem}
 %% ── Page Layout ──────────────────────────────────────────────
@@ -141,7 +141,7 @@
 \renewcommand{\cftchappagefont}{\bfseries}
 \renewcommand{\cftsecfont}{\small}
 \renewcommand{\cftsubsecfont}{\small}
-\setlength{\cftbeforechapskip}{6pt}
+\setlength{\cftbeforechapskip}{2pt}
 \setcounter{tocdepth}{3}
 \setcounter{secnumdepth}{3}
 
@@ -374,6 +374,9 @@ under the supervision of Dr. Anatoly Khina and Prof. Raja Giryes\\
 \clearpage
 \cleardoublepage
 \phantomsection
+\include{chapters/symbols}
+\cleardoublepage
+\phantomsection
 \addcontentsline{toc}{chapter}{\listfigurename}
 \listoffigures
 \clearpage
@@ -385,7 +388,7 @@ under the supervision of Dr. Anatoly Khina and Prof. Raja Giryes\\
 \clearpage
 
 % \usepackage[left]{lineno} 
-\linenumbers
+% \linenumbers
 
 \mainmatter
 \include{chapters/ch01_introduction}
