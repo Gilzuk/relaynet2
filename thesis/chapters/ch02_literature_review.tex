@@ -231,7 +231,7 @@ With $\mathbf{A}$ diagonal and negative, $\Delta_k$ acts as a learned gate: a la
 These adaptive-filtering connections become directly relevant only in the unknown-channel study of Chapter~\ref{sec:unknown-channels}; on the canonical memoryless channel the relay reduces to a per-symbol function and there is no temporal structure for a state to track.
 \end{remark}
 
-\begin{figure}[H]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=\linewidth]{results/mamba_ssd_s6.png}
     \caption[Mamba: selective state spaces]{Structured SSMs map each channel independently through a higher-dimensional latent state; the selective variant makes the transition input-dependent so the state is reset or held per sample}

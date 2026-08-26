@@ -106,7 +106,7 @@ Two comments on Table~\ref{tbl:table2}. First, symbol-wise DF is the best or tie
 \subsection{Results Figures}\label{sec:results-figures-1}
 
 
-\begin{figure}[H]
+\begin{figure}[htbp]
 \centering
 \pandocbounded{\includegraphics[width=\linewidth,height=0.8\textheight,keepaspectratio]{results/canonical_qpsk_rayleigh_ci.png}}
 \caption[The canonical setup]{The canonical setup: QPSK over i.i.d.\ Rayleigh fast fading, BER vs.\ $E_s/N_0$ for the eight relays of Table~\ref{tbl:table2}, with 95\% confidence intervals, plus two theoretical reference curves: ``DF (theory)'' (dashed), the closed-form two-hop composition, which the measured DF curve tracks closely, within a few percent relative error everywhere (worst case $3.6\%$, at 12~dB); and the ``single-hop floor'' (dotted), the BER a genie that recovered hop~1 perfectly would still incur on hop~2 -- a physical lower bound no relay crosses. AF is uniformly worst; symbol-wise DF and the feedforward learned relays are indistinguishable from 4~dB upward; the two sequence models trail at low SNR and converge by 16~dB}\label{fig:fig10}
@@ -150,7 +150,7 @@ SNR (dB) & MLP & Hybrid & VAE & Transf. & Mamba-S6 & Mamba2 & AF & DF \\
 \end{longtable}
 \endgroup
 
-\begin{figure}[H]
+\begin{figure}[htbp]
 \pandocbounded{\includegraphics[width=\linewidth,height=0.8\textheight,keepaspectratio]{results/normalized_3k_rayleigh_ber.png}}
 \caption[Equal-parameter-budget BER (3K), QPSK/Rayleigh]{BER vs $E_s/N_0$ for all relay variants normalised to $\approx$3{,}000 parameters, QPSK over Rayleigh fading. AF and DF (dashed) are the unparameterised references. Shaded bands show 95\% confidence intervals for the learned relays. The feedforward group (MLP-3K, Hybrid-3K, VAE-3K) tracks DF across the full range; the sequence models (Transformer-3K, Mamba-3K, Mamba2-3K) converge with them only at high SNR}\label{fig:fig-3k-ber}\end{figure}
 
@@ -184,7 +184,7 @@ SNR (dB) & uncoded DF & coded AF & coded DF & MLP-coded & Mamba-coded \\
 20 & 0.0098 & 0.0020 & 0.0014 & 0.0011 & \textbf{0.0010} \\
 \end{longtable}
 
-\begin{figure}[H]
+\begin{figure}[htbp]
 \pandocbounded{\includegraphics[width=\linewidth,height=0.8\textheight,keepaspectratio]{results/coded_df_ber.png}}
 \caption[Coded block-DF vs uncoded DF and learned relays, BER vs SNR]{BER vs $E_s/N_0$ for coded block-DF, uncoded symbol-wise DF, and the two coded-aware learned relays (MLP and Mamba), canonical QPSK/Rayleigh, rate-1/2 $K{=}3$. Coding hurts below the error-propagation threshold ($\lesssim$6~dB) and helps decisively above it; the learned relays close on coded-DF only at the top of the sweep}\label{fig:fig-coded-df-ber}\end{figure}
 
@@ -264,7 +264,7 @@ SNR (dB) & coded-DF & MLP (5/10/15) & MLP (5--30) & oracle & coded-DF FER \\
 \end{longtable}
 \endgroup
 
-\begin{figure}[H]
+\begin{figure}[htbp]
 \pandocbounded{\includegraphics[width=\linewidth,height=0.8\textheight,keepaspectratio]{results/coded_reliable_regime.png}}
 \caption[Reliable-decoding regime: BER at extended SNR]{BER vs $E_s/N_0$ at extended SNR ($20$--$32$~dB), rate-1/2 $K{=}3$ QPSK/Rayleigh. Coded DF's BER remains near twice the oracle floor at every point; the retrained learned relay (MLP 5--30~dB) closes on that floor monotonically and reaches statistical parity with it at 32~dB, demonstrating that the high-SNR reversal survives into the reliable-decoding regime}\label{fig:fig-reliable-regime}\end{figure}
 
@@ -294,7 +294,7 @@ SNR (dB) & hard block-DF & soft block-DF & MLP hard & MLP soft & oracle \\
 20 & 0.001354 & 0.002348 & 0.001056 & \textbf{0.000912} & 0.000682 \\
 \end{longtable}
 
-\begin{figure}[H]
+\begin{figure}[htbp]
 \centering
 \pandocbounded{\includegraphics[width=\linewidth]{results/coded_soft_decision.png}}
 \caption[Soft- versus hard-decision relaying: BER curves]{Soft- versus hard-decision relaying on the coded link (canonical QPSK/Rayleigh, rate-1/2 $K{=}3$, 100 paired trials). The soft MLP (posterior mean) tracks below the hard MLP at every SNR, with the largest gain visible at mid-to-high SNR where the relay's residual uncertainty is most useful to the destination decoder. The two block-DF variants (hard Viterbi, soft BCJR) converge at high SNR and are never separated by a reliable margin, confirming that the liability is consuming the code's redundancy at the relay rather than hard quantization per se. The oracle relay (dashed) is the hop-2-only floor}\label{fig:fig57}
@@ -334,7 +334,7 @@ SNR (dB) & uncoded QPSK & rate-1/2 16-QAM & Coding gain \\
 20 & 0.0098 & \textbf{0.0076} & $1.29\times$ (better) \\
 \end{longtable}
 
-\begin{figure}[H]
+\begin{figure}[htbp]
 \pandocbounded{\includegraphics[width=\linewidth,height=0.8\textheight,keepaspectratio]{results/coded_equal_throughput.png}}
 \caption[Coded vs uncoded BER at equal spectral efficiency]{BER vs $E_s/N_0$ for uncoded QPSK and rate-1/2 16-QAM, both delivering $\approx$2 information bits per channel symbol on the canonical Rayleigh channel. Held to equal throughput, the code does not pay for itself below 20~dB; the $1.29\times$ gain at 20~dB is the entirety of the coding advantage at this rate and frame length}\label{fig:fig-equal-throughput}\end{figure}
 
@@ -400,7 +400,7 @@ SNR & MCS (block-DF) & $G$ & MCS (denoise) & $G$ & $C$ \\
 \end{longtable}
 \endgroup
 
-\begin{figure}[H]
+\begin{figure}[htbp]
 \centering
 \pandocbounded{\includegraphics[width=\linewidth]{results/coded_rate_adaptation.png}}
 \caption[Link-adaptation envelope]{The envelope of Table~\ref{tbl:table42} (colored) against every individual fixed MCS on the block-DF relay (grey), which is the visual case for adaptation: the envelope tracks the upper hull of the grey curves rather than any single one of them, switching MCS as SNR crosses each rate's operating threshold. The two relay strategies' envelopes are visually almost the same curve}\label{fig:fig58}
@@ -443,7 +443,7 @@ SNR (dB) & Best MCS (block-DF) & $G$ (block-DF) & Best MCS (denoise) & $G$ (deno
 40 & 16-QAM uncoded & 3.7336 & 16-QAM uncoded & 3.7336 \\
 \end{longtable}
 
-\begin{figure}[H]
+\begin{figure}[htbp]
 \centering
 \pandocbounded{\includegraphics[width=\linewidth]{results/coded_latency_capacity.png}}
 \caption[Goodput vs. round-trip latency budget]{Best achievable goodput as a function of the round-trip latency budget $L_{\max}$, at the four SNRs where the two relay strategies differ (16, 20, 24, 28~dB). Each curve is a step function: goodput jumps each time $L_{\max}$ crosses an MCS's round-trip latency. The denoise-only relay's steps (dashed) occur at roughly half the $L_{\max}$ of the block-DF relay's (solid) for a comparable rate, since block-DF pays the frame cost twice}\label{fig:fig59}

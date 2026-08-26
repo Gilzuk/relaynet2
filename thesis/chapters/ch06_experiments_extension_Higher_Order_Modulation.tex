@@ -8,7 +8,7 @@ This chapter reports one study: reformulating the relay as a joint $N$-class cla
 
 The ladder proper resumes in Chapter~\ref{sec:unknown-channels}, which holds the constellation fixed and removes the channel assumptions one at a time. That is where learned relaying stops matching classical processing and starts beating it.
 
-\begin{figure}[H] 
+\begin{figure}[htbp] 
 \noindent 
 \makebox[\textwidth][l]{% 
 \begin{tikzpicture}[ >=latex, node distance=2.6cm, block/.style={rectangle, draw, thick, minimum width=2.2cm, minimum height=1.0cm, align=center}, relayblock/.style={rectangle, draw, very thick, dashed, minimum width=2.6cm, minimum height=1.2cm, align=center} ] 
@@ -69,21 +69,21 @@ DF & 0.03748 & n/a & n/a \\
 
 \subsection{Results Figures}\label{sec:results-figures-6}
 
-\begin{figure}[H]
+\begin{figure}[htbp]
 \centering
 \centering
 \pandocbounded{\includegraphics[width=\linewidth,height=\textheight,keepaspectratio]{results/all_relays_16class/ber_16class_ci.png}}
 \caption[16-QAM BER vs.\ SNR, 4-class against 16-class]{16-QAM BER vs.~SNR for all relay variants (4-class per-axis, dashed; joint 16-class 2D, solid) on the canonical Rayleigh channel, from the same results file as Table~\ref{tbl:table24}. The two formulations are indistinguishable below about 14~dB and separate only in the inset region: by 20~dB the 16-class variants reach $0.0376$--$0.0393$, matching symbol-wise DF's $0.03748$, while the 4-class variants stall around $0.054$. Mamba-2 SSD is the exception noted in Table~\ref{tbl:table24}, reaching only $0.0495$. The gap is a fixed offset in the high-SNR region rather than an error floor: every curve is still descending at the top of the swept range}\label{fig:fig50}
 \end{figure}
 
-\begin{figure}[H]
+\begin{figure}[htbp]
 \centering
 \centering
 \pandocbounded{\includegraphics[width=\linewidth,height=\textheight,keepaspectratio]{results/all_relays_16class/grouped_bar_16class.png}}
 \caption[Per-axis versus joint 2D classification, 16-QAM]{4-class per-axis against joint 16-class 2D relays, 16-QAM at 20~dB on the canonical Rayleigh channel, regenerated from the same results file as Table~\ref{tbl:table24}. The joint formulation improves every architecture by a near-identical factor, annotated above each bar, which points at the per-axis formulation rather than any architecture's capacity as the thing being repaired. The dashed line is symbol-wise DF: the 16-class bars reach it and stop, so the joint head buys parity with the classical baseline, not an advantage over it}\label{fig:fig51}
 \end{figure}
 
-\begin{figure}[H]
+\begin{figure}[htbp]
 \centering
 \centering
 \pandocbounded{\includegraphics[width=\linewidth,height=\textheight,keepaspectratio]{results/all_relays_16class/ber_16class_top3.png}}
