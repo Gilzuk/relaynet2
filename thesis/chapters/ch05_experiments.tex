@@ -150,8 +150,9 @@ SNR (dB) & MLP & Hybrid & VAE & Transf. & Mamba-S6 & Mamba2 & AF & DF \\
 \end{longtable}
 \endgroup
 
-
-
+\begin{figure}[H]
+\pandocbounded{\includegraphics[width=\linewidth,height=0.8\textheight,keepaspectratio]{results/normalized_3k_rayleigh_ber.png}}
+\caption[Equal-parameter-budget BER (3K), QPSK/Rayleigh]{BER vs $E_s/N_0$ for all relay variants normalised to $\approx$3{,}000 parameters, QPSK over Rayleigh fading. AF and DF (dashed) are the unparameterised references. Shaded bands show 95\% confidence intervals for the learned relays. The feedforward group (MLP-3K, Hybrid-3K, VAE-3K) tracks DF across the full range; the sequence models (Transformer-3K, Mamba-3K, Mamba2-3K) converge with them only at high SNR}\label{fig:fig-3k-ber}\end{figure}
 
 
 
@@ -183,6 +184,9 @@ SNR (dB) & uncoded DF & coded AF & coded DF & MLP-coded & Mamba-coded \\
 20 & 0.0098 & 0.0020 & 0.0014 & 0.0011 & \textbf{0.0010} \\
 \end{longtable}
 
+\begin{figure}[H]
+\pandocbounded{\includegraphics[width=\linewidth,height=0.8\textheight,keepaspectratio]{results/coded_df_ber.png}}
+\caption[Coded block-DF vs uncoded DF and learned relays, BER vs SNR]{BER vs $E_s/N_0$ for coded block-DF, uncoded symbol-wise DF, and the two coded-aware learned relays (MLP and Mamba), canonical QPSK/Rayleigh, rate-1/2 $K{=}3$. Coding hurts below the error-propagation threshold ($\lesssim$6~dB) and helps decisively above it; the learned relays close on coded-DF only at the top of the sweep}\label{fig:fig-coded-df-ber}\end{figure}
 
 Two findings, reported as measured rather than smoothed toward either a "coding always helps" or a "the learned relay wins" narrative:
 
@@ -260,6 +264,10 @@ SNR (dB) & coded-DF & MLP (5/10/15) & MLP (5--30) & oracle & coded-DF FER \\
 \end{longtable}
 \endgroup
 
+\begin{figure}[H]
+\pandocbounded{\includegraphics[width=\linewidth,height=0.8\textheight,keepaspectratio]{results/coded_reliable_regime.png}}
+\caption[Reliable-decoding regime: BER at extended SNR]{BER vs $E_s/N_0$ at extended SNR ($20$--$32$~dB), rate-1/2 $K{=}3$ QPSK/Rayleigh. Coded DF's BER remains near twice the oracle floor at every point; the retrained learned relay (MLP 5--30~dB) closes on that floor monotonically and reaches statistical parity with it at 32~dB, demonstrating that the high-SNR reversal survives into the reliable-decoding regime}\label{fig:fig-reliable-regime}\end{figure}
+
 \textbf{The liability does not dissolve.} Across $20$--$32$~dB coded-DF's frame-error rate falls $16.3\times$ ($0.1998$ to $0.0122$), yet its BER stays near twice the oracle floor with no trend at all ($1.96$, $1.92$, $2.03$, $2.00$; the scatter is trial noise, the absence of a downward slope is the point), while the retrained learned relay (MLP $5$--$30$) closes on that floor ($1.55$, $1.26$, $1.15$, $1.08$) and reaches statistical parity with it by $32$~dB ($636$ against $607$ frame errors in $100{,}000$, $z=+0.8$) while still beating coded-DF there ($z=+13.7$). The cause is structural, not code strength: block-DF decodes once per hop, so two independent frame-error events accumulate and neither decoder repairs the other's, whereas denoising leaves a single decoding operation at the destination. The reversal is thus no artefact of a weak code or short frame; it survives, and relatively widens, as decoding becomes reliable. One limit stays out of reach: driving per-hop failure to zero makes the sum of two vanishing terms vanish, so a capacity-achieving code at long blocklength would recover the floor. No operating point here does: even at $32$~dB the oracle's own decode -- one hop's worth, by construction, and equal to the other hop's by the link's symmetry -- still fails on $0.6\%$ of frames.
 
 \subsection{Soft-Decision Relaying, and What the Liability Actually Is}\label{sec:coded-soft-decision}
@@ -325,6 +333,10 @@ SNR (dB) & uncoded QPSK & rate-1/2 16-QAM & Coding gain \\
 16 & \textbf{0.0239} & 0.0273 & $0.88\times$ (worse) \\
 20 & 0.0098 & \textbf{0.0076} & $1.29\times$ (better) \\
 \end{longtable}
+
+\begin{figure}[H]
+\pandocbounded{\includegraphics[width=\linewidth,height=0.8\textheight,keepaspectratio]{results/coded_equal_throughput.png}}
+\caption[Coded vs uncoded BER at equal spectral efficiency]{BER vs $E_s/N_0$ for uncoded QPSK and rate-1/2 16-QAM, both delivering $\approx$2 information bits per channel symbol on the canonical Rayleigh channel. Held to equal throughput, the code does not pay for itself below 20~dB; the $1.29\times$ gain at 20~dB is the entirety of the coding advantage at this rate and frame length}\label{fig:fig-equal-throughput}\end{figure}
 
 The result is a substantial qualification of Section~\ref{sec:coded-block-df}. Held to equal throughput, the rate-1/2 code does not pay for itself anywhere below 20~dB, and where it finally does the gain is $1.29\times$, not the $5.7$--$7.2\times$ the equal-$E_s/N_0$ reading suggested. Coding is not free reliability: it is reliability bought with bandwidth, and on this channel, at this rate and frame length, the purchase is a poor one until the link is already operating well. This does not overturn the earlier section -- coded block-DF genuinely is the stronger \emph{detector}, and Remark~\ref{rem:df-terminology}'s caveat genuinely is real -- but it does bound how much the caveat matters in practice.
 
