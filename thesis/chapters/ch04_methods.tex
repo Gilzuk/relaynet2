@@ -30,7 +30,7 @@ The system under study is a two-hop relay network with a single relay node. All 
 \draw[arr] (demod) -- (dst);
 \end{tikzpicture}%
 }
-\caption[Two-hop relay system model]{Two-hop relay system model: source transmits through two channels with a neural network relay in between. Each hop applies the channel operator followed by one-tap coherent equalization in the canonical setup.}
+\caption[Two-hop relay system model]{Two-hop relay system model: source transmits through two channels with a neural network relay in between. Each hop applies the channel operator followed by one-tap coherent equalization in the canonical setup}
 \label{fig:relay-system-simple}
 \end{figure}
 
@@ -101,7 +101,7 @@ This thesis evaluates the primary (constellation, channel) configurations listed
 The pairings excluded by this principle are precisely the ones that would force the simulation to patch over a mismatch. A real constellation on the complex Rayleigh channel must discard the imaginary part of the equalized sample after dividing by \(h\), throwing away half the plane the channel acted in; a complex constellation on AWGN is not wrong, but it exercises none of what makes the complex channel interesting, since there is no phase rotation to undo. Neither is reported here.
 
 \begin{longtable}[]{@{}lllp{0.42\linewidth}@{}}
-\caption[The evaluated configurations]{The primary evaluated (constellation, channel) pairings. The canonical and coded rows use the same channel on both hops; the unknown-channel row's Hop-1 filter is fixed throughout (not redrawn per block) and unknown to AF/DF/MLP, though the MLP is trained on it, matching the genie-CSI/pilot-aided Viterbi baselines; Hop-2 is AWGN (Chapter~\ref{sec:unknown-channels}). A QPSK generalization of the unknown-ISI study, with the same Hop-1/Hop-2 split, is reported separately in Section~\ref{sec:qpsk-unknown-channel}.}\label{tbl:configurations}\tabularnewline
+\caption[The evaluated configurations]{The primary evaluated (constellation, channel) pairings. The canonical and coded rows use the same channel on both hops; the unknown-channel row's Hop-1 filter is fixed throughout (not redrawn per block) and unknown to AF/DF/MLP, though the MLP is trained on it, matching the genie-CSI/pilot-aided Viterbi baselines; Hop-2 is AWGN (Chapter~\ref{sec:unknown-channels}). A QPSK generalization of the unknown-ISI study, with the same Hop-1/Hop-2 split, is reported separately in Section~\ref{sec:qpsk-unknown-channel}}\label{tbl:configurations}\tabularnewline
 \toprule\noalign{}
 Constellation & Channel & Role & Why this pairing \\
 \midrule\noalign{}
@@ -315,7 +315,7 @@ A fundamental confound in comparing AI architectures is that different models ha
   >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
   >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
   >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
-\caption[Normalized 3K-parameter model configurations]{Normalized 3K-parameter model configurations: parameter count and scaling method for each architecture.}\label{tbl:table28}\tabularnewline
+\caption[Normalized 3K-parameter model configurations]{Normalized 3K-parameter model configurations: parameter count and scaling method for each architecture}\label{tbl:table28}\tabularnewline
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 Model
@@ -368,7 +368,7 @@ Quadrature Phase-Shift Keying maps pairs of bits \((b_0, b_1)\) to complex symbo
 yielding four constellation points at \(\{(\pm 1 \pm j)/\sqrt{2}\}\) with unit average power (\(E_s = 1\)). The Gray coding ensures that adjacent constellation points differ by exactly one bit:
 
 \begin{longtable}[]{@{}lll@{}}
-\caption[QPSK Gray-coded symbol mapping]{QPSK Gray-coded symbol mapping: bit pairs to complex symbols.}\label{tbl:table29}\tabularnewline
+\caption[QPSK Gray-coded symbol mapping]{QPSK Gray-coded symbol mapping: bit pairs to complex symbols}\label{tbl:table29}\tabularnewline
 \toprule\noalign{}
 Bit pair \((b_0, b_1)\) & Symbol & Quadrant \\
 \midrule\noalign{}
@@ -402,7 +402,7 @@ Figure~\ref{fig:fig8} presents the constellation diagrams for the modulation sch
 \begin{figure}[H]
 \centering
 \pandocbounded{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{results/modulation/constellation_diagrams.png}}
-\caption[Constellation diagrams]{Constellation diagrams. (a) BPSK: 2 real-valued symbols at \(\pm 1\). (b) QPSK: 4 Gray-coded symbols on the unit circle. (c) 16-QAM: 16 Gray-coded symbols on a \(4 \times 4\) rectangular grid with decision boundaries (dotted lines). (d) 16-PSK, shown for completeness only; it is not studied in this work. All constellations are normalised to unit average power.}\label{fig:fig8}
+\caption[Constellation diagrams]{Constellation diagrams. (a) BPSK: 2 real-valued symbols at \(\pm 1\). (b) QPSK: 4 Gray-coded symbols on the unit circle. (c) 16-QAM: 16 Gray-coded symbols on a \(4 \times 4\) rectangular grid with decision boundaries (dotted lines). (d) 16-PSK, shown for completeness only; it is not studied in this work. All constellations are normalised to unit average power}\label{fig:fig8}
 \end{figure}
 
 \subsection{I/Q Splitting for AI Relay Processing of Complex Constellations}\label{sec:iq-splitting-for-ai-relay-processing-of-complex-constellations}
@@ -420,7 +420,7 @@ Figure~\ref{fig:fig8} presents the constellation diagrams for the modulation sch
   >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
   >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
   >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
-\caption[Relay-specific complex-signal handling]{Relay-specific complex signal handling strategies and rationale.}\label{tbl:table31}\tabularnewline
+\caption[Relay-specific complex-signal handling]{Relay-specific complex signal handling strategies and rationale}\label{tbl:table31}\tabularnewline
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 Relay type

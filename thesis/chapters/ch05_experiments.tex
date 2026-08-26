@@ -75,7 +75,7 @@ Extension: unknown-channel failure of AF/DF and learned mitigation (H5) \\
 
 \begingroup\footnotesize
 \begin{longtable}[]{@{}lccccccccc@{}}
-\caption[BER on the canonical setup]{BER on the canonical setup: QPSK over i.i.d.\ Rayleigh fast fading, SISO on both hops, uncoded, $10\times10{,}000$ bits per SNR point. ``DF th.'' is the closed-form two-hop composition of Eq.~\ref{eq:df-ber-rayleigh} (Section~\ref{sec:rayleigh-two-hop-df-ber}), included for direct comparison against the measured DF column. Column abbreviations: Transf.\ is the Transformer relay, Mamba2 the Mamba-2 SSD relay.}\label{tbl:table2}\tabularnewline
+\caption[BER on the canonical setup]{BER on the canonical setup: QPSK over i.i.d.\ Rayleigh fast fading, SISO on both hops, uncoded, $10\times10{,}000$ bits per SNR point. ``DF th.'' is the closed-form two-hop composition of Eq.~\ref{eq:df-ber-rayleigh} (Section~\ref{sec:rayleigh-two-hop-df-ber}), included for direct comparison against the measured DF column. Column abbreviations: Transf.\ is the Transformer relay, Mamba2 the Mamba-2 SSD relay}\label{tbl:table2}\tabularnewline
 \toprule\noalign{}
 SNR (dB) & AF & DF & DF th. & MLP & Hybrid & VAE & Transf. & Mamba-S6 & Mamba2 \\
 \midrule\noalign{}
@@ -109,7 +109,7 @@ Two comments on Table~\ref{tbl:table2}. First, symbol-wise DF is the best or tie
 \begin{figure}[H]
 \centering
 \pandocbounded{\includegraphics[width=\linewidth,height=0.8\textheight,keepaspectratio]{results/canonical_qpsk_rayleigh_ci.png}}
-\caption[The canonical setup]{The canonical setup: QPSK over i.i.d.\ Rayleigh fast fading, BER vs.\ $E_s/N_0$ for the eight relays of Table~\ref{tbl:table2}, with 95\% confidence intervals, plus two theoretical reference curves: ``DF (theory)'' (dashed), the closed-form two-hop composition, which the measured DF curve tracks closely, within a few percent relative error everywhere (worst case $3.6\%$, at 12~dB); and the ``single-hop floor'' (dotted), the BER a genie that recovered hop~1 perfectly would still incur on hop~2 -- a physical lower bound no relay crosses. AF is uniformly worst; symbol-wise DF and the feedforward learned relays are indistinguishable from 4~dB upward; the two sequence models trail at low SNR and converge by 16~dB.}\label{fig:fig10}
+\caption[The canonical setup]{The canonical setup: QPSK over i.i.d.\ Rayleigh fast fading, BER vs.\ $E_s/N_0$ for the eight relays of Table~\ref{tbl:table2}, with 95\% confidence intervals, plus two theoretical reference curves: ``DF (theory)'' (dashed), the closed-form two-hop composition, which the measured DF curve tracks closely, within a few percent relative error everywhere (worst case $3.6\%$, at 12~dB); and the ``single-hop floor'' (dotted), the BER a genie that recovered hop~1 perfectly would still incur on hop~2 -- a physical lower bound no relay crosses. AF is uniformly worst; symbol-wise DF and the feedforward learned relays are indistinguishable from 4~dB upward; the two sequence models trail at low SNR and converge by 16~dB}\label{fig:fig10}
 \end{figure}
 
 
@@ -130,7 +130,7 @@ This study tests H3 (complexity versus BER) and H4 (architecture convergence at 
 
 \begingroup\footnotesize
 \begin{longtable}[]{@{}lcccccccc@{}}
-\caption[Equal-parameter-budget comparison at 3K]{Equal-parameter-budget comparison on the canonical setup (QPSK over Rayleigh). All learned columns are the $\sim$3{,}000-parameter variants; every learned model is scaled to approximately 3{,}000 parameters, so parameter count is removed as an explanation for the residual differences; width, depth, state dimension and window size still co-vary with architecture (Table~\ref{tbl:table28}). AF and DF are the unparameterized references. Column abbreviations: Transf.\ is the Transformer relay, Mamba2 the Mamba-2 SSD relay.}\label{tbl:table8}\tabularnewline
+\caption[Equal-parameter-budget comparison at 3K]{Equal-parameter-budget comparison on the canonical setup (QPSK over Rayleigh). All learned columns are the $\sim$3{,}000-parameter variants; every learned model is scaled to approximately 3{,}000 parameters, so parameter count is removed as an explanation for the residual differences; width, depth, state dimension and window size still co-vary with architecture (Table~\ref{tbl:table28}). AF and DF are the unparameterized references. Column abbreviations: Transf.\ is the Transformer relay, Mamba2 the Mamba-2 SSD relay}\label{tbl:table8}\tabularnewline
 \toprule\noalign{}
 SNR (dB) & MLP & Hybrid & VAE & Transf. & Mamba-S6 & Mamba2 & AF & DF \\
 \midrule\noalign{}
@@ -150,8 +150,9 @@ SNR (dB) & MLP & Hybrid & VAE & Transf. & Mamba-S6 & Mamba2 & AF & DF \\
 \end{longtable}
 \endgroup
 
-
-
+\begin{figure}[H]
+\pandocbounded{\includegraphics[width=\linewidth,height=0.8\textheight,keepaspectratio]{results/normalized_3k_rayleigh_ber.png}}
+\caption[Equal-parameter-budget BER (3K), QPSK/Rayleigh]{BER vs $E_s/N_0$ for all relay variants normalised to $\approx$3{,}000 parameters, QPSK over Rayleigh fading. AF and DF (dashed) are the unparameterised references. Shaded bands show 95\% confidence intervals for the learned relays. The feedforward group (MLP-3K, Hybrid-3K, VAE-3K) tracks DF across the full range; the sequence models (Transformer-3K, Mamba-3K, Mamba2-3K) converge with them only at high SNR}\label{fig:fig-3k-ber}\end{figure}
 
 
 
@@ -164,7 +165,7 @@ Remark~\ref{rem:df-terminology} draws a distinction the rest of this thesis reli
 \textbf{Setup.} A standard rate-1/2 convolutional code (constraint length $K$, $2^{K-1}$ trellis states, zero-tail terminated per 200-information-bit frame) is applied before QPSK modulation on the canonical Rayleigh channel; \texttt{CodedDecodeAndForwardRelay} decodes the full frame at the relay via soft-decision Viterbi (squared-distance branch metric on the coherently-compensated I/Q samples), then re-encodes and re-modulates a fresh, clean codeword before forwarding -- genuine block DF, as opposed to the per-symbol slicing used elsewhere in this thesis. Two coded-aware learned relays are trained on the same task for comparison: a windowed 756-parameter MLP classifier (window 21, $\approx$5$\times K$ for $K=3$) and the Mamba-S6 architecture already used in Table~\ref{tbl:table2} (24,084 parameters at this configuration), both predicting the transmitted QPSK symbol from a window of noisy coded observations with no explicit knowledge of the code. All results use the thesis-standard budget of 100 trials $\times$ 100,000 information bits per SNR point.
 
 \begin{longtable}[]{@{}lcccccc@{}}
-\caption[Coded block-DF vs.\ uncoded DF and coded-aware learned relays]{Coded block-DF vs.\ uncoded symbol-wise DF and coded-aware learned relays, canonical QPSK/Rayleigh, rate-1/2 $K{=}3$ code. ``coded-AF'' forwards the noisy codeword unmodified (the relay does not decode), isolating the code's own gain from any relay intelligence.}\label{tbl:table34}\tabularnewline
+\caption[Coded block-DF vs.\ uncoded DF and coded-aware learned relays]{Coded block-DF vs.\ uncoded symbol-wise DF and coded-aware learned relays, canonical QPSK/Rayleigh, rate-1/2 $K{=}3$ code. ``coded-AF'' forwards the noisy codeword unmodified (the relay does not decode), isolating the code's own gain from any relay intelligence}\label{tbl:table34}\tabularnewline
 \toprule\noalign{}
 SNR (dB) & uncoded DF & coded AF & coded DF & MLP-coded & Mamba-coded \\
 \midrule\noalign{}
@@ -183,6 +184,9 @@ SNR (dB) & uncoded DF & coded AF & coded DF & MLP-coded & Mamba-coded \\
 20 & 0.0098 & 0.0020 & 0.0014 & 0.0011 & \textbf{0.0010} \\
 \end{longtable}
 
+\begin{figure}[H]
+\pandocbounded{\includegraphics[width=\linewidth,height=0.8\textheight,keepaspectratio]{results/coded_df_ber.png}}
+\caption[Coded block-DF vs uncoded DF and learned relays, BER vs SNR]{BER vs $E_s/N_0$ for coded block-DF, uncoded symbol-wise DF, and the two coded-aware learned relays (MLP and Mamba), canonical QPSK/Rayleigh, rate-1/2 $K{=}3$. Coding hurts below the error-propagation threshold ($\lesssim$6~dB) and helps decisively above it; the learned relays close on coded-DF only at the top of the sweep}\label{fig:fig-coded-df-ber}\end{figure}
 
 Two findings, reported as measured rather than smoothed toward either a "coding always helps" or a "the learned relay wins" narrative:
 
@@ -193,7 +197,7 @@ Two findings, reported as measured rather than smoothed toward either a "coding 
 \textbf{At high SNR the ordering reverses, and it is not noise.} The differences at 16--20~dB in Table~\ref{tbl:table34} are small in absolute terms, and an earlier version of this section dismissed them as trial-to-trial variation. That was wrong, and the correction is worth stating explicitly because it changes the conclusion. Re-measuring those two points with \emph{paired} trials -- every relay driven by identical information bits and identical hop-1/hop-2 fading realizations within each trial, so the channel-draw variance that dominates an unpaired comparison cancels in the per-trial difference -- and testing with the Wilcoxon signed-rank test used elsewhere in this thesis gives Table~\ref{tbl:table37}. At 20~dB both learned relays beat coded-DF in essentially every one of 100 paired trials ($p<10^{-4}$). At 16~dB the result splits by architecture: Mamba-coded wins (68 of 100 trials) while the MLP significantly \emph{loses} (23 of 100), both at $p<10^{-4}$. The effects are real in both directions, and no single sentence of the form ``the learned relay beats/does not beat Viterbi'' describes them.
 
 \begin{longtable}[]{@{}lccccc@{}}
-\caption[Paired re-measurement of the high-SNR points]{Paired re-measurement of the two high-SNR points of Table~\ref{tbl:table34}, 100 paired trials $\times$ 100{,}000 information bits. ``Diff'' is the mean per-trial BER difference against coded-DF (negative favours the learned relay); ``W/L'' counts trials won/lost; $p$ is Wilcoxon signed-rank.}\label{tbl:table37}\tabularnewline
+\caption[Paired re-measurement of the high-SNR points]{Paired re-measurement of the two high-SNR points of Table~\ref{tbl:table34}, 100 paired trials $\times$ 100{,}000 information bits. ``Diff'' is the mean per-trial BER difference against coded-DF (negative favours the learned relay); ``W/L'' counts trials won/lost; $p$ is Wilcoxon signed-rank}\label{tbl:table37}\tabularnewline
 \toprule\noalign{}
 SNR & Relay & BER & Diff vs.\ coded-DF & W/L & $p$ \\
 \midrule\noalign{}
@@ -216,7 +220,7 @@ SNR & Relay & BER & Diff vs.\ coded-DF & W/L & $p$ \\
 \textbf{This is not a learned relay out-decoding Viterbi, and the mechanism says why.} Viterbi is the maximum-likelihood \emph{sequence} decoder for a known code on a known channel, so a learned decoder beating it at its own task would be a surprising claim requiring more than a BER table. It is not what happens here. Instrumenting the relay output directly (Table~\ref{tbl:table38}) shows coded-DF is the \emph{better} decoder by a wide margin: it puts roughly $2.1\times$ \emph{fewer} symbol errors on the air than the learned relay at both SNRs, exactly as the optimality result predicts. What separates them is what happens to those errors afterwards. Coded-DF decodes and then \emph{re-encodes}, so a frame it gets wrong leaves the relay as a different but perfectly \emph{valid} codeword: the code's redundancy has been spent and then regenerated around the error, and the destination's decoder has no way to detect or repair it. The learned relay never re-encodes, so its (more numerous) mistakes remain isolated bad symbols inside an otherwise-valid codeword, and the destination still holds the redundancy needed to fix them. Only 16--25\% of coded-DF's relay errors are repaired downstream against 58--73\% of the learned relay's. That also explains the SNR-dependent split above: at 16~dB the $2.1\times$ raw-error penalty still outweighs the repair advantage for the MLP, and by 20~dB it no longer does.
 
 \begin{longtable}[]{@{}lccccc@{}}
-\caption[Where the errors go: relay output versus destination output]{Where the errors go, 100 trials $\times$ 500 frames. ``Relay symbol ER'' counts symbols the relay put on the air that differ from the transmitted ones; ``repaired'' is the fraction of those that do not survive the destination's decoder. The oracle relay forwards the clean codeword and so isolates the hop-2-only floor.}\label{tbl:table38}\tabularnewline
+\caption[Where the errors go: relay output versus destination output]{Where the errors go, 100 trials $\times$ 500 frames. ``Relay symbol ER'' counts symbols the relay put on the air that differ from the transmitted ones; ``repaired'' is the fraction of those that do not survive the destination's decoder. The oracle relay forwards the clean codeword and so isolates the hop-2-only floor}\label{tbl:table38}\tabularnewline
 \toprule\noalign{}
 SNR & Relay & Relay symbol ER & Repaired & Final BER \\
 \midrule\noalign{}
@@ -242,7 +246,7 @@ SNR & Relay & Relay symbol ER & Repaired & Final BER \\
 
 \begingroup\footnotesize
 \begin{longtable}[]{@{}lccccc@{}}
-\caption[Block-DF into the reliable-decoding regime]{Block-DF into the reliable-decoding regime: the rate-1/2 $K{=}3$ code and canonical QPSK/Rayleigh link of Table~\ref{tbl:table34}, extended up the SNR axis, $100$ trials $\times$ $1{,}000$ frames ($20{,}000{,}000$ information bits) per point. ``MLP (5/10/15)'' uses that table's training recipe; ``MLP (5--30)'' is the same architecture retrained on $5$--$30$~dB, bracketing all but the $32$~dB point, hence a different instance whose $20$~dB entry need not reproduce it. Bold marks the best \emph{relay} in each row (both marked where they tie); the oracle forwards the clean codeword and is the single-decode floor they are measured against, not a competitor.}\label{tbl:table44}\tabularnewline
+\caption[Block-DF into the reliable-decoding regime]{Block-DF into the reliable-decoding regime: the rate-1/2 $K{=}3$ code and canonical QPSK/Rayleigh link of Table~\ref{tbl:table34}, extended up the SNR axis, $100$ trials $\times$ $1{,}000$ frames ($20{,}000{,}000$ information bits) per point. ``MLP (5/10/15)'' uses that table's training recipe; ``MLP (5--30)'' is the same architecture retrained on $5$--$30$~dB, bracketing all but the $32$~dB point, hence a different instance whose $20$~dB entry need not reproduce it. Bold marks the best \emph{relay} in each row (both marked where they tie); the oracle forwards the clean codeword and is the single-decode floor they are measured against, not a competitor}\label{tbl:table44}\tabularnewline
 \toprule\noalign{}
 SNR (dB) & coded-DF & MLP (5/10/15) & MLP (5--30) & oracle & coded-DF FER \\
 \midrule\noalign{}
@@ -260,6 +264,10 @@ SNR (dB) & coded-DF & MLP (5/10/15) & MLP (5--30) & oracle & coded-DF FER \\
 \end{longtable}
 \endgroup
 
+\begin{figure}[H]
+\pandocbounded{\includegraphics[width=\linewidth,height=0.8\textheight,keepaspectratio]{results/coded_reliable_regime.png}}
+\caption[Reliable-decoding regime: BER at extended SNR]{BER vs $E_s/N_0$ at extended SNR ($20$--$32$~dB), rate-1/2 $K{=}3$ QPSK/Rayleigh. Coded DF's BER remains near twice the oracle floor at every point; the retrained learned relay (MLP 5--30~dB) closes on that floor monotonically and reaches statistical parity with it at 32~dB, demonstrating that the high-SNR reversal survives into the reliable-decoding regime}\label{fig:fig-reliable-regime}\end{figure}
+
 \textbf{The liability does not dissolve.} Across $20$--$32$~dB coded-DF's frame-error rate falls $16.3\times$ ($0.1998$ to $0.0122$), yet its BER stays near twice the oracle floor with no trend at all ($1.96$, $1.92$, $2.03$, $2.00$; the scatter is trial noise, the absence of a downward slope is the point), while the retrained learned relay (MLP $5$--$30$) closes on that floor ($1.55$, $1.26$, $1.15$, $1.08$) and reaches statistical parity with it by $32$~dB ($636$ against $607$ frame errors in $100{,}000$, $z=+0.8$) while still beating coded-DF there ($z=+13.7$). The cause is structural, not code strength: block-DF decodes once per hop, so two independent frame-error events accumulate and neither decoder repairs the other's, whereas denoising leaves a single decoding operation at the destination. The reversal is thus no artefact of a weak code or short frame; it survives, and relatively widens, as decoding becomes reliable. One limit stays out of reach: driving per-hop failure to zero makes the sum of two vanishing terms vanish, so a capacity-achieving code at long blocklength would recover the floor. No operating point here does: even at $32$~dB the oracle's own decode -- one hop's worth, by construction, and equal to the other hop's by the link's symmetry -- still fails on $0.6\%$ of frames.
 
 \subsection{Soft-Decision Relaying, and What the Liability Actually Is}\label{sec:coded-soft-decision}
@@ -267,7 +275,7 @@ SNR (dB) & coded-DF & MLP (5/10/15) & MLP (5--30) & oracle & coded-DF FER \\
 The mechanism of Table~\ref{tbl:table38} suggests an obvious repair. If the trouble with block-DF is that it commits to a codeword, replace the commitment with soft information: run BCJR (forward-backward MAP) at the relay instead of Viterbi and forward the posterior-mean symbol per trellis step, so a symbol the relay is unsure of is shrunk toward the origin rather than asserted. The same idea applies to the learned relay, whose softmax already carries a posterior it was throwing away: forwarding $\sum_k p_k s_k$ instead of $\arg\max_k p_k$ costs nothing, needs no retraining, and reuses the identical weights, so any difference isolates the read-out rule alone. Table~\ref{tbl:table39} evaluates both against their hard counterparts and against an oracle relay that forwards the clean codeword, on paired trials.
 
 \begin{longtable}[]{@{}lccccc@{}}
-\caption[Soft- versus hard-decision relaying on the coded link]{Soft- versus hard-decision relaying, canonical QPSK/Rayleigh, rate-1/2 $K{=}3$, 100 paired trials $\times$ 100{,}000 information bits. The MLP hard/soft pair shares one set of trained weights and differs only in the read-out. The oracle relay forwards the clean codeword, giving the hop-2-only floor. Both block-DF variants are marked at 8~dB, where they are a statistical tie.}\label{tbl:table39}\tabularnewline
+\caption[Soft- versus hard-decision relaying on the coded link]{Soft- versus hard-decision relaying, canonical QPSK/Rayleigh, rate-1/2 $K{=}3$, 100 paired trials $\times$ 100{,}000 information bits. The MLP hard/soft pair shares one set of trained weights and differs only in the read-out. The oracle relay forwards the clean codeword, giving the hop-2-only floor. Both block-DF variants are marked at 8~dB, where they are a statistical tie}\label{tbl:table39}\tabularnewline
 \toprule\noalign{}
 SNR (dB) & hard block-DF & soft block-DF & MLP hard & MLP soft & oracle \\
 \midrule\noalign{}
@@ -289,7 +297,7 @@ SNR (dB) & hard block-DF & soft block-DF & MLP hard & MLP soft & oracle \\
 \begin{figure}[H]
 \centering
 \pandocbounded{\includegraphics[width=\linewidth]{results/coded_soft_decision.png}}
-\caption[Soft- versus hard-decision relaying: BER curves]{Soft- versus hard-decision relaying on the coded link (canonical QPSK/Rayleigh, rate-1/2 $K{=}3$, 100 paired trials). The soft MLP (posterior mean) tracks below the hard MLP at every SNR, with the largest gain visible at mid-to-high SNR where the relay's residual uncertainty is most useful to the destination decoder. The two block-DF variants (hard Viterbi, soft BCJR) converge at high SNR and are never separated by a reliable margin, confirming that the liability is consuming the code's redundancy at the relay rather than hard quantization per se. The oracle relay (dashed) is the hop-2-only floor.}\label{fig:fig57}
+\caption[Soft- versus hard-decision relaying: BER curves]{Soft- versus hard-decision relaying on the coded link (canonical QPSK/Rayleigh, rate-1/2 $K{=}3$, 100 paired trials). The soft MLP (posterior mean) tracks below the hard MLP at every SNR, with the largest gain visible at mid-to-high SNR where the relay's residual uncertainty is most useful to the destination decoder. The two block-DF variants (hard Viterbi, soft BCJR) converge at high SNR and are never separated by a reliable margin, confirming that the liability is consuming the code's redundancy at the relay rather than hard quantization per se. The oracle relay (dashed) is the hop-2-only floor}\label{fig:fig57}
 \end{figure}
 
 \textbf{Soft read-out helps the learned relay everywhere} (Figure~\ref{fig:fig57}). At every SNR the posterior mean beats the argmax, on identical weights: $0.4343$ against $0.4443$ at 0~dB, $0.0878$ against $0.1008$ at 8~dB, $0.000912$ against $0.001056$ at 20~dB. The gain is largest exactly where the mechanism predicts, since a relay that reports its uncertainty gives the destination's decoder more to work with than one that reports a confident guess. It is enough to change a verdict: at 16~dB the hard MLP significantly \emph{loses} to block-DF (19 wins, 80 losses and one tie) while the soft MLP significantly \emph{beats} it (100 wins, no losses), and at 20~dB the soft relay comes within $0.00023$ of the oracle floor that no relay of any kind can pass.
@@ -307,7 +315,7 @@ Every table above compares relays at equal $E_s/N_0$. That is the correct axis f
 \textbf{Throughput: the coded comparison was not like-for-like.} A rate-1/2 code carries half the information per channel use. Concretely, the coded QPSK link spends $202$ symbols to deliver $200$ information bits ($0.99$ bits/symbol) where uncoded QPSK spends $100$ ($2.00$ bits/symbol). The ``$5.7\times$ better at 16~dB'' quoted above is therefore bought with half the data rate, and a link designer given that trade would not read it as a $5.7\times$ improvement at all. The honest comparison holds spectral efficiency fixed, and the measurements already collected supply it: rate-1/2 \emph{16-QAM} delivers $4 \times \tfrac12 = 1.98$ information bits per symbol, matching uncoded QPSK's $2.00$. Table~\ref{tbl:table40} places those two side by side.
 
 \begin{longtable}[]{@{}lccc@{}}
-\caption[Coded versus uncoded at equal spectral efficiency]{Coded versus uncoded at equal spectral efficiency ($\approx$2 information bits per channel symbol): uncoded QPSK against rate-1/2 $K{=}3$ 16-QAM, both on the canonical Rayleigh channel. Recomputed from the data of Table~\ref{tbl:table34} and \url{results/coded_df_experiment.json}; no additional simulation.}\label{tbl:table40}\tabularnewline
+\caption[Coded versus uncoded at equal spectral efficiency]{Coded versus uncoded at equal spectral efficiency ($\approx$2 information bits per channel symbol): uncoded QPSK against rate-1/2 $K{=}3$ 16-QAM, both on the canonical Rayleigh channel. Recomputed from the data of Table~\ref{tbl:table34} and \url{results/coded_df_experiment.json}; no additional simulation}\label{tbl:table40}\tabularnewline
 \toprule\noalign{}
 SNR (dB) & uncoded QPSK & rate-1/2 16-QAM & Coding gain \\
 \midrule\noalign{}
@@ -326,12 +334,16 @@ SNR (dB) & uncoded QPSK & rate-1/2 16-QAM & Coding gain \\
 20 & 0.0098 & \textbf{0.0076} & $1.29\times$ (better) \\
 \end{longtable}
 
+\begin{figure}[H]
+\pandocbounded{\includegraphics[width=\linewidth,height=0.8\textheight,keepaspectratio]{results/coded_equal_throughput.png}}
+\caption[Coded vs uncoded BER at equal spectral efficiency]{BER vs $E_s/N_0$ for uncoded QPSK and rate-1/2 16-QAM, both delivering $\approx$2 information bits per channel symbol on the canonical Rayleigh channel. Held to equal throughput, the code does not pay for itself below 20~dB; the $1.29\times$ gain at 20~dB is the entirety of the coding advantage at this rate and frame length}\label{fig:fig-equal-throughput}\end{figure}
+
 The result is a substantial qualification of Section~\ref{sec:coded-block-df}. Held to equal throughput, the rate-1/2 code does not pay for itself anywhere below 20~dB, and where it finally does the gain is $1.29\times$, not the $5.7$--$7.2\times$ the equal-$E_s/N_0$ reading suggested. Coding is not free reliability: it is reliability bought with bandwidth, and on this channel, at this rate and frame length, the purchase is a poor one until the link is already operating well. This does not overturn the earlier section -- coded block-DF genuinely is the stronger \emph{detector}, and Remark~\ref{rem:df-terminology}'s caveat genuinely is real -- but it does bound how much the caveat matters in practice.
 
 \textbf{Latency: the block relays buffer three orders of magnitude more.} The relays also differ structurally in how much they must accumulate before emitting anything, which sets the delay the relay contributes independently of how fast its arithmetic is. Symbol-wise AF and DF emit per symbol. A windowed learned relay needs $w$ symbols of look-ahead, ten here, and that figure is a property of the architecture, constant in frame length. Block-DF cannot emit until it has decoded an entire frame, $202$ symbols; soft block-DF is worse still in kind rather than degree, since BCJR's backward recursion runs from the end of the frame and so structurally forbids emitting early even in principle. Frame length is a free parameter, so this is not a fixed penalty but a scaling one: the block relays' latency grows with the frame while the learned relay's does not.
 
 \begin{longtable}[]{@{}lcccc@{}}
-\caption[Latency and compute cost of the coded relays]{Structural latency and measured compute cost. ``Buffer'' is the number of symbols the relay must accumulate before it can emit its first output, and is architectural. Compute is the median of 7 runs over $49{,}894$ symbols after a discarded warm-up, single-threaded CPU. The identical benchmark was run on two different machines, both reported here: neither is more correct than the other, and the pair is the evidence that the absolute figures are machine-dependent while the ratios are not (\url{results/coded_latency_compute_machines.json}).}\label{tbl:table41}\tabularnewline
+\caption[Latency and compute cost of the coded relays]{Structural latency and measured compute cost. ``Buffer'' is the number of symbols the relay must accumulate before it can emit its first output, and is architectural. Compute is the median of 7 runs over $49{,}894$ symbols after a discarded warm-up, single-threaded CPU. The identical benchmark was run on two different machines, both reported here: neither is more correct than the other, and the pair is the evidence that the absolute figures are machine-dependent while the ratios are not (\url{results/coded_latency_compute_machines.json})}\label{tbl:table41}\tabularnewline
 \toprule\noalign{}
  &  & \multicolumn{2}{c}{$\mu$s/symbol} &  \\
 Relay & Buffer (symbols) & Machine A & Machine B & Relative to Viterbi \\
@@ -365,7 +377,7 @@ The objective is \emph{goodput}, $G = R\,(1-\mathrm{FER})$, the information rate
 
 \begingroup\footnotesize
 \begin{longtable}[]{@{}lccccc@{}}
-\caption[Link-adaptation envelope: best MCS per SNR]{Link-adaptation envelope: the MCS maximizing goodput at each SNR, block-DF versus denoise-only relaying, canonical Rayleigh channel, 100 trials $\times$ 200 frames $\times$ 200 information bits per point. Columns are SNR in dB, the goodput-maximizing MCS and its goodput $G$ for each relay, and $C$, the ergodic Rayleigh (Shannon) capacity at that SNR, $C=\log_2(e)\,e^{1/\gamma}E_1(1/\gamma)$ -- an unconstrained-input upper bound no achievable goodput may exceed, included as a sanity ceiling rather than a target: the gap to it here is dominated by the finite constellation and coding loss, not by relay strategy. The capacity column is a \emph{single-link} reference evaluated per active-hop channel symbol; it is not a capacity bound for the half-duplex two-hop relay system studied here, whose own bound would additionally account for the two-slot cycle and the relay constraint.}\label{tbl:table42}\tabularnewline
+\caption[Link-adaptation envelope: best MCS per SNR]{Link-adaptation envelope: the MCS maximizing goodput at each SNR, block-DF versus denoise-only relaying, canonical Rayleigh channel, 100 trials $\times$ 200 frames $\times$ 200 information bits per point. Columns are SNR in dB, the goodput-maximizing MCS and its goodput $G$ for each relay, and $C$, the ergodic Rayleigh (Shannon) capacity at that SNR, $C=\log_2(e)\,e^{1/\gamma}E_1(1/\gamma)$ -- an unconstrained-input upper bound no achievable goodput may exceed, included as a sanity ceiling rather than a target: the gap to it here is dominated by the finite constellation and coding loss, not by relay strategy. The capacity column is a \emph{single-link} reference evaluated per active-hop channel symbol; it is not a capacity bound for the half-duplex two-hop relay system studied here, whose own bound would additionally account for the two-slot cycle and the relay constraint}\label{tbl:table42}\tabularnewline
 \toprule\noalign{}
 SNR & MCS (block-DF) & $G$ & MCS (denoise) & $G$ & $C$ \\
 \midrule\noalign{}
@@ -391,7 +403,7 @@ SNR & MCS (block-DF) & $G$ & MCS (denoise) & $G$ & $C$ \\
 \begin{figure}[H]
 \centering
 \pandocbounded{\includegraphics[width=\linewidth]{results/coded_rate_adaptation.png}}
-\caption[Link-adaptation envelope]{The envelope of Table~\ref{tbl:table42} (colored) against every individual fixed MCS on the block-DF relay (grey), which is the visual case for adaptation: the envelope tracks the upper hull of the grey curves rather than any single one of them, switching MCS as SNR crosses each rate's operating threshold. The two relay strategies' envelopes are visually almost the same curve.}\label{fig:fig58}
+\caption[Link-adaptation envelope]{The envelope of Table~\ref{tbl:table42} (colored) against every individual fixed MCS on the block-DF relay (grey), which is the visual case for adaptation: the envelope tracks the upper hull of the grey curves rather than any single one of them, switching MCS as SNR crosses each rate's operating threshold. The two relay strategies' envelopes are visually almost the same curve}\label{fig:fig58}
 \end{figure}
 
 Two results follow, and the second qualifies the mechanism finding of Table~\ref{tbl:table38} substantially.
@@ -409,7 +421,7 @@ Section~\ref{sec:coded-rate-adaptation} optimizes goodput with no bound on how l
 The two relay strategies differ in what they cost against such a deadline. The destination always buffers a full coded frame before it can decode, regardless of which relay handled the first hop -- that cost is unavoidable for any coded MCS and is shared by both strategies. Block-DF adds a second full-frame buffer at the relay itself, since it must decode, re-encode and only then forward, so its round-trip latency is the frame length \emph{twice}. The denoise-only relay adds only its window (Table~\ref{tbl:table41}'s 10 symbols, independent of frame length or code rate), so its round-trip latency is the frame length once. Re-deriving the goodput envelope of Table~\ref{tbl:table42} under a round-trip budget $L_{\max}$ -- the best goodput each relay strategy can still deliver using only MCS options whose round-trip latency does not exceed $L_{\max}$ -- therefore penalizes block-DF twice as hard per unit of code redundancy as it penalizes the denoise-only relay, using the same already-measured FER data as Table~\ref{tbl:table42} and no new simulation.
 
 \begin{longtable}[]{@{}lcccc@{}}
-\caption[Link-adaptation envelope under a 150-symbol latency budget]{Link-adaptation envelope re-derived under a 150-symbol round-trip latency budget, same layout and data source as Table~\ref{tbl:table42}.}\label{tbl:table43}\tabularnewline
+\caption[Link-adaptation envelope under a 150-symbol latency budget]{Link-adaptation envelope re-derived under a 150-symbol round-trip latency budget, same layout and data source as Table~\ref{tbl:table42}}\label{tbl:table43}\tabularnewline
 \toprule\noalign{}
 SNR (dB) & Best MCS (block-DF) & $G$ (block-DF) & Best MCS (denoise) & $G$ (denoise) \\
 \midrule\noalign{}
@@ -434,7 +446,7 @@ SNR (dB) & Best MCS (block-DF) & $G$ (block-DF) & Best MCS (denoise) & $G$ (deno
 \begin{figure}[H]
 \centering
 \pandocbounded{\includegraphics[width=\linewidth]{results/coded_latency_capacity.png}}
-\caption[Goodput vs. round-trip latency budget]{Best achievable goodput as a function of the round-trip latency budget $L_{\max}$, at the four SNRs where the two relay strategies differ (16, 20, 24, 28~dB). Each curve is a step function: goodput jumps each time $L_{\max}$ crosses an MCS's round-trip latency. The denoise-only relay's steps (dashed) occur at roughly half the $L_{\max}$ of the block-DF relay's (solid) for a comparable rate, since block-DF pays the frame cost twice.}\label{fig:fig59}
+\caption[Goodput vs. round-trip latency budget]{Best achievable goodput as a function of the round-trip latency budget $L_{\max}$, at the four SNRs where the two relay strategies differ (16, 20, 24, 28~dB). Each curve is a step function: goodput jumps each time $L_{\max}$ crosses an MCS's round-trip latency. The denoise-only relay's steps (dashed) occur at roughly half the $L_{\max}$ of the block-DF relay's (solid) for a comparable rate, since block-DF pays the frame cost twice}\label{fig:fig59}
 \end{figure}
 
 \textbf{Under a tight budget, block-DF can be locked out of coding altogether.} At $L_{\max}=150$ symbols (Table~\ref{tbl:table43}), block-DF's cheapest coded option (16-QAM~3/4, 136 symbols round-trip) barely clears the budget, while its next-cheapest (16-QAM~2/3, 152 symbols) does not -- forcing it down from the unconstrained envelope's choice at several SNRs. The denoise-only relay, whose round-trip cost for the same MCS is roughly half, still has QPSK~3/4 (145 symbols) and every 16-QAM rate available. The result is a gap the unconstrained comparison of Table~\ref{tbl:table42} understates by an order of magnitude at 16~dB: $10.0\times$ ($0.372$ vs.\ $0.037$ information bits/symbol) there, and $2.0\times$ at 20~dB, where the unconstrained envelope showed the two strategies within 6\% of each other.
