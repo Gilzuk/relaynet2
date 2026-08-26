@@ -2,6 +2,28 @@
 
 _Last updated: 2026-08-26_
 
+### Latest (2026-08-26): removed near-empty pages + stripped cGAN re-run commentary
+
+Cleaned up three layout/text issues in the thesis front matter and early chapters.
+First, reduced `\cftbeforechapskip` in `thesis/main.tex` from 6pt to 2pt, which
+pulled the table of contents back to a single compact block instead of leaving an
+almost-empty spill page. Second, tightened the live abstract wording in
+`thesis/chapters/frontmatter.tex` and the closing sentence of
+`thesis/chapters/ch03_objectives.tex`, which removed the abstract continuation
+page and the one-word spill page at the end of Chapter 3 without changing any
+claim or result. Third, removed stale cGAN re-run commentary from the thesis
+text: deleted old commented-out abstract drafts in `frontmatter.tex` and removed
+the cGAN re-run/exclusion explanations from the relevant prose/captions in
+`thesis/chapters/ch05_experiments.tex` and
+`thesis/chapters/ch06_experiments_extension_Higher_Order_Modulation.tex`.
+
+Rebuilt `thesis/main.pdf` with `latexmk -xelatex`; the PDF now has 125 pages
+(down from 128 after the theory-wording pass, and from 127 immediately before
+the final tightening in this session). Spot-check via text extraction confirms
+the previous almost-empty pages are gone: the abstract now fits on one page,
+the contents no longer leaves a one-line spill page, and Chapter 3 no longer
+pushes a single trailing word to the next page.
+
 ### Latest (2026-08-26): textbook-theory wording audit applied to thesis chapters
 
 Applied a narrow theory-text correction pass against standard textbook framing,
