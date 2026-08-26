@@ -240,32 +240,7 @@ SNR & Relay & Relay symbol ER & Repaired & Final BER \\
  & oracle & --- & --- & 0.000668 \\
 \end{longtable}
 
-\paragraph{Does a stronger code help?} The $K{=}3$ code used above is deliberately small. Sweeping the constraint length to $K\in\{5,7\}$ on the same QPSK/Rayleigh link does \emph{not} improve matters: the larger-$K$ codes are worse than $K{=}3$ across 0--8~dB, a sharper error-propagation cliff for the bigger trellis, and by 20~dB all three are within trial-to-trial noise of one another (Table~\ref{tbl:table35}). Within this frame length and trial budget, the relay's re-encoding liability is therefore not something a stronger code repairs.
-
-\begin{longtable}[]{@{}lccccc@{}}
-\caption[Coded block-DF, constraint-length sweep, QPSK]{Constraint-length sweep $K\in\{3,5,7\}$ for coded block-DF on the canonical QPSK/Rayleigh link, rate-1/2. Uncoded DF is the symbol-wise baseline. Larger-$K$ codes incur a sharper error-propagation cliff below $\sim$8~dB and converge by 20~dB; neither the 16-state nor the 64-state trellis repairs the relay's re-encoding liability within this frame length and SNR range. Data from \url{results/coded_df_experiment.json}}\label{tbl:table35}\tabularnewline
-\toprule\noalign{}
-SNR (dB) & uncoded DF & $K{=}3$ ($4$ states) & $K{=}5$ ($16$ states) & $K{=}7$ ($64$ states) \\
-\midrule\noalign{}
-\endfirsthead
-\toprule\noalign{}
-SNR (dB) & uncoded DF & $K{=}3$ ($4$ states) & $K{=}5$ ($16$ states) & $K{=}7$ ($64$ states) \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-0  & \textbf{0.3337} & 0.4204 & 0.4737 & 0.4884 \\
-4  & \textbf{0.2216} & 0.2232 & 0.3015 & 0.3550 \\
-8  & 0.1205 & \textbf{0.0637} & 0.0843 & 0.0872 \\
-12 & 0.0560 & \textbf{0.0155} & 0.0191 & 0.0167 \\
-16 & 0.0239 & 0.0042 & 0.0050 & \textbf{0.0042} \\
-20 & 0.0098 & 0.0014 & 0.0015 & \textbf{0.0012} \\
-\end{longtable}
-
-\begin{figure}[H]
-\pandocbounded{\includegraphics[width=\linewidth,height=0.8\textheight,keepaspectratio]{results/coded_df_k_sweep_qpsk.png}}
-\caption[QPSK coded block-DF, constraint-length sweep]{BER vs $E_s/N_0$ for coded block-DF on QPSK/Rayleigh, sweeping $K\in\{3,5,7\}$, rate-1/2. All three codes are worse than uncoded DF below $\sim$6~dB; $K{=}3$ leads from 8--16~dB and the gap between the three codes closes by 20~dB. The uncoded DF curve is included as the symbol-wise baseline}\label{fig:fig-k-sweep-qpsk}
-\end{figure}
+\paragraph{Does a stronger code help?} The $K{=}3$ code used above is deliberately small. Sweeping the constraint length to $K\in\{5,7\}$ on the same QPSK/Rayleigh link does \emph{not} improve matters: the larger-$K$ codes are worse than $K{=}3$ across 0--8~dB, a sharper error-propagation cliff for the bigger trellis, and by 20~dB all three are within trial-to-trial noise of one another (values $0.0014$, $0.0015$, $0.0012$). Within this frame length and trial budget, the relay's re-encoding liability is therefore not something a stronger code repairs; the full sweep is available in \url{results/coded_df_experiment.json}.
 
 \paragraph{Does reliable decoding remove it?} Remark~\ref{rem:df-terminology} defines block-DF with ``a strong (ideally capacity-achieving) channel code'', which the measurements above do not approach: at $20$~dB the destination fails on $20.23\%$ of frames under coded-DF and on $10.58\%$ even under an \emph{oracle} relay forwarding the clean codeword, so one frame in ten is lost for reasons unrelated to the relay. Since the liability tracks the relay's frame-error rate rather than the code family behind it, the link is extended up the SNR axis, code fixed, until decoding is reliable (Table~\ref{tbl:table44}); two learned relays are run, one on the recipe above and one retrained on $5$--$30$~dB, which brackets three of the four evaluated points and leaves only the $32$~dB reading as a mild, $2$~dB extrapolation, so no high-SNR reading rests on a large train/test mismatch.
 
@@ -362,42 +337,6 @@ SNR (dB) & uncoded QPSK & rate-1/2 16-QAM & Coding gain \\
 \begin{figure}[H]
 \pandocbounded{\includegraphics[width=\linewidth,height=0.8\textheight,keepaspectratio]{results/coded_equal_throughput.png}}
 \caption[Coded vs uncoded BER at equal spectral efficiency]{BER vs $E_s/N_0$ for uncoded QPSK and rate-1/2 16-QAM, both delivering $\approx$2 information bits per channel symbol on the canonical Rayleigh channel. Held to equal throughput, the code does not pay for itself below 20~dB; the $1.29\times$ gain at 20~dB is the entirety of the coding advantage at this rate and frame length}\label{fig:fig-equal-throughput}\end{figure}
-
-\paragraph{Why coded 16-QAM does not beat uncoded QPSK below 20~dB.}
-The pattern of Table~\ref{tbl:table40} -- coding helps only at 20~dB, where the gain is a modest $1.29\times$ -- is a direct consequence of two competing effects that are well characterised in the digital communications literature \cite{ProakisSalehi2008DigitalComm,Sklar2001DigitalCommFundamentals}.
-
-\textbf{The modulation penalty.} Transmitting at equal $E_s/N_0$, 16-QAM carries $k{=}4$ bits per symbol against QPSK's $k{=}2$, so the per-bit SNR is $E_b/N_0 = E_s/N_0 - 10\log_{10}k$, which is 3~dB lower for 16-QAM at the same link budget. Beyond that $E_b/N_0$ gap, the minimum Euclidean distance of Gray-coded 16-QAM (normalised to unit average power) is $d_\text{min} = 2/\sqrt{10} \approx 0.632$, compared to $\sqrt{2} \approx 1.414$ for QPSK, and the approximate BER formulas reflect this: $P_b^{\text{QPSK}} \approx Q\!\bigl(\sqrt{2E_b/N_0}\bigr)$ versus $P_b^{\text{16-QAM}} \approx \tfrac{3}{4}Q\!\bigl(\sqrt{8E_b/(5N_0)}\bigr)$ \cite{ProakisSalehi2008DigitalComm}. Solving for equal BER at equal $E_s/N_0 = \gamma$ gives $\gamma_{\text{16-QAM}}/\gamma_{\text{QPSK}} = 5/2$, i.e.\ roughly $4$~dB: an uncoded 16-QAM link needs about 4~dB more $E_s/N_0$ than uncoded QPSK to reach the same BER at the same information rate.
-
-\textbf{The asymptotic coding gain.} The asymptotic (high-SNR) coding gain of a rate-$R$ convolutional code with free distance $d_\text{free}$ is $G_c \approx 10\log_{10}(R \cdot d_\text{free})$~dB \cite{ProakisSalehi2008DigitalComm,Sklar2001DigitalCommFundamentals}. For the rate-1/2 codes swept here: $K{=}3$ ($d_\text{free}{=}5$) gives $G_c \approx 4.0$~dB; $K{=}5$ ($d_\text{free}{=}7$) gives $5.4$~dB; $K{=}7$ ($d_\text{free}{=}10$) gives $7.0$~dB.
-
-\textbf{Net result.} The $K{=}3$ code's 4.0~dB asymptotic gain exactly matches the 4~dB modulation penalty, so the equal-throughput comparison breaks even only in the code's waterfall region -- which on this channel does not open until beyond 16~dB (Table~\ref{tbl:table40}). Below that, coding hurts: the same error-propagation threshold observed for QPSK in Section~\ref{sec:coded-block-df} is present here too, but shifted to higher SNR because 16-QAM's smaller minimum distance makes each trellis step's branch metric noisier, so cascading errors are both more frequent and harder for the decoder to terminate. The result is not a simulation artefact but a quantitative consequence of standard modulation--coding trade-off theory \cite{ProakisSalehi2008DigitalComm}.
-
-\textbf{Why stronger codes ($K{=}5, 7$) do not rescue the comparison.} A $K{=}7$ code offers a 7~dB asymptotic gain, which theoretically exceeds the 4~dB modulation penalty. Table~\ref{tbl:table45} shows it does not in practice within $0$--$20$~dB: $K{=}7$ is \emph{worse} than $K{=}3$ at every measured SNR for 16-QAM. The reason is the same as for QPSK (Table~\ref{tbl:table35}): asymptotic gain applies only in the true waterfall region where the trellis is already correcting reliably, and the 64-state trellis on a 16-QAM channel reaches that region far above 20~dB given a 200-bit frame. Below that, the larger trellis propagates errors more aggressively than the small one \cite{Sklar2001DigitalCommFundamentals}. The equal-throughput comparison with uncoded QPSK therefore \emph{cannot} be repaired by choosing a stronger code within this SNR range; it would require extending the frame length or operating above 20~dB.
-
-\begin{longtable}[]{@{}lccccc@{}}
-\caption[Coded 16-QAM block-DF, constraint-length sweep]{Constraint-length sweep $K\in\{3,5,7\}$ for coded block-DF on the 16-QAM/Rayleigh link, rate-1/2, alongside uncoded 16-QAM DF and uncoded QPSK DF for reference. All coded 16-QAM variants are worse than uncoded QPSK below 20~dB, and larger $K$ is worse than $K{=}3$ across the full sweep. The asymptotic coding gain formula \cite{ProakisSalehi2008DigitalComm} predicts $K{=}7$ ($d_\text{free}{=}10$) would eventually surpass uncoded QPSK, but the waterfall for 16-QAM with a 200-bit frame lies above 20~dB. Data from \url{results/coded_df_experiment.json}}\label{tbl:table45}\tabularnewline
-\toprule\noalign{}
-SNR (dB) & uncoded QPSK & uncoded 16-QAM & $K{=}3$ ($4$ st.) & $K{=}5$ ($16$ st.) & $K{=}7$ ($64$ st.) \\
-\midrule\noalign{}
-\endfirsthead
-\toprule\noalign{}
-SNR (dB) & uncoded QPSK & uncoded 16-QAM & $K{=}3$ ($4$ st.) & $K{=}5$ ($16$ st.) & $K{=}7$ ($64$ st.) \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-0  & \textbf{0.3337} & 0.4184 & 0.4680 & 0.4958 & 0.4963 \\
-4  & \textbf{0.2216} & 0.3499 & 0.4203 & 0.4775 & 0.4872 \\
-8  & \textbf{0.1205} & 0.2572 & 0.2726 & 0.3570 & 0.3998 \\
-12 & \textbf{0.0560} & 0.1578 & 0.1001 & 0.1291 & 0.1443 \\
-16 & \textbf{0.0239} & 0.0809 & 0.0273 & 0.0332 & 0.0342 \\
-20 & 0.0098 & 0.0363 & \textbf{0.0076} & 0.0092 & 0.0094 \\
-\end{longtable}
-
-\begin{figure}[H]
-\pandocbounded{\includegraphics[width=\linewidth,height=0.8\textheight,keepaspectratio]{results/coded_df_k_sweep_qam16.png}}
-\caption[16-QAM coded block-DF, constraint-length sweep]{BER vs $E_s/N_0$ for coded block-DF on 16-QAM/Rayleigh, sweeping $K\in\{3,5,7\}$, rate-1/2. Uncoded QPSK and uncoded 16-QAM are included for reference. All coded 16-QAM curves lie above uncoded QPSK until 20~dB, where only $K{=}3$ achieves a marginal gain ($1.29\times$). Larger-$K$ codes are worse than $K{=}3$ at every plotted SNR, as the error-propagation threshold for 16-QAM is shifted well beyond 20~dB relative to QPSK (cf.\ Figure~\ref{fig:fig-k-sweep-qpsk})}\label{fig:fig-k-sweep-qam16}
-\end{figure}
 
 The result is a substantial qualification of Section~\ref{sec:coded-block-df}. Held to equal throughput, the rate-1/2 code does not pay for itself anywhere below 20~dB, and where it finally does the gain is $1.29\times$, not the $5.7$--$7.2\times$ the equal-$E_s/N_0$ reading suggested. Coding is not free reliability: it is reliability bought with bandwidth, and on this channel, at this rate and frame length, the purchase is a poor one until the link is already operating well. This does not overturn the earlier section -- coded block-DF genuinely is the stronger \emph{detector}, and Remark~\ref{rem:df-terminology}'s caveat genuinely is real -- but it does bound how much the caveat matters in practice.
 
