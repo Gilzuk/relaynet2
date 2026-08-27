@@ -1,6 +1,61 @@
 # Active Context (update this file first, every session)
 
-_Last updated: 2026-08-26_
+_Last updated: 2026-08-27_
+
+### Latest (2026-08-27): fixed the one kissing-figure pair in Chapter 6
+
+Audited compiled Chapter 6 for "kissing" figures — consecutive floats landing
+back-to-back with no body text between them. **Note the file-name trap:**
+compiled Chapter 6 is `thesis/chapters/ch07_unknown_and_mismatch_channels.tex`;
+`ch06_experiments_extension_Higher_Order_Modulation.tex` exists but is NOT
+`\include`d in `main.tex`, so editing it changes nothing.
+
+Exactly one kissing pair existed: old Figures 6.7 (per-symbol cost) and 6.8
+(measured inference time) were two adjacent `figure` environments declared after
+the chapter's final paragraph, so they floated onto a page of their own with
+zero body text. The legacy mirror `_ch07_unknown_and_mismatch_channels.tex:146`
+carries a commented-out caption proving they were originally a single two-panel
+figure ("(a) Per-symbol operations... (b) Measured inference time"), and the
+second file is literally named `e6_right_clean.png` — the right-hand panel.
+Neither figure was `\ref`-ed anywhere in the prose.
+
+Merged them back into one two-panel figure using the side-by-side `minipage`
+pattern already used by Figure 6.5 in the same chapter (`subcaption` remains
+unusable under `bidi`), keeping label `fig:figE6complexity` and dropping the
+unreferenced `fig:e6_inference_time`. Panel letters are baked into the PNG
+titles, so no duplicate `(a)`/`(b)` text was added. Merging alone was not enough:
+the single merged float still took a page of its own, so it was also **moved
+above** the "Measured inference time" paragraph, giving the remaining text
+something to fill the page with. Result: no float-only page in Chapter 6, no
+page with two figure captions, 0 unresolved refs/citations. PDF stays at 128
+pages — this was a layout fix, not a page-saving one.
+
+The other candidate pages (Table 6.3 + Figure 6.2 on p. 90, Table 6.4 +
+Figure 6.3 on p. 91) are table/figure pairs deliberately kept together by
+PR #39's `[H]` → `[htbp]` change, separated by a normal ~26 pt float gap. Those
+are correct and should not be "fixed".
+
+### Latest (2026-08-27): rebuilt `thesis/main.pdf` so it no longer lags its sources
+
+PR #39 changed all 24 `\begin{figure}[H]` to `[htbp]` across `ch01`–`ch07` but
+could not rebuild the PDF (no TeX in that sandbox), leaving `thesis/main.pdf`
+behind its sources — the exact situation the "PDF must never lag its sources"
+rule in `CLAUDE.md` exists to prevent. Rebuilt with `latexmk -xelatex`
+(`make thesis`) against the current sources: **128 pages**, unchanged from the
+pre-`[htbp]` count, with **zero unresolved references and zero unresolved
+citations** in `main.log`. No source files were edited.
+
+**TeX toolchain is installable in this container** (it is not preinstalled).
+`sudo apt-get install -y --no-install-recommends texlive-xetex latexmk
+texlive-fonts-recommended texlive-lang-other texlive-latex-extra
+texlive-plain-generic texlive-science texlive-pictures texlive-fonts-extra
+texlive-lang-arabic texlive-publishers` is the minimum set that builds this
+document. Two failures are hit in order if packages are missing:
+`ulem.sty` (needs `texlive-plain-generic`) and `IEEEtran.bst` (needs
+`texlive-publishers`). After a failed bibtex run latexmk caches the error and
+reports "Nothing to do" — run `latexmk -C` in `thesis/` before retrying, or the
+rebuild silently no-ops. Future agents should not report "latexmk unavailable"
+without trying this install first.
 
 ### Latest (2026-08-26): removed near-empty pages + stripped cGAN re-run commentary
 
@@ -647,3 +702,46 @@ Also caught and fixed a self-inflicted repeat of the exact Ch.7-vs-Ch.6
 chapter-numbering mistake this PR's own predecessor (PR #23) had fixed in
 Appendix E -- this time in this PR's own new memory-bank notes and script
 docstrings.
+
+## 2026-08-27 (cont.) -- Ch2 compression reverted; VAE claims fixed
+
+The Chapter 2 background compression (commit 541cca4) was reverted at the
+user's request: all seven removed equations are restored (Sec 2.3's ELBO
+decomposition and the two-equation reparameterization trick; Sec 2.4's
+multi-head attention, its parameter count, the attention matrix and the
+sinusoidal positional encoding). Page count returns to 128. Sections 2.1,
+2.2 and 2.6 were never touched.
+
+Retained from that commit -- and this is the substantive part -- the fix to
+a claim the thesis's own data contradicts. A thesis-wide audit for the
+retracted "VAE underperforms" reading found *two* live instances, not one:
+
+1. Sec 2.3.1 (ch02:157) attributed "the consistent VAE under-performance
+   observed in this thesis" to inference-time sampling variance. Sec 2.3.3
+   explicitly retracts that reading: the VAE reaches 0.00972 at 20 dB
+   against DF's 0.00972 and the MLP's 0.00992 (Table 5.2). Now states the
+   variance concern as a plausible handicap and defers to Sec 2.3.3 for
+   what it was and was not found to cost.
+2. Chapter 5 (ch05:125) still called the VAE "a consistent underperformer in
+   this configuration" for the equal-3K-parameter study. Table 8 shows the
+   opposite: VAE-3K runs 0.3424 / 0.2291 / 0.1267 / 0.0604 / 0.0251 / 0.0101
+   across 0-20 dB -- inside the feedforward group at every SNR, and ahead of
+   all three sequence models (0.4001-0.4068 at 0 dB) from 0 through 16 dB.
+   Chapter 8 (ch08:245) had already been corrected and said so in as many
+   words ("The earlier reading, that the VAE was a consistent underperformer,
+   does not survive re-measurement"), so Chapter 5 was contradicting both its
+   own table and the discussion chapter. Now states what Table 8 shows.
+
+Already-correct instances left alone: ch05:100, ch05:155 (figure caption),
+ch02:167 (Sec 2.3.3), ch08:245. The stale `\REV{}` note at ch05:126, which
+described the superseded "softened to an inference-time caveat" wording, was
+updated to describe the current text.
+
+Lesson for future correction rounds: when a result is re-measured and a
+claim retracted, grep the *whole* thesis for the retracted reading. The
+earlier correction round fixed Chapters 2.3.3, 5 (Table 2 discussion) and 8
+but missed the Table 8 conclusion paragraph, leaving a direct
+chapter-to-chapter contradiction in the compiled document.
+
+Verification: `latexmk -xelatex` clean, 128 pages, 0 undefined references,
+0 undefined citations. `thesis/main.pdf` rebuilt in the same commit.
