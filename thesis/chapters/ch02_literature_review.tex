@@ -127,15 +127,34 @@ The generative approach is theoretically appealing because it separates the mode
 
 \subsection{Variational Autoencoders}\label{sec:variational-autoencoders}
 
-\textbf{Variational Autoencoders (VAEs)} \cite{KingmaWelling2014VAE} posit that data \(\mathbf{x}\) is generated from a latent variable \(\mathbf{z} \sim \mathcal{N}(\mathbf{0}, \mathbf{I})\) through a decoder \(p_\theta(\mathbf{x} | \mathbf{z})\). The true posterior \(p(\mathbf{z} | \mathbf{x})\) is intractable, so an encoder \(q_\phi(\mathbf{z} | \mathbf{x})\) approximates it, and training maximizes the evidence lower bound (ELBO), which decomposes into a reconstruction term and a regularization term:
+\textbf{Variational Autoencoders (VAEs)} \cite{KingmaWelling2014VAE} learn a latent representation by maximizing the evidence lower bound (ELBO). The generative model posits that data \(\mathbf{x}\) is generated from a latent variable \(\mathbf{z} \sim p(\mathbf{z}) = \mathcal{N}(\mathbf{0}, \mathbf{I})\) through a decoder \(p_\theta(\mathbf{x} | \mathbf{z})\). Since the true posterior \(p(\mathbf{z} | \mathbf{x})\) is intractable, an encoder network \(q_\phi(\mathbf{z} | \mathbf{x})\) approximates it. The ELBO objective is derived from the log-evidence decomposition: (Equation~\ref{eq:vae-elbo})
+
+\begin{equation}\protect\phantomsection\label{eq:vae-elbo}{\log p_\theta(\mathbf{x}) = \underbrace{\mathbb{E}_{q_\phi}\left[\log \frac{p_\theta(\mathbf{x}, \mathbf{z})}{q_\phi(\mathbf{z} | \mathbf{x})}\right]}_{\text{ELBO}(\theta, \phi; \mathbf{x})} + \underbrace{D_{KL}(q_\phi(\mathbf{z} | \mathbf{x}) \| p_\theta(\mathbf{z} | \mathbf{x}))}_{\geq 0}
+}\end{equation}
+\addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad vae-elbo}
+
+Since the KL divergence is non-negative, the ELBO is a lower bound on the log-evidence. Maximizing the ELBO simultaneously trains the encoder to approximate the true posterior and the decoder to reconstruct the data. The ELBO decomposes into a reconstruction term and a regularization term:
 
 \begin{equation}\protect\phantomsection\label{eq:vae-loss}{\mathcal{L}_{\text{VAE}} = \underbrace{\mathbb{E}_{q_\phi(\mathbf{z}|\mathbf{x})}[\log p_\theta(\mathbf{x}|\mathbf{z})]}_{\text{Reconstruction quality}} - \underbrace{\beta \cdot D_{KL}(q_\phi(\mathbf{z}|\mathbf{x}) \| p(\mathbf{z}))}_{\text{Latent space regularity}}
 }\end{equation}
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad vae-loss}
 
-The reconstruction term encourages the decoder to reproduce the input from the latent code, while the KL term pulls the latent space toward the standard Gaussian prior. The \(\beta\) parameter (\(\beta\)-VAE) \cite{Higgins2017betaVAE} trades the two off: \(\beta < 1\) prioritizes reconstruction, which suits the relay task where accurate signal recovery is what matters, while \(\beta > 1\) encourages disentangled representations. Gradient-based training passes through the stochastic sampling layer by the standard reparameterization trick, \(\mathbf{z} = \boldsymbol{\mu} + \boldsymbol{\sigma} \odot \boldsymbol{\epsilon}\) with \(\boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \mathbf{I})\), which moves the stochasticity outside the computational graph.
+The reconstruction term encourages the decoder to accurately reproduce the input from the latent code, while the KL term regularizes the latent space to be close to the standard Gaussian prior \(p(\mathbf{z})\). The \(\beta\) parameter (\(\beta\)-VAE) \cite{Higgins2017betaVAE} in Equation~\ref{eq:vae-loss} controls the trade-off between reconstruction quality and latent space smoothness: \(\beta < 1\) prioritizes reconstruction (beneficial for the relay task where accurate signal recovery is paramount), while \(\beta > 1\) encourages disentangled latent representations.\REV{ HTML artifacts \texttt{\&lt;}/\texttt{\&gt;} restored to \(<\)/\(>\) for compilation.}
 
-For relay signal processing, the VAE learns a compressed latent representation of the clean signal manifold: at inference the noisy received signal is encoded, and the decoder maps it back to a denoised estimate, with the regularized latent space providing implicit denoising as inputs far from the learned manifold are pulled toward high-probability regions. Sampling \(\mathbf{z}\) stochastically at inference does, however, inject variance into an otherwise deterministic estimate; Section~\ref{sec:generative-vs.-discriminative-paradigms-for-relay-processing} reports what this costs in practice.
+The \emph{reparameterization-trick} enables gradient-based optimization through the stochastic sampling layer:
+\begin{equation}\protect\phantomsection\label{eq:repremtrized-trick}
+\mathbf{z} \sim q_\phi(\mathbf{z} | \mathbf{x}) = \mathcal{N}(\boldsymbol{\mu}, \text{diag}(\boldsymbol{\sigma}^2))
+\end{equation}
+Instead of sampling from equation \ref{eq:repremtrized-trick}, the sample is expressed as:
+\begin{equation}\protect\phantomsection\label{eq:repremtrized-trick-resample}
+\mathbf{z} = \boldsymbol{\mu} + \boldsymbol{\sigma} \odot \boldsymbol{\epsilon}
+\end{equation}
+\addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad repremtrized-trick}
+
+where \(\boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \mathbf{I})\).
+This moves the stochasticity outside the computational graph, allowing backpropagation through the encoder.
+
+For relay signal processing, the VAE learns a compressed latent representation of the clean signal manifold. During inference, the noisy received signal is encoded into the latent space, and the decoder maps it back to a denoised estimate. The regularized latent space provides implicit denoising: noisy inputs that map to regions far from the learned signal manifold are pulled back toward high-probability regions during decoding. Sampling \(\mathbf{z}\) stochastically at inference does, however, inject variance into an otherwise deterministic estimate, which is a plausible handicap for a deterministic BPSK denoising target; Section~\ref{sec:generative-vs.-discriminative-paradigms-for-relay-processing} reports what this is and is not found to cost in the measurements.\REV{ This sentence previously attributed ``the consistent VAE under-performance observed in this thesis'' to inference-time sampling. That reading does not survive re-measurement (Section~\ref{sec:generative-vs.-discriminative-paradigms-for-relay-processing}, Table~\ref{tbl:table2}), so the claim is no longer asserted here.}
 
 \subsection{Conditional Generative Adversarial Networks}\label{sec:conditional-generative-adversarial-networks}
 
@@ -153,15 +172,40 @@ Recent advances in sequence modeling have produced two competing paradigms with 
 
 \subsection{Transformers and the Attention Mechanism}\label{sec:transformers-and-the-attention-mechanism}
 
-\textbf{Transformers} \cite{Vaswani2017Attention} use multi-head self-attention to capture global dependencies in sequences. The core mechanism computes a weighted combination of value vectors, where the weights are derived from the compatibility of query and key vectors:
+\textbf{Transformers} \cite{Vaswani2017Attention} use multi-head self-attention to capture global dependencies in sequences. The core attention mechanism computes a weighted combination of value vectors, where the weights are derived from the compatibility of query and key vectors:
 
 \begin{equation}\protect\phantomsection\label{eq:attention}{\text{Attention}(\mathbf{Q}, \mathbf{K}, \mathbf{V}) = \text{softmax}\left(\frac{\mathbf{Q}\mathbf{K}^T}{\sqrt{d_k}}\right)\mathbf{V}
 }\end{equation}
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad attention}
 
-where \(\mathbf{Q}, \mathbf{K} \in \mathbb{R}^{n \times d_k}\) and \(\mathbf{V} \in \mathbb{R}^{n \times d_v}\) are obtained from the input via learned linear projections, and the scaling factor \(1/\sqrt{d_k}\) keeps the dot products out of the softmax's saturation regions. Multi-head attention runs \(h\) such heads in parallel with independent projections and concatenates their outputs, so that different heads may attend to different aspects of the input: for signal processing, one head might focus on immediate neighbors (local denoising) while another captures longer-range patterns. Because attention is permutation-equivariant, position information must be injected explicitly; this thesis uses the standard sinusoidal positional encoding \cite{Vaswani2017Attention}.
+where \(\mathbf{Q}, \mathbf{K} \in \mathbb{R}^{n \times d_k}\) and \(\mathbf{V} \in \mathbb{R}^{n \times d_v}\) are obtained from the input via learned linear projections \(W^Q, W^K, W^V\). The scaling factor \(1/\sqrt{d_k}\) prevents the dot products from growing too large in magnitude, which would push the softmax into saturation regions with vanishing gradients.
 
-The property that matters for the comparison made here is cost. The attention matrix \(\text{softmax}(\mathbf{Q}\mathbf{K}^T/\sqrt{d_k}) \in \mathbb{R}^{n \times n}\) computes pairwise interactions between all \(n\) positions, giving \(O(n^2)\) time and memory. For the 11-symbol relay window used in this thesis this is negligible (\(11^2 = 121\) entries), but the quadratic cost becomes prohibitive for longer sequences, which is what motivates the linear-time alternatives below.
+\textbf{Multi-head attention} extends this by running \(h\) parallel attention heads, each with independent projections, and concatenating their outputs: (Equation~\ref{eq:multihead-attention})
+\begin{equation}\protect\phantomsection\label{eq:multihead-attention}{\text{MultiHead}(\mathbf{X}) = \text{Concat}(\text{head}_1, \dots, \text{head}_h) W^O,\\
+\text{head}_i = \text{Attention}(\mathbf{X} W_i^Q, \mathbf{X} W_i^K, \mathbf{X} W_i^V)
+}\end{equation}
+\addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad multihead-attention}
+
+Each head can attend to different aspects of the input: for signal processing, one head might focus on the immediate neighbors (local denoising) while another captures longer-range patterns. The total parameter count for multi-head attention is:
+
+\begin{equation}\protect\phantomsection\label{eq:multihead-attention-parameters-count}{3 d_{\text{model}}^2 + d_{\text{model}}^2 = 4 d_{\text{model}}^2}
+\end{equation}
+\addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad multihead-attention-parameters-count}
+
+for \(Q, K, V\) projections and the output projection. The attention matrix:
+\begin{equation}\protect\phantomsection\label{eq:multihead-attention-matrix}{\mathbf{A} = {softmax({\frac{\mathbf{Q}\mathbf{K}^T}{\sqrt{d_k}}})} \in \mathbb{R}^{n \times n}}
+\end{equation}
+\addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad multihead-attention-matrix}
+
+computes pairwise interactions between all \(n\) positions, yielding a time and memory complexity of: $O(n^2)$. For the 11-symbol relay window used in this thesis, this is negligible (\(11^2 = 121\) entries). However, the quadratic cost becomes prohibitive for longer sequences (e.g., \(n = 1000\) symbols), motivating linear-time alternatives.
+
+\textbf{Positional encoding} is necessary because the attention mechanism is permutation-equivariant (it treats input positions symmetrically). This thesis uses sinusoidal positional encoding: (Equation~\ref{eq:positional-encoding})
+
+\begin{equation}\protect\phantomsection\label{eq:positional-encoding}{PE_{(pos, 2k)} = \sin(\frac{pos}{10000^{2k/d}}), \quad PE_{(pos, 2k+1)} = \cos(\frac{pos}{10000^{2k/d}})
+}\end{equation}
+\addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad positional-encoding}
+
+which injects position information into the embeddings, enabling the model to distinguish between symbols at different positions in the window.
 
 \subsection{Structured State Space Models}\label{sec:structured-state-space-models}
 

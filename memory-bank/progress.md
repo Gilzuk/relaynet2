@@ -210,9 +210,11 @@ prose trimming, table merging, the equation list, or font/margin changes.
 publishers** — `arxiv.org` and `link.springer.com` are blocked by the egress
 proxy. Worth one verification pass before submission.
 
-- 2026-08-27: Compressed Chapter 2 background exposition (removed the VAE
-  ELBO/reparameterization derivations and the multi-head/positional-encoding
-  equations; none were cross-referenced). Fixed Sec 2.3.1's claim of
-  "consistent VAE under-performance", which Sec 2.3.3 retracts. Thesis
-  128 -> 127 pages, PDF rebuilt in the same commit. Scope unchanged: all 8
-  methods, both research gaps and every experiment retained.
+- 2026-08-27: Compressed Chapter 2 background exposition, then reverted the
+  compression at the user's request (all seven equations restored, back to
+  128 pages). Kept the claim fixes: a thesis-wide audit found TWO live
+  instances of the retracted "VAE is a consistent underperformer" reading --
+  Sec 2.3.1 and, more seriously, Chapter 5's Table 8 conclusion, which
+  contradicted both its own table (VAE-3K sits inside the feedforward group
+  at every SNR) and Chapter 8's explicit retraction. Both now state what the
+  data shows. PDF rebuilt in the same commit.

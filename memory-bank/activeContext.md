@@ -703,39 +703,45 @@ chapter-numbering mistake this PR's own predecessor (PR #23) had fixed in
 Appendix E -- this time in this PR's own new memory-bank notes and script
 docstrings.
 
-## 2026-08-27 (cont.) -- Chapter 2 background compression
+## 2026-08-27 (cont.) -- Ch2 compression reverted; VAE claims fixed
 
-Per user request to "reduce the background a little bit", compressed the
-tutorial exposition in Chapter 2 without narrowing the thesis scope. All 8
-compared methods, both research gaps, every hypothesis and every experiment
-are untouched.
+The Chapter 2 background compression (commit 541cca4) was reverted at the
+user's request: all seven removed equations are restored (Sec 2.3's ELBO
+decomposition and the two-equation reparameterization trick; Sec 2.4's
+multi-head attention, its parameter count, the attention matrix and the
+sinusoidal positional encoding). Page count returns to 128. Sections 2.1,
+2.2 and 2.6 were never touched.
 
-Removed (all pure derivation, none cross-referenced from any other chapter --
-verified by grepping every `\ref{}` across the included chapters first):
-- Sec 2.3 VAE: the log-evidence/ELBO decomposition (`eq:vae-elbo`) and the
-  two-equation reparameterization-trick derivation (`eq:repremtrized-trick`,
-  `-resample`). The trick is now stated inline in one clause; the retained
-  `eq:vae-loss` still carries the beta-VAE trade-off the chapter argues from.
-- Sec 2.4 Transformers: `eq:multihead-attention`, its parameter-count
-  equation, the standalone attention-matrix equation, and the sinusoidal
-  positional-encoding equation. The O(n^2)-vs-linear-time argument is kept
-  in prose because it is what motivates the SSM comparison.
+Retained from that commit -- and this is the substantive part -- the fix to
+a claim the thesis's own data contradicts. A thesis-wide audit for the
+retracted "VAE underperforms" reading found *two* live instances, not one:
 
-Also fixed a real inconsistency found while reading: Sec 2.3.1 closed by
-attributing "the consistent VAE under-performance observed in this thesis"
-to inference-time sampling variance -- a reading Sec 2.3.3 explicitly
-retracts ("the VAE tracks the supervised MLP and symbol-wise DF rather than
-trailing them", 0.00972 vs DF's 0.00972 at 20 dB, Table 5.2). The sentence
-now points forward to Sec 2.3.3 instead of asserting a result the data does
-not support.
+1. Sec 2.3.1 (ch02:157) attributed "the consistent VAE under-performance
+   observed in this thesis" to inference-time sampling variance. Sec 2.3.3
+   explicitly retracts that reading: the VAE reaches 0.00972 at 20 dB
+   against DF's 0.00972 and the MLP's 0.00992 (Table 5.2). Now states the
+   variance concern as a plausible handicap and defers to Sec 2.3.3 for
+   what it was and was not found to cost.
+2. Chapter 5 (ch05:125) still called the VAE "a consistent underperformer in
+   this configuration" for the equal-3K-parameter study. Table 8 shows the
+   opposite: VAE-3K runs 0.3424 / 0.2291 / 0.1267 / 0.0604 / 0.0251 / 0.0101
+   across 0-20 dB -- inside the feedforward group at every SNR, and ahead of
+   all three sequence models (0.4001-0.4068 at 0 dB) from 0 through 16 dB.
+   Chapter 8 (ch08:245) had already been corrected and said so in as many
+   words ("The earlier reading, that the VAE was a consistent underperformer,
+   does not survive re-measurement"), so Chapter 5 was contradicting both its
+   own table and the discussion chapter. Now states what Table 8 shows.
 
-Result: 128 -> 127 pages. Note the earlier /tmp measurement of 123 pages was
-for *deleting* Secs 2.3+2.4 outright; compressing them while keeping every
-citation, novelty claim and results link recovers only one page, because
-the removed equations were short and the surrounding prose reflows. Sections
-2.1/2.2 were examined and left alone (they define the method and are already
-carefully hedged), as was Sec 2.6 (every paragraph is tied to Chapter 5's
-coded study).
+Already-correct instances left alone: ch05:100, ch05:155 (figure caption),
+ch02:167 (Sec 2.3.3), ch08:245. The stale `\REV{}` note at ch05:126, which
+described the superseded "softened to an inference-time caveat" wording, was
+updated to describe the current text.
 
-Verification: `latexmk -xelatex` clean, 0 undefined references, 0 undefined
-citations. `thesis/main.pdf` rebuilt and committed in the same commit.
+Lesson for future correction rounds: when a result is re-measured and a
+claim retracted, grep the *whole* thesis for the retracted reading. The
+earlier correction round fixed Chapters 2.3.3, 5 (Table 2 discussion) and 8
+but missed the Table 8 conclusion paragraph, leaving a direct
+chapter-to-chapter contradiction in the compiled document.
+
+Verification: `latexmk -xelatex` clean, 128 pages, 0 undefined references,
+0 undefined citations. `thesis/main.pdf` rebuilt in the same commit.
