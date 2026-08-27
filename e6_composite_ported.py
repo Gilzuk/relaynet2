@@ -34,6 +34,7 @@ W = 11
 SNRS = np.arange(0, 21, 2)
 TRAIN_SNRS = [5, 10, 15]
 N_TRIALS, N_BITS = 10, 100_000  # project-standard scale (matches e6_sim/viterbi/flat)
+N_TRAIN = 3   # independent training seeds; effective MC columns = N_TRAIN * N_TRIALS
 H_ISI = np.array([1.0, 0.6, 0.4])
 H_ISI = H_ISI / np.linalg.norm(H_ISI)
 
@@ -201,41 +202,56 @@ def main():
     channel_h2 = AdaptiveRayleighChannel(seed=2)
 
     print("\nTraining MLPs...")
-    mlp_small = train_mlp(CompositeChannel(isi_taps=H_ISI, pa_sat=1.2, include_phase=True, seed=3),
-                           hidden_size=7, seed=2)   # ~169 params: 2*11*7+7 + 7+1
-    mlp_large = train_mlp(CompositeChannel(isi_taps=H_ISI, pa_sat=1.2, include_phase=True, seed=4),
-                           hidden_size=48, seed=3)  # larger
+    mlp_smalls = []
+    mlp_larges = []
+    for ti in range(N_TRAIN):
+        ms = train_mlp(CompositeChannel(isi_taps=H_ISI, pa_sat=1.2, include_phase=True, seed=3 + ti),
+                       hidden_size=7, seed=2 + ti)   # ~169 params: 2*11*7+7 + 7+1
+        ml = train_mlp(CompositeChannel(isi_taps=H_ISI, pa_sat=1.2, include_phase=True, seed=4 + ti),
+                       hidden_size=48, seed=3 + ti)  # larger
+        mlp_smalls.append(ms)
+        mlp_larges.append(ml)
 
     af_relay = AmplifyAndForwardRelay(target_power=1.0)
     viterbi_relay = ViterbiDiffCompositeRelay(n_pilots=200)
 
-    relays = {
-        'AF': af_relay,
-        'DF-diff': None,
-        'Viterbi-diff': viterbi_relay,
-        'MLP-169': mlp_small,
-        'MLP-large': mlp_large,
-    }
+    # Non-MLP relays run once; MLP relays run N_TRAIN times.
+    # We store all relay BER draws in (len(SNRS), total_cols) arrays where
+    # total_cols = N_TRAIN * N_TRIALS, so CIs reflect both training and MC variance.
+    total_cols = N_TRAIN * N_TRIALS
+    results = {name: np.zeros((len(SNRS), total_cols))
+               for name in ('AF', 'DF-diff', 'Viterbi-diff', 'MLP-169', 'MLP-large')}
 
-    results = {name: np.zeros((len(SNRS), N_TRIALS)) for name in relays}
     print(f"\nSNR (dB): " + " ".join(f"{s:>7d}" for s in SNRS))
-    for si, snr in enumerate(SNRS):
-        for tr in range(N_TRIALS):
-            seed_base = 7000 * si + tr
-            for name, relay in relays.items():
-                ber = run_ber_trial(name, relay, channel_h1, channel_h2, N_BITS, snr, seed=seed_base)
-                results[name][si, tr] = ber
+    for ti, (mlp_small, mlp_large) in enumerate(zip(mlp_smalls, mlp_larges)):
+        col_offset = ti * N_TRIALS
+        print(f"  [Training instance {ti + 1}/{N_TRAIN}]")
+        relays_ti = {
+            'AF': af_relay,
+            'DF-diff': None,
+            'Viterbi-diff': viterbi_relay,
+            'MLP-169': mlp_small,
+            'MLP-large': mlp_large,
+        }
+        for si, snr in enumerate(SNRS):
+            for tr in range(N_TRIALS):
+                col = col_offset + tr
+                seed_base = 7000 * si + tr
+                for name, relay in relays_ti.items():
+                    ber = run_ber_trial(name, relay, channel_h1, channel_h2, N_BITS, snr, seed=seed_base)
+                    results[name][si, col] = ber
 
     summary = {}
-    for name in relays:
+    for name in ('AF', 'DF-diff', 'Viterbi-diff', 'MLP-169', 'MLP-large'):
         mu = results[name].mean(axis=1)
-        ci = 1.96 * results[name].std(axis=1) / np.sqrt(N_TRIALS)
+        ci = 1.96 * results[name].std(axis=1) / np.sqrt(total_cols)
         summary[name] = (mu, ci)
         print(f"  {name:>13}: " + " ".join(f"{m:7.4f}" for m in mu))
 
     output_path = '/tmp/e6_composite_ported_results.npy'
     np.save(output_path, {'snrs': SNRS, 'summary': summary,
-                          'n_trials': N_TRIALS, 'n_bits': N_BITS}, allow_pickle=True)
+                          'n_train': N_TRAIN, 'n_trials': N_TRIALS,
+                          'n_bits': N_BITS}, allow_pickle=True)
     print(f"\nResults saved to {output_path}")
     print("\n" + "=" * 80)
     print("E6_COMPOSITE: Complete")

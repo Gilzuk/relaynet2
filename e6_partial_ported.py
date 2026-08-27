@@ -31,6 +31,7 @@ TRAIN_SNRS = [5, 10, 15]
 # As in e6_blind_ported.py: RandomISICompositeChannel redraws per call, so
 # trials are channel draws. 50 x 20k = 1,000,000 bits over 50 realizations.
 N_TRIALS, N_BITS = 50, 20_000
+N_TRAIN = 3   # independent training seeds; effective MC columns = N_TRAIN * N_TRIALS
 PILOTS = [800, 200, 50, 20, 10, 5]
 BLOCK_LENGTHS = [40, 80, 160, 320, 1000]
 N_MIN_PILOTS = 10
@@ -231,34 +232,46 @@ def ber_cma_blocklen(snr_db, block_len, n_trials, n_bits=N_BITS):
     return errs.mean(), 1.96 * errs.std() / np.sqrt(n_trials)
 
 
-def ref_at(snr_db, mlp, n_trials, n_bits=N_BITS):
-    """Zero-pilot flat references: MLP-169 and CMA-blind."""
+def ref_at(snr_db, mlps, n_trials, n_bits=N_BITS):
+    """Zero-pilot flat references: MLP-169 (pooled over N_TRAIN) and CMA-blind.
+
+    Parameters
+    ----------
+    mlps : list of MLPRelay
+        N_TRAIN independently trained MLP relays.
+    """
     channel = RandomISICompositeChannel(pa_sat=1.2)
     hop2 = ComplexISIRayleighChannel(taps=np.array([1.0]))
-    em = np.zeros(n_trials)
-    ec = np.zeros(n_trials)
-    for tr in range(n_trials):
-        r = np.random.default_rng(999 + tr)
-        bits = r.integers(0, 2, n_bits)
-        x = 1.0 - 2.0 * bits
-        s = diff_encode(x).astype(complex)
-        channel.rng = r
-        y = channel(s, snr_db)
+    total_cols = len(mlps) * n_trials
+    em_all = np.zeros(total_cols)
+    ec = np.zeros(n_trials)   # CMA has no training variance; run once
+    for ti, mlp in enumerate(mlps):
+        em = np.zeros(n_trials)
+        for tr in range(n_trials):
+            r = np.random.default_rng(999 + tr)
+            bits = r.integers(0, 2, n_bits)
+            x = 1.0 - 2.0 * bits
+            s = diff_encode(x).astype(complex)
+            channel.rng = r
+            y = channel(s, snr_db)
 
-        o = mlp.fwd(cwin(y))
-        x_hat_mlp = o / (np.sqrt(np.mean(o ** 2)) + 1e-12)
-        hop2.rng = r
-        y_dest = hop2(x_hat_mlp, snr_db)
-        em[tr] = np.mean((y_dest.real < 0).astype(int) != bits)
+            o = mlp.fwd(cwin(y))
+            x_hat_mlp = o / (np.sqrt(np.mean(o ** 2)) + 1e-12)
+            hop2.rng = r
+            y_dest = hop2(x_hat_mlp, snr_db)
+            em[tr] = np.mean((y_dest.real < 0).astype(int) != bits)
 
-        eq = cma_dfe(y)
-        d = np.real(eq[1:] * np.conj(eq[:-1]))
-        x_hat_cma = np.r_[1.0, np.sign(d) + (d == 0)]
-        hop2.rng = r
-        y_dest = hop2(x_hat_cma, snr_db)
-        ec[tr] = np.mean((y_dest.real < 0).astype(int)[1:] != bits[1:])
+            if ti == 0:
+                eq = cma_dfe(y)
+                d = np.real(eq[1:] * np.conj(eq[:-1]))
+                x_hat_cma = np.r_[1.0, np.sign(d) + (d == 0)]
+                hop2.rng = r
+                y_dest = hop2(x_hat_cma, snr_db)
+                ec[tr] = np.mean((y_dest.real < 0).astype(int)[1:] != bits[1:])
 
-    mlp_ref = (em.mean(), 1.96 * em.std() / np.sqrt(n_trials))
+        em_all[ti * n_trials:(ti + 1) * n_trials] = em
+
+    mlp_ref = (em_all.mean(), 1.96 * em_all.std() / np.sqrt(total_cols))
     cma_ref = (ec.mean(), 1.96 * ec.std() / np.sqrt(n_trials))
     return mlp_ref, cma_ref
 
@@ -268,11 +281,14 @@ def main():
     print("E6_PARTIAL: pilot-count and block-length sweeps at fixed 10dB")
     print("=" * 80)
 
-    print("\nTraining MLP-169...")
-    mlp = train_mlp(hidden_size=7, seed=2)
+    print(f"\nTraining MLP-169 ({N_TRAIN} independent seeds)...")
+    mlps = []
+    for ti in range(N_TRAIN):
+        mlp = train_mlp(hidden_size=7, seed=2 + ti)
+        mlps.append(mlp)
 
     print(f"\n=== Panel (a): pilot-count sweep at {OP_SNR:.0f} dB (payload BER, pilots excluded) ===")
-    mlp_ref, cma_ref = ref_at(OP_SNR, mlp, N_TRIALS)
+    mlp_ref, cma_ref = ref_at(OP_SNR, mlps, N_TRIALS)
     print(f"  MLP-169 (0 pilots): BER={mlp_ref[0]:.4f}  |  CMA blind (0 pilots): BER={cma_ref[0]:.4f}")
 
     panel_a = {}
@@ -301,7 +317,7 @@ def main():
         'mlp_ref': mlp_ref, 'cma_ref': cma_ref,
         'block_lengths': BLOCK_LENGTHS, 'n_min_pilots': N_MIN_PILOTS, 'panel_b': panel_b,
         'panel_b_cma': panel_b_cma,
-        'n_trials': N_TRIALS, 'n_bits': N_BITS,
+        'n_train': N_TRAIN, 'n_trials': N_TRIALS, 'n_bits': N_BITS,
     }, allow_pickle=True)
     print(f"\nResults saved to {output_path}")
     print("\n" + "=" * 80)

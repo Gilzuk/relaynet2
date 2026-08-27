@@ -39,6 +39,7 @@ TRAIN_SNRS = [5, 10, 15]
 # 5 x 40k budget) over 50 channel realizations (10x the old ensemble), with
 # blocks still long enough for the blind equalizers to converge.
 N_TRIALS, N_BITS = 50, 20_000
+N_TRAIN = 3   # independent training seeds; effective MC columns = N_TRAIN * N_TRIALS
 
 rng = np.random.default_rng(41)
 
@@ -210,24 +211,32 @@ def main():
     channel = RandomISICompositeChannel(pa_sat=1.2, seed=1)
     hop2 = ComplexISIRayleighChannel(taps=np.array([1.0]), seed=2)  # trivial taps = no ISI, always-complex AWGN
 
-    print("\nTraining MLP-169...")
-    mlp = train_mlp(hidden_size=7, seed=2)
+    print(f"\nTraining MLP-169 ({N_TRAIN} independent seeds)...")
+    mlps = []
+    for ti in range(N_TRAIN):
+        mlp = train_mlp(hidden_size=7, seed=2 + ti)
+        mlps.append(mlp)
 
     keys = ('DF-diff', 'CMA-blind', 'Viterbi-blind', 'MLP-169')
-    results = {k: np.zeros((len(SNRS), N_TRIALS)) for k in keys}
+    total_cols = N_TRAIN * N_TRIALS
+    results = {k: np.zeros((len(SNRS), total_cols)) for k in keys}
 
     print(f"\nSNR (dB): " + " ".join(f"{s:>7d}" for s in SNRS))
-    for si, snr in enumerate(SNRS):
-        for tr in range(N_TRIALS):
-            seed_base = 8000 * si + tr
-            for name in keys:
-                ber = run_ber_trial(name, mlp, channel, hop2, N_BITS, snr, seed=seed_base)
-                results[name][si, tr] = ber
+    for ti, mlp in enumerate(mlps):
+        col_offset = ti * N_TRIALS
+        print(f"  [Training instance {ti + 1}/{N_TRAIN}]")
+        for si, snr in enumerate(SNRS):
+            for tr in range(N_TRIALS):
+                col = col_offset + tr
+                seed_base = 8000 * si + tr
+                for name in keys:
+                    ber = run_ber_trial(name, mlp, channel, hop2, N_BITS, snr, seed=seed_base)
+                    results[name][si, col] = ber
 
     summary = {}
     for name in keys:
         mu = results[name].mean(axis=1)
-        ci = 1.96 * results[name].std(axis=1) / np.sqrt(N_TRIALS)
+        ci = 1.96 * results[name].std(axis=1) / np.sqrt(total_cols)
         summary[name] = (mu, ci)
         print(f"  {name:>14}: " + " ".join(f"{m:7.4f}" for m in mu))
 
@@ -239,7 +248,8 @@ def main():
 
     output_path = '/tmp/e6_blind_ported_results.npy'
     np.save(output_path, {'snrs': SNRS, 'summary': summary,
-                          'n_trials': N_TRIALS, 'n_bits': N_BITS}, allow_pickle=True)
+                          'n_train': N_TRAIN, 'n_trials': N_TRIALS,
+                          'n_bits': N_BITS}, allow_pickle=True)
     print(f"\nResults saved to {output_path}")
     print("\n" + "=" * 80)
     print("E6_BLIND: Complete")

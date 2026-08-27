@@ -24,6 +24,7 @@ HID = 13        # hidden units -> params = 11*13+13 + 13*1+1 = 170
 SNRS = np.arange(0, 21, 2)
 TRAIN_SNRS = [5, 10, 15]
 N_TRIALS, N_BITS = 10, 100_000
+N_TRAIN = 3   # independent training seeds; effective MC columns = N_TRAIN * N_TRIALS
 
 # Global RNG (for reproducibility)
 rng = np.random.default_rng(42)
@@ -162,8 +163,8 @@ def run_ber_trial(relay, hop1_channel, hop2_channel, source, destination, num_bi
     return calculate_ber(tx_bits, rx_bits)[0]
 
 
-def run_experiment(hop1_kind, hop2_kind, mlp_relay):
-    """Run full BER experiment.
+def run_experiment(hop1_kind, hop2_kind, mlp_relays):
+    """Run full BER experiment over multiple independently trained MLPs.
 
     Parameters
     ----------
@@ -171,14 +172,14 @@ def run_experiment(hop1_kind, hop2_kind, mlp_relay):
         Hop 1 channel type.
     hop2_kind : str
         Hop 2 channel type.
-    mlp_relay : MLPRelay
-        Trained MLP relay.
+    mlp_relays : list of MLPRelay
+        N_TRAIN independently trained MLP relays.
 
     Returns
     -------
     results : dict
         Dictionary with keys 'AF', 'DF', 'MLP', each containing
-        (mean_ber, ci_ber) tuples.
+        (mean_ber, ci_ber) tuples pooled over N_TRAIN * N_TRIALS columns.
     """
     # Create channels
     hop1_channel = create_channel(hop1_kind, seed=1)
@@ -192,29 +193,35 @@ def run_experiment(hop1_kind, hop2_kind, mlp_relay):
     af_relay = AmplifyAndForwardRelay(target_power=1.0)
     df_relay = DecodeAndForwardRelay(target_power=1.0)
 
-    # Run trials
-    results = {r: np.zeros((len(SNRS), N_TRIALS)) for r in ('AF', 'DF', 'MLP')}
+    # Result arrays: (len(SNRS), N_TRAIN * N_TRIALS)
+    total_cols = N_TRAIN * N_TRIALS
+    results = {r: np.zeros((len(SNRS), total_cols)) for r in ('AF', 'DF', 'MLP')}
 
-    for si, snr in enumerate(SNRS):
-        for tr in range(N_TRIALS):
-            # AF
-            ber_af = run_ber_trial(af_relay, hop1_channel, hop2_channel, source, destination, N_BITS, snr)
-            results['AF'][si, tr] = ber_af
+    for ti, mlp_relay in enumerate(mlp_relays):
+        col_offset = ti * N_TRIALS
+        print(f"  [Training instance {ti + 1}/{N_TRAIN}]")
+        for si, snr in enumerate(SNRS):
+            for tr in range(N_TRIALS):
+                col = col_offset + tr
 
-            # DF
-            ber_df = run_ber_trial(df_relay, hop1_channel, hop2_channel, source, destination, N_BITS, snr)
-            results['DF'][si, tr] = ber_df
+                # AF
+                ber_af = run_ber_trial(af_relay, hop1_channel, hop2_channel, source, destination, N_BITS, snr)
+                results['AF'][si, col] = ber_af
 
-            # MLP
-            ber_mlp = run_ber_trial(mlp_relay, hop1_channel, hop2_channel, source, destination, N_BITS, snr)
-            results['MLP'][si, tr] = ber_mlp
+                # DF
+                ber_df = run_ber_trial(df_relay, hop1_channel, hop2_channel, source, destination, N_BITS, snr)
+                results['DF'][si, col] = ber_df
 
-            if tr == 0:
-                print(f"  SNR {snr:2d} dB, trial {tr}: AF={ber_af:.4f}, DF={ber_df:.4f}, MLP={ber_mlp:.4f}")
+                # MLP
+                ber_mlp = run_ber_trial(mlp_relay, hop1_channel, hop2_channel, source, destination, N_BITS, snr)
+                results['MLP'][si, col] = ber_mlp
 
-    # Compute statistics
+                if tr == 0:
+                    print(f"    SNR {snr:2d} dB, trial {tr}: AF={ber_af:.4f}, DF={ber_df:.4f}, MLP={ber_mlp:.4f}")
+
+    # Pool statistics over all N_TRAIN * N_TRIALS columns
     return {
-        r: (v.mean(1), 1.96 * v.std(1) / np.sqrt(N_TRIALS))
+        r: (v.mean(1), 1.96 * v.std(1) / np.sqrt(total_cols))
         for r, v in results.items()
     }
 
@@ -225,14 +232,17 @@ def main():
     print("E6_SIM: Unknown ISI & Nonlinear Bias Experiments (Ported to relaynet)")
     print("=" * 70)
 
-    # Train MLPs once per channel type
+    # Train N_TRAIN independent MLPs per channel type
     nets = {}
     for kind in ('isi', 'nlbias'):
         channel = create_channel(kind, seed=1)
-        print(f"\nTraining MLP-170 for '{kind}'...")
-        net, npar = train_mlp(channel, seed=1)
-        nets[kind] = net
-        print(f"  Trained: {npar} parameters")
+        print(f"\nTraining {N_TRAIN}x MLP-170 for '{kind}'...")
+        trained = []
+        for ti in range(N_TRAIN):
+            net, npar = train_mlp(channel, seed=1 + ti)
+            trained.append(net)
+            print(f"  Seed {1 + ti}: {npar} parameters")
+        nets[kind] = trained
 
     # Run experiments
     setups = [
@@ -247,16 +257,19 @@ def main():
         print(f"\n{name}")
         print(f"  SNR (dB): " + " ".join(f"{s:>7d}" for s in SNRS))
 
-        # Choose or train MLP for this hop1 type
+        # Choose or train MLPs for this hop1 type
         if hop1_kind not in nets:
             channel = create_channel(hop1_kind, seed=1)
-            net, npar = train_mlp(channel, seed=1)
-            nets[hop1_kind] = net
-            print(f"  Trained MLP-170: {npar} parameters")
-        else:
-            net = nets[hop1_kind]
+            trained = []
+            print(f"  Training {N_TRAIN}x MLP-170 for '{hop1_kind}'...")
+            for ti in range(N_TRAIN):
+                net, npar = train_mlp(channel, seed=1 + ti)
+                trained.append(net)
+                print(f"    Seed {1 + ti}: {npar} parameters")
+            nets[hop1_kind] = trained
+        trained_nets = nets[hop1_kind]
 
-        results = run_experiment(hop1_kind, hop2_kind, net)
+        results = run_experiment(hop1_kind, hop2_kind, trained_nets)
         all_results[name] = results
 
         # Print results
@@ -266,7 +279,8 @@ def main():
 
     # Save results
     output_path = '/tmp/e6_sim_ported_results.npy'
-    np.save(output_path, {'setups': setups, 'results': all_results, 'snrs': SNRS}, allow_pickle=True)
+    np.save(output_path, {'setups': setups, 'results': all_results, 'snrs': SNRS,
+                          'n_train': N_TRAIN, 'n_trials': N_TRIALS}, allow_pickle=True)
     print(f"\nResults saved to {output_path}")
 
     return all_results
