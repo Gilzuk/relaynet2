@@ -1,6 +1,28 @@
 # Active Context (update this file first, every session)
 
-_Last updated: 2026-08-26_
+_Last updated: 2026-08-27_
+
+### Latest (2026-08-27): rebuilt `thesis/main.pdf` so it no longer lags its sources
+
+PR #39 changed all 24 `\begin{figure}[H]` to `[htbp]` across `ch01`–`ch07` but
+could not rebuild the PDF (no TeX in that sandbox), leaving `thesis/main.pdf`
+behind its sources — the exact situation the "PDF must never lag its sources"
+rule in `CLAUDE.md` exists to prevent. Rebuilt with `latexmk -xelatex`
+(`make thesis`) against the current sources: **128 pages**, unchanged from the
+pre-`[htbp]` count, with **zero unresolved references and zero unresolved
+citations** in `main.log`. No source files were edited.
+
+**TeX toolchain is installable in this container** (it is not preinstalled).
+`sudo apt-get install -y --no-install-recommends texlive-xetex latexmk
+texlive-fonts-recommended texlive-lang-other texlive-latex-extra
+texlive-plain-generic texlive-science texlive-pictures texlive-fonts-extra
+texlive-lang-arabic texlive-publishers` is the minimum set that builds this
+document. Two failures are hit in order if packages are missing:
+`ulem.sty` (needs `texlive-plain-generic`) and `IEEEtran.bst` (needs
+`texlive-publishers`). After a failed bibtex run latexmk caches the error and
+reports "Nothing to do" — run `latexmk -C` in `thesis/` before retrying, or the
+rebuild silently no-ops. Future agents should not report "latexmk unavailable"
+without trying this install first.
 
 ### Latest (2026-08-26): removed near-empty pages + stripped cGAN re-run commentary
 

@@ -2,6 +2,12 @@
 
 Branch: `claude/porting-md-file-l6xzsr`. Reference spec: `experiments-standalone/PORTING.md`.
 
+Session note (2026-08-27): rebuilt `thesis/main.pdf` (128 pages, no unresolved
+refs/citations) so it matches the sources after PR #39's `[H]` → `[htbp]` figure
+placement change, which merged without a PDF rebuild. TeX is not preinstalled in
+the agent container but is installable via apt — see `activeContext.md` for the
+exact package list and the `latexmk -C` caveat.
+
 Session note (2026-08-26, later): thesis layout cleanup removed near-empty
 pages by tightening the live abstract, tightening the Chapter 3 closing
 sentence, and reducing TOC chapter-entry spacing in `thesis/main.tex`.
