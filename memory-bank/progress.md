@@ -2,6 +2,13 @@
 
 Branch: `claude/porting-md-file-l6xzsr`. Reference spec: `experiments-standalone/PORTING.md`.
 
+Session note (2026-08-27, later): merged the one kissing-figure pair in
+compiled Chapter 6 (old Figures 6.7/6.8 -> a single two-panel Figure 6.7) and
+moved it above the closing paragraphs, removing the float-only page. Compiled
+Chapter 6 is `ch07_unknown_and_mismatch_channels.tex`;
+`ch06_experiments_extension_Higher_Order_Modulation.tex` is not included in
+`main.tex`. PDF still 128 pages.
+
 Session note (2026-08-27): rebuilt `thesis/main.pdf` (128 pages, no unresolved
 refs/citations) so it matches the sources after PR #39's `[H]` → `[htbp]` figure
 placement change, which merged without a PDF rebuild. TeX is not preinstalled in

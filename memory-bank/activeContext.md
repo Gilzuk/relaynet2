@@ -2,6 +2,39 @@
 
 _Last updated: 2026-08-27_
 
+### Latest (2026-08-27): fixed the one kissing-figure pair in Chapter 6
+
+Audited compiled Chapter 6 for "kissing" figures — consecutive floats landing
+back-to-back with no body text between them. **Note the file-name trap:**
+compiled Chapter 6 is `thesis/chapters/ch07_unknown_and_mismatch_channels.tex`;
+`ch06_experiments_extension_Higher_Order_Modulation.tex` exists but is NOT
+`\include`d in `main.tex`, so editing it changes nothing.
+
+Exactly one kissing pair existed: old Figures 6.7 (per-symbol cost) and 6.8
+(measured inference time) were two adjacent `figure` environments declared after
+the chapter's final paragraph, so they floated onto a page of their own with
+zero body text. The legacy mirror `_ch07_unknown_and_mismatch_channels.tex:146`
+carries a commented-out caption proving they were originally a single two-panel
+figure ("(a) Per-symbol operations... (b) Measured inference time"), and the
+second file is literally named `e6_right_clean.png` — the right-hand panel.
+Neither figure was `\ref`-ed anywhere in the prose.
+
+Merged them back into one two-panel figure using the side-by-side `minipage`
+pattern already used by Figure 6.5 in the same chapter (`subcaption` remains
+unusable under `bidi`), keeping label `fig:figE6complexity` and dropping the
+unreferenced `fig:e6_inference_time`. Panel letters are baked into the PNG
+titles, so no duplicate `(a)`/`(b)` text was added. Merging alone was not enough:
+the single merged float still took a page of its own, so it was also **moved
+above** the "Measured inference time" paragraph, giving the remaining text
+something to fill the page with. Result: no float-only page in Chapter 6, no
+page with two figure captions, 0 unresolved refs/citations. PDF stays at 128
+pages — this was a layout fix, not a page-saving one.
+
+The other candidate pages (Table 6.3 + Figure 6.2 on p. 90, Table 6.4 +
+Figure 6.3 on p. 91) are table/figure pairs deliberately kept together by
+PR #39's `[H]` → `[htbp]` change, separated by a normal ~26 pt float gap. Those
+are correct and should not be "fixed".
+
 ### Latest (2026-08-27): rebuilt `thesis/main.pdf` so it no longer lags its sources
 
 PR #39 changed all 24 `\begin{figure}[H]` to `[htbp]` across `ch01`–`ch07` but
