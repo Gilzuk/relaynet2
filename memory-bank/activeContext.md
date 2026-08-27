@@ -702,3 +702,40 @@ Also caught and fixed a self-inflicted repeat of the exact Ch.7-vs-Ch.6
 chapter-numbering mistake this PR's own predecessor (PR #23) had fixed in
 Appendix E -- this time in this PR's own new memory-bank notes and script
 docstrings.
+
+## 2026-08-27 (cont.) -- Chapter 2 background compression
+
+Per user request to "reduce the background a little bit", compressed the
+tutorial exposition in Chapter 2 without narrowing the thesis scope. All 8
+compared methods, both research gaps, every hypothesis and every experiment
+are untouched.
+
+Removed (all pure derivation, none cross-referenced from any other chapter --
+verified by grepping every `\ref{}` across the included chapters first):
+- Sec 2.3 VAE: the log-evidence/ELBO decomposition (`eq:vae-elbo`) and the
+  two-equation reparameterization-trick derivation (`eq:repremtrized-trick`,
+  `-resample`). The trick is now stated inline in one clause; the retained
+  `eq:vae-loss` still carries the beta-VAE trade-off the chapter argues from.
+- Sec 2.4 Transformers: `eq:multihead-attention`, its parameter-count
+  equation, the standalone attention-matrix equation, and the sinusoidal
+  positional-encoding equation. The O(n^2)-vs-linear-time argument is kept
+  in prose because it is what motivates the SSM comparison.
+
+Also fixed a real inconsistency found while reading: Sec 2.3.1 closed by
+attributing "the consistent VAE under-performance observed in this thesis"
+to inference-time sampling variance -- a reading Sec 2.3.3 explicitly
+retracts ("the VAE tracks the supervised MLP and symbol-wise DF rather than
+trailing them", 0.00972 vs DF's 0.00972 at 20 dB, Table 5.2). The sentence
+now points forward to Sec 2.3.3 instead of asserting a result the data does
+not support.
+
+Result: 128 -> 127 pages. Note the earlier /tmp measurement of 123 pages was
+for *deleting* Secs 2.3+2.4 outright; compressing them while keeping every
+citation, novelty claim and results link recovers only one page, because
+the removed equations were short and the surrounding prose reflows. Sections
+2.1/2.2 were examined and left alone (they define the method and are already
+carefully hedged), as was Sec 2.6 (every paragraph is tied to Chapter 5's
+coded study).
+
+Verification: `latexmk -xelatex` clean, 0 undefined references, 0 undefined
+citations. `thesis/main.pdf` rebuilt and committed in the same commit.
