@@ -2,6 +2,12 @@
 
 Branch: `copilot/fix-bug-in-data-processing`. Reference spec: `experiments-standalone/PORTING.md`.
 
+Session note (2026-08-28): reran 16 dB with 100 independent first-error trials
+and a 1G-bit cap per trial. All trials found an error; mean reciprocal
+waiting-time BER was $1.61\times10^{-7}$ with 95% CI $\pm5.60\times10^{-8}$,
+and mean stopping time was 20.5M bits. Updated the Chapter 7 table and
+rebuilt `thesis/main.pdf` to 130 pages.
+
 Session note (2026-08-28): synchronized the five regenerated E6 figures from
 the adaptive-bit result set into `thesis/results/`. The adaptive-bit metadata
 was verified in `e6_multi_training_results/e6_sim_ported_results.npy`. The

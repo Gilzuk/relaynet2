@@ -2,7 +2,17 @@
 
 _Last updated: 2026-08-28_
 
-### Latest (2026-08-28): adaptive-bit E6 figures synchronized
+### Latest (2026-08-28): 16 dB 100-trial first-error rerun
+
+Reran the 16 dB MLP first-error measurement over 100 independent trials with a
+1G-bit cap per trial. All trials observed an error: mean reciprocal
+waiting-time BER was $1.61\times10^{-7}$ (95% CI $\pm5.60\times10^{-8}$);
+mean stopping time was 20.5M bits and median 14.3M bits. Updated
+`thesis/chapters/ch07_unknown_and_mismatch_channels.tex` and rebuilt
+`thesis/main.pdf` with `latexmk -xelatex` to 130 pages. The current PR contains
+the updated table and first-error methodology note.
+
+### Previous (2026-08-28): adaptive-bit E6 figures synchronized
 
 Verified that `e6_multi_training_results/e6_sim_ported_results.npy` contains the
 SNR-adaptive bit-budget and first-error metadata introduced by PR #41. The five
