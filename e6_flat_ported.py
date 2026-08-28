@@ -29,6 +29,7 @@ W_COMPLEX = 2*W # I/Q pairs for complex signals
 SNRS = np.arange(0, 21, 2)
 TRAIN_SNRS = [5, 10, 15]
 N_TRIALS, N_BITS = 10, 100_000
+N_TRAIN = 3   # independent training seeds; effective MC columns = N_TRAIN * N_TRIALS
 
 # Global RNG
 rng = np.random.default_rng(21)
@@ -321,15 +322,15 @@ def run_ber_trial_real(relay_name, relay, y_received, bits, snr_db, hop2_seed):
     return np.mean(bit_out != bits)
 
 
-def run_experiment(kind, mlp_relay):
-    """Run flat channel experiment.
+def run_experiment(kind, mlp_relays):
+    """Run flat channel experiment over multiple independently trained MLPs.
 
     Parameters
     ----------
     kind : str
         'phase', 'gain', or 'iqimb'.
-    mlp_relay : MLPRelay
-        Trained relay.
+    mlp_relays : list of MLPRelay
+        N_TRAIN independently trained MLP relays.
 
     Returns
     -------
@@ -339,44 +340,45 @@ def run_experiment(kind, mlp_relay):
     channel = create_channel(kind, seed=2)
     is_phase = (kind == 'phase')
 
-    results = {r: np.zeros((len(SNRS), N_TRIALS)) for r in ('AF', 'DF', 'MLP')}
+    total_cols = N_TRAIN * N_TRIALS
+    results = {r: np.zeros((len(SNRS), total_cols)) for r in ('AF', 'DF', 'MLP')}
 
     af_relay = AmplifyAndForwardRelay(target_power=1.0)
     df_relay = DecodeAndForwardRelay(target_power=1.0)
 
-    for si, snr in enumerate(SNRS):
-        for tr in range(N_TRIALS):
-            seed_base = 9000 * si + tr
+    for ti, mlp_relay in enumerate(mlp_relays):
+        col_offset = ti * N_TRIALS
+        print(f"  [Training instance {ti + 1}/{N_TRAIN}]")
+        for si, snr in enumerate(SNRS):
+            for tr in range(N_TRIALS):
+                col = col_offset + tr
+                seed_base = 9000 * si + tr
 
-            # Draw bits + hop-1 channel ONCE per trial, shared across AF/DF/MLP
-            # (paired comparison -- same unknown-channel realization for all
-            # three relays; only hop2_seed differs from seed_base so hop 2's
-            # fading/noise draw is independent of the bits/hop1 stream, but is
-            # itself likewise shared across the three relays this trial).
-            rng_trial = np.random.default_rng(seed_base)
-            bits = rng_trial.integers(0, 2, N_BITS)
-            x_bpsk = 1.0 - 2.0 * bits
-            hop2_seed = seed_base + 5_000_000
+                # Draw bits + hop-1 channel ONCE per trial, shared across AF/DF/MLP
+                rng_trial = np.random.default_rng(seed_base)
+                bits = rng_trial.integers(0, 2, N_BITS)
+                x_bpsk = 1.0 - 2.0 * bits
+                hop2_seed = seed_base + 5_000_000
 
-            if is_phase:
-                run_fn = run_ber_trial_phase
-                relays = [('AF', None), ('DF', None), ('MLP', mlp_relay)]
-                y_received = channel(diff_encode(x_bpsk), snr)
-            else:
-                run_fn = run_ber_trial_real
-                relays = [('AF', af_relay), ('DF', df_relay), ('MLP', mlp_relay)]
-                y_received = channel(x_bpsk, snr)
+                if is_phase:
+                    run_fn = run_ber_trial_phase
+                    relays = [('AF', None), ('DF', None), ('MLP', mlp_relay)]
+                    y_received = channel(diff_encode(x_bpsk), snr)
+                else:
+                    run_fn = run_ber_trial_real
+                    relays = [('AF', af_relay), ('DF', df_relay), ('MLP', mlp_relay)]
+                    y_received = channel(x_bpsk, snr)
 
-            for name, relay_obj in relays:
-                ber = run_fn(name, relay_obj, y_received, bits, snr, hop2_seed)
-                results[name][si, tr] = ber
+                for name, relay_obj in relays:
+                    ber = run_fn(name, relay_obj, y_received, bits, snr, hop2_seed)
+                    results[name][si, col] = ber
 
-            if tr == 0:
-                print(f"  SNR {snr:2d} dB: AF={results['AF'][si, tr]:.4f}, " +
-                      f"DF={results['DF'][si, tr]:.4f}, MLP={results['MLP'][si, tr]:.4f}")
+                if tr == 0:
+                    print(f"    SNR {snr:2d} dB: AF={results['AF'][si, col]:.4f}, " +
+                          f"DF={results['DF'][si, col]:.4f}, MLP={results['MLP'][si, col]:.4f}")
 
     return {
-        r: (v.mean(1), 1.96 * v.std(1) / np.sqrt(N_TRIALS))
+        r: (v.mean(1), 1.96 * v.std(1) / np.sqrt(total_cols))
         for r, v in results.items()
     }
 
@@ -396,14 +398,17 @@ def main():
     all_results = {}
 
     for kind, tag in setups:
-        print(f"\nTraining MLP for {kind}...")
-        mlp, n_params = train_mlp(kind, seed=2)
-        print(f"  {kind}: {n_params} params")
+        print(f"\nTraining {N_TRAIN}x MLP for {kind}...")
+        trained = []
+        for ti in range(N_TRAIN):
+            mlp, n_params = train_mlp(kind, seed=2 + ti)
+            trained.append(mlp)
+            print(f"  Seed {2 + ti}: {n_params} params")
 
         print(f"\n{tag}")
         print(f"  SNR (dB): " + " ".join(f"{s:>6d}" for s in SNRS))
 
-        results = run_experiment(kind, mlp)
+        results = run_experiment(kind, trained)
         all_results[kind] = results
 
         for relay in ('AF', 'DF', 'MLP'):
@@ -418,7 +423,8 @@ def main():
 
     # Save results
     output_path = '/tmp/e6_flat_ported_results.npy'
-    np.save(output_path, {'setups': setups, 'results': all_results, 'snrs': SNRS}, allow_pickle=True)
+    np.save(output_path, {'setups': setups, 'results': all_results, 'snrs': SNRS,
+                          'n_train': N_TRAIN, 'n_trials': N_TRIALS}, allow_pickle=True)
     print(f"\nResults saved to {output_path}")
 
     print("\n" + "=" * 70)
