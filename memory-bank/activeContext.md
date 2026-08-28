@@ -2,6 +2,14 @@
 
 _Last updated: 2026-08-28_
 
+### Latest (2026-08-28): first-error cap policy updated for 18/20 dB
+
+Updated `e6_sim_ported.py` so the first-error runs at 18 dB and 20 dB now use a
+10G-bit cap and run until first failure or that cap. The configuration is now
+explicit per-SNR (`FIRST_ERROR_MAX_BITS_BY_SNR`) and persisted in the saved
+metadata (`first_error_max_bits_by_snr`), replacing the old single global
+100M-bit cap assumption.
+
 ### Latest (2026-08-28): 16 dB 100-trial first-error rerun
 
 Reran the 16 dB MLP first-error measurement over 100 independent trials with a

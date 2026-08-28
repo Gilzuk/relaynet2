@@ -2,6 +2,11 @@
 
 Branch: `copilot/fix-bug-in-data-processing`. Reference spec: `experiments-standalone/PORTING.md`.
 
+Session note (2026-08-28): enforced the high-SNR first-error runtime policy in
+`e6_sim_ported.py` so 18 dB and 20 dB now run until the first observed failure
+or a 10G-bit timeout (`FIRST_ERROR_MAX_BITS_BY_SNR`), with the per-SNR caps
+saved in output metadata.
+
 Session note (2026-08-28): reran 16 dB with 100 independent first-error trials
 and a 1G-bit cap per trial. All trials found an error; mean reciprocal
 waiting-time BER was $1.61\times10^{-7}$ with 95% CI $\pm5.60\times10^{-8}$,
