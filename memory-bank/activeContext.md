@@ -2,7 +2,17 @@
 
 _Last updated: 2026-08-28_
 
-### Latest (2026-08-28): N_TRAIN=3 multi-seed robustness study — figures, comparison plot, PDF rebuilt
+### Latest (2026-08-28): adaptive-bit E6 figures synchronized
+
+Verified that `e6_multi_training_results/e6_sim_ported_results.npy` contains the
+SNR-adaptive bit-budget and first-error metadata introduced by PR #41. The five
+regenerated root figures were synchronized into `thesis/results/` so the figures
+embedded by the thesis now use the same latest data. A PDF rebuild could not be
+performed in this container because `latexmk`/XeLaTeX are unavailable and apt
+installation is not permitted; `thesis/main.pdf` therefore still needs rebuilding
+in a TeX-enabled environment.
+
+### Previous (2026-08-28): N_TRAIN=3 multi-seed robustness study — figures, comparison plot, PDF rebuilt
 
 Addressed reviewer concern that "training was done only once" (single seed). Across all 5 MLP
 experiment scripts (`e6_sim_ported.py`, `e6_flat_ported.py`, `e6_composite_ported.py`,

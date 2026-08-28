@@ -2,6 +2,12 @@
 
 Branch: `copilot/fix-bug-in-data-processing`. Reference spec: `experiments-standalone/PORTING.md`.
 
+Session note (2026-08-28): synchronized the five regenerated E6 figures from
+the adaptive-bit result set into `thesis/results/`. The adaptive-bit metadata
+was verified in `e6_multi_training_results/e6_sim_ported_results.npy`. The
+required PDF rebuild remains pending because TeX tools are unavailable in the
+container.
+
 Session note (2026-08-28): N_TRAIN=3 multi-seed robustness study completed.
 All 5 MLP scripts modified to pool 3 training seeds × N_TRIALS trials.
 Runs completed; results in `e6_multi_training_results/`. ch07 text, table
