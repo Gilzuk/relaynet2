@@ -7,10 +7,9 @@ _Last updated: 2026-08-28_
 Verified that `e6_multi_training_results/e6_sim_ported_results.npy` contains the
 SNR-adaptive bit-budget and first-error metadata introduced by PR #41. The five
 regenerated root figures were synchronized into `thesis/results/` so the figures
-embedded by the thesis now use the same latest data. A PDF rebuild could not be
-performed in this container because `latexmk`/XeLaTeX are unavailable and apt
-installation is not permitted; `thesis/main.pdf` therefore still needs rebuilding
-in a TeX-enabled environment.
+embedded by the thesis now use the same latest data. The thesis was rebuilt with `latexmk -xelatex` after installing the required
+TeX packages; `thesis/main.pdf` now reflects the synchronized figures and is
+130 pages.
 
 ### Previous (2026-08-28): N_TRAIN=3 multi-seed robustness study — figures, comparison plot, PDF rebuilt
 
