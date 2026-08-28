@@ -1,6 +1,15 @@
 # Progress — E6 Porting Checklist
 
-Branch: `claude/porting-md-file-l6xzsr`. Reference spec: `experiments-standalone/PORTING.md`.
+Branch: `copilot/fix-bug-in-data-processing`. Reference spec: `experiments-standalone/PORTING.md`.
+
+Session note (2026-08-28): N_TRAIN=3 multi-seed robustness study completed.
+All 5 MLP scripts modified to pool 3 training seeds × N_TRIALS trials.
+Runs completed; results in `e6_multi_training_results/`. ch07 text, table
+values, and 5 conclusion paragraphs updated. All 5 thesis figures regenerated
+from new data via `plot_e6_figures.py`. New 1-vs-3-seed comparison figure
+saved to `e6_multi_training_results/e6_seed_comparison.png` via
+`plot_e6_seed_comparison.py`. `thesis/main.pdf` rebuilt to **129 pages**.
+The 120-page target is 9 pages over; author must decide what to cut.
 
 Session note (2026-08-26, later): thesis layout cleanup removed near-empty
 pages by tightening the live abstract, tightening the Chapter 3 closing
