@@ -43,13 +43,18 @@ BITS_AT_SNR = {
 }
 
 # At 16 dB and above the MLP BER is effectively zero in any realistic
-# block-length trial.  Instead of pooling N_TRAIN*N_TRIALS small blocks,
-# we run a single 100M-bit first-error experiment: transmit blocks until
-# the first bit error is found, then report BER = 1 / bits_until_first_error.
-# This gives the tightest possible upper bound and is honest about having
-# observed one error.
+# block-length trial. Instead of pooling N_TRAIN*N_TRIALS small blocks,
+# we run a first-error experiment: transmit blocks until the first bit
+# error is found, then report BER = 1 / bits_until_first_error.
 FIRST_ERROR_SNRS = {16, 18, 20}  # SNR values (dB) to use first-error estimator
-FIRST_ERROR_MAX_BITS = 100_000_000  # 100M-bit cap per first-error run
+# Per reviewer requirement: 18 dB and 20 dB must run to first error or
+# timeout at 10G bits.
+FIRST_ERROR_MAX_BITS_BY_SNR = {
+    16: 1_000_000_000,
+    18: 10_000_000_000,
+    20: 10_000_000_000,
+}
+FIRST_ERROR_DEFAULT_MAX_BITS = 100_000_000
 FIRST_ERROR_BLOCK = 100_000        # transmit in 100k-bit blocks for memory efficiency
 
 # Global RNG (for reproducibility)
@@ -190,7 +195,7 @@ def run_ber_trial(relay, hop1_channel, hop2_channel, source, destination, num_bi
 
 
 def run_ber_first_error(relay, hop1_channel, hop2_channel, source, destination,
-                        snr_db, max_bits=FIRST_ERROR_MAX_BITS,
+                        snr_db, max_bits=FIRST_ERROR_DEFAULT_MAX_BITS,
                         block_size=FIRST_ERROR_BLOCK):
     """First-error BER estimator: transmit until the first bit error, then stop.
 
@@ -286,11 +291,15 @@ def run_experiment(hop1_kind, hop2_kind, mlp_relays):
                     results['MLP'][si, col_offset:col_offset + N_TRIALS] = results['MLP'][si, 0]
                     continue
                 # ti == 0: run the actual first-error experiment
-                print(f"    SNR {snr:2d} dB  [first-error, up to {FIRST_ERROR_MAX_BITS//1_000_000}M bits]")
-                ber_af, bits_af, _ = run_ber_first_error(af_relay, hop1_channel, hop2_channel, source, destination, snr)
-                ber_df, bits_df, _ = run_ber_first_error(df_relay, hop1_channel, hop2_channel, source, destination, snr)
-                ber_mlp, bits_mlp, found = run_ber_first_error(mlp_relay, hop1_channel, hop2_channel, source, destination, snr)
-                flag = "" if found else " [no error in 100M bits → upper bound]"
+                first_error_max_bits = FIRST_ERROR_MAX_BITS_BY_SNR.get(int(snr), FIRST_ERROR_DEFAULT_MAX_BITS)
+                print(f"    SNR {snr:2d} dB  [first-error, up to {first_error_max_bits//1_000_000}M bits]")
+                ber_af, bits_af, _ = run_ber_first_error(af_relay, hop1_channel, hop2_channel, source, destination, snr,
+                                                         max_bits=first_error_max_bits)
+                ber_df, bits_df, _ = run_ber_first_error(df_relay, hop1_channel, hop2_channel, source, destination, snr,
+                                                         max_bits=first_error_max_bits)
+                ber_mlp, bits_mlp, found = run_ber_first_error(mlp_relay, hop1_channel, hop2_channel, source, destination, snr,
+                                                                max_bits=first_error_max_bits)
+                flag = "" if found else f" [no error in {first_error_max_bits//1_000_000}M bits → upper bound]"
                 print(f"      AF={ber_af:.2e} ({bits_af:,}b), DF={ber_df:.2e} ({bits_df:,}b), MLP={ber_mlp:.2e} ({bits_mlp:,}b){flag}")
                 # Fill all columns with this single estimate
                 results['AF'][si, :] = ber_af
@@ -383,7 +392,8 @@ def main():
                           'n_train': N_TRAIN, 'n_trials': N_TRIALS,
                           'bits_at_snr': BITS_AT_SNR,
                           'first_error_snrs': list(FIRST_ERROR_SNRS),
-                          'first_error_max_bits': FIRST_ERROR_MAX_BITS}, allow_pickle=True)
+                          'first_error_max_bits_by_snr': FIRST_ERROR_MAX_BITS_BY_SNR,
+                          'first_error_default_max_bits': FIRST_ERROR_DEFAULT_MAX_BITS}, allow_pickle=True)
     print(f"\nResults saved to {output_path}")
 
     return all_results

@@ -2,7 +2,34 @@
 
 _Last updated: 2026-08-28_
 
-### Latest (2026-08-28): N_TRAIN=3 multi-seed robustness study — figures, comparison plot, PDF rebuilt
+### Latest (2026-08-28): first-error cap policy updated for 18/20 dB
+
+Updated `e6_sim_ported.py` so the first-error runs at 18 dB and 20 dB now use a
+10G-bit cap and run until first failure or that cap. The configuration is now
+explicit per-SNR (`FIRST_ERROR_MAX_BITS_BY_SNR`) and persisted in the saved
+metadata (`first_error_max_bits_by_snr`), replacing the old single global
+100M-bit cap assumption.
+
+### Latest (2026-08-28): 16 dB 100-trial first-error rerun
+
+Reran the 16 dB MLP first-error measurement over 100 independent trials with a
+1G-bit cap per trial. All trials observed an error: mean reciprocal
+waiting-time BER was $1.61\times10^{-7}$ (95% CI $\pm5.60\times10^{-8}$);
+mean stopping time was 20.5M bits and median 14.3M bits. Updated
+`thesis/chapters/ch07_unknown_and_mismatch_channels.tex` and rebuilt
+`thesis/main.pdf` with `latexmk -xelatex` to 130 pages. The current PR contains
+the updated table and first-error methodology note.
+
+### Previous (2026-08-28): adaptive-bit E6 figures synchronized
+
+Verified that `e6_multi_training_results/e6_sim_ported_results.npy` contains the
+SNR-adaptive bit-budget and first-error metadata introduced by PR #41. The five
+regenerated root figures were synchronized into `thesis/results/` so the figures
+embedded by the thesis now use the same latest data. The thesis was rebuilt with
+`latexmk -xelatex` after installing the required TeX packages; `thesis/main.pdf`
+now reflects the synchronized figures and is 130 pages.
+
+### Previous (2026-08-28): N_TRAIN=3 multi-seed robustness study — figures, comparison plot, PDF rebuilt
 
 Addressed reviewer concern that "training was done only once" (single seed). Across all 5 MLP
 experiment scripts (`e6_sim_ported.py`, `e6_flat_ported.py`, `e6_composite_ported.py`,

@@ -2,6 +2,23 @@
 
 Branch: `copilot/fix-bug-in-data-processing`. Reference spec: `experiments-standalone/PORTING.md`.
 
+Session note (2026-08-28): enforced the high-SNR first-error runtime policy in
+`e6_sim_ported.py` so 18 dB and 20 dB now run until the first observed failure
+or a 10G-bit timeout (`FIRST_ERROR_MAX_BITS_BY_SNR`), with the per-SNR caps
+saved in output metadata.
+
+Session note (2026-08-28): reran 16 dB with 100 independent first-error trials
+and a 1G-bit cap per trial. All trials found an error; mean reciprocal
+waiting-time BER was $1.61\times10^{-7}$ with 95% CI $\pm5.60\times10^{-8}$,
+and mean stopping time was 20.5M bits. Updated the Chapter 7 table and
+rebuilt `thesis/main.pdf` to 130 pages.
+
+Session note (2026-08-28): synchronized the five regenerated E6 figures from
+the adaptive-bit result set into `thesis/results/`. The adaptive-bit metadata
+was verified in `e6_multi_training_results/e6_sim_ported_results.npy`. The
+thesis PDF was subsequently rebuilt with `latexmk -xelatex`; it is now 130
+pages and reflects the synchronized figures.
+
 Session note (2026-08-28): N_TRAIN=3 multi-seed robustness study completed.
 All 5 MLP scripts modified to pool 3 training seeds × N_TRIALS trials.
 Runs completed; results in `e6_multi_training_results/`. ch07 text, table
