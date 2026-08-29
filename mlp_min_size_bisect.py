@@ -102,22 +102,44 @@ def matches(channel, hop2, mod, window, hidden, base_ber, base_trials, cache):
 
 
 def bisect_window(channel, hop2, mod, window, base_ber, base_trials, cache):
-    """Smallest hidden width at this window that matches, or None."""
-    # upper bracket: if the cap does not match, nothing at this window does
-    # (subject to the monotonicity audit below)
-    if not matches(channel, hop2, mod, window, H_MAX,
-                   base_ber, base_trials, cache)["matches"]:
-        return None, "cap does not match"
+    """Smallest hidden width at this window that matches, or None.
 
-    if matches(channel, hop2, mod, window, 1,
-               base_ber, base_trials, cache)["matches"]:
-        return 1, "ok"
+    Galloping search, not a plain bisection over [1, H_MAX]. The first
+    version of this took h=H_MAX as the known-pass upper bracket, on the
+    reasoning that if the largest width fails then nothing matches. That is
+    the monotonicity assumption this study has already disproved, and it
+    inverted the answer immediately: on Rayleigh, h=64 fails at +2.2% while
+    h=1 and h=2 pass, because extra capacity fits noise on a memoryless
+    channel. The bracket reported "no width matches" for a channel whose
+    minimum is 4 parameters.
 
-    lo, hi = 1, H_MAX          # lo known-fail, hi known-pass
+    So the bracket is *found* rather than assumed: probe h = 1, 2, 4, 8, ...
+    until one matches, then bisect between the last failure and that match.
+    When h=1 matches -- the common case here -- it costs a single probe.
+    Monotonicity is still assumed strictly inside the final bracket, and the
+    audit afterwards is what tests it.
+    """
+    def ok(h):
+        return matches(channel, hop2, mod, window, h,
+                       base_ber, base_trials, cache)["matches"]
+
+    if ok(1):
+        return 1, "h=1 matches"
+
+    lo, hi = 1, None           # lo known-fail
+    h = 2
+    while h <= H_MAX:
+        if ok(h):
+            hi = h
+            break
+        lo = h
+        h *= 2
+    if hi is None:
+        return None, f"no match at any probed width up to {H_MAX}"
+
     while hi - lo > 1:
         mid = (lo + hi) // 2
-        if matches(channel, hop2, mod, window, mid,
-                   base_ber, base_trials, cache)["matches"]:
+        if ok(mid):
             hi = mid
         else:
             lo = mid
