@@ -1,0 +1,4209 @@
+{
+  "snr_db": [
+    0,
+    4,
+    8,
+    12,
+    16,
+    20
+  ],
+  "n_trials": 20,
+  "bits_per_trial": 20000,
+  "tolerance_rel": 0.02,
+  "alpha": 0.05,
+  "train_seeds": [
+    0,
+    1,
+    2
+  ],
+  "train_snrs": [
+    5,
+    10,
+    15
+  ],
+  "train_samples": 60000,
+  "epochs": 25,
+  "isi_taps": [
+    0.7580980435789034,
+    0.5306686305052324,
+    0.3790490217894517
+  ],
+  "grid": [
+    {
+      "window": 1,
+      "hidden": 1,
+      "params": 4
+    },
+    {
+      "window": 1,
+      "hidden": 2,
+      "params": 7
+    },
+    {
+      "window": 1,
+      "hidden": 4,
+      "params": 13
+    },
+    {
+      "window": 1,
+      "hidden": 8,
+      "params": 25
+    },
+    {
+      "window": 1,
+      "hidden": 16,
+      "params": 49
+    },
+    {
+      "window": 3,
+      "hidden": 1,
+      "params": 6
+    },
+    {
+      "window": 3,
+      "hidden": 2,
+      "params": 11
+    },
+    {
+      "window": 3,
+      "hidden": 4,
+      "params": 21
+    },
+    {
+      "window": 3,
+      "hidden": 8,
+      "params": 41
+    },
+    {
+      "window": 3,
+      "hidden": 16,
+      "params": 81
+    },
+    {
+      "window": 5,
+      "hidden": 1,
+      "params": 8
+    },
+    {
+      "window": 5,
+      "hidden": 2,
+      "params": 15
+    },
+    {
+      "window": 5,
+      "hidden": 4,
+      "params": 29
+    },
+    {
+      "window": 5,
+      "hidden": 8,
+      "params": 57
+    },
+    {
+      "window": 5,
+      "hidden": 24,
+      "params": 169
+    },
+    {
+      "window": 7,
+      "hidden": 4,
+      "params": 37
+    },
+    {
+      "window": 7,
+      "hidden": 8,
+      "params": 73
+    }
+  ],
+  "channels": {
+    "awgn": {
+      "note": "Ch5 calibration reference (closed-form BER)",
+      "modulation": "bpsk",
+      "memory": 1,
+      "df_ber": [
+        0.14464749999999998,
+        0.024894999999999997,
+        0.0004175,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "af_ber": [
+        0.18597000000000002,
+        0.06511499999999999,
+        0.006834999999999999,
+        3.0000000000000004e-05,
+        0.0,
+        0.0
+      ],
+      "sweep": [
+        {
+          "window": 1,
+          "hidden": 1,
+          "params": 4,
+          "worst_rel_penalty_over_seeds": 0.1796407185628742,
+          "best_rel_penalty_over_seeds": 0.10778443113772444,
+          "matches_tolerance_all_seeds": false,
+          "matches_wilcoxon_all_seeds": false,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.14080499999999999,
+                0.025374999999999998,
+                0.00046249999999999997,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": 0.10778443113772444,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.14080499999999999,
+                  "df_ber": 0.14464749999999998,
+                  "rel_penalty": -0.02656457940856219,
+                  "wilcoxon_p": 8.807368035275503e-05,
+                  "wilcoxon_loses": false,
+                  "wins": 20,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.025374999999999998,
+                  "df_ber": 0.024894999999999997,
+                  "rel_penalty": 0.019280980116489307,
+                  "wilcoxon_p": 0.005721317426002655,
+                  "wilcoxon_loses": true,
+                  "wins": 6,
+                  "losses": 14
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.00046249999999999997,
+                  "df_ber": 0.0004175,
+                  "rel_penalty": 0.10778443113772444,
+                  "wilcoxon_p": 0.03290008610905641,
+                  "wilcoxon_loses": true,
+                  "wins": 5,
+                  "losses": 10
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.14082999999999996,
+                0.0252325,
+                0.00046249999999999997,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": 0.10778443113772444,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.14082999999999996,
+                  "df_ber": 0.14464749999999998,
+                  "rel_penalty": -0.026391745450146248,
+                  "wilcoxon_p": 8.844915021211901e-05,
+                  "wilcoxon_loses": false,
+                  "wins": 20,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0252325,
+                  "df_ber": 0.024894999999999997,
+                  "rel_penalty": 0.013556939144406688,
+                  "wilcoxon_p": 0.05442099817409362,
+                  "wilcoxon_loses": false,
+                  "wins": 7,
+                  "losses": 13
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.00046249999999999997,
+                  "df_ber": 0.0004175,
+                  "rel_penalty": 0.10778443113772444,
+                  "wilcoxon_p": 0.025213782609744596,
+                  "wilcoxon_loses": true,
+                  "wins": 6,
+                  "losses": 10
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.14057749999999997,
+                0.0257,
+                0.0004925,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": 0.1796407185628742,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.14057749999999997,
+                  "df_ber": 0.14464749999999998,
+                  "rel_penalty": -0.028137368430149284,
+                  "wilcoxon_p": 8.794879347050151e-05,
+                  "wilcoxon_loses": false,
+                  "wins": 20,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0257,
+                  "df_ber": 0.024894999999999997,
+                  "rel_penalty": 0.032335810403695674,
+                  "wilcoxon_p": 0.000724649756788241,
+                  "wilcoxon_loses": true,
+                  "wins": 4,
+                  "losses": 16
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0004925,
+                  "df_ber": 0.0004175,
+                  "rel_penalty": 0.1796407185628742,
+                  "wilcoxon_p": 0.004759895644213269,
+                  "wilcoxon_loses": true,
+                  "wins": 4,
+                  "losses": 12
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "window": 1,
+          "hidden": 2,
+          "params": 7,
+          "worst_rel_penalty_over_seeds": 0.12574850299401205,
+          "best_rel_penalty_over_seeds": 0.1077844311377247,
+          "matches_tolerance_all_seeds": false,
+          "matches_wilcoxon_all_seeds": false,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.14091499999999998,
+                0.025345,
+                0.00046750000000000003,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": 0.11976047904191622,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.14091499999999998,
+                  "df_ber": 0.14464749999999998,
+                  "rel_penalty": -0.025804109991531137,
+                  "wilcoxon_p": 8.844915021211901e-05,
+                  "wilcoxon_loses": false,
+                  "wins": 20,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.025345,
+                  "df_ber": 0.024894999999999997,
+                  "rel_penalty": 0.018075918859208777,
+                  "wilcoxon_p": 0.009931620776168784,
+                  "wilcoxon_loses": true,
+                  "wins": 6,
+                  "losses": 14
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.00046750000000000003,
+                  "df_ber": 0.0004175,
+                  "rel_penalty": 0.11976047904191622,
+                  "wilcoxon_p": 0.030164349896172272,
+                  "wilcoxon_loses": true,
+                  "wins": 5,
+                  "losses": 9
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.14071,
+                0.025385,
+                0.00047000000000000004,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": 0.12574850299401205,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.14071,
+                  "df_ber": 0.14464749999999998,
+                  "rel_penalty": -0.027221348450543446,
+                  "wilcoxon_p": 8.832385863081277e-05,
+                  "wilcoxon_loses": false,
+                  "wins": 20,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.025385,
+                  "df_ber": 0.024894999999999997,
+                  "rel_penalty": 0.019682667202249624,
+                  "wilcoxon_p": 0.006415366682500151,
+                  "wilcoxon_loses": true,
+                  "wins": 5,
+                  "losses": 15
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.00047000000000000004,
+                  "df_ber": 0.0004175,
+                  "rel_penalty": 0.12574850299401205,
+                  "wilcoxon_p": 0.0164708050281561,
+                  "wilcoxon_loses": true,
+                  "wins": 5,
+                  "losses": 12
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.14093250000000002,
+                0.025255000000000007,
+                0.0004625000000000001,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": 0.1077844311377247,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.14093250000000002,
+                  "df_ber": 0.14464749999999998,
+                  "rel_penalty": -0.025683126220639615,
+                  "wilcoxon_p": 8.832385863081277e-05,
+                  "wilcoxon_loses": false,
+                  "wins": 20,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.025255000000000007,
+                  "df_ber": 0.024894999999999997,
+                  "rel_penalty": 0.01446073508736733,
+                  "wilcoxon_p": 0.03818473541616514,
+                  "wilcoxon_loses": true,
+                  "wins": 6,
+                  "losses": 14
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0004625000000000001,
+                  "df_ber": 0.0004175,
+                  "rel_penalty": 0.1077844311377247,
+                  "wilcoxon_p": 0.027998238281573294,
+                  "wilcoxon_loses": true,
+                  "wins": 5,
+                  "losses": 10
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "window": 1,
+          "hidden": 4,
+          "params": 13,
+          "worst_rel_penalty_over_seeds": 0.11976047904191596,
+          "best_rel_penalty_over_seeds": 0.07784431137724558,
+          "matches_tolerance_all_seeds": false,
+          "matches_wilcoxon_all_seeds": false,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.14104500000000003,
+                0.025272499999999996,
+                0.00045000000000000004,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": 0.07784431137724558,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.14104500000000003,
+                  "df_ber": 0.14464749999999998,
+                  "rel_penalty": -0.024905373407766836,
+                  "wilcoxon_p": 8.794879347050151e-05,
+                  "wilcoxon_loses": false,
+                  "wins": 20,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.025272499999999996,
+                  "df_ber": 0.024894999999999997,
+                  "rel_penalty": 0.015163687487447255,
+                  "wilcoxon_p": 0.027553369355764034,
+                  "wilcoxon_loses": true,
+                  "wins": 6,
+                  "losses": 14
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.00045000000000000004,
+                  "df_ber": 0.0004175,
+                  "rel_penalty": 0.07784431137724558,
+                  "wilcoxon_p": 0.09238112740720932,
+                  "wilcoxon_loses": false,
+                  "wins": 5,
+                  "losses": 10
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.14084249999999998,
+                0.025230000000000002,
+                0.00046249999999999997,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": 0.10778443113772444,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.14084249999999998,
+                  "df_ber": 0.14464749999999998,
+                  "rel_penalty": -0.026305328470937993,
+                  "wilcoxon_p": 8.832385863081277e-05,
+                  "wilcoxon_loses": false,
+                  "wins": 20,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.025230000000000002,
+                  "df_ber": 0.024894999999999997,
+                  "rel_penalty": 0.01345651737296668,
+                  "wilcoxon_p": 0.047741023005493884,
+                  "wilcoxon_loses": true,
+                  "wins": 7,
+                  "losses": 13
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.00046249999999999997,
+                  "df_ber": 0.0004175,
+                  "rel_penalty": 0.10778443113772444,
+                  "wilcoxon_p": 0.025213782609744596,
+                  "wilcoxon_loses": true,
+                  "wins": 6,
+                  "losses": 10
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.14072,
+                0.025425000000000003,
+                0.0004674999999999999,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": 0.11976047904191596,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.14072,
+                  "df_ber": 0.14464749999999998,
+                  "rel_penalty": -0.027152214867176918,
+                  "wilcoxon_p": 8.832385863081277e-05,
+                  "wilcoxon_loses": false,
+                  "wins": 20,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.025425000000000003,
+                  "df_ber": 0.024894999999999997,
+                  "rel_penalty": 0.021289415545290468,
+                  "wilcoxon_p": 0.0028793268777815052,
+                  "wilcoxon_loses": true,
+                  "wins": 5,
+                  "losses": 14
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0004674999999999999,
+                  "df_ber": 0.0004175,
+                  "rel_penalty": 0.11976047904191596,
+                  "wilcoxon_p": 0.022689932979599318,
+                  "wilcoxon_loses": true,
+                  "wins": 5,
+                  "losses": 11
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "window": 1,
+          "hidden": 8,
+          "params": 25,
+          "worst_rel_penalty_over_seeds": 0.13772455089820357,
+          "best_rel_penalty_over_seeds": 0.0898203592814371,
+          "matches_tolerance_all_seeds": false,
+          "matches_wilcoxon_all_seeds": false,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.14088000000000003,
+                0.025545,
+                0.000475,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": 0.13772455089820357,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.14088000000000003,
+                  "df_ber": 0.14464749999999998,
+                  "rel_penalty": -0.02604607753331341,
+                  "wilcoxon_p": 1.9073486328125e-06,
+                  "wilcoxon_loses": false,
+                  "wins": 20,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.025545,
+                  "df_ber": 0.024894999999999997,
+                  "rel_penalty": 0.026109660574412726,
+                  "wilcoxon_p": 0.002066658724299924,
+                  "wilcoxon_loses": true,
+                  "wins": 4,
+                  "losses": 16
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.000475,
+                  "df_ber": 0.0004175,
+                  "rel_penalty": 0.13772455089820357,
+                  "wilcoxon_p": 0.02975806743519917,
+                  "wilcoxon_loses": true,
+                  "wins": 4,
+                  "losses": 10
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.14098999999999998,
+                0.025162499999999997,
+                0.0004575,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": 0.09580838323353293,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.14098999999999998,
+                  "df_ber": 0.14464749999999998,
+                  "rel_penalty": -0.025285608116282745,
+                  "wilcoxon_p": 8.832385863081277e-05,
+                  "wilcoxon_loses": false,
+                  "wins": 20,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.025162499999999997,
+                  "df_ber": 0.024894999999999997,
+                  "rel_penalty": 0.010745129544085174,
+                  "wilcoxon_p": 0.09871822323700988,
+                  "wilcoxon_loses": false,
+                  "wins": 6,
+                  "losses": 13
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0004575,
+                  "df_ber": 0.0004175,
+                  "rel_penalty": 0.09580838323353293,
+                  "wilcoxon_p": 0.040677727037293526,
+                  "wilcoxon_loses": true,
+                  "wins": 5,
+                  "losses": 9
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.14089,
+                0.02504,
+                0.000455,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": 0.0898203592814371,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.14089,
+                  "df_ber": 0.14464749999999998,
+                  "rel_penalty": -0.02597694394994727,
+                  "wilcoxon_p": 8.807368035275503e-05,
+                  "wilcoxon_loses": false,
+                  "wins": 20,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.02504,
+                  "df_ber": 0.024894999999999997,
+                  "rel_penalty": 0.005824462743522907,
+                  "wilcoxon_p": 0.27846196266161904,
+                  "wilcoxon_loses": false,
+                  "wins": 8,
+                  "losses": 12
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.000455,
+                  "df_ber": 0.0004175,
+                  "rel_penalty": 0.0898203592814371,
+                  "wilcoxon_p": 0.03272335565271593,
+                  "wilcoxon_loses": true,
+                  "wins": 6,
+                  "losses": 9
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "window": 1,
+          "hidden": 16,
+          "params": 49,
+          "worst_rel_penalty_over_seeds": 0.11377245508982027,
+          "best_rel_penalty_over_seeds": 0.07185628742514963,
+          "matches_tolerance_all_seeds": false,
+          "matches_wilcoxon_all_seeds": false,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.14100249999999998,
+                0.025204999999999998,
+                0.0004475,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": 0.07185628742514963,
+              "tolerance_ok": false,
+              "wilcoxon_ok": true,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.14100249999999998,
+                  "df_ber": 0.14464749999999998,
+                  "rel_penalty": -0.02519919113707468,
+                  "wilcoxon_p": 8.844915021211901e-05,
+                  "wilcoxon_loses": false,
+                  "wins": 20,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.025204999999999998,
+                  "df_ber": 0.024894999999999997,
+                  "rel_penalty": 0.012452299658566028,
+                  "wilcoxon_p": 0.05930074136951378,
+                  "wilcoxon_loses": false,
+                  "wins": 6,
+                  "losses": 14
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0004475,
+                  "df_ber": 0.0004175,
+                  "rel_penalty": 0.07185628742514963,
+                  "wilcoxon_p": 0.17647341123194393,
+                  "wilcoxon_loses": false,
+                  "wins": 5,
+                  "losses": 9
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.1410125,
+                0.025122500000000002,
+                0.00045000000000000004,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": 0.07784431137724558,
+              "tolerance_ok": false,
+              "wilcoxon_ok": true,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.1410125,
+                  "df_ber": 0.14464749999999998,
+                  "rel_penalty": -0.02513005755370796,
+                  "wilcoxon_p": 8.832385863081277e-05,
+                  "wilcoxon_loses": false,
+                  "wins": 20,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.025122500000000002,
+                  "df_ber": 0.024894999999999997,
+                  "rel_penalty": 0.009138381201044607,
+                  "wilcoxon_p": 0.12111363623873889,
+                  "wilcoxon_loses": false,
+                  "wins": 8,
+                  "losses": 12
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.00045000000000000004,
+                  "df_ber": 0.0004175,
+                  "rel_penalty": 0.07784431137724558,
+                  "wilcoxon_p": 0.060424374210163445,
+                  "wilcoxon_loses": false,
+                  "wins": 6,
+                  "losses": 9
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.1408,
+                0.0253,
+                0.00046499999999999997,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": 0.11377245508982027,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.1408,
+                  "df_ber": 0.14464749999999998,
+                  "rel_penalty": -0.026599146200245262,
+                  "wilcoxon_p": 8.844915021211901e-05,
+                  "wilcoxon_loses": false,
+                  "wins": 20,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0253,
+                  "df_ber": 0.024894999999999997,
+                  "rel_penalty": 0.016268326973287915,
+                  "wilcoxon_p": 0.015996006958537357,
+                  "wilcoxon_loses": true,
+                  "wins": 6,
+                  "losses": 14
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.00046499999999999997,
+                  "df_ber": 0.0004175,
+                  "rel_penalty": 0.11377245508982027,
+                  "wilcoxon_p": 0.021146206416455936,
+                  "wilcoxon_loses": true,
+                  "wins": 5,
+                  "losses": 10
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "window": 3,
+          "hidden": 1,
+          "params": 6,
+          "worst_rel_penalty_over_seeds": 0.245508982035928,
+          "best_rel_penalty_over_seeds": 0.08982035928143697,
+          "matches_tolerance_all_seeds": false,
+          "matches_wilcoxon_all_seeds": false,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.14077,
+                0.025367499999999998,
+                0.000475,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": 0.13772455089820357,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.14077,
+                  "df_ber": 0.14464749999999998,
+                  "rel_penalty": -0.026806546950344654,
+                  "wilcoxon_p": 8.844915021211901e-05,
+                  "wilcoxon_loses": false,
+                  "wins": 20,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.025367499999999998,
+                  "df_ber": 0.024894999999999997,
+                  "rel_penalty": 0.018979714802169142,
+                  "wilcoxon_p": 0.007957732280225383,
+                  "wilcoxon_loses": true,
+                  "wins": 7,
+                  "losses": 13
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.000475,
+                  "df_ber": 0.0004175,
+                  "rel_penalty": 0.13772455089820357,
+                  "wilcoxon_p": 0.01109544393220054,
+                  "wilcoxon_loses": true,
+                  "wins": 4,
+                  "losses": 12
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.1405725,
+                0.025982500000000002,
+                0.00052,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": 0.245508982035928,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.1405725,
+                  "df_ber": 0.14464749999999998,
+                  "rel_penalty": -0.028171935221832357,
+                  "wilcoxon_p": 8.819870204194453e-05,
+                  "wilcoxon_loses": false,
+                  "wins": 20,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.025982500000000002,
+                  "df_ber": 0.024894999999999997,
+                  "rel_penalty": 0.04368347057642118,
+                  "wilcoxon_p": 0.00013622860026650142,
+                  "wilcoxon_loses": true,
+                  "wins": 2,
+                  "losses": 18
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.00052,
+                  "df_ber": 0.0004175,
+                  "rel_penalty": 0.245508982035928,
+                  "wilcoxon_p": 0.0006365878322925451,
+                  "wilcoxon_loses": true,
+                  "wins": 2,
+                  "losses": 15
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.1409925,
+                0.025327500000000003,
+                0.00045499999999999995,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": 0.08982035928143697,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.1409925,
+                  "df_ber": 0.14464749999999998,
+                  "rel_penalty": -0.025268324720441018,
+                  "wilcoxon_p": 8.844915021211901e-05,
+                  "wilcoxon_loses": false,
+                  "wins": 20,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.025327500000000003,
+                  "df_ber": 0.024894999999999997,
+                  "rel_penalty": 0.017372966459128576,
+                  "wilcoxon_p": 0.011847135693732714,
+                  "wilcoxon_loses": true,
+                  "wins": 5,
+                  "losses": 14
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.00045499999999999995,
+                  "df_ber": 0.0004175,
+                  "rel_penalty": 0.08982035928143697,
+                  "wilcoxon_p": 0.08698045762172561,
+                  "wilcoxon_loses": false,
+                  "wins": 6,
+                  "losses": 10
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "window": 3,
+          "hidden": 2,
+          "params": 11,
+          "worst_rel_penalty_over_seeds": 0.15568862275449102,
+          "best_rel_penalty_over_seeds": 0.1077844311377247,
+          "matches_tolerance_all_seeds": false,
+          "matches_wilcoxon_all_seeds": false,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.14099750000000003,
+                0.0253025,
+                0.0004625000000000001,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": 0.1077844311377247,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.14099750000000003,
+                  "df_ber": 0.14464749999999998,
+                  "rel_penalty": -0.02523375792875756,
+                  "wilcoxon_p": 8.832385863081277e-05,
+                  "wilcoxon_loses": false,
+                  "wins": 20,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0253025,
+                  "df_ber": 0.024894999999999997,
+                  "rel_penalty": 0.016368748744727924,
+                  "wilcoxon_p": 0.01769858011393462,
+                  "wilcoxon_loses": true,
+                  "wins": 7,
+                  "losses": 13
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0004625000000000001,
+                  "df_ber": 0.0004175,
+                  "rel_penalty": 0.1077844311377247,
+                  "wilcoxon_p": 0.03272335565271593,
+                  "wilcoxon_loses": true,
+                  "wins": 5,
+                  "losses": 10
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.14066749999999997,
+                0.025525,
+                0.0004825,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": 0.15568862275449102,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.14066749999999997,
+                  "df_ber": 0.14464749999999998,
+                  "rel_penalty": -0.0275151661798511,
+                  "wilcoxon_p": 8.844915021211901e-05,
+                  "wilcoxon_loses": false,
+                  "wins": 20,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.025525,
+                  "df_ber": 0.024894999999999997,
+                  "rel_penalty": 0.025306286402892234,
+                  "wilcoxon_p": 0.0007302658477684566,
+                  "wilcoxon_loses": true,
+                  "wins": 2,
+                  "losses": 16
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0004825,
+                  "df_ber": 0.0004175,
+                  "rel_penalty": 0.15568862275449102,
+                  "wilcoxon_p": 0.007521068463954455,
+                  "wilcoxon_loses": true,
+                  "wins": 4,
+                  "losses": 12
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.14060999999999998,
+                0.02532,
+                0.00046499999999999997,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": 0.11377245508982027,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.14060999999999998,
+                  "df_ber": 0.14464749999999998,
+                  "rel_penalty": -0.02791268428420816,
+                  "wilcoxon_p": 8.844915021211901e-05,
+                  "wilcoxon_loses": false,
+                  "wins": 20,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.02532,
+                  "df_ber": 0.024894999999999997,
+                  "rel_penalty": 0.017071701144808268,
+                  "wilcoxon_p": 0.013018180441057105,
+                  "wilcoxon_loses": true,
+                  "wins": 5,
+                  "losses": 15
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.00046499999999999997,
+                  "df_ber": 0.0004175,
+                  "rel_penalty": 0.11377245508982027,
+                  "wilcoxon_p": 0.02248575807787445,
+                  "wilcoxon_loses": true,
+                  "wins": 6,
+                  "losses": 10
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "window": 3,
+          "hidden": 4,
+          "params": 21,
+          "worst_rel_penalty_over_seeds": 0.11976047904191622,
+          "best_rel_penalty_over_seeds": 0.09580838323353293,
+          "matches_tolerance_all_seeds": false,
+          "matches_wilcoxon_all_seeds": false,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.14082250000000002,
+                0.025330000000000002,
+                0.00046749999999999987,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": 0.11976047904191583,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.14082250000000002,
+                  "df_ber": 0.14464749999999998,
+                  "rel_penalty": -0.026443595637670667,
+                  "wilcoxon_p": 1.9073486328125e-06,
+                  "wilcoxon_loses": false,
+                  "wins": 20,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.025330000000000002,
+                  "df_ber": 0.024894999999999997,
+                  "rel_penalty": 0.017473388230568584,
+                  "wilcoxon_p": 0.013650911778761333,
+                  "wilcoxon_loses": true,
+                  "wins": 7,
+                  "losses": 13
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.00046749999999999987,
+                  "df_ber": 0.0004175,
+                  "rel_penalty": 0.11976047904191583,
+                  "wilcoxon_p": 0.012049151529268998,
+                  "wilcoxon_loses": true,
+                  "wins": 4,
+                  "losses": 11
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.141005,
+                0.02531,
+                0.00046750000000000003,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": 0.11976047904191622,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.141005,
+                  "df_ber": 0.14464749999999998,
+                  "rel_penalty": -0.02518190774123295,
+                  "wilcoxon_p": 8.844915021211901e-05,
+                  "wilcoxon_loses": false,
+                  "wins": 20,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.02531,
+                  "df_ber": 0.024894999999999997,
+                  "rel_penalty": 0.01667001405904809,
+                  "wilcoxon_p": 0.018613200815783548,
+                  "wilcoxon_loses": true,
+                  "wins": 5,
+                  "losses": 15
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.00046750000000000003,
+                  "df_ber": 0.0004175,
+                  "rel_penalty": 0.11976047904191622,
+                  "wilcoxon_p": 0.006080340219459723,
+                  "wilcoxon_loses": true,
+                  "wins": 3,
+                  "losses": 12
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.140955,
+                0.0251,
+                0.0004575,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": 0.09580838323353293,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.140955,
+                  "df_ber": 0.14464749999999998,
+                  "rel_penalty": -0.025527575658065214,
+                  "wilcoxon_p": 8.819870204194453e-05,
+                  "wilcoxon_loses": false,
+                  "wins": 20,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0251,
+                  "df_ber": 0.024894999999999997,
+                  "rel_penalty": 0.008234585258084105,
+                  "wilcoxon_p": 0.21070615482115573,
+                  "wilcoxon_loses": false,
+                  "wins": 7,
+                  "losses": 13
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0004575,
+                  "df_ber": 0.0004175,
+                  "rel_penalty": 0.09580838323353293,
+                  "wilcoxon_p": 0.040798177651595144,
+                  "wilcoxon_loses": true,
+                  "wins": 7,
+                  "losses": 9
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "window": 3,
+          "hidden": 8,
+          "params": 41,
+          "worst_rel_penalty_over_seeds": 0.11976047904191622,
+          "best_rel_penalty_over_seeds": 0.07784431137724558,
+          "matches_tolerance_all_seeds": false,
+          "matches_wilcoxon_all_seeds": false,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.141105,
+                0.0251925,
+                0.00046750000000000003,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": 0.11976047904191622,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.141105,
+                  "df_ber": 0.14464749999999998,
+                  "rel_penalty": -0.02449057190756824,
+                  "wilcoxon_p": 8.832385863081277e-05,
+                  "wilcoxon_loses": false,
+                  "wins": 20,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0251925,
+                  "df_ber": 0.024894999999999997,
+                  "rel_penalty": 0.011950190801365843,
+                  "wilcoxon_p": 0.07984279208799495,
+                  "wilcoxon_loses": false,
+                  "wins": 6,
+                  "losses": 13
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.00046750000000000003,
+                  "df_ber": 0.0004175,
+                  "rel_penalty": 0.11976047904191622,
+                  "wilcoxon_p": 0.025585317809275795,
+                  "wilcoxon_loses": true,
+                  "wins": 4,
+                  "losses": 12
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.14121,
+                0.025432499999999997,
+                0.00046499999999999997,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": 0.11377245508982027,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.14121,
+                  "df_ber": 0.14464749999999998,
+                  "rel_penalty": -0.02376466928222045,
+                  "wilcoxon_p": 8.832385863081277e-05,
+                  "wilcoxon_loses": false,
+                  "wins": 20,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.025432499999999997,
+                  "df_ber": 0.024894999999999997,
+                  "rel_penalty": 0.021590680859610356,
+                  "wilcoxon_p": 0.0019372210497850312,
+                  "wilcoxon_loses": true,
+                  "wins": 4,
+                  "losses": 16
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.00046499999999999997,
+                  "df_ber": 0.0004175,
+                  "rel_penalty": 0.11377245508982027,
+                  "wilcoxon_p": 0.008009942329880022,
+                  "wilcoxon_loses": true,
+                  "wins": 2,
+                  "losses": 11
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.140915,
+                0.025272499999999996,
+                0.00045000000000000004,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": 0.07784431137724558,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.140915,
+                  "df_ber": 0.14464749999999998,
+                  "rel_penalty": -0.025804109991530946,
+                  "wilcoxon_p": 8.832385863081277e-05,
+                  "wilcoxon_loses": false,
+                  "wins": 20,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.025272499999999996,
+                  "df_ber": 0.024894999999999997,
+                  "rel_penalty": 0.015163687487447255,
+                  "wilcoxon_p": 0.030292964344084662,
+                  "wilcoxon_loses": true,
+                  "wins": 6,
+                  "losses": 14
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.00045000000000000004,
+                  "df_ber": 0.0004175,
+                  "rel_penalty": 0.07784431137724558,
+                  "wilcoxon_p": 0.04936551274493513,
+                  "wilcoxon_loses": true,
+                  "wins": 6,
+                  "losses": 9
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "window": 3,
+          "hidden": 16,
+          "params": 81,
+          "worst_rel_penalty_over_seeds": 0.13173652694610774,
+          "best_rel_penalty_over_seeds": 0.11976047904191596,
+          "matches_tolerance_all_seeds": false,
+          "matches_wilcoxon_all_seeds": false,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.1412175,
+                0.0253025,
+                0.00046999999999999993,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": 0.12574850299401177,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.1412175,
+                  "df_ber": 0.14464749999999998,
+                  "rel_penalty": -0.02371281909469565,
+                  "wilcoxon_p": 8.844915021211901e-05,
+                  "wilcoxon_loses": false,
+                  "wins": 20,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0253025,
+                  "df_ber": 0.024894999999999997,
+                  "rel_penalty": 0.016368748744727924,
+                  "wilcoxon_p": 0.038218386133020886,
+                  "wilcoxon_loses": true,
+                  "wins": 6,
+                  "losses": 14
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.00046999999999999993,
+                  "df_ber": 0.0004175,
+                  "rel_penalty": 0.12574850299401177,
+                  "wilcoxon_p": 0.051937595723944976,
+                  "wilcoxon_loses": false,
+                  "wins": 5,
+                  "losses": 10
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.141365,
+                0.025332499999999997,
+                0.0004725,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": 0.13173652694610774,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.141365,
+                  "df_ber": 0.14464749999999998,
+                  "rel_penalty": -0.022693098740040402,
+                  "wilcoxon_p": 1.9073486328125e-06,
+                  "wilcoxon_loses": false,
+                  "wins": 20,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.025332499999999997,
+                  "df_ber": 0.024894999999999997,
+                  "rel_penalty": 0.017573810002008455,
+                  "wilcoxon_p": 0.009420379211526308,
+                  "wilcoxon_loses": true,
+                  "wins": 6,
+                  "losses": 13
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0004725,
+                  "df_ber": 0.0004175,
+                  "rel_penalty": 0.13173652694610774,
+                  "wilcoxon_p": 0.005725876719987904,
+                  "wilcoxon_loses": true,
+                  "wins": 4,
+                  "losses": 13
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.1410225,
+                0.025310000000000006,
+                0.0004674999999999999,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": 0.11976047904191596,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.1410225,
+                  "df_ber": 0.14464749999999998,
+                  "rel_penalty": -0.025060923970341622,
+                  "wilcoxon_p": 8.844915021211901e-05,
+                  "wilcoxon_loses": false,
+                  "wins": 20,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.025310000000000006,
+                  "df_ber": 0.024894999999999997,
+                  "rel_penalty": 0.01667001405904837,
+                  "wilcoxon_p": 0.015222309098603384,
+                  "wilcoxon_loses": true,
+                  "wins": 6,
+                  "losses": 14
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0004674999999999999,
+                  "df_ber": 0.0004175,
+                  "rel_penalty": 0.11976047904191596,
+                  "wilcoxon_p": 0.023636498227525976,
+                  "wilcoxon_loses": true,
+                  "wins": 5,
+                  "losses": 11
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "window": 5,
+          "hidden": 1,
+          "params": 8,
+          "worst_rel_penalty_over_seeds": 0.23952095808383217,
+          "best_rel_penalty_over_seeds": 0.11377245508982027,
+          "matches_tolerance_all_seeds": false,
+          "matches_wilcoxon_all_seeds": false,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.14079999999999998,
+                0.025435000000000003,
+                0.00046499999999999997,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": 0.11377245508982027,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.14079999999999998,
+                  "df_ber": 0.14464749999999998,
+                  "rel_penalty": -0.026599146200245453,
+                  "wilcoxon_p": 8.844915021211901e-05,
+                  "wilcoxon_loses": false,
+                  "wins": 20,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.025435000000000003,
+                  "df_ber": 0.024894999999999997,
+                  "rel_penalty": 0.021691102631050646,
+                  "wilcoxon_p": 0.004035580423482011,
+                  "wilcoxon_loses": true,
+                  "wins": 5,
+                  "losses": 15
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.00046499999999999997,
+                  "df_ber": 0.0004175,
+                  "rel_penalty": 0.11377245508982027,
+                  "wilcoxon_p": 0.042291988762757166,
+                  "wilcoxon_loses": true,
+                  "wins": 5,
+                  "losses": 13
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.14123,
+                0.025589999999999995,
+                0.0005175,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": 0.23952095808383217,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.14123,
+                  "df_ber": 0.14464749999999998,
+                  "rel_penalty": -0.023626402115487586,
+                  "wilcoxon_p": 8.832385863081277e-05,
+                  "wilcoxon_loses": false,
+                  "wins": 20,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.025589999999999995,
+                  "df_ber": 0.024894999999999997,
+                  "rel_penalty": 0.02791725246033331,
+                  "wilcoxon_p": 0.0009484730227710729,
+                  "wilcoxon_loses": true,
+                  "wins": 3,
+                  "losses": 17
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0005175,
+                  "df_ber": 0.0004175,
+                  "rel_penalty": 0.23952095808383217,
+                  "wilcoxon_p": 0.0019081613674166095,
+                  "wilcoxon_loses": true,
+                  "wins": 2,
+                  "losses": 13
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.1407275,
+                0.025642500000000002,
+                0.0004875,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": 0.16766467065868254,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.1407275,
+                  "df_ber": 0.14464749999999998,
+                  "rel_penalty": -0.027100364679652118,
+                  "wilcoxon_p": 8.844915021211901e-05,
+                  "wilcoxon_loses": false,
+                  "wins": 20,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.025642500000000002,
+                  "df_ber": 0.024894999999999997,
+                  "rel_penalty": 0.03002610966057462,
+                  "wilcoxon_p": 0.000537117401416443,
+                  "wilcoxon_loses": true,
+                  "wins": 3,
+                  "losses": 16
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0004875,
+                  "df_ber": 0.0004175,
+                  "rel_penalty": 0.16766467065868254,
+                  "wilcoxon_p": 0.01341009427403169,
+                  "wilcoxon_loses": true,
+                  "wins": 6,
+                  "losses": 11
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "window": 5,
+          "hidden": 2,
+          "params": 15,
+          "worst_rel_penalty_over_seeds": 0.2514970059880238,
+          "best_rel_penalty_over_seeds": 0.0898203592814371,
+          "matches_tolerance_all_seeds": false,
+          "matches_wilcoxon_all_seeds": false,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.14093499999999998,
+                0.0254025,
+                0.00046750000000000003,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": 0.11976047904191622,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.14093499999999998,
+                  "df_ber": 0.14464749999999998,
+                  "rel_penalty": -0.02566584282479827,
+                  "wilcoxon_p": 8.844915021211901e-05,
+                  "wilcoxon_loses": false,
+                  "wins": 20,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0254025,
+                  "df_ber": 0.024894999999999997,
+                  "rel_penalty": 0.020385619602329968,
+                  "wilcoxon_p": 0.008961626956658936,
+                  "wilcoxon_loses": true,
+                  "wins": 4,
+                  "losses": 16
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.00046750000000000003,
+                  "df_ber": 0.0004175,
+                  "rel_penalty": 0.11976047904191622,
+                  "wilcoxon_p": 0.04684745423953883,
+                  "wilcoxon_loses": true,
+                  "wins": 5,
+                  "losses": 13
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.141345,
+                0.0254625,
+                0.0005225,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": 0.2514970059880238,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.141345,
+                  "df_ber": 0.14464749999999998,
+                  "rel_penalty": -0.022831365906773267,
+                  "wilcoxon_p": 1.9073486328125e-06,
+                  "wilcoxon_loses": false,
+                  "wins": 20,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0254625,
+                  "df_ber": 0.024894999999999997,
+                  "rel_penalty": 0.022795742116891025,
+                  "wilcoxon_p": 0.0035889055532021094,
+                  "wilcoxon_loses": true,
+                  "wins": 4,
+                  "losses": 16
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0005225,
+                  "df_ber": 0.0004175,
+                  "rel_penalty": 0.2514970059880238,
+                  "wilcoxon_p": 0.0005864706104017142,
+                  "wilcoxon_loses": true,
+                  "wins": 2,
+                  "losses": 15
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.1410075,
+                0.025057500000000003,
+                0.000455,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": 0.0898203592814371,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.1410075,
+                  "df_ber": 0.14464749999999998,
+                  "rel_penalty": -0.025164624345391223,
+                  "wilcoxon_p": 8.844915021211901e-05,
+                  "wilcoxon_loses": false,
+                  "wins": 20,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.025057500000000003,
+                  "df_ber": 0.024894999999999997,
+                  "rel_penalty": 0.00652741514360339,
+                  "wilcoxon_p": 0.19763674629950034,
+                  "wilcoxon_loses": false,
+                  "wins": 8,
+                  "losses": 12
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.000455,
+                  "df_ber": 0.0004175,
+                  "rel_penalty": 0.0898203592814371,
+                  "wilcoxon_p": 0.04008073118030534,
+                  "wilcoxon_loses": true,
+                  "wins": 4,
+                  "losses": 10
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "window": 5,
+          "hidden": 4,
+          "params": 29,
+          "worst_rel_penalty_over_seeds": 0.27544910179640714,
+          "best_rel_penalty_over_seeds": 0.1137724550898204,
+          "matches_tolerance_all_seeds": false,
+          "matches_wilcoxon_all_seeds": false,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.1410625,
+                0.02555,
+                0.0004825,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": 0.15568862275449102,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.1410625,
+                  "df_ber": 0.14464749999999998,
+                  "rel_penalty": -0.0247843896368757,
+                  "wilcoxon_p": 8.832385863081277e-05,
+                  "wilcoxon_loses": false,
+                  "wins": 20,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.02555,
+                  "df_ber": 0.024894999999999997,
+                  "rel_penalty": 0.026310504117292743,
+                  "wilcoxon_p": 0.0019420013830735384,
+                  "wilcoxon_loses": true,
+                  "wins": 3,
+                  "losses": 16
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0004825,
+                  "df_ber": 0.0004175,
+                  "rel_penalty": 0.15568862275449102,
+                  "wilcoxon_p": 0.013679595609506292,
+                  "wilcoxon_loses": true,
+                  "wins": 5,
+                  "losses": 13
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.14150500000000002,
+                0.025572499999999998,
+                0.0005325,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": 0.27544910179640714,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.14150500000000002,
+                  "df_ber": 0.14464749999999998,
+                  "rel_penalty": -0.021725228572909764,
+                  "wilcoxon_p": 8.819870204194453e-05,
+                  "wilcoxon_loses": false,
+                  "wins": 20,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.025572499999999998,
+                  "df_ber": 0.024894999999999997,
+                  "rel_penalty": 0.02721430006025311,
+                  "wilcoxon_p": 0.001816899593370669,
+                  "wilcoxon_loses": true,
+                  "wins": 3,
+                  "losses": 17
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0005325,
+                  "df_ber": 0.0004175,
+                  "rel_penalty": 0.27544910179640714,
+                  "wilcoxon_p": 0.00081125553511129,
+                  "wilcoxon_loses": true,
+                  "wins": 3,
+                  "losses": 16
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.14096999999999998,
+                0.0253,
+                0.000465,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": 0.1137724550898204,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.14096999999999998,
+                  "df_ber": 0.14464749999999998,
+                  "rel_penalty": -0.02542387528301561,
+                  "wilcoxon_p": 8.844915021211901e-05,
+                  "wilcoxon_loses": false,
+                  "wins": 20,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0253,
+                  "df_ber": 0.024894999999999997,
+                  "rel_penalty": 0.016268326973287915,
+                  "wilcoxon_p": 0.023882134259345145,
+                  "wilcoxon_loses": true,
+                  "wins": 5,
+                  "losses": 15
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.000465,
+                  "df_ber": 0.0004175,
+                  "rel_penalty": 0.1137724550898204,
+                  "wilcoxon_p": 0.037584401298991175,
+                  "wilcoxon_loses": true,
+                  "wins": 5,
+                  "losses": 10
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "window": 5,
+          "hidden": 8,
+          "params": 57,
+          "worst_rel_penalty_over_seeds": 0.28143712574850294,
+          "best_rel_penalty_over_seeds": 0.13772455089820357,
+          "matches_tolerance_all_seeds": false,
+          "matches_wilcoxon_all_seeds": false,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.14134000000000002,
+                0.025365,
+                0.000475,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": 0.13772455089820357,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.14134000000000002,
+                  "df_ber": 0.14464749999999998,
+                  "rel_penalty": -0.02286593269845634,
+                  "wilcoxon_p": 8.832385863081277e-05,
+                  "wilcoxon_loses": false,
+                  "wins": 20,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.025365,
+                  "df_ber": 0.024894999999999997,
+                  "rel_penalty": 0.018879293030729133,
+                  "wilcoxon_p": 0.011890044684392302,
+                  "wilcoxon_loses": true,
+                  "wins": 4,
+                  "losses": 15
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.000475,
+                  "df_ber": 0.0004175,
+                  "rel_penalty": 0.13772455089820357,
+                  "wilcoxon_p": 0.011930033024943961,
+                  "wilcoxon_loses": true,
+                  "wins": 4,
+                  "losses": 13
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.1417675,
+                0.025627499999999998,
+                0.000535,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": 0.28143712574850294,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.1417675,
+                  "df_ber": 0.14464749999999998,
+                  "rel_penalty": -0.01991047200954039,
+                  "wilcoxon_p": 8.794879347050151e-05,
+                  "wilcoxon_loses": false,
+                  "wins": 20,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.025627499999999998,
+                  "df_ber": 0.024894999999999997,
+                  "rel_penalty": 0.029423579031934148,
+                  "wilcoxon_p": 0.0009650339292710434,
+                  "wilcoxon_loses": true,
+                  "wins": 3,
+                  "losses": 16
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.000535,
+                  "df_ber": 0.0004175,
+                  "rel_penalty": 0.28143712574850294,
+                  "wilcoxon_p": 0.00045159695248686734,
+                  "wilcoxon_loses": true,
+                  "wins": 1,
+                  "losses": 16
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.14131249999999998,
+                0.02555,
+                0.000475,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": 0.13772455089820357,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.14131249999999998,
+                  "df_ber": 0.14464749999999998,
+                  "rel_penalty": -0.023056050052714393,
+                  "wilcoxon_p": 8.844915021211901e-05,
+                  "wilcoxon_loses": false,
+                  "wins": 20,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.02555,
+                  "df_ber": 0.024894999999999997,
+                  "rel_penalty": 0.026310504117292743,
+                  "wilcoxon_p": 0.0011130354392137054,
+                  "wilcoxon_loses": true,
+                  "wins": 3,
+                  "losses": 16
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.000475,
+                  "df_ber": 0.0004175,
+                  "rel_penalty": 0.13772455089820357,
+                  "wilcoxon_p": 0.014210059635209892,
+                  "wilcoxon_loses": true,
+                  "wins": 4,
+                  "losses": 10
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "window": 5,
+          "hidden": 24,
+          "params": 169,
+          "worst_rel_penalty_over_seeds": 0.3293413173652693,
+          "best_rel_penalty_over_seeds": 0.131736526946108,
+          "matches_tolerance_all_seeds": false,
+          "matches_wilcoxon_all_seeds": false,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.1417675,
+                0.025475000000000005,
+                0.0004725000000000001,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": 0.131736526946108,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.1417675,
+                  "df_ber": 0.14464749999999998,
+                  "rel_penalty": -0.01991047200954039,
+                  "wilcoxon_p": 8.782404130245517e-05,
+                  "wilcoxon_loses": false,
+                  "wins": 20,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.025475000000000005,
+                  "df_ber": 0.024894999999999997,
+                  "rel_penalty": 0.02329785097409149,
+                  "wilcoxon_p": 0.0018219333658194212,
+                  "wilcoxon_loses": true,
+                  "wins": 4,
+                  "losses": 16
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0004725000000000001,
+                  "df_ber": 0.0004175,
+                  "rel_penalty": 0.131736526946108,
+                  "wilcoxon_p": 0.01423398767298217,
+                  "wilcoxon_loses": true,
+                  "wins": 2,
+                  "losses": 12
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.14225,
+                0.025740000000000002,
+                0.0005549999999999999,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": 0.3293413173652693,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.14225,
+                  "df_ber": 0.14464749999999998,
+                  "rel_penalty": -0.016574776612108728,
+                  "wilcoxon_p": 8.807368035275503e-05,
+                  "wilcoxon_loses": false,
+                  "wins": 20,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.025740000000000002,
+                  "df_ber": 0.024894999999999997,
+                  "rel_penalty": 0.03394255874673652,
+                  "wilcoxon_p": 0.0005120729729700865,
+                  "wilcoxon_loses": true,
+                  "wins": 2,
+                  "losses": 18
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0005549999999999999,
+                  "df_ber": 0.0004175,
+                  "rel_penalty": 0.3293413173652693,
+                  "wilcoxon_p": 0.00019166964125599042,
+                  "wilcoxon_loses": true,
+                  "wins": 0,
+                  "losses": 18
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.141625,
+                0.025539999999999997,
+                0.0005025000000000001,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": 0.20359281437125776,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.141625,
+                  "df_ber": 0.14464749999999998,
+                  "rel_penalty": -0.020895625572512375,
+                  "wilcoxon_p": 8.844915021211901e-05,
+                  "wilcoxon_loses": false,
+                  "wins": 20,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.025539999999999997,
+                  "df_ber": 0.024894999999999997,
+                  "rel_penalty": 0.02590881703153243,
+                  "wilcoxon_p": 0.0013091294064413689,
+                  "wilcoxon_loses": true,
+                  "wins": 4,
+                  "losses": 16
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0005025000000000001,
+                  "df_ber": 0.0004175,
+                  "rel_penalty": 0.20359281437125776,
+                  "wilcoxon_p": 0.002798863555780007,
+                  "wilcoxon_loses": true,
+                  "wins": 3,
+                  "losses": 14
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "window": 7,
+          "hidden": 4,
+          "params": 37,
+          "worst_rel_penalty_over_seeds": 0.2934131736526943,
+          "best_rel_penalty_over_seeds": 0.13772455089820368,
+          "matches_tolerance_all_seeds": false,
+          "matches_wilcoxon_all_seeds": false,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.14105499999999999,
+                0.0253,
+                0.00047500000000000005,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": 0.13772455089820368,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.14105499999999999,
+                  "df_ber": 0.14464749999999998,
+                  "rel_penalty": -0.02483623982440069,
+                  "wilcoxon_p": 1.9073486328125e-06,
+                  "wilcoxon_loses": false,
+                  "wins": 20,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0253,
+                  "df_ber": 0.024894999999999997,
+                  "rel_penalty": 0.016268326973287915,
+                  "wilcoxon_p": 0.015681573512103038,
+                  "wilcoxon_loses": true,
+                  "wins": 6,
+                  "losses": 13
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.00047500000000000005,
+                  "df_ber": 0.0004175,
+                  "rel_penalty": 0.13772455089820368,
+                  "wilcoxon_p": 0.0047348486669802625,
+                  "wilcoxon_loses": true,
+                  "wins": 3,
+                  "losses": 14
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.1418575,
+                0.0256575,
+                0.0005399999999999999,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": 0.2934131736526943,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.1418575,
+                  "df_ber": 0.14464749999999998,
+                  "rel_penalty": -0.019288269759242208,
+                  "wilcoxon_p": 1.9073486328125e-06,
+                  "wilcoxon_loses": false,
+                  "wins": 20,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0256575,
+                  "df_ber": 0.024894999999999997,
+                  "rel_penalty": 0.030628640289214817,
+                  "wilcoxon_p": 0.00021852483499695252,
+                  "wilcoxon_loses": true,
+                  "wins": 1,
+                  "losses": 19
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0005399999999999999,
+                  "df_ber": 0.0004175,
+                  "rel_penalty": 0.2934131736526943,
+                  "wilcoxon_p": 0.00037821453602672597,
+                  "wilcoxon_loses": true,
+                  "wins": 2,
+                  "losses": 16
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.14153,
+                0.02558,
+                0.0004975,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": 0.19161676646706585,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.14153,
+                  "df_ber": 0.14464749999999998,
+                  "rel_penalty": -0.021552394614493826,
+                  "wilcoxon_p": 1.9073486328125e-06,
+                  "wilcoxon_loses": false,
+                  "wins": 20,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.02558,
+                  "df_ber": 0.024894999999999997,
+                  "rel_penalty": 0.027515565374573274,
+                  "wilcoxon_p": 0.0007277622489709132,
+                  "wilcoxon_loses": true,
+                  "wins": 2,
+                  "losses": 18
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0004975,
+                  "df_ber": 0.0004175,
+                  "rel_penalty": 0.19161676646706585,
+                  "wilcoxon_p": 0.0009112839073171735,
+                  "wilcoxon_loses": true,
+                  "wins": 2,
+                  "losses": 14
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "window": 7,
+          "hidden": 8,
+          "params": 73,
+          "worst_rel_penalty_over_seeds": 0.28143712574850294,
+          "best_rel_penalty_over_seeds": 0.14371257485029926,
+          "matches_tolerance_all_seeds": false,
+          "matches_wilcoxon_all_seeds": false,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.14138500000000004,
+                0.02561,
+                0.000495,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": 0.18562874251497002,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.14138500000000004,
+                  "df_ber": 0.14464749999999998,
+                  "rel_penalty": -0.022554831573307153,
+                  "wilcoxon_p": 1.9073486328125e-06,
+                  "wilcoxon_loses": false,
+                  "wins": 20,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.02561,
+                  "df_ber": 0.024894999999999997,
+                  "rel_penalty": 0.028720626631853943,
+                  "wilcoxon_p": 0.000960443864158297,
+                  "wilcoxon_loses": true,
+                  "wins": 2,
+                  "losses": 17
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.000495,
+                  "df_ber": 0.0004175,
+                  "rel_penalty": 0.18562874251497002,
+                  "wilcoxon_p": 0.001735923824531339,
+                  "wilcoxon_loses": true,
+                  "wins": 2,
+                  "losses": 14
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.14203749999999998,
+                0.025775000000000003,
+                0.000535,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": 0.28143712574850294,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.14203749999999998,
+                  "df_ber": 0.14464749999999998,
+                  "rel_penalty": -0.018043865258646027,
+                  "wilcoxon_p": 8.832385863081277e-05,
+                  "wilcoxon_loses": false,
+                  "wins": 20,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.025775000000000003,
+                  "df_ber": 0.024894999999999997,
+                  "rel_penalty": 0.035348463546897205,
+                  "wilcoxon_p": 0.00021852483499695252,
+                  "wilcoxon_loses": true,
+                  "wins": 2,
+                  "losses": 18
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.000535,
+                  "df_ber": 0.0004175,
+                  "rel_penalty": 0.28143712574850294,
+                  "wilcoxon_p": 0.0015647124471676265,
+                  "wilcoxon_loses": true,
+                  "wins": 1,
+                  "losses": 14
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.14143,
+                0.0254575,
+                0.00047749999999999995,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": 0.14371257485029926,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.14143,
+                  "df_ber": 0.14464749999999998,
+                  "rel_penalty": -0.022243730448158347,
+                  "wilcoxon_p": 8.844915021211901e-05,
+                  "wilcoxon_loses": false,
+                  "wins": 20,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0254575,
+                  "df_ber": 0.024894999999999997,
+                  "rel_penalty": 0.022594898574011008,
+                  "wilcoxon_p": 0.00281126933692553,
+                  "wilcoxon_loses": true,
+                  "wins": 4,
+                  "losses": 16
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.00047749999999999995,
+                  "df_ber": 0.0004175,
+                  "rel_penalty": 0.14371257485029926,
+                  "wilcoxon_p": 0.023686086533916274,
+                  "wilcoxon_loses": true,
+                  "wins": 3,
+                  "losses": 11
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "min_params_tolerance": null,
+      "min_params_both_criteria": null,
+      "best_config_both": null
+    }
+  }
+}
