@@ -122,7 +122,7 @@ This study tests H3 (complexity versus BER) and H4 (architecture convergence at 
 
 \textbf{Trials:} - \textbf{Topology:} SISO (both hops) - \textbf{Modulation scheme:} QPSK - \textbf{Channel:} i.i.d.\ Rayleigh fast fading (canonical) - \textbf{Equalizers:} None - \textbf{NN architecture:} All normalized to \textasciitilde3,000 parameters, plus original sizes (169 to 26K) - \textbf{NN activation:} ReLU hidden, tanh output
 
-\textbf{Conclusion:} A minimal 169-parameter MLP matches models roughly 140$\times$ larger, and no larger model evaluated here improves on it; whether the curve eventually turns upward, and whether overfitting would be the reason, is not tested by these experiments (Section~\ref{sec:the-less-is-more-principle-h3-confirmed}). At an equal budget of 3,000 parameters the gap between feedforward and sequence architectures is strongly SNR-dependent: it falls monotonically from $17.4\%$ at 0~dB to $4.1\%$ at 20~dB (Table~\ref{tbl:table8}). Parameter count therefore accounts for the comparison at high SNR, where the choice of model is nearly irrelevant, but not at low SNR, where the six equal-sized models separate cleanly into a feedforward group tracking DF and a sequence group tracking AF. Since all six carry the same budget, that separation is not explained by capacity; it is attributable to the remaining differences between the models, of which architecture is the most salient but not the only one, since depth, width, state dimension and window size were adjusted to meet the budget (Table~\ref{tbl:table28}). The generative VAE falls inside the feedforward group at every SNR rather than apart from it, ending at $0.0101$ against MLP-3K's $0.0099$, and it is ahead of all three sequence models from 0 to 16~dB; the generative paradigm is therefore not a handicap at this budget (Section~\ref{sec:generative-vs.-discriminative-paradigms-for-relay-processing}).
+\textbf{Conclusion:} A minimal 169-parameter MLP matches models roughly 140$\times$ larger, and no larger model evaluated here improves on it; whether the curve eventually turns upward, and whether overfitting would be the reason, is not tested by \emph{these} experiments (Section~\ref{sec:the-less-is-more-principle-h3-confirmed}). It is tested by the size sweep of Section~\ref{sec:minimum-relay-size}, which replicates every configuration across three initializations and finds no upward arm above the initialization spread. At an equal budget of 3,000 parameters the gap between feedforward and sequence architectures is strongly SNR-dependent: it falls monotonically from $17.4\%$ at 0~dB to $4.1\%$ at 20~dB (Table~\ref{tbl:table8}). Parameter count therefore accounts for the comparison at high SNR, where the choice of model is nearly irrelevant, but not at low SNR, where the six equal-sized models separate cleanly into a feedforward group tracking DF and a sequence group tracking AF. Since all six carry the same budget, that separation is not explained by capacity; it is attributable to the remaining differences between the models, of which architecture is the most salient but not the only one, since depth, width, state dimension and window size were adjusted to meet the budget (Table~\ref{tbl:table28}). The generative VAE falls inside the feedforward group at every SNR rather than apart from it, ending at $0.0101$ against MLP-3K's $0.0099$, and it is ahead of all three sequence models from 0 to 16~dB; the generative paradigm is therefore not a handicap at this budget (Section~\ref{sec:generative-vs.-discriminative-paradigms-for-relay-processing}).
 \REV{``inverted-U'' \(\to\) ``U-shaped \ldots in BER''. The VAE conclusion, previously ``a consistent underperformer \ldots due to probabilistic overhead'' and then softened to an inference-time caveat, is now stated as what Table~\ref{tbl:table8} actually shows: the VAE sits inside the feedforward group at every SNR. The ``consistent underperformer'' reading does not survive re-measurement (Chapter~\ref{sec:discussion}).}
 
 \subsection{Results Tables}\label{sec:results-tables-2}
@@ -155,6 +155,54 @@ SNR (dB) & MLP & Hybrid & VAE & Transf. & Mamba-S6 & Mamba2 & AF & DF \\
 \caption[Equal-parameter-budget BER (3K), QPSK/Rayleigh]{BER vs $E_s/N_0$ for all relay variants normalised to $\approx$3{,}000 parameters, QPSK over Rayleigh fading. AF and DF (dashed) are the unparameterised references. Shaded bands show 95\% confidence intervals for the learned relays. The feedforward group (MLP-3K, Hybrid-3K, VAE-3K) tracks DF across the full range; the sequence models (Transformer-3K, Mamba-3K, Mamba2-3K) converge with them only at high SNR}\label{fig:fig-3k-ber}\end{figure}
 
 
+
+\section{Minimum Relay Size Across Channel Families}\label{sec:minimum-relay-size}
+
+The complexity study of Section~\ref{sec:parameter-normalization-complexity-trade-off} establishes that no evaluated model improves on the 169-parameter MLP, but leaves two questions open: how far \emph{below} 169 parameters the relay can be taken, and whether the answer is a property of the architecture or of the channel. This section answers both by sweeping relay size downward on every channel family used in this thesis.
+
+\textbf{Goal:} Locate the smallest relay that costs nothing measurable against the thesis's own published relay, per channel, and determine which architectural axis --- window, depth or width --- sets that floor.
+
+\textbf{Trials:} - \textbf{Topology:} SISO, two hops, hop~2 per each channel family's own convention (AWGN or coherently-compensated Rayleigh) - \textbf{Modulation scheme:} BPSK or QPSK, per channel, as used elsewhere in this thesis - \textbf{Channels:} the nine families of Chapters~\ref{sec:experiments} and~\ref{sec:unknown-channels}, plus the coded scenario of Section~\ref{sec:coded-block-df} - \textbf{Comparators:} symbol-wise DF where the channel is memoryless, Viterbi/MLSE where it has memory, block DF for the coded scenario; each channel additionally compared against its own published relay (MLP-169, or MLP-756 coded) - \textbf{Relay architecture:} window $\in\{1,3,5,7\}$, depth $\in\{1,2,3\}$, width from 1 to 48 - \textbf{Replication:} three independent initializations per configuration, each configuration held to its worst - \textbf{Metric:} additional SNR required to reach a given BER
+
+\textbf{Conclusion:} The floor is set by channel memory, not by parameter count, and it is far lower than 169 parameters only where the channel is memoryless. Table~\ref{tbl:table-minsize} gives the smallest configuration meeting a range of degradation budgets against each scenario's own published relay. At zero degradation, three of the five memoryless channels are matched by four parameters --- a single hidden unit with no window, $42\times$ smaller than MLP-169 --- whereas the three-tap channels require 73 to 145 parameters, only $1.2\times$ to $2.3\times$ smaller. Reading the window column rather than the parameter column explains why: every memoryless row settles at window~1 and every three-tap row needs window~5 or~7 until a full decibel of degradation is permitted. Depth was varied from one to three hidden layers and improved no configuration; where a two-layer network matched, a single layer matched at fewer parameters. The complexity question is therefore not "how many parameters" but "how much window", and the answer is fixed by the channel's impulse response rather than by the architecture. Section~\ref{sec:complexity-curve-turn} takes up what this implies for the U-shaped reading of H3, and reports the across-initialization spread that bounds the resolution of these figures.
+
+\begin{longtable}[]{@{}llllllll@{}}
+\caption[Smallest relay per degradation budget]{Smallest relay meeting a given degradation budget against each scenario's own published relay (MLP-169, or MLP-756 for the coded row), written as parameters and window. The reader should observe the window column rather than the parameter column: every memoryless row settles at window~1 while every three-tap row requires window~5 or~7 until a full decibel is conceded, which is the sense in which channel memory rather than model size sets the floor. A dash indicates that no smaller configuration meets that budget}\label{tbl:table-minsize}\tabularnewline
+\toprule\noalign{}
+Channel & Taps & $\le$0~dB & $\le$0.1~dB & $\le$0.25~dB & $\le$0.5~dB & $\le$1~dB & $\le$2~dB \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+Channel & Taps & $\le$0~dB & $\le$0.1~dB & $\le$0.25~dB & $\le$0.5~dB & $\le$1~dB & $\le$2~dB \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+awgn & 1 & 4p w1 & 4p w1 & 4p w1 & 4p w1 & 4p w1 & 4p w1 \\
+rayleigh & 1 & 4p w1 & 4p w1 & 4p w1 & 4p w1 & 4p w1 & 4p w1 \\
+flat gain & 1 & 21p w3 & 21p w3 & 21p w3 & 4p w1 & 4p w1 & 4p w1 \\
+branch asym. & 1 & 4p w1 & 4p w1 & 4p w1 & 4p w1 & 4p w1 & 4p w1 \\
+nonlinear bias & 1 & 29p w5 & 4p w1 & 4p w1 & 4p w1 & 4p w1 & 4p w1 \\
+ISI & 3 & 73p w7 & 73p w7 & 57p w5 & 57p w5 & 37p w7 & 21p w3 \\
+ISI (complex) & 3 & 73p w7 & 73p w7 & 73p w7 & 73p w7 & 57p w5 & 21p w3 \\
+ISI + Rayleigh & 3 & 145p w7 & 73p w7 & 73p w7 & 73p w7 & 37p w7 & 21p w3 \\
+composite & 3 & 145p w7 & 73p w7 & 57p w5 & 21p w3 & 21p w3 & 6p w3 \\
+coded & code & 372p w9 & 244p w5 & 244p w5 & 18p w1 & 18p w1 & 18p w1 \\
+\end{longtable}
+
+\subsection{Results Figures}\label{sec:results-figures-minsize}
+
+\begin{figure}[htbp]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.8\textheight,keepaspectratio]{results/minsize_window_crossover.png}}
+\caption[Window against channel memory]{SNR penalty against each channel's classical comparator as the relay window widens, for the best configuration at each width. The reader should observe that the two panels behave oppositely: on the memoryless channels the penalty is flat to within a fifth of a decibel across every window (see inset), so the window buys nothing, while on the three-tap channels it falls by 8 to 11~dB between window~1 and window~7. This is the sense in which the relay's window must be matched to the channel's impulse response}\label{fig:minsize-crossover}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.8\textheight,keepaspectratio]{results/minsize_vs_degradation_budget.png}}
+\caption[Smallest relay per degradation budget]{Smallest relay meeting a given degradation budget against MLP-169, drawn as a step function because the horizontal axis is a budget the designer chooses rather than a measured quantity. The reader should observe the two-order-of-magnitude separation between the panels: the memoryless channels are served by four parameters at every budget shown, while the three-tap channels need between 21 and 145 depending on how much degradation is conceded}\label{fig:minsize-budget}
+\end{figure}
 
 \section{Coded Block-DF: Measuring the Remark~\ref{rem:df-terminology} Caveat}\label{sec:coded-block-df}
 

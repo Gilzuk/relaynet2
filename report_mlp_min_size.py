@@ -3,7 +3,13 @@
 Reads results/mlp_min_size_all_channels.json and prints two views, because
 neither alone is honest:
 
-  relative : worst-case mean-BER penalty vs DF, the criterion the sweep uses
+Each channel is scored against its own classical comparator (DF where the
+channel is memoryless, Viterbi/MLSE where it has memory), and each row carries
+the computed validity of that comparator. Read the `valid` column first: a row
+whose baseline is BROKEN or weak is not a floor, whatever its parameter count
+says.
+
+  relative : worst-case mean-BER penalty vs the baseline, the criterion used
              to decide "matches". It gets harsher as BER falls, so at high
              SNR a negligible absolute gap can read as a several-percent
              penalty (Table 5.2's own published MLP-169 lands at +2.06% at
@@ -22,6 +28,8 @@ import sys
 
 
 def worst_abs_gap(seed_runs):
+    """Largest absolute BER gap to the baseline. per_snr stores the baseline
+    under df_ber for backward compatibility with the DF-only results."""
     g = 0.0
     for s in seed_runs:
         for r in s["per_snr"]:
@@ -38,8 +46,8 @@ def main(path="results/mlp_min_size_all_channels.json"):
     print(f"  tolerance {100*d['tolerance_rel']:.0f}% relative at every SNR, "
           f"all {len(d['train_seeds'])} inits; Wilcoxon alpha {d['alpha']}")
     print("=" * 96)
-    print(f"  {'channel':<14} {'mod':<5} {'mem':>3} {'tol':>5} {'both':>5}  "
-          f"{'config':<12} {'DF BER @0dB':>11} {'abs gap':>9}")
+    print(f"  {'channel':<14} {'mod':<5} {'mem':>3} {'base':>5} {'valid':>12} "
+          f"{'tol':>5} {'both':>5}  {'config':<12} {'abs gap':>9}")
     print("  " + "-" * 92)
     for name, r in chans.items():
         # fall back to the tolerance-best config so the absolute gap is
@@ -55,9 +63,11 @@ def main(path="results/mlp_min_size_all_channels.json"):
             mark = " "
         cfg = f"{mark}w={b['window']} h={b['hidden']}"
         gap = worst_abs_gap(b["seed_runs"])
+        diag = r.get("baseline_diagnostics", {})
         print(f"  {name:<14} {r['modulation']:<5} {r['memory']:>3} "
+              f"{r.get('baseline','DF'):>5} {diag.get('verdict','?'):>12} "
               f"{str(r['min_params_tolerance']):>5} {str(r['min_params_both_criteria']):>5}  "
-              f"{cfg:<12} {r['df_ber'][0]:>11.4f} {gap:>9.4f}")
+              f"{cfg:<12} {gap:>9.4f}")
 
     print("\n" + "=" * 96)
     print("  BEST CONFIGURATION PER WINDOW, PER CHANNEL")
@@ -79,6 +89,9 @@ def main(path="results/mlp_min_size_all_channels.json"):
                          f"{'*' if best['matches_tolerance_all_seeds'] else ' '}")
         print(f"  {name:<14} {r['memory']:>3} " + "".join(cells))
     print("\n  * = that window's best configuration is within tolerance at every SNR")
+    print("  baseline validity: ok | weak (loses to AF) | near-optimal (BER floor ~0,")
+    print("    so relative penalties are unusable) | BROKEN (BER rises with SNR --")
+    print("    a 'match' on such a row clears a failed bar and is not a floor)")
     print("  ~ in the config column = nothing passed both criteria; shown for scale only")
     print("  Read across a row: does a wider window help on this channel?")
     print("  Memoryless channels (mem 1) should not benefit; ISI (mem 3) should.")

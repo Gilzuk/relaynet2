@@ -73,6 +73,46 @@ The bias-variance decomposition \cite{GoodfellowBengioCourville2016DeepLearning}
 
 This decomposition is a framework for interpreting the observation, not a measurement of it: bias and variance were not estimated separately, which would require training each configuration repeatedly across seeds and comparing training against held-out error. An earlier version of this section additionally attributed ``clear overfitting'' to an 11{,}201-parameter Maximum MLP; that configuration is not part of the reported experiments and no such measurement exists, so the claim has been withdrawn rather than restated.
 
+\subsection{Does the Complexity Curve Turn Upward?}\label{sec:complexity-curve-turn}
+
+The preceding subsections offer bias-variance and MDL readings of H3 but note that the stronger, U-shaped reading --- BER rising again once capacity exceeds what the mapping requires --- was not established, because each model had been trained once and a size effect could not be separated from run-to-run variance. A dedicated size sweep was therefore run to supply the missing evidence. It covers the nine channel families used across Chapters~\ref{sec:experiments} and~\ref{sec:unknown-channels} plus the coded scenario, varying relay window, depth and width independently, with three independent initializations at every configuration and each configuration held to its \emph{worst} initialization, so that a size counts only if it works whichever way it initializes --- a necessary precaution given the spread reported below. Degradation is measured as the additional SNR required to reach a given BER, which unlike a relative BER penalty does not divide by a vanishing denominator at high SNR.
+
+Because seed replication is the specific evidence this section previously lacked, the across-initialization spread is reported first, as a measurement in its own right rather than as a caveat. Table~\ref{tbl:seed-spread} gives, per channel, the spread in SNR penalty between the best and worst of the three initializations at the same configuration, summarized over all configurations swept.
+
+\begin{table}[htbp]
+\centering
+\caption[Across-initialization spread]{Spread in SNR penalty between the best and worst of three initializations at an identical configuration, summarized over all configurations swept on each channel. The reader should observe that on five of the nine channels the median spread is comparable to or larger than the entire effect of varying model size, so a single-initialization size comparison on those channels measures the draw rather than the architecture.}\label{tbl:seed-spread}
+\begin{tabular}{lrrrr}
+\toprule
+Channel & Configs & Median (dB) & 90th pct.\ (dB) & Max (dB) \\
+\midrule
+rayleigh      & 17 & 0.008 & 0.019 & 0.028 \\
+composite     & 16 & 0.036 & 0.165 & 0.195 \\
+awgn          & 17 & 0.055 & 0.116 & 0.138 \\
+isi\_rayleigh & 16 & 0.177 & 0.588 & 0.795 \\
+isi           & 18 & 0.195 & 0.705 & 0.996 \\
+isi\_complex  & 17 & 0.332 & 2.325 & 3.182 \\
+branch\_asym  & 17 & 0.388 & 0.892 & 1.013 \\
+flat\_gain    & 17 & 0.622 & 1.000 & 1.250 \\
+nlbias        & 17 & 1.231 & 1.242 & 1.245 \\
+\midrule
+All           & 152 & 0.180 & 1.229 & 3.182 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Two things follow. First, initialization variance is not a small correction: across all 152 configurations the median spread is \(0.180\)~dB and \(57\%\) exceed \(0.15\)~dB, with a worst case of \(3.18\)~dB on the complex ISI channel at eleven parameters. On the nonlinear-bias channel the spread is \(1.23\)~dB at essentially every configuration, which is the two-attractor behaviour noted below rather than a gradual variance. Second, the variance is strongly channel-dependent: the canonical Rayleigh channel is highly reproducible at \(0.008\)~dB median, and the composite and AWGN channels nearly so, while four channels sit above \(0.3\)~dB. Any single-run size comparison on the latter group measures which initialization was drawn, not which architecture is better --- which is precisely the confound this section identified in the original H3 evidence, now quantified.
+
+Against that yardstick, \textbf{the upward arm is not observed}, and the sweep had the resolution to see it had it been there. Holding the window fixed so that capacity is the only variable, the worst-case penalty against the classical baseline is flat on the memoryless channels and monotonically decreasing on the channels with memory. On the canonical Rayleigh channel at window~5 the penalty moves from \(+0.03\)~dB at one hidden unit to \(+0.06\)~dB at twenty-four; on the composite channel at window~7 it improves monotonically from \(-1.97\)~dB to \(-2.23\)~dB as width grows from four to forty-eight. Where a rising tail appears at all it is at most \(0.15\)~dB, which is below the \(0.180\)~dB median across-initialization spread of Table~\ref{tbl:seed-spread} and therefore not separable from the draw. The one clearly non-monotone case, the nonlinear-bias channel, oscillates between two distinct outcomes (\(-1.63\) and \(-2.87\)~dB) rather than tracing a curve, which is the signature of training landing in one of two attractors rather than of capacity being harmful.
+
+Two corrections to the reading of H3 follow. First, the weaker claim is now confirmed under seed replication rather than merely unrefuted: additional parameters neither help nor hurt on a memoryless channel over roughly two orders of magnitude of model size. Second, an effect that appears substantial under a relative BER criterion largely dissolves under the SNR-penalty criterion. On AWGN the penalty grows from \(+11\%\) to \(+28\%\) in relative BER as the window widens, which invites the conclusion that a window is actively harmful; the same measurements correspond to \(+0.06\)~dB and \(+0.11\)~dB. The effect is real in sign but negligible in magnitude, and the relative criterion overstates it because the absolute BER gap it divides by falls to \(4\times10^{-4}\).
+
+What the sweep does establish is that the binding resource is not parameter count but \textbf{window matched to channel memory}. On the memoryless channels the smallest configuration examined --- four parameters, a single hidden unit with no window --- is within \(0.15\)~dB of the classical baseline on three of five channels and within \(0.03\)~dB on the canonical channel, some \(42\times\) smaller than the 169-parameter relay of Table~\ref{tbl:table2}. On the three-tap channels the same four-parameter configuration is between \(11\) and \(13\)~dB adrift, and closing that gap requires widening the window rather than the layer: on the real ISI channel the penalty falls from \(+12.95\)~dB at window~1 to \(+1.67\)~dB at window~7. Depth was varied from one to three hidden layers and did not improve any configuration; where a two-layer network matched, a single layer matched at fewer parameters.
+
+The coded scenario behaves differently again and is the one case where size is demonstrably not the operative variable. Against block DF, every configuration from 18 to 1{,}076 parameters lies between \(+1.86\) and \(+1.92\)~dB, so a sixty-fold range in model size buys \(0.06\)~dB. The relay is not capacity-limited there but interface-limited: it commits to a hard constellation decision per symbol, at \(90\)--\(94\%\) symbol accuracy, before the outer code is decoded, so the destination decoder receives no reliability information that block DF would have exploited. This identifies a design change rather than a scaling law, and it is taken up in Section~\ref{sec:future-work}.
+
+Taken together, these measurements support the weaker H3 and leave the U-shaped reading unsupported --- now on the basis of a sweep designed to detect it, rather than for want of evidence. The practical statement that survives is narrower than ``less is more'' and more actionable: relay complexity should be matched to channel memory, and on a memoryless channel the matched complexity is very small indeed.
+
 \subsection{Practical Implications}\label{sec:practical-implications}
 
 \begin{enumerate}
