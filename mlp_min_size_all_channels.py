@@ -150,6 +150,13 @@ GRID = [
     (3, 1), (3, 2), (3, 4), (3, 8), (3, 16),
     (5, 1), (5, 2), (5, 4), (5, 8), (5, 24),   # (5,24) = MLP-169, the control
     (7, 4), (7, 8),
+    # Extended after the MLP-169 comparison put w=7 h1-8p (73p) at +5.2% on
+    # isi_rayleigh and +2.5% on composite -- just outside the 2% bar, and the
+    # widest w=7 point in the grid. The trend in width at w=7 is cleanly
+    # monotone there (h1-4p +38.4% -> h1-8p +5.2%), so that is a grid ceiling
+    # rather than a measured limit. These four close it out; every one is run
+    # and reported whether it passes or not.
+    (7, 16), (7, 24), (7, 32), (7, 48),
 ]
 
 # Channel families. "memory" is the number of taps in the channel's impulse
