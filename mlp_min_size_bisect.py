@@ -51,7 +51,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import mlp_min_size_all_channels as base
 from relaynet.relays import AmplifyAndForwardRelay, DecodeAndForwardRelay
-from deep_mlp_relay import DeepMLPRelay, n_params
+from deep_mlp_relay import DeepMLPRelay, n_params, arch_label
 
 WINDOWS = [1, 3, 5, 7]
 DEPTHS = [1, 2, 3]      # hidden layers; depth 1 reproduces MLPRelay exactly
@@ -92,13 +92,14 @@ def matches(channel, hop2, mod, window, depth, hidden,
     worst = max(r["worst_rel_penalty"] for r in runs)
     best = min(r["worst_rel_penalty"] for r in runs)
     out = {"window": window, "depth": depth, "width": hidden,
+           "arch": arch_label(hidden, depth),
            "params": n_params(window, hidden, depth),
            "matches": bool(ok),
            "worst_rel_penalty_over_seeds": float(worst),
            "best_rel_penalty_over_seeds": float(best),
            "seed_runs": runs}
     cache[key] = out
-    print(f"      probe w={window} L={depth} h={hidden:<3} ({out['params']:>5}p)  "
+    print(f"      probe w={window} {out['arch']:<22} ({out['params']:>5}p)  "
           f"penalty {100*best:+8.1f}% .. {100*worst:+8.1f}%   "
           f"{'match' if ok else 'no'}", flush=True)
     return out
@@ -202,9 +203,10 @@ def run_channel(name, spec):
                         base_ber, base_trials, cache)
             p = n_params(w, h_star, L)
             tag = "" if not bad else f"   NON-MONOTONE: fails again at h={bad}"
-            print(f"      -> smallest matching width h={h_star} "
+            print(f"      -> smallest match {arch_label(h_star, L)} "
                   f"({p} params){tag}")
             cells[(w, L)] = {"width": h_star, "params": p,
+                             "arch": arch_label(h_star, L),
                              "monotone": not bad, "failed_above": bad}
 
     # Two different questions, both answered, because reporting only one of
@@ -217,9 +219,9 @@ def run_channel(name, spec):
     best_any = min(matched, key=lambda t: t[1]["params"]) if matched else None
     best = min(mono, key=lambda t: t[1]["params"]) if mono else None
 
-    print(f"\n    smallest matching width by (window, depth), params in brackets")
+    print(f"\n    smallest matching hidden stack by (window, depth)")
     print("      " + "depth".rjust(8)
-          + "".join(f"{L:>16}" for L in DEPTHS))
+          + "".join(f"{L:>26}" for L in DEPTHS))
     for w in WINDOWS:
         row = []
         for L in DEPTHS:
@@ -228,23 +230,23 @@ def run_channel(name, spec):
                 row.append(f"{'--':>16}")
             else:
                 mark = "" if c["monotone"] else "!"
-                cell = "h=%d (%dp)%s" % (c["width"], c["params"], mark)
-                row.append(f"{cell:>16}")
+                cell = "%s (%dp)%s" % (c["arch"], c["params"], mark)
+                row.append(f"{cell:>26}")
         print(f"      w={w:<6}" + "".join(row))
 
     if best_any:
         (aw, aL), av = best_any
-        print(f"\n  => smallest that matches at all: {av['params']} params "
-              f"(window {aw}, depth {aL}, width {av['width']}) vs {base_name}"
+        print(f"\n  => smallest that matches at all: w={aw} "
+              f"{arch_label(av['width'], aL)} = {av['params']} params "
+              f"vs {base_name}"
               + ("" if av["monotone"] else
                  "   -- non-monotone: a working point, not a threshold"))
     else:
         print(f"\n  => nothing matches {base_name} anywhere in the search space")
     if best:
         (bw, bL), bv = best
-        print(f"  => smallest with every wider net still matching: "
-              f"{bv['params']} params "
-              f"(window {bw}, depth {bL}, width {bv['width']})")
+        print(f"  => smallest with every wider net still matching: w={bw} "
+              f"{arch_label(bv['width'], bL)} = {bv['params']} params")
     else:
         print("  => no (window, depth) cell is monotone above its boundary")
 
@@ -258,12 +260,14 @@ def run_channel(name, spec):
         "min_params_any": best_any[1]["params"] if best_any else None,
         "min_config_any": ({"window": best_any[0][0], "depth": best_any[0][1],
                             "width": best_any[1]["width"],
+                            "arch": best_any[1]["arch"],
                             "monotone": best_any[1]["monotone"]}
                            if best_any else None),
         "min_params": best[1]["params"] if best else None,
         "min_window": best[0][0] if best else None,
         "min_depth": best[0][1] if best else None,
         "min_width": best[1]["width"] if best else None,
+        "min_arch": best[1]["arch"] if best else None,
         "probes": [v for v in cache.values()],
         "n_probes": len(cache),
     }
@@ -293,16 +297,17 @@ def main():
             json.dump(out, fh, indent=2)
 
     print(f"\n{'=' * 78}\n  SUMMARY\n{'=' * 78}")
-    print(f"  {'channel':<14} {'base':>5} {'valid':>12} "
-          f"{'any':>5} {'thresh':>7} {'w':>2} {'L':>2} {'h':>3} {'probes':>7}")
+    print(f"  {'channel':<14} {'base':>5} {'valid':>12} {'any':>6} "
+          f"{'w':>2}  {'architecture':<24} {'thresh':>7} {'probes':>7}")
     for n, r in out["channels"].items():
         a = r.get("min_config_any")
         atag = "" if not a else ("" if a["monotone"] else "!")
+        arch = a["arch"] if a else "--"
+        win = str(a["window"]) if a else "--"
         print(f"  {n:<14} {r['baseline']:>5} "
               f"{r['baseline_diagnostics']['verdict']:>12} "
-              f"{str(r['min_params_any']) + atag:>5} {str(r['min_params']):>7} "
-              f"{str(r['min_window']):>2} {str(r['min_depth']):>2} "
-              f"{str(r['min_width']):>3} {r['n_probes']:>7}")
+              f"{str(r['min_params_any']) + atag:>6} {win:>2}  {arch:<24} "
+              f"{str(r['min_params']):>7} {r['n_probes']:>7}")
     print("\n  any    = smallest configuration that matched at all")
     print("  thresh = smallest whose (window, depth) cell also matched at every")
     print("           wider width probed -- i.e. a threshold, not just a point")

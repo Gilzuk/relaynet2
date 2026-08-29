@@ -58,16 +58,29 @@ class DeepMLPRelay(Relay):
 
     def __init__(self, input_size, width, depth=1, output_size=1,
                  window_size=None, seed=0):
+        """`width` is neurons per hidden layer: an int for a uniform stack, or
+        a per-layer sequence such as [4, 2] for a 4-then-2 taper. When a
+        sequence is given `depth` is taken from its length."""
+        if isinstance(width, (list, tuple, np.ndarray)):
+            widths = [int(w) for w in width]
+            depth = len(widths)
+        else:
+            if depth < 1:
+                raise ValueError("depth must be at least 1")
+            widths = [int(width)] * depth
         if depth < 1:
             raise ValueError("depth must be at least 1")
+        if any(w < 1 for w in widths):
+            raise ValueError("every hidden layer needs at least one neuron")
         self.input_size = input_size
-        self.width = width
+        self.widths = widths
+        self.width = widths[0] if len(set(widths)) == 1 else tuple(widths)
         self.depth = depth
         self.output_size = output_size
         self.window_size = window_size
 
         rng = np.random.default_rng(seed)
-        sizes = [input_size] + [width] * depth + [output_size]
+        sizes = [input_size] + widths + [output_size]
         self.W, self.b = [], []
         for n_in, n_out in zip(sizes[:-1], sizes[1:]):
             # He initialization, as in MLPRelay
@@ -146,13 +159,34 @@ class DeepMLPRelay(Relay):
         return output / power
 
 
-def n_params(window, width, depth, input_size=None, output_size=1):
-    """Closed form, for grids that need the count before building anything."""
+def n_params(window, width, depth=None, input_size=None, output_size=1):
+    """Closed form, for grids that need the count before building anything.
+
+    `width` may be an int (uniform stack of `depth` layers) or a per-layer
+    sequence, in which case `depth` is ignored.
+    """
     n_in = window if input_size is None else input_size
-    p = n_in * width + width                      # input -> first hidden
-    p += (depth - 1) * (width * width + width)    # hidden -> hidden
-    p += width * output_size + output_size        # last hidden -> output
-    return p
+    if isinstance(width, (list, tuple)):
+        widths = list(width)
+    else:
+        widths = [width] * depth
+    sizes = [n_in] + widths + [output_size]
+    return sum(a * b + b for a, b in zip(sizes[:-1], sizes[1:]))
+
+
+def arch_label(width, depth=None):
+    """Name a configuration by its hidden stack rather than by a bare count.
+
+    "4 params" says how big a network is but not what shape it is, and two
+    very different architectures can share a count. This spells the stack out
+    layer by layer:
+
+        arch_label(2, 2)      -> 'h1-2p-h2-2p'      two layers of 2
+        arch_label(1, 1)      -> 'h1-1p'            one layer of 1
+        arch_label([4, 2])    -> 'h1-4p-h2-2p'      a 4-then-2 taper
+    """
+    widths = list(width) if isinstance(width, (list, tuple)) else [width] * depth
+    return "-".join(f"h{i}-{w}p" for i, w in enumerate(widths, start=1))
 
 
 def test_deep_mlp_matches_single_layer(verbose=True):
@@ -193,7 +227,11 @@ def test_deep_mlp_matches_single_layer(verbose=True):
         for d in (1, 2, 3):
             r = DeepMLPRelay(input_size=5, width=7, depth=d)
             assert r.num_params == n_params(5, 7, d)
-            print(f"  depth {d}: {r.num_params} params (formula agrees)")
+            print(f"  depth {d}: {arch_label(7, d)} = {r.num_params} params")
+        taper = DeepMLPRelay(input_size=5, width=[4, 2])
+        assert taper.num_params == n_params(5, [4, 2])
+        assert taper.depth == 2
+        print(f"  per-layer: {arch_label([4, 2])} = {taper.num_params} params")
     return True
 
 
