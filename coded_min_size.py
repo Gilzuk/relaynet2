@@ -105,6 +105,52 @@ def evaluate(relay, encoder, decoder, frame_symbols, tag=None):
     return np.asarray(ber), np.asarray(fer)
 
 
+def summarize(out):
+    """Report the threshold structure, not a single 'smallest' number.
+
+    An earlier version printed "smallest relay at least as close as MLP-756"
+    and got 18 params, 42x smaller. That was an artifact: the comparison was
+    worst-seed against worst-seed, and MLP-756 has a bad initialization
+    (+34.9% on its best seed, +50.3% on its worst), so a relay that is simply
+    stuck at +50% ties it. Reporting that as a 42x reduction would have been
+    wrong in substance while true in arithmetic.
+
+    What the sweep actually shows is a threshold in width, so that is what
+    gets reported: the best consistent configuration, meaning the one with
+    the lowest worst-case penalty across all initializations.
+    """
+    rows = out["sweep"]
+    print("  penalty vs block DF (operational region), grouped by hidden width")
+    for h in sorted({r["hidden"] for r in rows}):
+        g = [r for r in rows if r["hidden"] == h]
+        lo = min(r["best_rel_operational"] for r in g)
+        hi = max(r["worst_rel_operational"] for r in g)
+        print(f"    hidden {h:>2}  ({min(r['params'] for r in g)}p"
+              f"-{max(r['params'] for r in g)}p):  "
+              f"{100*lo:+6.1f}% .. {100*hi:+6.1f}%")
+
+    best = min(rows, key=lambda r: (r["worst_rel_operational"], r["params"]))
+    ctrl = [r for r in rows if (r["window"], r["hidden"]) == (21, 16)]
+    print(f"\n  most consistent configuration: {best['params']}p "
+          f"(w={best['window']} h={best['hidden']})  "
+          f"{100*best['best_rel_operational']:+.1f}% .. "
+          f"{100*best['worst_rel_operational']:+.1f}% vs block DF")
+    if ctrl:
+        c = ctrl[0]
+        print(f"  published MLP-756 at this budget: "
+              f"{100*c['best_rel_operational']:+.1f}% .. "
+              f"{100*c['worst_rel_operational']:+.1f}%  "
+              f"({756/best['params']:.1f}x larger, and less consistent)")
+    print("\n  No size closes the gap. MLPQPSKClassifierRelay.process() takes an")
+    print("  argmax and forwards exact constellation points, so the relay hard-")
+    print("  decides every symbol at ~90-94% accuracy and the destination's")
+    print("  Viterbi decoder receives no reliability information. Block DF")
+    print("  decodes the frame with soft values, corrects using the code, and")
+    print("  re-encodes clean. The binding constraint is that interface, not")
+    print("  network capacity, which is why width 2 and width 8 sit at +50%")
+    print("  from 18 to 540 parameters.")
+
+
 def main():
     CE.N_FRAMES = N_FRAMES
     encoder, decoder = ConvolutionalEncoder(), ViterbiCodeDecoder()
@@ -176,18 +222,7 @@ def main():
             json.dump(out, fh, indent=2)
 
     print("\n" + "=" * 78)
-    ctrl = [r for r in rows if (r["window"], r["hidden"]) == (21, 16)]
-    if ctrl:
-        c = ctrl[0]
-        print(f"  published MLP-756 at this budget: "
-              f"{100*c['worst_rel_operational']:+.1f}% vs block DF (operational)")
-        within = [r for r in rows
-                  if r["worst_rel_operational"] <= c["worst_rel_operational"]]
-        if within:
-            b = min(within, key=lambda r: r["params"])
-            print(f"  smallest relay at least as close as MLP-756: {b['params']} "
-                  f"params (w={b['window']} h={b['hidden']}) -- "
-                  f"{756 / b['params']:.1f}x smaller")
+    summarize(out)
     print(f"  saved results/coded_min_size.json")
 
 
