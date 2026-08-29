@@ -24887,6 +24887,4095 @@
           }
         ]
       }
+    },
+    "pa": {
+      "note": "Ch7 power-amplifier saturation (memoryless but nonlinear)",
+      "modulation": "qpsk",
+      "memory": 1,
+      "df_ber": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "af_ber": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "sweep": [
+        {
+          "window": 1,
+          "hidden": 1,
+          "params": 4,
+          "worst_rel_penalty_over_seeds": NaN,
+          "best_rel_penalty_over_seeds": NaN,
+          "matches_tolerance_all_seeds": false,
+          "matches_wilcoxon_all_seeds": true,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": NaN,
+              "tolerance_ok": false,
+              "wilcoxon_ok": true,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": NaN,
+              "tolerance_ok": false,
+              "wilcoxon_ok": true,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": NaN,
+              "tolerance_ok": false,
+              "wilcoxon_ok": true,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "window": 1,
+          "hidden": 2,
+          "params": 7,
+          "worst_rel_penalty_over_seeds": NaN,
+          "best_rel_penalty_over_seeds": NaN,
+          "matches_tolerance_all_seeds": false,
+          "matches_wilcoxon_all_seeds": true,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": NaN,
+              "tolerance_ok": false,
+              "wilcoxon_ok": true,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": NaN,
+              "tolerance_ok": false,
+              "wilcoxon_ok": true,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": NaN,
+              "tolerance_ok": false,
+              "wilcoxon_ok": true,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "window": 1,
+          "hidden": 4,
+          "params": 13,
+          "worst_rel_penalty_over_seeds": NaN,
+          "best_rel_penalty_over_seeds": NaN,
+          "matches_tolerance_all_seeds": false,
+          "matches_wilcoxon_all_seeds": true,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": NaN,
+              "tolerance_ok": false,
+              "wilcoxon_ok": true,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": NaN,
+              "tolerance_ok": false,
+              "wilcoxon_ok": true,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": NaN,
+              "tolerance_ok": false,
+              "wilcoxon_ok": true,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "window": 1,
+          "hidden": 8,
+          "params": 25,
+          "worst_rel_penalty_over_seeds": NaN,
+          "best_rel_penalty_over_seeds": NaN,
+          "matches_tolerance_all_seeds": false,
+          "matches_wilcoxon_all_seeds": true,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": NaN,
+              "tolerance_ok": false,
+              "wilcoxon_ok": true,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": NaN,
+              "tolerance_ok": false,
+              "wilcoxon_ok": true,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": NaN,
+              "tolerance_ok": false,
+              "wilcoxon_ok": true,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "window": 1,
+          "hidden": 16,
+          "params": 49,
+          "worst_rel_penalty_over_seeds": NaN,
+          "best_rel_penalty_over_seeds": NaN,
+          "matches_tolerance_all_seeds": false,
+          "matches_wilcoxon_all_seeds": true,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": NaN,
+              "tolerance_ok": false,
+              "wilcoxon_ok": true,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": NaN,
+              "tolerance_ok": false,
+              "wilcoxon_ok": true,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": NaN,
+              "tolerance_ok": false,
+              "wilcoxon_ok": true,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "window": 3,
+          "hidden": 1,
+          "params": 6,
+          "worst_rel_penalty_over_seeds": NaN,
+          "best_rel_penalty_over_seeds": NaN,
+          "matches_tolerance_all_seeds": false,
+          "matches_wilcoxon_all_seeds": true,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": NaN,
+              "tolerance_ok": false,
+              "wilcoxon_ok": true,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": NaN,
+              "tolerance_ok": false,
+              "wilcoxon_ok": true,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": NaN,
+              "tolerance_ok": false,
+              "wilcoxon_ok": true,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "window": 3,
+          "hidden": 2,
+          "params": 11,
+          "worst_rel_penalty_over_seeds": NaN,
+          "best_rel_penalty_over_seeds": NaN,
+          "matches_tolerance_all_seeds": false,
+          "matches_wilcoxon_all_seeds": true,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": NaN,
+              "tolerance_ok": false,
+              "wilcoxon_ok": true,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": NaN,
+              "tolerance_ok": false,
+              "wilcoxon_ok": true,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": NaN,
+              "tolerance_ok": false,
+              "wilcoxon_ok": true,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "window": 3,
+          "hidden": 4,
+          "params": 21,
+          "worst_rel_penalty_over_seeds": NaN,
+          "best_rel_penalty_over_seeds": NaN,
+          "matches_tolerance_all_seeds": false,
+          "matches_wilcoxon_all_seeds": true,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": NaN,
+              "tolerance_ok": false,
+              "wilcoxon_ok": true,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": NaN,
+              "tolerance_ok": false,
+              "wilcoxon_ok": true,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": NaN,
+              "tolerance_ok": false,
+              "wilcoxon_ok": true,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "window": 3,
+          "hidden": 8,
+          "params": 41,
+          "worst_rel_penalty_over_seeds": NaN,
+          "best_rel_penalty_over_seeds": NaN,
+          "matches_tolerance_all_seeds": false,
+          "matches_wilcoxon_all_seeds": true,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": NaN,
+              "tolerance_ok": false,
+              "wilcoxon_ok": true,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": NaN,
+              "tolerance_ok": false,
+              "wilcoxon_ok": true,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": NaN,
+              "tolerance_ok": false,
+              "wilcoxon_ok": true,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "window": 3,
+          "hidden": 16,
+          "params": 81,
+          "worst_rel_penalty_over_seeds": NaN,
+          "best_rel_penalty_over_seeds": NaN,
+          "matches_tolerance_all_seeds": false,
+          "matches_wilcoxon_all_seeds": true,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": NaN,
+              "tolerance_ok": false,
+              "wilcoxon_ok": true,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": NaN,
+              "tolerance_ok": false,
+              "wilcoxon_ok": true,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": NaN,
+              "tolerance_ok": false,
+              "wilcoxon_ok": true,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "window": 5,
+          "hidden": 1,
+          "params": 8,
+          "worst_rel_penalty_over_seeds": NaN,
+          "best_rel_penalty_over_seeds": NaN,
+          "matches_tolerance_all_seeds": false,
+          "matches_wilcoxon_all_seeds": true,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": NaN,
+              "tolerance_ok": false,
+              "wilcoxon_ok": true,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": NaN,
+              "tolerance_ok": false,
+              "wilcoxon_ok": true,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": NaN,
+              "tolerance_ok": false,
+              "wilcoxon_ok": true,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "window": 5,
+          "hidden": 2,
+          "params": 15,
+          "worst_rel_penalty_over_seeds": NaN,
+          "best_rel_penalty_over_seeds": NaN,
+          "matches_tolerance_all_seeds": false,
+          "matches_wilcoxon_all_seeds": true,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": NaN,
+              "tolerance_ok": false,
+              "wilcoxon_ok": true,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": NaN,
+              "tolerance_ok": false,
+              "wilcoxon_ok": true,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": NaN,
+              "tolerance_ok": false,
+              "wilcoxon_ok": true,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "window": 5,
+          "hidden": 4,
+          "params": 29,
+          "worst_rel_penalty_over_seeds": NaN,
+          "best_rel_penalty_over_seeds": NaN,
+          "matches_tolerance_all_seeds": false,
+          "matches_wilcoxon_all_seeds": true,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": NaN,
+              "tolerance_ok": false,
+              "wilcoxon_ok": true,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": NaN,
+              "tolerance_ok": false,
+              "wilcoxon_ok": true,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": NaN,
+              "tolerance_ok": false,
+              "wilcoxon_ok": true,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "window": 5,
+          "hidden": 8,
+          "params": 57,
+          "worst_rel_penalty_over_seeds": NaN,
+          "best_rel_penalty_over_seeds": NaN,
+          "matches_tolerance_all_seeds": false,
+          "matches_wilcoxon_all_seeds": true,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": NaN,
+              "tolerance_ok": false,
+              "wilcoxon_ok": true,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": NaN,
+              "tolerance_ok": false,
+              "wilcoxon_ok": true,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": NaN,
+              "tolerance_ok": false,
+              "wilcoxon_ok": true,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "window": 5,
+          "hidden": 24,
+          "params": 169,
+          "worst_rel_penalty_over_seeds": NaN,
+          "best_rel_penalty_over_seeds": NaN,
+          "matches_tolerance_all_seeds": false,
+          "matches_wilcoxon_all_seeds": true,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": NaN,
+              "tolerance_ok": false,
+              "wilcoxon_ok": true,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": NaN,
+              "tolerance_ok": false,
+              "wilcoxon_ok": true,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": NaN,
+              "tolerance_ok": false,
+              "wilcoxon_ok": true,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "window": 7,
+          "hidden": 4,
+          "params": 37,
+          "worst_rel_penalty_over_seeds": NaN,
+          "best_rel_penalty_over_seeds": NaN,
+          "matches_tolerance_all_seeds": false,
+          "matches_wilcoxon_all_seeds": true,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": NaN,
+              "tolerance_ok": false,
+              "wilcoxon_ok": true,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": NaN,
+              "tolerance_ok": false,
+              "wilcoxon_ok": true,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": NaN,
+              "tolerance_ok": false,
+              "wilcoxon_ok": true,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "window": 7,
+          "hidden": 8,
+          "params": 73,
+          "worst_rel_penalty_over_seeds": NaN,
+          "best_rel_penalty_over_seeds": NaN,
+          "matches_tolerance_all_seeds": false,
+          "matches_wilcoxon_all_seeds": true,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": NaN,
+              "tolerance_ok": false,
+              "wilcoxon_ok": true,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": NaN,
+              "tolerance_ok": false,
+              "wilcoxon_ok": true,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "worst_rel_penalty": NaN,
+              "tolerance_ok": false,
+              "wilcoxon_ok": true,
+              "per_snr": [
+                {
+                  "snr_db": 0,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 4,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 8,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 12,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 16,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                },
+                {
+                  "snr_db": 20,
+                  "mlp_ber": 0.0,
+                  "df_ber": 0.0,
+                  "rel_penalty": NaN,
+                  "wilcoxon_p": 1.0,
+                  "wilcoxon_loses": false,
+                  "wins": 0,
+                  "losses": 0
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "min_params_tolerance": null,
+      "min_params_both_criteria": null,
+      "best_config_both": null
     }
   }
 }
