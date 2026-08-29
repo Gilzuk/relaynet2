@@ -63,9 +63,9 @@ def main(path="results/mlp_min_size_all_channels.json"):
             mark = " "
         cfg = f"{mark}w={b['window']} h={b['hidden']}"
         gap = worst_abs_gap(b["seed_runs"])
-        d = r.get("baseline_diagnostics", {})
+        diag = r.get("baseline_diagnostics", {})
         print(f"  {name:<14} {r['modulation']:<5} {r['memory']:>3} "
-              f"{r.get('baseline','DF'):>5} {d.get('verdict','?'):>12} "
+              f"{r.get('baseline','DF'):>5} {diag.get('verdict','?'):>12} "
               f"{str(r['min_params_tolerance']):>5} {str(r['min_params_both_criteria']):>5}  "
               f"{cfg:<12} {gap:>9.4f}")
 
