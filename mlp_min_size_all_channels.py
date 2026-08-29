@@ -34,14 +34,41 @@ budget, the same Monte Carlo budget, and the same DF comparator, measured in
 the same process on identical channel draws. The only variables are channel
 and relay size.
 
-BASELINE CAVEAT, stated rather than buried. DF is the comparator on every
-channel, which keeps the study internally consistent and keeps "matches DF"
-meaning one thing. But DF is a symbol-by-symbol slicer, so on the ISI channels
-it is a *weak* baseline -- it cannot equalize either, and the thesis compares
-against Viterbi/MLSE there (Chapter 7). A small relay "matching DF" on an ISI
-channel therefore means it matches a slicer, not that it matches the classical
-state of the art. Read the ISI rows as a memory-vs-size measurement, not as a
-claim about MLSE.
+THE COMPARATOR IS PER-CHANNEL. An earlier version of this study used
+symbol-wise DF on every channel and carried a prose caveat saying DF is a weak
+baseline on the channels with memory. That caveat was both under-scoped and
+skippable, so it has been replaced by two mechanisms.
+
+First, each channel now names its own classical comparator, the one the thesis
+uses on it: symbol-wise DF where the channel is memoryless and symbol-wise
+detection is the right classical answer, and Viterbi/MLSE where the channel
+has memory (relaynet/relays/viterbi.py, as in Chapter 7). "Matches the
+classical baseline" therefore means something different per channel -- which is
+honest, because the classical baseline *is* different per channel. DF is still
+measured everywhere and reported, so the numbers stay comparable with the
+earlier DF-only run.
+
+Second, the validity of each baseline is computed rather than asserted, and
+tagged on its own row. Three checks:
+
+    monotone   BER must fall as SNR rises. A baseline that gets *worse* with
+               more SNR has failed, and "beating" it means nothing. The
+               DF-only run had exactly this on isi_rayleigh, where DF ran
+               0.4231 0.3804 0.3496 0.3423 0.3566 0.3832 -- rising above
+               12 dB -- and still produced a headline 4-parameter minimum.
+    beats_af   the classical relay should beat plain amplify-and-forward.
+    floor      the BER at the top SNR. When this reaches ~0 the *relative*
+               penalty metric stops being usable, because a negligible
+               absolute gap divides into a large percentage (awgn: no size
+               "matched" DF at +11% to +28% relative, on an absolute gap of
+               0.0004 BER).
+
+WHICH WAY A WEAK BASELINE ERRS. A baseline the relay can beat easily flatters
+the relay, so any minimum measured against a weak comparator is optimistic --
+the true floor against a strong classical scheme is higher, never lower. This
+is why the memory channels are now scored against MLSE: the DF-only run put
+their minimum at 6 parameters, and that number was an upper bound on the
+relay's difficulty, not a measurement of it.
 
 SEEDING. Three RNGs, all pinned (the lesson from the Rayleigh sweep):
   1. Payload bits   -- run_monte_carlo seeds Source(seed=seed_offset+trial).
@@ -84,6 +111,7 @@ from relaynet.channels import (
     CompositeChannel,
 )
 from relaynet.relays import AmplifyAndForwardRelay, DecodeAndForwardRelay, MLPRelay
+from relaynet.relays.viterbi import ViterbiMLSERelay, ViterbiMLSEQPSKRelay
 from relaynet.simulation.runner import run_monte_carlo
 
 SNRS = [0, 4, 8, 12, 16, 20]
@@ -127,34 +155,43 @@ GRID = [
 CHANNELS = {
     "awgn": dict(
         make=lambda s: awgn_channel, mod="bpsk", memory=1,
+        baseline=lambda: ("DF", DecodeAndForwardRelay()),
         note="Ch5 calibration reference (closed-form BER)"),
     "rayleigh": dict(
         make=lambda s: rayleigh_fading_channel, mod="qpsk", memory=1,
+        baseline=lambda: ("DF", DecodeAndForwardRelay()),
         note="Ch5 canonical operating point"),
     "flat_gain": dict(
         make=lambda s: FlatGainChannel(gain_min=0.3, gain_max=2.0, seed=s),
         mod="bpsk", memory=1,
+        baseline=lambda: ("DF", DecodeAndForwardRelay()),
         note="Ch7 E6_FLAT unknown gain, g ~ U[0.3,2.0]"),
     "branch_asym": dict(
         make=lambda s: BranchAsymmetryChannel(seed=s), mod="bpsk", memory=1,
+        baseline=lambda: ("DF", DecodeAndForwardRelay()),
         note="Ch7 E6_FLAT branch asymmetry, a+- ~ U[0.6,1.4]"),
     "nlbias": dict(
         make=lambda s: NonlinearBiasChannel(saturation=1.5, dc_bias=0.5, seed=s),
         mod="bpsk", memory=1,
+        baseline=lambda: ("DF", DecodeAndForwardRelay()),
         note="Ch7 nonlinear saturation + DC bias (memoryless but nonlinear)"),
     "isi": dict(
         make=lambda s: ISIChannel(H_ISI, seed=s), mod="bpsk", memory=3,
+        baseline=lambda: ("MLSE", ViterbiMLSERelay(channel_taps=H_ISI)),
         note="Ch7 real 3-tap ISI"),
     "isi_complex": dict(
         make=lambda s: ComplexISIChannel(H_ISI, seed=s), mod="qpsk", memory=3,
+        baseline=lambda: ("MLSE", ViterbiMLSEQPSKRelay(channel_taps=H_ISI)),
         note="Ch7 complex 3-tap ISI"),
     "isi_rayleigh": dict(
         make=lambda s: ComplexISIRayleighChannel(H_ISI, seed=s), mod="qpsk",
-        memory=3, note="Ch7 3-tap ISI on top of Rayleigh fading"),
+        memory=3,
+        baseline=lambda: ("MLSE", ViterbiMLSEQPSKRelay(channel_taps=H_ISI)), note="Ch7 3-tap ISI on top of Rayleigh fading"),
     "composite": dict(
         make=lambda s: CompositeChannel(isi_taps=H_COMPOSITE, pa_sat=1.2,
                                         include_phase=True, seed=s),
         mod="bpsk", memory=3,
+        baseline=lambda: ("MLSE", ViterbiMLSERelay(channel_taps=H_COMPOSITE)),
         note="Ch7 composite cascade: ISI -> PA -> phase -> AWGN"),
 }
 
@@ -256,6 +293,30 @@ def compare(ber, trials, df_ber, df_trials):
     return per_snr
 
 
+def baseline_diagnostics(base_ber, af_ber):
+    """Is this baseline a valid yardstick? Computed, not asserted.
+
+    A prose caveat about baseline quality is skippable and, in the DF-only
+    version of this study, was also under-scoped -- it warned about the ISI
+    channels and missed that DF had outright failed on isi_rayleigh. These
+    checks travel with the row instead.
+    """
+    b = np.asarray(base_ber, dtype=float)
+    monotone = bool(np.all(np.diff(b) <= 1e-12))
+    beats_af = bool(np.all(b <= np.asarray(af_ber, dtype=float) + 1e-12))
+    floor = float(b[-1])
+    if not monotone:
+        verdict = "BROKEN"          # worse with more SNR: beating it means nothing
+    elif floor <= 1e-5:
+        verdict = "near-optimal"    # relative penalties unusable at the top end
+    elif not beats_af:
+        verdict = "weak"            # loses to plain AF somewhere
+    else:
+        verdict = "ok"
+    return {"monotone": monotone, "beats_af": beats_af, "floor": floor,
+            "verdict": verdict}
+
+
 def run_channel(name, spec):
     print(f"\n{'=' * 78}\n  {name}   [{spec['note']}]   "
           f"modulation {spec['mod']}, channel memory {spec['memory']} tap(s)")
@@ -267,7 +328,22 @@ def run_channel(name, spec):
 
     print("\n  classical baselines")
     df_ber, df_trials = evaluate(DecodeAndForwardRelay(), channel, mod, "DF (0 params)")
-    af_ber, _ = evaluate(AmplifyAndForwardRelay(), channel, mod, "AF (0 params)")
+    af_ber, af_trials = evaluate(AmplifyAndForwardRelay(), channel, mod, "AF (0 params)")
+
+    # the comparator the thesis actually uses on this channel
+    base_name, base_relay = spec["baseline"]()
+    if base_name == "DF":
+        base_ber, base_trials = df_ber, df_trials
+    else:
+        base_ber, base_trials = evaluate(base_relay, channel, mod,
+                                         f"{base_name} (0 params)")
+    diag = baseline_diagnostics(base_ber, af_ber)
+    print(f"    baseline for scoring: {base_name}   "
+          f"monotone {diag['monotone']}   beats AF {diag['beats_af']}   "
+          f"floor {diag['floor']:.5f}   -> {diag['verdict']}")
+    if diag["verdict"] == "BROKEN":
+        print("    WARNING: this baseline gets worse as SNR rises. Any "
+              "'match' on this channel clears a failed bar and is not a floor.")
 
     print("\n  MLP sweep")
     rows = []
@@ -281,7 +357,7 @@ def run_channel(name, spec):
                              output_size=1, window_size=window, seed=ts)
             relay.train_on_data(X, T, epochs=EPOCHS, batch_size=BATCH, lr=LR)
             ber, trials = evaluate(relay, channel, mod, None)
-            per_snr = compare(ber, trials, df_ber, df_trials)
+            per_snr = compare(ber, trials, base_ber, base_trials)
             finite = [r["rel_penalty"] for r in per_snr if r["rel_penalty"] == r["rel_penalty"]]
             worst = max(finite) if finite else float("nan")
             seed_runs.append({
@@ -315,6 +391,8 @@ def run_channel(name, spec):
             and r["matches_wilcoxon_all_seeds"]]
     result = {
         "note": spec["note"], "modulation": mod, "memory": spec["memory"],
+        "baseline": base_name, "baseline_ber": [float(b) for b in base_ber],
+        "baseline_diagnostics": diag,
         "df_ber": [float(b) for b in df_ber], "af_ber": [float(b) for b in af_ber],
         "sweep": rows,
         "min_params_tolerance": min((r["params"] for r in tol_match), default=None),
@@ -324,14 +402,14 @@ def run_channel(name, spec):
     }
     if both:
         b = min(both, key=lambda r: r["params"])
-        print(f"\n  -> smallest passing both: {b['params']} params "
+        print(f"\n  -> smallest passing both vs {base_name}: {b['params']} params "
               f"(window {b['window']}, hidden {b['hidden']})")
     elif tol_match:
         b = min(tol_match, key=lambda r: r["params"])
-        print(f"\n  -> none passes both; smallest within tolerance: {b['params']} params "
+        print(f"\n  -> none passes both vs {base_name}; smallest within tolerance: {b['params']} params "
               f"(window {b['window']}, hidden {b['hidden']})")
     else:
-        print("\n  -> no configuration in the grid matched DF")
+        print(f"\n  -> no configuration in the grid matched {base_name}")
     return result
 
 
@@ -361,12 +439,15 @@ def main():
             json.dump(out, fh, indent=2)
 
     print(f"\n{'=' * 78}\n  SUMMARY: minimum size matching DF, by channel\n{'=' * 78}")
-    print(f"  {'channel':<14} {'mod':<6} {'mem':>3}  {'tol only':>9}  {'both':>6}  config")
+    print(f"  {'channel':<14} {'mod':<6} {'mem':>3} {'base':>5} {'valid':>12}  "
+          f"{'tol':>5} {'both':>5}  config")
     for name, r in out["channels"].items():
         b = r["best_config_both"]
         cfg = f"w={b['window']} h={b['hidden']}" if b else "--"
-        print(f"  {name:<14} {r['modulation']:<6} {r['memory']:>3}  "
-              f"{str(r['min_params_tolerance']):>9}  {str(r['min_params_both_criteria']):>6}  {cfg}")
+        d = r["baseline_diagnostics"]
+        print(f"  {name:<14} {r['modulation']:<6} {r['memory']:>3} {r['baseline']:>5} "
+              f"{d['verdict']:>12}  {str(r['min_params_tolerance']):>5} "
+              f"{str(r['min_params_both_criteria']):>5}  {cfg}")
     print(f"\n  saved {path}")
 
 
