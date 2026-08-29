@@ -4684,6 +4684,4662 @@
         }
       ],
       "n_probes": 84
+    },
+    "rayleigh": {
+      "note": "Ch5 canonical operating point",
+      "modulation": "qpsk",
+      "memory": 1,
+      "baseline": "DF",
+      "baseline_diagnostics": {
+        "monotone": true,
+        "beats_af": true,
+        "floor": 0.009680000000000001,
+        "verdict": "ok"
+      },
+      "baseline_ber": [
+        0.33339250000000004,
+        0.22184500000000001,
+        0.120385,
+        0.0558675,
+        0.024002500000000003,
+        0.009680000000000001
+      ],
+      "df_ber": [
+        0.33339250000000004,
+        0.22184500000000001,
+        0.120385,
+        0.0558675,
+        0.024002500000000003,
+        0.009680000000000001
+      ],
+      "af_ber": [
+        0.4088425,
+        0.3140475,
+        0.18644,
+        0.08200249999999999,
+        0.030542500000000007,
+        0.010934999999999999
+      ],
+      "cells": {
+        "w1_L1": {
+          "width": null,
+          "params": null,
+          "monotone": null,
+          "failed_above": []
+        },
+        "w1_L2": {
+          "width": null,
+          "params": null,
+          "monotone": null,
+          "failed_above": []
+        },
+        "w1_L3": {
+          "width": null,
+          "params": null,
+          "monotone": null,
+          "failed_above": []
+        },
+        "w3_L1": {
+          "width": null,
+          "params": null,
+          "monotone": null,
+          "failed_above": []
+        },
+        "w3_L2": {
+          "width": null,
+          "params": null,
+          "monotone": null,
+          "failed_above": []
+        },
+        "w3_L3": {
+          "width": null,
+          "params": null,
+          "monotone": null,
+          "failed_above": []
+        },
+        "w5_L1": {
+          "width": null,
+          "params": null,
+          "monotone": null,
+          "failed_above": []
+        },
+        "w5_L2": {
+          "width": null,
+          "params": null,
+          "monotone": null,
+          "failed_above": []
+        },
+        "w5_L3": {
+          "width": null,
+          "params": null,
+          "monotone": null,
+          "failed_above": []
+        },
+        "w7_L1": {
+          "width": null,
+          "params": null,
+          "monotone": null,
+          "failed_above": []
+        },
+        "w7_L2": {
+          "width": null,
+          "params": null,
+          "monotone": null,
+          "failed_above": []
+        },
+        "w7_L3": {
+          "width": null,
+          "params": null,
+          "monotone": null,
+          "failed_above": []
+        }
+      },
+      "min_params_any": null,
+      "min_config_any": null,
+      "min_params": null,
+      "min_window": null,
+      "min_depth": null,
+      "min_width": null,
+      "min_arch": null,
+      "probes": [
+        {
+          "window": 1,
+          "depth": 1,
+          "width": 1,
+          "arch": "h1-1p",
+          "params": 4,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.011858414999776317,
+          "best_rel_penalty_over_seeds": 0.011545173848838765,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.3294,
+                0.2197225,
+                0.1208425,
+                0.056530000000000004,
+                0.024229999999999995,
+                0.009667499999999999
+              ],
+              "worst_rel_penalty": 0.011858414999776317,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.3294275,
+                0.21975250000000002,
+                0.12080000000000002,
+                0.0565125,
+                0.024205,
+                0.009677499999999999
+              ],
+              "worst_rel_penalty": 0.011545173848838765,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.3293975,
+                0.21969500000000003,
+                0.12094,
+                0.056515,
+                0.024232499999999997,
+                0.009692500000000001
+              ],
+              "worst_rel_penalty": 0.011589922584687022,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 1,
+          "depth": 1,
+          "width": 2,
+          "arch": "h1-2p",
+          "params": 7,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.024253814829730973,
+          "best_rel_penalty_over_seeds": 0.020002684924150776,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.3310125,
+                0.220825,
+                0.12145750000000002,
+                0.057004999999999986,
+                0.02437,
+                0.0097025
+              ],
+              "worst_rel_penalty": 0.020360674810936334,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.3309350000000001,
+                0.22066499999999997,
+                0.12140749999999997,
+                0.056984999999999994,
+                0.0243575,
+                0.0097025
+              ],
+              "worst_rel_penalty": 0.020002684924150776,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.3311125,
+                0.22116000000000002,
+                0.1219275,
+                0.057222499999999996,
+                0.02435,
+                0.009742500000000001
+              ],
+              "worst_rel_penalty": 0.024253814829730973,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 1,
+          "depth": 1,
+          "width": 4,
+          "arch": "h1-4p",
+          "params": 13,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.0207634134335704,
+          "best_rel_penalty_over_seeds": 0.020315926075088205,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.331385,
+                0.22100749999999997,
+                0.12158750000000003,
+                0.057027499999999995,
+                0.02435,
+                0.0097175
+              ],
+              "worst_rel_penalty": 0.0207634134335704,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.3310575,
+                0.22079999999999994,
+                0.12144999999999999,
+                0.05700249999999999,
+                0.0243675,
+                0.0097025
+              ],
+              "worst_rel_penalty": 0.020315926075088205,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.33115000000000006,
+                0.2209975,
+                0.12159249999999999,
+                0.0570125,
+                0.02435,
+                0.0097325
+              ],
+              "worst_rel_penalty": 0.02049492101848123,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 1,
+          "depth": 1,
+          "width": 8,
+          "arch": "h1-8p",
+          "params": 25,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.022866604018436494,
+          "best_rel_penalty_over_seeds": 0.020136931131695297,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.3315475,
+                0.221245,
+                0.1217075,
+                0.057145,
+                0.024370000000000003,
+                0.00971
+              ],
+              "worst_rel_penalty": 0.022866604018436494,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.33093,
+                0.22062749999999998,
+                0.12140000000000002,
+                0.05699249999999999,
+                0.02437,
+                0.009710000000000002
+              ],
+              "worst_rel_penalty": 0.020136931131695297,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.331085,
+                0.22083,
+                0.12156499999999999,
+                0.05703499999999999,
+                0.024314999999999996,
+                0.009745
+              ],
+              "worst_rel_penalty": 0.020897659641114924,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 1,
+          "depth": 1,
+          "width": 16,
+          "arch": "h1-16p",
+          "params": 49,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.0215241419429899,
+          "best_rel_penalty_over_seeds": 0.019734192509061357,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.33121,
+                0.22083999999999998,
+                0.12151749999999999,
+                0.057042499999999996,
+                0.024327499999999995,
+                0.009714999999999998
+              ],
+              "worst_rel_penalty": 0.021031905848659695,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.3308925,
+                0.22066249999999998,
+                0.12141249999999999,
+                0.056969999999999986,
+                0.024369999999999996,
+                0.0097025
+              ],
+              "worst_rel_penalty": 0.019734192509061357,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.3312325,
+                0.2210125,
+                0.12158749999999999,
+                0.05706999999999999,
+                0.024324999999999996,
+                0.009757499999999999
+              ],
+              "worst_rel_penalty": 0.0215241419429899,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 1,
+          "depth": 1,
+          "width": 32,
+          "arch": "h1-32p",
+          "params": 97,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.022642860339195332,
+          "best_rel_penalty_over_seeds": 0.020629167226025754,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.331035,
+                0.22071000000000002,
+                0.121485,
+                0.0570375,
+                0.024327499999999995,
+                0.009720000000000001
+              ],
+              "worst_rel_penalty": 0.020942408376963303,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.3311075,
+                0.22092,
+                0.12152499999999997,
+                0.057019999999999994,
+                0.024367499999999997,
+                0.009715000000000001
+              ],
+              "worst_rel_penalty": 0.020629167226025754,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.33170750000000004,
+                0.22137749999999995,
+                0.12182,
+                0.057132499999999996,
+                0.024345,
+                0.0097525
+              ],
+              "worst_rel_penalty": 0.022642860339195332,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 1,
+          "depth": 1,
+          "width": 64,
+          "arch": "h1-64p",
+          "params": 193,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.024030071150489937,
+          "best_rel_penalty_over_seeds": 0.02224012171656139,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.33147499999999996,
+                0.22107749999999998,
+                0.12158500000000001,
+                0.057109999999999994,
+                0.0243425,
+                0.009722499999999999
+              ],
+              "worst_rel_penalty": 0.02224012171656139,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.331535,
+                0.22121000000000005,
+                0.12170999999999998,
+                0.057124999999999995,
+                0.0243825,
+                0.009725000000000001
+              ],
+              "worst_rel_penalty": 0.022508614131650687,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.331855,
+                0.22161500000000003,
+                0.12199750000000001,
+                0.05721,
+                0.024419999999999997,
+                0.009762499999999997
+              ],
+              "worst_rel_penalty": 0.024030071150489937,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 1,
+          "depth": 2,
+          "width": 1,
+          "arch": "h1-1p-h2-1p",
+          "params": 6,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.011187183962052833,
+          "best_rel_penalty_over_seeds": 0.01065019913187437,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.32937,
+                0.21963249999999998,
+                0.12073999999999999,
+                0.05646749999999999,
+                0.024210000000000002,
+                0.009665
+              ],
+              "worst_rel_penalty": 0.01073969660357076,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.3294,
+                0.21964250000000002,
+                0.12078500000000003,
+                0.05646249999999999,
+                0.02418,
+                0.009682499999999998
+              ],
+              "worst_rel_penalty": 0.01065019913187437,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.32928500000000005,
+                0.21981,
+                0.12096250000000001,
+                0.05649249999999999,
+                0.024187499999999997,
+                0.00969
+              ],
+              "worst_rel_penalty": 0.011187183962052833,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 1,
+          "depth": 2,
+          "width": 2,
+          "arch": "h1-2p-h2-2p",
+          "params": 13,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.02058441849017737,
+          "best_rel_penalty_over_seeds": 0.017452006980802733,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.33142499999999997,
+                0.2210625,
+                0.12156749999999998,
+                0.057017499999999985,
+                0.024274999999999998,
+                0.009702500000000001
+              ],
+              "worst_rel_penalty": 0.02058441849017737,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.330945,
+                0.2205525,
+                0.12137499999999998,
+                0.056940000000000004,
+                0.0242925,
+                0.009695
+              ],
+              "worst_rel_penalty": 0.01919720767888314,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.33067250000000004,
+                0.220605,
+                0.12121249999999999,
+                0.0568425,
+                0.024287499999999997,
+                0.009775
+              ],
+              "worst_rel_penalty": 0.017452006980802733,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 1,
+          "depth": 2,
+          "width": 4,
+          "arch": "h1-4p-h2-4p",
+          "params": 33,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.02224012171656139,
+          "best_rel_penalty_over_seeds": 0.02018167986754368,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.3317175,
+                0.22118000000000002,
+                0.1217,
+                0.057109999999999994,
+                0.024312499999999997,
+                0.00971
+              ],
+              "worst_rel_penalty": 0.02224012171656139,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.33131000000000005,
+                0.22079,
+                0.12141499999999998,
+                0.056995,
+                0.024324999999999996,
+                0.009725000000000001
+              ],
+              "worst_rel_penalty": 0.02018167986754368,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.331375,
+                0.221055,
+                0.12159500000000001,
+                0.057047499999999994,
+                0.024324999999999996,
+                0.0097475
+              ],
+              "worst_rel_penalty": 0.021121403320356086,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 1,
+          "depth": 2,
+          "width": 8,
+          "arch": "h1-8p-h2-8p",
+          "params": 97,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.022911352754284627,
+          "best_rel_penalty_over_seeds": 0.018794469056249326,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.3313500000000001,
+                0.22097000000000003,
+                0.1215525,
+                0.0571075,
+                0.0243075,
+                0.009714999999999998
+              ],
+              "worst_rel_penalty": 0.02219537298071326,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.33101,
+                0.220605,
+                0.12134,
+                0.05691750000000001,
+                0.024349999999999997,
+                0.009734999999999999
+              ],
+              "worst_rel_penalty": 0.018794469056249326,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.33125249999999995,
+                0.221165,
+                0.12179500000000001,
+                0.0571475,
+                0.02439,
+                0.0097825
+              ],
+              "worst_rel_penalty": 0.022911352754284627,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 1,
+          "depth": 2,
+          "width": 16,
+          "arch": "h1-16p-h2-16p",
+          "params": 321,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.021792634358079318,
+          "best_rel_penalty_over_seeds": 0.019778941244909864,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.33130000000000004,
+                0.22109,
+                0.12153500000000002,
+                0.057047499999999994,
+                0.024329999999999997,
+                0.0097175
+              ],
+              "worst_rel_penalty": 0.021121403320356086,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.33103,
+                0.22069999999999998,
+                0.12145249999999999,
+                0.0569725,
+                0.024352499999999996,
+                0.009745
+              ],
+              "worst_rel_penalty": 0.019778941244909864,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.3317775,
+                0.22131749999999997,
+                0.12177000000000002,
+                0.057085,
+                0.024359999999999996,
+                0.009785
+              ],
+              "worst_rel_penalty": 0.021792634358079318,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 1,
+          "depth": 2,
+          "width": 32,
+          "arch": "h1-32p-h2-32p",
+          "params": 1153,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.02147939320714177,
+          "best_rel_penalty_over_seeds": 0.017631001924195762,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.3313625,
+                0.22105000000000002,
+                0.12161750000000002,
+                0.05706749999999999,
+                0.024342499999999996,
+                0.009717499999999999
+              ],
+              "worst_rel_penalty": 0.02147939320714177,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.331105,
+                0.22059750000000006,
+                0.12130249999999998,
+                0.0569025,
+                0.0243075,
+                0.009730000000000003
+              ],
+              "worst_rel_penalty": 0.01852597664115991,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.33128750000000007,
+                0.220865,
+                0.12142749999999998,
+                0.05685250000000001,
+                0.024314999999999996,
+                0.009795
+              ],
+              "worst_rel_penalty": 0.017631001924195762,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 1,
+          "depth": 2,
+          "width": 64,
+          "arch": "h1-64p-h2-64p",
+          "params": 4353,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.02156889067883816,
+          "best_rel_penalty_over_seeds": 0.019913187452454385,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.33125499999999997,
+                0.22090749999999998,
+                0.12168749999999999,
+                0.05707249999999999,
+                0.0243675,
+                0.009717499999999999
+              ],
+              "worst_rel_penalty": 0.02156889067883816,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.33284250000000004,
+                0.22174,
+                0.12179,
+                0.057055,
+                0.024280000000000003,
+                0.0097275
+              ],
+              "worst_rel_penalty": 0.021255649527900856,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.33149,
+                0.2212425,
+                0.12157000000000003,
+                0.056979999999999996,
+                0.024302499999999998,
+                0.009785
+              ],
+              "worst_rel_penalty": 0.019913187452454385,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 1,
+          "depth": 3,
+          "width": 1,
+          "arch": "h1-1p-h2-1p-h3-1p",
+          "params": 8,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.011366178905445737,
+          "best_rel_penalty_over_seeds": 0.0103817067167852,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.32937249999999996,
+                0.21959749999999997,
+                0.12072250000000004,
+                0.0564475,
+                0.024172499999999996,
+                0.00967
+              ],
+              "worst_rel_penalty": 0.0103817067167852,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.3293425,
+                0.21968749999999998,
+                0.12083999999999998,
+                0.056475,
+                0.02417,
+                0.009675
+              ],
+              "worst_rel_penalty": 0.010873942811115532,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.32928499999999994,
+                0.21988249999999998,
+                0.121005,
+                0.05650249999999999,
+                0.024212499999999998,
+                0.009704999999999998
+              ],
+              "worst_rel_penalty": 0.011366178905445737,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 1,
+          "depth": 3,
+          "width": 2,
+          "arch": "h1-2p-h2-2p-h3-2p",
+          "params": 19,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.01866022284870443,
+          "best_rel_penalty_over_seeds": 0.010471204188481591,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.32942750000000004,
+                0.21968749999999998,
+                0.12080750000000003,
+                0.056452499999999996,
+                0.024194999999999998,
+                0.009679999999999998
+              ],
+              "worst_rel_penalty": 0.010471204188481591,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.33132249999999996,
+                0.22066249999999998,
+                0.12139249999999999,
+                0.056909999999999995,
+                0.024295,
+                0.00971
+              ],
+              "worst_rel_penalty": 0.01866022284870443,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.331115,
+                0.2207775,
+                0.12144750000000001,
+                0.0568925,
+                0.024349999999999997,
+                0.009755
+              ],
+              "worst_rel_penalty": 0.018346981697767006,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 1,
+          "depth": 3,
+          "width": 4,
+          "arch": "h1-4p-h2-4p-h3-4p",
+          "params": 53,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.02089765964111517,
+          "best_rel_penalty_over_seeds": 0.01812323801852597,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.331995,
+                0.22111999999999998,
+                0.12149749999999997,
+                0.057035,
+                0.024294999999999994,
+                0.009694999999999999
+              ],
+              "worst_rel_penalty": 0.02089765964111517,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.3310825,
+                0.22053000000000003,
+                0.12126249999999998,
+                0.05688,
+                0.0243175,
+                0.009729999999999999
+              ],
+              "worst_rel_penalty": 0.01812323801852597,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.33147000000000004,
+                0.22108999999999995,
+                0.12153749999999999,
+                0.05700999999999999,
+                0.024327499999999995,
+                0.0097475
+              ],
+              "worst_rel_penalty": 0.02045017228263285,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 1,
+          "depth": 3,
+          "width": 8,
+          "arch": "h1-8p-h2-8p-h3-8p",
+          "params": 169,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.021568890678838406,
+          "best_rel_penalty_over_seeds": 0.020226428603391813,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.331585,
+                0.22091000000000002,
+                0.12149750000000001,
+                0.057072500000000005,
+                0.024302499999999998,
+                0.0097175
+              ],
+              "worst_rel_penalty": 0.021568890678838406,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.3310375,
+                0.22079749999999998,
+                0.12151750000000001,
+                0.05699749999999999,
+                0.024347499999999994,
+                0.009725000000000001
+              ],
+              "worst_rel_penalty": 0.020226428603391813,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.331415,
+                0.22107499999999997,
+                0.121605,
+                0.0570025,
+                0.0243325,
+                0.0097975
+              ],
+              "worst_rel_penalty": 0.020315926075088326,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 1,
+          "depth": 3,
+          "width": 16,
+          "arch": "h1-16p-h2-16p-h3-16p",
+          "params": 593,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.02058441849017762,
+          "best_rel_penalty_over_seeds": 0.01852597664115991,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.33158999999999994,
+                0.22116749999999996,
+                0.1215375,
+                0.0569775,
+                0.024319999999999998,
+                0.009725000000000001
+              ],
+              "worst_rel_penalty": 0.019868438716606252,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.3313900000000001,
+                0.22103249999999997,
+                0.12149249999999998,
+                0.0570175,
+                0.024314999999999996,
+                0.009715000000000001
+              ],
+              "worst_rel_penalty": 0.02058441849017762,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.33131999999999995,
+                0.22090750000000003,
+                0.12145500000000001,
+                0.0569025,
+                0.024324999999999996,
+                0.009787500000000001
+              ],
+              "worst_rel_penalty": 0.01852597664115991,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 1,
+          "depth": 3,
+          "width": 32,
+          "arch": "h1-32p-h2-32p-h3-32p",
+          "params": 2209,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.02689399024477578,
+          "best_rel_penalty_over_seeds": 0.013290374546919176,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.3317875,
+                0.22146249999999998,
+                0.12186749999999999,
+                0.0572975,
+                0.0243925,
+                0.009805
+              ],
+              "worst_rel_penalty": 0.02559627690517744,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.33133500000000005,
+                0.22054,
+                0.1209425,
+                0.05661000000000001,
+                0.0242025,
+                0.009685000000000001
+              ],
+              "worst_rel_penalty": 0.013290374546919176,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.3321375,
+                0.2219675,
+                0.12208250000000001,
+                0.05737000000000001,
+                0.0244775,
+                0.009835
+              ],
+              "worst_rel_penalty": 0.02689399024477578,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 1,
+          "depth": 3,
+          "width": 64,
+          "arch": "h1-64p-h2-64p-h3-64p",
+          "params": 8513,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.02725198013156146,
+          "best_rel_penalty_over_seeds": 0.0192419564147314,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.331775,
+                0.22173500000000002,
+                0.1219425,
+                0.05739000000000001,
+                0.02449,
+                0.0098125
+              ],
+              "worst_rel_penalty": 0.02725198013156146,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.3321425,
+                0.22120500000000004,
+                0.12152749999999998,
+                0.05694250000000001,
+                0.0242775,
+                0.009740000000000002
+              ],
+              "worst_rel_penalty": 0.0192419564147314,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.3322725,
+                0.2220475,
+                0.12201499999999998,
+                0.05729000000000001,
+                0.024449999999999996,
+                0.0098625
+              ],
+              "worst_rel_penalty": 0.02546203069763292,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 3,
+          "depth": 1,
+          "width": 1,
+          "arch": "h1-1p",
+          "params": 6,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.012440148565802913,
+          "best_rel_penalty_over_seeds": 0.012350651094106647,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.3294925,
+                0.21978500000000004,
+                0.1208775,
+                0.056557500000000004,
+                0.0241925,
+                0.009665
+              ],
+              "worst_rel_penalty": 0.012350651094106647,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.3294475,
+                0.21985250000000006,
+                0.12092,
+                0.056559999999999985,
+                0.024185,
+                0.0096775
+              ],
+              "worst_rel_penalty": 0.012395399829954532,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.32941249999999994,
+                0.2198525,
+                0.12098499999999998,
+                0.056562499999999995,
+                0.02418,
+                0.009677499999999999
+              ],
+              "worst_rel_penalty": 0.012440148565802913,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 3,
+          "depth": 1,
+          "width": 2,
+          "arch": "h1-2p",
+          "params": 11,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.021255649527900856,
+          "best_rel_penalty_over_seeds": 0.013021882131829882,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.3311775,
+                0.221035,
+                0.12157,
+                0.057055,
+                0.02437,
+                0.00969
+              ],
+              "worst_rel_penalty": 0.021255649527900856,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.33076,
+                0.22051749999999998,
+                0.12136999999999998,
+                0.056927499999999985,
+                0.024334999999999996,
+                0.009675
+              ],
+              "worst_rel_penalty": 0.018973463999641733,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.32957000000000003,
+                0.21985000000000002,
+                0.12103499999999998,
+                0.056595000000000006,
+                0.024227500000000003,
+                0.009675
+              ],
+              "worst_rel_penalty": 0.013021882131829882,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 3,
+          "depth": 1,
+          "width": 4,
+          "arch": "h1-4p",
+          "params": 21,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.02201637803732023,
+          "best_rel_penalty_over_seeds": 0.019018212735490116,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.331545,
+                0.22125250000000002,
+                0.1218075,
+                0.05709749999999999,
+                0.024395,
+                0.00973
+              ],
+              "worst_rel_penalty": 0.02201637803732023,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.3308975,
+                0.22070499999999998,
+                0.1214275,
+                0.056929999999999994,
+                0.02435,
+                0.0096925
+              ],
+              "worst_rel_penalty": 0.019018212735490116,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.3311875,
+                0.22101500000000002,
+                0.12156499999999999,
+                0.0570325,
+                0.0242925,
+                0.009725000000000001
+              ],
+              "worst_rel_penalty": 0.020852910905266916,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 3,
+          "depth": 1,
+          "width": 8,
+          "arch": "h1-8p",
+          "params": 41,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.021568890678838406,
+          "best_rel_penalty_over_seeds": 0.019868438716606252,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.33138750000000006,
+                0.22125500000000003,
+                0.12163749999999998,
+                0.057072500000000005,
+                0.024367500000000004,
+                0.009692500000000003
+              ],
+              "worst_rel_penalty": 0.021568890678838406,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.330995,
+                0.2208875,
+                0.12147249999999996,
+                0.0569775,
+                0.0243425,
+                0.009685
+              ],
+              "worst_rel_penalty": 0.019868438716606252,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.33126,
+                0.22111999999999998,
+                0.12161999999999999,
+                0.0570625,
+                0.024327500000000002,
+                0.009722499999999999
+              ],
+              "worst_rel_penalty": 0.021389895735445502,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 3,
+          "depth": 1,
+          "width": 16,
+          "arch": "h1-16p",
+          "params": 81,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.02062916722602588,
+          "best_rel_penalty_over_seeds": 0.019734192509061357,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.331435,
+                0.22124249999999995,
+                0.12162500000000002,
+                0.05702,
+                0.024324999999999996,
+                0.0097075
+              ],
+              "worst_rel_penalty": 0.02062916722602588,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.33070999999999995,
+                0.22078749999999997,
+                0.12145499999999998,
+                0.056969999999999986,
+                0.024345,
+                0.0096775
+              ],
+              "worst_rel_penalty": 0.019734192509061357,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.3310875000000001,
+                0.2211125,
+                0.12164000000000001,
+                0.056995,
+                0.0242975,
+                0.009725000000000001
+              ],
+              "worst_rel_penalty": 0.02018167986754368,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 3,
+          "depth": 1,
+          "width": 32,
+          "arch": "h1-32p",
+          "params": 161,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.021345146999597244,
+          "best_rel_penalty_over_seeds": 0.019152458943034762,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.33107999999999993,
+                0.22091,
+                0.1217425,
+                0.05706,
+                0.02439,
+                0.0097075
+              ],
+              "worst_rel_penalty": 0.021345146999597244,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.33055249999999997,
+                0.2205725,
+                0.12142499999999998,
+                0.056937499999999995,
+                0.024299999999999995,
+                0.0097
+              ],
+              "worst_rel_penalty": 0.019152458943034762,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.3311875,
+                0.2210575,
+                0.12168749999999999,
+                0.05701250000000001,
+                0.0243075,
+                0.009745
+              ],
+              "worst_rel_penalty": 0.020494921018481355,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 3,
+          "depth": 1,
+          "width": 64,
+          "arch": "h1-64p",
+          "params": 321,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.023000850225981265,
+          "best_rel_penalty_over_seeds": 0.021389895735445502,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.33096000000000003,
+                0.2211125,
+                0.1215875,
+                0.05709499999999999,
+                0.024470000000000002,
+                0.009742500000000001
+              ],
+              "worst_rel_penalty": 0.0219716293014721,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.33153000000000005,
+                0.22124749999999996,
+                0.121665,
+                0.0570625,
+                0.0244125,
+                0.009722499999999999
+              ],
+              "worst_rel_penalty": 0.021389895735445502,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.3316325,
+                0.2215225,
+                0.12195000000000003,
+                0.05715250000000001,
+                0.0243325,
+                0.00977
+              ],
+              "worst_rel_penalty": 0.023000850225981265,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 3,
+          "depth": 2,
+          "width": 1,
+          "arch": "h1-1p-h2-1p",
+          "params": 8,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.01239539982995478,
+          "best_rel_penalty_over_seeds": 0.011634671320535155,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.32948249999999996,
+                0.21975499999999998,
+                0.12083999999999999,
+                0.056537500000000004,
+                0.024194999999999998,
+                0.009665
+              ],
+              "worst_rel_penalty": 0.011992661207320964,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.32944,
+                0.21974749999999998,
+                0.12091,
+                0.0565175,
+                0.0241975,
+                0.009675
+              ],
+              "worst_rel_penalty": 0.011634671320535155,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.32946749999999997,
+                0.2199325,
+                0.12098250000000002,
+                0.05656,
+                0.0242075,
+                0.0097
+              ],
+              "worst_rel_penalty": 0.01239539982995478,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 3,
+          "depth": 2,
+          "width": 2,
+          "arch": "h1-2p-h2-2p",
+          "params": 17,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.02036067481093671,
+          "best_rel_penalty_over_seeds": 0.011589922584686899,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.3315375,
+                0.22111999999999998,
+                0.12162000000000002,
+                0.05700500000000001,
+                0.0243225,
+                0.0097025
+              ],
+              "worst_rel_penalty": 0.02036067481093671,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.329495,
+                0.21972999999999998,
+                0.120875,
+                0.056514999999999996,
+                0.024210000000000002,
+                0.009665
+              ],
+              "worst_rel_penalty": 0.011589922584686899,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.33140500000000006,
+                0.2210375,
+                0.12153500000000002,
+                0.056989999999999985,
+                0.024257499999999998,
+                0.0097375
+              ],
+              "worst_rel_penalty": 0.020092182395847043,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 3,
+          "depth": 2,
+          "width": 4,
+          "arch": "h1-4p-h2-4p",
+          "params": 41,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.020539669754329363,
+          "best_rel_penalty_over_seeds": 0.017988991810981445,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.3315525,
+                0.2212175,
+                0.1216225,
+                0.057014999999999996,
+                0.024350000000000004,
+                0.0096825
+              ],
+              "worst_rel_penalty": 0.020539669754329363,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.33108000000000004,
+                0.220805,
+                0.1214375,
+                0.056872500000000006,
+                0.024370000000000003,
+                0.009722499999999999
+              ],
+              "worst_rel_penalty": 0.017988991810981445,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.33101250000000004,
+                0.2209125,
+                0.1213975,
+                0.056995,
+                0.02432,
+                0.0097125
+              ],
+              "worst_rel_penalty": 0.02018167986754368,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 3,
+          "depth": 2,
+          "width": 8,
+          "arch": "h1-8p-h2-8p",
+          "params": 113,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.021926880565623842,
+          "best_rel_penalty_over_seeds": 0.018391730433615385,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.33169249999999995,
+                0.22132749999999998,
+                0.12165999999999999,
+                0.05709249999999999,
+                0.02435,
+                0.009697500000000001
+              ],
+              "worst_rel_penalty": 0.021926880565623842,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.33111999999999997,
+                0.2209025,
+                0.12142249999999999,
+                0.05689500000000001,
+                0.0243275,
+                0.009707499999999999
+              ],
+              "worst_rel_penalty": 0.018391730433615385,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.3312075,
+                0.22112250000000003,
+                0.12157999999999998,
+                0.056925,
+                0.024375,
+                0.0097475
+              ],
+              "worst_rel_penalty": 0.01892871526379385,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 3,
+          "depth": 2,
+          "width": 16,
+          "arch": "h1-16p-h2-16p",
+          "params": 353,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.02125564952790098,
+          "best_rel_penalty_over_seeds": 0.017631001924195512,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.33159,
+                0.22116750000000002,
+                0.1215125,
+                0.05685249999999999,
+                0.024335000000000002,
+                0.0097175
+              ],
+              "worst_rel_penalty": 0.017631001924195512,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.33059249999999996,
+                0.22064499999999998,
+                0.1214275,
+                0.0569325,
+                0.024362500000000002,
+                0.009732500000000002
+              ],
+              "worst_rel_penalty": 0.01906296147133837,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.331415,
+                0.2213325,
+                0.12179500000000001,
+                0.05705500000000001,
+                0.0243375,
+                0.009729999999999999
+              ],
+              "worst_rel_penalty": 0.02125564952790098,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 3,
+          "depth": 2,
+          "width": 32,
+          "arch": "h1-32p-h2-32p",
+          "params": 1217,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.020718664697722145,
+          "best_rel_penalty_over_seeds": 0.020315926075088576,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.3310025,
+                0.2210825,
+                0.12151749999999999,
+                0.05700250000000001,
+                0.024395,
+                0.009729999999999999
+              ],
+              "worst_rel_penalty": 0.020315926075088576,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.33109500000000003,
+                0.22094,
+                0.12158500000000001,
+                0.057014999999999996,
+                0.024354999999999998,
+                0.00973
+              ],
+              "worst_rel_penalty": 0.020539669754329363,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.33146749999999997,
+                0.2213975,
+                0.12185499999999996,
+                0.05702499999999999,
+                0.024385,
+                0.0097575
+              ],
+              "worst_rel_penalty": 0.020718664697722145,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 3,
+          "depth": 2,
+          "width": 64,
+          "arch": "h1-64p-h2-64p",
+          "params": 4481,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.024343312301427486,
+          "best_rel_penalty_over_seeds": 0.019241956414731153,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.33104500000000003,
+                0.2208075,
+                0.12166000000000002,
+                0.05694249999999999,
+                0.02441,
+                0.009720000000000001
+              ],
+              "worst_rel_penalty": 0.019241956414731153,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.33152250000000005,
+                0.22118749999999995,
+                0.12169,
+                0.056982500000000005,
+                0.0243,
+                0.0097425
+              ],
+              "worst_rel_penalty": 0.019957936188302768,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.332655,
+                0.22227750000000004,
+                0.12220999999999997,
+                0.0572275,
+                0.024367499999999997,
+                0.009787500000000001
+              ],
+              "worst_rel_penalty": 0.024343312301427486,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 3,
+          "depth": 3,
+          "width": 1,
+          "arch": "h1-1p-h2-1p-h3-1p",
+          "params": 10,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.011366178905445862,
+          "best_rel_penalty_over_seeds": 0.010650199131874618,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.3295199999999999,
+                0.21978,
+                0.12092,
+                0.0565025,
+                0.024210000000000002,
+                0.0096825
+              ],
+              "worst_rel_penalty": 0.011366178905445862,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.32938750000000006,
+                0.2197375,
+                0.12077750000000001,
+                0.0564725,
+                0.024184999999999998,
+                0.009675
+              ],
+              "worst_rel_penalty": 0.010829194075267399,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.32946749999999997,
+                0.21985499999999997,
+                0.12100499999999999,
+                0.056462500000000006,
+                0.0241975,
+                0.009687500000000002
+              ],
+              "worst_rel_penalty": 0.010650199131874618,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 3,
+          "depth": 3,
+          "width": 2,
+          "arch": "h1-2p-h2-2p-h3-2p",
+          "params": 23,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.01919720767888314,
+          "best_rel_penalty_over_seeds": 0.016780775943079747,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.3316075,
+                0.22102,
+                0.12136,
+                0.05690249999999999,
+                0.024282500000000002,
+                0.009692500000000001
+              ],
+              "worst_rel_penalty": 0.01852597664115966,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.33102,
+                0.22062999999999997,
+                0.121295,
+                0.05680500000000001,
+                0.0243175,
+                0.0097225
+              ],
+              "worst_rel_penalty": 0.016780775943079747,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.3315325,
+                0.22095499999999996,
+                0.12146750000000002,
+                0.056940000000000004,
+                0.0242625,
+                0.009729999999999999
+              ],
+              "worst_rel_penalty": 0.01919720767888314,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 3,
+          "depth": 3,
+          "width": 4,
+          "arch": "h1-4p-h2-4p-h3-4p",
+          "params": 61,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.01879446905624908,
+          "best_rel_penalty_over_seeds": 0.01780999686758854,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.3314425,
+                0.2209975,
+                0.12145500000000001,
+                0.056917499999999996,
+                0.0243075,
+                0.009687500000000002
+              ],
+              "worst_rel_penalty": 0.01879446905624908,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.3312775,
+                0.2209425,
+                0.121385,
+                0.05688000000000001,
+                0.02432,
+                0.009702500000000001
+              ],
+              "worst_rel_penalty": 0.01812323801852609,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.331225,
+                0.22109750000000003,
+                0.12151250000000002,
+                0.0568625,
+                0.02429,
+                0.0097025
+              ],
+              "worst_rel_penalty": 0.01780999686758854,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 3,
+          "depth": 3,
+          "width": 8,
+          "arch": "h1-8p-h2-8p-h3-8p",
+          "params": 185,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.02062916722602588,
+          "best_rel_penalty_over_seeds": 0.01758625318834738,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.33157000000000003,
+                0.2212175,
+                0.12161,
+                0.05702,
+                0.02436,
+                0.009692500000000001
+              ],
+              "worst_rel_penalty": 0.02062916722602588,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.33082,
+                0.220785,
+                0.121515,
+                0.056965,
+                0.0243725,
+                0.009729999999999999
+              ],
+              "worst_rel_penalty": 0.019644695037365215,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.33154000000000006,
+                0.2212425,
+                0.12158,
+                0.05685,
+                0.024319999999999998,
+                0.0097325
+              ],
+              "worst_rel_penalty": 0.01758625318834738,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 3,
+          "depth": 3,
+          "width": 16,
+          "arch": "h1-16p-h2-16p-h3-16p",
+          "params": 625,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.020808162169418783,
+          "best_rel_penalty_over_seeds": 0.01839173043361514,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.33143,
+                0.221215,
+                0.12151999999999999,
+                0.056894999999999994,
+                0.024295,
+                0.009722499999999999
+              ],
+              "worst_rel_penalty": 0.01839173043361514,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.33114,
+                0.22075499999999998,
+                0.12155750000000001,
+                0.056952499999999996,
+                0.024322500000000004,
+                0.009727500000000002
+              ],
+              "worst_rel_penalty": 0.019420951358124057,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.33168,
+                0.22172999999999998,
+                0.12192999999999998,
+                0.057030000000000004,
+                0.024399999999999998,
+                0.0097375
+              ],
+              "worst_rel_penalty": 0.020808162169418783,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 3,
+          "depth": 3,
+          "width": 32,
+          "arch": "h1-32p-h2-32p-h3-32p",
+          "params": 2273,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.02385107620709728,
+          "best_rel_penalty_over_seeds": 0.0174072582449546,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.3316275000000001,
+                0.22162500000000002,
+                0.12217250000000002,
+                0.05720000000000001,
+                0.0244775,
+                0.009725
+              ],
+              "worst_rel_penalty": 0.02385107620709728,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.33094499999999993,
+                0.22102500000000003,
+                0.1214575,
+                0.05684,
+                0.0242925,
+                0.009775
+              ],
+              "worst_rel_penalty": 0.0174072582449546,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.33208750000000004,
+                0.2216075,
+                0.12162500000000001,
+                0.05700999999999999,
+                0.024275,
+                0.00976
+              ],
+              "worst_rel_penalty": 0.02045017228263285,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 3,
+          "depth": 3,
+          "width": 64,
+          "arch": "h1-64p-h2-64p-h3-64p",
+          "params": 8641,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.025059292074998976,
+          "best_rel_penalty_over_seeds": 0.01780999686758854,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.33165750000000005,
+                0.22158249999999996,
+                0.1220225,
+                0.057267500000000006,
+                0.024470000000000002,
+                0.009742499999999998
+              ],
+              "worst_rel_penalty": 0.025059292074998976,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.331515,
+                0.22118999999999994,
+                0.12140499999999999,
+                0.0568625,
+                0.024335,
+                0.0097025
+              ],
+              "worst_rel_penalty": 0.01780999686758854,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.332085,
+                0.2223175,
+                0.122065,
+                0.057102500000000014,
+                0.024377500000000003,
+                0.009755
+              ],
+              "worst_rel_penalty": 0.022105875509017117,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 5,
+          "depth": 1,
+          "width": 1,
+          "arch": "h1-1p",
+          "params": 8,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.012126907414865487,
+          "best_rel_penalty_over_seeds": 0.010784445339419265,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.32952000000000004,
+                0.21981,
+                0.12086500000000003,
+                0.056545,
+                0.024195,
+                0.009667499999999999
+              ],
+              "worst_rel_penalty": 0.012126907414865487,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.3294775,
+                0.21986750000000002,
+                0.120875,
+                0.056537500000000004,
+                0.02419,
+                0.0096975
+              ],
+              "worst_rel_penalty": 0.011992661207320964,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.3293750000000001,
+                0.219825,
+                0.12095249999999999,
+                0.056470000000000006,
+                0.024215,
+                0.0097025
+              ],
+              "worst_rel_penalty": 0.010784445339419265,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 5,
+          "depth": 1,
+          "width": 2,
+          "arch": "h1-2p",
+          "params": 15,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.020047433659999156,
+          "best_rel_penalty_over_seeds": 0.018883966527945342,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.33133250000000003,
+                0.221,
+                0.121345,
+                0.0569875,
+                0.024335,
+                0.009705
+              ],
+              "worst_rel_penalty": 0.020047433659999156,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.33072749999999995,
+                0.2206175,
+                0.121295,
+                0.05692249999999999,
+                0.024312499999999997,
+                0.009705
+              ],
+              "worst_rel_penalty": 0.018883966527945342,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.33094250000000003,
+                0.22077249999999998,
+                0.1212325,
+                0.056925,
+                0.0243475,
+                0.009727500000000002
+              ],
+              "worst_rel_penalty": 0.01892871526379385,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 5,
+          "depth": 1,
+          "width": 4,
+          "arch": "h1-4p",
+          "params": 29,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.021345146999597244,
+          "best_rel_penalty_over_seeds": 0.018167986754374223,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.3316199999999999,
+                0.22128500000000004,
+                0.12154250000000003,
+                0.05706,
+                0.0243725,
+                0.0097025
+              ],
+              "worst_rel_penalty": 0.021345146999597244,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.3309925,
+                0.22085499999999997,
+                0.12136500000000003,
+                0.0568825,
+                0.024354999999999998,
+                0.009734999999999999
+              ],
+              "worst_rel_penalty": 0.018167986754374223,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.33094500000000004,
+                0.22074,
+                0.1212675,
+                0.056975,
+                0.02433,
+                0.0097225
+              ],
+              "worst_rel_penalty": 0.019823689980757998,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 5,
+          "depth": 1,
+          "width": 8,
+          "arch": "h1-8p",
+          "params": 57,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.021166152056204465,
+          "best_rel_penalty_over_seeds": 0.019913187452454385,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.3317825,
+                0.22144500000000003,
+                0.1216675,
+                0.057035,
+                0.02436,
+                0.009687499999999998
+              ],
+              "worst_rel_penalty": 0.02089765964111517,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.331015,
+                0.22095250000000002,
+                0.12135,
+                0.057050000000000003,
+                0.024364999999999998,
+                0.0097225
+              ],
+              "worst_rel_penalty": 0.021166152056204465,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.331145,
+                0.2208575,
+                0.12138499999999999,
+                0.056979999999999996,
+                0.0243475,
+                0.009705000000000002
+              ],
+              "worst_rel_penalty": 0.019913187452454385,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 5,
+          "depth": 1,
+          "width": 16,
+          "arch": "h1-16p",
+          "params": 113,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.02094240837696343,
+          "best_rel_penalty_over_seeds": 0.02045017228263285,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.33155249999999997,
+                0.2213975,
+                0.12163500000000001,
+                0.057037500000000005,
+                0.024327500000000002,
+                0.0097125
+              ],
+              "worst_rel_penalty": 0.02094240837696343,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.3310725,
+                0.22084,
+                0.12132000000000001,
+                0.05700999999999999,
+                0.0242975,
+                0.009715
+              ],
+              "worst_rel_penalty": 0.02045017228263285,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.33099,
+                0.22093999999999997,
+                0.12148250000000001,
+                0.05700999999999999,
+                0.024305,
+                0.009734999999999999
+              ],
+              "worst_rel_penalty": 0.02045017228263285,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 5,
+          "depth": 1,
+          "width": 32,
+          "arch": "h1-32p",
+          "params": 225,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.021345146999597494,
+          "best_rel_penalty_over_seeds": 0.018973463999641983,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.3310825,
+                0.22117750000000003,
+                0.12167249999999999,
+                0.057060000000000013,
+                0.0243225,
+                0.009692500000000001
+              ],
+              "worst_rel_penalty": 0.021345146999597494,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.3308975,
+                0.22081,
+                0.12134500000000001,
+                0.0569275,
+                0.024312499999999997,
+                0.009749999999999998
+              ],
+              "worst_rel_penalty": 0.018973463999641983,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.33125499999999997,
+                0.22095249999999997,
+                0.12147250000000001,
+                0.05700000000000001,
+                0.024324999999999996,
+                0.009729999999999999
+              ],
+              "worst_rel_penalty": 0.020271177339240318,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 5,
+          "depth": 1,
+          "width": 64,
+          "arch": "h1-64p",
+          "params": 449,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.021434644471293635,
+          "best_rel_penalty_over_seeds": 0.020271177339240318,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.3308975,
+                0.221145,
+                0.1215875,
+                0.057065,
+                0.024369999999999996,
+                0.009695
+              ],
+              "worst_rel_penalty": 0.021434644471293635,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.3311975000000001,
+                0.22096250000000003,
+                0.12155750000000001,
+                0.057027499999999995,
+                0.02432,
+                0.0097025
+              ],
+              "worst_rel_penalty": 0.0207634134335704,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.3314525,
+                0.221385,
+                0.121855,
+                0.05700000000000001,
+                0.02434,
+                0.009720000000000001
+              ],
+              "worst_rel_penalty": 0.020271177339240318,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 5,
+          "depth": 2,
+          "width": 1,
+          "arch": "h1-1p-h2-1p",
+          "params": 10,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.011455676377142376,
+          "best_rel_penalty_over_seeds": 0.010336957980937067,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.3295,
+                0.21977000000000002,
+                0.1207875,
+                0.0565075,
+                0.024195,
+                0.0096725
+              ],
+              "worst_rel_penalty": 0.011455676377142376,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.329385,
+                0.21975749999999997,
+                0.1207175,
+                0.056445,
+                0.0241725,
+                0.0096775
+              ],
+              "worst_rel_penalty": 0.010336957980937067,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.3295,
+                0.2200775,
+                0.1209675,
+                0.05650499999999999,
+                0.024184999999999998,
+                0.009694999999999999
+              ],
+              "worst_rel_penalty": 0.011410927641293995,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 5,
+          "depth": 2,
+          "width": 2,
+          "arch": "h1-2p-h2-2p",
+          "params": 21,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.01892871526379385,
+          "best_rel_penalty_over_seeds": 0.017854745603436674,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.3316275,
+                0.22119,
+                0.12128249999999999,
+                0.056917499999999996,
+                0.0243525,
+                0.009725000000000001
+              ],
+              "worst_rel_penalty": 0.01879446905624908,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.331015,
+                0.2206975,
+                0.12127249999999998,
+                0.056865,
+                0.024329999999999997,
+                0.00973
+              ],
+              "worst_rel_penalty": 0.017854745603436674,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.331255,
+                0.220805,
+                0.12126,
+                0.056925,
+                0.024302499999999998,
+                0.009732500000000002
+              ],
+              "worst_rel_penalty": 0.01892871526379385,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 5,
+          "depth": 2,
+          "width": 4,
+          "arch": "h1-4p-h2-4p",
+          "params": 49,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.019689443773213227,
+          "best_rel_penalty_over_seeds": 0.01825748422607049,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.3314825,
+                0.22103,
+                0.12151500000000001,
+                0.05696749999999999,
+                0.024307500000000003,
+                0.00971
+              ],
+              "worst_rel_penalty": 0.019689443773213227,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.3309175000000001,
+                0.2208925,
+                0.12131750000000001,
+                0.056887499999999994,
+                0.024342500000000003,
+                0.009747500000000001
+              ],
+              "worst_rel_penalty": 0.01825748422607049,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.3312125,
+                0.22108500000000006,
+                0.1213325,
+                0.0568925,
+                0.0242975,
+                0.00975
+              ],
+              "worst_rel_penalty": 0.018346981697767006,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 5,
+          "depth": 2,
+          "width": 8,
+          "arch": "h1-8p-h2-8p",
+          "params": 129,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.020136931131695297,
+          "best_rel_penalty_over_seeds": 0.01722826330156157,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.33135000000000003,
+                0.22120500000000004,
+                0.12154500000000004,
+                0.056925,
+                0.024295,
+                0.009685000000000001
+              ],
+              "worst_rel_penalty": 0.01892871526379385,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.33097499999999996,
+                0.22093250000000003,
+                0.12130749999999998,
+                0.05682999999999999,
+                0.024285,
+                0.009685000000000001
+              ],
+              "worst_rel_penalty": 0.01722826330156157,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.33141750000000003,
+                0.22136500000000003,
+                0.1215425,
+                0.05699249999999999,
+                0.0243525,
+                0.009775
+              ],
+              "worst_rel_penalty": 0.020136931131695297,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 5,
+          "depth": 2,
+          "width": 16,
+          "arch": "h1-16p-h2-16p",
+          "params": 385,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.01946570009397256,
+          "best_rel_penalty_over_seeds": 0.0174072582449546,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.3308575,
+                0.2213075,
+                0.12159249999999999,
+                0.05695500000000001,
+                0.02433,
+                0.0096775
+              ],
+              "worst_rel_penalty": 0.01946570009397256,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.330775,
+                0.22081000000000003,
+                0.12132999999999998,
+                0.05684,
+                0.024337499999999998,
+                0.009694999999999999
+              ],
+              "worst_rel_penalty": 0.0174072582449546,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.33121500000000004,
+                0.22112250000000003,
+                0.1214875,
+                0.05693,
+                0.024335,
+                0.009692500000000001
+              ],
+              "worst_rel_penalty": 0.019018212735490238,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 5,
+          "depth": 2,
+          "width": 32,
+          "arch": "h1-32p-h2-32p",
+          "params": 1281,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.02009218239584729,
+          "best_rel_penalty_over_seeds": 0.019644695037365215,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.33092250000000006,
+                0.22139250000000005,
+                0.121515,
+                0.056965,
+                0.024327499999999995,
+                0.009720000000000001
+              ],
+              "worst_rel_penalty": 0.019644695037365215,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.33107,
+                0.2212425,
+                0.121775,
+                0.056979999999999996,
+                0.0244225,
+                0.0097425
+              ],
+              "worst_rel_penalty": 0.019913187452454385,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.33195,
+                0.2217475,
+                0.12190749999999999,
+                0.05699,
+                0.024345,
+                0.0097725
+              ],
+              "worst_rel_penalty": 0.02009218239584729,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 5,
+          "depth": 2,
+          "width": 64,
+          "arch": "h1-64p-h2-64p",
+          "params": 4609,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.0256410256410257,
+          "best_rel_penalty_over_seeds": 0.020539669754329363,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.3309525,
+                0.22156249999999997,
+                0.12201749999999997,
+                0.05722999999999999,
+                0.0244725,
+                0.009749999999999998
+              ],
+              "worst_rel_penalty": 0.024388061037275494,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.33083,
+                0.22097249999999996,
+                0.12160499999999996,
+                0.057014999999999996,
+                0.0243275,
+                0.009692499999999998
+              ],
+              "worst_rel_penalty": 0.020539669754329363,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.33295,
+                0.22259750000000006,
+                0.12263249999999999,
+                0.057300000000000004,
+                0.024515,
+                0.009795
+              ],
+              "worst_rel_penalty": 0.0256410256410257,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 5,
+          "depth": 3,
+          "width": 1,
+          "arch": "h1-1p-h2-1p-h3-1p",
+          "params": 12,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.011410927641293995,
+          "best_rel_penalty_over_seeds": 0.009441983263972671,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.32955499999999993,
+                0.2199325,
+                0.12089999999999998,
+                0.05645,
+                0.024157500000000002,
+                0.0097025
+              ],
+              "worst_rel_penalty": 0.010426455452633458,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.32943,
+                0.2197625,
+                0.1207525,
+                0.056394999999999994,
+                0.02418,
+                0.00967
+              ],
+              "worst_rel_penalty": 0.009441983263972671,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.329495,
+                0.21999500000000002,
+                0.121,
+                0.05650499999999999,
+                0.0241675,
+                0.009707500000000003
+              ],
+              "worst_rel_penalty": 0.011410927641293995,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 5,
+          "depth": 3,
+          "width": 2,
+          "arch": "h1-2p-h2-2p-h3-2p",
+          "params": 27,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.01906296147133837,
+          "best_rel_penalty_over_seeds": 0.01754150445249937,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.3316925,
+                0.22113750000000004,
+                0.12143999999999999,
+                0.0569325,
+                0.0243325,
+                0.0097025
+              ],
+              "worst_rel_penalty": 0.01906296147133837,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.33121,
+                0.22075500000000003,
+                0.12123249999999999,
+                0.0568875,
+                0.024319999999999998,
+                0.009744999999999997
+              ],
+              "worst_rel_penalty": 0.018257484226070615,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.3313625000000001,
+                0.22091249999999998,
+                0.12118999999999999,
+                0.05684750000000001,
+                0.0242975,
+                0.009745
+              ],
+              "worst_rel_penalty": 0.01754150445249937,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 5,
+          "depth": 3,
+          "width": 4,
+          "arch": "h1-4p-h2-4p-h3-4p",
+          "params": 69,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.02018167986754368,
+          "best_rel_penalty_over_seeds": 0.017854745603436674,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.33147499999999996,
+                0.2211875,
+                0.12157499999999999,
+                0.056995,
+                0.0243325,
+                0.009729999999999999
+              ],
+              "worst_rel_penalty": 0.02018167986754368,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.3311225,
+                0.220825,
+                0.12129999999999999,
+                0.056865,
+                0.024329999999999997,
+                0.00971
+              ],
+              "worst_rel_penalty": 0.017854745603436674,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.33135,
+                0.221055,
+                0.12137500000000001,
+                0.05688249999999999,
+                0.0242825,
+                0.0097525
+              ],
+              "worst_rel_penalty": 0.018167986754373977,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 5,
+          "depth": 3,
+          "width": 8,
+          "arch": "h1-8p-h2-8p-h3-8p",
+          "params": 201,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.017899494339284807,
+          "best_rel_penalty_over_seeds": 0.01588580122611535,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.331275,
+                0.22124000000000002,
+                0.12153,
+                0.056867499999999994,
+                0.02436,
+                0.009687499999999998
+              ],
+              "worst_rel_penalty": 0.017899494339284807,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.330695,
+                0.22060250000000003,
+                0.121285,
+                0.056755,
+                0.024272499999999995,
+                0.009717499999999999
+              ],
+              "worst_rel_penalty": 0.01588580122611535,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.331485,
+                0.22128500000000004,
+                0.12139499999999999,
+                0.0568425,
+                0.0243175,
+                0.009729999999999999
+              ],
+              "worst_rel_penalty": 0.017452006980802733,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 5,
+          "depth": 3,
+          "width": 16,
+          "arch": "h1-16p-h2-16p-h3-16p",
+          "params": 657,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.021389895735445502,
+          "best_rel_penalty_over_seeds": 0.019152458943035012,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.33135,
+                0.22125,
+                0.12155749999999999,
+                0.05696500000000001,
+                0.024325000000000003,
+                0.009770000000000003
+              ],
+              "worst_rel_penalty": 0.01964469503736534,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.33080499999999996,
+                0.22100749999999997,
+                0.1214475,
+                0.05693750000000001,
+                0.024327499999999995,
+                0.009707499999999999
+              ],
+              "worst_rel_penalty": 0.019152458943035012,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.3316425,
+                0.22181,
+                0.12200250000000001,
+                0.0570625,
+                0.024489999999999998,
+                0.00981
+              ],
+              "worst_rel_penalty": 0.021389895735445502,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 5,
+          "depth": 3,
+          "width": 32,
+          "arch": "h1-32p-h2-32p-h3-32p",
+          "params": 2337,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.022329619188257783,
+          "best_rel_penalty_over_seeds": 0.01995793618830252,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.33133749999999995,
+                0.2216625,
+                0.12178,
+                0.05698249999999999,
+                0.0242975,
+                0.0097525
+              ],
+              "worst_rel_penalty": 0.01995793618830252,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.33106250000000004,
+                0.22132000000000004,
+                0.121945,
+                0.0570325,
+                0.024352499999999996,
+                0.0097475
+              ],
+              "worst_rel_penalty": 0.020852910905266916,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.33262999999999987,
+                0.22228250000000002,
+                0.1222175,
+                0.05711499999999999,
+                0.024445,
+                0.009714999999999998
+              ],
+              "worst_rel_penalty": 0.022329619188257783,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 5,
+          "depth": 3,
+          "width": 64,
+          "arch": "h1-64p-h2-64p-h3-64p",
+          "params": 8769,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.02837069852776652,
+          "best_rel_penalty_over_seeds": 0.025417281961784662,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.33174750000000003,
+                0.22251499999999996,
+                0.12248750000000001,
+                0.05737000000000001,
+                0.024602500000000003,
+                0.009772500000000002
+              ],
+              "worst_rel_penalty": 0.02689399024477578,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.3322225,
+                0.2222775,
+                0.1224625,
+                0.0574525,
+                0.02439,
+                0.009732500000000002
+              ],
+              "worst_rel_penalty": 0.02837069852776652,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.33270250000000007,
+                0.22287249999999997,
+                0.1225325,
+                0.057287500000000005,
+                0.024555,
+                0.009794999999999998
+              ],
+              "worst_rel_penalty": 0.025417281961784662,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 7,
+          "depth": 1,
+          "width": 1,
+          "arch": "h1-1p",
+          "params": 10,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.012261153622410257,
+          "best_rel_penalty_over_seeds": 0.011724168792231546,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.3294875,
+                0.21979749999999995,
+                0.12084749999999997,
+                0.056552500000000006,
+                0.0242075,
+                0.0096575
+              ],
+              "worst_rel_penalty": 0.012261153622410257,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.32946000000000003,
+                0.21983750000000005,
+                0.12083999999999999,
+                0.056522499999999996,
+                0.02419,
+                0.009700000000000002
+              ],
+              "worst_rel_penalty": 0.011724168792231546,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.3293975,
+                0.21982249999999998,
+                0.12092499999999999,
+                0.056545,
+                0.02423,
+                0.0096925
+              ],
+              "worst_rel_penalty": 0.012126907414865487,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 7,
+          "depth": 1,
+          "width": 2,
+          "arch": "h1-2p",
+          "params": 19,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.01906296147133837,
+          "best_rel_penalty_over_seeds": 0.018033740546829453,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.331125,
+                0.22084,
+                0.12125749999999998,
+                0.0568825,
+                0.024324999999999996,
+                0.00971
+              ],
+              "worst_rel_penalty": 0.018167986754374223,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.33071,
+                0.22044000000000002,
+                0.12137499999999998,
+                0.0569325,
+                0.024302499999999998,
+                0.009717499999999999
+              ],
+              "worst_rel_penalty": 0.01906296147133837,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.3308924999999999,
+                0.220595,
+                0.12122,
+                0.056874999999999995,
+                0.024325,
+                0.0097125
+              ],
+              "worst_rel_penalty": 0.018033740546829453,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 7,
+          "depth": 1,
+          "width": 4,
+          "arch": "h1-4p",
+          "params": 37,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.01933145388642779,
+          "best_rel_penalty_over_seeds": 0.01843647916946352,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.3312775,
+                0.2211275,
+                0.12135000000000003,
+                0.056947500000000005,
+                0.024364999999999998,
+                0.009712499999999999
+              ],
+              "worst_rel_penalty": 0.01933145388642779,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.3309025,
+                0.2207575,
+                0.12135500000000002,
+                0.056897500000000004,
+                0.02432,
+                0.009715000000000001
+              ],
+              "worst_rel_penalty": 0.01843647916946352,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.33099,
+                0.22076,
+                0.12129750000000003,
+                0.05692250000000001,
+                0.024322499999999997,
+                0.009710000000000002
+              ],
+              "worst_rel_penalty": 0.018883966527945717,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 7,
+          "depth": 1,
+          "width": 8,
+          "arch": "h1-8p",
+          "params": 73,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.020047433659999156,
+          "best_rel_penalty_over_seeds": 0.018033740546829453,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.3313425,
+                0.22125499999999998,
+                0.12147250000000001,
+                0.0569875,
+                0.024354999999999998,
+                0.0097025
+              ],
+              "worst_rel_penalty": 0.020047433659999156,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.3308275,
+                0.22077249999999998,
+                0.12143,
+                0.0569125,
+                0.024295,
+                0.009729999999999999
+              ],
+              "worst_rel_penalty": 0.01870497158455269,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.33069500000000007,
+                0.2208925,
+                0.1213525,
+                0.056874999999999995,
+                0.024365,
+                0.00974
+              ],
+              "worst_rel_penalty": 0.018033740546829453,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 7,
+          "depth": 1,
+          "width": 16,
+          "arch": "h1-16p",
+          "params": 145,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.02004743365999891,
+          "best_rel_penalty_over_seeds": 0.019555197565668703,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.33148,
+                0.22146000000000005,
+                0.1216375,
+                0.05696,
+                0.02437,
+                0.00971
+              ],
+              "worst_rel_penalty": 0.019555197565668703,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.33091500000000007,
+                0.22093499999999996,
+                0.1213525,
+                0.05698749999999999,
+                0.024345,
+                0.0097325
+              ],
+              "worst_rel_penalty": 0.02004743365999891,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.331065,
+                0.22089999999999996,
+                0.12154749999999999,
+                0.05697,
+                0.0243175,
+                0.009704999999999998
+              ],
+              "worst_rel_penalty": 0.019734192509061606,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 7,
+          "depth": 1,
+          "width": 32,
+          "arch": "h1-32p",
+          "params": 289,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.02098715711281156,
+          "best_rel_penalty_over_seeds": 0.019913187452454635,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.33108499999999996,
+                0.2214375,
+                0.12163499999999998,
+                0.05704,
+                0.0243075,
+                0.009695
+              ],
+              "worst_rel_penalty": 0.02098715711281156,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.330945,
+                0.22091249999999998,
+                0.12140749999999997,
+                0.056984999999999994,
+                0.02436,
+                0.009692500000000001
+              ],
+              "worst_rel_penalty": 0.020002684924150776,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.33086999999999994,
+                0.22101500000000002,
+                0.1215325,
+                0.05698000000000001,
+                0.024315,
+                0.0097125
+              ],
+              "worst_rel_penalty": 0.019913187452454635,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 7,
+          "depth": 1,
+          "width": 64,
+          "arch": "h1-64p",
+          "params": 577,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.022642860339195332,
+          "best_rel_penalty_over_seeds": 0.019734192509061606,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.33090749999999997,
+                0.22125499999999998,
+                0.1219375,
+                0.057132499999999996,
+                0.024384999999999997,
+                0.0097075
+              ],
+              "worst_rel_penalty": 0.022642860339195332,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.33060000000000006,
+                0.22093500000000002,
+                0.1214875,
+                0.05697,
+                0.024334999999999996,
+                0.009717500000000004
+              ],
+              "worst_rel_penalty": 0.019734192509061606,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.3311425,
+                0.22138000000000005,
+                0.1218525,
+                0.0570575,
+                0.024337499999999998,
+                0.009705000000000002
+              ],
+              "worst_rel_penalty": 0.02130039826374899,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 7,
+          "depth": 2,
+          "width": 1,
+          "arch": "h1-1p-h2-1p",
+          "params": 12,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.010829194075267399,
+          "best_rel_penalty_over_seeds": 0.0103817067167852,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.3295425,
+                0.21990500000000002,
+                0.12083500000000003,
+                0.0564475,
+                0.02418,
+                0.009677500000000002
+              ],
+              "worst_rel_penalty": 0.0103817067167852,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.329415,
+                0.21972,
+                0.12069,
+                0.056462500000000006,
+                0.0241725,
+                0.009677500000000002
+              ],
+              "worst_rel_penalty": 0.010650199131874618,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.32937750000000005,
+                0.2199125,
+                0.12089749999999999,
+                0.0564725,
+                0.0241975,
+                0.00969
+              ],
+              "worst_rel_penalty": 0.010829194075267399,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 7,
+          "depth": 2,
+          "width": 2,
+          "arch": "h1-2p-h2-2p",
+          "params": 25,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.01861547411285605,
+          "best_rel_penalty_over_seeds": 0.018033740546829453,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.33137249999999996,
+                0.22102,
+                0.12134249999999999,
+                0.056874999999999995,
+                0.0243475,
+                0.009705
+              ],
+              "worst_rel_penalty": 0.018033740546829453,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.3310275,
+                0.22068500000000002,
+                0.12135499999999999,
+                0.056907499999999986,
+                0.024352500000000003,
+                0.009757499999999999
+              ],
+              "worst_rel_penalty": 0.01861547411285605,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.33114499999999997,
+                0.22091750000000002,
+                0.12122250000000001,
+                0.056874999999999995,
+                0.0243,
+                0.009725000000000001
+              ],
+              "worst_rel_penalty": 0.018033740546829453,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 7,
+          "depth": 2,
+          "width": 4,
+          "arch": "h1-4p-h2-4p",
+          "params": 57,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.020494921018481355,
+          "best_rel_penalty_over_seeds": 0.017362509509106342,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.33136,
+                0.22113750000000004,
+                0.12153,
+                0.05701250000000001,
+                0.0243725,
+                0.0097225
+              ],
+              "worst_rel_penalty": 0.020494921018481355,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.33105,
+                0.2208675,
+                0.12138000000000002,
+                0.0568375,
+                0.024349999999999997,
+                0.009742500000000001
+              ],
+              "worst_rel_penalty": 0.017362509509106342,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.3313775,
+                0.2210975,
+                0.12143749999999998,
+                0.05686,
+                0.0242775,
+                0.0097225
+              ],
+              "worst_rel_penalty": 0.017765248131740283,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 7,
+          "depth": 2,
+          "width": 8,
+          "arch": "h1-8p-h2-8p",
+          "params": 145,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.02027117733924007,
+          "best_rel_penalty_over_seeds": 0.016646529735534977,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.33124500000000007,
+                0.22118500000000002,
+                0.12153500000000002,
+                0.056909999999999995,
+                0.024357499999999997,
+                0.009699999999999999
+              ],
+              "worst_rel_penalty": 0.01866022284870443,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.33061500000000005,
+                0.22071750000000004,
+                0.12127999999999999,
+                0.0567975,
+                0.02434,
+                0.0097275
+              ],
+              "worst_rel_penalty": 0.016646529735534977,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.33151,
+                0.22151749999999998,
+                0.12177750000000001,
+                0.056999999999999995,
+                0.0243475,
+                0.0097475
+              ],
+              "worst_rel_penalty": 0.02027117733924007,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 7,
+          "depth": 2,
+          "width": 16,
+          "arch": "h1-16p-h2-16p",
+          "params": 417,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.020092182395847414,
+          "best_rel_penalty_over_seeds": 0.01794424307513331,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.33100749999999995,
+                0.221045,
+                0.12159249999999999,
+                0.056945,
+                0.0243175,
+                0.009717499999999999
+              ],
+              "worst_rel_penalty": 0.019286705150579533,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.33063000000000003,
+                0.22072999999999995,
+                0.1214025,
+                0.05687000000000001,
+                0.0243625,
+                0.009735
+              ],
+              "worst_rel_penalty": 0.01794424307513331,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.3308375,
+                0.22112249999999997,
+                0.12174,
+                0.056990000000000006,
+                0.024310000000000002,
+                0.009665
+              ],
+              "worst_rel_penalty": 0.020092182395847414,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 7,
+          "depth": 2,
+          "width": 32,
+          "arch": "h1-32p-h2-32p",
+          "params": 1345,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.0225981116033472,
+          "best_rel_penalty_over_seeds": 0.019018212735490238,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.33117499999999994,
+                0.22126250000000006,
+                0.12165,
+                0.05696,
+                0.0242875,
+                0.009712500000000002
+              ],
+              "worst_rel_penalty": 0.019555197565668703,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.33080000000000004,
+                0.22122000000000003,
+                0.12174750000000001,
+                0.05693,
+                0.0244,
+                0.0097725
+              ],
+              "worst_rel_penalty": 0.019018212735490238,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.3317525,
+                0.22163999999999998,
+                0.12198499999999998,
+                0.05713,
+                0.024385,
+                0.009707499999999999
+              ],
+              "worst_rel_penalty": 0.0225981116033472,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 7,
+          "depth": 2,
+          "width": 64,
+          "arch": "h1-64p-h2-64p",
+          "params": 4737,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.027072985188168433,
+          "best_rel_penalty_over_seeds": 0.022732357810891973,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.3313299999999999,
+                0.2219525,
+                0.12228000000000001,
+                0.05738,
+                0.024460000000000003,
+                0.009712500000000002
+              ],
+              "worst_rel_penalty": 0.027072985188168433,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.3308225,
+                0.22143000000000002,
+                0.12198,
+                0.05713750000000001,
+                0.024435,
+                0.00971
+              ],
+              "worst_rel_penalty": 0.022732357810891973,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.33247499999999997,
+                0.2224,
+                0.12266250000000001,
+                0.05732750000000001,
+                0.0245075,
+                0.0097075
+              ],
+              "worst_rel_penalty": 0.026133261735356152,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 7,
+          "depth": 3,
+          "width": 1,
+          "arch": "h1-1p-h2-1p-h3-1p",
+          "params": 14,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.01123193269790134,
+          "best_rel_penalty_over_seeds": 0.009978968094151384,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.32953,
+                0.21982500000000002,
+                0.120895,
+                0.05649,
+                0.024197499999999997,
+                0.009705
+              ],
+              "worst_rel_penalty": 0.011142435226204825,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.329465,
+                0.2197725,
+                0.12075499999999999,
+                0.056425,
+                0.0241925,
+                0.0096825
+              ],
+              "worst_rel_penalty": 0.009978968094151384,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.32938999999999996,
+                0.2198975,
+                0.1208825,
+                0.056495000000000004,
+                0.024187499999999997,
+                0.0096975
+              ],
+              "worst_rel_penalty": 0.01123193269790134,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 7,
+          "depth": 3,
+          "width": 2,
+          "arch": "h1-2p-h2-2p-h3-2p",
+          "params": 31,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.018481227905311527,
+          "best_rel_penalty_over_seeds": 0.01709401709401705,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.33176249999999996,
+                0.22121250000000003,
+                0.1213625,
+                0.05689999999999999,
+                0.024315,
+                0.009695
+              ],
+              "worst_rel_penalty": 0.018481227905311527,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.33094250000000003,
+                0.22056499999999998,
+                0.12122,
+                0.05685249999999999,
+                0.024305,
+                0.009754999999999998
+              ],
+              "worst_rel_penalty": 0.017631001924195512,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.33127,
+                0.220805,
+                0.12113250000000002,
+                0.0568225,
+                0.024310000000000005,
+                0.009734999999999999
+              ],
+              "worst_rel_penalty": 0.01709401709401705,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 7,
+          "depth": 3,
+          "width": 4,
+          "arch": "h1-4p-h2-4p-h3-4p",
+          "params": 77,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.023224593905222177,
+          "best_rel_penalty_over_seeds": 0.0174072582449546,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.331685,
+                0.22144,
+                0.12177250000000002,
+                0.057165,
+                0.024374999999999997,
+                0.00971
+              ],
+              "worst_rel_penalty": 0.023224593905222177,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.33103999999999995,
+                0.2208075,
+                0.12129750000000002,
+                0.05684,
+                0.02436,
+                0.009720000000000001
+              ],
+              "worst_rel_penalty": 0.0174072582449546,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.33123749999999996,
+                0.22118250000000006,
+                0.1214275,
+                0.056874999999999995,
+                0.0243175,
+                0.009715000000000001
+              ],
+              "worst_rel_penalty": 0.018033740546829453,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 7,
+          "depth": 3,
+          "width": 8,
+          "arch": "h1-8p-h2-8p-h3-8p",
+          "params": 217,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.02009218239584729,
+          "best_rel_penalty_over_seeds": 0.019018212735490238,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.33169000000000004,
+                0.2215925,
+                0.12158250000000001,
+                0.05699,
+                0.0243325,
+                0.0097125
+              ],
+              "worst_rel_penalty": 0.02009218239584729,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.330585,
+                0.220735,
+                0.12138749999999998,
+                0.05693,
+                0.024415,
+                0.009749999999999998
+              ],
+              "worst_rel_penalty": 0.019018212735490238,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.331725,
+                0.22153500000000004,
+                0.12170250000000002,
+                0.05695,
+                0.024280000000000003,
+                0.009747500000000001
+              ],
+              "worst_rel_penalty": 0.019376202622275924,
+              "tolerance_ok": true,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 7,
+          "depth": 3,
+          "width": 16,
+          "arch": "h1-16p-h2-16p-h3-16p",
+          "params": 689,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.02241911665995442,
+          "best_rel_penalty_over_seeds": 0.020673915961874012,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.3313349999999999,
+                0.22156249999999997,
+                0.1217425,
+                0.057120000000000004,
+                0.024375,
+                0.009689999999999999
+              ],
+              "worst_rel_penalty": 0.02241911665995442,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.330875,
+                0.2210825,
+                0.12153750000000003,
+                0.0570225,
+                0.0244025,
+                0.009734999999999999
+              ],
+              "worst_rel_penalty": 0.020673915961874012,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.33144500000000005,
+                0.22164749999999994,
+                0.12190000000000001,
+                0.057085,
+                0.024409999999999998,
+                0.009735
+              ],
+              "worst_rel_penalty": 0.021792634358079318,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 7,
+          "depth": 3,
+          "width": 32,
+          "arch": "h1-32p-h2-32p-h3-32p",
+          "params": 2401,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.02689399024477578,
+          "best_rel_penalty_over_seeds": 0.02295610149013313,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.331945,
+                0.2220625,
+                0.12220249999999999,
+                0.05735,
+                0.0245325,
+                0.009797499999999997
+              ],
+              "worst_rel_penalty": 0.026536000357989847,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.331195,
+                0.22146749999999998,
+                0.12237749999999999,
+                0.05715000000000001,
+                0.0244425,
+                0.0097725
+              ],
+              "worst_rel_penalty": 0.02295610149013313,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.33211749999999995,
+                0.22256499999999999,
+                0.12260750000000001,
+                0.05737000000000001,
+                0.024505,
+                0.009745
+              ],
+              "worst_rel_penalty": 0.02689399024477578,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            }
+          ]
+        },
+        {
+          "window": 7,
+          "depth": 3,
+          "width": 64,
+          "arch": "h1-64p-h2-64p-h3-64p",
+          "params": 8897,
+          "matches": false,
+          "worst_rel_penalty_over_seeds": 0.03875240524455197,
+          "best_rel_penalty_over_seeds": 0.03266657716919485,
+          "seed_runs": [
+            {
+              "train_seed": 0,
+              "ber": [
+                0.33235000000000003,
+                0.22341249999999996,
+                0.1236275,
+                0.05803250000000001,
+                0.024725,
+                0.009865
+              ],
+              "worst_rel_penalty": 0.03875240524455197,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 1,
+              "ber": [
+                0.33166750000000006,
+                0.2226525,
+                0.122945,
+                0.057692499999999994,
+                0.024665,
+                0.009834999999999998
+              ],
+              "worst_rel_penalty": 0.03266657716919485,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            },
+            {
+              "train_seed": 2,
+              "ber": [
+                0.33291750000000003,
+                0.22363249999999998,
+                0.12390249999999998,
+                0.05787,
+                0.0247725,
+                0.0097975
+              ],
+              "worst_rel_penalty": 0.035843737414417993,
+              "tolerance_ok": false,
+              "wilcoxon_ok": false
+            }
+          ]
+        }
+      ],
+      "n_probes": 84
     }
   }
 }
