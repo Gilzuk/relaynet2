@@ -335,6 +335,49 @@ def summary_table(d, out="results/minsize_summary_table.md"):
     return "\n".join(lines)
 
 
+# ── 6. minimal size against a degradation budget, per channel ──────────────
+def chart_minsize_vs_budget():
+    """How small can the relay be if you will accept X dB against MLP-169.
+
+    The x axis is a budget the reader chooses, not a measured quantity, so
+    this is a step function and is drawn as one -- joining the points with
+    straight lines would imply sizes between the probed thresholds.
+    """
+    from report_minsize_vs_169 import analyse, THRESHOLDS
+    table, _ = analyse()
+
+    groups = [("Memoryless channels (1 tap)", 1),
+              ("Channels with memory (3 taps)", 3)]
+    fig, axes = plt.subplots(1, 2, figsize=(11, 5), sharey=True)
+    for ax, (title, mem) in zip(axes, groups):
+        chans = [(n, t) for n, t in table.items() if t["memory"] == mem]
+        for i, (n, t) in enumerate(chans):
+            ys = []
+            for th in THRESHOLDS:
+                ok = [z for z in t["rows"] if z["db"] <= th]
+                ys.append(min(z["params"] for z in ok) if ok else np.nan)
+            # one artist carrying both the step and the marker, so the
+            # legend key shows the marker too and identity is never colour
+            # alone
+            ax.plot(THRESHOLDS, ys, drawstyle="steps-post",
+                    marker=MARKERS[i % len(MARKERS)], markersize=6,
+                    color=PALETTE[i % len(PALETTE)], linewidth=LW, label=n)
+        ax.axhline(169, color=BLACK, linewidth=1.0, linestyle=":")
+        ax.set_yscale("log")
+        ax.set_xlabel("Degradation budget vs MLP-169 (dB)")
+        ax.set_title(title)
+        ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.16),
+                  frameon=False)
+    axes[0].set_ylabel("Smallest relay meeting the budget (parameters)")
+    axes[0].text(0.52, 185, "MLP-169", fontsize=10, color=BLACK)
+    fig.suptitle("How small the relay can be for a given cost against MLP-169",
+                 fontsize=16)
+    fig.tight_layout()
+    fig.savefig("results/minsize_vs_degradation_budget.png", dpi=150,
+                bbox_inches="tight")
+    plt.close(fig)
+
+
 if __name__ == "__main__":
     d = load("results/mlp_min_size_all_channels.json")
     chart_window_crossover(d)
@@ -342,5 +385,6 @@ if __name__ == "__main__":
     chart_vs_mlp169(d)
     chart_coded_threshold()
     chart_ber_curves(d, "composite")
+    chart_minsize_vs_budget()
     print(summary_table(d))
-    print("\nwrote 5 charts + summary table to results/")
+    print("\nwrote 6 charts + summary table to results/")
