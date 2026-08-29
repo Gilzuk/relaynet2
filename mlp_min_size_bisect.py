@@ -207,9 +207,15 @@ def run_channel(name, spec):
             cells[(w, L)] = {"width": h_star, "params": p,
                              "monotone": not bad, "failed_above": bad}
 
-    valid = [(k, v) for k, v in cells.items()
-             if v["params"] is not None and v["monotone"]]
-    best = min(valid, key=lambda t: t[1]["params"]) if valid else None
+    # Two different questions, both answered, because reporting only one of
+    # them misleads. A cell flagged non-monotone still contains a genuine
+    # match at h*: what the flag says is that wider networks at the same
+    # (window, depth) stop matching, so h* is a point that works rather than
+    # a threshold above which everything works.
+    matched = [(k, v) for k, v in cells.items() if v["params"] is not None]
+    mono = [(k, v) for k, v in matched if v["monotone"]]
+    best_any = min(matched, key=lambda t: t[1]["params"]) if matched else None
+    best = min(mono, key=lambda t: t[1]["params"]) if mono else None
 
     print(f"\n    smallest matching width by (window, depth), params in brackets")
     print("      " + "depth".rjust(8)
@@ -226,12 +232,21 @@ def run_channel(name, spec):
                 row.append(f"{cell:>16}")
         print(f"      w={w:<6}" + "".join(row))
 
+    if best_any:
+        (aw, aL), av = best_any
+        print(f"\n  => smallest that matches at all: {av['params']} params "
+              f"(window {aw}, depth {aL}, width {av['width']}) vs {base_name}"
+              + ("" if av["monotone"] else
+                 "   -- non-monotone: a working point, not a threshold"))
+    else:
+        print(f"\n  => nothing matches {base_name} anywhere in the search space")
     if best:
         (bw, bL), bv = best
-        print(f"\n  => minimum: {bv['params']} params "
-              f"(window {bw}, depth {bL}, width {bv['width']}) vs {base_name}")
+        print(f"  => smallest with every wider net still matching: "
+              f"{bv['params']} params "
+              f"(window {bw}, depth {bL}, width {bv['width']})")
     else:
-        print(f"\n  => no (window, depth) yields a monotone minimum vs {base_name}")
+        print("  => no (window, depth) cell is monotone above its boundary")
 
     return {
         "note": spec["note"], "modulation": mod, "memory": spec["memory"],
@@ -240,6 +255,11 @@ def run_channel(name, spec):
         "df_ber": [float(b) for b in df_ber],
         "af_ber": [float(b) for b in af_ber],
         "cells": {f"w{w}_L{L}": v for (w, L), v in cells.items()},
+        "min_params_any": best_any[1]["params"] if best_any else None,
+        "min_config_any": ({"window": best_any[0][0], "depth": best_any[0][1],
+                            "width": best_any[1]["width"],
+                            "monotone": best_any[1]["monotone"]}
+                           if best_any else None),
         "min_params": best[1]["params"] if best else None,
         "min_window": best[0][0] if best else None,
         "min_depth": best[0][1] if best else None,
@@ -273,14 +293,20 @@ def main():
             json.dump(out, fh, indent=2)
 
     print(f"\n{'=' * 78}\n  SUMMARY\n{'=' * 78}")
-    print(f"  {'channel':<14} {'base':>5} {'valid':>12} {'min p':>6} "
-          f"{'w':>2} {'L':>2} {'h':>3} {'probes':>7}")
+    print(f"  {'channel':<14} {'base':>5} {'valid':>12} "
+          f"{'any':>5} {'thresh':>7} {'w':>2} {'L':>2} {'h':>3} {'probes':>7}")
     for n, r in out["channels"].items():
+        a = r.get("min_config_any")
+        atag = "" if not a else ("" if a["monotone"] else "!")
         print(f"  {n:<14} {r['baseline']:>5} "
               f"{r['baseline_diagnostics']['verdict']:>12} "
-              f"{str(r['min_params']):>6} {str(r['min_window']):>2} "
-              f"{str(r['min_depth']):>2} {str(r['min_width']):>3} "
-              f"{r['n_probes']:>7}")
+              f"{str(r['min_params_any']) + atag:>5} {str(r['min_params']):>7} "
+              f"{str(r['min_window']):>2} {str(r['min_depth']):>2} "
+              f"{str(r['min_width']):>3} {r['n_probes']:>7}")
+    print("\n  any    = smallest configuration that matched at all")
+    print("  thresh = smallest whose (window, depth) cell also matched at every")
+    print("           wider width probed -- i.e. a threshold, not just a point")
+    print("  !      = the 'any' winner is non-monotone: wider nets stop matching")
     print(f"\n  saved {path}")
 
 
