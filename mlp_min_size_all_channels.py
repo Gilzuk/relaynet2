@@ -230,13 +230,15 @@ CHANNELS = {
     "isi_complex": dict(
         make=lambda s: ComplexISIChannel(H_ISI, seed=s), mod="qpsk", memory=3,
         hop2=lambda: _hop2_awgn(),
-        baseline=lambda: ("MLSE", ViterbiMLSEQPSKRelay(channel_taps=H_ISI)),
+        baseline=lambda: ("MLSE", _complex_native(
+            ViterbiMLSEQPSKRelay(channel_taps=H_ISI))),
         note="Ch7 complex 3-tap ISI"),
     "isi_rayleigh": dict(
         make=lambda s: ComplexISIRayleighChannel(H_ISI, seed=s), mod="qpsk",
         memory=3,
         hop2=lambda: _hop2_awgn(),
-        baseline=lambda: ("MLSE", ViterbiMLSEQPSKRelay(channel_taps=H_ISI)), note="Ch7 3-tap ISI on top of Rayleigh fading"),
+        baseline=lambda: ("MLSE", _complex_native(
+            ViterbiMLSEQPSKRelay(channel_taps=H_ISI))), note="Ch7 3-tap ISI on top of Rayleigh fading"),
     "composite": dict(
         make=lambda s: CompositeChannel(isi_taps=H_COMPOSITE, pa_sat=1.2,
                                         include_phase=True, seed=s),
@@ -265,6 +267,12 @@ CHANNELS = {
 #             measures nothing. It is a component of CompositeChannel, and
 #             the composite is included above as the thesis's actual PA
 #             scenario (e6_composite_ported.py).
+
+
+def _complex_native(relay):
+    """Mark a relay as taking the complex signal whole, not axis by axis."""
+    relay.handles_complex_natively = True
+    return relay
 
 
 def n_params(window, hidden):
@@ -328,7 +336,18 @@ def two_hop_ber(relay, hop1, hop2, mod, num_bits, snr_db, seed):
     tx_bits, tx_symbols = source.transmit(num_bits)
 
     rx_relay = hop1(tx_symbols, snr_db)
-    relay_out = _process_relay(relay, rx_relay, mod)
+    if getattr(relay, "handles_complex_natively", False):
+        # runner._apply_relay splits a complex signal into I and Q and calls
+        # process() on each axis. That is right for the per-axis MLPs and
+        # wrong for a QPSK MLSE, whose trellis is defined over the complex
+        # constellation: handing it y.real alone destroys it. This is what
+        # made the isi_complex and isi_rayleigh MLSE baselines look "weak".
+        # Standalone on the same channel that relay recovers the symbols
+        # exactly (0.00000 symbol error at 20 dB), so the fault was in the
+        # dispatch, not the comparator.
+        relay_out = relay.process(rx_relay)
+    else:
+        relay_out = _process_relay(relay, rx_relay, mod)
 
     rx_dest = hop2(relay_out, snr_db)
     if isinstance(rx_dest, tuple):
