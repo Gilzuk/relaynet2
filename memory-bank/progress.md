@@ -28,6 +28,19 @@ saved to `e6_multi_training_results/e6_seed_comparison.png` via
 `plot_e6_seed_comparison.py`. `thesis/main.pdf` rebuilt to **129 pages**.
 The 120-page target is 9 pages over; author must decide what to cut.
 
+Session note (2026-08-27, later): merged the one kissing-figure pair in
+compiled Chapter 6 (old Figures 6.7/6.8 -> a single two-panel Figure 6.7) and
+moved it above the closing paragraphs, removing the float-only page. Compiled
+Chapter 6 is `ch07_unknown_and_mismatch_channels.tex`;
+`ch06_experiments_extension_Higher_Order_Modulation.tex` is not included in
+`main.tex`. PDF still 128 pages.
+
+Session note (2026-08-27): rebuilt `thesis/main.pdf` (128 pages, no unresolved
+refs/citations) so it matches the sources after PR #39's `[H]` → `[htbp]` figure
+placement change, which merged without a PDF rebuild. TeX is not preinstalled in
+the agent container but is installable via apt — see `activeContext.md` for the
+exact package list and the `latexmk -C` caveat.
+
 Session note (2026-08-26, later): thesis layout cleanup removed near-empty
 pages by tightening the live abstract, tightening the Chapter 3 closing
 sentence, and reducing TOC chapter-entry spacing in `thesis/main.tex`.
@@ -222,3 +235,12 @@ prose trimming, table merging, the equation list, or font/margin changes.
 **Citations added this session were verified against search results, not
 publishers** — `arxiv.org` and `link.springer.com` are blocked by the egress
 proxy. Worth one verification pass before submission.
+
+- 2026-08-27: Compressed Chapter 2 background exposition, then reverted the
+  compression at the user's request (all seven equations restored, back to
+  128 pages). Kept the claim fixes: a thesis-wide audit found TWO live
+  instances of the retracted "VAE is a consistent underperformer" reading --
+  Sec 2.3.1 and, more seriously, Chapter 5's Table 8 conclusion, which
+  contradicted both its own table (VAE-3K sits inside the feedforward group
+  at every SNR) and Chapter 8's explicit retraction. Both now state what the
+  data shows. PDF rebuilt in the same commit.
