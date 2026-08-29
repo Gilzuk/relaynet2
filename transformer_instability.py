@@ -85,11 +85,14 @@ def main():
     print("Transformer-3K across 8 initializations, canonical QPSK/Rayleigh")
     print(f"{'seed':>5} {'final loss':>11} {'best loss':>10} {'final val':>10} "
           f"{'dB vs DF':>9} {'BER@20dB':>10}")
-    for arch, factory in (("Transformer-3K", make_transformer_3k),
-                          ("Mamba-S6-3K", make_mamba_3k)):
+    # Mamba is a control: four initializations is enough to confirm the
+    # stability the three-seed sweep already indicated, and the Transformer
+    # is where the frequency of the bad mode actually needs estimating.
+    for arch, factory, seeds in (("Transformer-3K", make_transformer_3k, SEEDS),
+                                 ("Mamba-S6-3K", make_mamba_3k, SEEDS[:4])):
         print(f"\n  --- {arch}")
         recs = []
-        for ts in SEEDS:
+        for ts in seeds:
             t0 = time.time()
             relay, losses, vaccs = one_run(factory, ts)
             ber = evaluate(relay)
