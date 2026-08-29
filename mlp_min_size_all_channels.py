@@ -79,10 +79,9 @@ from relaynet.channels import (
     ComplexISIChannel,
     ComplexISIRayleighChannel,
     NonlinearBiasChannel,
-    FlatPhaseChannel,
     FlatGainChannel,
     BranchAsymmetryChannel,
-    PowerAmplifierChannel,
+    CompositeChannel,
 )
 from relaynet.relays import AmplifyAndForwardRelay, DecodeAndForwardRelay, MLPRelay
 from relaynet.simulation.runner import run_monte_carlo
@@ -110,6 +109,10 @@ ALPHA = 0.05
 H_ISI = np.array([1.0, 0.7, 0.5])
 H_ISI = H_ISI / np.linalg.norm(H_ISI)
 
+# The composite cascade uses its own taps (e6_composite_ported.py:38).
+H_COMPOSITE = np.array([1.0, 0.6, 0.4])
+H_COMPOSITE = H_COMPOSITE / np.linalg.norm(H_COMPOSITE)
+
 # (window, hidden). Window 7 is included beyond the canonical maximum of 5
 # because the ISI channels have 3 taps over two hops and may need the reach.
 GRID = [
@@ -128,9 +131,6 @@ CHANNELS = {
     "rayleigh": dict(
         make=lambda s: rayleigh_fading_channel, mod="qpsk", memory=1,
         note="Ch5 canonical operating point"),
-    "flat_phase": dict(
-        make=lambda s: FlatPhaseChannel(seed=s), mod="qpsk", memory=1,
-        note="Ch7 E6_FLAT unknown phase, theta ~ U[0,2pi)"),
     "flat_gain": dict(
         make=lambda s: FlatGainChannel(gain_min=0.3, gain_max=2.0, seed=s),
         mod="bpsk", memory=1,
@@ -142,10 +142,6 @@ CHANNELS = {
         make=lambda s: NonlinearBiasChannel(saturation=1.5, dc_bias=0.5, seed=s),
         mod="bpsk", memory=1,
         note="Ch7 nonlinear saturation + DC bias (memoryless but nonlinear)"),
-    "pa": dict(
-        make=lambda s: PowerAmplifierChannel(saturation=1.2, seed=s),
-        mod="qpsk", memory=1,
-        note="Ch7 power-amplifier saturation (memoryless but nonlinear)"),
     "isi": dict(
         make=lambda s: ISIChannel(H_ISI, seed=s), mod="bpsk", memory=3,
         note="Ch7 real 3-tap ISI"),
@@ -155,7 +151,32 @@ CHANNELS = {
     "isi_rayleigh": dict(
         make=lambda s: ComplexISIRayleighChannel(H_ISI, seed=s), mod="qpsk",
         memory=3, note="Ch7 3-tap ISI on top of Rayleigh fading"),
+    "composite": dict(
+        make=lambda s: CompositeChannel(isi_taps=H_COMPOSITE, pa_sat=1.2,
+                                        include_phase=True, seed=s),
+        mod="bpsk", memory=3,
+        note="Ch7 composite cascade: ISI -> PA -> phase -> AWGN"),
 }
+
+# TWO CHANNELS DELIBERATELY EXCLUDED, both because the standalone pairing is
+# not a valid measurement rather than because the result was unwelcome:
+#
+# flat_phase  FlatPhaseChannel applies a constant unknown rotation per block
+#             (its docstring: "the DBPSK scenario"). A coherent constellation
+#             through an unknown rotation has no phase reference, so DF and
+#             the relay both guess: the run gave ~0.5 BER at every size,
+#             non-monotonic in SNR, Wilcoxon p 0.60-0.96. The thesis pairs
+#             this channel with a DBPSK source and differential detection,
+#             which needs a different comparator and so lives in
+#             mlp_min_size_flat_phase_dbpsk.py.
+#
+# pa          PowerAmplifierChannel is explicitly noiseless -- "This is a
+#             non-noisy channel (noise added elsewhere in composite)", with
+#             snr_db "Unused (for API compatibility)". Standalone it gives
+#             BER 0.00000 for DF, AF and every MLP at every SNR, which
+#             measures nothing. It is a component of CompositeChannel, and
+#             the composite is included above as the thesis's actual PA
+#             scenario (e6_composite_ported.py).
 
 
 def n_params(window, hidden):
@@ -329,6 +350,11 @@ def main():
         "channels": {},
     }
     path = "results/mlp_min_size_all_channels.json"
+    if os.path.exists(path):
+        # merge, so one channel can be re-run without discarding the rest
+        prev = json.load(open(path))
+        out["channels"] = {k: v for k, v in prev.get("channels", {}).items()
+                           if k in CHANNELS}
     for name in only:
         out["channels"][name] = run_channel(name, CHANNELS[name])
         with open(path, "w") as fh:          # checkpoint after every channel
