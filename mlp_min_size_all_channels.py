@@ -112,7 +112,9 @@ from relaynet.channels import (
 )
 from relaynet.relays import AmplifyAndForwardRelay, DecodeAndForwardRelay, MLPRelay
 from relaynet.relays.viterbi import ViterbiMLSERelay, ViterbiMLSEQPSKRelay
-from relaynet.simulation.runner import run_monte_carlo
+from relaynet.simulation.runner import (run_monte_carlo, _process_relay,
+                                        Source, Destination)
+from relaynet.modulation import calculate_ber
 
 SNRS = [0, 4, 8, 12, 16, 20]
 N_TRIALS = 20
@@ -152,45 +154,87 @@ GRID = [
 
 # Channel families. "memory" is the number of taps in the channel's impulse
 # response: 1 means memoryless, so the crossover prediction applies to it.
+# HOP 2, per channel family. e6_sim_ported.py:3-6 defines the Chapter 7 model
+# as "Hop 1 = unknown channel ... Hop 2 = AWGN or coherently-compensated
+# Rayleigh at the same SNR" (setups S1 isi->awgn, S3 nlbias->awgn, S4 control
+# rayleigh->rayleigh). e6_flat_ported.py uses Rayleigh-magnitude fading plus
+# AWGN for hop 2 on the flat unknown channels, and e6_composite_ported.py:202
+# uses AdaptiveRayleighChannel. Only the Chapter 5 controls are symmetric.
+
+def _hop2_awgn():
+    return awgn_channel
+
+
+def _hop2_rayleigh():
+    return rayleigh_fading_channel
+
+
+def _hop2_rayleigh_mag(seed=2):
+    """Coherently-compensated Rayleigh: magnitude fading plus AWGN, the hop 2
+    used by the E6 flat and composite experiments."""
+    rng = np.random.default_rng(seed)
+
+    def ch(signal, snr_db):
+        n = len(signal)
+        h = np.abs((rng.standard_normal(n) + 1j * rng.standard_normal(n)) / np.sqrt(2))
+        sigma = 1.0 / np.sqrt(2.0 * 10 ** (snr_db / 10.0))
+        if np.iscomplexobj(signal):
+            noise = sigma * (rng.standard_normal(n) + 1j * rng.standard_normal(n))
+        else:
+            noise = sigma * rng.standard_normal(n)
+        return h * signal + noise
+
+    return ch
+
+
 CHANNELS = {
     "awgn": dict(
         make=lambda s: awgn_channel, mod="bpsk", memory=1,
+        hop2=lambda: _hop2_awgn(),
         baseline=lambda: ("DF", DecodeAndForwardRelay()),
         note="Ch5 calibration reference (closed-form BER)"),
     "rayleigh": dict(
         make=lambda s: rayleigh_fading_channel, mod="qpsk", memory=1,
+        hop2=lambda: _hop2_rayleigh(),
         baseline=lambda: ("DF", DecodeAndForwardRelay()),
         note="Ch5 canonical operating point"),
     "flat_gain": dict(
         make=lambda s: FlatGainChannel(gain_min=0.3, gain_max=2.0, seed=s),
         mod="bpsk", memory=1,
+        hop2=lambda: _hop2_rayleigh_mag(),
         baseline=lambda: ("DF", DecodeAndForwardRelay()),
         note="Ch7 E6_FLAT unknown gain, g ~ U[0.3,2.0]"),
     "branch_asym": dict(
         make=lambda s: BranchAsymmetryChannel(seed=s), mod="bpsk", memory=1,
+        hop2=lambda: _hop2_rayleigh_mag(),
         baseline=lambda: ("DF", DecodeAndForwardRelay()),
         note="Ch7 E6_FLAT branch asymmetry, a+- ~ U[0.6,1.4]"),
     "nlbias": dict(
         make=lambda s: NonlinearBiasChannel(saturation=1.5, dc_bias=0.5, seed=s),
         mod="bpsk", memory=1,
+        hop2=lambda: _hop2_awgn(),
         baseline=lambda: ("DF", DecodeAndForwardRelay()),
         note="Ch7 nonlinear saturation + DC bias (memoryless but nonlinear)"),
     "isi": dict(
         make=lambda s: ISIChannel(H_ISI, seed=s), mod="bpsk", memory=3,
+        hop2=lambda: _hop2_awgn(),
         baseline=lambda: ("MLSE", ViterbiMLSERelay(channel_taps=H_ISI)),
         note="Ch7 real 3-tap ISI"),
     "isi_complex": dict(
         make=lambda s: ComplexISIChannel(H_ISI, seed=s), mod="qpsk", memory=3,
+        hop2=lambda: _hop2_awgn(),
         baseline=lambda: ("MLSE", ViterbiMLSEQPSKRelay(channel_taps=H_ISI)),
         note="Ch7 complex 3-tap ISI"),
     "isi_rayleigh": dict(
         make=lambda s: ComplexISIRayleighChannel(H_ISI, seed=s), mod="qpsk",
         memory=3,
+        hop2=lambda: _hop2_awgn(),
         baseline=lambda: ("MLSE", ViterbiMLSEQPSKRelay(channel_taps=H_ISI)), note="Ch7 3-tap ISI on top of Rayleigh fading"),
     "composite": dict(
         make=lambda s: CompositeChannel(isi_taps=H_COMPOSITE, pa_sat=1.2,
                                         include_phase=True, seed=s),
         mod="bpsk", memory=3,
+        hop2=lambda: _hop2_rayleigh_mag(),
         baseline=lambda: ("MLSE", ViterbiMLSERelay(channel_taps=H_COMPOSITE)),
         note="Ch7 composite cascade: ISI -> PA -> phase -> AWGN"),
 }
@@ -259,6 +303,47 @@ def make_training_data(channel, mod, window, rng):
     return np.vstack(X_list), np.concatenate(T_list)
 
 
+def two_hop_ber(relay, hop1, hop2, mod, num_bits, snr_db, seed):
+    """One two-hop trial with *independent* hop-1 and hop-2 channels.
+
+    relaynet's simulate_transmission reuses one channel_fn for both hops
+    (runner.py: rx_dest = channel_fn(relay_out, snr_db)). That is right for
+    the Chapter 5 controls, where both hops really are the same channel, but
+    wrong for every Chapter 7 channel: e6_sim_ported.py states the model as
+    "Hop 1 = unknown channel ... Hop 2 = AWGN or coherently-compensated
+    Rayleigh at the same SNR", with setups S1 isi -> awgn and S3 nlbias ->
+    awgn. Putting the unknown channel on both hops leaves the destination
+    facing un-equalized distortion it has no way to undo, which is why BER
+    then *rises* with SNR: the noise shrinks but the distortion does not.
+    """
+    source = Source(seed=seed, modulation=mod)
+    destination = Destination(modulation=mod)
+    tx_bits, tx_symbols = source.transmit(num_bits)
+
+    rx_relay = hop1(tx_symbols, snr_db)
+    relay_out = _process_relay(relay, rx_relay, mod)
+
+    rx_dest = hop2(relay_out, snr_db)
+    if isinstance(rx_dest, tuple):
+        rx_dest = rx_dest[0]
+    return calculate_ber(tx_bits, destination.receive(rx_dest))[0]
+
+
+def evaluate_two_hop(relay, hop1, hop2, mod, tag):
+    """Monte Carlo over the asymmetric two-hop chain, from a fixed global RNG
+    state so every relay on a channel sees identical realizations."""
+    np.random.seed(SEED % (2 ** 31))
+    ber, trials = [], []
+    for snr in SNRS:
+        t = [two_hop_ber(relay, hop1, hop2, mod, BITS_PER_TRIAL, snr, SEED + i)
+             for i in range(N_TRIALS)]
+        trials.append(t)
+        ber.append(float(np.mean(t)))
+    if tag:
+        print(f"    {tag:<30} " + "  ".join(f"{b:.4f}" for b in ber), flush=True)
+    return np.asarray(ber), np.asarray(trials)
+
+
 def evaluate(relay, channel, mod, tag):
     """Monte Carlo from a fixed global RNG state, so every relay on a given
     channel sees identical fading and noise realizations."""
@@ -324,19 +409,22 @@ def run_channel(name, spec):
     print("  " + " " * 30 + "  ".join(f"{s:>6}dB" for s in SNRS))
 
     channel = spec["make"](CHANNEL_SEED)
+    hop2 = spec["hop2"]()
     mod = spec["mod"]
 
+    def ev(relay, tag):
+        return evaluate_two_hop(relay, channel, hop2, mod, tag)
+
     print("\n  classical baselines")
-    df_ber, df_trials = evaluate(DecodeAndForwardRelay(), channel, mod, "DF (0 params)")
-    af_ber, af_trials = evaluate(AmplifyAndForwardRelay(), channel, mod, "AF (0 params)")
+    df_ber, df_trials = ev(DecodeAndForwardRelay(), "DF (0 params)")
+    af_ber, af_trials = ev(AmplifyAndForwardRelay(), "AF (0 params)")
 
     # the comparator the thesis actually uses on this channel
     base_name, base_relay = spec["baseline"]()
     if base_name == "DF":
         base_ber, base_trials = df_ber, df_trials
     else:
-        base_ber, base_trials = evaluate(base_relay, channel, mod,
-                                         f"{base_name} (0 params)")
+        base_ber, base_trials = ev(base_relay, f"{base_name} (0 params)")
     diag = baseline_diagnostics(base_ber, af_ber)
     print(f"    baseline for scoring: {base_name}   "
           f"monotone {diag['monotone']}   beats AF {diag['beats_af']}   "
@@ -356,7 +444,7 @@ def run_channel(name, spec):
             relay = MLPRelay(input_size=window, hidden_size=hidden,
                              output_size=1, window_size=window, seed=ts)
             relay.train_on_data(X, T, epochs=EPOCHS, batch_size=BATCH, lr=LR)
-            ber, trials = evaluate(relay, channel, mod, None)
+            ber, trials = ev(relay, None)
             per_snr = compare(ber, trials, base_ber, base_trials)
             finite = [r["rel_penalty"] for r in per_snr if r["rel_penalty"] == r["rel_penalty"]]
             worst = max(finite) if finite else float("nan")
@@ -392,6 +480,7 @@ def run_channel(name, spec):
     result = {
         "note": spec["note"], "modulation": mod, "memory": spec["memory"],
         "baseline": base_name, "baseline_ber": [float(b) for b in base_ber],
+        "hop2": spec["hop2"].__code__.co_names[0],
         "baseline_diagnostics": diag,
         "df_ber": [float(b) for b in df_ber], "af_ber": [float(b) for b in af_ber],
         "sweep": rows,
