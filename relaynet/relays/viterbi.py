@@ -347,7 +347,10 @@ class TruncatedViterbiQPSKRelay(ViterbiMLSEQPSKRelay):
         Channel length used for LS estimation.
     traceback : int, optional
         Decision delay in symbols (default 5 * channel_len, the usual rule
-        of thumb). ``traceback=0`` is a symbol-by-symbol decision.
+        of thumb). ``traceback=0`` commits each symbol as soon as it is
+        observed; the decision still comes from the accumulated path
+        metric over the whole history, so it is zero *look-ahead* rather
+        than a memoryless slicer.
     """
 
     def __init__(self, channel_taps=None, pilot_symbols=None, channel_len=3,
@@ -355,6 +358,9 @@ class TruncatedViterbiQPSKRelay(ViterbiMLSEQPSKRelay):
         super().__init__(channel_taps=channel_taps, pilot_symbols=pilot_symbols,
                          channel_len=channel_len)
         self.traceback = int(5 * self.L) if traceback is None else int(traceback)
+        if self.traceback < 0:
+            raise ValueError("traceback must be non-negative, got "
+                             f"{self.traceback}")
         self._build_predecessors()
 
     def _build_predecessors(self):
@@ -414,3 +420,15 @@ class TruncatedViterbiQPSKRelay(ViterbiMLSEQPSKRelay):
                 s = bp_state[j % depth, s]
 
         return self.ALPHABET[out_idx]
+
+    def set_channel(self, channel_taps=None, pilot_symbols=None):
+        """Update the channel estimate and re-invert the new trellis.
+
+        The inherited implementation rebuilds ``nxt`` and ``exp_y`` (and,
+        for a different tap count, ``num_states``) but knows nothing about
+        the predecessor table this class decodes from. Without the rebuild
+        below, a relay re-estimated from pilots would decode against a
+        trellis inversion belonging to the previous channel.
+        """
+        super().set_channel(channel_taps=channel_taps, pilot_symbols=pilot_symbols)
+        self._build_predecessors()

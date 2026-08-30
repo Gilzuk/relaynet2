@@ -101,7 +101,14 @@ def run_trial(relay, snr_db, seed, L, encoder, decoder, frame_symbols):
     hop1 = ComplexISIChannel(taps_for(L), seed=10_000 + seed)
     hop2 = ComplexAWGNChannel(seed=20_000 + seed)
 
-    rx = hop2(relay.process(hop1(tx, snr_db)), snr_db)
+    assert len(tx) == N_FRAMES * frame_symbols, (
+        f"modulator produced {len(tx)} symbols, expected "
+        f"{N_FRAMES * frame_symbols}")
+    relay_out = relay.process(hop1(tx, snr_db))
+    assert len(relay_out) == len(tx), (
+        f"{type(relay).__name__} changed the signal length "
+        f"({len(tx)} -> {len(relay_out)}); frame alignment would be lost")
+    rx = hop2(relay_out, snr_db)
 
     n_frames = len(rx) // frame_symbols
     info_hat = []
@@ -139,7 +146,9 @@ def build_schemes(L, frame_symbols, mlp_cache):
     schemes.append(("block DF", frame_symbols, None,
                     lambda seed: CodedDecodeAndForwardRelay(
                         frame_info_bits=FRAME_INFO_BITS)))
-    schemes.append(("block DF + MLSE", frame_symbols, 4 ** (L - 1),
+    # The equalizer decides symbol n after y[n + 5L]; only then can the frame
+    # be assembled and decoded, so the two delays add rather than overlap.
+    schemes.append(("block DF + MLSE", frame_symbols + 5 * L, 4 ** (L - 1),
                     lambda seed: ComposedRelay(
                         TruncatedViterbiQPSKRelay(channel_taps=taps, traceback=5 * L),
                         CodedDecodeAndForwardRelay(frame_info_bits=FRAME_INFO_BITS))))
