@@ -32,6 +32,8 @@ Data sources, by table:
   tbl:table44           reliable-decoding regime            <- results/coded_reliable_regime.json
   tbl:mmse-baseline     MMSE linear equalizer vs MLSE       <- results/mmse_equalizer.json
   tbl:seq-on-memory     sequence architectures on ISI       <- results/seq_models_on_memory.json
+  tbl:joint-latency     memory+latency relay comparison     <- results/joint_latency_memory.json
+  tbl:joint-memory      memory-sweep cost/BER table         <- results/joint_latency_memory.json
 
 Timing tables (tbl:table13, tbl:table25) report machine-dependent wall-clock and
 are checked only for their deterministic content (parameter counts); the timing
@@ -1258,6 +1260,110 @@ def check_seq_on_memory(tex, rep):
     rep.finish_table(T, before)
 
 
+def check_joint_latency(tex, rep):
+    """Joint latency table (tbl:joint-latency) vs results/joint_latency_memory.json."""
+    T = "tbl:joint-latency"; before = rep.checked
+    body = tabular_body(tex, T)
+    if body is None:
+        return rep.skip(T, "label not found in tex")
+    src_path = os.path.join(ROOT, "results", "joint_latency_memory.json")
+    if not os.path.exists(src_path):
+        return rep.skip(T, "results/joint_latency_memory.json not found")
+    with open(src_path) as fh:
+        data = json.load(fh)
+
+    rows = data.get("part_a", {}).get("rows", [])
+    if not rows:
+        return rep.skip(T, "part_a rows missing in results/joint_latency_memory.json")
+
+    by_scheme = {r.get("scheme"): r for r in rows if r.get("scheme")}
+    snr_axis = rows[0].get("snr_db", [])
+    if 12 not in snr_axis:
+        return rep.skip(T, "12 dB point missing in part_a snr_db")
+    i12 = snr_axis.index(12)
+
+    table_to_scheme = {
+        "AF": "AF",
+        "DF-hard (symbol-wise)": "DF-hard (symbol-wise)",
+        "MLP W=5": "MLP w=5",
+        "MLP W=11": "MLP w=11",
+        "MLP W=21": "MLP w=21",
+        "MLSE D=2": "MLSE D=2",
+        "MLSE D=3": "MLSE D=3",
+        "MLSE D=15": "MLSE D=15",
+        "block DF": "block DF",
+        "block DF + MLSE": "block DF + MLSE",
+    }
+
+    for row in data_rows(body):
+        if len(row) < 4:
+            continue
+        label = row[0][0].strip()
+        src_label = table_to_scheme.get(label)
+        if src_label is None:
+            continue
+        src = by_scheme.get(src_label)
+        if src is None:
+            continue
+        lat_text, lat_val = row[1]
+        ber_text, ber_val = row[3]
+        rep.cell(T, f"{label}/latency", lat_text, lat_val, src.get("latency_symbols"))
+        rep.cell(T, f"{label}/ber@12dB", ber_text, ber_val, src["ber"][i12])
+    rep.finish_table(T, before)
+
+
+def check_joint_memory(tex, rep):
+    """Joint memory table (tbl:joint-memory) vs results/joint_latency_memory.json."""
+    T = "tbl:joint-memory"; before = rep.checked
+    body = tabular_body(tex, T)
+    if body is None:
+        return rep.skip(T, "label not found in tex")
+    src_path = os.path.join(ROOT, "results", "joint_latency_memory.json")
+    if not os.path.exists(src_path):
+        return rep.skip(T, "results/joint_latency_memory.json not found")
+    with open(src_path) as fh:
+        data = json.load(fh)
+
+    rows = data.get("part_b", {}).get("rows", [])
+    if not rows:
+        return rep.skip(T, "part_b rows missing in results/joint_latency_memory.json")
+    mlse = {}
+    mlp = {}
+    for r in rows:
+        L = r.get("channel_taps_L")
+        scheme = r.get("scheme", "")
+        if L is None:
+            continue
+        if scheme.startswith("MLSE"):
+            mlse[L] = r
+        elif scheme == "MLP w=11":
+            mlp[L] = r
+
+    def parsed_number(cell):
+        text = cell[0]
+        m = _NUM.search(text.replace(",", ""))
+        return float(m.group(0)) if m else None
+
+    for row in data_rows(body):
+        if len(row) < 6:
+            continue
+        L = row[0][1]
+        if L is None:
+            continue
+        L = int(L)
+        if L not in mlse or L not in mlp:
+            continue
+        states_text, states_val = row[1]
+        if states_val is None:
+            states_val = parsed_number(row[1])
+        mlse_ber_text, mlse_ber_val = row[4]
+        mlp_ber_text, mlp_ber_val = row[5]
+        rep.cell(T, f"L={L}/mlse_states", states_text, states_val, mlse[L].get("states"))
+        rep.cell(T, f"L={L}/mlse_ber", mlse_ber_text, mlse_ber_val, mlse[L].get("ber"))
+        rep.cell(T, f"L={L}/relay_ber", mlp_ber_text, mlp_ber_val, mlp[L].get("ber"))
+    rep.finish_table(T, before)
+
+
 def main():
     global TEX_DIR, MC_SLACK
     ap = argparse.ArgumentParser()
@@ -1301,7 +1407,8 @@ def main():
               check_table37, check_table38, check_table39, check_table40,
               check_table41, check_table42, check_table43,
               check_table44,
-              check_mmse_baseline, check_seq_on_memory]
+              check_mmse_baseline, check_seq_on_memory,
+              check_joint_latency, check_joint_memory]
     for chk in checks:
         try:
             chk(tex, rep)
