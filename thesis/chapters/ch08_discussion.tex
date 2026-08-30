@@ -77,29 +77,7 @@ This decomposition is a framework for interpreting the observation, not a measur
 
 The preceding subsections offer bias-variance and MDL readings of H3 but note that the stronger, overfitting reading --- BER rising again once capacity exceeds what the mapping requires --- was not established, because each model had been trained once and a size effect could not be separated from run-to-run variance. A dedicated size sweep was therefore run to supply the missing evidence. It covers the nine channel families used across Chapters~\ref{sec:experiments} and~\ref{sec:unknown-channels} plus the coded scenario, varying relay window, depth and width independently, with three independent initializations at every configuration and each configuration held to its \emph{worst} initialization, so that a size counts only if it works whichever way it initializes --- a necessary precaution given the spread reported below. Degradation is measured as the additional SNR required to reach a given BER, which unlike a relative BER penalty does not divide by a vanishing denominator at high SNR.
 
-Because seed replication is the specific evidence this section previously lacked, the across-initialization spread is reported first, as a measurement in its own right rather than as a caveat. Table~\ref{tbl:seed-spread} gives, per channel, the spread in SNR penalty between the best and worst of the three initializations at the same configuration, summarized over all configurations swept.
-
-\begin{table}[htbp]
-\centering
-\caption[Across-initialization spread]{Spread in SNR penalty between the best and worst of three initializations at an identical configuration, summarized over all configurations swept on each channel. The reader should observe that on five of the nine channels the median spread is comparable to or larger than the entire effect of varying model size, so a single-initialization size comparison on those channels measures the draw rather than the architecture.}\label{tbl:seed-spread}
-\begin{tabular}{lrrrr}
-\toprule
-Channel & Configs & Median (dB) & 90th pct.\ (dB) & Max (dB) \\
-\midrule
-rayleigh      & 17 & 0.008 & 0.019 & 0.028 \\
-composite     & 16 & 0.036 & 0.165 & 0.195 \\
-awgn          & 17 & 0.055 & 0.116 & 0.138 \\
-isi\_rayleigh & 16 & 0.177 & 0.588 & 0.795 \\
-isi           & 18 & 0.195 & 0.705 & 0.996 \\
-isi\_complex  & 17 & 0.332 & 2.325 & 3.182 \\
-branch\_asym  & 17 & 0.388 & 0.892 & 1.013 \\
-flat\_gain    & 17 & 0.622 & 1.000 & 1.250 \\
-nlbias        & 17 & 1.231 & 1.242 & 1.245 \\
-\midrule
-All           & 152 & 0.180 & 1.229 & 3.182 \\
-\bottomrule
-\end{tabular}
-\end{table}
+Because seed replication is the specific evidence this section previously lacked, the across-initialization spread is treated as a measurement in its own right rather than as a caveat. Table~\ref{tbl:seed-spread}, in Appendix~\ref{sec:appendix-f-minimum-size}, gives per channel, the spread in SNR penalty between the best and worst of the three initializations at the same configuration, summarized over all configurations swept.
 
 Two things follow. First, initialization variance is not a small correction: across all 152 configurations the median spread is \(0.180\)~dB and \(57\%\) exceed \(0.15\)~dB, with a worst case of \(3.18\)~dB on the complex ISI channel at eleven parameters. On the nonlinear-bias channel the spread is \(1.23\)~dB at essentially every configuration, which is the two-attractor behaviour noted below rather than a gradual variance. Second, the variance is strongly channel-dependent: the canonical Rayleigh channel is highly reproducible at \(0.008\)~dB median, and the composite and AWGN channels nearly so, while four channels sit above \(0.3\)~dB. Any single-run size comparison on the latter group measures which initialization was drawn, not which architecture is better --- which is precisely the confound this section identified in the original H3 evidence, now quantified.
 
@@ -279,23 +257,7 @@ H5 receives independent corroboration rather than merely surviving. Chapter~\ref
 
 H4 needs qualifying, and the qualification could not be inferred from the size sweep. That sweep measures initialization variance on MLPs, where the canonical channel is the most reproducible case anywhere in this thesis at $0.008$~dB median, and an earlier version of this section offered that as reassurance for H4's single-seed equal-budget comparison while noting it was not proof, the sequence models never having been measured. Measuring them directly reverses the conclusion for one of the six.
 
-Each equal-budget architecture was retrained from three seeded initializations and evaluated on identical channel draws and payload bits, giving the following spread in SNR penalty against DF:
-
-\begin{table}[htbp]
-\centering
-\caption[Across-initialization spread at the 3K budget]{Spread in SNR penalty against symbol-wise DF between the best and worst of three initializations, for the equal-budget architectures on the canonical channel. The reader should observe the Transformer row: its spread is five times the roughly $0.18$~dB that H4's $4.1\%$ high-SNR architecture spread corresponds to, so a single run of that architecture cannot resolve the effect H4 claims. Every other architecture is comfortably inside it}\label{tbl:seed-spread-3k}
-\begin{tabular}{lrrr}
-\toprule
-Architecture & Params & Per-seed penalty vs DF (dB) & Spread (dB) \\
-\midrule
-Mamba2-3K       & 3{,}004 & $+1.113$, $+1.094$, $+1.098$ & 0.019 \\
-Mamba-S6-3K     & 3{,}027 & $+1.123$, $+1.110$, $+1.082$ & 0.041 \\
-MLP-3K          & 3{,}004 & $+0.133$, $+0.162$, $+0.189$ & 0.055 \\
-VAE-3K          & 3{,}037 & $+0.072$, $+0.228$, $+0.142$ & 0.156 \\
-Transformer-3K  & 3{,}007 & $+2.039$, $+1.147$, $+1.133$ & \textbf{0.906} \\
-\bottomrule
-\end{tabular}
-\end{table}
+Each equal-budget architecture was retrained from three seeded initializations and evaluated on identical channel draws and payload bits. The resulting spread in SNR penalty against DF is tabulated as Table~\ref{tbl:seed-spread-3k} in Appendix~\ref{sec:appendix-f-minimum-size}.
 
 Four of the five are stable to within $0.16$~dB and the two Mamba variants are the most reproducible architectures measured, at $0.019$ and $0.041$~dB. The Transformer is not: its three initializations span $0.906$~dB, five times the effect H4's high-SNR claim must resolve, with one run at $+2.039$~dB against two at approximately $+1.14$~dB. The instability is therefore specific to that architecture rather than generic to sequence models, which is the opposite of what a capacity or inductive-bias account would predict.
 
@@ -329,10 +291,7 @@ The main conclusions, in order of significance, are:
   \textbf{The Hybrid relay is the recommended practical choice, given a usable estimate of the operating SNR.} By combining AI processing at low SNR with classical DF at high SNR, the Hybrid relay achieves near-optimal performance across the entire SNR range with only 169 parameters. It selects between the two regimes from an SNR estimated out of the received signal power, so no manual per-regime configuration is needed. The recommendation is conditional in a way the experiments here do not discharge: the switching threshold is fixed at the crossover measured on the training sweep, and neither the accuracy of the run-time SNR estimate, the sensitivity of the BER to a misplaced threshold, nor any online adaptation of it was evaluated. All reported Hybrid results are therefore obtained under an accurate operating-SNR estimate, and the margin over its two constituents is small enough at the crossover that a mis-estimate there would plausibly erase it.
 \end{enumerate}
 
-
-
 \REV{Fix applied (orphaned conclusions): three conclusions were removed here, (8)~``Mamba S6 is the strongest architecture across the higher-order modulation experiments'', (9)~``No neural relay outperforms DF across the full 48-variant combinatorial search'', and (10)~``Input LayerNorm is universally beneficial'' (citing a nonexistent ``Section 4.13''). None of the supporting experiments exist in this restructured version, 16-PSK, the CSI/LayerNorm ablation, and the 48-variant search were all cut (Appendix~E). The in-scope part of the DF-optimality claim is covered by Conclusion~2 and the modulation-extension finding below.}
-
 
 It is important to note that sequence-detection methods such as Viterbi MLSE appear only in the unknown-channel study of Chapter~\ref{sec:unknown-channels}, where channel memory is introduced explicitly through a 3-tap FIR/ISI channel. The canonical system model of Chapters~\ref{sec:introduction}--\ref{sec:experiments} remains memoryless and therefore requires only per-symbol processing.
 
