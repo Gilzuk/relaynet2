@@ -6,6 +6,20 @@ To determine \emph{under which conditions} a learned relay surpasses classical r
 \REV{Relocated the revision note out of the middle of the objective sentence (it previously split ``To systematically \ldots evaluate''), so the main objective now reads cleanly. Note content preserved below.}
 \REV{Fix applied: Chapter~\ref{sec:literature-review} was reduced to a literature review only. Removed duplicate E1 channel-validation material (including relocated theoretical-SNR results), duplicated validation figures, the Rician fading distribution discussion (future work only), the relay-positioning table duplicated from Chapter~\ref{sec:research-objectives}, and the unused MIMO equalization section (ZF/LMMSE/LMMSE-SIC), since no MIMO experiment appears in the thesis. The term MMSE is now used only in its estimator-theoretic sense, consistent with the canonical-study scope and supervisor comments documented in Appendix~E.}
 
+\subsection{Two Research Questions}\label{sec:two-objectives}
+
+The main objective resolves into two questions that differ only in whether a budget is imposed, and which for that reason have different answers. Throughout, the classical reference is named explicitly rather than left as ``classical processing'': symbol-wise DF and AF where the channel is memoryless, Viterbi MLSE where it has memory, and block DF --- a channel code decoded and re-encoded at the relay --- where the relay is permitted to spend a frame of delay.
+
+\begin{description}
+\item[\textbf{O1 (unconstrained).}] On a channel with memory, and with no budget on latency or computation, in which regime and under what conditions can a learned relay replace the classical method? This is a question purely about accuracy and about what each detector needs to know. It is answered by the four-layer ladder of Chapter~\ref{sec:unknown-channels}, whose rungs vary exactly one thing: how much the receiver chain knows about the channel.
+
+\item[\textbf{O2 (constrained).}] The same question when the relay must also meet a latency budget and a computational budget. Here the classical method may be the more accurate detector and still be unavailable, because a trellis search that grows as $M^{L}$ eventually cannot be afforded and a relay that decodes a codeword cannot decide before the codeword ends.
+\end{description}
+
+The two boundaries do not coincide, and the distance between them is a result in its own right rather than a restatement. O1's boundary is set by \emph{identifiability}: the learned relay overtakes MLSE when the channel can no longer be estimated well enough for MLSE to be run as specified, which Section~\ref{sec:partial-posterior} locates at a pilot budget between ten and twenty symbols. O2's boundary is set by \emph{arithmetic}, and Section~\ref{sec:joint-latency-memory} places it at a channel memory of roughly three and a half taps, exactly (Equation~\ref{eq:mac-crossover}) and without reference to any particular processor.
+
+Latency, measured rather than assumed, turns out not to be a boundary at all on channels of short memory: an MLSE with bounded traceback reaches its full accuracy after three symbols of decision delay, fewer than a windowed relay needs, so a latency budget tight enough to exclude the classical detector excludes the learned one first. This is a negative result about a constraint the literature commonly treats as decisive, and Section~\ref{sec:joint-latency-memory} reports it as such.
+
 \section{Research Gap and Motivation}\label{sec:research-gap-and-motivation}
 
 Despite growing interest in AI for wireless communication, a systematic comparison of relay processing paradigms (spanning classical signal processing, supervised learning, generative modeling, and modern sequence architectures) is, to the best of our knowledge, absent from the literature.\REV{ Softened ``is absent from the literature'' with ``to the best of our knowledge'' (same caution applied to novelty claims in Chapter~\ref{sec:literature-review}).} The following specific gaps motivate this thesis:
@@ -101,6 +115,8 @@ Unlike H1--H4, which assume the canonical memoryless channel throughout, H5 deli
   \textbf{Test whether the canonical conclusion survives a coded chain} by replacing the uncoded symbol-wise DF baseline with a genuine block-DF relay --- a convolutional code decoded and re-encoded at the relay --- and comparing it against coded-aware learned relays at equal $E_s/N_0$ and again at equal throughput, since a code that halves the information rate changes what ``better'' means (Section~\ref{sec:coded-block-df}).
 \item
   \textbf{Delineate the conditions under which a learned relay surpasses classical processing} on channels whose structure the classical relays do not model --- unknown memory, nonlinear asymmetry, and composite cascades of both --- by locating the boundary rather than demonstrating a capability: a memoryless control where learning is expected to buy nothing, a matched-receiver bound (Viterbi MLSE with genie CSI), a pilot-budget sweep to find the crossover, and a blind regime where no channel posterior exists (Chapter~\ref{sec:unknown-channels}).
+\item
+  \textbf{Price the two objectives against each other} by measuring a channel with memory \emph{under} a latency constraint --- the one cell in which MLSE's $M^{L}$ growth and block DF's frame buffering bind simultaneously --- with every relay placed inside one identical coded chain so the comparison is between relays and nothing else, and with cost reported on axes that assume no processor: decision delay in symbols and multiply-accumulates per symbol (Section~\ref{sec:joint-latency-memory}).
 \item
   \textbf{Identify practical deployment recommendations} for selecting the appropriate relay strategy given specific operational constraints (SNR range, computational budget, channel environment).
 \end{enumerate}

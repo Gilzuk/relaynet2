@@ -281,7 +281,7 @@ A second observation was not anticipated. The sequence models' reproducibility i
 
 One limitation is carried. All four architectures receive identical hyperparameters, matching the equal-budget protocol of Section~\ref{sec:parameter-normalization-complexity-trade-off}; no per-architecture tuning was attempted, and a tuned sequence model might close part of the gap.
 
-\subsection{Complexity: The Cost Side of the Trade-off}\label{sec:complexity-viterbi-mlp}
+\section{The Cost Side: Decision Delay and Arithmetic}\label{sec:complexity-viterbi-mlp}
 
 Across the unknown-channel studies the pilot-aided Viterbi receiver, where it applies, holds a small BER edge over the learned relay. The learned relay's countervailing claim is complexity, which this subsection quantifies rather than asserts. Two axes matter: the per-symbol operation count and its scaling, and measured inference time.
 
@@ -302,5 +302,65 @@ For the channel actually studied (BPSK, $L=3$; 4 states) Viterbi is in fact the 
 \end{figure}
 
 \textbf{Measured inference time.} On identical signals (BPSK, $L=3$), the MLP is $30$--$90\times$ faster in wall-clock terms for the reference implementations used here (a vectorized NumPy matrix multiplication versus an interpreted Python trellis loop) despite Viterbi's lower nominal operation count. Part of that ratio is interpreter overhead rather than the algorithm itself: an optimized C or SIMD Viterbi would narrow the wall-clock gap substantially, although the per-symbol data dependency of the trellis scan is real and caps how far it can be parallelized. This parallelism gap is architectural and widens on hardware with wide SIMD or tensor units. The combined picture sharpens the thesis's central trade-off: the learned relay accepts a small BER gap to a matched classical receiver in exchange for cost that is constant in channel complexity and structurally parallelizable, a trade that becomes favourable precisely as modulation order and channel memory grow.
+
+\subsection{A Channel with Memory Under a Latency Constraint}\label{sec:joint-latency-memory}
+
+The accounting above and the ladder that precedes it answer different questions and never meet. The ladder asks which detector is more accurate on a channel with memory, imposing no budget; this section's opening asks what each detector costs, without reference to a channel. What a deployment actually faces is both at once, and the two constraints do not have to bind in the same place. This subsection measures the intersection directly, and includes block DF, which the ladder omits: of the classical options it is the one whose cost is structural rather than arithmetic, so it is exactly the case the ladder's accuracy-only comparison cannot price.
+
+Every scheme is placed inside one identical coded system so that the comparison is between relays and nothing else: a rate-$1/2$, $K=3$ convolutional code on QPSK, $200$ information bits per frame ($202$ symbols after tail), with soft Viterbi decoding of the code at the \emph{destination}. All schemes therefore deliver an information BER at the same information rate. Hop~1 carries the unknown $L$-tap ISI response ($h_k = 0.7^k$, unit-energy normalized) plus complex AWGN and hop~2 is AWGN; $150$ frames per trial and three seeds per point.
+
+Each relay is then labelled with the structural decision delay it forces, in symbols: zero for AF and symbol-wise DF; $\lfloor W/2 \rfloor$ for a relay of window $W$, which must wait for the later half of its own window; $D$ for an MLSE with traceback depth $D$; and the full frame, $202$ symbols, for block DF, which cannot begin until the last symbol of a codeword has arrived.
+
+\paragraph{Latency does not separate the detectors on a short-memory channel.} Table~\ref{tbl:joint-latency} gives the result at $L=3$. Bounded-traceback MLSE reaches its floor at $D=3$: the BER at $12$~dB is unchanged from $D=2$ through $D=15$, because the trellis survivors merge after three symbols and waiting longer revises no decision. Three symbols is \emph{less} delay than the window-11 relay's five, so a latency budget tight enough to exclude MLSE excludes the learned relay first. Block DF spends $202$ symbols and buys nothing with them: without an equalizer it expends the code's redundancy on the intersymbol interference rather than on the noise, and with one it merely reproduces MLSE's number at forty times the delay.
+
+\begin{table}[htbp]
+\centering
+\caption[Relay cost and accuracy under a latency constraint]{Coded information BER at $12$~dB on the three-tap channel, against the structural decision delay each relay forces and its arithmetic per symbol. Mean of three seeds. The reader should observe that MLSE reaches its floor at three symbols of delay, fewer than the learned relay's five, and that block DF's $202$ symbols purchase no accuracy at all}\label{tbl:joint-latency}
+\begin{tabular}{lrrr}
+\toprule
+Relay & Delay (symbols) & MACs/symbol & BER at $12$~dB \\
+\midrule
+AF                    & $0$   & $2$   & $0.0609$ \\
+DF-hard (symbol-wise) & $0$   & $0$   & $0.3027$ \\
+MLP $W=5$             & $2$   & $112$ & $0.0010$ \\
+MLP $W=11$            & $5$   & $208$ & $0.000189$ \\
+MLP $W=21$            & $10$  & $368$ & $0.000278$ \\
+MLSE $D=2$            & $2$   & $128$ & $\mathbf{0.000033}$ \\
+MLSE $D=3$            & $3$   & $128$ & $\mathbf{0.000033}$ \\
+MLSE $D=15$           & $15$  & $128$ & $\mathbf{0.000033}$ \\
+block DF              & $202$ & $16$  & $0.0411$ \\
+block DF $+$ MLSE     & $202$ & $144$ & $0.000033$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The symbol-wise relays confirm the chapter's Layer~2 finding inside the coded chain: AF and hard DF do not merely lose, they fail, DF's BER \emph{rising} with SNR from $0.2913$ at $8$~dB to $0.4253$ at $20$~dB as the interference rather than the noise comes to dominate its decisions.
+
+\paragraph{What separates them is arithmetic, and only as memory grows.} MLSE costs $2M^{L}$ MACs per symbol, the relay $2WH + 4H$, which does not depend on $L$ at all. Setting the two equal locates the boundary exactly, with no appeal to a processor, clock rate or symbol rate:
+\begin{equation}
+L^{\star} = \log_{M}\!\left(\frac{2WH + 4H}{2}\right) = 3.35 \text{ taps}
+\label{eq:mac-crossover}
+\end{equation}
+for the window-11, eight-unit relay used here ($2.90$ taps at $W=5$, $3.76$ at $W=21$). Below $L^{\star}$ the learned relay has no case: at $L=3$ MLSE needs $128$ MACs per symbol against the relay's $208$, decides in three symbols against its five, and is the more accurate of the two. Above $L^{\star}$ the gap compounds, because one cost grows as $M^{L}$ and the other does not grow at all. Table~\ref{tbl:joint-memory} sweeps it.
+
+\begin{table}[htbp]
+\centering
+\caption[Cost and accuracy against channel memory]{Coded information BER at $12$~dB and arithmetic per symbol as channel memory grows, mean of three seeds, with MLSE given genie CSI and a traceback of $5L$. The relay is the same window-11 network throughout. BER is measured at $L \in \{3,5,7\}$; the $L=4$ and $L=6$ MAC counts are arithmetic from the architecture rather than measured points, and are given only to show the growth rate}\label{tbl:joint-memory}
+\begin{tabular}{lrrrrr}
+\toprule
+$L$ & MLSE states & MLSE MACs & Relay MACs & MLSE BER & Relay BER \\
+\midrule
+$3$ & $16$   & $128$    & $208$ & $0.000033$ & $0.000189$ \\
+$4$ & $64$   & $512$    & $208$ & ---        & ---        \\
+$5$ & $256$  & $2{,}048$  & $208$ & $0.000067$ & $0.000278$ \\
+$6$ & $1{,}024$ & $8{,}192$  & $208$ & ---     & ---        \\
+$7$ & $4{,}096$ & $32{,}768$ & $208$ & $0.000011$ & $0.000256$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Across the measured span the relay's cost and error are both flat while MLSE's cost rises by a factor of $256$, for an accuracy advantage that never exceeds a factor of $23$. This is the trade the chapter's opening paragraphs assert qualitatively, now stated as a threshold: the learned relay earns its place when channel memory exceeds roughly three and a half taps, and the margin thereafter grows as $M^{L}/(2WH + 4H)$.
+
+Two limits are worth recording. The threshold is a statement about \emph{arithmetic}, not about accuracy: above $L^{\star}$ MLSE remains the more accurate detector wherever it can be afforded, and the learned relay's case rests on it becoming unaffordable rather than on it becoming wrong. And the three-tap channel used throughout this chapter sits \emph{below} $L^{\star}$, so this chapter's earlier results should be read as establishing the failure of the memoryless relays on channels with memory, which they do, and not as a cost argument against MLSE, which at $L=3$ they cannot support.
 
 The experiments of this chapter deliberately extend the thesis beyond the canonical memoryless model. The resulting conclusions should therefore be interpreted as robustness results under model mismatch rather than as replacements for the matched-model conclusions of Chapter~\ref{sec:experiments}. Together, these two principal contributions of the thesis delineate where learning provides value: not under matched memoryless conditions, where classical methods remain strongest, but when the assumptions underlying those methods are violated.
