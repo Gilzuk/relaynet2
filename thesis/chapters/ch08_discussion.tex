@@ -213,43 +213,11 @@ Several directions warrant further investigation:
   \textbf{Longer relay windows with state-space architectures.} Future work should explore whether longer relay windows (e.g., 128--512 symbols) combined with a chunk-parallel state-space architecture can improve both BER performance and processing speed simultaneously; the training-time crossover between sequential and chunk-parallel formulations, removed from this thesis's scope, is the natural companion measurement.
 \end{enumerate}
 
-\section{Conclusions}\label{sec:conclusions}
+\section{Hypotheses Revisited}\label{sec:conclusions}
 
-This thesis presents a comprehensive comparative study of nine implemented relay strategies, eight of which are evaluated in the canonical comparison: two classical (AF, DF) and six AI-based (MLP, Hybrid, VAE, Transformer, Mamba-S6, Mamba-2 SSD), with the cGAN implemented but excluded on cost grounds. The eight canonical strategies are evaluated on one canonical setup (SISO on both hops, i.i.d.\ Rayleigh fast fading, complex baseband, QPSK, uncoded BER); two studies deliberately depart from it, the coded link-adaptation study, which additionally evaluates 16-QAM, and the unknown-channel study of Chapter~\ref{sec:unknown-channels}, which mainly evaluates BPSK (with a QPSK re-check, Section~\ref{sec:qpsk-unknown-channel}), elsewhere appearing only in closed-form expressions. The study addresses three identified research gaps (Section \ref{sec:research-gap-and-motivation}) through controlled experiments with statistical rigor (100,000 bits per SNR point, 10 independent trials, and 95\% confidence intervals on the canonical comparison, and its own trial budget and 95\% confidence intervals throughout the unknown-channel study, detailed there; the coded study reports means and frame-error rates from its own trial budgets, with 95\% confidence intervals and Wilcoxon signed-rank testing additionally computed for its paired high-SNR and soft-decision comparisons, Section~\ref{sec:coded-block-df}); Gap 1's adversarial paradigm is implemented (cGAN) but, being excluded from the canonical comparison, remains qualitatively rather than quantitatively addressed. The following table summarizes the hypothesis outcomes:
+Chapter~\ref{sec:summary} states what this thesis found, and Table~\ref{tbl:table33} there records the verdict on each hypothesis. This section addresses the different question of \emph{how} each hypothesis fared under measurement, and why three of the five required qualification.
 
-\begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
-\caption[Hypothesis outcomes summary]{Research hypotheses, their statements, and experimental outcomes}\label{tbl:table33}\tabularnewline
-\toprule\noalign{}
-\begin{minipage}[b]{\linewidth}\raggedright
-Hypothesis
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Statement
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Result
-\end{minipage} \\
-\midrule\noalign{}
-\endfirsthead
-\toprule\noalign{}
-\begin{minipage}[b]{\linewidth}\raggedright
-Hypothesis
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Statement
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Result
-\end{minipage} \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-H1 & Some AI relays outperform AF at low SNR & \textbf{Confirmed}: the best neural relays beat AF at 0--4 dB on the canonical channel \\
-H2 & DF lowest-BER among per-symbol relays at high SNR & \textbf{Confirmed}: DF matches or beats all AI methods at \(\geq 6\) dB with 0 parameters \\
-H3 & Overfitting at excess capacity & \textbf{Not supported; weaker size claim holds}: 169 params matches 24K, and larger evaluated models did not improve BER. The size sweep of Section~\ref{sec:minimum-relay-size}, replicated over three initializations, finds no upturn above the $0.180$~dB across-initialization spread, so the overfitting hypothesis is unsupported on evidence rather than untested. The overfitting \emph{mechanism} remains unestablished, no train/test-gap analysis having been performed \\
-H4 & Architecture convergence at equal parameter budget & \textbf{Rejected at low SNR; high-SNR convergence not seed-robust} (Table~\ref{tbl:seed-spread-3k}): at 3K params the six architectures span 4.1\% BER at 20~dB but 17.4\% at 0~dB, splitting into feedforward and sequence groups. Equalizing the budget required changing width, depth, state dimension and input window jointly (Table~\ref{tbl:table28}), so this equalizes capacity, not the other architectural degrees of freedom \\
-H5 & Memoryless classical relays fail on unknown channels; a minimal MLP mitigates by learning, near the model-aware optimum & \textbf{Confirmed}: on unknown ISI, AF/DF hit the analytic 0.25 floor (DF non-monotonic in SNR) while the 169-parameter MLP reaches BER $<5\times10^{-5}$, within $\approx$1--1.5 dB of genie-CSI Viterbi MLSE; the same architecture mitigates a composite ISI$\times$PA$\times$phase cascade with no impairment model, tracking $\approx$2 dB behind pilot-aided Viterbi and matching blind CMA when no posterior exists; the advantage is bounded to structural model-class mismatch representable at minimal capacity \\
-\end{longtable}
+
 
 \paragraph{Do the other hypotheses survive the size sweep?} The sweep of Section~\ref{sec:minimum-relay-size} re-measures four of the five hypotheses' subject matter with a different relay class, a corrected two-hop model, per-channel classical comparators and three initializations per configuration, so it is worth asking explicitly whether any of them moves. Only H3 does.
 
@@ -273,25 +241,7 @@ Two consequences follow for H4. H4's low-SNR finding stands: the feedforward and
 
 The main conclusions, in order of significance, are:
 
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\item
-  \textbf{AI relays beat AF at low SNR (0-4 dB) but not DF.} On the canonical channel, the best neural relays clearly outperform AF in the low-SNR regime while tracking symbol-wise DF within statistical uncertainty; DF remains lowest or tied-lowest at every SNR point. The theoretical explanation is that neural networks approximate the MMSE-optimal soft-threshold estimate \(f^*(y) = \tanh(y/\sigma^2)\), whose end-to-end benefit over the hard slicer is limited in this uncoded setting.
-\item
-  \textbf{DF attains the lowest per-symbol BER at medium-to-high SNR (≥6 dB) with zero parameters.} The classical decode-and-forward relay requires no training and no parameters yet achieves the best performance among the evaluated per-symbol relays when channel quality is sufficient for reliable first-hop demodulation. At high SNR, the posterior-mean estimate converges to \(\text{sign}(y)\), which is exactly the symbol-wise DF operation.
-\REV{``DF is optimal at medium-to-high SNR'' \(\to\) ``DF attains the lowest per-symbol BER \ldots'', consistent with the bounded H2 claim (optimal only among per-symbol relay functions, not information-theoretically).}
-\item
-  \textbf{No AI architecture separates itself at original parameter counts.} On the canonical channel the best neural relays (MLP, Hybrid, VAE) perform within statistical uncertainty of one another, and classical DF matches or exceeds all of them across the SNR range; the cGAN is excluded from this comparison (Section~\ref{sec:siso-bpsk-performance-baseline-relay-comparison}). The selective state space model's \(O(n)\) complexity and adaptive filtering mechanism make it an efficient sequence-model choice, but no architectural inductive bias yields a decisive BER advantage on this task.
-\item
-  \textbf{Architecture matters less than parameter count at equal scale --- but only at high SNR.} When all models are normalized to approximately 3{,}000 parameters (Table~\ref{tbl:table8}), the spread across the six architectures falls monotonically with SNR: $17.4\%$ at 0~dB, $9.3\%$ at 12~dB, $4.1\%$ at 20~dB. In the high-SNR regime the original claim holds and architecture is close to irrelevant. At low SNR it does not: the six models separate cleanly into a feedforward group (MLP, Hybrid, VAE at $0.336$--$0.342$) and a sequence group (Transformer, Mamba-S6, Mamba-2 at $0.400$--$0.407$), a gap far larger than the confidence intervals, with the feedforward models close to DF and the sequence models close to AF.
-
-  Two points are worth separating here. The split is by \emph{family}, not by capacity, since all six carry the same parameter budget --- so at low SNR architecture does matter, and the sequence models' inductive bias is actively unhelpful on a memoryless channel where there is no temporal structure to exploit. And the VAE is no longer the exception it was: at 3K parameters it sits inside the feedforward group at every SNR ($0.0101$ against MLP-3K's $0.0099$ at 20~dB). The earlier reading, that the VAE was a consistent underperformer, does not survive re-measurement. The cause is not the corrected noise convention, which a controlled A/B rules out: training the same relay on data generated under the old convention and under the corrected one produces curves that agree to within Monte Carlo noise at every SNR. The earlier figures came from an implementation that predates the current relay module, so the discrepancy is one of code rather than of channel calibration. See the discussion of the generative paradigm in Section~\ref{sec:generative-vs.-discriminative-paradigms-for-relay-processing}.
-\REV{Fix applied (units drift): ``$\sim$1~dB'' changed to ``$\sim$1\% BER'' to match the same claim in Chapter~\ref{sec:experiments} and the H4 row of the outcome table, which both report a relative-BER gap.}
-\item
-  \textbf{No model larger than 169 parameters improved on it.} The Minimal MLP architecture achieves performance comparable to models 100--140$\times$ larger, and none of the larger models evaluated reduced BER under the training protocol used. The bias-variance account is a candidate explanation for that observation --- the target function is simple (a soft threshold), so additional parameters would increase variance without reducing bias --- but it is not established here as the mechanism: each model was trained once, so a capacity effect cannot be separated from run-to-run variance (Section~\ref{sec:limitations}).
-\item
-  \textbf{The Hybrid relay is the recommended practical choice, given a usable estimate of the operating SNR.} By combining AI processing at low SNR with classical DF at high SNR, the Hybrid relay achieves near-optimal performance across the entire SNR range with only 169 parameters. It selects between the two regimes from an SNR estimated out of the received signal power, so no manual per-regime configuration is needed. The recommendation is conditional in a way the experiments here do not discharge: the switching threshold is fixed at the crossover measured on the training sweep, and neither the accuracy of the run-time SNR estimate, the sensitivity of the BER to a misplaced threshold, nor any online adaptation of it was evaluated. All reported Hybrid results are therefore obtained under an accurate operating-SNR estimate, and the margin over its two constituents is small enough at the crossover that a mis-estimate there would plausibly erase it.
-\end{enumerate}
+These six findings are enumerated in Chapter~\ref{sec:summary} and are not restated here; what follows concerns the equal-budget comparison behind the fourth of them.
 
 \REV{Fix applied (orphaned conclusions): three conclusions were removed here, (8)~``Mamba S6 is the strongest architecture across the higher-order modulation experiments'', (9)~``No neural relay outperforms DF across the full 48-variant combinatorial search'', and (10)~``Input LayerNorm is universally beneficial'' (citing a nonexistent ``Section 4.13''). None of the supporting experiments exist in this restructured version, 16-PSK, the CSI/LayerNorm ablation, and the 48-variant search were all cut (Appendix~E). The in-scope part of the DF-optimality claim is covered by Conclusion~2 and the modulation-extension finding below.}
 
