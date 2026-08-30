@@ -176,43 +176,7 @@ The complexity study of Section~\ref{sec:parameter-normalization-complexity-trad
 
 \textbf{Conclusion:} The floor is set by channel memory, not by parameter count, and it is far lower than 169 parameters only where the channel is memoryless. Table~\ref{tbl:table-minsize} gives the smallest configuration meeting a range of degradation budgets against each scenario's own published relay. At zero degradation, three of the five memoryless channels are matched by four parameters --- a single hidden unit with no window, $42\times$ smaller than MLP-169 --- whereas the three-tap channels require 73 to 145 parameters, only $1.2\times$ to $2.3\times$ smaller. Reading the window column rather than the parameter column explains why: every memoryless row settles at window~1 and every three-tap row needs window~5 or~7 until a full decibel of degradation is permitted. Figure~\ref{fig:minsize-crossover} shows the same effect directly --- widening the window is worth $8$ to $11$~dB on the three-tap channels and nothing at all on the memoryless ones --- and Figure~\ref{fig:minsize-budget} plots the size required against the degradation the designer is willing to concede. Depth was varied from one to three hidden layers and improved no configuration; where a two-layer network matched, a single layer matched at fewer parameters. The complexity question is therefore not "how many parameters" but "how much window", and the answer is fixed by the channel's impulse response rather than by the architecture. Section~\ref{sec:complexity-curve-turn} takes up what this implies for the overfitting hypothesis H3, and reports the across-initialization spread that bounds the resolution of these figures.
 
-\begin{longtable}[]{@{}llllllll@{}}
-\caption[Smallest relay per degradation budget]{Smallest relay meeting a given degradation budget against each scenario's own published relay (MLP-169, or MLP-756 for the coded row), written as parameters and window. The reader should observe the window column rather than the parameter column: every memoryless row settles at window~1 while every three-tap row requires window~5 or~7 until a full decibel is conceded, which is the sense in which channel memory rather than model size sets the floor. A dash indicates that no smaller configuration meets that budget}\label{tbl:table-minsize}\tabularnewline
-\toprule\noalign{}
-Channel & Taps & $\le$0~dB & $\le$0.1~dB & $\le$0.25~dB & $\le$0.5~dB & $\le$1~dB & $\le$2~dB \\
-\midrule\noalign{}
-\endfirsthead
-\toprule\noalign{}
-Channel & Taps & $\le$0~dB & $\le$0.1~dB & $\le$0.25~dB & $\le$0.5~dB & $\le$1~dB & $\le$2~dB \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-awgn & 1 & 4p w1 & 4p w1 & 4p w1 & 4p w1 & 4p w1 & 4p w1 \\
-rayleigh & 1 & 4p w1 & 4p w1 & 4p w1 & 4p w1 & 4p w1 & 4p w1 \\
-flat gain & 1 & 21p w3 & 21p w3 & 21p w3 & 4p w1 & 4p w1 & 4p w1 \\
-branch asym. & 1 & 4p w1 & 4p w1 & 4p w1 & 4p w1 & 4p w1 & 4p w1 \\
-nonlinear bias & 1 & 29p w5 & 4p w1 & 4p w1 & 4p w1 & 4p w1 & 4p w1 \\
-ISI & 3 & 73p w7 & 73p w7 & 57p w5 & 57p w5 & 37p w7 & 21p w3 \\
-ISI (complex) & 3 & 73p w7 & 73p w7 & 73p w7 & 73p w7 & 57p w5 & 21p w3 \\
-ISI + Rayleigh & 3 & 145p w7 & 73p w7 & 73p w7 & 73p w7 & 37p w7 & 21p w3 \\
-composite & 3 & 145p w7 & 73p w7 & 57p w5 & 21p w3 & 21p w3 & 6p w3 \\
-coded & code & 372p w9 & 244p w5 & 244p w5 & 18p w1 & 18p w1 & 18p w1 \\
-\end{longtable}
-
-\subsection{Results Figures}\label{sec:results-figures-minsize}
-
-\begin{figure}[htbp]
-\centering
-\pandocbounded{\includegraphics[width=\linewidth,height=0.8\textheight,keepaspectratio]{results/minsize_window_crossover.png}}
-\caption[Window against channel memory]{SNR penalty against each channel's classical comparator as the relay window widens, for the best configuration at each width. The reader should observe that the two panels behave oppositely: on the memoryless channels the penalty is flat to within a fifth of a decibel across every window (see inset), so the window buys nothing, while on the three-tap channels it falls by 8 to 11~dB between window~1 and window~7. This is the sense in which the relay's window must be matched to the channel's impulse response}\label{fig:minsize-crossover}
-\end{figure}
-
-\begin{figure}[htbp]
-\centering
-\pandocbounded{\includegraphics[width=\linewidth,height=0.8\textheight,keepaspectratio]{results/minsize_vs_degradation_budget.png}}
-\caption[Smallest relay per degradation budget]{Smallest relay meeting a given degradation budget against MLP-169, drawn as a step function because the horizontal axis is a budget the designer chooses rather than a measured quantity. The reader should observe the two-order-of-magnitude separation between the panels: the memoryless channels are served by four parameters at every budget shown, while the three-tap channels need between 21 and 145 depending on how much degradation is conceded}\label{fig:minsize-budget}
-\end{figure}
+The full budget-by-budget table is Table~\ref{tbl:table-minsize} in Appendix~\ref{sec:appendix-f-minimum-size}, together with the two figures that show the window effect directly (Figures~\ref{fig:minsize-crossover} and~\ref{fig:minsize-budget}).
 
 \section{Coded Block-DF: Measuring the Remark~\ref{rem:df-terminology} Caveat}\label{sec:coded-block-df}
 
