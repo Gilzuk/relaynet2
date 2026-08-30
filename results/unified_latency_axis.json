@@ -1,0 +1,323 @@
+{
+  "symbol_rates_msps": [
+    0.1,
+    1.0,
+    10.0
+  ],
+  "throughput_gops": 1.0,
+  "mlp_hidden": 8,
+  "rows": [
+    {
+      "scheme": "AF",
+      "delay_symbols": 0,
+      "ops_per_symbol": 2,
+      "compute_us_per_symbol": 0.002,
+      "by_symbol_rate": {
+        "0.1Msps": {
+          "symbol_period_us": 10.0,
+          "realtime_feasible": true,
+          "total_latency_us": 0.002,
+          "compute_over_budget_x": null
+        },
+        "1.0Msps": {
+          "symbol_period_us": 1.0,
+          "realtime_feasible": true,
+          "total_latency_us": 0.002,
+          "compute_over_budget_x": null
+        },
+        "10.0Msps": {
+          "symbol_period_us": 0.1,
+          "realtime_feasible": true,
+          "total_latency_us": 0.002,
+          "compute_over_budget_x": null
+        }
+      }
+    },
+    {
+      "scheme": "DF-hard (symbol-wise)",
+      "delay_symbols": 0,
+      "ops_per_symbol": 4,
+      "compute_us_per_symbol": 0.004,
+      "by_symbol_rate": {
+        "0.1Msps": {
+          "symbol_period_us": 10.0,
+          "realtime_feasible": true,
+          "total_latency_us": 0.004,
+          "compute_over_budget_x": null
+        },
+        "1.0Msps": {
+          "symbol_period_us": 1.0,
+          "realtime_feasible": true,
+          "total_latency_us": 0.004,
+          "compute_over_budget_x": null
+        },
+        "10.0Msps": {
+          "symbol_period_us": 0.1,
+          "realtime_feasible": true,
+          "total_latency_us": 0.004,
+          "compute_over_budget_x": null
+        }
+      }
+    },
+    {
+      "scheme": "MLP w=1",
+      "delay_symbols": 0,
+      "ops_per_symbol": 108,
+      "compute_us_per_symbol": 0.108,
+      "by_symbol_rate": {
+        "0.1Msps": {
+          "symbol_period_us": 10.0,
+          "realtime_feasible": true,
+          "total_latency_us": 0.108,
+          "compute_over_budget_x": null
+        },
+        "1.0Msps": {
+          "symbol_period_us": 1.0,
+          "realtime_feasible": true,
+          "total_latency_us": 0.108,
+          "compute_over_budget_x": null
+        },
+        "10.0Msps": {
+          "symbol_period_us": 0.1,
+          "realtime_feasible": false,
+          "total_latency_us": null,
+          "compute_over_budget_x": 1.0799999999999998
+        }
+      }
+    },
+    {
+      "scheme": "MLP w=3",
+      "delay_symbols": 1,
+      "ops_per_symbol": 172,
+      "compute_us_per_symbol": 0.172,
+      "by_symbol_rate": {
+        "0.1Msps": {
+          "symbol_period_us": 10.0,
+          "realtime_feasible": true,
+          "total_latency_us": 10.172,
+          "compute_over_budget_x": null
+        },
+        "1.0Msps": {
+          "symbol_period_us": 1.0,
+          "realtime_feasible": true,
+          "total_latency_us": 1.172,
+          "compute_over_budget_x": null
+        },
+        "10.0Msps": {
+          "symbol_period_us": 0.1,
+          "realtime_feasible": false,
+          "total_latency_us": null,
+          "compute_over_budget_x": 1.7199999999999998
+        }
+      }
+    },
+    {
+      "scheme": "MLP w=5",
+      "delay_symbols": 2,
+      "ops_per_symbol": 236,
+      "compute_us_per_symbol": 0.236,
+      "by_symbol_rate": {
+        "0.1Msps": {
+          "symbol_period_us": 10.0,
+          "realtime_feasible": true,
+          "total_latency_us": 20.236,
+          "compute_over_budget_x": null
+        },
+        "1.0Msps": {
+          "symbol_period_us": 1.0,
+          "realtime_feasible": true,
+          "total_latency_us": 2.2359999999999998,
+          "compute_over_budget_x": null
+        },
+        "10.0Msps": {
+          "symbol_period_us": 0.1,
+          "realtime_feasible": false,
+          "total_latency_us": null,
+          "compute_over_budget_x": 2.36
+        }
+      }
+    },
+    {
+      "scheme": "MLP w=11",
+      "delay_symbols": 5,
+      "ops_per_symbol": 428,
+      "compute_us_per_symbol": 0.428,
+      "by_symbol_rate": {
+        "0.1Msps": {
+          "symbol_period_us": 10.0,
+          "realtime_feasible": true,
+          "total_latency_us": 50.428,
+          "compute_over_budget_x": null
+        },
+        "1.0Msps": {
+          "symbol_period_us": 1.0,
+          "realtime_feasible": true,
+          "total_latency_us": 5.428,
+          "compute_over_budget_x": null
+        },
+        "10.0Msps": {
+          "symbol_period_us": 0.1,
+          "realtime_feasible": false,
+          "total_latency_us": null,
+          "compute_over_budget_x": 4.279999999999999
+        }
+      }
+    },
+    {
+      "scheme": "MLP w=21",
+      "delay_symbols": 10,
+      "ops_per_symbol": 748,
+      "compute_us_per_symbol": 0.748,
+      "by_symbol_rate": {
+        "0.1Msps": {
+          "symbol_period_us": 10.0,
+          "realtime_feasible": true,
+          "total_latency_us": 100.748,
+          "compute_over_budget_x": null
+        },
+        "1.0Msps": {
+          "symbol_period_us": 1.0,
+          "realtime_feasible": true,
+          "total_latency_us": 10.748,
+          "compute_over_budget_x": null
+        },
+        "10.0Msps": {
+          "symbol_period_us": 0.1,
+          "realtime_feasible": false,
+          "total_latency_us": null,
+          "compute_over_budget_x": 7.4799999999999995
+        }
+      }
+    },
+    {
+      "scheme": "MLSE L=3 D=3",
+      "delay_symbols": 3,
+      "ops_per_symbol": 435,
+      "compute_us_per_symbol": 0.435,
+      "by_symbol_rate": {
+        "0.1Msps": {
+          "symbol_period_us": 10.0,
+          "realtime_feasible": true,
+          "total_latency_us": 30.435,
+          "compute_over_budget_x": null
+        },
+        "1.0Msps": {
+          "symbol_period_us": 1.0,
+          "realtime_feasible": true,
+          "total_latency_us": 3.435,
+          "compute_over_budget_x": null
+        },
+        "10.0Msps": {
+          "symbol_period_us": 0.1,
+          "realtime_feasible": false,
+          "total_latency_us": null,
+          "compute_over_budget_x": 4.35
+        }
+      }
+    },
+    {
+      "scheme": "MLSE L=5 D=25",
+      "delay_symbols": 25,
+      "ops_per_symbol": 6937,
+      "compute_us_per_symbol": 6.937,
+      "by_symbol_rate": {
+        "0.1Msps": {
+          "symbol_period_us": 10.0,
+          "realtime_feasible": true,
+          "total_latency_us": 256.937,
+          "compute_over_budget_x": null
+        },
+        "1.0Msps": {
+          "symbol_period_us": 1.0,
+          "realtime_feasible": false,
+          "total_latency_us": null,
+          "compute_over_budget_x": 6.937
+        },
+        "10.0Msps": {
+          "symbol_period_us": 0.1,
+          "realtime_feasible": false,
+          "total_latency_us": null,
+          "compute_over_budget_x": 69.37
+        }
+      }
+    },
+    {
+      "scheme": "MLSE L=7 D=35",
+      "delay_symbols": 35,
+      "ops_per_symbol": 110627,
+      "compute_us_per_symbol": 110.627,
+      "by_symbol_rate": {
+        "0.1Msps": {
+          "symbol_period_us": 10.0,
+          "realtime_feasible": false,
+          "total_latency_us": null,
+          "compute_over_budget_x": 11.0627
+        },
+        "1.0Msps": {
+          "symbol_period_us": 1.0,
+          "realtime_feasible": false,
+          "total_latency_us": null,
+          "compute_over_budget_x": 110.627
+        },
+        "10.0Msps": {
+          "symbol_period_us": 0.1,
+          "realtime_feasible": false,
+          "total_latency_us": null,
+          "compute_over_budget_x": 1106.27
+        }
+      }
+    },
+    {
+      "scheme": "block DF",
+      "delay_symbols": 202,
+      "ops_per_symbol": 54,
+      "compute_us_per_symbol": 0.054,
+      "by_symbol_rate": {
+        "0.1Msps": {
+          "symbol_period_us": 10.0,
+          "realtime_feasible": true,
+          "total_latency_us": 2020.054,
+          "compute_over_budget_x": null
+        },
+        "1.0Msps": {
+          "symbol_period_us": 1.0,
+          "realtime_feasible": true,
+          "total_latency_us": 202.054,
+          "compute_over_budget_x": null
+        },
+        "10.0Msps": {
+          "symbol_period_us": 0.1,
+          "realtime_feasible": true,
+          "total_latency_us": 20.254,
+          "compute_over_budget_x": null
+        }
+      }
+    },
+    {
+      "scheme": "block DF + MLSE L=3",
+      "delay_symbols": 202,
+      "ops_per_symbol": 501,
+      "compute_us_per_symbol": 0.501,
+      "by_symbol_rate": {
+        "0.1Msps": {
+          "symbol_period_us": 10.0,
+          "realtime_feasible": true,
+          "total_latency_us": 2020.501,
+          "compute_over_budget_x": null
+        },
+        "1.0Msps": {
+          "symbol_period_us": 1.0,
+          "realtime_feasible": true,
+          "total_latency_us": 202.501,
+          "compute_over_budget_x": null
+        },
+        "10.0Msps": {
+          "symbol_period_us": 0.1,
+          "realtime_feasible": false,
+          "total_latency_us": null,
+          "compute_over_budget_x": 5.01
+        }
+      }
+    }
+  ]
+}
