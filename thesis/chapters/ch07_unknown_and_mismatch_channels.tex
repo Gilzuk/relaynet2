@@ -50,6 +50,10 @@ The investigation is deliberately adversarial to the learned relay. Each classic
 \label{fig:ext-unknown}
 \end{figure}
 
+\section{Layer 1 --- Matched Memoryless Channel: The Control}\label{sec:layer-one}
+
+The first rung is not run in this chapter. It is the canonical comparison of Chapter~\ref{sec:experiments}, restated here so the ladder has all four of its rungs in one place: a memoryless channel, known to the receiver chain, with perfect CSI, on which the strongest classical opponent is a relay function rather than a receiver. It is the control the rest of the ladder is read against, and its role is to establish that the learned relay's later advantages come from the assumptions being relaxed rather than from the comparison being unfair. Sections~\ref{sec:siso-bpsk-performance-baseline-relay-comparison} and~\ref{sec:minimum-relay-size} report it; the row for layer~1 in Table~\ref{tbl:layers} gives the operating point.
+
 \section{Layer 2 --- Channel Memory with Perfect CSI: Classical Failure and Learned Mitigation}\label{sec:unknown-channel-experiment}
 
 \textbf{Goal:} Test whether the learned relay's value changes qualitatively when the channel violates the assumptions under which AF and DF are (near-)optimal: do the \emph{memoryless} classical relays fail on an unknown channel while the minimal 169-parameter MLP mitigates by learning it from data (H5)?\REV{The unknown-channel relay uses real-valued inputs with an $11$-sample window ($11 \to 13 \to 1$, $169$ parameters); the canonical-setup relay of Chapter~\ref{sec:experiments} uses the same minimal class with a slightly different width ($169$ parameters). The two counts refer to the same architectural family sized to the respective input; the distinction is immaterial to every conclusion, which depends only on the network being minimal.}
