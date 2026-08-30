@@ -267,7 +267,7 @@ Result
 H1 & Some AI relays outperform AF at low SNR & \textbf{Confirmed}: the best neural relays beat AF at 0--4 dB on the canonical channel \\
 H2 & DF lowest-BER among per-symbol relays at high SNR & \textbf{Confirmed}: DF matches or beats all AI methods at \(\geq 6\) dB with 0 parameters \\
 H3 & Overfitting at excess capacity & \textbf{Not supported; weaker size claim holds}: 169 params matches 24K, and larger evaluated models did not improve BER. The size sweep of Section~\ref{sec:minimum-relay-size}, replicated over three initializations, finds no upturn above the $0.180$~dB across-initialization spread, so the overfitting hypothesis is unsupported on evidence rather than untested. The overfitting \emph{mechanism} remains unestablished, no train/test-gap analysis having been performed \\
-H4 & Architecture convergence at equal parameter budget & \textbf{Confirmed at high SNR, rejected at low}: at 3K params the six architectures span 4.1\% BER at 20~dB but 17.4\% at 0~dB, splitting into feedforward and sequence groups. Equalizing the budget required changing width, depth, state dimension and input window jointly (Table~\ref{tbl:table28}), so this equalizes capacity, not the other architectural degrees of freedom \\
+H4 & Architecture convergence at equal parameter budget & \textbf{Rejected at low SNR; high-SNR convergence not seed-robust} (Table~\ref{tbl:seed-spread-3k}): at 3K params the six architectures span 4.1\% BER at 20~dB but 17.4\% at 0~dB, splitting into feedforward and sequence groups. Equalizing the budget required changing width, depth, state dimension and input window jointly (Table~\ref{tbl:table28}), so this equalizes capacity, not the other architectural degrees of freedom \\
 H5 & Memoryless classical relays fail on unknown channels; a minimal MLP mitigates by learning, near the model-aware optimum & \textbf{Confirmed}: on unknown ISI, AF/DF hit the analytic 0.25 floor (DF non-monotonic in SNR) while the 169-parameter MLP reaches BER $<5\times10^{-5}$, within $\approx$1--1.5 dB of genie-CSI Viterbi MLSE; the same architecture mitigates a composite ISI$\times$PA$\times$phase cascade with no impairment model, tracking $\approx$2 dB behind pilot-aided Viterbi and matching blind CMA when no posterior exists; the advantage is bounded to structural model-class mismatch representable at minimal capacity \\
 \end{longtable}
 
@@ -277,7 +277,29 @@ H1 is reconfirmed on the canonical channel: the smallest matching relay reaches 
 
 H5 receives independent corroboration rather than merely surviving. Chapter~\ref{sec:unknown-channels} reports the learned relay $1$--$1.5$~dB behind genie-CSI Viterbi on the three-tap ISI channel, using a window of 11. The sweep, which caps the window at 7 and uses a differently trained relay, measures $+1.67$~dB at that width, with a clean progression of $+12.95$, $+3.60$, $+2.75$ and $+1.67$~dB at windows 1, 3, 5 and 7. Extrapolating that trend to the window of 11 actually used in Chapter~\ref{sec:unknown-channels} gives $+0.79$~dB, bracketing the reported figure from below as the measured points bracket it from above. Two independent measurements, differing in relay class, training procedure, two-hop model and Monte Carlo budget, therefore agree on the size of the gap to the model-aware detector, and the residual difference between them is explained by window width alone --- which is the same variable the sweep identifies as binding.
 
-H4 is untouched in substance but acquires a caveat and a partial defence. The caveat is that the equal-budget architecture comparison remains single-seed, so it is exposed to exactly the initialization variance Table~\ref{tbl:seed-spread} measures. The partial defence is that on the canonical channel, where that comparison was run, the measured spread is the smallest anywhere in the sweep at $0.008$~dB median, comfortably below the roughly $0.18$~dB that H4's $4.1\%$ high-SNR spread corresponds to. That is reassurance rather than proof: the spread was measured on MLPs, and there is no basis here for assuming the sequence models initialize as stably.
+H4 needs qualifying, and the qualification could not be inferred from the size sweep. That sweep measures initialization variance on MLPs, where the canonical channel is the most reproducible case anywhere in this thesis at $0.008$~dB median, and an earlier version of this section offered that as reassurance for H4's single-seed equal-budget comparison while noting it was not proof, the sequence models never having been measured. Measuring them directly reverses the conclusion for one of the six.
+
+Each equal-budget architecture was retrained from three seeded initializations and evaluated on identical channel draws and payload bits, giving the following spread in SNR penalty against DF:
+
+\begin{table}[htbp]
+\centering
+\caption[Across-initialization spread at the 3K budget]{Spread in SNR penalty against symbol-wise DF between the best and worst of three initializations, for the equal-budget architectures on the canonical channel. The reader should observe the Transformer row: its spread is five times the roughly $0.18$~dB that H4's $4.1\%$ high-SNR architecture spread corresponds to, so a single run of that architecture cannot resolve the effect H4 claims. Every other architecture is comfortably inside it}\label{tbl:seed-spread-3k}
+\begin{tabular}{lrrr}
+\toprule
+Architecture & Params & Per-seed penalty vs DF (dB) & Spread (dB) \\
+\midrule
+Mamba2-3K       & 3{,}004 & $+1.113$, $+1.094$, $+1.098$ & 0.019 \\
+Mamba-S6-3K     & 3{,}027 & $+1.123$, $+1.110$, $+1.082$ & 0.041 \\
+MLP-3K          & 3{,}004 & $+0.133$, $+0.162$, $+0.189$ & 0.055 \\
+VAE-3K          & 3{,}037 & $+0.072$, $+0.228$, $+0.142$ & 0.156 \\
+Transformer-3K  & 3{,}007 & $+2.039$, $+1.147$, $+1.133$ & \textbf{0.906} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Four of the five are stable to within $0.16$~dB and the two Mamba variants are the most reproducible architectures measured, at $0.019$ and $0.041$~dB. The Transformer is not: its three initializations span $0.906$~dB, five times the effect H4's high-SNR claim must resolve, with one run at $+2.039$~dB against two at approximately $+1.14$~dB. The instability is therefore specific to that architecture rather than generic to sequence models, which is the opposite of what a capacity or inductive-bias account would predict.
+
+Two consequences follow. H4's low-SNR finding stands: the feedforward and sequence groups separate by roughly a decibel here ($+0.15$ against $+1.1$~dB), far outside any measured spread, so the $17.4\%$ split at 0~dB is not a seeding artifact. H4's high-SNR convergence claim does not stand as a seed-robust result, because the $4.1\%$ spread it rests on is smaller than the Transformer's own run-to-run variation; it should be read as an observation from one run of each architecture. Notably, this was not detectable from the published experiments: none of the three sequence checkpoints seeds \texttt{torch} at all, so the reported comparison was drawn from an uncontrolled initialization and its variance was not merely unreported but unmeasurable after the fact.
 
 \REV{H2/H3 statements in the outcome table aligned with the rest of the thesis: ``DF optimal at high SNR'' \(\to\) ``DF lowest-BER among per-symbol relays at high SNR''; ``Inverted-U complexity curve'' \(\to\) ``Overfitting at excess capacity''. \texttt{\$\&lt;5\ldots\$} restored to \texttt{\$<5\ldots\$}; all \texttt{\&amp;} restored to \texttt{\&}.}
 
