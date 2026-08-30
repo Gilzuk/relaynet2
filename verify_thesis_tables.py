@@ -30,6 +30,8 @@ Data sources, by table:
   tbl:table42           link-adaptation envelope            <- results/coded_rate_adaptation.json
   tbl:table43           envelope under a latency budget     <- results/coded_latency_capacity.json
   tbl:table44           reliable-decoding regime            <- results/coded_reliable_regime.json
+  tbl:mmse-baseline     MMSE linear equalizer vs MLSE       <- results/mmse_equalizer.json
+  tbl:seq-on-memory     sequence architectures on ISI       <- results/seq_models_on_memory.json
 
 Timing tables (tbl:table13, tbl:table25) report machine-dependent wall-clock and
 are checked only for their deterministic content (parameter counts); the timing
@@ -87,6 +89,15 @@ def table_body(tex, label):
     if i < 0:
         return None
     j = tex.find("\\end{longtable}", i)
+    return tex[i:j] if j > 0 else tex[i:]
+
+
+def tabular_body(tex, label):
+    """Return the tabular body containing \\label{<label>} (up to \\end{tabular})."""
+    i = tex.find("\\label{" + label + "}")
+    if i < 0:
+        return None
+    j = tex.find("\\end{tabular}", i)
     return tex[i:j] if j > 0 else tex[i:]
 
 
@@ -1156,6 +1167,97 @@ def check_ber_validation(tex, rep):
     rep.finish_table(T, before)
 
 
+def check_mmse_baseline(tex, rep):
+    """MMSE linear-equalizer baseline (tbl:mmse-baseline) vs results/mmse_equalizer.json.
+
+    Columns: Channel & 3 taps & 5 taps & 7 taps & 11 taps & Learned relay
+    Rows: ISI (BPSK) / ISI (QPSK) / Composite
+    Source keys: mmse["isi"][N], mmse["isi_complex"][N], mmse["composite"][N].
+    The learned-relay column is not in the JSON (it is copied from E6 results)
+    and is skipped here; only the MMSE columns are machine-derived.
+    """
+    T = "tbl:mmse-baseline"; before = rep.checked
+    body = tabular_body(tex, T)
+    if body is None:
+        return rep.skip(T, "label not found in tex")
+    src_path = os.path.join(ROOT, "results", "mmse_equalizer.json")
+    if not os.path.exists(src_path):
+        return rep.skip(T, "results/mmse_equalizer.json not found")
+    with open(src_path) as fh:
+        mmse = json.load(fh)
+    # map tex row label -> JSON channel key
+    ch_map = [("bpsk", "isi"), ("qpsk", "isi_complex"), ("composite", "composite")]
+    tap_cols = [(1, "3"), (2, "5"), (3, "7"), (4, "11")]
+    for row in data_rows(body):
+        if not row:
+            continue
+        label = row[0][0].strip().lower()
+        src_key = None
+        for needle, key in ch_map:
+            if needle in label:
+                src_key = key
+                break
+        if src_key is None:
+            continue
+        for col, n in tap_cols:
+            if col >= len(row):
+                continue
+            pub_text, pub_val = row[col]
+            if pub_val is None:
+                continue
+            src = mmse.get(src_key, {}).get(n)
+            if src is not None:
+                rep.cell(T, f"{src_key}/{n}tap", pub_text, pub_val, src)
+    rep.finish_table(T, before)
+
+
+def check_seq_on_memory(tex, rep):
+    """Sequence architectures on memory channels (tbl:seq-on-memory) vs
+    results/seq_models_on_memory.json.
+
+    Columns: Channel & MLP-3K & Transformer-3K & Mamba-S6-3K & Mamba2-3K
+    Each cell is "best_db (spread)"; we check the best_db value and skip the
+    bracketed spread (it is informational and harder to parse without ambiguity).
+    Rows: ISI (BPSK) / ISI (QPSK) / Composite
+    Source keys: seq["channels"]["isi"], ["isi_complex"], ["composite"].
+    """
+    T = "tbl:seq-on-memory"; before = rep.checked
+    body = tabular_body(tex, T)
+    if body is None:
+        return rep.skip(T, "label not found in tex")
+    src_path = os.path.join(ROOT, "results", "seq_models_on_memory.json")
+    if not os.path.exists(src_path):
+        return rep.skip(T, "results/seq_models_on_memory.json not found")
+    with open(src_path) as fh:
+        seq = json.load(fh)
+    channels = seq.get("channels", {})
+    ch_map = [("bpsk", "isi"), ("qpsk", "isi_complex"), ("composite", "composite")]
+    arch_cols = [(1, "MLP-3K"), (2, "Transformer-3K"), (3, "Mamba-S6-3K"), (4, "Mamba2-3K")]
+    for row in data_rows(body):
+        if not row:
+            continue
+        label = row[0][0].strip().lower()
+        src_key = None
+        for needle, key in ch_map:
+            if needle in label:
+                src_key = key
+                break
+        if src_key is None:
+            continue
+        ch_data = channels.get(src_key, {})
+        for col, aname in arch_cols:
+            if col >= len(row):
+                continue
+            pub_text, pub_val = row[col]
+            if pub_val is None:
+                continue
+            arch_data = ch_data.get("archs", {}).get(aname, {})
+            src = arch_data.get("best_db")
+            if src is not None and not math.isnan(src):
+                rep.cell(T, f"{src_key}/{aname}", pub_text, pub_val, src)
+    rep.finish_table(T, before)
+
+
 def main():
     global TEX_DIR, MC_SLACK
     ap = argparse.ArgumentParser()
@@ -1198,7 +1300,8 @@ def main():
               check_table34,
               check_table37, check_table38, check_table39, check_table40,
               check_table41, check_table42, check_table43,
-              check_table44]
+              check_table44,
+              check_mmse_baseline, check_seq_on_memory]
     for chk in checks:
         try:
             chk(tex, rep)
