@@ -53,6 +53,9 @@ N_TRAIN = 120_000
 MLP_HIDDEN = 8
 
 MLP_WINDOWS_A = (1, 3, 5, 11, 21)
+# Depth at which the L=3 trellis survivors merge, measured by the D sweep below;
+# deeper costs delay and revises no decision.
+COMPOSED_TRACEBACK = {3: 3}
 TRACEBACKS_A = (0, 1, 2, 3, 5, 15)
 
 
@@ -146,11 +149,15 @@ def build_schemes(L, frame_symbols, mlp_cache):
     schemes.append(("block DF", frame_symbols, None,
                     lambda seed: CodedDecodeAndForwardRelay(
                         frame_info_bits=FRAME_INFO_BITS)))
-    # The equalizer decides symbol n after y[n + 5L]; only then can the frame
-    # be assembled and decoded, so the two delays add rather than overlap.
-    schemes.append(("block DF + MLSE", frame_symbols + 5 * L, 4 ** (L - 1),
+    # The equalizer decides symbol n after y[n + D]; only then can the frame be
+    # assembled and decoded, so the two delays add rather than overlap. D is the
+    # depth the standalone rows show to be sufficient, so the composed scheme is
+    # not charged for an equalizer deeper than the one measured beside it.
+    composed_D = COMPOSED_TRACEBACK.get(L, 5 * L)
+    schemes.append(("block DF + MLSE", frame_symbols + composed_D, 4 ** (L - 1),
                     lambda seed: ComposedRelay(
-                        TruncatedViterbiQPSKRelay(channel_taps=taps, traceback=5 * L),
+                        TruncatedViterbiQPSKRelay(channel_taps=taps,
+                                                  traceback=composed_D),
                         CodedDecodeAndForwardRelay(frame_info_bits=FRAME_INFO_BITS))))
     return schemes
 

@@ -9,15 +9,11 @@ a symbol-by-symbol decision rather than silently misalign its output.
 """
 
 import numpy as np
-from relaynet.relays import ViterbiMLSEQPSKRelay, TruncatedViterbiQPSKRelay
-from relaynet.channels.e6_channels import ComplexISIChannel
-
-
-import numpy as np
 import pytest
 
 from relaynet.relays import ViterbiMLSEQPSKRelay, TruncatedViterbiQPSKRelay
 from relaynet.channels.e6_channels import ComplexISIChannel
+
 
 TAPS = np.array([1.0, 0.7, 0.5]) / np.linalg.norm(np.array([1.0, 0.7, 0.5]))
 DEPTHS = (0, 1, 3, 5, 10, 15, 30)

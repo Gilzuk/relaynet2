@@ -430,5 +430,11 @@ class TruncatedViterbiQPSKRelay(ViterbiMLSEQPSKRelay):
         below, a relay re-estimated from pilots would decode against a
         trellis inversion belonging to the previous channel.
         """
+        default_before = self.traceback == 5 * self.L
         super().set_channel(channel_taps=channel_taps, pilot_symbols=pilot_symbols)
+        # A default traceback is a function of the channel length, so it has to
+        # follow the channel. An explicitly chosen one is the caller's and is
+        # left alone -- the point of the parameter is to fix the delay budget.
+        if default_before:
+            self.traceback = 5 * self.L
         self._build_predecessors()

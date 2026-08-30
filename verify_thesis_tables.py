@@ -550,8 +550,10 @@ def check_joint_latency(tex, rep):
 
     Columns: relay | delay (symbols) | MACs/symbol | BER at 12 dB. The BER
     column and the delay column both come from the measurement; the MAC
-    column is arithmetic from the architecture and is checked against the
-    same formulas unified_latency_axis.py uses, so the two cannot drift.
+    column is arithmetic from the architecture rather than measured, so it is
+    checked against the MLSE and relay cost formulas restated below. Those
+    restate what unified_latency_axis.py computes; they are not imported from
+    it, so a change to the formulas has to be made in both places.
     """
     T = "tbl:joint-latency"; before = rep.checked
     body = tabular_body(tex, T)
