@@ -1,0 +1,125 @@
+{
+  "alphabet_size": 4,
+  "mlp_hidden": 8,
+  "frame_symbols": 202,
+  "rows": [
+    {
+      "scheme": "AF",
+      "delay_symbols": 0,
+      "macs_per_symbol": 2,
+      "adds_per_symbol": 0,
+      "other_ops_per_symbol": 0
+    },
+    {
+      "scheme": "DF-hard (symbol-wise)",
+      "delay_symbols": 0,
+      "macs_per_symbol": 0,
+      "adds_per_symbol": 0,
+      "other_ops_per_symbol": 2
+    },
+    {
+      "scheme": "MLP w=1",
+      "delay_symbols": 0,
+      "macs_per_symbol": 48,
+      "adds_per_symbol": 12,
+      "other_ops_per_symbol": 12
+    },
+    {
+      "scheme": "MLP w=3",
+      "delay_symbols": 1,
+      "macs_per_symbol": 80,
+      "adds_per_symbol": 12,
+      "other_ops_per_symbol": 12
+    },
+    {
+      "scheme": "MLP w=5",
+      "delay_symbols": 2,
+      "macs_per_symbol": 112,
+      "adds_per_symbol": 12,
+      "other_ops_per_symbol": 12
+    },
+    {
+      "scheme": "MLP w=11",
+      "delay_symbols": 5,
+      "macs_per_symbol": 208,
+      "adds_per_symbol": 12,
+      "other_ops_per_symbol": 12
+    },
+    {
+      "scheme": "MLP w=21",
+      "delay_symbols": 10,
+      "macs_per_symbol": 368,
+      "adds_per_symbol": 12,
+      "other_ops_per_symbol": 12
+    },
+    {
+      "scheme": "MLSE L=3 D=3",
+      "delay_symbols": 3,
+      "macs_per_symbol": 128,
+      "adds_per_symbol": 67,
+      "other_ops_per_symbol": 48
+    },
+    {
+      "scheme": "MLSE L=5 D=25",
+      "delay_symbols": 25,
+      "macs_per_symbol": 2048,
+      "adds_per_symbol": 1049,
+      "other_ops_per_symbol": 768
+    },
+    {
+      "scheme": "MLSE L=7 D=35",
+      "delay_symbols": 35,
+      "macs_per_symbol": 32768,
+      "adds_per_symbol": 16419,
+      "other_ops_per_symbol": 12288
+    },
+    {
+      "scheme": "block DF",
+      "delay_symbols": 202,
+      "macs_per_symbol": 16,
+      "adds_per_symbol": 12,
+      "other_ops_per_symbol": 0
+    },
+    {
+      "scheme": "block DF + MLSE L=3",
+      "delay_symbols": 202,
+      "macs_per_symbol": 144,
+      "adds_per_symbol": 91,
+      "other_ops_per_symbol": 48
+    }
+  ],
+  "crossover": {
+    "L=3": {
+      "mlse_macs": 128,
+      "ratio_vs_mlp_w11": 0.6153846153846154
+    },
+    "L=4": {
+      "mlse_macs": 512,
+      "ratio_vs_mlp_w11": 2.4615384615384617
+    },
+    "L=5": {
+      "mlse_macs": 2048,
+      "ratio_vs_mlp_w11": 9.846153846153847
+    },
+    "L=6": {
+      "mlse_macs": 8192,
+      "ratio_vs_mlp_w11": 39.38461538461539
+    },
+    "L=7": {
+      "mlse_macs": 32768,
+      "ratio_vs_mlp_w11": 157.53846153846155
+    },
+    "w=5": {
+      "mlp_macs": 112,
+      "crossover_taps": 2.9036774610288023
+    },
+    "w=11": {
+      "mlp_macs": 208,
+      "crossover_taps": 3.350219859070546
+    },
+    "w=21": {
+      "mlp_macs": 368,
+      "crossover_taps": 3.7617809780285065
+    }
+  }
+}

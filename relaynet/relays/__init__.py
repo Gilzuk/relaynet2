@@ -10,7 +10,7 @@ from .cgan import CGANRelay
 from .hybrid import HybridRelay
 from .e2e import E2ERelay
 from .mlp import MLPRelay, MLPQPSKClassifierRelay
-from .viterbi import ViterbiMLSERelay, ViterbiMLSEQPSKRelay
+from .viterbi import ViterbiMLSERelay, ViterbiMLSEQPSKRelay, TruncatedViterbiQPSKRelay
 from .coded_df import CodedDecodeAndForwardRelay
 from .soft_coded_df import SoftCodedDecodeAndForwardRelay, SoftLearnedRelay
 
@@ -28,6 +28,7 @@ __all__ = [
     "MLPQPSKClassifierRelay",
     "ViterbiMLSERelay",
     "ViterbiMLSEQPSKRelay",
+    "TruncatedViterbiQPSKRelay",
     "CodedDecodeAndForwardRelay",
     "SoftCodedDecodeAndForwardRelay",
     "SoftLearnedRelay",

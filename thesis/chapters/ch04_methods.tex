@@ -187,7 +187,7 @@ Training uses MSE loss with multi-SNR training data (i.e., 5, 10, and 15 dB), 25
 
 \item \textbf{Hybrid:} SNR-adaptive relay that switches between MLP (low SNR) and DF (high SNR) based on a learned threshold. Combines the AI advantage at low SNR with DF's low-BER, zero-parameter operation at high SNR. Same 169 parameters as MLP.
 
-  \emph{Design rationale:} The Hybrid relay is motivated by the observation (confirmed empirically) that AI relays outperform DF only at low SNR, while DF achieves the lowest BER among the evaluated symbol-wise relay strategies at high SNR. By introducing a switching threshold, the Hybrid relay automatically selects the better strategy for each operating condition. The threshold is determined empirically from the training data by finding the SNR at which MLP and DF BER curves cross. This approach requires no additional parameters beyond those of the MLP sub-network.
+  \emph{Design rationale:} The Hybrid relay is motivated by the prediction that the two families are strongest in different SNR regimes --- hypotheses H1 and H2 of Section~\ref{sec:research-hypotheses} state that expectation and Chapter~\ref{sec:experiments} tests it. If it holds, neither family is the right choice across the whole range, and a switching threshold lets the relay select between them per operating condition. The threshold is determined empirically from the training data by finding the SNR at which MLP and DF BER curves cross. This approach requires no additional parameters beyond those of the MLP sub-network.
 
   Training points at the relay node: SNR = \textbf{5, 10, 15 dB} (same trained MLP sub-network as the Minimal MLP relay).
 

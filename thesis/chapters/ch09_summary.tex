@@ -1,4 +1,4 @@
-\chapter{Summary}
+\chapter{Summary}\label{sec:summary}
 \paragraph{Scope of the summarized results.} The results summarized below originate from three studies. The canonical study (Chapter~\ref{sec:experiments}) evaluates relay processing on a memoryless channel with white noise and uncoded transmission. A supplementary coded study (Section~\ref{sec:coded-block-df}) measures a block-DF relay, soft-information forwarding, and an adaptive modulation-and-coding scheme against that baseline. The unknown-channel study (Chapter~\ref{sec:unknown-channels}) extends the canonical baseline by deliberately introducing impairments that violate its assumptions, including intersymbol interference (ISI), nonlinear distortion, and model mismatch. Conclusions involving channel-memory sequence detection, Viterbi maximum-likelihood sequence estimation (MLSE), pilot overhead, or blind equalization refer specifically to that extension rather than to the canonical system model; the coded study's soft-decision Viterbi decoding of the convolutional code is a distinct use of the Viterbi algorithm, for error-correction decoding rather than channel-memory sequence detection.
 
 This work examined classical and neural network–based relay strategies for \textit{two-hop relay communication} using a unified simulation framework. The objective was to analyze performance–complexity tradeoffs and determine when learning-based relays provide practical advantages over analytically derived methods.
@@ -20,8 +20,44 @@ The core comparison is carried out on one canonical setup, fixed in advance and 
 
     \item Sweeping the intermediate \emph{partial}-posterior case located the crossover precisely: it is governed by the \textbf{reliability of the channel estimate} and by pilot overhead. Pilot-aided classical processing wins on long blocks at negligible cost, but the zero-pilot learned relay becomes decisive once blocks are too short, or channels too transient, for pilots to yield an accurate estimate. The learned relay's advantage is therefore specific to \emph{structural} model-class mismatch (memory, nonlinearity, absent pilots) rather than to unknownness per se. Together with the high-SNR result, this delineates precisely where learned relays add value: never above the model-aware optimum, but uniquely robust to \emph{not knowing which model applies} and to the pilot overhead of channel identification.
 
-    \item A \textbf{complexity accounting} completed the trade-off: the learned relay's per-symbol cost grows only linearly in window length and output dimension, and $30$--$90\times$ faster in measured wall-clock as a vectorized operation for the reference implementations compared (Section~\ref{sec:complexity-viterbi-mlp}), whereas exact Viterbi MLSE grows as $M^{L}$ and becomes intractable. The learned relay thus trades a small BER gap for cost that scales gracefully exactly where classical sequence detection does not.
+    \item A \textbf{cost accounting on processor-independent axes} completed the trade-off and bounded it. Measured in multiply-accumulates per symbol rather than wall-clock, exact Viterbi MLSE costs $2M^{L}$ against the learned relay's $2WH+4H$, which does not depend on channel memory at all; the two are equal at $L^{\star}=3.35$ taps for the relay deployed here. Below that threshold the learned relay has no cost case --- at three taps MLSE is the cheaper detector ($128$ MACs against $208$), decides sooner, and is more accurate --- so the three-tap channel used throughout the unknown-channel study establishes the failure of the \emph{memoryless} relays and not a cost argument against sequence detection. Above it the gap compounds as $M^{L}$, reaching $158\times$ at seven taps, and there the learned relay trades a BER gap of at most a factor of $23$ for arithmetic that does not grow with the channel (Section~\ref{sec:joint-latency-memory}).
+
+    \item \textbf{Latency, measured rather than assumed, is not the boundary} it is commonly taken to be. An MLSE with bounded traceback reaches its full accuracy after three symbols of decision delay on a three-tap channel, fewer than a window-11 relay's five, so a latency budget tight enough to exclude sequence detection excludes the learned relay first. What a latency budget does exclude is the block relay: its $202$ symbols of frame buffering purchase no accuracy at all on a channel with memory, since without an equalizer it spends the code's redundancy on the interference and with one it merely reproduces MLSE's error rate at forty-three times the delay. The two research objectives of Chapter~\ref{sec:research-objectives} therefore have boundaries set by different resources --- identifiability for the unconstrained question, arithmetic for the constrained one --- and the distance between them is a result rather than a restatement.
 \end{enumerate}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
+\caption[Hypothesis outcomes summary]{Research hypotheses, their statements, and experimental outcomes}\label{tbl:table33}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Hypothesis
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Statement
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Result
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Hypothesis
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Statement
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Result
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+H1 & Some AI relays outperform AF at low SNR & \textbf{Confirmed}: the best neural relays beat AF at 0--4 dB on the canonical channel \\
+H2 & DF lowest-BER among per-symbol relays at high SNR & \textbf{Confirmed}: DF matches or beats all AI methods at \(\geq 6\) dB with 0 parameters \\
+H3 & Overfitting at excess capacity & \textbf{Not supported; weaker size claim holds}: 169 params matches 24K, and larger evaluated models did not improve BER. The size sweep of Section~\ref{sec:minimum-relay-size}, replicated over three initializations, finds no upturn above the $0.180$~dB across-initialization spread, so the overfitting hypothesis is unsupported on evidence rather than untested. The overfitting \emph{mechanism} remains unestablished, no train/test-gap analysis having been performed \\
+H4 & Architecture convergence at equal parameter budget & \textbf{Rejected at low SNR; high-SNR convergence not seed-robust} (Table~\ref{tbl:seed-spread-3k}): at 3K params the six architectures span 4.1\% BER at 20~dB but 17.4\% at 0~dB, splitting into feedforward and sequence groups. Equalizing the budget required changing width, depth, state dimension and input window jointly (Table~\ref{tbl:table28}), so this equalizes capacity, not the other architectural degrees of freedom \\
+H5 & Memoryless classical relays fail on unknown channels; a minimal MLP mitigates by learning, near the model-aware optimum & \textbf{Confirmed}: on unknown ISI, AF/DF hit the analytic 0.25 floor (DF non-monotonic in SNR) while the 169-parameter MLP reaches BER $<5\times10^{-5}$, within $\approx$1--1.5 dB of genie-CSI Viterbi MLSE; the same architecture mitigates a composite ISI$\times$PA$\times$phase cascade with no impairment model, tracking $\approx$2 dB behind pilot-aided Viterbi and matching blind CMA when no posterior exists; the advantage is bounded to structural model-class mismatch representable at minimal capacity \\
+\end{longtable}
 
 Overall, the results indicate that learning-based relays are best used as targeted enhancements rather than universal replacements, with simplicity, parameter efficiency, and hybrid design as key principles for practical relay systems. The canonical conclusions hold for the \emph{uncoded}, symbol-level setting studied here (Remark~\ref{rem:df-terminology}); a supplementary coded study (Section~\ref{sec:coded-block-df}) measures where coding changes that standing: a rate-1/2 convolutional code with a genuine block-DF relay beats uncoded DF from $8$~dB upward, but by $20$~dB both learned relays overtake block-DF (one architecture already does at $16$~dB, the other still trails there), since a relay that decodes the code spends its redundancy before forwarding while a denoising relay leaves that redundancy intact for the destination to use. That advantage is bounded, not erased, once the code rate is itself allowed to adapt: maximizing goodput over a modulation-and-coding grid shows rate selection dominates the relay-decoding question by an order of magnitude, unless a latency deadline reopens the gap by forcing the block-DF relay's double buffering out of budget first. Extending the study to other channel families, multi-antenna configurations, and higher-order constellations as a relay-architecture question (16-QAM and denser, which need a joint $N$-class 2D relay) is identified in Chapter~\ref{sec:discussion-and-conclusions} as the principal direction for future work.
 \REV{Fix applied (structure and precision): the unknown-channel summary was a single $\sim$250-word item that buried the pilot-crossover and complexity results; it is now split into the three items above, mirroring the structure of Chapter~\ref{sec:unknown-channels}. ``A few dB behind a pilot-aided Viterbi receiver'' was replaced by the precise figures used in the body ($\approx$1--1.5~dB on pure ISI, $\approx$2~dB on the composite), and the repeated $30$--$90\times$ wall-clock figure now carries the same implementation caveat as Section~\ref{sec:complexity-viterbi-mlp}.}

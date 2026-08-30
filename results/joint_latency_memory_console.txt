@@ -1,0 +1,122 @@
+training MLP  L=3 w=1 seed=0
+training MLP  L=3 w=1 seed=1
+training MLP  L=3 w=1 seed=2
+training MLP  L=3 w=3 seed=0
+training MLP  L=3 w=3 seed=1
+training MLP  L=3 w=3 seed=2
+training MLP  L=3 w=5 seed=0
+training MLP  L=3 w=5 seed=1
+training MLP  L=3 w=5 seed=2
+training MLP  L=3 w=11 seed=0
+training MLP  L=3 w=11 seed=1
+training MLP  L=3 w=11 seed=2
+training MLP  L=3 w=21 seed=0
+training MLP  L=3 w=21 seed=1
+training MLP  L=3 w=21 seed=2
+training MLP  L=5 w=11 seed=0
+training MLP  L=5 w=11 seed=1
+training MLP  L=5 w=11 seed=2
+training MLP  L=7 w=11 seed=0
+training MLP  L=7 w=11 seed=1
+training MLP  L=7 w=11 seed=2
+A  AF                       lat=   0  SNR= 0  BER=0.419511 (sd 0.000925)  FER=1.0000
+A  AF                       lat=   0  SNR= 4  BER=0.302656 (sd 0.007787)  FER=1.0000
+A  AF                       lat=   0  SNR= 8  BER=0.157044 (sd 0.003803)  FER=1.0000
+A  AF                       lat=   0  SNR=12  BER=0.060889 (sd 0.001210)  FER=0.9311
+A  AF                       lat=   0  SNR=16  BER=0.026500 (sd 0.001661)  FER=0.6667
+A  AF                       lat=   0  SNR=20  BER=0.013922 (sd 0.001939)  FER=0.3600
+A  DF-hard (symbol-wise)    lat=   0  SNR= 0  BER=0.440578 (sd 0.002749)  FER=1.0000
+A  DF-hard (symbol-wise)    lat=   0  SNR= 4  BER=0.358956 (sd 0.004613)  FER=1.0000
+A  DF-hard (symbol-wise)    lat=   0  SNR= 8  BER=0.291267 (sd 0.006240)  FER=1.0000
+A  DF-hard (symbol-wise)    lat=   0  SNR=12  BER=0.302656 (sd 0.002994)  FER=1.0000
+A  DF-hard (symbol-wise)    lat=   0  SNR=16  BER=0.367211 (sd 0.002106)  FER=1.0000
+A  DF-hard (symbol-wise)    lat=   0  SNR=20  BER=0.425333 (sd 0.000287)  FER=1.0000
+A  MLP w=1                  lat=   0  SNR= 0  BER=0.439278 (sd 0.004081)  FER=1.0000
+A  MLP w=1                  lat=   0  SNR= 4  BER=0.360522 (sd 0.005197)  FER=1.0000
+A  MLP w=1                  lat=   0  SNR= 8  BER=0.291111 (sd 0.007737)  FER=1.0000
+A  MLP w=1                  lat=   0  SNR=12  BER=0.296056 (sd 0.007051)  FER=1.0000
+A  MLP w=1                  lat=   0  SNR=16  BER=0.361356 (sd 0.012351)  FER=1.0000
+A  MLP w=1                  lat=   0  SNR=20  BER=0.413711 (sd 0.013897)  FER=1.0000
+A  MLP w=3                  lat=   1  SNR= 0  BER=0.401244 (sd 0.003285)  FER=1.0000
+A  MLP w=3                  lat=   1  SNR= 4  BER=0.187589 (sd 0.004081)  FER=1.0000
+A  MLP w=3                  lat=   1  SNR= 8  BER=0.025756 (sd 0.000787)  FER=0.8444
+A  MLP w=3                  lat=   1  SNR=12  BER=0.001300 (sd 0.000406)  FER=0.1044
+A  MLP w=3                  lat=   1  SNR=16  BER=0.000022 (sd 0.000031)  FER=0.0022
+A  MLP w=3                  lat=   1  SNR=20  BER=0.000000 (sd 0.000000)  FER=0.0000
+A  MLP w=5                  lat=   2  SNR= 0  BER=0.390211 (sd 0.004799)  FER=1.0000
+A  MLP w=5                  lat=   2  SNR= 4  BER=0.168911 (sd 0.002765)  FER=1.0000
+A  MLP w=5                  lat=   2  SNR= 8  BER=0.019733 (sd 0.000900)  FER=0.7889
+A  MLP w=5                  lat=   2  SNR=12  BER=0.001022 (sd 0.000359)  FER=0.0889
+A  MLP w=5                  lat=   2  SNR=16  BER=0.000000 (sd 0.000000)  FER=0.0000
+A  MLP w=5                  lat=   2  SNR=20  BER=0.000000 (sd 0.000000)  FER=0.0000
+A  MLP w=11                 lat=   5  SNR= 0  BER=0.394756 (sd 0.007377)  FER=1.0000
+A  MLP w=11                 lat=   5  SNR= 4  BER=0.166111 (sd 0.005199)  FER=1.0000
+A  MLP w=11                 lat=   5  SNR= 8  BER=0.014633 (sd 0.000834)  FER=0.6578
+A  MLP w=11                 lat=   5  SNR=12  BER=0.000189 (sd 0.000031)  FER=0.0222
+A  MLP w=11                 lat=   5  SNR=16  BER=0.000000 (sd 0.000000)  FER=0.0000
+A  MLP w=11                 lat=   5  SNR=20  BER=0.000000 (sd 0.000000)  FER=0.0000
+A  MLP w=21                 lat=  10  SNR= 0  BER=0.397367 (sd 0.008022)  FER=1.0000
+A  MLP w=21                 lat=  10  SNR= 4  BER=0.172911 (sd 0.003839)  FER=1.0000
+A  MLP w=21                 lat=  10  SNR= 8  BER=0.015189 (sd 0.001085)  FER=0.7044
+A  MLP w=21                 lat=  10  SNR=12  BER=0.000278 (sd 0.000096)  FER=0.0289
+A  MLP w=21                 lat=  10  SNR=16  BER=0.000000 (sd 0.000000)  FER=0.0000
+A  MLP w=21                 lat=  10  SNR=20  BER=0.000000 (sd 0.000000)  FER=0.0000
+A  MLSE D=0                 lat=   0  SNR= 0  BER=0.410689 (sd 0.005027)  FER=1.0000
+A  MLSE D=0                 lat=   0  SNR= 4  BER=0.201667 (sd 0.002707)  FER=1.0000
+A  MLSE D=0                 lat=   0  SNR= 8  BER=0.017633 (sd 0.000262)  FER=0.7622
+A  MLSE D=0                 lat=   0  SNR=12  BER=0.000078 (sd 0.000016)  FER=0.0089
+A  MLSE D=0                 lat=   0  SNR=16  BER=0.000000 (sd 0.000000)  FER=0.0000
+A  MLSE D=0                 lat=   0  SNR=20  BER=0.000000 (sd 0.000000)  FER=0.0000
+A  MLSE D=1                 lat=   1  SNR= 0  BER=0.388167 (sd 0.004189)  FER=1.0000
+A  MLSE D=1                 lat=   1  SNR= 4  BER=0.157822 (sd 0.000300)  FER=1.0000
+A  MLSE D=1                 lat=   1  SNR= 8  BER=0.012922 (sd 0.000859)  FER=0.6889
+A  MLSE D=1                 lat=   1  SNR=12  BER=0.000078 (sd 0.000031)  FER=0.0067
+A  MLSE D=1                 lat=   1  SNR=16  BER=0.000000 (sd 0.000000)  FER=0.0000
+A  MLSE D=1                 lat=   1  SNR=20  BER=0.000000 (sd 0.000000)  FER=0.0000
+A  MLSE D=2                 lat=   2  SNR= 0  BER=0.376111 (sd 0.002521)  FER=1.0000
+A  MLSE D=2                 lat=   2  SNR= 4  BER=0.144711 (sd 0.003069)  FER=1.0000
+A  MLSE D=2                 lat=   2  SNR= 8  BER=0.010444 (sd 0.001188)  FER=0.5978
+A  MLSE D=2                 lat=   2  SNR=12  BER=0.000033 (sd 0.000047)  FER=0.0022
+A  MLSE D=2                 lat=   2  SNR=16  BER=0.000000 (sd 0.000000)  FER=0.0000
+A  MLSE D=2                 lat=   2  SNR=20  BER=0.000000 (sd 0.000000)  FER=0.0000
+A  MLSE D=3                 lat=   3  SNR= 0  BER=0.371611 (sd 0.003085)  FER=1.0000
+A  MLSE D=3                 lat=   3  SNR= 4  BER=0.139733 (sd 0.002604)  FER=1.0000
+A  MLSE D=3                 lat=   3  SNR= 8  BER=0.009700 (sd 0.000712)  FER=0.5400
+A  MLSE D=3                 lat=   3  SNR=12  BER=0.000033 (sd 0.000047)  FER=0.0022
+A  MLSE D=3                 lat=   3  SNR=16  BER=0.000000 (sd 0.000000)  FER=0.0000
+A  MLSE D=3                 lat=   3  SNR=20  BER=0.000000 (sd 0.000000)  FER=0.0000
+A  MLSE D=5                 lat=   5  SNR= 0  BER=0.370033 (sd 0.005322)  FER=1.0000
+A  MLSE D=5                 lat=   5  SNR= 4  BER=0.136022 (sd 0.001867)  FER=1.0000
+A  MLSE D=5                 lat=   5  SNR= 8  BER=0.009889 (sd 0.001089)  FER=0.5711
+A  MLSE D=5                 lat=   5  SNR=12  BER=0.000033 (sd 0.000047)  FER=0.0022
+A  MLSE D=5                 lat=   5  SNR=16  BER=0.000000 (sd 0.000000)  FER=0.0000
+A  MLSE D=5                 lat=   5  SNR=20  BER=0.000000 (sd 0.000000)  FER=0.0000
+A  MLSE D=15                lat=  15  SNR= 0  BER=0.370022 (sd 0.004992)  FER=1.0000
+A  MLSE D=15                lat=  15  SNR= 4  BER=0.136311 (sd 0.001367)  FER=1.0000
+A  MLSE D=15                lat=  15  SNR= 8  BER=0.009956 (sd 0.000980)  FER=0.5756
+A  MLSE D=15                lat=  15  SNR=12  BER=0.000033 (sd 0.000047)  FER=0.0022
+A  MLSE D=15                lat=  15  SNR=16  BER=0.000000 (sd 0.000000)  FER=0.0000
+A  MLSE D=15                lat=  15  SNR=20  BER=0.000000 (sd 0.000000)  FER=0.0000
+A  block DF                 lat= 202  SNR= 0  BER=0.351800 (sd 0.003068)  FER=1.0000
+A  block DF                 lat= 202  SNR= 4  BER=0.222578 (sd 0.004647)  FER=1.0000
+A  block DF                 lat= 202  SNR= 8  BER=0.102556 (sd 0.002052)  FER=0.9978
+A  block DF                 lat= 202  SNR=12  BER=0.041144 (sd 0.003176)  FER=0.8667
+A  block DF                 lat= 202  SNR=16  BER=0.020000 (sd 0.001701)  FER=0.5244
+A  block DF                 lat= 202  SNR=20  BER=0.010411 (sd 0.001673)  FER=0.2733
+A  block DF + MLSE          lat= 202  SNR= 0  BER=0.298522 (sd 0.002125)  FER=1.0000
+A  block DF + MLSE          lat= 202  SNR= 4  BER=0.111300 (sd 0.002619)  FER=1.0000
+A  block DF + MLSE          lat= 202  SNR= 8  BER=0.008611 (sd 0.000675)  FER=0.5111
+A  block DF + MLSE          lat= 202  SNR=12  BER=0.000033 (sd 0.000047)  FER=0.0022
+A  block DF + MLSE          lat= 202  SNR=16  BER=0.000000 (sd 0.000000)  FER=0.0000
+A  block DF + MLSE          lat= 202  SNR=20  BER=0.000000 (sd 0.000000)  FER=0.0000
+B  L=3  MLP w=11       lat=   5 states=None  BER=0.000189  0.211 us/sym
+B  L=3  MLSE D=15      lat=  15 states=16  BER=0.000033  14.014 us/sym
+B  L=3  block DF       lat= 202 states=None  BER=0.041144  13.716 us/sym
+B  L=5  MLP w=11       lat=   5 states=None  BER=0.000278  0.215 us/sym
+B  L=5  MLSE D=25      lat=  25 states=256  BER=0.000067  29.214 us/sym
+B  L=5  block DF       lat= 202 states=None  BER=0.066711  11.353 us/sym
+B  L=7  MLP w=11       lat=   5 states=None  BER=0.000256  0.215 us/sym
+B  L=7  MLSE D=35      lat=  35 states=4096  BER=0.000011  236.815 us/sym
+B  L=7  block DF       lat= 202 states=None  BER=0.080122  14.072 us/sym
+
+wrote results/joint_latency_memory.json
