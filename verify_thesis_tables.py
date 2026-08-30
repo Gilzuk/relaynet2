@@ -112,6 +112,9 @@ def clean_cell(c):
     c = c.replace("\\(", "").replace("\\)", "").replace("$", "")
     c = c.replace("\\textasciitilde", "~").replace("\\%", "%")
     c = c.replace("{", "").replace("}", "").strip()
+    # LaTeX writes thousands as 2{,}048; the braces are gone by now, and a
+    # bare comma between digits would truncate the number at its first group.
+    c = re.sub(r"(?<=\d),(?=\d{3}\b)", "", c)
     if c in {"", ":", "---", "--", "~", "-"}:
         return c, None
     # "<5e-5" / "< 5e-5" -> treat as a ceiling; keep raw, value = the bound
@@ -539,6 +542,78 @@ def check_table37(tex, rep):
         src = float(np.mean(d["per_trial"][snr][key]))
         pub_text, pub_val = row[2]
         rep.cell(T, f"{snr}dB/{key}", pub_text, pub_val, src)
+    rep.finish_table(T, before)
+
+
+def check_joint_latency(tex, rep):
+    """Latency/cost table (tbl:joint-latency) vs joint_latency_memory.json.
+
+    Columns: relay | delay (symbols) | MACs/symbol | BER at 12 dB. The BER
+    column and the delay column both come from the measurement; the MAC
+    column is arithmetic from the architecture and is checked against the
+    same formulas unified_latency_axis.py uses, so the two cannot drift.
+    """
+    T = "tbl:joint-latency"; before = rep.checked
+    body = tabular_body(tex, T)
+    if body is None:
+        return rep.skip(T, "label not found in tex")
+    d = json.load(open(os.path.join(ROOT, "results/joint_latency_memory.json")))
+    rows = {r["scheme"]: r for r in d["part_a"]["rows"]}
+    snr_i = d["part_a"]["rows"][0]["snr_db"].index(12)
+
+    label_map = {
+        "AF": "AF", "DF-hard (symbol-wise)": "DF-hard (symbol-wise)",
+        "MLP $W=5$": "MLP w=5", "MLP $W=11$": "MLP w=11", "MLP $W=21$": "MLP w=21",
+        "MLSE $D=2$": "MLSE D=2", "MLSE $D=3$": "MLSE D=3", "MLSE $D=15$": "MLSE D=15",
+        "block DF": "block DF", "block DF $+$ MLSE": "block DF + MLSE",
+    }
+    macs = {"AF": 2, "DF-hard (symbol-wise)": 0,
+            "MLP w=5": 2*5*8 + 4*8, "MLP w=11": 2*11*8 + 4*8, "MLP w=21": 2*21*8 + 4*8,
+            "MLSE D=2": 2*4**3, "MLSE D=3": 2*4**3, "MLSE D=15": 2*4**3,
+            "block DF": 16, "block DF + MLSE": 16 + 2*4**3}
+
+    for row in data_rows(body):
+        if not row:
+            continue
+        key = label_map.get(row[0][0].strip())
+        if key is None or key not in rows or len(row) < 4:
+            continue
+        src = rows[key]
+        rep.cell(T, f"{key}/delay", row[1][0], row[1][1], src["latency_symbols"])
+        rep.cell(T, f"{key}/macs", row[2][0], row[2][1], macs[key])
+        rep.cell(T, f"{key}/ber12", row[3][0], row[3][1], src["ber"][snr_i])
+    rep.finish_table(T, before)
+
+
+def check_joint_memory(tex, rep):
+    """Cost-against-memory table (tbl:joint-memory) vs joint_latency_memory.json.
+
+    Columns: L | MLSE states | MLSE MACs | relay MACs | MLSE BER | relay BER.
+    Rows for L = 4 and 6 carry no measured BER (they exist to show the growth
+    rate) and their BER cells are dashes, which parse to None and are skipped.
+    """
+    T = "tbl:joint-memory"; before = rep.checked
+    body = tabular_body(tex, T)
+    if body is None:
+        return rep.skip(T, "label not found in tex")
+    d = json.load(open(os.path.join(ROOT, "results/joint_latency_memory.json")))
+    mlse, relay = {}, {}
+    for r in d["part_b"]["rows"]:
+        (mlse if r["scheme"].startswith("MLSE") else
+         relay if r["scheme"].startswith("MLP") else {}).setdefault(
+            r["channel_taps_L"], r.get("ber"))
+
+    for row in data_rows(body):
+        if not row or row[0][1] is None:
+            continue
+        L = int(row[0][1])
+        rep.cell(T, f"L={L}/states", row[1][0], row[1][1], 4 ** (L - 1))
+        rep.cell(T, f"L={L}/mlse_macs", row[2][0], row[2][1], 2 * 4 ** L)
+        rep.cell(T, f"L={L}/relay_macs", row[3][0], row[3][1], 2 * 11 * 8 + 4 * 8)
+        if len(row) > 4 and row[4][1] is not None and L in mlse:
+            rep.cell(T, f"L={L}/mlse_ber", row[4][0], row[4][1], mlse[L])
+        if len(row) > 5 and row[5][1] is not None and L in relay:
+            rep.cell(T, f"L={L}/relay_ber", row[5][0], row[5][1], relay[L])
     rep.finish_table(T, before)
 
 
