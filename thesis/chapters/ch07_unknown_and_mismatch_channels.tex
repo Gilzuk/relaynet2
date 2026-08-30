@@ -233,6 +233,54 @@ This is layer~4, the bottom of the ladder. Section~\ref{sec:partial-posterior} s
 \caption[Posterior-free (blind) composite channel]{Posterior-free composite channel (no pilots, no channel prior, fresh realization per block; mean over 50 channel draws, 20{,}000 bits/point, 95\% CI bands). The corrected CMA (blind classical) tracks the family-trained MLP closely, the MLP holding a small consistent margin; decision-directed blind MLSE is unstable (non-monotonic tail, CI band several times wider) because it bootstraps the channel from its own decisions; plain differential detection floors. Without a posterior, learning only narrowly outperforms the best blind classical equalizer, but does so with one-shot, stable inference and no online adaptation}\label{fig:figE6blind}
 \end{figure}
 
+\subsection{A Complexity-Matched Classical Baseline: MMSE Linear Equalization}\label{sec:mmse-baseline}
+
+The comparisons above set the learned relay against two classical relays, and neither is matched to it in cost. Symbol-wise DF is memoryless and cannot undo intersymbol interference at any transmit power, so outperforming it establishes only that the relay uses its window. Viterbi MLSE is the optimal sequence detector but costs $O(M^{L})$ per symbol in the channel memory, which is precisely the expense Section~\ref{sec:complexity-viterbi-mlp} invokes on the learned relay's behalf. The case between them was not tested: an $N$-tap MMSE linear equalizer is in the same complexity class as an $N$-tap learned relay, both being a windowed linear operation, and it is the classical remedy an engineer would reach for before a trellis. If it recovered most of what the learned relay recovers, the contribution of Chapter~\ref{sec:unknown-channels} would be a narrower claim about a nonlinearity rather than about learned processing.
+
+It does not. Table~\ref{tbl:mmse-baseline} gives the equalizer's SNR penalty against MLSE for equalizer lengths from 3 to 11 taps, measured on the same two-hop chains, with the exact channel taps supplied and the weights redesigned at every SNR point --- the same genie CSI granted to MLSE, and a longer window than the learned relay is given.
+
+\begin{table}[htbp]
+\centering
+\caption[MMSE linear equalization against MLSE]{SNR penalty against Viterbi MLSE for an MMSE linear equalizer of $N$ taps, with the best learned relay on the same channel for comparison. Negative values beat MLSE. The reader should observe that the learned relay leads the equalizer by $1.75$ to $2.4$~dB on every channel, despite the equalizer being given exact channel knowledge, per-SNR weight redesign, and up to $11$ taps against the relay's window of $7$}\label{tbl:mmse-baseline}
+\begin{tabular}{lrrrrr}
+\toprule
+Channel & 3 taps & 5 taps & 7 taps & 11 taps & Learned relay \\
+\midrule
+ISI (BPSK)      & $+6.58$ & $+4.40$ & $+4.23$ & $+4.04$ & $\mathbf{+1.67}$ \\
+ISI (QPSK)      & $+7.80$ & $+9.11$ & $+5.00$ & $+4.78$ & $\mathbf{+3.03}$ \\
+Composite       & $-0.33$ & $-0.37$ & $-0.37$ & $-0.44$ & $\mathbf{-2.26}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Two readings follow. The learned relay's advantage over classical processing on channels with memory is not an artifact of comparing against a detector that was never equipped for the job: against the strongest classical scheme of matched cost it still leads by $1.75$ to $2.4$~dB. And on the composite channel both the equalizer and the relay beat MLSE, which is expected rather than anomalous, since a fixed-tap trellis is mismatched to that channel's amplifier nonlinearity and phase term while neither of the other two detectors assumes a purely linear channel. One non-monotonicity is left unexplained: on the complex ISI channel the five-tap equalizer ($+9.11$~dB) is worse than the three-tap ($+7.80$~dB) before improving again at seven and eleven taps. The conclusion rests on the seven- and eleven-tap points, where the trend is orderly.
+
+\subsection{Does a Sequence Architecture Help Where a Window Does?}\label{sec:sequence-on-memory}
+
+Chapter~\ref{sec:experiments} finds that Transformer, Mamba-S6 and Mamba-2 buy nothing over a feedforward relay on the canonical channel, and attributes this to the channel rather than to the architectures: a memoryless channel offers no temporal structure for their inductive bias to exploit. That is a prediction about what would happen given such structure, and until now it was untested here, no sequence model having been evaluated anywhere in this chapter. The minimum-size study sharpens the prediction, finding the relay's \emph{window} to be the binding resource on channels with memory, worth $8$ to $11$~dB between window~1 and window~7 while width and depth buy almost nothing. A window is a blunt way of granting a feedforward network temporal context; sequence models are built for it.
+
+The prediction fails. Table~\ref{tbl:seq-on-memory} compares the four architectures at an equal budget of approximately $3{,}000$ parameters, each trained on the channel under test rather than on a memoryless surrogate, with identical hyperparameters and three initializations apiece.
+
+\begin{table}[htbp]
+\centering
+\caption[Sequence architectures on channels with memory]{SNR penalty against Viterbi MLSE at an equal budget of $\approx$3{,}000 parameters, best of three initializations, with the across-initialization spread in brackets. Negative values beat MLSE. The reader should observe that the feedforward relay leads every sequence architecture on every channel, and that the two Mamba variants --- the most reproducible architectures measured on the canonical channel, at $0.019$ and $0.041$~dB --- become the least reproducible here}\label{tbl:seq-on-memory}
+\begin{tabular}{lrrrr}
+\toprule
+Channel & MLP-3K & Transformer-3K & Mamba-S6-3K & Mamba2-3K \\
+\midrule
+ISI (BPSK) & $\mathbf{+1.97}$ (0.39) & $+3.52$ (0.33) & $+4.30$ (1.15) & $+4.55$ (0.14) \\
+ISI (QPSK) & $\mathbf{+2.58}$ (0.07) & $+5.96$ (0.45) & $+5.72$ (1.33) & $+4.69$ (2.12) \\
+Composite  & $\mathbf{-2.08}$ (0.03) & $-1.76$ (0.03) & $-1.56$ (0.08) & $-1.60$ (0.06) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The feedforward relay leads on all three channels, by $1.55$ and $2.11$~dB on the two ISI channels and by $0.32$~dB on the composite. The conclusion is therefore the opposite of the natural one, and it is a positive statement rather than a null result: channel memory raises the size floor without calling for a sequence architecture. What a relay needs on such a channel is sufficient temporal context, and a fixed window supplies it more cheaply than a learned sequence mechanism, both in parameters at equal accuracy and in training time, which ran $35$ to $66$~seconds per initialization for the feedforward relay against $217$ to $609$~seconds for the sequence models.
+
+A second observation was not anticipated. The sequence models' reproducibility inverts. On the canonical channel Mamba-2 and Mamba-S6 are the two most stable architectures measured across initializations, at $0.019$ and $0.041$~dB; on the complex ISI channel the same architectures spread $2.115$ and $1.333$~dB, while the feedforward relay stays inside $0.07$~dB throughout. They are not merely worse on channels with memory but substantially less predictable there, which compounds the case against them for this task.
+
+One limitation is carried. All four architectures receive identical hyperparameters, matching the equal-budget protocol of Section~\ref{sec:parameter-normalization-complexity-trade-off}; no per-architecture tuning was attempted, and a tuned sequence model might close part of the gap.
+
 \subsection{Complexity: The Cost Side of the Trade-off}\label{sec:complexity-viterbi-mlp}
 
 Across the unknown-channel studies the pilot-aided Viterbi receiver, where it applies, holds a small BER edge over the learned relay. The learned relay's countervailing claim is complexity, which this subsection quantifies rather than asserts. Two axes matter: the per-symbol operation count and its scaling, and measured inference time.
