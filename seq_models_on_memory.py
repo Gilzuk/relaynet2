@@ -160,7 +160,8 @@ def main():
                                              else float("nan")}
             print(f"    {aname:<16} dB vs {bn}: "
                   + "  ".join(f"{v:+6.2f}" for v in dbs)
-                  + f"   best {min(dbs):+.2f}  spread {max(dbs)-min(dbs):.3f}"
+                  + (f"   best {min(dbs):+.2f}  spread {max(dbs)-min(dbs):.3f}"
+                     if dbs else "   no runs reached target")
                   + f"   [{time.time()-t0:.0f}s]", flush=True)
         out["channels"][name] = rec
         with open("results/seq_models_on_memory.json", "w") as fh:
@@ -168,9 +169,20 @@ def main():
 
     print("\n" + "=" * 74)
     for name, rec in out["channels"].items():
-        best = min(rec["archs"].items(), key=lambda kv: kv[1]["best_db"])
+        # filter to architectures that have a finite best_db
+        finite = {k: v for k, v in rec["archs"].items()
+                  if v["best_db"] == v["best_db"]}   # NaN != NaN
+        if not finite:
+            print(f"  {name:<14} no architecture reached all targets")
+            continue
+        best = min(finite.items(), key=lambda kv: kv[1]["best_db"])
         mlp = rec["archs"]["MLP-3K"]["best_db"]
-        seq = min(v["best_db"] for k, v in rec["archs"].items() if k != "MLP-3K")
+        seq_vals = [v["best_db"] for k, v in finite.items() if k != "MLP-3K"]
+        if not seq_vals:
+            print(f"  {name:<14} best {best[0]} at {best[1]['best_db']:+.2f} dB  |  "
+                  f"MLP {mlp:+.2f} vs best sequence n/a")
+            continue
+        seq = min(seq_vals)
         verdict = ("sequence wins" if seq < mlp - 0.05 else
                    "feedforward wins" if mlp < seq - 0.05 else "tie")
         print(f"  {name:<14} best {best[0]} at {best[1]['best_db']:+.2f} dB  |  "

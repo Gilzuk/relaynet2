@@ -60,17 +60,18 @@ class MMSELinearEqualizerRelay(Relay):
     """
 
     def __init__(self, channel_taps, num_taps=7, snr_db=None, hard=False,
-                 target_power=1.0):
+                 target_power=1.0, sig_x2=1.0):
         self.h = np.asarray(channel_taps, dtype=float).ravel()
         self.N = int(num_taps)
         self.snr_db = snr_db
         self.hard = bool(hard)
         self.target_power = target_power
+        self.sig_x2 = float(sig_x2)   # per-axis symbol power (BPSK: 1.0, QPSK: 0.5)
         self.handles_complex_natively = False   # applied per axis, like the MLPs
         self._cache = {}
 
     def _weights(self, snr_db):
-        key = round(float(snr_db), 6)
+        key = (round(float(snr_db), 6), self.sig_x2)
         if key in self._cache:
             return self._cache[key]
         h, N, L = self.h, self.N, len(self.h)
@@ -78,7 +79,11 @@ class MMSELinearEqualizerRelay(Relay):
         H = np.zeros((N, N + L - 1))
         for i in range(N):
             H[i, i:i + L] = h
-        sig_x2 = 1.0
+        sig_x2 = self.sig_x2
+        # Noise variance follows the thesis convention gamma = 10^(snr_db/10),
+        # sigma^2 = 1/(2*gamma) per real dimension -- matching ISIChannel and
+        # the rest of the codebase. sig_x2 is independent: BPSK symbols are
+        # ±1 (power 1.0), QPSK per-axis are ±1/√2 (power 0.5).
         sig_v2 = 1.0 / (2.0 * 10 ** (snr_db / 10.0))   # per real dimension
         R = sig_x2 * (H @ H.T) + sig_v2 * np.eye(N)
         Rinv = np.linalg.inv(R)
@@ -95,9 +100,17 @@ class MMSELinearEqualizerRelay(Relay):
     def process(self, received_signal):
         y = received_signal
         if isinstance(y, tuple):
-            y = y[0]
+            y, snr_hint = y[0], (y[1] if len(y) > 1 else None)
+        else:
+            snr_hint = None
         y = np.asarray(y, dtype=float).ravel()
-        snr = self.snr_db if self.snr_db is not None else self._runtime_snr
+        snr = self.snr_db if self.snr_db is not None else snr_hint
+        if snr is None:
+            raise ValueError(
+                "MMSELinearEqualizerRelay requires an explicit SNR. "
+                "Pass snr_db= at construction or supply a (signal, snr_db) "
+                "tuple from the runner."
+            )
         w, d = self._weights(snr)
         # sliding inner product; pad so the output aligns with the input
         yp = np.concatenate([np.zeros(self.N - 1), y])
@@ -115,10 +128,6 @@ class MMSELinearEqualizerRelay(Relay):
             out[out == 0] = 1.0
         p = np.sqrt(np.mean(out ** 2)) + 1e-12
         return out / p * np.sqrt(self.target_power)
-
-    # the runner does not pass SNR to process(), so it is set per evaluation
-    _runtime_snr = 10.0
-
 
 def _selftest():
     """On a known 3-tap channel the equalizer must beat a memoryless slicer,
