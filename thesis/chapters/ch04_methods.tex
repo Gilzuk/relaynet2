@@ -347,6 +347,8 @@ Mamba-S6-3K & 3,027 & Reduced d\_model (32$\to$16), d\_state (16$\to$6), layers 
 Mamba-2-SSD-3K & 3,004 & Reduced d\_model (32$\to$15), d\_state (16$\to$6), layers (2$\to$1) \\
 \end{longtable}
 
+All seven configurations use a window size of 11 (versus 5 for the original MLP/Hybrid and 7 for the original VAE/cGAN; the original sequence models already used 11), and every parameter count lands within $\pm1.2\%$ of the 3{,}000 target.
+
 \textbf{Parameter counting convention.} All learnable parameters are counted, including biases, normalization parameters (LayerNorm gain/bias), and projection matrices. Non-learnable buffers (e.g., positional encoding tables, fixed \(\mathbf{A}\) matrices) are excluded. The counts are verified programmatically via \texttt{sum(p.numel()\ for\ p\ in\ model.parameters()\ if\ p.requires\_grad)}.
 
 \textbf{Unified input window.} All 3K models use a window size of 11 (vs.~5 for original MLP/Hybrid, and 7 for original VAE/cGAN), providing a common input context. This ensures that differences in performance reflect architectural inductive biases rather than differences in the amount of input information available.
