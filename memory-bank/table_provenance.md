@@ -16,6 +16,17 @@ rests on. Do not hand-edit; re-run the script.
 | provenance | ok |
 | MLP_HIDDEN | `8` |
 
+## `eq:slicer-floor`
+
+| field | value |
+|---|---|
+| experiment | ISI slicer floor, closed form |
+| reproduce | `python isi_slicer_floor.py` |
+| data file | `results/isi_slicer_floor.json` |
+| data commit | `640ee77` 2026-08-31 (Claude) |
+| provenance | ok |
+| SNRS | `list(range(0, 21, 2))` |
+
 ## `fig:e6-partial`
 
 | field | value |
@@ -113,6 +124,17 @@ rests on. Do not hand-edit; re-run the script.
 | provenance | ok |
 | SEEDS | `list(range(8))` |
 | SNRS | `[0, 4, 8, 12, 16, 20]` |
+
+## `prose: closed-form slicer BER table`
+
+| field | value |
+|---|---|
+| experiment | ISI slicer floor, closed form |
+| reproduce | `python isi_slicer_floor.py` |
+| data file | `results/isi_slicer_floor.json` |
+| data commit | `640ee77` 2026-08-31 (Claude) |
+| provenance | ok |
+| SNRS | `list(range(0, 21, 2))` |
 
 ## `prose: coded row`
 
@@ -215,8 +237,8 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | MMSE complexity-matched baseline |
 | reproduce | `python mmse_equalizer.py` |
 | data file | `results/mmse_equalizer.json` |
-| data commit | `d180f61` 2026-08-30 (Claude) |
-| provenance | **STALE (data older than script)** |
+| data commit | `b1ea325` 2026-08-31 (Claude) |
+| provenance | ok |
 
 ## `tbl:seed-spread`
 
