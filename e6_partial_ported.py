@@ -22,6 +22,7 @@ Panel (b): block-length sweep {40,80,160,320,1000} with a FIXED 10-pilot
   description, following the same channel/relay logic as panel (a).
 """
 
+import os
 import numpy as np
 from relaynet.channels import RandomISICompositeChannel, ComplexISIRayleighChannel
 from relaynet.relays import MLPRelay
@@ -311,7 +312,10 @@ def main():
               f"overhead={100*overhead:.2f}%  |  CMA-blind BER={cmu:.4f} +/- {cci:.4f} "
               f"(MLP overhead = 0% always)")
 
-    output_path = '/tmp/e6_partial_ported_results.npy'
+    output_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                               'e6_unknown_channel_results', 'e6_partial_ported_results.npy')
+    # /tmp does not persist between sessions (CLAUDE.md); writing straight
+    # into the repo is what keeps the committed data and the script in step.
     np.save(output_path, {
         'op_snr': OP_SNR, 'pilots': PILOTS, 'panel_a': panel_a,
         'mlp_ref': mlp_ref, 'cma_ref': cma_ref,

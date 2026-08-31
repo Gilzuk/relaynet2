@@ -8,7 +8,18 @@ to QPSK, using the new ViterbiMLSEQPSKRelay (4-symbol Gray-coded alphabet,
 DF-Soft relays compared in e6_sim_enhanced_multimod.py.
 """
 
+import os
 import numpy as np
+
+# Results are written into the repository, never /tmp: a container reset
+# discards /tmp, and results that reach the repo only by manual copy drift
+# out of step with the scripts that made them (CLAUDE.md).
+_HERE = os.path.dirname(os.path.abspath(__file__))
+_OUT_NPY = os.path.join(_HERE, 'e6_unknown_channel_results')
+_OUT_FIG = os.path.join(_HERE, 'results')
+os.makedirs(_OUT_NPY, exist_ok=True)
+os.makedirs(_OUT_FIG, exist_ok=True)
+
 import matplotlib.pyplot as plt
 from relaynet.relays import AmplifyAndForwardRelay, ViterbiMLSEQPSKRelay
 from relaynet.channels import ComplexISIChannel, ComplexAWGNChannel
@@ -98,10 +109,10 @@ def plot_results(summary):
     ax.set_ylim([1e-5, 0.6])
 
     plt.tight_layout()
-    plt.savefig('/tmp/e6_viterbi_qpsk_comparison.png', dpi=150, bbox_inches='tight')
+    plt.savefig(os.path.join(_OUT_FIG, 'e6_viterbi_qpsk_comparison.png'), dpi=150, bbox_inches='tight')
     print("\n  Saved: /tmp/e6_viterbi_qpsk_comparison.png")
 
-    np.save('/tmp/e6_viterbi_qpsk_results.npy', {'snrs': SNRS, 'summary': summary}, allow_pickle=True)
+    np.save(os.path.join(_OUT_NPY, 'e6_viterbi_qpsk_results.npy'), {'snrs': SNRS, 'summary': summary}, allow_pickle=True)
     print("  Saved: /tmp/e6_viterbi_qpsk_results.npy")
 
 

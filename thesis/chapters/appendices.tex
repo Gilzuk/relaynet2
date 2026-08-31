@@ -267,3 +267,18 @@ Transformer-3K  & 3{,}007 & $+2.039$, $+1.147$, $+1.133$ & \textbf{0.906} \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+The Transformer row of Table~\ref{tbl:seed-spread-3k} is a single failing initialization rather than a broadly noisy architecture, and the two figures below are the evidence for that reading. Figure~\ref{fig:transformer-seed-curves} shows all eight runs: seven are indistinguishable at this scale and one separates progressively as SNR rises, which is why a three-seed sample had roughly a one-in-three chance of missing it entirely. Figure~\ref{fig:transformer-loss-penalty} shows why the failure is detectable at training time without reference to BER --- the failing run's final training loss is eleven times the median --- and, equally, why training loss is not a quality signal in the ordinary case.
+
+\begin{figure}[htbp]
+\centering
+\pandocbounded{\includegraphics[width=0.78\linewidth,height=0.34\textheight,keepaspectratio]{results/transformer_seed_ber_curves.png}}
+\caption[Transformer-3K across eight initializations]{Transformer-3K on the canonical channel across eight initializations, against symbol-wise DF. The reader should observe that the failing run is not offset by a constant: it tracks the others at $0$~dB and separates as SNR rises, so an evaluation confined to low SNR would not distinguish it from the seven that converge}\label{fig:transformer-seed-curves}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\pandocbounded{\includegraphics[width=0.78\linewidth,height=0.34\textheight,keepaspectratio]{results/transformer_loss_vs_penalty.png}}
+\caption[Training loss against SNR penalty]{Final training loss against SNR penalty for the eight Transformer initializations and the four-seed Mamba-S6 control. The correlation over all eight seeds is $r=+0.998$, but that figure is the outlier's leverage: among the seven runs that converge it is $r=-0.38$ ($p=0.41$), so loss identifies the failure and carries no information about relative quality once training has succeeded}\label{fig:transformer-loss-penalty}
+\end{figure}
+

@@ -25,6 +25,7 @@ is UNSTABLE (mid-SNR CI ~0.164 vs MLP's ~0.014) -- the instability itself is
 the finding, not a bug to fix.
 """
 
+import os
 import numpy as np
 from relaynet.channels import RandomISICompositeChannel, ComplexISIRayleighChannel
 from relaynet.relays import MLPRelay
@@ -246,7 +247,10 @@ def main():
         mu, ci = summary[name]
         print(f"    {name:>14}: {mu[mid_idx]:.4f} +/- {ci[mid_idx]:.4f}")
 
-    output_path = '/tmp/e6_blind_ported_results.npy'
+    output_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                               'e6_unknown_channel_results', 'e6_blind_ported_results.npy')
+    # /tmp does not persist between sessions (CLAUDE.md); writing straight
+    # into the repo is what keeps the committed data and the script in step.
     np.save(output_path, {'snrs': SNRS, 'summary': summary,
                           'n_train': N_TRAIN, 'n_trials': N_TRIALS,
                           'n_bits': N_BITS}, allow_pickle=True)

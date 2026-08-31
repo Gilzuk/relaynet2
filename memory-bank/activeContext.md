@@ -761,3 +761,55 @@ chapter-to-chapter contradiction in the compiled document.
 
 Verification: `latexmk -xelatex` clean, 128 pages, 0 undefined references,
 0 undefined citations. `thesis/main.pdf` rebuilt in the same commit.
+
+---
+
+## Session: joint latency/memory measurement and the two-objective restructure
+
+**Branch:** `claude/restructure-main-goal` (PR #52). PRs #50 and #51 merged during
+this session.
+
+### What was measured
+`joint_latency_memory.py` puts every relay inside one identical coded chain
+(rate-1/2 K=3, QPSK, 200 info bits/frame, destination-side soft Viterbi) so the
+comparison is between relays alone, and labels each with its structural decision
+delay. `unified_latency_axis.py` costs the same relays in MACs per symbol.
+`joint_memory_precision.py` re-runs the memory sweep at 1.5M info bits per point
+with Wilson intervals.
+
+### Results that changed the thesis
+- Bounded-traceback MLSE saturates at **D=3** on the 3-tap channel. Latency does
+  not separate the detectors: that is fewer symbols than a window-11 relay's
+  five, so a budget tight enough to exclude MLSE excludes the learned relay first.
+- Block DF's frame buffering buys **no** accuracy on a memory channel.
+- The crossover is arithmetic and closed-form: MLSE costs `2M^L` MACs/symbol
+  against the relay's `2WH+4H`, equal at **L* = 3.35 taps**. Below it the learned
+  relay is worse on cost, delay and accuracy at once -- which means the 3-tap
+  channel used throughout Ch6 cannot support a cost argument against MLSE, and
+  the chapter now says so.
+- The accuracy ratio is **flat in L at 4.7-7.7**, not growing.
+
+### Two mistakes worth carrying forward
+1. **Page count was misread for most of the session.** `pdfinfo` counts front
+   matter; the guidelines number only the body in Arabic (offset 14 here). I
+   quoted 137/140/143 against a 120 limit when the real figure was ~6 over.
+   *Always* derive the printed count, never `pdfinfo`.
+2. **A published ratio rested on one bit error.** Part B ran at 90k info bits,
+   putting the L=7 MLSE cell at a single error; "a factor of 23" was quoted from
+   it and reached Ch8 and the PR body. Caught by code review, not by the
+   verifier, because neither new table carried CIs. Any BER cell below ~1e-4
+   needs its error *count* checked before a ratio is built on it.
+
+### Verifier
+`verify_thesis_tables.py` gained `check_joint_latency` and `check_joint_memory`
+(51 cells). Wiring them up exposed three defects in the verifier itself: thousands
+separators (`2{,}048`) truncated at the first group; scientific notation
+(`3.20\times10^{-5}`) read as its mantissa; and my own first version keyed labels
+on the pre-`clean_cell` form, silently checking 3 of 10 rows while reporting OK.
+All fixed; the notation fix also cleared a pre-existing flag.
+
+### State
+121 pages, build clean, 0 undefined references. Verifier: 451 cells, 5 flags, all
+pre-existing (three AF rows in `tbl:tableE6` differing by ~0.01 BER -- a genuine
+stale-data issue predating this branch and still open -- and two seventh-decimal
+roundings in `tbl:table44`). Tests: 169 passed.

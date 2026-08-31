@@ -115,10 +115,19 @@ def clean_cell(c):
     # LaTeX writes thousands as 2{,}048; the braces are gone by now, and a
     # bare comma between digits would truncate the number at its first group.
     c = re.sub(r"(?<=\d),(?=\d{3}\b)", "", c)
+    # A trailing \tiny[lo, hi] confidence annotation is commentary on the cell,
+    # not a second number; drop it before the value is read.
+    c = re.sub(r"\\tiny\s*\[[^\]]*\]", "", c).strip()
     if c in {"", ":", "---", "--", "~", "-"}:
         return c, None
     # "<5e-5" / "< 5e-5" -> treat as a ceiling; keep raw, value = the bound
     lt = "<" in c
+    # Scientific notation is written a\times10^{b}; braces are already gone, so
+    # a bare _NUM search would stop at the mantissa and read 3.20 for 3.2e-5.
+    sci = re.match(r"^([+-]?\d+(?:\.\d+)?)\s*\\times\s*10\^\s*\(?(-?\d+)\)?", c)
+    if sci:
+        val = float(sci.group(1)) * 10.0 ** int(sci.group(2))
+        return c, ("<%g" % val if lt else val)
     m = _NUM.search(c)
     if not m:
         return c, None
@@ -157,8 +166,13 @@ def data_rows(body):
 # within Monte-Carlo noise, so these get an absolute MC tolerance on top of the
 # display-rounding tolerance. JSON-backed tables (deterministic transcriptions)
 # and analytical tables keep the tight rounding tolerance.
-STOCHASTIC_TABLES = {"tbl:tableE6": 0.010, "tbl:tableE6flat": 0.010,
-                     "tbl:tableE6qpsk": 0.010,
+# These slacks absorb Monte-Carlo noise between a published transcription and
+# the stored run. They must stay near the tables' own reported CIs (~0.001 for
+# the E6 tables); a slack an order of magnitude wider silently passes
+# transcription errors, which is how an 0.0088 discrepancy in tbl:tableE6flat
+# survived several review passes.
+STOCHASTIC_TABLES = {"tbl:tableE6": 0.002, "tbl:tableE6flat": 0.002,
+                     "tbl:tableE6qpsk": 0.002,
                      "tbl:table24": 0.002,
                      # Prose claims from the E6 blind/partial/composite studies.
                      # These are now transcribed from the committed .npy at
@@ -550,8 +564,10 @@ def check_joint_latency(tex, rep):
 
     Columns: relay | delay (symbols) | MACs/symbol | BER at 12 dB. The BER
     column and the delay column both come from the measurement; the MAC
-    column is arithmetic from the architecture and is checked against the
-    same formulas unified_latency_axis.py uses, so the two cannot drift.
+    column is arithmetic from the architecture rather than measured, so it is
+    checked against the MLSE and relay cost formulas restated below. Those
+    restate what unified_latency_axis.py computes; they are not imported from
+    it, so a change to the formulas has to be made in both places.
     """
     T = "tbl:joint-latency"; before = rep.checked
     body = tabular_body(tex, T)
@@ -588,19 +604,25 @@ def check_joint_latency(tex, rep):
 
 
 def check_joint_memory(tex, rep):
-    """Cost-against-memory table (tbl:joint-memory) vs joint_latency_memory.json.
+    """Cost-against-memory table (tbl:joint-memory).
 
-    Columns: L | MLSE states | MLSE MACs | relay MACs | MLSE BER | relay BER.
-    Rows for L = 4 and 6 carry no measured BER (they exist to show the growth
-    rate) and their BER cells are dashes, which parse to None and are skipped.
+    Arithmetic columns are derived and checked against the cost formulas; the
+    BER columns come from results/joint_memory_precision.json, the fifty-fold
+    longer re-run, not from joint_latency_memory.json -- the original sweep put
+    the L=7 MLSE cell at a single bit error and cannot support the published
+    figures. Rows for L = 4 and 6 carry no measured BER (they exist to show the
+    growth rate) and their BER cells are dashes, which parse to None.
     """
     T = "tbl:joint-memory"; before = rep.checked
     body = tabular_body(tex, T)
     if body is None:
         return rep.skip(T, "label not found in tex")
-    d = json.load(open(os.path.join(ROOT, "results/joint_latency_memory.json")))
+    src = os.path.join(ROOT, "results/joint_memory_precision.json")
+    if not os.path.exists(src):
+        return rep.skip(T, "results/joint_memory_precision.json not found")
+    d = json.load(open(src))
     mlse, relay = {}, {}
-    for r in d["part_b"]["rows"]:
+    for r in d["rows"]:
         (mlse if r["scheme"].startswith("MLSE") else
          relay if r["scheme"].startswith("MLP") else {}).setdefault(
             r["channel_taps_L"], r.get("ber"))

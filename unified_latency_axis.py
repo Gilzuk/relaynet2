@@ -77,13 +77,18 @@ def schemes():
         m, a, o = mlp_cost(W)
         rows.append((f"MLP w={W}", W // 2, m, a, o))
     for L in (3, 5, 7):
+        # The measured merge depth at L=3; 5L elsewhere, the usual rule of thumb.
         D = MEASURED_MERGE_DEPTH_L3 if L == 3 else 5 * L
         m, a, c = mlse_cost(L, D)
         rows.append((f"MLSE L={L} D={D}", D, m, a, c))
     m, a, o = block_df_cost()
     rows.append(("block DF", FRAME_SYMBOLS, m, a, o))
-    m2, a2, c2 = mlse_cost(3, 15)
-    rows.append(("block DF + MLSE L=3", FRAME_SYMBOLS, m + m2, a + a2, o + c2))
+    # Same equalizer as the standalone L=3 row, so the same traceback; and the
+    # equalizer decides symbol n after y[n+D] before the frame can be built,
+    # so the two delays add rather than overlap.
+    m2, a2, c2 = mlse_cost(3, MEASURED_MERGE_DEPTH_L3)
+    rows.append(("block DF + MLSE L=3", FRAME_SYMBOLS + MEASURED_MERGE_DEPTH_L3,
+                 m + m2, a + a2, o + c2))
     return rows
 
 

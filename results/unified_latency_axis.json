@@ -82,9 +82,9 @@
     },
     {
       "scheme": "block DF + MLSE L=3",
-      "delay_symbols": 202,
+      "delay_symbols": 205,
       "macs_per_symbol": 144,
-      "adds_per_symbol": 91,
+      "adds_per_symbol": 79,
       "other_ops_per_symbol": 48
     }
   ],

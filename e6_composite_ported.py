@@ -25,6 +25,7 @@ Viterbi-diff ~2dB ahead of MLP at low-mid SNR; MLP-large =~ MLP-169 (H3: more
 params don't help once the task is this hard).
 """
 
+import os
 import numpy as np
 from relaynet.relays import AmplifyAndForwardRelay, MLPRelay
 from relaynet.channels import CompositeChannel, AdaptiveRayleighChannel
@@ -248,7 +249,10 @@ def main():
         summary[name] = (mu, ci)
         print(f"  {name:>13}: " + " ".join(f"{m:7.4f}" for m in mu))
 
-    output_path = '/tmp/e6_composite_ported_results.npy'
+    output_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                               'e6_unknown_channel_results', 'e6_composite_ported_results.npy')
+    # /tmp does not persist between sessions (CLAUDE.md); writing straight
+    # into the repo is what keeps the committed data and the script in step.
     np.save(output_path, {'snrs': SNRS, 'summary': summary,
                           'n_train': N_TRAIN, 'n_trials': N_TRIALS,
                           'n_bits': N_BITS}, allow_pickle=True)
