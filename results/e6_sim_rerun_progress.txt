@@ -26,3 +26,39 @@ S1: unknown ISI -> AWGN
     SNR 16 dB  [first-error, up to 1000M bits]
       AF=2.07e-01 (100,000b, 20669 err), DF=2.30e-01 (100,000b, 22959 err), MLP=4.79e-08 (334,002,040b, 16 err)
     SNR 18 dB  [first-error, up to 10000M bits]
+      AF=2.21e-01 (100,000b, 22133 err), DF=2.39e-01 (100,000b, 23912 err), MLP=3.00e-10 (10,000,000,000b, 0 err) [no error in 10000M bits → 3/N bound]
+    SNR 20 dB  [first-error, up to 10000M bits]
+      AF=2.35e-01 (100,000b, 23494 err), DF=2.46e-01 (100,000b, 24570 err), MLP=3.00e-10 (10,000,000,000b, 0 err) [no error in 10000M bits → 3/N bound]
+  [Training instance 2/3]
+    SNR  0 dB [100k bits], trial 0: AF=0.2806, DF=0.2662, MLP=0.1978
+    SNR  2 dB [100k bits], trial 0: AF=0.2452, DF=0.2226, MLP=0.1273
+    SNR  4 dB [100k bits], trial 0: AF=0.2161, DF=0.1923, MLP=0.0642
+    SNR  6 dB [100k bits], trial 0: AF=0.1931, DF=0.1799, MLP=0.0242
+    SNR  8 dB [100k bits], trial 0: AF=0.1824, DF=0.1813, MLP=0.0064
+    SNR 10 dB [1000k bits], trial 0: AF=0.1782, DF=0.1886, MLP=0.0010
+    SNR 12 dB [10000k bits], trial 0: AF=0.1834, DF=0.2009, MLP=0.0001
+    SNR 14 dB [10000k bits], trial 0: AF=0.1942, DF=0.2149, MLP=0.0000
+  [Training instance 3/3]
+    SNR  0 dB [100k bits], trial 0: AF=0.2833, DF=0.2667, MLP=0.1996
+    SNR  2 dB [100k bits], trial 0: AF=0.2444, DF=0.2236, MLP=0.1254
+    SNR  4 dB [100k bits], trial 0: AF=0.2150, DF=0.1934, MLP=0.0656
+    SNR  6 dB [100k bits], trial 0: AF=0.1934, DF=0.1804, MLP=0.0246
+    SNR  8 dB [100k bits], trial 0: AF=0.1820, DF=0.1795, MLP=0.0073
+    SNR 10 dB [1000k bits], trial 0: AF=0.1782, DF=0.1888, MLP=0.0013
+    SNR 12 dB [10000k bits], trial 0: AF=0.1834, DF=0.2008, MLP=0.0001
+    SNR 14 dB [10000k bits], trial 0: AF=0.1940, DF=0.2147, MLP=0.0000
+    AF:  0.2808  0.2448  0.2150  0.1940  0.1817  0.1783  0.1834  0.1941  0.2067  0.2213  0.2349
+    DF:  0.2660  0.2227  0.1928  0.1802  0.1804  0.1887  0.2009  0.2147  0.2296  0.2391  0.2457
+   MLP:  0.2000  0.1257  0.0642  0.0245  0.0064  0.0011  0.0001  0.0000  0.0000  0.0000  0.0000
+  [checkpoint] 1/4 setups saved (partial)
+
+S2: unknown ISI -> Rayleigh
+  SNR (dB):       0       2       4       6       8      10      12      14      16      18      20
+  [Training instance 1/3]
+    SNR  0 dB [100k bits], trial 0: AF=0.3112, DF=0.3051, MLP=0.2466
+    SNR  2 dB [100k bits], trial 0: AF=0.2761, DF=0.2646, MLP=0.1827
+    SNR  4 dB [100k bits], trial 0: AF=0.2470, DF=0.2350, MLP=0.1208
+    SNR  6 dB [100k bits], trial 0: AF=0.2210, DF=0.2129, MLP=0.0713
+    SNR  8 dB [100k bits], trial 0: AF=0.2047, DF=0.2043, MLP=0.0413
+    SNR 10 dB [1000k bits], trial 0: AF=0.1949, DF=0.2038, MLP=0.0244
+    SNR 12 dB [10000k bits], trial 0: AF=0.1923, DF=0.2098, MLP=0.0152
