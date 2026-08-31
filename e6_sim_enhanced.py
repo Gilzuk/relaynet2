@@ -10,7 +10,18 @@ DF Decision Types:
   - Soft: No quantization (continuous signal pass-through)
 """
 
+import os
 import numpy as np
+
+# Results are written into the repository, never /tmp: a container reset
+# discards /tmp, and results that reach the repo only by manual copy drift
+# out of step with the scripts that made them (CLAUDE.md).
+_HERE = os.path.dirname(os.path.abspath(__file__))
+_OUT_NPY = os.path.join(_HERE, 'e6_unknown_channel_results')
+_OUT_FIG = os.path.join(_HERE, 'results')
+os.makedirs(_OUT_NPY, exist_ok=True)
+os.makedirs(_OUT_FIG, exist_ok=True)
+
 import matplotlib.pyplot as plt
 from relaynet.relays import (
     AmplifyAndForwardRelay,
@@ -246,11 +257,11 @@ def plot_results(results, relays, snrs):
     ax.set_ylim([1e-5, 0.5])
 
     plt.tight_layout()
-    plt.savefig('/tmp/e6_sim_enhanced_comparison.png', dpi=150, bbox_inches='tight')
+    plt.savefig(os.path.join(_OUT_FIG, 'e6_sim_enhanced_comparison.png'), dpi=150, bbox_inches='tight')
     print("  ✓ Saved: /tmp/e6_sim_enhanced_comparison.png")
 
     # Save data
-    np.save('/tmp/e6_sim_enhanced_results.npy',
+    np.save(os.path.join(_OUT_NPY, 'e6_sim_enhanced_results.npy'),
             {'snrs': snrs, 'results': results},
             allow_pickle=True)
     print("  ✓ Saved: /tmp/e6_sim_enhanced_results.npy")
