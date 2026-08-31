@@ -315,7 +315,7 @@ Every scheme is placed inside one identical coded system so that the comparison 
 
 Each relay is then labelled with the structural decision delay it forces, in symbols: zero for AF and symbol-wise DF; $\lfloor W/2 \rfloor$ for a relay of window $W$, which must wait for the later half of its own window; $D$ for an MLSE with traceback depth $D$; and the full frame, $202$ symbols, for block DF, which cannot begin until the last symbol of a codeword has arrived.
 
-\paragraph{Latency does not separate the detectors on a short-memory channel.} Table~\ref{tbl:joint-latency} gives the result at $L=3$. Bounded-traceback MLSE reaches its floor at $D=3$: the BER at $12$~dB is unchanged from $D=2$ through $D=15$, because the trellis survivors merge after three symbols and waiting longer revises no decision. Three symbols is \emph{less} delay than the window-11 relay's five, so a latency budget tight enough to exclude MLSE excludes the learned relay first. Block DF spends $202$ symbols and buys nothing with them: without an equalizer it expends the code's redundancy on the intersymbol interference rather than on the noise, and with one it merely reproduces MLSE's number at forty-three times the delay, since the equalizer's own decision delay precedes the frame it must then buffer.
+\paragraph{Latency does not separate the detectors on a short-memory channel.} Table~\ref{tbl:joint-latency} gives the result at $L=3$. Bounded-traceback MLSE reaches its floor at $D=3$: the BER at $12$~dB is unchanged from $D=2$ through $D=15$, because the trellis survivors merge after three symbols and waiting longer revises no decision. Three symbols is \emph{less} delay than the window-11 relay's five, so a latency budget tight enough to exclude MLSE excludes the learned relay first. Block DF spends $202$ symbols and buys nothing with them: without an equalizer it expends the code's redundancy on the intersymbol interference rather than on the noise, and with one it merely reproduces MLSE's number at $205$ symbols of delay against that equalizer's own three, the frame it must buffer accounting for every symbol of the difference.
 
 \begin{table}[htbp]
 \centering
@@ -333,7 +333,7 @@ MLSE $D=2$            & $2$   & $128$ & $\mathbf{0.000033}$ \\
 MLSE $D=3$            & $3$   & $128$ & $\mathbf{0.000033}$ \\
 MLSE $D=15$           & $15$  & $128$ & $\mathbf{0.000033}$ \\
 block DF              & $202$ & $16$  & $0.0411$ \\
-block DF $+$ MLSE     & $217$ & $144$ & $0.000033$ \\
+block DF $+$ MLSE     & $205$ & $144$ & $0.000033$ \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -349,21 +349,21 @@ for the window-11, eight-unit relay used here ($2.90$ taps at $W=5$, $3.76$ at $
 
 \begin{table}[htbp]
 \centering
-\caption[Cost and accuracy against channel memory]{Coded information BER at $12$~dB and arithmetic per symbol as channel memory grows, mean of three seeds, with MLSE given genie CSI and a traceback of $5L$. The relay is the same window-11 network throughout. BER is measured at $L \in \{3,5,7\}$; the $L=4$ and $L=6$ MAC counts are arithmetic from the architecture rather than measured points, and are given only to show the growth rate}\label{tbl:joint-memory}
-\begin{tabular}{lrrrrr}
+\caption[Cost and accuracy against channel memory]{Coded information BER at $12$~dB and arithmetic per symbol as channel memory grows, with MLSE given genie CSI and a traceback of $5L$. The relay is the same window-11 network throughout. BER is measured at $L \in \{3,5,7\}$ over $1{,}500{,}000$ information bits per point (five seeds), with $95\%$ Wilson intervals; the $L=4$ and $L=6$ MAC counts are arithmetic from the architecture rather than measured points, and are given only to show the growth rate. The reader should observe that the accuracy ratio does not grow with $L$: the relay trails by a factor between five and eight at every measured memory length, while MLSE's arithmetic rises by $256$}\label{tbl:joint-memory}
+\begin{tabular}{lrrrll}
 \toprule
-$L$ & MLSE states & MLSE MACs & Relay MACs & MLSE BER & Relay BER \\
+$L$ & MLSE states & MLSE MACs & Relay MACs & MLSE BER (95\% CI) & Relay BER (95\% CI) \\
 \midrule
-$3$ & $16$   & $128$    & $208$ & $0.000033$ & $0.000189$ \\
-$4$ & $64$   & $512$    & $208$ & ---        & ---        \\
-$5$ & $256$  & $2{,}048$  & $208$ & $0.000067$ & $0.000278$ \\
-$6$ & $1{,}024$ & $8{,}192$  & $208$ & ---     & ---        \\
-$7$ & $4{,}096$ & $32{,}768$ & $208$ & $0.000011$ & $0.000256$ \\
+$3$ & $16$      & $128$      & $208$ & $3.20\times10^{-5}$ \tiny{[2.41, 4.24]} & $2.36\times10^{-4}$ \tiny{[2.13, 2.62]} \\
+$4$ & $64$      & $512$      & $208$ & ---                                     & ---                                     \\
+$5$ & $256$     & $2{,}048$  & $208$ & $4.20\times10^{-5}$ \tiny{[3.28, 5.37]} & $1.96\times10^{-4}$ \tiny{[1.75, 2.20]} \\
+$6$ & $1{,}024$ & $8{,}192$  & $208$ & ---                                     & ---                                     \\
+$7$ & $4{,}096$ & $32{,}768$ & $208$ & $2.47\times10^{-5}$ \tiny{[1.79, 3.40]} & $1.91\times10^{-4}$ \tiny{[1.70, 2.14]} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Across the measured span the relay's cost and error are both flat while MLSE's cost rises by a factor of $256$, for an accuracy advantage that never exceeds a factor of $23$. This is the trade the chapter's opening paragraphs assert qualitatively, now stated as a threshold: the learned relay earns its place when channel memory exceeds roughly three and a half taps, and the margin thereafter grows as $M^{L}/(2WH + 4H)$.
+Across the measured span the relay's cost and error are both flat while MLSE's cost rises by a factor of $256$, for an accuracy advantage that does not grow with the channel either: the ratio is $7.4$ at three taps, $4.7$ at five and $7.7$ at seven, and the three confidence intervals overlap one another. An earlier version of this measurement put that ratio at $23$; it rested on a single bit error in the $L=7$ MLSE cell, and the fifty-fold longer run reported here supersedes it. What grows with channel memory is the price of the classical detector, not the penalty for declining to pay it. This is the trade the chapter's opening paragraphs assert qualitatively, now stated as a threshold: the learned relay earns its place when channel memory exceeds roughly three and a half taps, and the margin thereafter grows as $M^{L}/(2WH + 4H)$.
 
 Two limits are worth recording. The threshold is a statement about \emph{arithmetic}, not about accuracy: above $L^{\star}$ MLSE remains the more accurate detector wherever it can be afforded, and the learned relay's case rests on it becoming unaffordable rather than on it becoming wrong. And the three-tap channel used throughout this chapter sits \emph{below} $L^{\star}$, so this chapter's earlier results should be read as establishing the failure of the memoryless relays on channels with memory, which they do, and not as a cost argument against MLSE, which at $L=3$ they cannot support.
 

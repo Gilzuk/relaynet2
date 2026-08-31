@@ -103,20 +103,20 @@ A  block DF                 lat= 202  SNR= 8  BER=0.102556 (sd 0.002052)  FER=0.
 A  block DF                 lat= 202  SNR=12  BER=0.041144 (sd 0.003176)  FER=0.8667
 A  block DF                 lat= 202  SNR=16  BER=0.020000 (sd 0.001701)  FER=0.5244
 A  block DF                 lat= 202  SNR=20  BER=0.010411 (sd 0.001673)  FER=0.2733
-A  block DF + MLSE          lat= 202  SNR= 0  BER=0.298522 (sd 0.002125)  FER=1.0000
-A  block DF + MLSE          lat= 202  SNR= 4  BER=0.111300 (sd 0.002619)  FER=1.0000
-A  block DF + MLSE          lat= 202  SNR= 8  BER=0.008611 (sd 0.000675)  FER=0.5111
-A  block DF + MLSE          lat= 202  SNR=12  BER=0.000033 (sd 0.000047)  FER=0.0022
-A  block DF + MLSE          lat= 202  SNR=16  BER=0.000000 (sd 0.000000)  FER=0.0000
-A  block DF + MLSE          lat= 202  SNR=20  BER=0.000000 (sd 0.000000)  FER=0.0000
-B  L=3  MLP w=11       lat=   5 states=None  BER=0.000189  0.211 us/sym
-B  L=3  MLSE D=15      lat=  15 states=16  BER=0.000033  14.014 us/sym
-B  L=3  block DF       lat= 202 states=None  BER=0.041144  13.716 us/sym
-B  L=5  MLP w=11       lat=   5 states=None  BER=0.000278  0.215 us/sym
-B  L=5  MLSE D=25      lat=  25 states=256  BER=0.000067  29.214 us/sym
-B  L=5  block DF       lat= 202 states=None  BER=0.066711  11.353 us/sym
-B  L=7  MLP w=11       lat=   5 states=None  BER=0.000256  0.215 us/sym
-B  L=7  MLSE D=35      lat=  35 states=4096  BER=0.000011  236.815 us/sym
-B  L=7  block DF       lat= 202 states=None  BER=0.080122  14.072 us/sym
+A  block DF + MLSE          lat= 205  SNR= 0  BER=0.301833 (sd 0.002233)  FER=1.0000
+A  block DF + MLSE          lat= 205  SNR= 4  BER=0.111544 (sd 0.000640)  FER=1.0000
+A  block DF + MLSE          lat= 205  SNR= 8  BER=0.007989 (sd 0.000559)  FER=0.4756
+A  block DF + MLSE          lat= 205  SNR=12  BER=0.000033 (sd 0.000047)  FER=0.0022
+A  block DF + MLSE          lat= 205  SNR=16  BER=0.000000 (sd 0.000000)  FER=0.0000
+A  block DF + MLSE          lat= 205  SNR=20  BER=0.000000 (sd 0.000000)  FER=0.0000
+B  L=3  MLP w=11       lat=   5 states=None  BER=0.000189  0.205 us/sym
+B  L=3  MLSE D=15      lat=  15 states=16  BER=0.000033  14.384 us/sym
+B  L=3  block DF       lat= 202 states=None  BER=0.041144  16.006 us/sym
+B  L=5  MLP w=11       lat=   5 states=None  BER=0.000278  0.209 us/sym
+B  L=5  MLSE D=25      lat=  25 states=256  BER=0.000067  29.530 us/sym
+B  L=5  block DF       lat= 202 states=None  BER=0.066711  15.869 us/sym
+B  L=7  MLP w=11       lat=   5 states=None  BER=0.000256  0.223 us/sym
+B  L=7  MLSE D=35      lat=  35 states=4096  BER=0.000011  228.564 us/sym
+B  L=7  block DF       lat= 202 states=None  BER=0.080122  16.239 us/sym
 
 wrote results/joint_latency_memory.json

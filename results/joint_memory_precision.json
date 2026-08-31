@@ -1,0 +1,160 @@
+{
+  "n_frames": 1500,
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "snr_db": 12,
+  "info_bits_per_point": 1500000,
+  "rows": [
+    {
+      "channel_taps_L": 3,
+      "scheme": "MLP w=11",
+      "latency_symbols": 5,
+      "states": null,
+      "bit_errors": 354,
+      "info_bits": 1500000,
+      "ber": 0.000236,
+      "ci95": [
+        0.0002126647727038603,
+        0.0002618950785833898
+      ]
+    },
+    {
+      "channel_taps_L": 3,
+      "scheme": "MLSE D=15",
+      "latency_symbols": 15,
+      "states": 16,
+      "bit_errors": 48,
+      "info_bits": 1500000,
+      "ber": 3.2e-05,
+      "ci95": [
+        2.4137645014682497e-05,
+        4.2423251185091604e-05
+      ]
+    },
+    {
+      "channel_taps_L": 3,
+      "scheme": "block DF",
+      "latency_symbols": 202,
+      "states": null,
+      "bit_errors": 60635,
+      "info_bits": 1500000,
+      "ber": 0.04042333333333333,
+      "ci95": [
+        0.04010932296071686,
+        0.04073969771288458
+      ]
+    },
+    {
+      "channel_taps_L": 5,
+      "scheme": "MLP w=11",
+      "latency_symbols": 5,
+      "states": null,
+      "bit_errors": 294,
+      "info_bits": 1500000,
+      "ber": 0.000196,
+      "ci95": [
+        0.00017484104710850624,
+        0.00021971900906355248
+      ]
+    },
+    {
+      "channel_taps_L": 5,
+      "scheme": "MLSE D=25",
+      "latency_symbols": 25,
+      "states": 256,
+      "bit_errors": 63,
+      "info_bits": 1500000,
+      "ber": 4.2e-05,
+      "ci95": [
+        3.283056657826398e-05,
+        5.373027840030796e-05
+      ]
+    },
+    {
+      "channel_taps_L": 5,
+      "scheme": "block DF",
+      "latency_symbols": 202,
+      "states": null,
+      "bit_errors": 104621,
+      "info_bits": 1500000,
+      "ber": 0.06974733333333333,
+      "ci95": [
+        0.06934079622635314,
+        0.07015607424619508
+      ]
+    },
+    {
+      "channel_taps_L": 7,
+      "scheme": "MLP w=11",
+      "latency_symbols": 5,
+      "states": null,
+      "bit_errors": 286,
+      "info_bits": 1500000,
+      "ber": 0.00019066666666666668,
+      "ci95": [
+        0.00016981405840062435,
+        0.00021407935842274222
+      ]
+    },
+    {
+      "channel_taps_L": 7,
+      "scheme": "MLSE D=35",
+      "latency_symbols": 35,
+      "states": 4096,
+      "bit_errors": 37,
+      "info_bits": 1500000,
+      "ber": 2.4666666666666665e-05,
+      "ci95": [
+        1.789661473465825e-05,
+        3.399765236066409e-05
+      ]
+    },
+    {
+      "channel_taps_L": 7,
+      "scheme": "block DF",
+      "latency_symbols": 202,
+      "states": null,
+      "bit_errors": 125519,
+      "info_bits": 1500000,
+      "ber": 0.08367933333333333,
+      "ci95": [
+        0.08323725645767326,
+        0.08412354265349613
+      ]
+    }
+  ],
+  "ratios": [
+    {
+      "channel_taps_L": 3,
+      "point_ratio": 7.375,
+      "ratio_range": [
+        5.012929626162057,
+        10.850067536583776
+      ],
+      "intervals_disjoint": true
+    },
+    {
+      "channel_taps_L": 5,
+      "point_ratio": 4.666666666666667,
+      "ratio_range": [
+        3.2540506454458296,
+        6.692513470328626
+      ],
+      "intervals_disjoint": true
+    },
+    {
+      "channel_taps_L": 7,
+      "point_ratio": 7.729729729729731,
+      "ratio_range": [
+        4.9948760167070345,
+        11.962002959596607
+      ],
+      "intervals_disjoint": true
+    }
+  ]
+}

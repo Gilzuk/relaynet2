@@ -115,10 +115,19 @@ def clean_cell(c):
     # LaTeX writes thousands as 2{,}048; the braces are gone by now, and a
     # bare comma between digits would truncate the number at its first group.
     c = re.sub(r"(?<=\d),(?=\d{3}\b)", "", c)
+    # A trailing \tiny[lo, hi] confidence annotation is commentary on the cell,
+    # not a second number; drop it before the value is read.
+    c = re.sub(r"\\tiny\s*\[[^\]]*\]", "", c).strip()
     if c in {"", ":", "---", "--", "~", "-"}:
         return c, None
     # "<5e-5" / "< 5e-5" -> treat as a ceiling; keep raw, value = the bound
     lt = "<" in c
+    # Scientific notation is written a\times10^{b}; braces are already gone, so
+    # a bare _NUM search would stop at the mantissa and read 3.20 for 3.2e-5.
+    sci = re.match(r"^([+-]?\d+(?:\.\d+)?)\s*\\times\s*10\^\s*\(?(-?\d+)\)?", c)
+    if sci:
+        val = float(sci.group(1)) * 10.0 ** int(sci.group(2))
+        return c, ("<%g" % val if lt else val)
     m = _NUM.search(c)
     if not m:
         return c, None
@@ -590,19 +599,25 @@ def check_joint_latency(tex, rep):
 
 
 def check_joint_memory(tex, rep):
-    """Cost-against-memory table (tbl:joint-memory) vs joint_latency_memory.json.
+    """Cost-against-memory table (tbl:joint-memory).
 
-    Columns: L | MLSE states | MLSE MACs | relay MACs | MLSE BER | relay BER.
-    Rows for L = 4 and 6 carry no measured BER (they exist to show the growth
-    rate) and their BER cells are dashes, which parse to None and are skipped.
+    Arithmetic columns are derived and checked against the cost formulas; the
+    BER columns come from results/joint_memory_precision.json, the fifty-fold
+    longer re-run, not from joint_latency_memory.json -- the original sweep put
+    the L=7 MLSE cell at a single bit error and cannot support the published
+    figures. Rows for L = 4 and 6 carry no measured BER (they exist to show the
+    growth rate) and their BER cells are dashes, which parse to None.
     """
     T = "tbl:joint-memory"; before = rep.checked
     body = tabular_body(tex, T)
     if body is None:
         return rep.skip(T, "label not found in tex")
-    d = json.load(open(os.path.join(ROOT, "results/joint_latency_memory.json")))
+    src = os.path.join(ROOT, "results/joint_memory_precision.json")
+    if not os.path.exists(src):
+        return rep.skip(T, "results/joint_memory_precision.json not found")
+    d = json.load(open(src))
     mlse, relay = {}, {}
-    for r in d["part_b"]["rows"]:
+    for r in d["rows"]:
         (mlse if r["scheme"].startswith("MLSE") else
          relay if r["scheme"].startswith("MLP") else {}).setdefault(
             r["channel_taps_L"], r.get("ber"))
