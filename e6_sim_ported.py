@@ -11,6 +11,7 @@ SNR convention matches thesis: gamma = 1/sigma^2, single-hop AWGN BER = Q(sqrt(g
 Following PORTING.md section 1 acceptance criteria.
 """
 
+import os
 import numpy as np
 from relaynet.relays import AmplifyAndForwardRelay, DecodeAndForwardRelay, MLPRelay
 from relaynet.channels import ISIChannel, NonlinearBiasChannel, RayleighChannel, awgn_channel
@@ -387,7 +388,10 @@ def main():
             print(f"  {relay:>4}: " + " ".join(f"{m:7.4f}" for m in mu))
 
     # Save results
-    output_path = '/tmp/e6_sim_ported_results.npy'
+    output_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                               'e6_unknown_channel_results', 'e6_sim_ported_results.npy')
+    # /tmp does not persist between sessions (CLAUDE.md); writing straight
+    # into the repo is what keeps the committed data and the script in step.
     np.save(output_path, {'setups': setups, 'results': all_results, 'snrs': SNRS,
                           'n_train': N_TRAIN, 'n_trials': N_TRIALS,
                           'bits_at_snr': BITS_AT_SNR,

@@ -17,6 +17,7 @@ Expected result: **MLP gap ≤ 0.0036 everywhere** — classical does NOT fail.
 Following PORTING.md section 2 acceptance criteria.
 """
 
+import os
 import numpy as np
 from relaynet.relays import AmplifyAndForwardRelay, DecodeAndForwardRelay, MLPRelay
 from relaynet.channels import FlatPhaseChannel, FlatGainChannel, BranchAsymmetryChannel, RayleighChannel
@@ -422,7 +423,10 @@ def main():
         print(f"  → Max MLP-DF gap: {gap:.6f} (should be ≤ 0.0036 for control)")
 
     # Save results
-    output_path = '/tmp/e6_flat_ported_results.npy'
+    output_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                               'e6_unknown_channel_results', 'e6_flat_ported_results.npy')
+    # /tmp does not persist between sessions (CLAUDE.md); writing straight
+    # into the repo is what keeps the committed data and the script in step.
     np.save(output_path, {'setups': setups, 'results': all_results, 'snrs': SNRS,
                           'n_train': N_TRAIN, 'n_trials': N_TRIALS}, allow_pickle=True)
     print(f"\nResults saved to {output_path}")
