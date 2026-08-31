@@ -108,3 +108,73 @@ S3: nonlinear+bias -> AWGN
     SNR 18 dB  [first-error, up to 10000M bits]
       AF=3.80e-04 (100,000b, 38 err), DF=2.88e-06 (695,180b, 2 err), MLP=3.00e-10 (10,000,000,000b, 0 err) [no error in 10000M bits → 3/N bound]
     SNR 20 dB  [first-error, up to 10000M bits]
+      AF=1.68e-05 (1,313,030b, 22 err), DF=3.85e-09 (2,075,252,010b, 8 err), MLP=3.00e-10 (10,000,000,000b, 0 err) [no error in 10000M bits → 3/N bound]
+  [Training instance 2/3]
+    SNR  0 dB [100k bits], trial 0: AF=0.2349, DF=0.2078, MLP=0.1606
+    SNR  2 dB [100k bits], trial 0: AF=0.1869, DF=0.1496, MLP=0.0869
+    SNR  4 dB [100k bits], trial 0: AF=0.1453, DF=0.1019, MLP=0.0344
+    SNR  6 dB [100k bits], trial 0: AF=0.1111, DF=0.0648, MLP=0.0092
+    SNR  8 dB [100k bits], trial 0: AF=0.0809, DF=0.0378, MLP=0.0011
+    SNR 10 dB [1000k bits], trial 0: AF=0.0536, DF=0.0175, MLP=0.0000
+    SNR 12 dB [10000k bits], trial 0: AF=0.0289, DF=0.0056, MLP=0.0000
+    SNR 14 dB [10000k bits], trial 0: AF=0.0117, DF=0.0010, MLP=0.0000
+  [Training instance 3/3]
+    SNR  0 dB [100k bits], trial 0: AF=0.2342, DF=0.2073, MLP=0.1605
+    SNR  2 dB [100k bits], trial 0: AF=0.1871, DF=0.1476, MLP=0.0863
+    SNR  4 dB [100k bits], trial 0: AF=0.1456, DF=0.1028, MLP=0.0349
+    SNR  6 dB [100k bits], trial 0: AF=0.1114, DF=0.0647, MLP=0.0084
+    SNR  8 dB [100k bits], trial 0: AF=0.0816, DF=0.0378, MLP=0.0012
+    SNR 10 dB [1000k bits], trial 0: AF=0.0534, DF=0.0175, MLP=0.0001
+    SNR 12 dB [10000k bits], trial 0: AF=0.0289, DF=0.0057, MLP=0.0000
+    SNR 14 dB [10000k bits], trial 0: AF=0.0117, DF=0.0010, MLP=0.0000
+    AF:  0.2337  0.1864  0.1457  0.1120  0.0817  0.0533  0.0289  0.0117  0.0029  0.0004  0.0000
+    DF:  0.2076  0.1494  0.1015  0.0654  0.0377  0.0175  0.0056  0.0010  0.0001  0.0000  0.0000
+   MLP:  0.1601  0.0865  0.0343  0.0086  0.0011  0.0001  0.0000  0.0000  0.0000  0.0000  0.0000
+  [checkpoint] 3/4 setups saved (partial)
+
+S4 control: Rayleigh -> Rayleigh (canonical)
+  SNR (dB):       0       2       4       6       8      10      12      14      16      18      20
+  Training 3x MLP-170 for 'rayleigh'...
+    Seed 1: 170 parameters
+    Seed 2: 170 parameters
+    Seed 3: 170 parameters
+  [Training instance 1/3]
+    SNR  0 dB [100k bits], trial 0: AF=0.2705, DF=0.2522, MLP=0.2436
+    SNR  2 dB [100k bits], trial 0: AF=0.2237, DF=0.1921, MLP=0.1920
+    SNR  4 dB [100k bits], trial 0: AF=0.1792, DF=0.1420, MLP=0.1416
+    SNR  6 dB [100k bits], trial 0: AF=0.1381, DF=0.1017, MLP=0.0995
+    SNR  8 dB [100k bits], trial 0: AF=0.1059, DF=0.0694, MLP=0.0686
+    SNR 10 dB [1000k bits], trial 0: AF=0.0771, DF=0.0456, MLP=0.0470
+    SNR 12 dB [10000k bits], trial 0: AF=0.0562, DF=0.0296, MLP=0.0310
+    SNR 14 dB [10000k bits], trial 0: AF=0.0400, DF=0.0191, MLP=0.0204
+    SNR 16 dB  [first-error, up to 1000M bits]
+      AF=2.77e-02 (100,000b, 2769 err), DF=1.28e-02 (100,000b, 1281 err), MLP=1.37e-02 (100,000b, 1369 err)
+    SNR 18 dB  [first-error, up to 10000M bits]
+      AF=2.01e-02 (100,000b, 2006 err), DF=7.88e-03 (100,000b, 788 err), MLP=9.00e-03 (100,000b, 900 err)
+    SNR 20 dB  [first-error, up to 10000M bits]
+      AF=1.34e-02 (100,000b, 1342 err), DF=4.58e-03 (100,000b, 458 err), MLP=5.62e-03 (100,000b, 562 err)
+  [Training instance 2/3]
+    SNR  0 dB [100k bits], trial 0: AF=0.2713, DF=0.2495, MLP=0.2456
+    SNR  2 dB [100k bits], trial 0: AF=0.2238, DF=0.1940, MLP=0.1888
+    SNR  4 dB [100k bits], trial 0: AF=0.1785, DF=0.1447, MLP=0.1403
+    SNR  6 dB [100k bits], trial 0: AF=0.1394, DF=0.0991, MLP=0.0993
+    SNR  8 dB [100k bits], trial 0: AF=0.1038, DF=0.0686, MLP=0.0687
+    SNR 10 dB [1000k bits], trial 0: AF=0.0777, DF=0.0451, MLP=0.0463
+    SNR 12 dB [10000k bits], trial 0: AF=0.0561, DF=0.0297, MLP=0.0307
+    SNR 14 dB [10000k bits], trial 0: AF=0.0399, DF=0.0192, MLP=0.0202
+  [Training instance 3/3]
+    SNR  0 dB [100k bits], trial 0: AF=0.2710, DF=0.2519, MLP=0.2460
+    SNR  2 dB [100k bits], trial 0: AF=0.2244, DF=0.1925, MLP=0.1917
+    SNR  4 dB [100k bits], trial 0: AF=0.1796, DF=0.1429, MLP=0.1388
+    SNR  6 dB [100k bits], trial 0: AF=0.1385, DF=0.1004, MLP=0.1015
+    SNR  8 dB [100k bits], trial 0: AF=0.1040, DF=0.0693, MLP=0.0686
+    SNR 10 dB [1000k bits], trial 0: AF=0.0775, DF=0.0454, MLP=0.0467
+    SNR 12 dB [10000k bits], trial 0: AF=0.0562, DF=0.0298, MLP=0.0311
+    SNR 14 dB [10000k bits], trial 0: AF=0.0400, DF=0.0191, MLP=0.0205
+    AF:  0.2705  0.2235  0.1792  0.1391  0.1049  0.0775  0.0561  0.0400  0.0277  0.0201  0.0134
+    DF:  0.2500  0.1934  0.1422  0.1007  0.0685  0.0454  0.0297  0.0191  0.0128  0.0079  0.0046
+   MLP:  0.2449  0.1899  0.1406  0.1003  0.0692  0.0467  0.0310  0.0203  0.0137  0.0090  0.0056
+  [checkpoint] 4/4 setups saved (partial)
+  [checkpoint] 4/4 setups saved
+
+Results saved to /home/user/relaynet2/e6_unknown_channel_results/e6_sim_ported_results.npy
