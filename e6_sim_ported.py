@@ -336,6 +336,24 @@ def run_experiment(hop1_kind, hop2_kind, mlp_relays):
     }, first_error_meta
 
 
+def _save(all_results, setups, complete):
+    """Write results to the repository, flagging whether the run finished.
+
+    Called after every setup as well as at the end, so a container restart
+    costs one setup rather than the whole pass.
+    """
+    out = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                       'e6_unknown_channel_results', 'e6_sim_ported_results.npy')
+    np.save(out, {'setups': setups, 'results': all_results, 'snrs': SNRS,
+                  'n_train': N_TRAIN, 'n_trials': N_TRIALS,
+                  'bits_at_snr': BITS_AT_SNR,
+                  'first_error_snrs': list(FIRST_ERROR_SNRS),
+                  'complete': complete,
+                  'setups_done': sorted(all_results)}, allow_pickle=True)
+    print(f"  [checkpoint] {len(all_results)}/{len(setups)} setups saved"
+          f"{'' if complete else ' (partial)'}", flush=True)
+
+
 def main():
     """Main entry point."""
     print("=" * 70)
@@ -387,7 +405,13 @@ def main():
             mu, ci = results[relay]
             print(f"  {relay:>4}: " + " ".join(f"{m:7.4f}" for m in mu))
 
-    # Save results
+        # Checkpoint after every setup. The 18 and 20 dB first-error searches
+        # run to 10 billion bits, so a full pass takes hours; two container
+        # restarts have already discarded a complete run that only saved at
+        # the end. A partial file is marked so it is never mistaken for one.
+        _save(all_results, setups, complete=False)
+
+    _save(all_results, setups, complete=True)
     output_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                'e6_unknown_channel_results', 'e6_sim_ported_results.npy')
     # /tmp does not persist between sessions (CLAUDE.md); writing straight
