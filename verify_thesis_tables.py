@@ -1324,6 +1324,64 @@ def check_mmse_baseline(tex, rep):
     rep.finish_table(T, before)
 
 
+def check_slicer_floor(tex, rep):
+    """The closed-form slicer-BER table in Section~\\ref{sec:unknown-channel-experiment}.
+
+    Two rows, both machine-derivable and from different sources, which is the
+    point of the table: the closed form against results/isi_slicer_floor.json,
+    and the measured DF row against the same E6 .npy that backs tbl:tableE6.
+    The table has no \\label (it is an inline tabular inside a center, not a
+    float), so it is located by its row labels rather than by tabular_body.
+    """
+    T = "tbl:slicer-floor-inline"; before = rep.checked
+    i = tex.find("Closed form, Eq.")
+    if i < 0:
+        return rep.skip(T, "closed-form row not found in tex")
+    # back up to the table's own \toprule so the SNR header row is inside the
+    # body -- it is what tells each value row which column is which SNR.
+    start = tex.rfind("\\toprule", 0, i)
+    if start < 0:
+        return rep.skip(T, "no \\toprule above the closed-form row")
+    body = tex[start:tex.find("\\bottomrule", i)]
+    src_path = os.path.join(ROOT, "results", "isi_slicer_floor.json")
+    if not os.path.exists(src_path):
+        return rep.skip(T, "results/isi_slicer_floor.json not found")
+    with open(src_path) as fh:
+        src = json.load(fh)
+    closed = dict(zip([int(x) for x in src["snr_db"]], src["slicer_ber"]))
+
+    sim_path = os.path.join(ROOT, "e6_unknown_channel_results",
+                            "e6_sim_ported_results.npy")
+    sim = (np.load(sim_path, allow_pickle=True).item()
+           if os.path.exists(sim_path) else None)
+
+    # the SNR header decides which columns the value rows are compared against
+    header = None
+    for row in data_rows(body):
+        if not row:
+            continue
+        label = row[0][0].strip()
+        if label.startswith("SNR"):
+            header = [int(v) for _, v in row[1:] if v is not None]
+            continue
+        if header is None:
+            continue
+        vals = [(t, v) for t, v in row[1:] if v is not None]
+        if len(vals) != len(header):
+            continue
+        for (pub_text, pub_val), snr in zip(vals, header):
+            if label.startswith("Closed form"):
+                if snr in closed:
+                    rep.cell(T, f"closed/{snr}dB", pub_text, pub_val, closed[snr])
+            elif label.startswith("Measured DF") and sim is not None:
+                res = sim["results"].get("S1: unknown ISI -> AWGN")
+                snrs = list(sim["snrs"])
+                if res is not None and snr in snrs:
+                    rep.cell(T, f"measuredDF/{snr}dB", pub_text, pub_val,
+                             float(res["DF"][0][snrs.index(snr)]))
+    rep.finish_table(T, before)
+
+
 def check_seq_on_memory(tex, rep):
     """Sequence architectures on memory channels (tbl:seq-on-memory) vs
     results/seq_models_on_memory.json.
@@ -1415,6 +1473,7 @@ def main():
               check_table41, check_table42, check_table43,
               check_table44,
               check_mmse_baseline, check_seq_on_memory,
+              check_slicer_floor,
               check_joint_latency, check_joint_memory]
     for chk in checks:
         try:

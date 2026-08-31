@@ -30,6 +30,9 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 
 # experiment -> (script, [output files], [published tables/figures])
 REGISTRY = {
+    "ISI slicer floor, closed form": (
+        "isi_slicer_floor.py", ["results/isi_slicer_floor.json"],
+        ["eq:slicer-floor", "prose: closed-form slicer BER table"]),
     "E6 unknown ISI (S1-S4)": (
         "e6_sim_ported.py", ["e6_unknown_channel_results/e6_sim_ported_results.npy"],
         ["tbl:tableE6"]),

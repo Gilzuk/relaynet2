@@ -89,7 +89,29 @@ What it asks instead is \emph{when} doing so is worth anything, which the prior 
 
 
 
-The ISI channel admits a sharp analytic prediction: the effective slicer amplitude $h_0 \pm h_1 \pm h_2 \in \{1.67, 0.91, 0.61, -0.15\}$ (normalized) has one of four equiprobable patterns that \emph{flip the symbol sign}, so symbol-wise DF has an irreducible BER floor of $0.25$ (approached from below as SNR grows); AF inherits it. The floor is a property of the \emph{memoryless relay class}, not the channel: Viterbi MLSE over the 4-state trellis has no floor when the channel is known.
+The ISI channel admits a sharp analytic prediction, and not merely of the asymptote. With BPSK symbols i.i.d.\ and equiprobable, the relay observes $y[n] = h_0 x[n] + h_1 x[n-1] + h_2 x[n-2] + v[n]$ and a memoryless slicer returns $\operatorname{sign}(y[n])$. Conditioned on $x[n]=+1$ the two interfering symbols take one of $2^{2}=4$ equiprobable sign patterns, each fixing an effective amplitude $A(s_1,s_2) = h_0 + s_1 h_1 + s_2 h_2$, so
+\begin{equation}\label{eq:slicer-floor}
+P_e(\gamma) \;=\; \tfrac{1}{4}\!\!\sum_{s_1,s_2 \in \{\pm 1\}}\!\! \Phi\!\left(\frac{-A(s_1,s_2)}{\sigma}\right),
+\qquad \sigma^{2} = \frac{1}{2\gamma},\quad \gamma = 10^{\mathrm{SNR_{dB}}/10}.
+\end{equation}
+For $h = [1.0, 0.7, 0.5]$ normalized the four amplitudes are $1.6678$, $0.9097$, $0.6065$ and $-0.1516$. As $\sigma \to 0$ each term tends to $0$ where $A>0$ and to $1$ where $A<0$, so the limit is the fraction of interference patterns that \emph{flip the symbol sign} --- here exactly one of four, giving the floor of $0.25$, approached from below. AF inherits it.
+
+Equation~\eqref{eq:slicer-floor} predicts the measured DF column, not just its asymptote (\texttt{isi\_slicer\_floor.py}):
+
+\begin{center}\small
+\begin{tabular}{lrrrrrr}
+\toprule
+SNR (dB) & 6 & 8 & 12 & 16 & 18 & 20 \\
+\midrule
+Closed form, Eq.~\eqref{eq:slicer-floor} & $0.1786$ & $0.1803$ & $0.2009$ & $0.2280$ & $0.2389$ & $0.2460$ \\
+Measured DF (Table~\ref{tbl:tableE6}) & $0.1802$ & $0.1804$ & $0.2009$ & $0.2296$ & $0.2391$ & $0.2457$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent Agreement to three or four decimals from 6~dB upward --- including the minimum near 6~dB and the rise thereafter --- is an independent check on the whole DF column and on the rare-event estimator that produced its 16--20~dB entries. Below 6~dB the closed form sits low because it models the relay slicer alone and ignores the second hop, which still contributes errors there.
+
+Two caveats bound the claim. The value $0.25$ belongs to this tap vector, not to ISI in general: the floor is $k/4$ with $k$ the number of negative amplitudes, so another 3-tap channel gives $0$, $0.25$, $0.5$ or $0.75$, and one with $|h_1| + |h_2| < h_0$ has no floor at all. What is general for a memoryless relay --- and what the argument of this chapter rests on --- is that the limit is a fixed fraction independent of SNR, so transmit power cannot reach it. The floor is likewise a property of the \emph{memoryless relay class}, not of the channel: Viterbi MLSE over the 4-state trellis has no floor when the channel is known.
 
 
 \subsection{Control: Flat (Memoryless) Unknown Channels}\label{sec:flat-unknown-channels}
@@ -158,7 +180,7 @@ Unknown ISI $\to$ AWGN & AF & 0.1817 & 0.1834 & 0.2067 & 0.2349 \\
 
 \subsection{Does the Result Generalize to QPSK?}\label{sec:qpsk-unknown-channel}
 
-The unknown-ISI study above uses BPSK throughout. The canonical setup of Chapter~\ref{sec:experiments} is QPSK, so this subsection checks that the failure mode is a property of the channel rather than of the constellation it was first observed on. The $0.25$ floor derived in Section~\ref{sec:unknown-channel-experiment} is a property of the \emph{binary} slicer: it counts the $2^{3}=8$ equiprobable tap-sign patterns that flip a $\pm1$ decision. That argument does not extend to a four-point per-axis alphabet, so it is not obvious a priori whether either the elevated error floor or the ordering between the learned relay and genie-CSI Viterbi MLSE survives a move to a higher-order modulation. This subsection repeats the unknown-ISI study with Gray-coded QPSK in place of BPSK, keeping every other element fixed: the same $3$-tap ISI channel $h=[1.0,0.7,0.5]$ (normalized) on Hop 1, AWGN on Hop 2 at the same nominal per-hop SNR (identical convention, $\gamma=10^{\text{SNR}_{\text{dB}}/10}$, memory-bank/techContext.md), and the same relay set generalized to the complex alphabet: AF, symbol-wise DF (hard per-axis decision), a $193$-parameter $4$-class MLP-QPSK classifier (window 11, softmax cross-entropy, trained at SNR $\in\{5,10,15\}$ dB), and genie-CSI Viterbi MLSE generalized to the complex QPSK trellis ($4^{2}=16$ states, complex branch metrics). Evaluation uses $10$ trials $\times$ $100{,}000$ bits per SNR point over the same $0$--$20$ dB range. No closed-form floor is derived for QPSK, so the curves below are reported as measured, not fit to a predicted asymptote. Because the QPSK relays are applied jointly to the complex signal rather than decomposed into two independent BPSK problems, and the per-relay power normalization is computed on total (I+Q) power, the resulting AF/DF operating points are not required to, and empirically do not, numerically match the BPSK figures of Table~\ref{tbl:tableE6} at the same SNR label; no such match is claimed.
+The unknown-ISI study above uses BPSK throughout. The canonical setup of Chapter~\ref{sec:experiments} is QPSK, so this subsection checks that the failure mode is a property of the channel rather than of the constellation it was first observed on. The $0.25$ floor derived in Section~\ref{sec:unknown-channel-experiment} is a property of the \emph{binary} slicer: it counts the $2^{2}=4$ equiprobable interfering-symbol patterns that flip a $\pm1$ decision. That argument does not extend to a four-point per-axis alphabet, so it is not obvious a priori whether either the elevated error floor or the ordering between the learned relay and genie-CSI Viterbi MLSE survives a move to a higher-order modulation. This subsection repeats the unknown-ISI study with Gray-coded QPSK in place of BPSK, keeping every other element fixed: the same $3$-tap ISI channel $h=[1.0,0.7,0.5]$ (normalized) on Hop 1, AWGN on Hop 2 at the same nominal per-hop SNR (identical convention, $\gamma=10^{\text{SNR}_{\text{dB}}/10}$, memory-bank/techContext.md), and the same relay set generalized to the complex alphabet: AF, symbol-wise DF (hard per-axis decision), a $193$-parameter $4$-class MLP-QPSK classifier (window 11, softmax cross-entropy, trained at SNR $\in\{5,10,15\}$ dB), and genie-CSI Viterbi MLSE generalized to the complex QPSK trellis ($4^{2}=16$ states, complex branch metrics). Evaluation uses $10$ trials $\times$ $100{,}000$ bits per SNR point over the same $0$--$20$ dB range. No closed-form floor is derived for QPSK, so the curves below are reported as measured, not fit to a predicted asymptote. Because the QPSK relays are applied jointly to the complex signal rather than decomposed into two independent BPSK problems, and the per-relay power normalization is computed on total (I+Q) power, the resulting AF/DF operating points are not required to, and empirically do not, numerically match the BPSK figures of Table~\ref{tbl:tableE6} at the same SNR label; no such match is claimed.
 
 \begin{longtable}[]{@{}llllll@{}}
 \caption[QPSK unknown-channel BER (mean over 10 trials)]{QPSK unknown-channel BER (mean over 10 trials). AF and DF plateau at an elevated, non-monotonic BER across the SNR range tabulated; the 193-parameter MLP-QPSK restores monotonically decreasing BER and, unlike the BPSK case, ends up \emph{below} genie-CSI Viterbi MLSE from about 2 dB upward}\label{tbl:tableE6qpsk}\tabularnewline
