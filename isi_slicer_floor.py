@@ -38,9 +38,25 @@ sum|h_i| < 2 h0 has no floor at all. What *is* general for a memoryless relay is
 that the limit is a fixed fraction independent of SNR, so transmit power cannot
 reach it -- which is the claim Chapter 7 actually rests on.
 
-The model ignores hop-2 noise, so it is a relay-side prediction and is expected
-to sit below the measured end-to-end BER at low SNR, where the second hop still
-contributes. Above roughly 6 dB the second hop is clean and the two coincide.
+The DF model ignores hop-2 noise, so it is a relay-side prediction and is
+expected to sit below the measured end-to-end BER at low SNR, where the second
+hop still contributes. Above roughly 6 dB the second hop is clean and the two
+coincide.
+
+AF NEEDS ITS OWN DERIVATION, because AF is not a hard slicer and does not
+"inherit" the floor by assertion. The relay forwards g(A + n1) with g the
+power-normalization gain; the destination slices g(A + n1) + n2. A positive
+scale does not change a sign, so the effective decision statistic is
+
+    A + n1 + n2 / g,
+
+which is the same four-amplitude structure with an inflated noise variance
+sigma^2 (1 + 1/g^2), g^2 = 1 / (E[A^2] + sigma^2) for unit transmit power. Both
+relays therefore share the 0.25 limit -- it is a property of the four amplitudes,
+not of the decision rule -- but they approach it differently, and AF is the
+*better* of the two at high SNR precisely because of its extra noise: on the one
+pattern whose amplitude is negative, DF errs with probability tending to 1 while
+AF's extra noise still occasionally rescues the decision.
 """
 
 import itertools
@@ -63,10 +79,25 @@ def effective_amplitudes(h):
 
 
 def slicer_ber(h, snr_db):
-    """Closed-form memoryless-slicer BER at `snr_db`, thesis SNR convention."""
+    """Closed-form DF (hard-slicer) BER at `snr_db`, thesis SNR convention."""
     amps = effective_amplitudes(h)
-    sigma = np.sqrt(1.0 / (2.0 * 10 ** (np.asarray(snr_db, float) / 10.0)))
-    return np.mean(norm.cdf(-amps[:, None] / sigma[None, :]), axis=0)
+    var = 1.0 / (2.0 * 10 ** (np.asarray(snr_db, float) / 10.0))
+    return np.mean(norm.cdf(-amps[:, None] / np.sqrt(var)[None, :]), axis=0)
+
+
+def af_ber(h, snr_db):
+    """Closed-form AF BER at `snr_db`, both hops at the same nominal SNR.
+
+    The relay forwards g(A + n1) and the destination slices g(A + n1) + n2. A
+    positive gain cannot change a sign, so the statistic is A + n1 + n2/g with
+    total per-axis variance sigma^2 (1 + 1/g^2) and g^2 = 1 / (E[A^2] + sigma^2)
+    for unit transmit power.
+    """
+    amps = effective_amplitudes(h)
+    var = 1.0 / (2.0 * 10 ** (np.asarray(snr_db, float) / 10.0))
+    g2 = 1.0 / (np.mean(amps ** 2) + var)
+    total = var * (1.0 + 1.0 / g2)
+    return np.mean(norm.cdf(-amps[:, None] / np.sqrt(total)[None, :]), axis=0)
 
 
 def floor(h):
@@ -79,18 +110,19 @@ def main():
     h = H_RAW / np.linalg.norm(H_RAW)
     amps = effective_amplitudes(h)
     ber = slicer_ber(h, SNRS)
+    ber_af = af_ber(h, SNRS)
     out = {"taps_raw": H_RAW.tolist(), "taps_normalized": h.tolist(),
            "effective_amplitudes": amps.tolist(),
            "floor": floor(h), "snr_db": SNRS,
-           "slicer_ber": ber.tolist()}
+           "slicer_ber": ber.tolist(), "af_ber": ber_af.tolist()}
 
     print(f"taps (normalized): {np.round(h, 4).tolist()}")
     print(f"effective amplitudes: {np.round(amps, 4).tolist()}")
     print(f"sign-flipping patterns: {int((amps < 0).sum())} of {amps.size} "
           f"-> floor {floor(h)}")
-    print("\n  SNR dB   closed-form slicer BER")
-    for s, b in zip(SNRS, ber):
-        print(f"  {s:>6d}   {b:.4f}")
+    print(f"\n  {'SNR dB':>6}   {'DF (slicer)':>11}   {'AF':>7}")
+    for s, b, a in zip(SNRS, ber, ber_af):
+        print(f"  {s:>6d}   {b:>11.4f}   {a:>7.4f}")
 
     dest = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                         "results", "isi_slicer_floor.json")

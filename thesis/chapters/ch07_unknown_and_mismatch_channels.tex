@@ -94,22 +94,26 @@ The ISI channel admits a sharp analytic prediction, and not merely of the asympt
 P_e(\gamma) \;=\; \tfrac{1}{4}\!\!\sum_{s_1,s_2 \in \{\pm 1\}}\!\! \Phi\!\left(\frac{-A(s_1,s_2)}{\sigma}\right),
 \qquad \sigma^{2} = \frac{1}{2\gamma},\quad \gamma = 10^{\mathrm{SNR_{dB}}/10}.
 \end{equation}
-For $h = [1.0, 0.7, 0.5]$ normalized the four amplitudes are $1.6678$, $0.9097$, $0.6065$ and $-0.1516$. As $\sigma \to 0$ each term tends to $0$ where $A>0$ and to $1$ where $A<0$, so the limit is the fraction of interference patterns that \emph{flip the symbol sign} --- here exactly one of four, giving the floor of $0.25$, approached from below. AF inherits it.
+For $h = [1.0, 0.7, 0.5]$ normalized the four amplitudes are $1.6678$, $0.9097$, $0.6065$ and $-0.1516$. As $\sigma \to 0$ each term tends to $0$ where $A>0$ and to $1$ where $A<0$, so the limit is the fraction of interference patterns that \emph{flip the symbol sign} --- here exactly one of four, giving the floor of $0.25$, approached from below.
 
-Equation~\eqref{eq:slicer-floor} predicts the measured DF column, not just its asymptote (\texttt{isi\_slicer\_floor.py}):
+AF reaches the same floor, but this needs its own argument rather than an appeal to inheritance, since AF performs no hard decision. The relay forwards $g(A + n_1)$ with $g$ the power-normalization gain and the destination slices $g(A + n_1) + n_2$; a positive scale cannot change a sign, so the effective statistic is $A + n_1 + n_2/g$. That is the same four-amplitude structure with an inflated variance $\sigma^{2}(1 + g^{-2})$, $g^{2} = 1/(\mathbb{E}[A^{2}] + \sigma^{2})$, so the $\sigma \to 0$ limit is again the fraction of sign-flipping patterns. The floor belongs to the four amplitudes, not to the decision rule. The two relays approach it differently, and AF is the better of the two at high SNR \emph{because} of its extra noise: on the one pattern whose amplitude is negative, DF errs with probability tending to one, while AF's additional noise still occasionally rescues the decision.
+
+Both closed forms predict their measured columns across the sweep, not merely the asymptote (\texttt{isi\_slicer\_floor.py}):
 
 \begin{center}\small
 \begin{tabular}{lrrrrrr}
 \toprule
 SNR (dB) & 6 & 8 & 12 & 16 & 18 & 20 \\
 \midrule
-Closed form, Eq.~\eqref{eq:slicer-floor} & $0.1786$ & $0.1803$ & $0.2009$ & $0.2280$ & $0.2389$ & $0.2460$ \\
-Measured DF (Table~\ref{tbl:tableE6}) & $0.1802$ & $0.1804$ & $0.2009$ & $0.2296$ & $0.2391$ & $0.2457$ \\
+DF closed form, Eq.~\eqref{eq:slicer-floor} & $0.1786$ & $0.1803$ & $0.2009$ & $0.2280$ & $0.2389$ & $0.2460$ \\
+DF measured (Table~\ref{tbl:tableE6}) & $0.1802$ & $0.1804$ & $0.2009$ & $0.2296$ & $0.2391$ & $0.2457$ \\
+AF closed form & $0.1939$ & $0.1814$ & $0.1835$ & $0.2075$ & $0.2213$ & $0.2338$ \\
+AF measured (Table~\ref{tbl:tableE6}) & $0.1940$ & $0.1817$ & $0.1834$ & $0.2067$ & $0.2213$ & $0.2349$ \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-\noindent Agreement to three or four decimals from 6~dB upward --- including the minimum near 6~dB and the rise thereafter --- is an independent check on the whole DF column and on the rare-event estimator that produced its 16--20~dB entries. Below 6~dB the closed form sits low because it models the relay slicer alone and ignores the second hop, which still contributes errors there.
+\noindent Three to four decimals throughout, including DF's minimum near 6~dB, AF's near 10~dB, and the rise of both thereafter. Two columns of Table~\ref{tbl:tableE6} are therefore predicted in closed form by an argument that shares no code with the simulator, which is an independent check on those columns and on the rare-event estimator behind their 16--20~dB entries. The DF row alone sits low below 6~dB, because that model treats the relay slicer in isolation and omits the second hop; the AF model includes both hops and tracks the measurement from 0~dB up.
 
 Two caveats bound the claim. The value $0.25$ belongs to this tap vector, not to ISI in general: the floor is $k/4$ with $k$ the number of negative amplitudes, so another 3-tap channel gives $0$, $0.25$, $0.5$ or $0.75$, and one with $|h_1| + |h_2| < h_0$ has no floor at all. What is general for a memoryless relay --- and what the argument of this chapter rests on --- is that the limit is a fixed fraction independent of SNR, so transmit power cannot reach it. The floor is likewise a property of the \emph{memoryless relay class}, not of the channel: Viterbi MLSE over the 4-state trellis has no floor when the channel is known.
 

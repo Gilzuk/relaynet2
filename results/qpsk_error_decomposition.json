@@ -1,0 +1,204 @@
+{
+  "snr_db": [
+    0,
+    2,
+    4,
+    6,
+    8,
+    10,
+    12,
+    14,
+    16,
+    18,
+    20
+  ],
+  "n_trials": 10,
+  "n_bits": 100000,
+  "taps": [
+    0.7580980435789034,
+    0.5306686305052324,
+    0.3790490217894517
+  ],
+  "detectors": {
+    "Viterbi (genie CSI)": [
+      {
+        "ser": 0.45170200000000005,
+        "ber": 0.262641,
+        "frac_two_bit": 0.1628954395891255,
+        "bits_per_symbol_error": 1.1628954395891256,
+        "snr_db": 0,
+        "n_symbol_errors": 225851
+      },
+      {
+        "ser": 0.40044599999999997,
+        "ber": 0.22924099999999997,
+        "frac_two_bit": 0.14493043363193647,
+        "bits_per_symbol_error": 1.1449304336319366,
+        "snr_db": 2,
+        "n_symbol_errors": 200223
+      },
+      {
+        "ser": 0.34363599999999994,
+        "ber": 0.19373800000000002,
+        "frac_two_bit": 0.12757785594287988,
+        "bits_per_symbol_error": 1.1275778559428797,
+        "snr_db": 4,
+        "n_symbol_errors": 171818
+      },
+      {
+        "ser": 0.28492,
+        "ber": 0.158441,
+        "frac_two_bit": 0.11217822373077113,
+        "bits_per_symbol_error": 1.1121782237307711,
+        "snr_db": 6,
+        "n_symbol_errors": 142460
+      },
+      {
+        "ser": 0.22911600000000001,
+        "ber": 0.126264,
+        "frac_two_bit": 0.10218592726862812,
+        "bits_per_symbol_error": 1.102185927268628,
+        "snr_db": 8,
+        "n_symbol_errors": 114558
+      },
+      {
+        "ser": 0.185658,
+        "ber": 0.101804,
+        "frac_two_bit": 0.09669629367054408,
+        "bits_per_symbol_error": 1.096696293670544,
+        "snr_db": 10,
+        "n_symbol_errors": 92829
+      },
+      {
+        "ser": 0.155312,
+        "ber": 0.08491200000000002,
+        "frac_two_bit": 0.09344372684475263,
+        "bits_per_symbol_error": 1.0934437268447526,
+        "snr_db": 12,
+        "n_symbol_errors": 77656
+      },
+      {
+        "ser": 0.13562000000000002,
+        "ber": 0.07395399999999999,
+        "frac_two_bit": 0.09060566021881925,
+        "bits_per_symbol_error": 1.0906056602188192,
+        "snr_db": 14,
+        "n_symbol_errors": 67810
+      },
+      {
+        "ser": 0.12382599999999999,
+        "ber": 0.06750300000000001,
+        "frac_two_bit": 0.09029738836234227,
+        "bits_per_symbol_error": 1.0902973883623424,
+        "snr_db": 16,
+        "n_symbol_errors": 61913
+      },
+      {
+        "ser": 0.11681799999999998,
+        "ber": 0.06363300000000001,
+        "frac_two_bit": 0.08945231476394952,
+        "bits_per_symbol_error": 1.0894523147639494,
+        "snr_db": 18,
+        "n_symbol_errors": 58409
+      },
+      {
+        "ser": 0.11257199999999998,
+        "ber": 0.061374,
+        "frac_two_bit": 0.09040421786051803,
+        "bits_per_symbol_error": 1.090404217860518,
+        "snr_db": 20,
+        "n_symbol_errors": 56286
+      }
+    ],
+    "MLP-QPSK (193p)": [
+      {
+        "ser": 0.4546279999999999,
+        "ber": 0.264034,
+        "frac_two_bit": 0.16153992824252897,
+        "bits_per_symbol_error": 1.1615399282425292,
+        "snr_db": 0,
+        "n_symbol_errors": 227314
+      },
+      {
+        "ser": 0.396614,
+        "ber": 0.22608399999999995,
+        "frac_two_bit": 0.14007406271553297,
+        "bits_per_symbol_error": 1.140074062715533,
+        "snr_db": 2,
+        "n_symbol_errors": 198307
+      },
+      {
+        "ser": 0.33635200000000004,
+        "ber": 0.18844499999999997,
+        "frac_two_bit": 0.12052951004233103,
+        "bits_per_symbol_error": 1.1205295100423311,
+        "snr_db": 4,
+        "n_symbol_errors": 168176
+      },
+      {
+        "ser": 0.27952799999999994,
+        "ber": 0.154334,
+        "frac_two_bit": 0.10424883727789076,
+        "bits_per_symbol_error": 1.1042488372778907,
+        "snr_db": 6,
+        "n_symbol_errors": 139764
+      },
+      {
+        "ser": 0.22885,
+        "ber": 0.12479199999999999,
+        "frac_two_bit": 0.09059888618286709,
+        "bits_per_symbol_error": 1.0905988861828673,
+        "snr_db": 8,
+        "n_symbol_errors": 114425
+      },
+      {
+        "ser": 0.187436,
+        "ber": 0.101376,
+        "frac_two_bit": 0.08172122001893127,
+        "bits_per_symbol_error": 1.0817212200189312,
+        "snr_db": 10,
+        "n_symbol_errors": 93718
+      },
+      {
+        "ser": 0.154378,
+        "ber": 0.08302499999999999,
+        "frac_two_bit": 0.07561010346721347,
+        "bits_per_symbol_error": 1.0756101034672132,
+        "snr_db": 12,
+        "n_symbol_errors": 77189
+      },
+      {
+        "ser": 0.130444,
+        "ber": 0.070018,
+        "frac_two_bit": 0.07353757582926912,
+        "bits_per_symbol_error": 1.0735375758292691,
+        "snr_db": 14,
+        "n_symbol_errors": 65222
+      },
+      {
+        "ser": 0.11355799999999998,
+        "ber": 0.060843999999999995,
+        "frac_two_bit": 0.07159037943770531,
+        "bits_per_symbol_error": 1.0715903794377053,
+        "snr_db": 16,
+        "n_symbol_errors": 56779
+      },
+      {
+        "ser": 0.10160399999999999,
+        "ber": 0.05447,
+        "frac_two_bit": 0.07219720028448028,
+        "bits_per_symbol_error": 1.0721972002844802,
+        "snr_db": 18,
+        "n_symbol_errors": 50802
+      },
+      {
+        "ser": 0.0939,
+        "ber": 0.05037699999999999,
+        "frac_two_bit": 0.07299774823711833,
+        "bits_per_symbol_error": 1.0729977482371182,
+        "snr_db": 20,
+        "n_symbol_errors": 46950
+      }
+    ]
+  }
+}

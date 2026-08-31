@@ -1334,7 +1334,7 @@ def check_slicer_floor(tex, rep):
     float), so it is located by its row labels rather than by tabular_body.
     """
     T = "tbl:slicer-floor-inline"; before = rep.checked
-    i = tex.find("Closed form, Eq.")
+    i = tex.find("DF closed form, Eq.")
     if i < 0:
         return rep.skip(T, "closed-form row not found in tex")
     # back up to the table's own \toprule so the SNR header row is inside the
@@ -1349,6 +1349,7 @@ def check_slicer_floor(tex, rep):
     with open(src_path) as fh:
         src = json.load(fh)
     closed = dict(zip([int(x) for x in src["snr_db"]], src["slicer_ber"]))
+    closed_af = dict(zip([int(x) for x in src["snr_db"]], src["af_ber"]))
 
     sim_path = os.path.join(ROOT, "e6_unknown_channel_results",
                             "e6_sim_ported_results.npy")
@@ -1370,15 +1371,17 @@ def check_slicer_floor(tex, rep):
         if len(vals) != len(header):
             continue
         for (pub_text, pub_val), snr in zip(vals, header):
-            if label.startswith("Closed form"):
-                if snr in closed:
-                    rep.cell(T, f"closed/{snr}dB", pub_text, pub_val, closed[snr])
-            elif label.startswith("Measured DF") and sim is not None:
+            if label.startswith("DF closed form") and snr in closed:
+                rep.cell(T, f"closedDF/{snr}dB", pub_text, pub_val, closed[snr])
+            elif label.startswith("AF closed form") and snr in closed_af:
+                rep.cell(T, f"closedAF/{snr}dB", pub_text, pub_val, closed_af[snr])
+            elif label.startswith(("DF measured", "AF measured")) and sim is not None:
                 res = sim["results"].get("S1: unknown ISI -> AWGN")
                 snrs = list(sim["snrs"])
+                relay = label[:2]
                 if res is not None and snr in snrs:
-                    rep.cell(T, f"measuredDF/{snr}dB", pub_text, pub_val,
-                             float(res["DF"][0][snrs.index(snr)]))
+                    rep.cell(T, f"measured{relay}/{snr}dB", pub_text, pub_val,
+                             float(res[relay][0][snrs.index(snr)]))
     rep.finish_table(T, before)
 
 

@@ -825,6 +825,54 @@ errors over the same channel. MLP at 16 dB is now `4.79e-8` (16 errors in
 `memory-bank/table_provenance.md` was regenerated -- `tbl:tableE6` moved from
 **STALE** to **ok**, and no table in the ledger is STALE any more.
 
+### The QPSK Viterbi benchmark was not genie CSI (round-2 review, resolved)
+
+Chapter 7 reported a reversal it could not explain: on the QPSK unknown-ISI
+channel a 193-parameter MLP matched or beat "genie-CSI Viterbi MLSE" from 2 dB
+upward, where BPSK's Viterbi led by 1--1.5 dB. It offered a sequence-ML versus
+bit-MAP criterion mismatch as a conjecture and named two measurements as future
+work. Both now point the other way, and the cause is much simpler.
+
+`qpsk_error_decomposition.py` ran the first of the two (single- versus
+double-bit symbol errors) and **ruled the conjecture out**: the MLP beats
+Viterbi on *symbol* error rate too, from about 8 dB up (0.094 against 0.113 at
+20 dB), and both detectors lose almost identical bits per symbol error (1.073
+against 1.090), so the Gray map is not the mechanism either. A criterion
+mismatch cannot explain a detector that is behind on the criterion it is
+supposed to optimize.
+
+The real cause: the QPSK study's hop 1 is `ComplexISIRayleighChannel`, which is
+`y[n] = g[n] (h * x)[n] + v[n]` with an independent Rayleigh magnitude on every
+symbol. `ViterbiMLSEQPSKRelay(channel_taps=H_ISI)` models `y[n] = (h*x)[n] +
+v[n]`. **It is given the taps but not the fading, so it is not genie CSI on
+that channel** -- its branch residual `A^2 (g[n]-1)^2` does not shrink with SNR,
+which is why its error rate flattens. Controls, same trellis:
+
+  taps-only on the faded channel   SER 0.184 at 20 dB
+  taps-only, fading removed        SER 0.000 at 20 dB
+  fading-aware (true genie CSI)    SER 0.022 at 20 dB
+
+`FadingAwareViterbiQPSKRelay` scales each branch's expected observation by
+`g[n]`; `ComplexISIRayleighChannel` (and its real sibling) now record
+`last_gains` so a genie detector can be handed them. With the correct benchmark
+the reversal disappears: genie CSI leads the MLP at every SNR measured.
+
+The BPSK study is unaffected -- it uses `ISIChannel`, which has no fading, so
+its Viterbi genuinely is genie CSI. That difference between the two channels,
+not the modulation order, is the whole of the "reversal".
+
+The trellis itself was audited and is correct: it never returns a path less
+likely than the true transmitted sequence, and with no ISI it agrees with the
+nearest-symbol slicer on every symbol (asserted in
+`qpsk_error_decomposition._selftest`). Two unrelated defects surfaced: both
+Viterbi classes crash for L=1 (`M**0 = 1` state, and the successor is not in
+the state list), and the simulator's zero pre-history at a block start is not
+representable in the trellis (at most L-1 symbols per block).
+
+Still open: `mlp_min_size_all_channels.py`'s `isi_rayleigh` scenario uses the
+same taps-only baseline, so the "ISI + Rayleigh" row of `tbl:table-minsize` is
+measured against a weaker comparator than its label claims.
+
 ### State
 123 pages, build clean, 0 undefined references. Verifier: 447 cells, 2 flags, both
 pre-existing seventh-decimal roundings in `tbl:table44`. The three stale AF rows in
