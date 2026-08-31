@@ -103,7 +103,7 @@ PyTorch (CUDA) \\
 
 \subsection{Reproducibility} Random seeds are controlled at the source (bit generation) and noise (per-trial seeding) levels to ensure reproducible results.
 
-\paragraph{Provenance of the reported results.} Every result reported in this thesis was regenerated from the archived experiment artifacts and verified against its committed result file, at $10$ trials $\times\ 10{,}000$ bits per SNR point. The verification is mechanical rather than manual: each numerical table cell is re-derived from the committed result file it came from, so a table and the data behind it cannot drift apart unnoticed.
+\paragraph{Provenance of the reported results.} Every result reported in this thesis was regenerated from the archived experiment artifacts and verified against its committed result file, using the experiment-specific budget documented in its own section and in the master ledger above. Those budgets differ substantially by study --- from $10\times100{,}000$ bits per SNR point on the canonical comparison, through $10$-million-bit trials at mid SNR, to billion-bit rare-event runs at the top of the unknown-channel sweep --- and no single figure describes them all. The verification is mechanical rather than manual: each numerical table cell is re-derived from the committed result file it came from, so a table and the data behind it cannot drift apart unnoticed.
 
 
 
