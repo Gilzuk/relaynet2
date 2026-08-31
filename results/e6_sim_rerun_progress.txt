@@ -102,3 +102,9 @@ S3: nonlinear+bias -> AWGN
     SNR  8 dB [100k bits], trial 0: AF=0.0823, DF=0.0374, MLP=0.0009
     SNR 10 dB [1000k bits], trial 0: AF=0.0532, DF=0.0174, MLP=0.0000
     SNR 12 dB [10000k bits], trial 0: AF=0.0289, DF=0.0056, MLP=0.0000
+    SNR 14 dB [10000k bits], trial 0: AF=0.0118, DF=0.0010, MLP=0.0000
+    SNR 16 dB  [first-error, up to 1000M bits]
+      AF=2.91e-03 (100,000b, 291 err), DF=7.85e-05 (637,030b, 50 err), MLP=3.00e-09 (1,000,000,000b, 0 err) [no error in 1000M bits → 3/N bound]
+    SNR 18 dB  [first-error, up to 10000M bits]
+      AF=3.80e-04 (100,000b, 38 err), DF=2.88e-06 (695,180b, 2 err), MLP=3.00e-10 (10,000,000,000b, 0 err) [no error in 10000M bits → 3/N bound]
+    SNR 20 dB  [first-error, up to 10000M bits]
