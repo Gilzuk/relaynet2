@@ -166,8 +166,13 @@ def data_rows(body):
 # within Monte-Carlo noise, so these get an absolute MC tolerance on top of the
 # display-rounding tolerance. JSON-backed tables (deterministic transcriptions)
 # and analytical tables keep the tight rounding tolerance.
-STOCHASTIC_TABLES = {"tbl:tableE6": 0.010, "tbl:tableE6flat": 0.010,
-                     "tbl:tableE6qpsk": 0.010,
+# These slacks absorb Monte-Carlo noise between a published transcription and
+# the stored run. They must stay near the tables' own reported CIs (~0.001 for
+# the E6 tables); a slack an order of magnitude wider silently passes
+# transcription errors, which is how an 0.0088 discrepancy in tbl:tableE6flat
+# survived several review passes.
+STOCHASTIC_TABLES = {"tbl:tableE6": 0.002, "tbl:tableE6flat": 0.002,
+                     "tbl:tableE6qpsk": 0.002,
                      "tbl:table24": 0.002,
                      # Prose claims from the E6 blind/partial/composite studies.
                      # These are now transcribed from the committed .npy at
