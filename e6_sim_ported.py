@@ -374,11 +374,19 @@ def run_experiment(hop1_kind, hop2_kind, mlp_relays):
     }, first_error_meta
 
 
-def _save(all_results, setups, complete):
+def _save(all_results, setups, complete, rare_event_meta):
     """Write results to the repository, flagging whether the run finished.
 
     Called after every setup as well as at the end, so a container restart
-    costs one setup rather than the whole pass.
+    costs one setup rather than the whole pass. This is the only writer of
+    the .npy: an earlier version also did a bare np.save() at the end of
+    main(), which silently dropped the `complete` and `setups_done` tags
+    from the finished file.
+
+    `rare_event_meta` carries the bits and error counts behind every 16-20 dB
+    cell. Those counts are what tell a reader whether a cell is an estimate
+    or a single event, and without them in the file the only record was the
+    console log.
     """
     out = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                        'e6_unknown_channel_results', 'e6_sim_ported_results.npy')
@@ -386,6 +394,10 @@ def _save(all_results, setups, complete):
                   'n_train': N_TRAIN, 'n_trials': N_TRIALS,
                   'bits_at_snr': BITS_AT_SNR,
                   'first_error_snrs': list(FIRST_ERROR_SNRS),
+                  'first_error_max_bits_by_snr': FIRST_ERROR_MAX_BITS_BY_SNR,
+                  'first_error_default_max_bits': FIRST_ERROR_DEFAULT_MAX_BITS,
+                  'extend_factor': FIRST_ERROR_EXTEND_FACTOR,
+                  'rare_event_meta': rare_event_meta,
                   'complete': complete,
                   'setups_done': sorted(all_results)}, allow_pickle=True)
     print(f"  [checkpoint] {len(all_results)}/{len(setups)} setups saved"
@@ -419,6 +431,7 @@ def main():
     ]
 
     all_results = {}
+    rare_event_meta = {}
     for name, hop1_kind, hop2_kind in setups:
         print(f"\n{name}")
         print(f"  SNR (dB): " + " ".join(f"{s:>7d}" for s in SNRS))
@@ -437,6 +450,7 @@ def main():
 
         results, fe_meta = run_experiment(hop1_kind, hop2_kind, trained_nets)
         all_results[name] = results
+        rare_event_meta[name] = fe_meta
 
         # Print results
         for relay in ('AF', 'DF', 'MLP'):
@@ -447,20 +461,13 @@ def main():
         # run to 10 billion bits, so a full pass takes hours; two container
         # restarts have already discarded a complete run that only saved at
         # the end. A partial file is marked so it is never mistaken for one.
-        _save(all_results, setups, complete=False)
+        _save(all_results, setups, complete=False,
+              rare_event_meta=rare_event_meta)
 
-    _save(all_results, setups, complete=True)
-    output_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                               'e6_unknown_channel_results', 'e6_sim_ported_results.npy')
-    # /tmp does not persist between sessions (CLAUDE.md); writing straight
-    # into the repo is what keeps the committed data and the script in step.
-    np.save(output_path, {'setups': setups, 'results': all_results, 'snrs': SNRS,
-                          'n_train': N_TRAIN, 'n_trials': N_TRIALS,
-                          'bits_at_snr': BITS_AT_SNR,
-                          'first_error_snrs': list(FIRST_ERROR_SNRS),
-                          'first_error_max_bits_by_snr': FIRST_ERROR_MAX_BITS_BY_SNR,
-                          'first_error_default_max_bits': FIRST_ERROR_DEFAULT_MAX_BITS}, allow_pickle=True)
-    print(f"\nResults saved to {output_path}")
+    # /tmp does not persist between sessions (CLAUDE.md); _save writes straight
+    # into the repo, which is what keeps the committed data and the script in
+    # step. Nothing else may write this file -- see the note in _save.
+    _save(all_results, setups, complete=True, rare_event_meta=rare_event_meta)
 
     return all_results
 
