@@ -12,7 +12,7 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | MAC accounting |
 | reproduce | `python unified_latency_axis.py` |
 | data file | `results/unified_latency_axis.json` |
-| data commit | `a0ba807` 2026-08-30 (Claude) |
+| data commit | `ab2cb8b` 2026-08-31 (Claude) |
 | provenance | ok |
 | MLP_HIDDEN | `8` |
 
@@ -23,8 +23,8 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | E6 pilot-budget sweep |
 | reproduce | `python e6_partial_ported.py` |
 | data file | `e6_unknown_channel_results/e6_partial_ported_results.npy` |
-| data commit | `bee4abf` 2026-08-15 (Claude) |
-| provenance | **STALE (data older than script)** |
+| data commit | `2512cb2` 2026-08-31 (Claude) |
+| provenance | ok |
 | N_TRAIN | `3` |
 | TRAIN_SNRS | `[5, 10, 15]` |
 | W | `11` |
@@ -36,8 +36,8 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | E6 blind / posterior-free |
 | reproduce | `python e6_blind_ported.py` |
 | data file | `e6_unknown_channel_results/e6_blind_ported_results.npy` |
-| data commit | `bee4abf` 2026-08-15 (Claude) |
-| provenance | **STALE (data older than script)** |
+| data commit | `455c119` 2026-08-31 (Claude) |
+| provenance | ok |
 | N_TRAIN | `3` |
 | SNRS | `np.arange(0, 21, 2)` |
 | TRAIN_SNRS | `[5, 10, 15]` |
@@ -50,8 +50,8 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | E6 composite cascade |
 | reproduce | `python e6_composite_ported.py` |
 | data file | `e6_unknown_channel_results/e6_composite_ported_results.npy` |
-| data commit | `0a45def` 2026-08-17 (Claude) |
-| provenance | **STALE (data older than script)** |
+| data commit | `455c119` 2026-08-31 (Claude) |
+| provenance | ok |
 | H_ISI | `np.array([1.0, 0.6, 0.4])` |
 | N_TRAIN | `3` |
 | SNRS | `np.arange(0, 21, 2)` |
@@ -145,8 +145,8 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | E6 blind / posterior-free |
 | reproduce | `python e6_blind_ported.py` |
 | data file | `e6_unknown_channel_results/e6_blind_ported_results.npy` |
-| data commit | `bee4abf` 2026-08-15 (Claude) |
-| provenance | **STALE (data older than script)** |
+| data commit | `455c119` 2026-08-31 (Claude) |
+| provenance | ok |
 | N_TRAIN | `3` |
 | SNRS | `np.arange(0, 21, 2)` |
 | TRAIN_SNRS | `[5, 10, 15]` |
@@ -159,8 +159,8 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | E6 composite cascade |
 | reproduce | `python e6_composite_ported.py` |
 | data file | `e6_unknown_channel_results/e6_composite_ported_results.npy` |
-| data commit | `0a45def` 2026-08-17 (Claude) |
-| provenance | **STALE (data older than script)** |
+| data commit | `455c119` 2026-08-31 (Claude) |
+| provenance | ok |
 | H_ISI | `np.array([1.0, 0.6, 0.4])` |
 | N_TRAIN | `3` |
 | SNRS | `np.arange(0, 21, 2)` |
@@ -174,8 +174,8 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | E6 pilot-budget sweep |
 | reproduce | `python e6_partial_ported.py` |
 | data file | `e6_unknown_channel_results/e6_partial_ported_results.npy` |
-| data commit | `bee4abf` 2026-08-15 (Claude) |
-| provenance | **STALE (data older than script)** |
+| data commit | `2512cb2` 2026-08-31 (Claude) |
+| provenance | ok |
 | N_TRAIN | `3` |
 | TRAIN_SNRS | `[5, 10, 15]` |
 | W | `11` |
@@ -187,7 +187,7 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | Joint latency/memory |
 | reproduce | `python joint_latency_memory.py` |
 | data file | `results/joint_latency_memory.json` |
-| data commit | `4395c6d` 2026-08-31 (Claude) |
+| data commit | `ef0f4b7` 2026-08-31 (Claude) |
 | provenance | ok |
 | FRAME_INFO_BITS | `200` |
 | MLP_HIDDEN | `8` |
@@ -203,7 +203,7 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | Memory sweep, precision re-run |
 | reproduce | `python joint_memory_precision.py` |
 | data file | `results/joint_memory_precision.json` |
-| data commit | `4395c6d` 2026-08-31 (Claude) |
+| data commit | `ef0f4b7` 2026-08-31 (Claude) |
 | provenance | ok |
 | N_FRAMES | `1500` |
 | SEEDS | `(0, 1, 2, 3, 4)` |
@@ -282,8 +282,8 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | E6 unknown ISI (S1-S4) |
 | reproduce | `python e6_sim_ported.py` |
 | data file | `e6_unknown_channel_results/e6_sim_ported_results.npy` |
-| data commit | `0a45def` 2026-08-17 (Claude) |
-| provenance | **STALE (data older than script)** |
+| data commit | `a3a07ab` 2026-08-31 (Claude) |
+| provenance | ok |
 | N_TRAIN | `3` |
 | SNRS | `np.arange(0, 21, 2)` |
 | TRAIN_SNRS | `[5, 10, 15]` |
@@ -296,7 +296,7 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | E6 flat control |
 | reproduce | `python e6_flat_ported.py` |
 | data file | `e6_unknown_channel_results/e6_flat_ported_results.npy` |
-| data commit | `0d181ea` 2026-08-31 (Claude) |
+| data commit | `96e8884` 2026-08-31 (Claude) |
 | provenance | ok |
 | N_TRAIN | `3` |
 | SNRS | `np.arange(0, 21, 2)` |

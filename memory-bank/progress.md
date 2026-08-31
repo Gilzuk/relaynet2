@@ -2,6 +2,20 @@
 
 Branch: `copilot/fix-bug-in-data-processing`. Reference spec: `experiments-standalone/PORTING.md`.
 
+Session note (2026-08-31): replaced the first-error estimator with an
+error-counting one. `run_ber_first_error` in `e6_sim_ported.py` no longer stops at
+the first error -- it fixes the budget at `10 x N1` bits (capped per SNR) and
+reports accumulated errors / total exposure; a cell with no error inside the cap
+reports the rule-of-three `3/N` 95% upper bound, not `1/N` and not zero. The
+2026-08-28 note below is superseded: its 16 dB figure of $1.61\times10^{-7}$ came
+from mean reciprocal waiting time, one event per trial. All four E6 setups were
+regenerated on three seeds (`a3a07ab`, full log in `e6_sim_rerun.log`) and
+`tbl:tableE6` repointed to that run. The old estimator was wrong by more than
+rounding at high SNR: DF at 16 dB read `0.500` from a single error in two bits
+against `0.2296` from 22,959 errors. MLP S1 is now `0.0064` / `9.55e-5` /
+`4.79e-8` / `<3.0e-10` at 8/12/16/20 dB. Results are written to
+`e6_unknown_channel_results/`, never `/tmp/`, and checkpointed after each setup.
+
 Session note (2026-08-28): enforced the high-SNR first-error runtime policy in
 `e6_sim_ported.py` so 18 dB and 20 dB now run until the first observed failure
 or a 10G-bit timeout (`FIRST_ERROR_MAX_BITS_BY_SNR`), with the per-SNR caps
@@ -263,20 +277,22 @@ reported three-seed numbers backed by single-seed data.
 |---|---|---|---|---|---|
 | Coded minimum size | `coded_min_size.py` | `coded_min_size.json` | `ac26dab` 2026-08-29 | `prose: coded row` | ok |
 | E6 QPSK unknown channel | `e6_qpsk_unknown_channel.py` | `e6_qpsk_unknown_channel_results.npy` | `0a45def` 2026-08-17 | `tbl:tableE6qpsk` | ok |
-| E6 blind / posterior-free | `e6_blind_ported.py` | `e6_blind_ported_results.npy` | `bee4abf` 2026-08-15 | `fig:figE6blind`, `prose:E6blind` | **STALE (data older than script)** |
-| E6 composite cascade | `e6_composite_ported.py` | `e6_composite_ported_results.npy` | `0a45def` 2026-08-17 | `fig:figE6composite`, `prose:E6composite` | **STALE (data older than script)** |
-| E6 flat control | `e6_flat_ported.py` | `e6_flat_ported_results.npy` | `0a45def` 2026-08-17 | `tbl:tableE6flat` | **STALE (data older than script)** |
-| E6 pilot-budget sweep | `e6_partial_ported.py` | `e6_partial_ported_results.npy` | `bee4abf` 2026-08-15 | `fig:e6-partial`, `prose:E6partial` | **STALE (data older than script)** |
-| E6 unknown ISI (S1-S4) | `e6_sim_ported.py` | `e6_sim_ported_results.npy` | `0a45def` 2026-08-17 | `tbl:tableE6` | **STALE (data older than script)** |
-| Joint latency/memory | `joint_latency_memory.py` | `joint_latency_memory.json` | `4395c6d` 2026-08-31 | `tbl:joint-latency` | ok |
-| MAC accounting | `unified_latency_axis.py` | `unified_latency_axis.json` | `a0ba807` 2026-08-30 | `eq:mac-crossover` | ok |
+| E6 blind / posterior-free | `e6_blind_ported.py` | `e6_blind_ported_results.npy` | `455c119` 2026-08-31 | `fig:figE6blind`, `prose:E6blind` | ok |
+| E6 composite cascade | `e6_composite_ported.py` | `e6_composite_ported_results.npy` | `455c119` 2026-08-31 | `fig:figE6composite`, `prose:E6composite` | ok |
+| E6 flat control | `e6_flat_ported.py` | `e6_flat_ported_results.npy` | `96e8884` 2026-08-31 | `tbl:tableE6flat` | ok |
+| E6 pilot-budget sweep | `e6_partial_ported.py` | `e6_partial_ported_results.npy` | `2512cb2` 2026-08-31 | `fig:e6-partial`, `prose:E6partial` | ok |
+| E6 unknown ISI (S1-S4) | `e6_sim_ported.py` | `e6_sim_ported_results.npy` | `a3a07ab` 2026-08-31 | `tbl:tableE6` | ok |
+| Joint latency/memory | `joint_latency_memory.py` | `joint_latency_memory.json` | `ef0f4b7` 2026-08-31 | `tbl:joint-latency` | ok |
+| MAC accounting | `unified_latency_axis.py` | `unified_latency_axis.json` | `ab2cb8b` 2026-08-31 | `eq:mac-crossover` | ok |
 | MMSE complexity-matched baseline | `mmse_equalizer.py` | `mmse_equalizer.json` | `d180f61` 2026-08-30 | `tbl:mmse-baseline` | ok |
-| Memory sweep, precision re-run | `joint_memory_precision.py` | `joint_memory_precision.json` | `4395c6d` 2026-08-31 | `tbl:joint-memory` | ok |
+| Memory sweep, precision re-run | `joint_memory_precision.py` | `joint_memory_precision.json` | `ef0f4b7` 2026-08-31 | `tbl:joint-memory` | ok |
 | Minimum relay size, 9 channels | `mlp_min_size_all_channels.py` | `mlp_min_size_all_channels.json` | `1336b84` 2026-08-29 | `tbl:table-minsize`, `fig:minsize-crossover`, `fig:minsize-budget` | ok |
 | Minimum size, window x depth | `mlp_min_size_bisect.py` | `mlp_min_size_bisect.json` | `a18b10d` 2026-08-29 | `prose: depth 1-3, window 1-7` | ok |
 | Seed spread, equal budget | `seed_spread_architectures.py` | `seed_spread_architectures.json` | `0ca3432` 2026-08-30 | `tbl:seed-spread`, `tbl:seed-spread-3k` | ok |
 | Sequence models on memory | `seq_models_on_memory.py` | `seq_models_on_memory.json` | `8880cc0` 2026-08-30 | `tbl:seq-on-memory` | ok |
 | Transformer instability | `transformer_instability.py` | `transformer_instability.json` | `ce59ed1` 2026-08-30 | `fig:transformer-seed-curves`, `fig:transformer-loss-penalty` | ok |
+
+All declared outputs are committed and no data predates its script.
 
 5 PROVENANCE WARNING(S):
   [STALE (data older than script)] E6 blind / posterior-free

@@ -808,8 +808,25 @@ separators (`2{,}048`) truncated at the first group; scientific notation
 on the pre-`clean_cell` form, silently checking 3 of 10 rows while reporting OK.
 All fixed; the notation fix also cleared a pre-existing flag.
 
+### E6 regeneration with the corrected rare-event estimator (closed)
+`run_ber_first_error` no longer stops at the first error: it fixes the budget at
+`10 x N1` bits and reports accumulated errors / total exposure, falling back to the
+rule-of-three `3/N` upper bound when no error occurs inside the cap. All four E6
+setups were regenerated on three seeds (`a3a07ab`, log in `e6_sim_rerun.log`), and
+`tbl:tableE6`'s S1 rows, caption, footnotes, the Layer-2 ladder row, the chapter
+opener and the "Note on simulation validity" tiers were all repointed to that run.
+
+The old estimator was materially wrong at 16--20 dB, not merely imprecise:
+DF at 16 dB read `0.500` from one error in two bits, against `0.2296` from 22,959
+errors over the same channel. MLP at 16 dB is now `4.79e-8` (16 errors in
+334,002,040 bits); 18 and 20 dB saw no error in 10G bits and are reported as the
+`3/N = 3.0e-10` bound rather than as zero.
+
+`memory-bank/table_provenance.md` was regenerated -- `tbl:tableE6` moved from
+**STALE** to **ok**, and no table in the ledger is STALE any more.
+
 ### State
-121 pages, build clean, 0 undefined references. Verifier: 451 cells, 5 flags, all
-pre-existing (three AF rows in `tbl:tableE6` differing by ~0.01 BER -- a genuine
-stale-data issue predating this branch and still open -- and two seventh-decimal
-roundings in `tbl:table44`). Tests: 169 passed.
+123 pages, build clean, 0 undefined references. Verifier: 447 cells, 2 flags, both
+pre-existing seventh-decimal roundings in `tbl:table44`. The three stale AF rows in
+`tbl:tableE6` that were open above are now closed by the three-seed regeneration.
+Tests: 169 passed.
