@@ -57,6 +57,9 @@ FIRST_ERROR_MAX_BITS_BY_SNR = {
 }
 FIRST_ERROR_DEFAULT_MAX_BITS = 100_000_000
 FIRST_ERROR_BLOCK = 100_000        # transmit in 100k-bit blocks for memory efficiency
+# After the first error at N1 bits, keep transmitting to this multiple of N1
+# so the estimate rests on ~10 errors rather than 1 (capped by max_bits).
+FIRST_ERROR_EXTEND_FACTOR = 10
 
 # Global RNG (for reproducibility)
 rng = np.random.default_rng(42)
@@ -197,48 +200,76 @@ def run_ber_trial(relay, hop1_channel, hop2_channel, source, destination, num_bi
 
 def run_ber_first_error(relay, hop1_channel, hop2_channel, source, destination,
                         snr_db, max_bits=FIRST_ERROR_DEFAULT_MAX_BITS,
-                        block_size=FIRST_ERROR_BLOCK):
-    """First-error BER estimator: transmit until the first bit error, then stop.
+                        block_size=FIRST_ERROR_BLOCK,
+                        extend_factor=FIRST_ERROR_EXTEND_FACTOR):
+    """Rare-event BER estimator: locate the first error, then keep going.
 
-    Returns BER = 1 / bits_transmitted_until_first_error.
-    If no error is found within max_bits, returns 1 / max_bits (upper bound).
+    Stopping at the first error and reporting 1/N is a one-sample estimator:
+    the waiting time to a single event has a standard deviation equal to its
+    own mean, so the figure carries no usable precision. It is also badly
+    behaved when applied to a relay whose BER is not small -- an AF relay
+    near 0.2 hits its first error after a couple of bits, and 1/2 is then
+    reported as a BER.
 
-    Parameters
-    ----------
-    relay, hop1_channel, hop2_channel, source, destination : as in run_ber_trial
-    snr_db : float
-    max_bits : int
-        Maximum bits to transmit before giving up.
-    block_size : int
-        Process this many bits per block for memory efficiency.
+    So the search runs in two phases. Phase one finds the first error at
+    N1 bits. Phase two continues to `extend_factor * N1` bits (capped by
+    max_bits), counting every error, and the estimate is the ordinary
+    errors/bits ratio over the whole run. At the default factor of ten this
+    accumulates about ten errors, giving roughly +/-30% relative precision
+    instead of a single sample, and it costs almost nothing precisely where
+    the old estimator was worst: a relay erring every few bits reaches its
+    quota in a few dozen bits.
+
+    Where the BER is genuinely tiny the cap binds before the quota is met.
+    That case is reported honestly rather than papered over: `n_errors`
+    tells the caller how many events the estimate rests on, so a figure
+    resting on one or two errors can be labelled as such.
 
     Returns
     -------
     ber : float
-        1 / bits_until_first_error  (or 1 / max_bits if no error found)
+        n_errors / bits_used, or the rule-of-three 95% upper bound 3/max_bits
+        if no error was seen at all. (1/N, used previously for that case, is
+        not an upper bound of any stated confidence -- it is roughly the
+        point at which one error becomes likely, so it understates the true
+        bound by about a factor of three.)
     bits_used : int
         Total bits transmitted.
     found_error : bool
         Whether at least one error was observed.
+    n_errors : int
+        Errors accumulated. 0 means `ber` is an upper bound, not an estimate.
     """
     bits_used = 0
-    while bits_used < max_bits:
-        n = min(block_size, max_bits - bits_used)
+    n_errors = 0
+    target_bits = max_bits          # tightened to extend_factor*N1 once found
+
+    while bits_used < target_bits:
+        n = min(block_size, target_bits - bits_used)
         tx_bits, tx_symbols = source.transmit(n)
         rx_relay = hop1_channel(tx_symbols, snr_db)
         relay_out = relay.process(rx_relay)
         rx_dest = hop2_channel(relay_out, snr_db)
         rx_bits = destination.receive(rx_dest)
 
-        errors = np.sum(tx_bits != rx_bits)
-        if errors > 0:
-            # find index of first error
-            first_idx = np.argmax(tx_bits != rx_bits)
-            bits_until_error = bits_used + int(first_idx) + 1
-            return 1.0 / bits_until_error, bits_until_error, True
+        mismatches = (tx_bits != rx_bits)
+        errors = int(np.sum(mismatches))
+
+        if n_errors == 0 and errors > 0:
+            # First error located: fix the budget at extend_factor * N1.
+            first_idx = int(np.argmax(mismatches))
+            bits_to_first = bits_used + first_idx + 1
+            target_bits = min(extend_factor * bits_to_first, max_bits)
+
+        n_errors += errors
         bits_used += n
 
-    return 1.0 / max_bits, max_bits, False
+    if n_errors == 0:
+        # Rule of three: with zero events in N trials the 95% upper bound on
+        # the rate is ~3/N. Flagged by found_error=False and n_errors=0.
+        return 3.0 / max_bits, max_bits, False, 0
+
+    return n_errors / bits_used, bits_used, True, n_errors
 
 
 def run_experiment(hop1_kind, hop2_kind, mlp_relays):
@@ -294,14 +325,16 @@ def run_experiment(hop1_kind, hop2_kind, mlp_relays):
                 # ti == 0: run the actual first-error experiment
                 first_error_max_bits = FIRST_ERROR_MAX_BITS_BY_SNR.get(int(snr), FIRST_ERROR_DEFAULT_MAX_BITS)
                 print(f"    SNR {snr:2d} dB  [first-error, up to {first_error_max_bits//1_000_000}M bits]")
-                ber_af, bits_af, _ = run_ber_first_error(af_relay, hop1_channel, hop2_channel, source, destination, snr,
+                ber_af, bits_af, _, nerr_af = run_ber_first_error(af_relay, hop1_channel, hop2_channel, source, destination, snr,
                                                          max_bits=first_error_max_bits)
-                ber_df, bits_df, _ = run_ber_first_error(df_relay, hop1_channel, hop2_channel, source, destination, snr,
+                ber_df, bits_df, _, nerr_df = run_ber_first_error(df_relay, hop1_channel, hop2_channel, source, destination, snr,
                                                          max_bits=first_error_max_bits)
-                ber_mlp, bits_mlp, found = run_ber_first_error(mlp_relay, hop1_channel, hop2_channel, source, destination, snr,
+                ber_mlp, bits_mlp, found, nerr_mlp = run_ber_first_error(mlp_relay, hop1_channel, hop2_channel, source, destination, snr,
                                                                 max_bits=first_error_max_bits)
-                flag = "" if found else f" [no error in {first_error_max_bits//1_000_000}M bits → upper bound]"
-                print(f"      AF={ber_af:.2e} ({bits_af:,}b), DF={ber_df:.2e} ({bits_df:,}b), MLP={ber_mlp:.2e} ({bits_mlp:,}b){flag}")
+                flag = "" if found else f" [no error in {first_error_max_bits//1_000_000}M bits → 3/N bound]"
+                print(f"      AF={ber_af:.2e} ({bits_af:,}b, {nerr_af} err), "
+                      f"DF={ber_df:.2e} ({bits_df:,}b, {nerr_df} err), "
+                      f"MLP={ber_mlp:.2e} ({bits_mlp:,}b, {nerr_mlp} err){flag}")
                 # Fill all columns with this single estimate
                 results['AF'][si, :] = ber_af
                 results['DF'][si, :] = ber_df
@@ -309,6 +342,11 @@ def run_experiment(hop1_kind, hop2_kind, mlp_relays):
                 first_error_meta[si] = {
                     'snr': snr, 'bits_af': bits_af, 'bits_df': bits_df,
                     'bits_mlp': bits_mlp, 'found_error': found,
+                    # Error counts are what tell a reader whether a cell is an
+                    # estimate or a single event; carried through to the .npy.
+                    'n_errors_af': nerr_af, 'n_errors_df': nerr_df,
+                    'n_errors_mlp': nerr_mlp,
+                    'extend_factor': FIRST_ERROR_EXTEND_FACTOR,
                 }
             else:
                 n_bits_snr = BITS_AT_SNR.get(int(snr), N_BITS)
