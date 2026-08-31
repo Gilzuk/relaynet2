@@ -247,19 +247,19 @@ It does not. Table~\ref{tbl:mmse-baseline} gives the equalizer's SNR penalty aga
 
 \begin{table}[htbp]
 \centering
-\caption[MMSE linear equalization against MLSE]{SNR penalty against Viterbi MLSE for an MMSE linear equalizer of $N$ taps, with the best learned relay on the same channel for comparison. Negative values beat MLSE. The reader should observe that the learned relay leads the equalizer by $1.75$ to $2.4$~dB on every channel, despite the equalizer being given exact channel knowledge, per-SNR weight redesign, and up to $11$ taps against the relay's window of $7$}\label{tbl:mmse-baseline}
+\caption[MMSE linear equalization against MLSE]{SNR penalty against Viterbi MLSE for an MMSE linear equalizer of $N$ taps, with the best learned relay on the same channel for comparison. Negative values beat MLSE. The reader should observe that the learned relay leads the equalizer by $1.8$ to $2.4$~dB on every channel, despite the equalizer being given exact channel knowledge, per-SNR weight redesign, and up to $11$ taps against the relay's window of $7$}\label{tbl:mmse-baseline}
 \begin{tabular}{lrrrrr}
 \toprule
 Channel & 3 taps & 5 taps & 7 taps & 11 taps & Learned relay \\
 \midrule
 ISI (BPSK)      & $+6.58$ & $+4.40$ & $+4.23$ & $+4.04$ & $\mathbf{+1.67}$ \\
-ISI (QPSK)      & $+7.80$ & $+9.11$ & $+5.00$ & $+4.78$ & $\mathbf{+3.03}$ \\
+ISI (QPSK)      & $+7.81$ & $+9.11$ & $+5.02$ & $+4.84$ & $\mathbf{+3.03}$ \\
 Composite       & $-0.33$ & $-0.37$ & $-0.37$ & $-0.44$ & $\mathbf{-2.26}$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Two readings follow. The learned relay's advantage over classical processing on channels with memory is not an artifact of comparing against a detector that was never equipped for the job: against the strongest classical scheme of matched cost it still leads by $1.75$ to $2.4$~dB. And on the composite channel both the equalizer and the relay beat MLSE, which is expected rather than anomalous, since a fixed-tap trellis is mismatched to that channel's amplifier nonlinearity and phase term while neither of the other two detectors assumes a purely linear channel. One non-monotonicity is left unexplained: on the complex ISI channel the five-tap equalizer ($+9.11$~dB) is worse than the three-tap ($+7.80$~dB) before improving again at seven and eleven taps. The conclusion rests on the seven- and eleven-tap points, where the trend is orderly.
+Two readings follow. The learned relay's advantage over classical processing on channels with memory is not an artifact of comparing against a detector that was never equipped for the job: against the strongest classical scheme of matched cost it still leads by $1.8$ to $2.4$~dB. And on the composite channel both the equalizer and the relay beat MLSE, which is expected rather than anomalous, since a fixed-tap trellis is mismatched to that channel's amplifier nonlinearity and phase term while neither of the other two detectors assumes a purely linear channel. One non-monotonicity is left unexplained: on the complex ISI channel the five-tap equalizer ($+9.11$~dB) is worse than the three-tap ($+7.81$~dB) before improving again at seven and eleven taps. The conclusion rests on the seven- and eleven-tap points, where the trend is orderly.
 
 \subsection{Does a Sequence Architecture Help Where a Window Does?}\label{sec:sequence-on-memory}
 

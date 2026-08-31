@@ -106,13 +106,42 @@ def params_of(script):
 
 
 def last_commit(path):
-    """(sha, iso-date, author, subject) for the last commit touching path."""
+    """(sha, iso-date, author, subject, iso-timestamp) for path's last commit.
+
+    Both a short date (for display) and a full timestamp (for the staleness
+    comparison). Comparing on %cs alone made the check blind to a script edited
+    later the same day as the run it describes -- which is precisely how a
+    metadata fix to e6_sim_ported.py slipped past this tool while it printed
+    "ok".
+    """
     if not os.path.exists(os.path.join(ROOT, path)):
         return None
     out = subprocess.run(
-        ["git", "log", "-1", "--format=%h\t%cs\t%an\t%s", "--", path],
+        ["git", "log", "-1", "--format=%h\t%cs\t%an\t%s\t%cI", "--", path],
         cwd=ROOT, capture_output=True, text=True).stdout.strip()
-    return out.split("\t", 3) if out else None
+    if not out:
+        return None
+    parts = out.split("\t")
+    # subject may itself contain tabs; timestamp is the last field
+    sha, date, author, ts = parts[0], parts[1], parts[2], parts[-1]
+    subject = "\t".join(parts[3:-1])
+    return [sha, date, author, subject, ts]
+
+
+# (script, output) pairs where the script is newer than its data on purpose,
+# with the reason. Only for changes that cannot alter a simulated value --
+# persisted metadata, comments, logging. A change to the simulation itself is
+# never allowlisted; it is re-run.
+REVIEWED_STALE = {
+    ("e6_sim_ported.py", "e6_unknown_channel_results/e6_sim_ported_results.npy"):
+        "metadata-only fix (3fc7f91): single writer for the .npy plus persisted "
+        "rare_event_meta; no simulated value depends on it. That run's error "
+        "counts are in e6_sim_rerun.log.",
+    ("seq_models_on_memory.py", "results/seq_models_on_memory.json"):
+        "6048c95 touched only main()'s console reporting -- a NaN guard around "
+        "min() over architectures that reached no target. Every value written "
+        "to the JSON is computed before that code runs.",
+}
 
 
 def audit():
@@ -126,9 +155,11 @@ def audit():
                 status = "SCRIPT MISSING"
             elif o is None:
                 status = "DATA UNCOMMITTED"
-            elif o[1] < s[1]:
-                status = "STALE (data older than script)"
-            if status != "ok":
+            elif o[4] < s[4]:
+                reason = REVIEWED_STALE.get((script, out))
+                status = (f"stale, reviewed: {reason}" if reason
+                          else "STALE (data older than script)")
+            if status != "ok" and not status.startswith("stale, reviewed"):
                 warn.append((name, status, script, out,
                              s[1] if s else "-", o[1] if o else "-"))
             rows.append({"experiment": name, "script": script, "output": out,

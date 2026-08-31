@@ -216,7 +216,7 @@ rests on. Do not hand-edit; re-run the script.
 | reproduce | `python mmse_equalizer.py` |
 | data file | `results/mmse_equalizer.json` |
 | data commit | `d180f61` 2026-08-30 (Claude) |
-| provenance | ok |
+| provenance | **STALE (data older than script)** |
 
 ## `tbl:seed-spread`
 
@@ -256,7 +256,7 @@ rests on. Do not hand-edit; re-run the script.
 | reproduce | `python seq_models_on_memory.py` |
 | data file | `results/seq_models_on_memory.json` |
 | data commit | `8880cc0` 2026-08-30 (Claude) |
-| provenance | ok |
+| provenance | **stale, reviewed: 6048c95 touched only main()'s console reporting -- a NaN guard around min() over architectures that reached no target. Every value written to the JSON is computed before that code runs.** |
 | TRAIN_SNRS | `[5, 10, 15]` |
 
 ## `tbl:table-minsize`
@@ -283,7 +283,7 @@ rests on. Do not hand-edit; re-run the script.
 | reproduce | `python e6_sim_ported.py` |
 | data file | `e6_unknown_channel_results/e6_sim_ported_results.npy` |
 | data commit | `a3a07ab` 2026-08-31 (Claude) |
-| provenance | ok |
+| provenance | **stale, reviewed: metadata-only fix (3fc7f91): single writer for the .npy plus persisted rare_event_meta; no simulated value depends on it. That run's error counts are in e6_sim_rerun.log.** |
 | N_TRAIN | `3` |
 | SNRS | `np.arange(0, 21, 2)` |
 | TRAIN_SNRS | `[5, 10, 15]` |

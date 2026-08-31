@@ -281,16 +281,20 @@ reported three-seed numbers backed by single-seed data.
 | E6 composite cascade | `e6_composite_ported.py` | `e6_composite_ported_results.npy` | `455c119` 2026-08-31 | `fig:figE6composite`, `prose:E6composite` | ok |
 | E6 flat control | `e6_flat_ported.py` | `e6_flat_ported_results.npy` | `96e8884` 2026-08-31 | `tbl:tableE6flat` | ok |
 | E6 pilot-budget sweep | `e6_partial_ported.py` | `e6_partial_ported_results.npy` | `2512cb2` 2026-08-31 | `fig:e6-partial`, `prose:E6partial` | ok |
-| E6 unknown ISI (S1-S4) | `e6_sim_ported.py` | `e6_sim_ported_results.npy` | `a3a07ab` 2026-08-31 | `tbl:tableE6` | ok |
+| E6 unknown ISI (S1-S4) | `e6_sim_ported.py` | `e6_sim_ported_results.npy` | `a3a07ab` 2026-08-31 | `tbl:tableE6` | **stale, reviewed: metadata-only fix (3fc7f91): single writer for the .npy plus persisted rare_event_meta; no simulated value depends on it. That run's error counts are in e6_sim_rerun.log.** |
 | Joint latency/memory | `joint_latency_memory.py` | `joint_latency_memory.json` | `ef0f4b7` 2026-08-31 | `tbl:joint-latency` | ok |
 | MAC accounting | `unified_latency_axis.py` | `unified_latency_axis.json` | `ab2cb8b` 2026-08-31 | `eq:mac-crossover` | ok |
-| MMSE complexity-matched baseline | `mmse_equalizer.py` | `mmse_equalizer.json` | `d180f61` 2026-08-30 | `tbl:mmse-baseline` | ok |
+| MMSE complexity-matched baseline | `mmse_equalizer.py` | `mmse_equalizer.json` | `d180f61` 2026-08-30 | `tbl:mmse-baseline` | **STALE (data older than script)** |
 | Memory sweep, precision re-run | `joint_memory_precision.py` | `joint_memory_precision.json` | `ef0f4b7` 2026-08-31 | `tbl:joint-memory` | ok |
 | Minimum relay size, 9 channels | `mlp_min_size_all_channels.py` | `mlp_min_size_all_channels.json` | `1336b84` 2026-08-29 | `tbl:table-minsize`, `fig:minsize-crossover`, `fig:minsize-budget` | ok |
 | Minimum size, window x depth | `mlp_min_size_bisect.py` | `mlp_min_size_bisect.json` | `a18b10d` 2026-08-29 | `prose: depth 1-3, window 1-7` | ok |
 | Seed spread, equal budget | `seed_spread_architectures.py` | `seed_spread_architectures.json` | `0ca3432` 2026-08-30 | `tbl:seed-spread`, `tbl:seed-spread-3k` | ok |
-| Sequence models on memory | `seq_models_on_memory.py` | `seq_models_on_memory.json` | `8880cc0` 2026-08-30 | `tbl:seq-on-memory` | ok |
+| Sequence models on memory | `seq_models_on_memory.py` | `seq_models_on_memory.json` | `8880cc0` 2026-08-30 | `tbl:seq-on-memory` | **stale, reviewed: 6048c95 touched only main()'s console reporting -- a NaN guard around min() over architectures that reached no target. Every value written to the JSON is computed before that code runs.** |
 | Transformer instability | `transformer_instability.py` | `transformer_instability.json` | `ce59ed1` 2026-08-30 | `fig:transformer-seed-curves`, `fig:transformer-loss-penalty` | ok |
+
+1 PROVENANCE WARNING(S):
+  [STALE (data older than script)] MMSE complexity-matched baseline
+      script mmse_equalizer.py last changed 2026-08-30; data mmse_equalizer.json last committed 2026-08-30
 
 All declared outputs are committed and no data predates its script.
 
