@@ -95,8 +95,12 @@ class ViterbiMLSERelay(Relay):
 
         for s, state in enumerate(self.states):
             for u_idx, u in enumerate((-1.0, 1.0)):
-                # Next state: (state[1:], u)
-                next_state = state[1:] + (u,)
+                # Next state: drop the oldest symbol, append the new one.
+                # Written as (state + (u,))[1:] rather than state[1:] + (u,)
+                # so that L=1 works: there the state is empty and the successor
+                # of the single state is itself, where the latter form produces
+                # a one-element tuple that is not a state at all.
+                next_state = (state + (u,))[1:]
                 next_s = self.states.index(next_state)
                 self.nxt[s, u_idx] = next_s
 
@@ -244,7 +248,7 @@ class ViterbiMLSEQPSKRelay(Relay):
 
         for s, state in enumerate(self.states):
             for u in range(self.M):
-                next_state = state[1:] + (u,)
+                next_state = (state + (u,))[1:]      # L=1 safe; see ViterbiMLSERelay
                 self.nxt[s, u] = state_index[next_state]
 
                 expected = self.h[0] * self.ALPHABET[u]
