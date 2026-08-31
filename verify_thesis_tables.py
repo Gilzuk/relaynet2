@@ -335,11 +335,23 @@ def check_layers_table(tex, rep):
     snrs = list(sim["snrs"])
     i8, i20 = snrs.index(8), snrs.index(20)
     S1 = sim["results"]["S1: unknown ISI -> AWGN"]
-    S4 = sim["results"]["S4 control: Rayleigh -> Rayleigh (canonical)"]
 
-    # Layer 1: the canonical control -- DF vs MLP at 8 dB.
-    for label, key, src in [("L1/DF@8dB", r"DF \$([\d.]+)\$ against", S4["DF"][0][i8]),
-                            ("L1/MLP@8dB", r"MLP's \$([\d.]+)\$ at 8~dB", S4["MLP"][0][i8])]:
+    # Layer 1 is "the canonical setup of Chapter 5, unmodified" -- it must
+    # therefore be checked against Chapter 5's actual canonical result
+    # (tbl:table2, QPSK on Rayleigh), not against e6_sim_ported.py's own
+    # "S4 control", which is a same-pipeline BPSK sanity check with no
+    # relation to the QPSK canonical benchmark H2 is stated on. Using S4 here
+    # is exactly the bug this check exists to catch: it let a BPSK number
+    # (0.0687) stand in for the QPSK canonical DF value (0.1218) for as long
+    # as this file went unread, because nothing compared the two.
+    canon = json.load(open(os.path.join(ROOT, "results/modulation/qpsk_rayleigh.json")))
+    csnrs = canon["snr_range"]; ci8 = csnrs.index(8)
+    canon_df = canon["results"]["DF"]["ber_mean"][ci8]
+    canon_mlp = canon["results"]["MLP (169p)"]["ber_mean"][ci8]
+
+    # Layer 1: the true canonical setup -- DF vs MLP at 8 dB, QPSK/Rayleigh.
+    for label, key, src in [("L1/DF@8dB", r"DF \$([\d.]+)\$ against", canon_df),
+                            ("L1/MLP@8dB", r"MLP's \$([\d.]+)\$ at 8~dB", canon_mlp)]:
         m = re.search(key, body)
         if m:
             rep.cell(T, label, m.group(1), float(m.group(1)), src)
