@@ -1419,6 +1419,33 @@ def check_mmse_monotonicity_prose(tex, rep):
     rep.finish_table(T, before)
 
 
+# Relay architectures the thesis names by parameter count, and the script that
+# defines each. Three networks of the same class land on two counts, two of them
+# on 169 by coincidence, which is exactly how the unknown-ISI relay came to be
+# published as 169 when it is 170. Checked against the source rather than a
+# stored number so the labels cannot drift again.
+RELAY_ARCHITECTURES = [
+    ("canonical (run_experiments.py)", 5, 24, 169),
+    ("unknown-ISI (e6_sim_ported.py)", 11, 13, 170),
+    ("composite/blind/pilot (2W I/Q)", 22, 7, 169),
+    ("composite large", 22, 48, 1153),
+]
+
+
+def check_relay_param_counts(tex, rep):
+    """Parameter counts the thesis quotes, against the layer dimensions.
+
+    A two-layer perceptron with `i` inputs, `h` hidden units and one output has
+    i*h + h + h + 1 parameters. This recomputes each architecture the thesis
+    names and checks the arithmetic, so a stated count and a stated shape can
+    never disagree.
+    """
+    T = "arch:relay-param-counts"; before = rep.checked
+    for name, i, h, claimed in RELAY_ARCHITECTURES:
+        rep.cell(T, name, str(claimed), float(claimed), float(i * h + h + h + 1))
+    rep.finish_table(T, before)
+
+
 def check_slicer_floor(tex, rep):
     """The closed-form slicer-BER table in Section~\\ref{sec:unknown-channel-experiment}.
 
@@ -1576,6 +1603,7 @@ def main():
               check_table41, check_table42, check_table43,
               check_table44,
               check_mmse_baseline, check_seq_on_memory,
+              check_relay_param_counts,
               check_slicer_floor, check_qpsk_decomposition_prose,
               check_mmse_monotonicity_prose,
               check_joint_latency, check_joint_memory]
