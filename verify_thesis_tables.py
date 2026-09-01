@@ -1358,7 +1358,16 @@ def check_qpsk_decomposition_prose(tex, rep):
     i = tex.find("the MLP is ahead on \\emph{symbol} error rate as well")
     if i < 0:
         return rep.skip(T, "decomposition sentence not found in tex")
-    sent = tex[i:tex.find(".", tex.find("Gray map is not the route", i))]
+    # Both lookups guarded: on -1 the inner find would make the outer one
+    # search from the end of the document and the slice would cover an
+    # unrelated region, checking the wrong numbers instead of failing.
+    tail = tex.find("Gray map is not the route", i)
+    if tail < 0:
+        return rep.skip(T, "sentence does not reach the expected closing clause")
+    stop = tex.find(".", tail)
+    if stop < 0:
+        return rep.skip(T, "no sentence terminator after the closing clause")
+    sent = tex[i:stop]
     nums = [float(m) for m in re.findall(r"\$(\d+\.\d+)\$", sent)]
     if len(nums) != 4:
         return rep.skip(T, f"expected 4 numbers in the sentence, found {len(nums)}")
