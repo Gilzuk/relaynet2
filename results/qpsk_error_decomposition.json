@@ -20,7 +20,7 @@
     0.3790490217894517
   ],
   "detectors": {
-    "Viterbi (genie CSI)": [
+    "Viterbi (taps only)": [
       {
         "ser": 0.45170200000000005,
         "ber": 0.262641,

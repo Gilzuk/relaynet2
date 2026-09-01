@@ -306,12 +306,12 @@ reported three-seed numbers backed by single-seed data.
 | Experiment | Script | Data | Produced by | Backs | Status |
 |---|---|---|---|---|---|
 | Coded minimum size | `coded_min_size.py` | `coded_min_size.json` | `ac26dab` 2026-08-29 | `prose: coded row` | ok |
-| E6 QPSK unknown channel | `e6_qpsk_unknown_channel.py` | `e6_qpsk_unknown_channel_results.npy` | `0a45def` 2026-08-17 | `tbl:tableE6qpsk` | **STALE (data older than script)** |
+| E6 QPSK unknown channel | `e6_qpsk_unknown_channel.py` | `e6_qpsk_unknown_channel_results.npy` | `aaddb79` 2026-09-01 | `tbl:tableE6qpsk` | ok |
 | E6 blind / posterior-free | `e6_blind_ported.py` | `e6_blind_ported_results.npy` | `455c119` 2026-08-31 | `fig:figE6blind`, `prose:E6blind` | ok |
 | E6 composite cascade | `e6_composite_ported.py` | `e6_composite_ported_results.npy` | `455c119` 2026-08-31 | `fig:figE6composite`, `prose:E6composite` | ok |
 | E6 flat control | `e6_flat_ported.py` | `e6_flat_ported_results.npy` | `96e8884` 2026-08-31 | `tbl:tableE6flat` | ok |
 | E6 pilot-budget sweep | `e6_partial_ported.py` | `e6_partial_ported_results.npy` | `2512cb2` 2026-08-31 | `fig:e6-partial`, `prose:E6partial` | ok |
-| E6 unknown ISI (S1-S4) | `e6_sim_ported.py` | `e6_sim_ported_results.npy` | `0441455` 2026-08-31 | `tbl:tableE6` | ok |
+| E6 unknown ISI (S1-S4) | `e6_sim_ported.py` | `e6_sim_ported_results.npy` | `aaddb79` 2026-09-01 | `tbl:tableE6` | ok |
 | ISI slicer floor, closed form | `isi_slicer_floor.py` | `isi_slicer_floor.json` | `0441455` 2026-08-31 | `eq:slicer-floor`, `prose: closed-form slicer BER table` | ok |
 | Joint latency/memory | `joint_latency_memory.py` | `joint_latency_memory.json` | `ef0f4b7` 2026-08-31 | `tbl:joint-latency` | ok |
 | MAC accounting | `unified_latency_axis.py` | `unified_latency_axis.json` | `ab2cb8b` 2026-08-31 | `eq:mac-crossover` | ok |
@@ -319,9 +319,12 @@ reported three-seed numbers backed by single-seed data.
 | Memory sweep, precision re-run | `joint_memory_precision.py` | `joint_memory_precision.json` | `ef0f4b7` 2026-08-31 | `tbl:joint-memory` | ok |
 | Minimum relay size, 9 channels | `mlp_min_size_all_channels.py` | `mlp_min_size_all_channels.json` | `1336b84` 2026-08-29 | `tbl:table-minsize`, `fig:minsize-crossover`, `fig:minsize-budget` | **stale, reviewed: comment correction plus a display-name change to the isi_rayleigh comparator ('MLSE' -> 'MLSE (taps only)'). Same relay object, same numbers; only the JSON's `baseline` label would differ on a re-run.** |
 | Minimum size, window x depth | `mlp_min_size_bisect.py` | `mlp_min_size_bisect.json` | `a18b10d` 2026-08-29 | `prose: depth 1-3, window 1-7` | ok |
+| QPSK error decomposition | `qpsk_error_decomposition.py` | `qpsk_error_decomposition.json` | `0441455` 2026-08-31 | `prose: QPSK SER/BER and bits-per-symbol-error` | ok |
 | Seed spread, equal budget | `seed_spread_architectures.py` | `seed_spread_architectures.json` | `0ca3432` 2026-08-30 | `tbl:seed-spread`, `tbl:seed-spread-3k` | ok |
 | Sequence models on memory | `seq_models_on_memory.py` | `seq_models_on_memory.json` | `8880cc0` 2026-08-30 | `tbl:seq-on-memory` | **stale, reviewed: 6048c95 touched only main()'s console reporting -- a NaN guard around min() over architectures that reached no target. Every value written to the JSON is computed before that code runs.** |
 | Transformer instability | `transformer_instability.py` | `transformer_instability.json` | `ce59ed1` 2026-08-30 | `fig:transformer-seed-curves`, `fig:transformer-loss-penalty` | ok |
+
+All declared outputs are committed and no data predates its script.
 
 1 PROVENANCE WARNING(S):
   [STALE (data older than script)] E6 QPSK unknown channel

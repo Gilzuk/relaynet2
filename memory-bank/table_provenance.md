@@ -125,6 +125,16 @@ rests on. Do not hand-edit; re-run the script.
 | SEEDS | `list(range(8))` |
 | SNRS | `[0, 4, 8, 12, 16, 20]` |
 
+## `prose: QPSK SER/BER and bits-per-symbol-error`
+
+| field | value |
+|---|---|
+| experiment | QPSK error decomposition |
+| reproduce | `python qpsk_error_decomposition.py` |
+| data file | `results/qpsk_error_decomposition.json` |
+| data commit | `0441455` 2026-08-31 (Claude) |
+| provenance | ok |
+
 ## `prose: closed-form slicer BER table`
 
 | field | value |
@@ -304,7 +314,7 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | E6 unknown ISI (S1-S4) |
 | reproduce | `python e6_sim_ported.py` |
 | data file | `e6_unknown_channel_results/e6_sim_ported_results.npy` |
-| data commit | `0441455` 2026-08-31 (Claude) |
+| data commit | `aaddb79` 2026-09-01 (Claude) |
 | provenance | ok |
 | N_TRAIN | `3` |
 | SNRS | `np.arange(0, 21, 2)` |
@@ -332,8 +342,8 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | E6 QPSK unknown channel |
 | reproduce | `python e6_qpsk_unknown_channel.py` |
 | data file | `e6_unknown_channel_results/e6_qpsk_unknown_channel_results.npy` |
-| data commit | `0a45def` 2026-08-17 (Claude) |
-| provenance | **STALE (data older than script)** |
+| data commit | `aaddb79` 2026-09-01 (Claude) |
+| provenance | ok |
 | H_ISI | `np.array([1.0, 0.7, 0.5])` |
 | SNRS | `np.arange(0, 21, 2)` |
 | TRAIN_SNRS | `[5, 10, 15]` |

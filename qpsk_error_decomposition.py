@@ -1,8 +1,8 @@
 """Where Viterbi MLSE's bit errors come from on the QPSK ISI channel.
 
 Chapter 7 reports a reversal it does not explain: on the QPSK unknown-ISI
-channel the 193-parameter learned relay matches or beats genie-CSI Viterbi MLSE
-from 2 dB upward, where on the BPSK version of the same channel MLSE led by
+channel the 193-parameter learned relay matches or beats the Viterbi MLSE
+benchmark from 2 dB upward, where on the BPSK version of the same channel MLSE led by
 1--1.5 dB throughout. The chapter offers a criterion mismatch as a conjecture --
 MLSE minimizes *sequence* error probability, BER is what a bit-wise MAP (BCJR)
 detector minimizes, and the MLP is trained on a per-symbol softmax objective --
@@ -142,8 +142,12 @@ def main():
     _selftest()
     hop1 = ComplexISIRayleighChannel(H_ISI, seed=1)
     mlp = train_mlp_qpsk(ComplexISIRayleighChannel(H_ISI, seed=3), seed=0)
+    # The detector under test is the one the chapter published: built from the
+    # taps alone. On this per-symbol faded channel that is NOT genie CSI, and
+    # calling it so is the error this whole investigation started from -- the
+    # key is named for what the object is.
     detectors = {
-        "Viterbi (genie CSI)": ViterbiMLSEQPSKRelay(channel_taps=H_ISI),
+        "Viterbi (taps only)": ViterbiMLSEQPSKRelay(channel_taps=H_ISI),
         f"MLP-QPSK ({mlp.n_params()}p)": mlp,
     }
 

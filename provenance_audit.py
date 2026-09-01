@@ -30,6 +30,9 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 
 # experiment -> (script, [output files], [published tables/figures])
 REGISTRY = {
+    "QPSK error decomposition": (
+        "qpsk_error_decomposition.py", ["results/qpsk_error_decomposition.json"],
+        ["prose: QPSK SER/BER and bits-per-symbol-error"]),
     "ISI slicer floor, closed form": (
         "isi_slicer_floor.py", ["results/isi_slicer_floor.json"],
         ["eq:slicer-floor", "prose: closed-form slicer BER table"]),

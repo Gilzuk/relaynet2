@@ -1329,6 +1329,48 @@ def check_mmse_baseline(tex, rep):
     rep.finish_table(T, before)
 
 
+def check_qpsk_decomposition_prose(tex, rep):
+    """The QPSK SER / bits-per-symbol-error figures quoted in Chapter 7 prose.
+
+    These are the numbers that rule out the criterion-mismatch conjecture, so
+    they should not be able to drift away from the run that produced them.
+    Prose rather than a table, so the sentence is located by its own wording.
+    """
+    T = "prose:qpsk-decomposition"; before = rep.checked
+    src_path = os.path.join(ROOT, "results", "qpsk_error_decomposition.json")
+    if not os.path.exists(src_path):
+        return rep.skip(T, "results/qpsk_error_decomposition.json not found")
+    with open(src_path) as fh:
+        src = json.load(fh)
+
+    def at20(needle):
+        for name, rows in src["detectors"].items():
+            if needle.lower() in name.lower():
+                for r in rows:
+                    if int(r["snr_db"]) == 20:
+                        return r
+        return None
+
+    vit, mlp = at20("taps only"), at20("MLP")
+    if vit is None or mlp is None:
+        return rep.skip(T, "detector keys not found in the JSON")
+
+    i = tex.find("the MLP is ahead on \\emph{symbol} error rate as well")
+    if i < 0:
+        return rep.skip(T, "decomposition sentence not found in tex")
+    sent = tex[i:tex.find(".", tex.find("Gray map is not the route", i))]
+    nums = [float(m) for m in re.findall(r"\$(\d+\.\d+)\$", sent)]
+    if len(nums) != 4:
+        return rep.skip(T, f"expected 4 numbers in the sentence, found {len(nums)}")
+    for got, want, what in zip(
+            nums,
+            [mlp["ser"], vit["ser"],
+             mlp["bits_per_symbol_error"], vit["bits_per_symbol_error"]],
+            ["mlp_ser@20dB", "vit_ser@20dB", "mlp_bits_per_err", "vit_bits_per_err"]):
+        rep.cell(T, what, f"{got}", got, want)
+    rep.finish_table(T, before)
+
+
 def check_slicer_floor(tex, rep):
     """The closed-form slicer-BER table in Section~\\ref{sec:unknown-channel-experiment}.
 
@@ -1481,7 +1523,7 @@ def main():
               check_table41, check_table42, check_table43,
               check_table44,
               check_mmse_baseline, check_seq_on_memory,
-              check_slicer_floor,
+              check_slicer_floor, check_qpsk_decomposition_prose,
               check_joint_latency, check_joint_memory]
     for chk in checks:
         try:
