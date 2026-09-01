@@ -133,7 +133,7 @@ rests on. Do not hand-edit; re-run the script.
 | reproduce | `python mmse_equalizer.py` |
 | data file | `results/mmse_equalizer.json` |
 | data commit | `b1ea325` 2026-08-31 (Claude) |
-| provenance | ok |
+| provenance | **stale, reviewed: additive change (859027f): main() now also persists per-target penalties and attained MMSE to mmse_equalizer_detail.json, which was committed from the same run. The headline JSON is not stale -- it reproduced byte-identically on that re-run, so git recorded no change to it and its last commit predates the script edit.** |
 
 ## `prose: QPSK SER/BER and bits-per-symbol-error`
 
@@ -258,7 +258,7 @@ rests on. Do not hand-edit; re-run the script.
 | reproduce | `python mmse_equalizer.py` |
 | data file | `results/mmse_equalizer.json` |
 | data commit | `b1ea325` 2026-08-31 (Claude) |
-| provenance | ok |
+| provenance | **stale, reviewed: additive change (859027f): main() now also persists per-target penalties and attained MMSE to mmse_equalizer_detail.json, which was committed from the same run. The headline JSON is not stale -- it reproduced byte-identically on that re-run, so git recorded no change to it and its last commit predates the script edit.** |
 
 ## `tbl:seed-spread`
 

@@ -149,6 +149,12 @@ REVIEWED_STALE = {
         "comment correction plus a display-name change to the isi_rayleigh "
         "comparator ('MLSE' -> 'MLSE (taps only)'). Same relay object, same "
         "numbers; only the JSON's `baseline` label would differ on a re-run.",
+    ("mmse_equalizer.py", "results/mmse_equalizer.json"):
+        "additive change (859027f): main() now also persists per-target "
+        "penalties and attained MMSE to mmse_equalizer_detail.json, which was "
+        "committed from the same run. The headline JSON is not stale -- it "
+        "reproduced byte-identically on that re-run, so git recorded no change "
+        "to it and its last commit predates the script edit.",
     ("seq_models_on_memory.py", "results/seq_models_on_memory.json"):
         "6048c95 touched only main()'s console reporting -- a NaN guard around "
         "min() over architectures that reached no target. Every value written "
