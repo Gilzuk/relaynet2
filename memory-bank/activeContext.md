@@ -904,6 +904,30 @@ trial); per-trial deterministic seeding would fix that and is worth doing before
 the next regeneration.
 
 ### State
-142 pdfinfo pages, build clean, 0 undefined references. Verifier: 475 cells, 2
-flags, both pre-existing seventh-decimal roundings in `tbl:table44`. Provenance
-audit clean. Tests: 179 passed.
+**125 countable pages** against the faculty's 120 limit -- five over. Build
+clean, 0 undefined references or citations. Verifier: 479 cells, 2 flags, both
+pre-existing seventh-decimal roundings in `tbl:table44`. Provenance audit clean.
+Tests: 179 passed.
+
+### How to count the pages (do not quote `pdfinfo`)
+`pdfinfo` reports **142**, and that is not the number the limit is measured
+against -- quoting it is a mistake this project has now made twice. The build is:
+
+| pages | what | counts? |
+|---|---|---|
+| 1-2 | title page, then the inner title page with the supervision statement | no |
+| 3-14 | Abstract, Acknowledgments, Contents, Symbols, Figures, Tables (folios i-xii) | no |
+| **15-139** | **Chapter 1 through the Appendices (folios 1-125)** | **yes** |
+| 140-142 | Hebrew title page and abstract, own numbering | no |
+
+So countable = `pdfinfo` total minus 14 Roman front-matter pages minus 3 Hebrew
+back-matter pages. The offset is verifiable two ways: folio 1 sits on PDF p15,
+and `main.toc` puts Chapter 9 (Appendices) at folio 119 on PDF p133. The limit
+includes the appendices.
+
+**Margins are already at the faculty minimum** and are not a lever. `main.tex`
+sets `top=2.5cm, bottom=2cm, left=3cm, right=2cm`, which is TAU Faculty of
+Engineering *Guidelines* A.3 exactly -- 3 cm binding side, 2 cm on the other
+three, measured from the built PDF in commit `8610554`. Cutting further would
+breach the format rule rather than exploit it, so the five pages have to come
+out of content.
