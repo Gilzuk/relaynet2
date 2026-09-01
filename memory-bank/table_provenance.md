@@ -125,6 +125,16 @@ rests on. Do not hand-edit; re-run the script.
 | SEEDS | `list(range(8))` |
 | SNRS | `[0, 4, 8, 12, 16, 20]` |
 
+## `prose: MMSE monotonicity by tap count`
+
+| field | value |
+|---|---|
+| experiment | MMSE complexity-matched baseline |
+| reproduce | `python mmse_equalizer.py` |
+| data file | `results/mmse_equalizer.json` |
+| data commit | `b1ea325` 2026-08-31 (Claude) |
+| provenance | ok |
+
 ## `prose: QPSK SER/BER and bits-per-symbol-error`
 
 | field | value |
@@ -132,7 +142,7 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | QPSK error decomposition |
 | reproduce | `python qpsk_error_decomposition.py` |
 | data file | `results/qpsk_error_decomposition.json` |
-| data commit | `0441455` 2026-08-31 (Claude) |
+| data commit | `bcb39ef` 2026-09-01 (Claude) |
 | provenance | ok |
 
 ## `prose: closed-form slicer BER table`

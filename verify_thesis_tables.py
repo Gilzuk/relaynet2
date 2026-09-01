@@ -1380,6 +1380,45 @@ def check_qpsk_decomposition_prose(tex, rep):
     rep.finish_table(T, before)
 
 
+def check_mmse_monotonicity_prose(tex, rep):
+    """The MMSE-vs-taps figures Chapter 6 uses to explain the non-monotonicity.
+
+    Twelve numbers quoted in prose -- four attained MMSE values at 16 dB and the
+    per-target penalties at 1e-1 and 1e-2 -- against
+    results/mmse_equalizer_detail.json. They are the evidence that the published
+    non-monotonicity belongs to the worst-target metric rather than to the
+    equalizer, so they should not be able to drift away from the run.
+    """
+    T = "prose:mmse-monotonicity"; before = rep.checked
+    src_path = os.path.join(ROOT, "results", "mmse_equalizer_detail.json")
+    if not os.path.exists(src_path):
+        return rep.skip(T, "results/mmse_equalizer_detail.json not found")
+    with open(src_path) as fh:
+        det = json.load(fh).get("isi_complex", {})
+    if not det:
+        return rep.skip(T, "isi_complex not in the detail JSON")
+
+    i = tex.find("is an artefact of the metric, not the equalizer")
+    if i < 0:
+        return rep.skip(T, "monotonicity sentence not found in tex")
+    stop = tex.find("The conclusion is unaffected", i)
+    if stop < 0:
+        return rep.skip(T, "no closing clause after the monotonicity sentence")
+    nums = [float(x) for x in re.findall(r"[-+]?\d+\.\d+", tex[i:stop])]
+    taps = ("3", "5", "7", "11")
+    want = ([det[n]["attained_mmse"]["16"] for n in taps]
+            + [det[n]["per_target_db"]["0.1"] for n in taps]
+            + [det[n]["per_target_db"]["0.01"] for n in taps])
+    if len(nums) != len(want):
+        return rep.skip(T, f"expected {len(want)} numbers, found {len(nums)}")
+    names = ([f"mmse16/{n}tap" for n in taps]
+             + [f"pen1e-1/{n}tap" for n in taps]
+             + [f"pen1e-2/{n}tap" for n in taps])
+    for got, exp, nm in zip(nums, want, names):
+        rep.cell(T, nm, f"{got}", got, exp)
+    rep.finish_table(T, before)
+
+
 def check_slicer_floor(tex, rep):
     """The closed-form slicer-BER table in Section~\\ref{sec:unknown-channel-experiment}.
 
@@ -1538,6 +1577,7 @@ def main():
               check_table44,
               check_mmse_baseline, check_seq_on_memory,
               check_slicer_floor, check_qpsk_decomposition_prose,
+              check_mmse_monotonicity_prose,
               check_joint_latency, check_joint_memory]
     for chk in checks:
         try:

@@ -72,7 +72,9 @@ REGISTRY = {
         "transformer_instability.py", ["results/transformer_instability.json"],
         ["fig:transformer-seed-curves", "fig:transformer-loss-penalty"]),
     "MMSE complexity-matched baseline": (
-        "mmse_equalizer.py", ["results/mmse_equalizer.json"], ["tbl:mmse-baseline"]),
+        "mmse_equalizer.py",
+        ["results/mmse_equalizer.json", "results/mmse_equalizer_detail.json"],
+        ["tbl:mmse-baseline", "prose: MMSE monotonicity by tap count"]),
     "Sequence models on memory": (
         "seq_models_on_memory.py", ["results/seq_models_on_memory.json"],
         ["tbl:seq-on-memory"]),

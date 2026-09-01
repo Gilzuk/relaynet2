@@ -909,6 +909,48 @@ clean, 0 undefined references or citations. Verifier: 479 cells, 2 flags, both
 pre-existing seventh-decimal roundings in `tbl:table44`. Provenance audit clean.
 Tests: 179 passed.
 
+### Theory audit of the thesis text (2026-09-01)
+
+A pass over every theoretical claim against standard references. **The theory is
+sound**: the AWGN/AF/DF/Rayleigh/QPSK closed forms all check out (Proakis, Tse &
+Viswanath, Laneman 2004), the AF section correctly separates Laneman's
+variable-gain formula from the implemented fixed-gain variant, the DF remark
+correctly distinguishes symbol-wise slicing from Cover--El Gamal block DF, the
+`w=0` sufficient-statistic argument is right, half-duplex costs cancel because
+there is no direct link, and the MLSE state/branch counts and the `L*=3.35`
+crossover arithmetic verify exactly.
+
+Six findings fixed:
+- The MAC convention was **promised but never stated** -- ch07 said the crossover
+  held "for the operation-count convention stated above" and no such convention
+  appeared anywhere in the thesis; the derivation lived only in a docstring. Now
+  stated in the text.
+- The MMSE non-monotonicity was left "unexplained". It is a **metric artefact**:
+  MMSE is non-increasing in tap count by nesting (verified numerically), and the
+  1e-1 and 1e-2 penalties are monotone; only the 1e-3 target misbehaves, and
+  `worst_db_penalty` reports the max, so that one target sets the whole row. Its
+  crossing sits on a 4 dB grid where interpolation is coarse.
+- `2Q(sqrt(10))(1-Q(sqrt(10)))` is 0.00156, quoted as "~0.002".
+- Multi-SNR training called "related to minimax"; it minimises **Bayes** risk over
+  the sampled SNRs, not worst-case.
+- "A single-symbol estimator is a sufficient statistic" -- the **observation** is.
+- Universal approximation cited only to a textbook; Cybenko 1989 and Hornik 1991
+  added.
+- The thesis uses **three** observation models under the same symbol; ch04 named
+  two, now names all three.
+
+`results/mmse_equalizer_detail.json` is new: per-target penalties and attained
+MMSE, so the twelve numbers the monotonicity argument quotes have a committed
+source and a verifier check (`check_mmse_monotonicity_prose`).
+
+**Deliberately NOT fixed, at the author's instruction:** the unknown-ISI relay
+has **170** parameters (input W=11, hidden 13), not the 169 the thesis states in
+ch07/ch08/ch09 and both abstracts. The code comment, the run log and the results
+README all say 170. Note 169 *is* correct for the composite, blind and
+pilot-budget relays (complex 2W=22 input, hidden 7), and 1,153 is correct for the
+composite's large net -- so the label is right in some places and wrong in
+others, which is what makes it easy to miss.
+
 ### How to count the pages (do not quote `pdfinfo`)
 `pdfinfo` reports **142**, and that is not the number the limit is measured
 against -- quoting it is a mistake this project has now made twice. The build is:
