@@ -39,7 +39,8 @@ reports accumulated errors / total exposure; a cell with no error inside the cap
 reports the rule-of-three `3/N` 95% upper bound, not `1/N` and not zero. The
 2026-08-28 note below is superseded: its 16 dB figure of $1.61\times10^{-7}$ came
 from mean reciprocal waiting time, one event per trial. All four E6 setups were
-regenerated on three seeds (`a3a07ab`, full log in `e6_sim_rerun.log`) and
+regenerated on three seeds (`a3a07ab`, full log in
+`results/e6_sim_rerun_progress.txt`) and
 `tbl:tableE6` repointed to that run. The old estimator was wrong by more than
 rounding at high SNR: DF at 16 dB read `0.500` from a single error in two bits
 against `0.2296` from 22,959 errors. MLP S1 is now `0.0064` / `9.55e-5` /

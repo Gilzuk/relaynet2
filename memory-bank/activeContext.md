@@ -812,7 +812,8 @@ All fixed; the notation fix also cleared a pre-existing flag.
 `run_ber_first_error` no longer stops at the first error: it fixes the budget at
 `10 x N1` bits and reports accumulated errors / total exposure, falling back to the
 rule-of-three `3/N` upper bound when no error occurs inside the cap. All four E6
-setups were regenerated on three seeds (`a3a07ab`, log in `e6_sim_rerun.log`), and
+setups were regenerated on three seeds (`a3a07ab`, log in
+`results/e6_sim_rerun_progress.txt`), and
 `tbl:tableE6`'s S1 rows, caption, footnotes, the Layer-2 ladder row, the chapter
 opener and the "Note on simulation validity" tiers were all repointed to that run.
 

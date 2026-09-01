@@ -142,7 +142,7 @@ REVIEWED_STALE = {
     ("e6_sim_ported.py", "e6_unknown_channel_results/e6_sim_ported_results.npy"):
         "metadata-only fix (3fc7f91): single writer for the .npy plus persisted "
         "rare_event_meta; no simulated value depends on it. That run's error "
-        "counts are in e6_sim_rerun.log.",
+        "counts are in results/e6_sim_rerun_progress.txt.",
     ("mlp_min_size_all_channels.py", "results/mlp_min_size_all_channels.json"):
         "comment correction plus a display-name change to the isi_rayleigh "
         "comparator ('MLSE' -> 'MLSE (taps only)'). Same relay object, same "

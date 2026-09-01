@@ -1389,7 +1389,12 @@ def check_slicer_floor(tex, rep):
     start = tex.rfind("\\toprule", 0, i)
     if start < 0:
         return rep.skip(T, "no \\toprule above the closed-form row")
-    body = tex[start:tex.find("\\bottomrule", i)]
+    stop = tex.find("\\bottomrule", i)
+    if stop < 0:
+        # find() returning -1 would slice to the last character of the whole
+        # document, silently checking the wrong cells rather than failing.
+        return rep.skip(T, "no \\bottomrule below the closed-form row")
+    body = tex[start:stop]
     src_path = os.path.join(ROOT, "results", "isi_slicer_floor.json")
     if not os.path.exists(src_path):
         return rep.skip(T, "results/isi_slicer_floor.json not found")

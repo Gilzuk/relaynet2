@@ -65,9 +65,10 @@ implausible as `0.5` for DF at 16 dB where error counting gives `0.2296`.
 `e6_sim_ported_results.npy` as committed (run `a3a07ab`, 2026-08-31) stores the
 BER means and CIs but **not** the underlying bit and error counts: `_save` only
 began persisting `rare_event_meta` after that run finished. Until the next full
-regeneration, the per-cell counts for that run are in **`e6_sim_rerun.log`** at the
-repository root, which is committed alongside the `.npy`. For S1 at 16 dB, for
-example, the log records `MLP=4.79e-08 (334,002,040b, 16 err)`.
+regeneration, the per-cell counts for that run are in
+**`results/e6_sim_rerun_progress.txt`**, which is committed alongside the `.npy`.
+For S1 at 16 dB, for example, it records
+`MLP=4.79e-08 (334,002,040b, 16 err)`.
 
-Any BER cell below roughly 1e-4 should have its error *count* checked in that log
+Any BER cell below roughly 1e-4 should have its error *count* checked in that file
 before a ratio or a claim is built on it.
