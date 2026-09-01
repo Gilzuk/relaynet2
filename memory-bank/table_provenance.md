@@ -23,7 +23,7 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | ISI slicer floor, closed form |
 | reproduce | `python isi_slicer_floor.py` |
 | data file | `results/isi_slicer_floor.json` |
-| data commit | `640ee77` 2026-08-31 (Claude) |
+| data commit | `0441455` 2026-08-31 (Claude) |
 | provenance | ok |
 | SNRS | `list(range(0, 21, 2))` |
 
@@ -77,7 +77,7 @@ rests on. Do not hand-edit; re-run the script.
 | reproduce | `python mlp_min_size_all_channels.py` |
 | data file | `results/mlp_min_size_all_channels.json` |
 | data commit | `1336b84` 2026-08-29 (Claude) |
-| provenance | ok |
+| provenance | **stale, reviewed: comment correction plus a display-name change to the isi_rayleigh comparator ('MLSE' -> 'MLSE (taps only)'). Same relay object, same numbers; only the JSON's `baseline` label would differ on a re-run.** |
 | EPOCHS | `25` |
 | H_ISI | `np.array([1.0, 0.7, 0.5])` |
 | N_TRIALS | `20` |
@@ -93,7 +93,7 @@ rests on. Do not hand-edit; re-run the script.
 | reproduce | `python mlp_min_size_all_channels.py` |
 | data file | `results/mlp_min_size_all_channels.json` |
 | data commit | `1336b84` 2026-08-29 (Claude) |
-| provenance | ok |
+| provenance | **stale, reviewed: comment correction plus a display-name change to the isi_rayleigh comparator ('MLSE' -> 'MLSE (taps only)'). Same relay object, same numbers; only the JSON's `baseline` label would differ on a re-run.** |
 | EPOCHS | `25` |
 | H_ISI | `np.array([1.0, 0.7, 0.5])` |
 | N_TRIALS | `20` |
@@ -132,7 +132,7 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | ISI slicer floor, closed form |
 | reproduce | `python isi_slicer_floor.py` |
 | data file | `results/isi_slicer_floor.json` |
-| data commit | `640ee77` 2026-08-31 (Claude) |
+| data commit | `0441455` 2026-08-31 (Claude) |
 | provenance | ok |
 | SNRS | `list(range(0, 21, 2))` |
 
@@ -289,7 +289,7 @@ rests on. Do not hand-edit; re-run the script.
 | reproduce | `python mlp_min_size_all_channels.py` |
 | data file | `results/mlp_min_size_all_channels.json` |
 | data commit | `1336b84` 2026-08-29 (Claude) |
-| provenance | ok |
+| provenance | **stale, reviewed: comment correction plus a display-name change to the isi_rayleigh comparator ('MLSE' -> 'MLSE (taps only)'). Same relay object, same numbers; only the JSON's `baseline` label would differ on a re-run.** |
 | EPOCHS | `25` |
 | H_ISI | `np.array([1.0, 0.7, 0.5])` |
 | N_TRIALS | `20` |
@@ -304,8 +304,8 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | E6 unknown ISI (S1-S4) |
 | reproduce | `python e6_sim_ported.py` |
 | data file | `e6_unknown_channel_results/e6_sim_ported_results.npy` |
-| data commit | `a3a07ab` 2026-08-31 (Claude) |
-| provenance | **stale, reviewed: metadata-only fix (3fc7f91): single writer for the .npy plus persisted rare_event_meta; no simulated value depends on it. That run's error counts are in e6_sim_rerun.log.** |
+| data commit | `0441455` 2026-08-31 (Claude) |
+| provenance | ok |
 | N_TRAIN | `3` |
 | SNRS | `np.arange(0, 21, 2)` |
 | TRAIN_SNRS | `[5, 10, 15]` |
@@ -333,7 +333,7 @@ rests on. Do not hand-edit; re-run the script.
 | reproduce | `python e6_qpsk_unknown_channel.py` |
 | data file | `e6_unknown_channel_results/e6_qpsk_unknown_channel_results.npy` |
 | data commit | `0a45def` 2026-08-17 (Claude) |
-| provenance | ok |
+| provenance | **STALE (data older than script)** |
 | H_ISI | `np.array([1.0, 0.7, 0.5])` |
 | SNRS | `np.arange(0, 21, 2)` |
 | TRAIN_SNRS | `[5, 10, 15]` |

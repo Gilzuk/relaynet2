@@ -1037,8 +1037,13 @@ def check_tableE6qpsk(tex, rep):
     col_snr = [(2, 8), (3, 12), (4, 16), (5, 20)]
 
     setup_map = {"AWGN": "awgn", "Rayleigh": "rayleigh"}
+    # Two Viterbi rows now: the taps-only trellis, which is what this table
+    # used to publish under the "genie CSI" label, and the fading-aware one
+    # that actually is genie CSI on this channel. "TAPS" must be tested before
+    # the bare "VITERBI" fallback or both rows would match the same key.
     relay_map = {"AF": "AF", "DF": "DF", "MLP-QPSK": "MLP-QPSK",
-                 "VITERBI": "Viterbi (genie CSI)"}
+                 "TAPS ONLY": "Viterbi (taps only)",
+                 "GENIE": "Viterbi (genie CSI)"}
     cur_setup = None
     for row in data_rows(body):
         if not row:

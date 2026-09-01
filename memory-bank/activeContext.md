@@ -869,12 +869,40 @@ Viterbi classes crash for L=1 (`M**0 = 1` state, and the successor is not in
 the state list), and the simulator's zero pre-history at a block start is not
 representable in the trellis (at most L-1 symbols per block).
 
-Still open: `mlp_min_size_all_channels.py`'s `isi_rayleigh` scenario uses the
-same taps-only baseline, so the "ISI + Rayleigh" row of `tbl:table-minsize` is
-measured against a weaker comparator than its label claims.
+Resolved at project scale. `e6_qpsk_unknown_channel.py` now runs both detectors.
+Every AF/DF/MLP/taps-only cell reproduces the published table (the taps-only row
+*is* the row that was published as "genie CSI"); the new genie-CSI column leads
+the MLP at every SNR, 0.3300 against 0.3389 at 0 dB widening to 0.0001 against
+0.0508 at 20 dB. Chapter 7's QPSK subsection is rewritten: the reversal was an
+artefact of the comparator, the BPSK ordering does generalize, and the stronger
+reading the old text drew -- that the learned relay was the best option among
+either family -- is withdrawn. H5 itself is unaffected.
+
+`mlp_min_size_all_channels.py`'s `isi_rayleigh` uses the same taps-only relay;
+its comparator is renamed "MLSE (taps only)" and the over-reaching comment
+corrected. `tbl:table-minsize` is *not* affected -- `report_minsize_vs_169
+.analyse` scores every row against the MLP-169 sweep entry, not this baseline.
+Only the JSON's unused `min_params_both_criteria` field is optimistic there.
+
+### Hierarchical CIs, measured
+The three-seed E6 re-run with `--reuse-rare-event` completed all four setups and
+persists raw per-column BERs, so an interval can be recomputed without running
+anything again. The pooled interval understates the MLP by **7-8x** (S1 8 dB:
++-1.3e-3 hierarchical against +-1.8e-4 pooled) and leaves AF and DF roughly
+alone -- exactly as it should, since only the MLP has a trained network varying
+across seeds. With 3 seeds the t-interval is itself noisy and occasionally comes
+out *narrower* than pooled on a relay with no training variance; that is not a
+counterexample, it is what 2 degrees of freedom looks like.
+
+One consequence to remember: skipping the 16-20 dB rare-event cells changes the
+RNG stream for everything after them, so the re-run is an independent
+measurement rather than a bit-exact reproduction. The 8 and 12 dB means moved by
+~2e-4 and the thesis now carries the new run's values throughout. Trial noise is
+history-dependent because a trial's seed is not derived from (setup, seed, snr,
+trial); per-trial deterministic seeding would fix that and is worth doing before
+the next regeneration.
 
 ### State
-123 pages, build clean, 0 undefined references. Verifier: 447 cells, 2 flags, both
-pre-existing seventh-decimal roundings in `tbl:table44`. The three stale AF rows in
-`tbl:tableE6` that were open above are now closed by the three-seed regeneration.
-Tests: 169 passed.
+142 pdfinfo pages, build clean, 0 undefined references. Verifier: 475 cells, 2
+flags, both pre-existing seventh-decimal roundings in `tbl:table44`. Provenance
+audit clean. Tests: 179 passed.

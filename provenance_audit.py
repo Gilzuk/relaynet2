@@ -140,6 +140,10 @@ REVIEWED_STALE = {
         "metadata-only fix (3fc7f91): single writer for the .npy plus persisted "
         "rare_event_meta; no simulated value depends on it. That run's error "
         "counts are in e6_sim_rerun.log.",
+    ("mlp_min_size_all_channels.py", "results/mlp_min_size_all_channels.json"):
+        "comment correction plus a display-name change to the isi_rayleigh "
+        "comparator ('MLSE' -> 'MLSE (taps only)'). Same relay object, same "
+        "numbers; only the JSON's `baseline` label would differ on a re-run.",
     ("seq_models_on_memory.py", "results/seq_models_on_memory.json"):
         "6048c95 touched only main()'s console reporting -- a NaN guard around "
         "min() over architectures that reached no target. Every value written "
