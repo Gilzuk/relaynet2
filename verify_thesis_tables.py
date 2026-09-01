@@ -184,6 +184,39 @@ STOCHASTIC_TABLES = {"tbl:tableE6": 0.002, "tbl:tableE6flat": 0.002,
                      "prose:E6partial": 0.004}
 
 
+# ----------------------------------------------------------------------------
+# Coverage floors
+# ----------------------------------------------------------------------------
+# The number of cells each check is expected to examine. A check that examines
+# fewer has stopped seeing part of what it covers -- a renamed row label, a
+# moved anchor, a table it can no longer parse -- and until now that failed
+# silently, because only *mismatches* were reported and a check that examined
+# nothing reported "OK". Three real defects hid here: a parameter-count check
+# that validated constants against themselves, two unguarded find() calls that
+# could slice the wrong region, and an earlier joint-latency check that read 3
+# of 10 rows while printing OK.
+#
+# Raise a floor when a check legitimately gains cells; never lower one to make
+# a failure go away -- a drop means the check lost sight of something.
+MIN_CELLS = {
+    "tbl:table2": 54, "tbl:layers": 14, "tbl:table8": 48,
+    "tbl:tableE6": 20, "tbl:tableE6flat": 24, "tbl:tableE6qpsk": 20,
+    "prose:E6blind": 9, "prose:E6partial": 13, "prose:E6composite": 6,
+    "tbl:table34": 30, "tbl:table37": 6, "tbl:table38": 10,
+    "tbl:table39": 30, "tbl:table40": 12, "tbl:table41": 15,
+    "tbl:table42": 27, "tbl:table43": 18, "tbl:table44": 20,
+    "tbl:mmse-baseline": 12, "tbl:seq-on-memory": 12,
+    "arch:relay-param-counts": 7, "tbl:slicer-floor-inline": 24,
+    "prose:qpsk-decomposition": 4, "prose:mmse-monotonicity": 12,
+    "tbl:joint-latency": 30, "tbl:joint-memory": 21,
+}
+
+# Checks allowed to skip, with the reason. A skip means the check could not run
+# at all; anything not listed here is a failure rather than a quiet line in the
+# report.
+ALLOWED_SKIPS = {}
+
+
 class Report:
     def __init__(self):
         self.checked = 0
@@ -191,6 +224,8 @@ class Report:
         self.skipped = []        # (table, reason)
         self.tables = []         # (table, n_checked, n_flag)
         self.notes = []          # (table, partial-coverage reason)
+        self.coverage = []       # (table, n_checked, floor) - examined too few
+        self.unexpected_skips = []  # (table, reason) - could not run at all
 
     def cell(self, table, where, pub_text, pub_val, src_val):
         # unresolved / non-numeric published cell -> skip silently
@@ -212,9 +247,14 @@ class Report:
         n = self.checked - before
         nf = sum(1 for f in self.flags if f[0] == table)
         self.tables.append((table, n, nf))
+        floor = MIN_CELLS.get(table)
+        if floor is not None and n < floor:
+            self.coverage.append((table, n, floor))
 
     def skip(self, table, reason):
         self.skipped.append((table, reason))
+        if table not in ALLOWED_SKIPS:
+            self.unexpected_skips.append((table, reason))
 
     def note(self, table, reason):
         """Record a partial-coverage note without skipping the whole table.
@@ -1661,11 +1701,27 @@ def main():
     else:
         print("\nAll checked cells match their data source within display-rounding tolerance.")
 
+    if rep.coverage:
+        print("\nCOVERAGE SHORTFALL (a check stopped seeing part of what it covers):")
+        for t, n, floor in rep.coverage:
+            print(f"  [{t}] examined {n} cells, expected at least {floor}")
+        print("  A drop means the check lost sight of something -- a renamed row,")
+        print("  a moved anchor, a table it can no longer parse. Fix the check, or")
+        print("  raise the floor in MIN_CELLS only if the coverage genuinely shrank.")
+
+    if rep.unexpected_skips:
+        print("\nCHECK COULD NOT RUN (not in ALLOWED_SKIPS):")
+        for t, reason in rep.unexpected_skips:
+            print(f"  [{t}] {reason}")
+
     print("\nInformational (not pass/fail):")
     print("  tbl:table13, tbl:table25 report machine-dependent wall-clock timing;")
     print("  re-run run_experiments.py / the sequence-model benchmark to refresh those.")
 
-    return 1 if rep.flags else 0
+    # A check that examined nothing, or could not run, is a failure. Previously
+    # only mismatches set the exit code, so "I checked nothing" and "everything
+    # matches" were the same green.
+    return 1 if (rep.flags or rep.coverage or rep.unexpected_skips) else 0
 
 
 if __name__ == "__main__":
