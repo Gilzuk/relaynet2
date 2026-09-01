@@ -1433,16 +1433,38 @@ RELAY_ARCHITECTURES = [
 
 
 def check_relay_param_counts(tex, rep):
-    """Parameter counts the thesis quotes, against the layer dimensions.
+    """Every "i -> h -> 1, N parameters" claim in the thesis, checked two ways.
 
     A two-layer perceptron with `i` inputs, `h` hidden units and one output has
-    i*h + h + h + 1 parameters. This recomputes each architecture the thesis
-    names and checks the arithmetic, so a stated count and a stated shape can
-    never disagree.
+    i*h + h + h + 1 parameters. This reads the shape-and-count claims out of the
+    LaTeX rather than trusting a stored number, checks each one's arithmetic,
+    and checks that the shape is one the code actually builds. The earlier
+    version validated only the hardcoded constants against themselves, which
+    could not fail and could not have caught the defect it was written for: the
+    thesis called an 11 -> 13 -> 1 relay "169 parameters" when it is 170.
     """
     T = "arch:relay-param-counts"; before = rep.checked
+    known = {(i, h): n for _, i, h, n in RELAY_ARCHITECTURES}
+
+    # "$11 \to 13 \to 1$, which is $170$ parameters" and its variants: take the
+    # first number quoted within a short window after the shape.
+    pat = re.compile(r"\$(\d+)\s*\\to\s*(\d+)\s*\\to\s*1\$(.{0,120}?)\$(\d+)\$", re.S)
+    found = 0
+    for m in pat.finditer(tex):
+        i, h, claimed = int(m.group(1)), int(m.group(2)), int(m.group(4))
+        found += 1
+        rep.cell(T, f"tex {i}->{h}->1", str(claimed), float(claimed),
+                 float(i * h + h + h + 1))
+        if (i, h) not in known:
+            rep.cell(T, f"tex {i}->{h}->1 is an architecture the code builds",
+                     "yes", 0.0, 1.0)
+    if not found:
+        return rep.skip(T, "no 'i -> h -> 1' shape claims found in the tex")
+
+    # and the arithmetic of every architecture the code does build
     for name, i, h, claimed in RELAY_ARCHITECTURES:
-        rep.cell(T, name, str(claimed), float(claimed), float(i * h + h + h + 1))
+        rep.cell(T, f"code {name}", str(claimed), float(claimed),
+                 float(i * h + h + h + 1))
     rep.finish_table(T, before)
 
 

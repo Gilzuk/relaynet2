@@ -136,6 +136,14 @@ def last_commit(path):
     return [sha, date, author, subject, ts]
 
 
+# Artefacts that rest on one particular output of a multi-output experiment.
+# Without this the ledger would point a reader at the wrong file.
+ARTEFACT_OUTPUT = {
+    "prose: MMSE monotonicity by tap count": "results/mmse_equalizer_detail.json",
+    "tbl:mmse-baseline": "results/mmse_equalizer.json",
+}
+
+
 # (script, output) pairs where the script is newer than its data on purpose,
 # with the reason. Only for changes that cannot alter a simulated value --
 # persisted metadata, comments, logging. A change to the simulation itself is
@@ -218,9 +226,16 @@ def main():
         print("figure, the experiment behind it, the exact command that reproduces it,")
         print("the parameters that run used, and the commit that produced the data it")
         print("rests on. Do not hand-edit; re-run the script.\n")
+        # An experiment with several outputs produces one row per output, each
+        # carrying the whole artefact list, so a plain first-wins mapping would
+        # attribute every artefact to the first output. Where a specific
+        # artefact rests on a specific file, ARTEFACT_OUTPUT says which.
         byart = {}
         for r in rows:
             for a in r["artefacts"]:
+                want = ARTEFACT_OUTPUT.get(a)
+                if want is not None and r["output"] != want:
+                    continue
                 byart.setdefault(a, r)
         for a in sorted(byart):
             r = byart[a]

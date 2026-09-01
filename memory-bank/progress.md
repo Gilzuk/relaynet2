@@ -326,36 +326,6 @@ reported three-seed numbers backed by single-seed data.
 | Sequence models on memory | `seq_models_on_memory.py` | `seq_models_on_memory.json` | `8880cc0` 2026-08-30 | `tbl:seq-on-memory` | **stale, reviewed: 6048c95 touched only main()'s console reporting -- a NaN guard around min() over architectures that reached no target. Every value written to the JSON is computed before that code runs.** |
 | Transformer instability | `transformer_instability.py` | `transformer_instability.json` | `ce59ed1` 2026-08-30 | `fig:transformer-seed-curves`, `fig:transformer-loss-penalty` | ok |
 
-All declared outputs are committed and no data predates its script.
-
-1 PROVENANCE WARNING(S):
-  [DATA UNCOMMITTED] MMSE complexity-matched baseline
-      script mmse_equalizer.py last changed 2026-08-31; data mmse_equalizer_detail.json last committed -
-
-All declared outputs are committed and no data predates its script.
-
-1 PROVENANCE WARNING(S):
-  [STALE (data older than script)] E6 QPSK unknown channel
-      script e6_qpsk_unknown_channel.py last changed 2026-08-31; data e6_qpsk_unknown_channel_results.npy last committed 2026-08-17
-
-All declared outputs are committed and no data predates its script.
-
-1 PROVENANCE WARNING(S):
-  [STALE (data older than script)] MMSE complexity-matched baseline
-      script mmse_equalizer.py last changed 2026-08-30; data mmse_equalizer.json last committed 2026-08-30
-
-All declared outputs are committed and no data predates its script.
-
-5 PROVENANCE WARNING(S):
-  [STALE (data older than script)] E6 blind / posterior-free
-      script e6_blind_ported.py last changed 2026-08-27; data e6_blind_ported_results.npy last committed 2026-08-15
-  [STALE (data older than script)] E6 composite cascade
-      script e6_composite_ported.py last changed 2026-08-27; data e6_composite_ported_results.npy last committed 2026-08-17
-  [STALE (data older than script)] E6 flat control
-      script e6_flat_ported.py last changed 2026-08-27; data e6_flat_ported_results.npy last committed 2026-08-17
-  [STALE (data older than script)] E6 pilot-budget sweep
-      script e6_partial_ported.py last changed 2026-08-27; data e6_partial_ported_results.npy last committed 2026-08-15
-  [STALE (data older than script)] E6 unknown ISI (S1-S4)
-      script e6_sim_ported.py last changed 2026-08-28; data e6_sim_ported_results.npy last committed 2026-08-17
+**Current audit status** (regenerate; do not hand-edit): clean -- all declared outputs are committed and no data predates its script.
 
 Regenerate with `python provenance_audit.py --markdown`.
