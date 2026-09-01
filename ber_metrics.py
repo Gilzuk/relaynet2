@@ -91,6 +91,61 @@ def penalty_table(snr_db, ber_relay, ber_base, targets=DEFAULT_TARGETS):
                                  if reached else float("nan"))}
 
 
+def hierarchical_ci(samples, n_seeds, n_trials, conf=0.95):
+    """95% CI for a mean over `n_seeds` trained networks x `n_trials` runs each.
+
+    The obvious thing -- 1.96 * std(all 30 samples) / sqrt(30) -- is wrong here,
+    and wrong in the direction that flatters the result. The 10 inference trials
+    inside one seed share a single trained network: they resample Monte Carlo
+    noise but not training variance, so they are not 30 independent draws from
+    the population the claim is about ("a relay of this architecture, trained
+    this way"). Treating them as independent divides by sqrt(30) when the
+    effective sample size is closer to the 3 seeds, and the interval comes out
+    several times too narrow.
+
+    The correct unit of replication is the seed. Average within each seed, then
+    put a Student-t interval on those `n_seeds` means. With 3 seeds that is
+    t(2, 0.975) = 4.303 rather than 1.96 -- deliberately wide, because three
+    points genuinely say little about a spread.
+
+    Parameters
+    ----------
+    samples : array of shape (n_seeds * n_trials,), seed-major
+        Column `s * n_trials + t` is trial `t` of seed `s`, matching the layout
+        the E6 runners produce.
+    n_seeds, n_trials : int
+    conf : float, the two-sided confidence level.
+
+    Returns
+    -------
+    dict with `mean`, `ci` (half-width, hierarchical), `seed_means`,
+    `between_seed_std`, and `ci_pooled` -- the naive interval, kept so the two
+    can be reported side by side rather than one silently replacing the other.
+    """
+    from scipy import stats
+
+    x = np.asarray(samples, dtype=float).ravel()
+    if x.size != n_seeds * n_trials:
+        raise ValueError(f"expected {n_seeds * n_trials} samples, got {x.size}")
+    seed_means = x.reshape(n_seeds, n_trials).mean(axis=1)
+    mean = float(seed_means.mean())
+
+    if n_seeds < 2:
+        ci = float("nan")
+        sd = float("nan")
+    else:
+        sd = float(seed_means.std(ddof=1))
+        tcrit = float(stats.t.ppf(0.5 + conf / 2.0, n_seeds - 1))
+        ci = tcrit * sd / np.sqrt(n_seeds)
+
+    zcrit = float(stats.norm.ppf(0.5 + conf / 2.0))
+    ci_pooled = float(zcrit * x.std(ddof=1) / np.sqrt(x.size)) if x.size > 1 else float("nan")
+
+    return {"mean": mean, "ci": float(ci), "seed_means": seed_means.tolist(),
+            "between_seed_std": sd, "ci_pooled": ci_pooled,
+            "n_seeds": int(n_seeds), "n_trials": int(n_trials)}
+
+
 def _selftest():
     snr = [0, 4, 8, 12, 16, 20]
 
@@ -119,6 +174,29 @@ def _selftest():
     for t in p["targets_reached"]:
         d = p["per_target"][t]["db_penalty"]
         print(f"  Table 5.2 MLP-169 vs DF at BER {t:g}: {d:+.3f} dB")
+
+    # hierarchical CI: with no between-seed spread the two intervals should be
+    # close; with real spread the hierarchical one must be substantially wider,
+    # since that spread is exactly what pooling hides.
+    rng = np.random.default_rng(0)
+    tight = np.concatenate([rng.normal(0.0064, 1e-5, 10) for _ in range(3)])
+    h = hierarchical_ci(tight, 3, 10)
+    assert h["ci"] < 5 * h["ci_pooled"], "no real spread should not blow up the CI"
+    print(f"  hierarchical CI, no between-seed spread: "
+          f"{h['ci']:.2e} vs pooled {h['ci_pooled']:.2e}")
+
+    # the S1 8 dB case that prompted this: seed means 0.0061 / 0.0064 / 0.0073
+    spread = np.concatenate([rng.normal(m, 1e-5, 10)
+                             for m in (0.0061, 0.0064, 0.0073)])
+    h = hierarchical_ci(spread, 3, 10)
+    assert h["ci"] > 5 * h["ci_pooled"], "real between-seed spread must widen it"
+    print(f"  hierarchical CI, S1 8 dB spread: {h['ci']:.2e} vs pooled "
+          f"{h['ci_pooled']:.2e} ({h['ci'] / h['ci_pooled']:.1f}x wider)")
+
+    # the seed means must be recovered exactly, not approximately
+    assert np.allclose(h["seed_means"],
+                       spread.reshape(3, 10).mean(axis=1)), "seed means wrong"
+    print("  seed means recovered from the seed-major layout: OK")
     return True
 
 

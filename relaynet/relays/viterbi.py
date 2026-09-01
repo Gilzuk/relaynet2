@@ -95,8 +95,12 @@ class ViterbiMLSERelay(Relay):
 
         for s, state in enumerate(self.states):
             for u_idx, u in enumerate((-1.0, 1.0)):
-                # Next state: (state[1:], u)
-                next_state = state[1:] + (u,)
+                # Next state: drop the oldest symbol, append the new one.
+                # Written as (state + (u,))[1:] rather than state[1:] + (u,)
+                # so that L=1 works: there the state is empty and the successor
+                # of the single state is itself, where the latter form produces
+                # a one-element tuple that is not a state at all.
+                next_state = (state + (u,))[1:]
                 next_s = self.states.index(next_state)
                 self.nxt[s, u_idx] = next_s
 
@@ -244,7 +248,7 @@ class ViterbiMLSEQPSKRelay(Relay):
 
         for s, state in enumerate(self.states):
             for u in range(self.M):
-                next_state = state[1:] + (u,)
+                next_state = (state + (u,))[1:]      # L=1 safe; see ViterbiMLSERelay
                 self.nxt[s, u] = state_index[next_state]
 
                 expected = self.h[0] * self.ALPHABET[u]
@@ -438,3 +442,80 @@ class TruncatedViterbiQPSKRelay(ViterbiMLSEQPSKRelay):
         if default_before:
             self.traceback = 5 * self.L
         self._build_predecessors()
+
+
+class FadingAwareViterbiQPSKRelay(ViterbiMLSEQPSKRelay):
+    """QPSK MLSE told the per-symbol fading gain as well as the channel taps.
+
+    :class:`ViterbiMLSEQPSKRelay` assumes ``y[n] = (h * x)[n] + v[n]``. The
+    channel used in the QPSK unknown-ISI study is
+    :class:`~relaynet.channels.e6_channels.ComplexISIRayleighChannel`, which is
+
+        y[n] = g[n] (h * x)[n] + v[n],   g[n] = |CN(0,1)|,
+
+    an independent fading magnitude on every symbol. A detector given only ``h``
+    is therefore *not* genie CSI on that channel: its branch metrics compare
+    ``y[n]`` against unfaded expected values, so the residual
+    ``|g[n] A - A|^2 = A^2 (g[n] - 1)^2`` does not vanish as the noise does, and
+    its error rate flattens instead of falling. That mismatch, not any
+    sequence-versus-bit subtlety, is what a learned relay trained on the faded
+    channel exploits.
+
+    This subclass takes the gains and scales each branch's expected observation
+    by ``g[n]``, which is the genie-CSI detector for that channel. Pass them
+    with :meth:`set_gains` before :meth:`process`, or leave them unset to get
+    the unfaded behaviour of the parent unchanged.
+    """
+
+    def __init__(self, channel_taps=None, pilot_symbols=None, channel_len=3,
+                 gains=None):
+        super().__init__(channel_taps=channel_taps, pilot_symbols=pilot_symbols,
+                         channel_len=channel_len)
+        self.gains = None if gains is None else np.asarray(gains, dtype=float)
+
+    def set_gains(self, gains):
+        """Supply the per-symbol fading magnitudes for the next block."""
+        self.gains = None if gains is None else np.asarray(gains, dtype=float)
+        return self
+
+    def process(self, received_signal):
+        if self.gains is None:
+            return super().process(received_signal)
+
+        y = received_signal
+        n = len(y)
+        g = self.gains
+        if g.size != n:
+            raise ValueError(f"got {g.size} gains for {n} symbols; call "
+                             "set_gains() with one gain per received symbol")
+
+        metric = np.zeros(self.num_states)
+        bp_state = np.zeros((n, self.num_states), dtype=np.int32)
+        bp_input = np.zeros((n, self.num_states), dtype=np.int32)
+
+        for i in range(n):
+            # the only change from the parent: the expected observation for
+            # every branch is scaled by this symbol's fading gain
+            cand = metric[:, None] + np.abs(y[i] - g[i] * self.exp_y) ** 2
+
+            new_metric = np.full(self.num_states, np.inf, dtype=float)
+            bs = np.zeros(self.num_states, dtype=np.int32)
+            bi = np.zeros(self.num_states, dtype=np.int32)
+            for s in range(self.num_states):
+                for u in range(self.M):
+                    ns = self.nxt[s, u]
+                    if cand[s, u] < new_metric[ns]:
+                        new_metric[ns] = cand[s, u]
+                        bs[ns] = s
+                        bi[ns] = u
+            metric = new_metric
+            bp_state[i] = bs
+            bp_input[i] = bi
+
+        s = int(np.argmin(metric))
+        decoded = np.empty(n, dtype=complex)
+        for i in range(n - 1, -1, -1):
+            u_idx = bp_input[i, s]
+            decoded[i] = self.ALPHABET[u_idx]
+            s = bp_state[i, s]
+        return decoded

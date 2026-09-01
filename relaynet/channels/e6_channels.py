@@ -176,6 +176,10 @@ class ISIRayleighChannel:
             (self.rng.standard_normal(signal.size) +
              1j * self.rng.standard_normal(signal.size)) / np.sqrt(2)
         )
+        # Recorded so a genie-CSI detector can be given the fading gains as
+        # well as the taps. A trellis told only the taps is *not* genie CSI on
+        # this channel -- see FadingAwareViterbiQPSKRelay.
+        self.last_gains = h
         faded = h * isi_output
         # sigma^2 = N0/2 with N0 = Es/gamma, so snr_db is Eb/N0 and this
         # channel is on the same axis as relaynet/channels/fading.py and the
@@ -201,6 +205,10 @@ class ComplexISIRayleighChannel:
             (self.rng.standard_normal(signal.size) +
              1j * self.rng.standard_normal(signal.size)) / np.sqrt(2)
         )
+        # Recorded so a genie-CSI detector can be given the fading gains as
+        # well as the taps. A trellis told only the taps is *not* genie CSI on
+        # this channel -- see FadingAwareViterbiQPSKRelay.
+        self.last_gains = h
         faded = h * isi_output
         sigma = 10 ** (-snr_db / 20.0)
         noise = sigma * (

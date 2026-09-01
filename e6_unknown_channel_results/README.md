@@ -50,3 +50,25 @@ now fixed — see `memory-bank/progress.md`'s "E6_FLAT bug fixes" section for th
 writeup. E6_COMPOSITE/BLIND/PARTIAL/COMPLEXITY were verified against `PORTING.md`'s
 stated targets at their own standalone trial budgets (see `memory-bank/progress.md`
 for full numeric details).
+
+## Rare-event cells (16–20 dB) and where their error counts live
+
+The 16, 18 and 20 dB entries of `tbl:tableE6` are not fixed-budget averages. They
+use an error-counting rule: transmit until the first error at `N1` bits, then
+continue to `10 x N1` bits (capped per SNR by `FIRST_ERROR_MAX_BITS_BY_SNR`), and
+report accumulated errors divided by total exposure. A cell that sees no error
+inside the cap reports the rule-of-three 95% upper bound `3/N`, not `1/N` and not
+zero. This replaced an estimator that stopped at the first event and reported its
+reciprocal waiting time — one sample per cell, which returned values as
+implausible as `0.5` for DF at 16 dB where error counting gives `0.2296`.
+
+`e6_sim_ported_results.npy` as committed (run `a3a07ab`, 2026-08-31) stores the
+BER means and CIs but **not** the underlying bit and error counts: `_save` only
+began persisting `rare_event_meta` after that run finished. Until the next full
+regeneration, the per-cell counts for that run are in
+**`results/e6_sim_rerun_progress.txt`**, which is committed alongside the `.npy`.
+For S1 at 16 dB, for example, it records
+`MLP=4.79e-08 (334,002,040b, 16 err)`.
+
+Any BER cell below roughly 1e-4 should have its error *count* checked in that file
+before a ratio or a claim is built on it.

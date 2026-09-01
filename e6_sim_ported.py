@@ -12,7 +12,11 @@ Following PORTING.md section 1 acceptance criteria.
 """
 
 import os
+import sys
+
 import numpy as np
+
+from ber_metrics import hierarchical_ci
 from relaynet.relays import AmplifyAndForwardRelay, DecodeAndForwardRelay, MLPRelay
 from relaynet.channels import ISIChannel, NonlinearBiasChannel, RayleighChannel, awgn_channel
 from relaynet.channels.awgn import calculate_snr
@@ -57,6 +61,9 @@ FIRST_ERROR_MAX_BITS_BY_SNR = {
 }
 FIRST_ERROR_DEFAULT_MAX_BITS = 100_000_000
 FIRST_ERROR_BLOCK = 100_000        # transmit in 100k-bit blocks for memory efficiency
+# After the first error at N1 bits, keep transmitting to this multiple of N1
+# so the estimate rests on ~10 errors rather than 1 (capped by max_bits).
+FIRST_ERROR_EXTEND_FACTOR = 10
 
 # Global RNG (for reproducibility)
 rng = np.random.default_rng(42)
@@ -197,51 +204,104 @@ def run_ber_trial(relay, hop1_channel, hop2_channel, source, destination, num_bi
 
 def run_ber_first_error(relay, hop1_channel, hop2_channel, source, destination,
                         snr_db, max_bits=FIRST_ERROR_DEFAULT_MAX_BITS,
-                        block_size=FIRST_ERROR_BLOCK):
-    """First-error BER estimator: transmit until the first bit error, then stop.
+                        block_size=FIRST_ERROR_BLOCK,
+                        extend_factor=FIRST_ERROR_EXTEND_FACTOR):
+    """Rare-event BER estimator: locate the first error, then keep going.
 
-    Returns BER = 1 / bits_transmitted_until_first_error.
-    If no error is found within max_bits, returns 1 / max_bits (upper bound).
+    Stopping at the first error and reporting 1/N is a one-sample estimator:
+    the waiting time to a single event has a standard deviation equal to its
+    own mean, so the figure carries no usable precision. It is also badly
+    behaved when applied to a relay whose BER is not small -- an AF relay
+    near 0.2 hits its first error after a couple of bits, and 1/2 is then
+    reported as a BER.
 
-    Parameters
-    ----------
-    relay, hop1_channel, hop2_channel, source, destination : as in run_ber_trial
-    snr_db : float
-    max_bits : int
-        Maximum bits to transmit before giving up.
-    block_size : int
-        Process this many bits per block for memory efficiency.
+    So the search runs in two phases. Phase one finds the first error at
+    N1 bits. Phase two continues to `extend_factor * N1` bits (capped by
+    max_bits), counting every error, and the estimate is the ordinary
+    errors/bits ratio over the whole run. At the default factor of ten this
+    accumulates about ten errors, giving roughly +/-30% relative precision
+    instead of a single sample, and it costs almost nothing precisely where
+    the old estimator was worst: a relay erring every few bits reaches its
+    quota in a few dozen bits.
+
+    Where the BER is genuinely tiny the cap binds before the quota is met.
+    That case is reported honestly rather than papered over: `n_errors`
+    tells the caller how many events the estimate rests on, so a figure
+    resting on one or two errors can be labelled as such.
 
     Returns
     -------
     ber : float
-        1 / bits_until_first_error  (or 1 / max_bits if no error found)
+        n_errors / bits_used, or the rule-of-three 95% upper bound 3/max_bits
+        if no error was seen at all. (1/N, used previously for that case, is
+        not an upper bound of any stated confidence -- it is roughly the
+        point at which one error becomes likely, so it understates the true
+        bound by about a factor of three.)
     bits_used : int
         Total bits transmitted.
     found_error : bool
         Whether at least one error was observed.
+    n_errors : int
+        Errors accumulated. 0 means `ber` is an upper bound, not an estimate.
     """
     bits_used = 0
-    while bits_used < max_bits:
-        n = min(block_size, max_bits - bits_used)
+    n_errors = 0
+    target_bits = max_bits          # tightened to extend_factor*N1 once found
+
+    while bits_used < target_bits:
+        n = min(block_size, target_bits - bits_used)
         tx_bits, tx_symbols = source.transmit(n)
         rx_relay = hop1_channel(tx_symbols, snr_db)
         relay_out = relay.process(rx_relay)
         rx_dest = hop2_channel(relay_out, snr_db)
         rx_bits = destination.receive(rx_dest)
 
-        errors = np.sum(tx_bits != rx_bits)
-        if errors > 0:
-            # find index of first error
-            first_idx = np.argmax(tx_bits != rx_bits)
-            bits_until_error = bits_used + int(first_idx) + 1
-            return 1.0 / bits_until_error, bits_until_error, True
+        mismatches = (tx_bits != rx_bits)
+        errors = int(np.sum(mismatches))
+
+        if n_errors == 0 and errors > 0:
+            # First error located: fix the budget at extend_factor * N1.
+            first_idx = int(np.argmax(mismatches))
+            bits_to_first = bits_used + first_idx + 1
+            target_bits = min(extend_factor * bits_to_first, max_bits)
+
+        n_errors += errors
         bits_used += n
 
-    return 1.0 / max_bits, max_bits, False
+    if n_errors == 0:
+        # Rule of three: with zero events in N trials the 95% upper bound on
+        # the rate is ~3/N. Flagged by found_error=False and n_errors=0.
+        return 3.0 / max_bits, max_bits, False, 0
+
+    return n_errors / bits_used, bits_used, True, n_errors
 
 
-def run_experiment(hop1_kind, hop2_kind, mlp_relays):
+def load_previous_rare_event(setup_name):
+    """Previously measured 16-20 dB cells for `setup_name`, or None.
+
+    The 18 and 20 dB searches run to 10 billion bits and dominate the cost of a
+    full pass by hours, while contributing no confidence interval at all: each
+    is a single measurement with no replication. Re-measuring them to change how
+    the *other* cells' intervals are computed would be several hours spent to
+    reproduce numbers that cannot move. This reads them from the committed .npy
+    instead. Every run that does so records `rare_event_source` in its output,
+    so a reused cell is never mistaken for a fresh one.
+    """
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                        'e6_unknown_channel_results', 'e6_sim_ported_results.npy')
+    if not os.path.exists(path):
+        return None
+    prev = np.load(path, allow_pickle=True).item()
+    res = prev.get('results', {}).get(setup_name)
+    if res is None or list(prev.get('snrs', [])) != list(SNRS):
+        return None
+    return {r: {int(SNRS[si]): float(res[r][0][si])
+                for si in range(len(SNRS))
+                if int(SNRS[si]) in FIRST_ERROR_SNRS}
+            for r in ('AF', 'DF', 'MLP') if r in res}
+
+
+def run_experiment(hop1_kind, hop2_kind, mlp_relays, reuse_rare_event=None):
     """Run full BER experiment over multiple independently trained MLPs.
 
     Parameters
@@ -284,6 +344,12 @@ def run_experiment(hop1_kind, hop2_kind, mlp_relays):
         print(f"  [Training instance {ti + 1}/{N_TRAIN}]")
         for si, snr in enumerate(SNRS):
             if int(snr) in FIRST_ERROR_SNRS:
+                if reuse_rare_event is not None:
+                    for r in ('AF', 'DF', 'MLP'):
+                        results[r][si, :] = reuse_rare_event[r][int(snr)]
+                    if ti == 0:
+                        print(f"    SNR {snr:2d} dB  [reused from the committed run]")
+                    continue
                 # First-error estimator: only run on the first training seed
                 if ti > 0:
                     # Copy seed-0 result into this seed's columns so pooled mean is stable
@@ -294,14 +360,16 @@ def run_experiment(hop1_kind, hop2_kind, mlp_relays):
                 # ti == 0: run the actual first-error experiment
                 first_error_max_bits = FIRST_ERROR_MAX_BITS_BY_SNR.get(int(snr), FIRST_ERROR_DEFAULT_MAX_BITS)
                 print(f"    SNR {snr:2d} dB  [first-error, up to {first_error_max_bits//1_000_000}M bits]")
-                ber_af, bits_af, _ = run_ber_first_error(af_relay, hop1_channel, hop2_channel, source, destination, snr,
+                ber_af, bits_af, _, nerr_af = run_ber_first_error(af_relay, hop1_channel, hop2_channel, source, destination, snr,
                                                          max_bits=first_error_max_bits)
-                ber_df, bits_df, _ = run_ber_first_error(df_relay, hop1_channel, hop2_channel, source, destination, snr,
+                ber_df, bits_df, _, nerr_df = run_ber_first_error(df_relay, hop1_channel, hop2_channel, source, destination, snr,
                                                          max_bits=first_error_max_bits)
-                ber_mlp, bits_mlp, found = run_ber_first_error(mlp_relay, hop1_channel, hop2_channel, source, destination, snr,
+                ber_mlp, bits_mlp, found, nerr_mlp = run_ber_first_error(mlp_relay, hop1_channel, hop2_channel, source, destination, snr,
                                                                 max_bits=first_error_max_bits)
-                flag = "" if found else f" [no error in {first_error_max_bits//1_000_000}M bits → upper bound]"
-                print(f"      AF={ber_af:.2e} ({bits_af:,}b), DF={ber_df:.2e} ({bits_df:,}b), MLP={ber_mlp:.2e} ({bits_mlp:,}b){flag}")
+                flag = "" if found else f" [no error in {first_error_max_bits//1_000_000}M bits → 3/N bound]"
+                print(f"      AF={ber_af:.2e} ({bits_af:,}b, {nerr_af} err), "
+                      f"DF={ber_df:.2e} ({bits_df:,}b, {nerr_df} err), "
+                      f"MLP={ber_mlp:.2e} ({bits_mlp:,}b, {nerr_mlp} err){flag}")
                 # Fill all columns with this single estimate
                 results['AF'][si, :] = ber_af
                 results['DF'][si, :] = ber_df
@@ -309,6 +377,11 @@ def run_experiment(hop1_kind, hop2_kind, mlp_relays):
                 first_error_meta[si] = {
                     'snr': snr, 'bits_af': bits_af, 'bits_df': bits_df,
                     'bits_mlp': bits_mlp, 'found_error': found,
+                    # Error counts are what tell a reader whether a cell is an
+                    # estimate or a single event; carried through to the .npy.
+                    'n_errors_af': nerr_af, 'n_errors_df': nerr_df,
+                    'n_errors_mlp': nerr_mlp,
+                    'extend_factor': FIRST_ERROR_EXTEND_FACTOR,
                 }
             else:
                 n_bits_snr = BITS_AT_SNR.get(int(snr), N_BITS)
@@ -327,20 +400,50 @@ def run_experiment(hop1_kind, hop2_kind, mlp_relays):
                     if tr == 0:
                         print(f"    SNR {snr:2d} dB [{n_bits_snr//1000}k bits], trial {tr}: AF={ber_af:.4f}, DF={ber_df:.4f}, MLP={ber_mlp:.4f}")
 
-    # Pool statistics over all N_TRAIN * N_TRIALS columns
-    # (first-error SNRs have all cols identical → CI = 0, which is correct:
-    #  a single first-error measurement has no within-experiment variance)
-    return {
-        r: (v.mean(1), 1.96 * v.std(1) / np.sqrt(total_cols))
-        for r, v in results.items()
-    }, first_error_meta
+    # Confidence intervals. The unit of replication is the training seed, not
+    # the inference trial: the 10 trials inside one seed share a trained
+    # network, so pooling all 30 as i.i.d. divides by sqrt(30) when the
+    # effective sample size is nearer 3, and returns an interval several times
+    # too narrow. `hierarchical_ci` averages within a seed and puts a
+    # Student-t interval on the seed means; both it and the naive pooled
+    # interval are returned so the two can be reported side by side.
+    #
+    # A first-error SNR has all columns identical by construction: one
+    # measurement, no replication, so both intervals are 0 and neither means
+    # anything. Those cells carry their error counts instead (rare_event_meta).
+    stats = {}
+    for r, v in results.items():
+        mean = np.zeros(len(SNRS))
+        ci_h = np.zeros(len(SNRS))
+        ci_p = np.zeros(len(SNRS))
+        for si in range(len(SNRS)):
+            if int(SNRS[si]) in FIRST_ERROR_SNRS:
+                mean[si] = v[si, 0]
+                ci_h[si] = ci_p[si] = 0.0
+                continue
+            h = hierarchical_ci(v[si], N_TRAIN, N_TRIALS)
+            mean[si], ci_h[si], ci_p[si] = h["mean"], h["ci"], h["ci_pooled"]
+        # (mean, ci) keeps the historical 2-tuple shape every reader expects;
+        # the pooled interval and the raw columns ride alongside.
+        stats[r] = (mean, ci_h)
+        stats[r + "_ci_pooled"] = ci_p
+        stats[r + "_raw"] = v.copy()
+    return stats, first_error_meta
 
 
-def _save(all_results, setups, complete):
+def _save(all_results, setups, complete, rare_event_meta, rare_event_source):
     """Write results to the repository, flagging whether the run finished.
 
     Called after every setup as well as at the end, so a container restart
-    costs one setup rather than the whole pass.
+    costs one setup rather than the whole pass. This is the only writer of
+    the .npy: an earlier version also did a bare np.save() at the end of
+    main(), which silently dropped the `complete` and `setups_done` tags
+    from the finished file.
+
+    `rare_event_meta` carries the bits and error counts behind every 16-20 dB
+    cell. Those counts are what tell a reader whether a cell is an estimate
+    or a single event, and without them in the file the only record was the
+    console log.
     """
     out = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                        'e6_unknown_channel_results', 'e6_sim_ported_results.npy')
@@ -348,6 +451,11 @@ def _save(all_results, setups, complete):
                   'n_train': N_TRAIN, 'n_trials': N_TRIALS,
                   'bits_at_snr': BITS_AT_SNR,
                   'first_error_snrs': list(FIRST_ERROR_SNRS),
+                  'first_error_max_bits_by_snr': FIRST_ERROR_MAX_BITS_BY_SNR,
+                  'first_error_default_max_bits': FIRST_ERROR_DEFAULT_MAX_BITS,
+                  'extend_factor': FIRST_ERROR_EXTEND_FACTOR,
+                  'rare_event_meta': rare_event_meta,
+                  'rare_event_source': rare_event_source,
                   'complete': complete,
                   'setups_done': sorted(all_results)}, allow_pickle=True)
     print(f"  [checkpoint] {len(all_results)}/{len(setups)} setups saved"
@@ -355,9 +463,17 @@ def _save(all_results, setups, complete):
 
 
 def main():
-    """Main entry point."""
+    """Main entry point.
+
+    --reuse-rare-event carries the 16-20 dB cells over from the committed .npy
+    instead of re-measuring them. See load_previous_rare_event for why, and note
+    that the saved file records which of the two it was.
+    """
+    reuse_rare = "--reuse-rare-event" in sys.argv
     print("=" * 70)
     print("E6_SIM: Unknown ISI & Nonlinear Bias Experiments (Ported to relaynet)")
+    if reuse_rare:
+        print("  16-20 dB cells reused from the committed run (--reuse-rare-event)")
     print("=" * 70)
 
     # Train N_TRAIN independent MLPs per channel type
@@ -380,7 +496,21 @@ def main():
         ('S4 control: Rayleigh -> Rayleigh (canonical)', 'rayleigh', 'rayleigh'),
     ]
 
+    # Read every setup's 16-20 dB cells before the first checkpoint. _save
+    # rewrites the file with only the setups finished so far, so a per-setup
+    # read would find setup 2's cells already deleted by setup 1's checkpoint.
+    prev_rare_all = {}
+    if reuse_rare:
+        for name, _, _ in setups:
+            prev = load_previous_rare_event(name)
+            if prev is None:
+                raise SystemExit(
+                    f"--reuse-rare-event: no committed 16-20 dB cells for "
+                    f"{name!r}. Run a full pass first, or drop the flag.")
+            prev_rare_all[name] = prev
+
     all_results = {}
+    rare_event_meta = {}
     for name, hop1_kind, hop2_kind in setups:
         print(f"\n{name}")
         print(f"  SNR (dB): " + " ".join(f"{s:>7d}" for s in SNRS))
@@ -397,8 +527,10 @@ def main():
             nets[hop1_kind] = trained
         trained_nets = nets[hop1_kind]
 
-        results, fe_meta = run_experiment(hop1_kind, hop2_kind, trained_nets)
+        results, fe_meta = run_experiment(hop1_kind, hop2_kind, trained_nets,
+                                          reuse_rare_event=prev_rare_all.get(name))
         all_results[name] = results
+        rare_event_meta[name] = fe_meta
 
         # Print results
         for relay in ('AF', 'DF', 'MLP'):
@@ -409,20 +541,17 @@ def main():
         # run to 10 billion bits, so a full pass takes hours; two container
         # restarts have already discarded a complete run that only saved at
         # the end. A partial file is marked so it is never mistaken for one.
-        _save(all_results, setups, complete=False)
+        _save(all_results, setups, complete=False,
+              rare_event_meta=rare_event_meta,
+              rare_event_source=('reused from the previous committed run'
+                                 if reuse_rare else 'measured in this run'))
 
-    _save(all_results, setups, complete=True)
-    output_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                               'e6_unknown_channel_results', 'e6_sim_ported_results.npy')
-    # /tmp does not persist between sessions (CLAUDE.md); writing straight
-    # into the repo is what keeps the committed data and the script in step.
-    np.save(output_path, {'setups': setups, 'results': all_results, 'snrs': SNRS,
-                          'n_train': N_TRAIN, 'n_trials': N_TRIALS,
-                          'bits_at_snr': BITS_AT_SNR,
-                          'first_error_snrs': list(FIRST_ERROR_SNRS),
-                          'first_error_max_bits_by_snr': FIRST_ERROR_MAX_BITS_BY_SNR,
-                          'first_error_default_max_bits': FIRST_ERROR_DEFAULT_MAX_BITS}, allow_pickle=True)
-    print(f"\nResults saved to {output_path}")
+    # /tmp does not persist between sessions (CLAUDE.md); _save writes straight
+    # into the repo, which is what keeps the committed data and the script in
+    # step. Nothing else may write this file -- see the note in _save.
+    _save(all_results, setups, complete=True, rare_event_meta=rare_event_meta,
+          rare_event_source=('reused from the previous committed run'
+                             if reuse_rare else 'measured in this run'))
 
     return all_results
 

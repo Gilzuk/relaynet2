@@ -34,6 +34,9 @@ ViterbiMLSERelay receives, so the comparison isolates the detector rather than
 channel knowledge.
 """
 
+import os
+import sys
+
 import numpy as np
 
 from relaynet.relays.base import Relay
@@ -151,5 +154,79 @@ def _selftest():
     return True
 
 
+# Tap counts published in tbl:mmse-baseline.
+TAP_COUNTS = (3, 5, 7, 11)
+# JSON key -> (CHANNELS key, name of the tap vector in mlp_min_size_all_channels)
+# The equalizer needs the taps explicitly; CHANNELS entries carry them only
+# inside their baseline MLSE relay, so they are named here rather than dug out.
+TABLE_CHANNELS = (("isi", "isi", "H_ISI"),
+                  ("isi_complex", "isi_complex", "H_ISI"),
+                  ("composite", "composite", "H_COMPOSITE"))
+
+
+def main():
+    """Regenerate results/mmse_equalizer.json, the source for tbl:mmse-baseline.
+
+    The published table originally had no committed producer: the JSON was
+    written by an ad-hoc script that was never checked in, so the numbers could
+    not be reproduced and the provenance audit had nothing real to point at.
+    This is that producer.
+
+    The metric is the same one seq_models_on_memory.py reports -- the worst dB
+    penalty against the channel's own Viterbi MLSE baseline across the standard
+    BER targets -- computed on the shared evaluation protocol in
+    mlp_min_size_all_channels.evaluate_two_hop, so an MMSE-LE number and a
+    learned-relay number in the same row are measured identically.
+
+    The equalizer is constructed with an explicit snr_db at each sweep point.
+    An earlier revision of this class carried a `_runtime_snr = 10.0` fallback,
+    which meant a caller that did not pass an SNR silently used 10 dB weights at
+    every point; passing it per point is what that fallback's removal requires.
+    """
+    import json
+
+    import mlp_min_size_all_channels as mm
+    from mlp_min_size_all_channels import CHANNELS, SNRS, evaluate_two_hop
+    from ber_metrics import penalty_table
+
+    out = {}
+    for json_key, ch_key, taps_name in TABLE_CHANNELS:
+        spec = CHANNELS[ch_key]
+        hop1, hop2, mod = spec["make"](1), spec["hop2"](), spec["mod"]
+        base_name, base_relay = spec["baseline"]()
+        base, _ = evaluate_two_hop(base_relay, hop1, hop2, mod, None)
+        taps = np.asarray(getattr(mm, taps_name), dtype=float)
+        # QPSK carries half the power on each real axis; the equalizer applies
+        # itself per axis, so sigma_x^2 is 0.5 there and 1.0 for BPSK.
+        sig_x2 = 0.5 if mod == "qpsk" else 1.0
+        print(f"  === {json_key} ({mod}, baseline {base_name}) ===", flush=True)
+        out[json_key] = {}
+        for n in TAP_COUNTS:
+            eq = MMSELinearEqualizerRelay(taps, num_taps=n, hard=False,
+                                          sig_x2=sig_x2)
+            ber = []
+            for snr in SNRS:
+                eq.snr_db = float(snr)
+                eq._cache.clear()
+                b, _ = evaluate_two_hop(eq, hop1, hop2, mod, None)
+                ber.append(b[SNRS.index(snr)])
+            p = penalty_table(SNRS, ber, base)
+            db = (p["worst_db_penalty"] if p["targets_reached"]
+                  else float("nan"))
+            out[json_key][str(n)] = db
+            print(f"    MMSE-LE {n:>2} taps: {db:+.4f} dB vs {base_name}",
+                  flush=True)
+
+    dest = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                        "results", "mmse_equalizer.json")
+    with open(dest, "w") as fh:
+        json.dump(out, fh, indent=2)
+    print(f"\nWritten to {dest}")
+    return out
+
+
 if __name__ == "__main__":
-    _selftest()
+    if "--selftest" in sys.argv:
+        _selftest()
+    else:
+        main()

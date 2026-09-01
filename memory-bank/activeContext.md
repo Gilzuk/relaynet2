@@ -808,8 +808,126 @@ separators (`2{,}048`) truncated at the first group; scientific notation
 on the pre-`clean_cell` form, silently checking 3 of 10 rows while reporting OK.
 All fixed; the notation fix also cleared a pre-existing flag.
 
+### E6 regeneration with the corrected rare-event estimator (closed)
+`run_ber_first_error` no longer stops at the first error: it fixes the budget at
+`10 x N1` bits and reports accumulated errors / total exposure, falling back to the
+rule-of-three `3/N` upper bound when no error occurs inside the cap. All four E6
+setups were regenerated on three seeds (`a3a07ab`, log in
+`results/e6_sim_rerun_progress.txt`), and
+`tbl:tableE6`'s S1 rows, caption, footnotes, the Layer-2 ladder row, the chapter
+opener and the "Note on simulation validity" tiers were all repointed to that run.
+
+The old estimator was materially wrong at 16--20 dB, not merely imprecise:
+DF at 16 dB read `0.500` from one error in two bits, against `0.2296` from 22,959
+errors over the same channel. MLP at 16 dB is now `4.79e-8` (16 errors in
+334,002,040 bits); 18 and 20 dB saw no error in 10G bits and are reported as the
+`3/N = 3.0e-10` bound rather than as zero.
+
+`memory-bank/table_provenance.md` was regenerated -- `tbl:tableE6` moved from
+**STALE** to **ok**, and no table in the ledger is STALE any more.
+
+### The QPSK Viterbi benchmark was not genie CSI (round-2 review, resolved)
+
+Chapter 7 reported a reversal it could not explain: on the QPSK unknown-ISI
+channel a 193-parameter MLP matched or beat "genie-CSI Viterbi MLSE" from 2 dB
+upward, where BPSK's Viterbi led by 1--1.5 dB. It offered a sequence-ML versus
+bit-MAP criterion mismatch as a conjecture and named two measurements as future
+work. Both now point the other way, and the cause is much simpler.
+
+`qpsk_error_decomposition.py` ran the first of the two (single- versus
+double-bit symbol errors) and **ruled the conjecture out**: the MLP beats
+Viterbi on *symbol* error rate too, from about 8 dB up (0.094 against 0.113 at
+20 dB), and both detectors lose almost identical bits per symbol error (1.073
+against 1.090), so the Gray map is not the mechanism either. A criterion
+mismatch cannot explain a detector that is behind on the criterion it is
+supposed to optimize.
+
+The real cause: the QPSK study's hop 1 is `ComplexISIRayleighChannel`, which is
+`y[n] = g[n] (h * x)[n] + v[n]` with an independent Rayleigh magnitude on every
+symbol. `ViterbiMLSEQPSKRelay(channel_taps=H_ISI)` models `y[n] = (h*x)[n] +
+v[n]`. **It is given the taps but not the fading, so it is not genie CSI on
+that channel** -- its branch residual `A^2 (g[n]-1)^2` does not shrink with SNR,
+which is why its error rate flattens. Controls, same trellis:
+
+  taps-only on the faded channel   SER 0.184 at 20 dB
+  taps-only, fading removed        SER 0.000 at 20 dB
+  fading-aware (true genie CSI)    SER 0.022 at 20 dB
+
+`FadingAwareViterbiQPSKRelay` scales each branch's expected observation by
+`g[n]`; `ComplexISIRayleighChannel` (and its real sibling) now record
+`last_gains` so a genie detector can be handed them. With the correct benchmark
+the reversal disappears: genie CSI leads the MLP at every SNR measured.
+
+The BPSK study is unaffected -- it uses `ISIChannel`, which has no fading, so
+its Viterbi genuinely is genie CSI. That difference between the two channels,
+not the modulation order, is the whole of the "reversal".
+
+The trellis itself was audited and is correct: it never returns a path less
+likely than the true transmitted sequence, and with no ISI it agrees with the
+nearest-symbol slicer on every symbol (asserted in
+`qpsk_error_decomposition._selftest`). Two unrelated defects surfaced: both
+Viterbi classes crash for L=1 (`M**0 = 1` state, and the successor is not in
+the state list), and the simulator's zero pre-history at a block start is not
+representable in the trellis (at most L-1 symbols per block).
+
+Resolved at project scale. `e6_qpsk_unknown_channel.py` now runs both detectors.
+Every AF/DF/MLP/taps-only cell reproduces the published table (the taps-only row
+*is* the row that was published as "genie CSI"); the new genie-CSI column leads
+the MLP at every SNR, 0.3300 against 0.3389 at 0 dB widening to 0.0001 against
+0.0508 at 20 dB. Chapter 7's QPSK subsection is rewritten: the reversal was an
+artefact of the comparator, the BPSK ordering does generalize, and the stronger
+reading the old text drew -- that the learned relay was the best option among
+either family -- is withdrawn. H5 itself is unaffected.
+
+`mlp_min_size_all_channels.py`'s `isi_rayleigh` uses the same taps-only relay;
+its comparator is renamed "MLSE (taps only)" and the over-reaching comment
+corrected. `tbl:table-minsize` is *not* affected -- `report_minsize_vs_169
+.analyse` scores every row against the MLP-169 sweep entry, not this baseline.
+Only the JSON's unused `min_params_both_criteria` field is optimistic there.
+
+### Hierarchical CIs, measured
+The three-seed E6 re-run with `--reuse-rare-event` completed all four setups and
+persists raw per-column BERs, so an interval can be recomputed without running
+anything again. The pooled interval understates the MLP by **7-8x** (S1 8 dB:
++-1.3e-3 hierarchical against +-1.8e-4 pooled) and leaves AF and DF roughly
+alone -- exactly as it should, since only the MLP has a trained network varying
+across seeds. With 3 seeds the t-interval is itself noisy and occasionally comes
+out *narrower* than pooled on a relay with no training variance; that is not a
+counterexample, it is what 2 degrees of freedom looks like.
+
+One consequence to remember: skipping the 16-20 dB rare-event cells changes the
+RNG stream for everything after them, so the re-run is an independent
+measurement rather than a bit-exact reproduction. The 8 and 12 dB means moved by
+~2e-4 and the thesis now carries the new run's values throughout. Trial noise is
+history-dependent because a trial's seed is not derived from (setup, seed, snr,
+trial); per-trial deterministic seeding would fix that and is worth doing before
+the next regeneration.
+
 ### State
-121 pages, build clean, 0 undefined references. Verifier: 451 cells, 5 flags, all
-pre-existing (three AF rows in `tbl:tableE6` differing by ~0.01 BER -- a genuine
-stale-data issue predating this branch and still open -- and two seventh-decimal
-roundings in `tbl:table44`). Tests: 169 passed.
+**125 countable pages** against the faculty's 120 limit -- five over. Build
+clean, 0 undefined references or citations. Verifier: 479 cells, 2 flags, both
+pre-existing seventh-decimal roundings in `tbl:table44`. Provenance audit clean.
+Tests: 179 passed.
+
+### How to count the pages (do not quote `pdfinfo`)
+`pdfinfo` reports **142**, and that is not the number the limit is measured
+against -- quoting it is a mistake this project has now made twice. The build is:
+
+| pages | what | counts? |
+|---|---|---|
+| 1-2 | title page, then the inner title page with the supervision statement | no |
+| 3-14 | Abstract, Acknowledgments, Contents, Symbols, Figures, Tables (folios i-xii) | no |
+| **15-139** | **Chapter 1 through the Appendices (folios 1-125)** | **yes** |
+| 140-142 | Hebrew title page and abstract, own numbering | no |
+
+So countable = `pdfinfo` total minus 14 Roman front-matter pages minus 3 Hebrew
+back-matter pages. The offset is verifiable two ways: folio 1 sits on PDF p15,
+and `main.toc` puts Chapter 9 (Appendices) at folio 119 on PDF p133. The limit
+includes the appendices.
+
+**Margins are already at the faculty minimum** and are not a lever. `main.tex`
+sets `top=2.5cm, bottom=2cm, left=3cm, right=2cm`, which is TAU Faculty of
+Engineering *Guidelines* A.3 exactly -- 3 cm binding side, 2 cm on the other
+three, measured from the built PDF in commit `8610554`. Cutting further would
+breach the format rule rather than exploit it, so the five pages have to come
+out of content.

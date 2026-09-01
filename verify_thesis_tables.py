@@ -1037,8 +1037,13 @@ def check_tableE6qpsk(tex, rep):
     col_snr = [(2, 8), (3, 12), (4, 16), (5, 20)]
 
     setup_map = {"AWGN": "awgn", "Rayleigh": "rayleigh"}
+    # Two Viterbi rows now: the taps-only trellis, which is what this table
+    # used to publish under the "genie CSI" label, and the fading-aware one
+    # that actually is genie CSI on this channel. "TAPS" must be tested before
+    # the bare "VITERBI" fallback or both rows would match the same key.
     relay_map = {"AF": "AF", "DF": "DF", "MLP-QPSK": "MLP-QPSK",
-                 "VITERBI": "Viterbi (genie CSI)"}
+                 "TAPS ONLY": "Viterbi (taps only)",
+                 "GENIE": "Viterbi (genie CSI)"}
     cur_setup = None
     for row in data_rows(body):
         if not row:
@@ -1324,6 +1329,123 @@ def check_mmse_baseline(tex, rep):
     rep.finish_table(T, before)
 
 
+def check_qpsk_decomposition_prose(tex, rep):
+    """The QPSK SER / bits-per-symbol-error figures quoted in Chapter 7 prose.
+
+    These are the numbers that rule out the criterion-mismatch conjecture, so
+    they should not be able to drift away from the run that produced them.
+    Prose rather than a table, so the sentence is located by its own wording.
+    """
+    T = "prose:qpsk-decomposition"; before = rep.checked
+    src_path = os.path.join(ROOT, "results", "qpsk_error_decomposition.json")
+    if not os.path.exists(src_path):
+        return rep.skip(T, "results/qpsk_error_decomposition.json not found")
+    with open(src_path) as fh:
+        src = json.load(fh)
+
+    def at20(needle):
+        for name, rows in src["detectors"].items():
+            if needle.lower() in name.lower():
+                for r in rows:
+                    if int(r["snr_db"]) == 20:
+                        return r
+        return None
+
+    vit, mlp = at20("taps only"), at20("MLP")
+    if vit is None or mlp is None:
+        return rep.skip(T, "detector keys not found in the JSON")
+
+    i = tex.find("the MLP is ahead on \\emph{symbol} error rate as well")
+    if i < 0:
+        return rep.skip(T, "decomposition sentence not found in tex")
+    # Both lookups guarded: on -1 the inner find would make the outer one
+    # search from the end of the document and the slice would cover an
+    # unrelated region, checking the wrong numbers instead of failing.
+    tail = tex.find("Gray map is not the route", i)
+    if tail < 0:
+        return rep.skip(T, "sentence does not reach the expected closing clause")
+    stop = tex.find(".", tail)
+    if stop < 0:
+        return rep.skip(T, "no sentence terminator after the closing clause")
+    sent = tex[i:stop]
+    nums = [float(m) for m in re.findall(r"\$(\d+\.\d+)\$", sent)]
+    if len(nums) != 4:
+        return rep.skip(T, f"expected 4 numbers in the sentence, found {len(nums)}")
+    for got, want, what in zip(
+            nums,
+            [mlp["ser"], vit["ser"],
+             mlp["bits_per_symbol_error"], vit["bits_per_symbol_error"]],
+            ["mlp_ser@20dB", "vit_ser@20dB", "mlp_bits_per_err", "vit_bits_per_err"]):
+        rep.cell(T, what, f"{got}", got, want)
+    rep.finish_table(T, before)
+
+
+def check_slicer_floor(tex, rep):
+    """The closed-form slicer-BER table in Section~\\ref{sec:unknown-channel-experiment}.
+
+    Two rows, both machine-derivable and from different sources, which is the
+    point of the table: the closed form against results/isi_slicer_floor.json,
+    and the measured DF row against the same E6 .npy that backs tbl:tableE6.
+    The table has no \\label (it is an inline tabular inside a center, not a
+    float), so it is located by its row labels rather than by tabular_body.
+    """
+    T = "tbl:slicer-floor-inline"; before = rep.checked
+    i = tex.find("DF closed form, Eq.")
+    if i < 0:
+        return rep.skip(T, "closed-form row not found in tex")
+    # back up to the table's own \toprule so the SNR header row is inside the
+    # body -- it is what tells each value row which column is which SNR.
+    start = tex.rfind("\\toprule", 0, i)
+    if start < 0:
+        return rep.skip(T, "no \\toprule above the closed-form row")
+    stop = tex.find("\\bottomrule", i)
+    if stop < 0:
+        # find() returning -1 would slice to the last character of the whole
+        # document, silently checking the wrong cells rather than failing.
+        return rep.skip(T, "no \\bottomrule below the closed-form row")
+    body = tex[start:stop]
+    src_path = os.path.join(ROOT, "results", "isi_slicer_floor.json")
+    if not os.path.exists(src_path):
+        return rep.skip(T, "results/isi_slicer_floor.json not found")
+    with open(src_path) as fh:
+        src = json.load(fh)
+    closed = dict(zip([int(x) for x in src["snr_db"]], src["slicer_ber"]))
+    closed_af = dict(zip([int(x) for x in src["snr_db"]], src["af_ber"]))
+
+    sim_path = os.path.join(ROOT, "e6_unknown_channel_results",
+                            "e6_sim_ported_results.npy")
+    sim = (np.load(sim_path, allow_pickle=True).item()
+           if os.path.exists(sim_path) else None)
+
+    # the SNR header decides which columns the value rows are compared against
+    header = None
+    for row in data_rows(body):
+        if not row:
+            continue
+        label = row[0][0].strip()
+        if label.startswith("SNR"):
+            header = [int(v) for _, v in row[1:] if v is not None]
+            continue
+        if header is None:
+            continue
+        vals = [(t, v) for t, v in row[1:] if v is not None]
+        if len(vals) != len(header):
+            continue
+        for (pub_text, pub_val), snr in zip(vals, header):
+            if label.startswith("DF closed form") and snr in closed:
+                rep.cell(T, f"closedDF/{snr}dB", pub_text, pub_val, closed[snr])
+            elif label.startswith("AF closed form") and snr in closed_af:
+                rep.cell(T, f"closedAF/{snr}dB", pub_text, pub_val, closed_af[snr])
+            elif label.startswith(("DF measured", "AF measured")) and sim is not None:
+                res = sim["results"].get("S1: unknown ISI -> AWGN")
+                snrs = list(sim["snrs"])
+                relay = label[:2]
+                if res is not None and snr in snrs:
+                    rep.cell(T, f"measured{relay}/{snr}dB", pub_text, pub_val,
+                             float(res[relay][0][snrs.index(snr)]))
+    rep.finish_table(T, before)
+
+
 def check_seq_on_memory(tex, rep):
     """Sequence architectures on memory channels (tbl:seq-on-memory) vs
     results/seq_models_on_memory.json.
@@ -1415,6 +1537,7 @@ def main():
               check_table41, check_table42, check_table43,
               check_table44,
               check_mmse_baseline, check_seq_on_memory,
+              check_slicer_floor, check_qpsk_decomposition_prose,
               check_joint_latency, check_joint_memory]
     for chk in checks:
         try:

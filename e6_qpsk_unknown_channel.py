@@ -38,6 +38,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 from relaynet.relays import AmplifyAndForwardRelay, ViterbiMLSEQPSKRelay
+from relaynet.relays.viterbi import FadingAwareViterbiQPSKRelay
 from relaynet.channels import ComplexISIRayleighChannel, awgn_channel
 from e6_sim_enhanced_multimod import DFHardRelay
 from e6_mlp_qpsk_vs_viterbi import train_mlp_qpsk, W
@@ -82,6 +83,12 @@ def run_trial(relay, hop1, hop2, n_bits, snr_db, seed):
     hop1.rng = np.random.default_rng(seed + 101)
     y_relay = hop1(x, snr_db)
 
+    # A genie-CSI detector on this channel needs the per-symbol fading gains as
+    # well as the taps -- hop 1 is g[n] * conv(x, h) + v, and a trellis told
+    # only h is model-mismatched, not genie. See FadingAwareViterbiQPSKRelay.
+    if isinstance(relay, FadingAwareViterbiQPSKRelay):
+        relay.set_gains(getattr(hop1, "last_gains", None))
+
     x_relay = y_relay if relay is None else relay.process(y_relay)
     # power-normalise the relay output so all strategies transmit equal power
     p = np.sqrt(np.mean(np.abs(x_relay) ** 2)) + 1e-12
@@ -105,7 +112,10 @@ def run_setup(hop2_kind, mlp):
         "AF": AmplifyAndForwardRelay(target_power=1.0),
         "DF": DFHardRelay("qpsk"),
         "MLP-QPSK": mlp,
-        "Viterbi (genie CSI)": ViterbiMLSEQPSKRelay(channel_taps=H_ISI),
+        # Renamed for what it is: given the ISI taps only. On this channel that
+        # is not genie CSI, and the original label was wrong.
+        "Viterbi (taps only)": ViterbiMLSEQPSKRelay(channel_taps=H_ISI),
+        "Viterbi (genie CSI)": FadingAwareViterbiQPSKRelay(channel_taps=H_ISI),
     }
 
     out = {k: np.zeros((len(SNRS), N_TRIALS)) for k in relays}

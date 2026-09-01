@@ -237,7 +237,10 @@ CHANNELS = {
         make=lambda s: ComplexISIRayleighChannel(H_ISI, seed=s), mod="qpsk",
         memory=3,
         hop2=lambda: _hop2_awgn(),
-        baseline=lambda: ("MLSE", _complex_native(
+        # Taps only, and named so. This channel fades per symbol, and the
+        # runner has no way to hand the gains to a relay, so a genie-CSI
+        # comparator is not available here -- see the note in evaluate_two_hop.
+        baseline=lambda: ("MLSE (taps only)", _complex_native(
             ViterbiMLSEQPSKRelay(channel_taps=H_ISI))), note="Ch7 3-tap ISI on top of Rayleigh fading"),
     "composite": dict(
         make=lambda s: CompositeChannel(isi_taps=H_COMPOSITE, pa_sat=1.2,
@@ -342,9 +345,20 @@ def two_hop_ber(relay, hop1, hop2, mod, num_bits, snr_db, seed):
         # wrong for a QPSK MLSE, whose trellis is defined over the complex
         # constellation: handing it y.real alone destroys it. This is what
         # made the isi_complex and isi_rayleigh MLSE baselines look "weak".
-        # Standalone on the same channel that relay recovers the symbols
-        # exactly (0.00000 symbol error at 20 dB), so the fault was in the
-        # dispatch, not the comparator.
+        # Standalone on isi_complex that relay recovers the symbols exactly
+        # (0.00000 symbol error at 20 dB), so on that channel the fault was in
+        # the dispatch, not the comparator.
+        #
+        # isi_rayleigh is different and the sentence above used to over-reach
+        # to it. That channel is g[n] * conv(x, h) + v with an independent
+        # fading magnitude per symbol, and a trellis given only h is genuinely
+        # model-mismatched there: 0.18 symbol error at 20 dB, against 0.02 for
+        # the same trellis handed the gains (FadingAwareViterbiQPSKRelay). Its
+        # comparator below is therefore labelled MLSE (taps only) for what it
+        # is. tbl:table-minsize is unaffected -- report_minsize_vs_169.analyse
+        # scores every row against the MLP-169 sweep entry, not against this
+        # baseline -- but min_params_both_criteria in the JSON is scored
+        # against it and is optimistic for that one channel.
         relay_out = relay.process(rx_relay)
     else:
         relay_out = _process_relay(relay, rx_relay, mod)

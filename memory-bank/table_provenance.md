@@ -12,9 +12,20 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | MAC accounting |
 | reproduce | `python unified_latency_axis.py` |
 | data file | `results/unified_latency_axis.json` |
-| data commit | `a0ba807` 2026-08-30 (Claude) |
+| data commit | `ab2cb8b` 2026-08-31 (Claude) |
 | provenance | ok |
 | MLP_HIDDEN | `8` |
+
+## `eq:slicer-floor`
+
+| field | value |
+|---|---|
+| experiment | ISI slicer floor, closed form |
+| reproduce | `python isi_slicer_floor.py` |
+| data file | `results/isi_slicer_floor.json` |
+| data commit | `0441455` 2026-08-31 (Claude) |
+| provenance | ok |
+| SNRS | `list(range(0, 21, 2))` |
 
 ## `fig:e6-partial`
 
@@ -23,8 +34,8 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | E6 pilot-budget sweep |
 | reproduce | `python e6_partial_ported.py` |
 | data file | `e6_unknown_channel_results/e6_partial_ported_results.npy` |
-| data commit | `bee4abf` 2026-08-15 (Claude) |
-| provenance | **STALE (data older than script)** |
+| data commit | `2512cb2` 2026-08-31 (Claude) |
+| provenance | ok |
 | N_TRAIN | `3` |
 | TRAIN_SNRS | `[5, 10, 15]` |
 | W | `11` |
@@ -36,8 +47,8 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | E6 blind / posterior-free |
 | reproduce | `python e6_blind_ported.py` |
 | data file | `e6_unknown_channel_results/e6_blind_ported_results.npy` |
-| data commit | `bee4abf` 2026-08-15 (Claude) |
-| provenance | **STALE (data older than script)** |
+| data commit | `455c119` 2026-08-31 (Claude) |
+| provenance | ok |
 | N_TRAIN | `3` |
 | SNRS | `np.arange(0, 21, 2)` |
 | TRAIN_SNRS | `[5, 10, 15]` |
@@ -50,8 +61,8 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | E6 composite cascade |
 | reproduce | `python e6_composite_ported.py` |
 | data file | `e6_unknown_channel_results/e6_composite_ported_results.npy` |
-| data commit | `0a45def` 2026-08-17 (Claude) |
-| provenance | **STALE (data older than script)** |
+| data commit | `455c119` 2026-08-31 (Claude) |
+| provenance | ok |
 | H_ISI | `np.array([1.0, 0.6, 0.4])` |
 | N_TRAIN | `3` |
 | SNRS | `np.arange(0, 21, 2)` |
@@ -66,7 +77,7 @@ rests on. Do not hand-edit; re-run the script.
 | reproduce | `python mlp_min_size_all_channels.py` |
 | data file | `results/mlp_min_size_all_channels.json` |
 | data commit | `1336b84` 2026-08-29 (Claude) |
-| provenance | ok |
+| provenance | **stale, reviewed: comment correction plus a display-name change to the isi_rayleigh comparator ('MLSE' -> 'MLSE (taps only)'). Same relay object, same numbers; only the JSON's `baseline` label would differ on a re-run.** |
 | EPOCHS | `25` |
 | H_ISI | `np.array([1.0, 0.7, 0.5])` |
 | N_TRIALS | `20` |
@@ -82,7 +93,7 @@ rests on. Do not hand-edit; re-run the script.
 | reproduce | `python mlp_min_size_all_channels.py` |
 | data file | `results/mlp_min_size_all_channels.json` |
 | data commit | `1336b84` 2026-08-29 (Claude) |
-| provenance | ok |
+| provenance | **stale, reviewed: comment correction plus a display-name change to the isi_rayleigh comparator ('MLSE' -> 'MLSE (taps only)'). Same relay object, same numbers; only the JSON's `baseline` label would differ on a re-run.** |
 | EPOCHS | `25` |
 | H_ISI | `np.array([1.0, 0.7, 0.5])` |
 | N_TRIALS | `20` |
@@ -113,6 +124,27 @@ rests on. Do not hand-edit; re-run the script.
 | provenance | ok |
 | SEEDS | `list(range(8))` |
 | SNRS | `[0, 4, 8, 12, 16, 20]` |
+
+## `prose: QPSK SER/BER and bits-per-symbol-error`
+
+| field | value |
+|---|---|
+| experiment | QPSK error decomposition |
+| reproduce | `python qpsk_error_decomposition.py` |
+| data file | `results/qpsk_error_decomposition.json` |
+| data commit | `0441455` 2026-08-31 (Claude) |
+| provenance | ok |
+
+## `prose: closed-form slicer BER table`
+
+| field | value |
+|---|---|
+| experiment | ISI slicer floor, closed form |
+| reproduce | `python isi_slicer_floor.py` |
+| data file | `results/isi_slicer_floor.json` |
+| data commit | `0441455` 2026-08-31 (Claude) |
+| provenance | ok |
+| SNRS | `list(range(0, 21, 2))` |
 
 ## `prose: coded row`
 
@@ -145,8 +177,8 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | E6 blind / posterior-free |
 | reproduce | `python e6_blind_ported.py` |
 | data file | `e6_unknown_channel_results/e6_blind_ported_results.npy` |
-| data commit | `bee4abf` 2026-08-15 (Claude) |
-| provenance | **STALE (data older than script)** |
+| data commit | `455c119` 2026-08-31 (Claude) |
+| provenance | ok |
 | N_TRAIN | `3` |
 | SNRS | `np.arange(0, 21, 2)` |
 | TRAIN_SNRS | `[5, 10, 15]` |
@@ -159,8 +191,8 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | E6 composite cascade |
 | reproduce | `python e6_composite_ported.py` |
 | data file | `e6_unknown_channel_results/e6_composite_ported_results.npy` |
-| data commit | `0a45def` 2026-08-17 (Claude) |
-| provenance | **STALE (data older than script)** |
+| data commit | `455c119` 2026-08-31 (Claude) |
+| provenance | ok |
 | H_ISI | `np.array([1.0, 0.6, 0.4])` |
 | N_TRAIN | `3` |
 | SNRS | `np.arange(0, 21, 2)` |
@@ -174,8 +206,8 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | E6 pilot-budget sweep |
 | reproduce | `python e6_partial_ported.py` |
 | data file | `e6_unknown_channel_results/e6_partial_ported_results.npy` |
-| data commit | `bee4abf` 2026-08-15 (Claude) |
-| provenance | **STALE (data older than script)** |
+| data commit | `2512cb2` 2026-08-31 (Claude) |
+| provenance | ok |
 | N_TRAIN | `3` |
 | TRAIN_SNRS | `[5, 10, 15]` |
 | W | `11` |
@@ -187,7 +219,7 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | Joint latency/memory |
 | reproduce | `python joint_latency_memory.py` |
 | data file | `results/joint_latency_memory.json` |
-| data commit | `4395c6d` 2026-08-31 (Claude) |
+| data commit | `ef0f4b7` 2026-08-31 (Claude) |
 | provenance | ok |
 | FRAME_INFO_BITS | `200` |
 | MLP_HIDDEN | `8` |
@@ -203,7 +235,7 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | Memory sweep, precision re-run |
 | reproduce | `python joint_memory_precision.py` |
 | data file | `results/joint_memory_precision.json` |
-| data commit | `4395c6d` 2026-08-31 (Claude) |
+| data commit | `ef0f4b7` 2026-08-31 (Claude) |
 | provenance | ok |
 | N_FRAMES | `1500` |
 | SEEDS | `(0, 1, 2, 3, 4)` |
@@ -215,7 +247,7 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | MMSE complexity-matched baseline |
 | reproduce | `python mmse_equalizer.py` |
 | data file | `results/mmse_equalizer.json` |
-| data commit | `d180f61` 2026-08-30 (Claude) |
+| data commit | `b1ea325` 2026-08-31 (Claude) |
 | provenance | ok |
 
 ## `tbl:seed-spread`
@@ -256,7 +288,7 @@ rests on. Do not hand-edit; re-run the script.
 | reproduce | `python seq_models_on_memory.py` |
 | data file | `results/seq_models_on_memory.json` |
 | data commit | `8880cc0` 2026-08-30 (Claude) |
-| provenance | ok |
+| provenance | **stale, reviewed: 6048c95 touched only main()'s console reporting -- a NaN guard around min() over architectures that reached no target. Every value written to the JSON is computed before that code runs.** |
 | TRAIN_SNRS | `[5, 10, 15]` |
 
 ## `tbl:table-minsize`
@@ -267,7 +299,7 @@ rests on. Do not hand-edit; re-run the script.
 | reproduce | `python mlp_min_size_all_channels.py` |
 | data file | `results/mlp_min_size_all_channels.json` |
 | data commit | `1336b84` 2026-08-29 (Claude) |
-| provenance | ok |
+| provenance | **stale, reviewed: comment correction plus a display-name change to the isi_rayleigh comparator ('MLSE' -> 'MLSE (taps only)'). Same relay object, same numbers; only the JSON's `baseline` label would differ on a re-run.** |
 | EPOCHS | `25` |
 | H_ISI | `np.array([1.0, 0.7, 0.5])` |
 | N_TRIALS | `20` |
@@ -282,8 +314,8 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | E6 unknown ISI (S1-S4) |
 | reproduce | `python e6_sim_ported.py` |
 | data file | `e6_unknown_channel_results/e6_sim_ported_results.npy` |
-| data commit | `0a45def` 2026-08-17 (Claude) |
-| provenance | **STALE (data older than script)** |
+| data commit | `aaddb79` 2026-09-01 (Claude) |
+| provenance | ok |
 | N_TRAIN | `3` |
 | SNRS | `np.arange(0, 21, 2)` |
 | TRAIN_SNRS | `[5, 10, 15]` |
@@ -296,7 +328,7 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | E6 flat control |
 | reproduce | `python e6_flat_ported.py` |
 | data file | `e6_unknown_channel_results/e6_flat_ported_results.npy` |
-| data commit | `0d181ea` 2026-08-31 (Claude) |
+| data commit | `96e8884` 2026-08-31 (Claude) |
 | provenance | ok |
 | N_TRAIN | `3` |
 | SNRS | `np.arange(0, 21, 2)` |
@@ -310,7 +342,7 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | E6 QPSK unknown channel |
 | reproduce | `python e6_qpsk_unknown_channel.py` |
 | data file | `e6_unknown_channel_results/e6_qpsk_unknown_channel_results.npy` |
-| data commit | `0a45def` 2026-08-17 (Claude) |
+| data commit | `aaddb79` 2026-09-01 (Claude) |
 | provenance | ok |
 | H_ISI | `np.array([1.0, 0.7, 0.5])` |
 | SNRS | `np.arange(0, 21, 2)` |
