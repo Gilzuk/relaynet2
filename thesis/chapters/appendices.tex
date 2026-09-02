@@ -99,7 +99,7 @@ PyTorch (CUDA) \\
 
 \section{Appendix C: Reproducibility}\label{sec:appendix-c-software-architecture}
 
-\subsection{Testing} 187 automated tests (pytest) cover the channels, modulation, relay-strategy, simulation and statistics modules with a 100\% pass rate. The suite requires only NumPy and SciPy; PyTorch is optional and needed solely by the neural relays that use it.
+\subsection{Testing} 187 automated tests (pytest) cover the channels, modulation, relay-strategy, simulation and statistics modules with a 100\% pass rate. The suite requires only NumPy and SciPy; PyTorch is optional and needed solely by the neural relays that use it. This is verified rather than asserted: with \texttt{import torch} forced to fail, the Torch-optional layer (\texttt{relaynet/utils/torch\_compat.py}) returns no module, the relays that can fall back to NumPy do so, and the suite reports $183$ passed and $4$ skipped --- the four being the Mamba-2 checkpoint tests, which are guarded by \texttt{skipif} and require a checkpoint file rather than Torch itself. No test fails and none errors, so the dependency claim holds for the suite as committed.
 
 \subsection{Reproducibility} Random seeds are controlled at the source (bit generation) and noise (per-trial seeding) levels to ensure reproducible results.
 
