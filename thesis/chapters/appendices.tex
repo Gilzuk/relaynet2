@@ -99,7 +99,7 @@ PyTorch (CUDA) \\
 
 \section{Appendix C: Reproducibility}\label{sec:appendix-c-software-architecture}
 
-\subsection{Testing} 159 automated tests (pytest) cover the channels, modulation, relay-strategy, simulation and statistics modules with a 100\% pass rate. The suite requires only NumPy and SciPy; PyTorch is optional and needed solely by the neural relays that use it.
+\subsection{Testing} 187 automated tests (pytest) cover the channels, modulation, relay-strategy, simulation and statistics modules with a 100\% pass rate. The suite requires only NumPy and SciPy; PyTorch is optional and needed solely by the neural relays that use it.
 
 \subsection{Reproducibility} Random seeds are controlled at the source (bit generation) and noise (per-trial seeding) levels to ensure reproducible results.
 
@@ -247,3 +247,31 @@ The Transformer row of Table~\ref{tbl:seed-spread-3k} is a single failing initia
 \caption[Training loss against SNR penalty]{Final training loss against SNR penalty for the eight Transformer initializations and the four-seed Mamba-S6 control. The correlation over all eight seeds is $r=+0.998$, but that figure is the outlier's leverage: among the seven runs that converge it is $r=-0.38$ ($p=0.41$), so loss identifies the failure and carries no information about relative quality once training has succeeded}\label{fig:transformer-loss-penalty}
 \end{figure}
 
+
+\section{Appendix F: Verification of Headline Claims}\label{sec:appendix-claim-verification}
+
+Each headline claim of Chapter~\ref{sec:unknown-channels} is restated here with the argument or derivation that supports it and the primary reference against which it was checked. The channel used throughout is the normalized 3-tap FIR $\mathbf{h} = [1, 0.7, 0.5]/\lVert\cdot\rVert \approx [0.758, 0.531, 0.379]$.
+
+\subsection{The learned relay never beats a correctly matched classical receiver}
+
+Exact MAP/MLSE detection is optimal by definition given the true channel model and the same observation, so no learned function of that observation can improve on it; the claim is a consequence of optimality theory rather than an empirical finding \cite{Forney1972MLSE, ProakisSalehi2008DigitalComm}. The learned-receiver literature is consistent with this reading: reported wins over ``classical'' receivers are wins over mismatched or suboptimal baselines. The sliding bidirectional RNN detector approaches Viterbi with full CSI and passes it only when CSI is imperfect \cite{FarsadGoldsmith2018NNDetection}; ViterbiNet matches the model-based algorithm and gains only under CSI uncertainty \cite{Shlezinger2020ViterbiNet}; DeepRx outperforms practical LMMSE receiver chains, which are not MAP-optimal under the studied impairments \cite{Honkala2021DeepRx}; the OFDM detector of Ye et al.~\cite{YeLiJuang2018OFDMDL} beats MMSE under pilot shortage, cyclic-prefix removal and clipping --- mismatch again. End-to-end autoencoders \cite{OSheaHoydis2017PhysicalLayer} can beat classical \emph{schemes}, but do so by redesigning the transmitter, and are therefore not a receiver-only counterexample.
+
+\subsection{The analytic $0.25$ floor and the non-monotonicity of symbol-wise DF}
+
+With the normalized taps, the interferer magnitude sum $h_1 + h_2 \approx 0.910$ exceeds the cursor $h_0 \approx 0.758$: the eye is closed. Of the four equiprobable BPSK interferer sign patterns, exactly one (both interferers opposing the cursor) yields a noise-free sample of $0.758 - 0.910 = -0.152 < 0$, a deterministic sign flip, while the remaining three ($0.606$, $0.910$, $1.668$) preserve the sign. A memoryless slicer therefore errs on exactly one pattern in four as noise vanishes, giving the analytic floor of exactly $1/4$. The non-monotonicity follows from the same geometry: at moderate SNR, noise occasionally pushes the flipped sample back across the decision boundary, so the conditional error rate on the bad pattern is below one there and rises toward one as SNR grows, and total BER climbs toward $0.25$ from below. This is the standard behaviour of a closed-eye channel under symbol-by-symbol detection \cite{LuckySalzWeldon1968, ProakisSalehi2008DigitalComm}.
+
+\subsection{Complexity: the $M^{L}$ trellis against a fixed forward pass}
+
+MLSE maintains $M^{L-1}$ trellis states and evaluates $M^{L}$ branch metrics per symbol \cite{Forney1972MLSE, ProakisSalehi2008DigitalComm}. The $11 \to 13 \to 1$ relay costs approximately $2(11 \cdot 13 + 13)$ multiply--accumulates plus activations, about $330$ floating-point operations per symbol, constant for the deployed architecture --- with the caveat, stated in Section~\ref{sec:complexity-viterbi-mlp}, that spanning longer memory generally widens the window, after which the cost grows roughly linearly in it. One qualification for fairness: reduced-state sequence estimation \cite{EyuboqluQureshi1988RSSE} and related decision-feedback trellis methods also break the $M^{L}$ scaling, so full Viterbi is the steepest classical comparator, not the only one.
+
+\subsection{The blind regime: CMA converges where decision-directed MLSE does not}
+
+The constant modulus algorithm performs blind equalization of constant-modulus signals \cite{Godard1980SelfRecovering, TreichlerAgee1983CMA}. The study channel is minimum phase (zeros at $|z| \approx 0.707$), so a short FIR equalizer can approximately invert it; finite equalizer length and noise enhancement leave a residual BER of order $10^{-3}$ at 20~dB, consistent with the measured $3.3\times10^{-3}$ of Section~\ref{sec:blind-channel}. The known ill-convergence of Godard equalizers when the equalizer is too short \cite{Ding1991IllConvergence} supports the observed ``matches but does not excel'' behaviour. Decision-directed blind MLSE, which bootstraps channel estimates from its own decisions, is a crude form of per-survivor processing \cite{RaheliPolydorosTzou1995PSP}; misconvergence, sign and shift ambiguities, and error propagation are its documented failure modes and match the instability observed.
+
+\subsection{The pilot-budget crossover: reliable at ten pilots, collapse at five}
+
+Least-squares estimation of three unknown taps is identifiable from five pilots, so the collapse of Section~\ref{sec:partial-posterior} is not one of strict non-identifiability. Convolution edge effects leave a near-square, ill-conditioned system whose least-squares error variance, proportional to $\sigma^{2}\,\mathrm{tr}\!\left((\mathbf{X}^{H}\mathbf{X})^{-1}\right)$, grows without useful bound, and Viterbi run with badly wrong taps then propagates errors catastrophically. The scaling is consistent with the Cram\'er--Rao bound $\sigma^{2}L/N_{p}$ for this estimation problem \cite{Kay1993Estimation}. The result is specific to the classical LS-plus-Viterbi pipeline: meta-learned demodulators adapt from very few pilots \cite{ParkSimeone2021MetaDemod}, which does not contradict the claim but bounds its scope to the pipeline stated.
+
+\subsection{Genie-CSI MLSE leads the minimal relay by only 1--1.5 dB}
+
+A finite-window symbol-wise detector is bounded below by the windowed MAP detector, which is itself typically within about 1~dB of full MLSE on mild three-tap channels; a 170-parameter approximation losing 1--1.5~dB to genie-CSI Viterbi is therefore consistent with theory and, if anything, conservative. Published learned detectors close the gap further: the sliding bidirectional RNN comes within fractions of a dB of Viterbi \cite{FarsadGoldsmith2018NNDetection}, and ViterbiNet closes it essentially to zero given sufficient capacity and data \cite{Shlezinger2020ViterbiNet}. The residual gap reported in Section~\ref{sec:unknown-channel-experiment} is thus a property of the deliberately minimal parameter budget, not of learned detection as a method.
