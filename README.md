@@ -4,12 +4,12 @@
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.6+-red.svg)](https://pytorch.org)
 [![CUDA](https://img.shields.io/badge/CUDA-12.4-green.svg)](https://developer.nvidia.com/cuda-toolkit)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Tests](https://img.shields.io/badge/Tests-108%20passed-brightgreen.svg)](#testing)
+[![Tests](https://img.shields.io/badge/Tests-187%20passed-brightgreen.svg)](#testing)
 [![Experiments](https://img.shields.io/badge/Experiments-18-blue.svg)](#recent-experiments-summary)
 
 A framework for comparing **classical and AI-based relay strategies** in two-hop cooperative communication, over **AWGN and Rayleigh fading** SISO channels, with **BPSK, QPSK and 16-QAM** modulation.
 
-> **Thesis vs. framework scope.** This repository contains both the `relaynet` simulation **framework** (whose full capabilities are described below) and the M.Sc. **thesis** it supports, under [`thesis/`](thesis/). The thesis deliberately fixes a **single canonical setup** — SISO on both hops, i.i.d. Rayleigh fast fading, complex baseband, BPSK, uncoded BER — and varies only the relay function, with two scoped extensions (higher-order modulation; **learned relaying under unknown/mismatched channels**). MIMO, Rician relay comparison, and 16-PSK were removed from both the thesis and the framework, and are recorded as *future work* (Rician is retained only to draw the fading-distribution figure). See the [Thesis](#thesis-msc) section.
+> **Thesis vs. framework scope.** This repository contains both the `relaynet` simulation **framework** (whose full capabilities are described below) and the M.Sc. **thesis** it supports, under [`thesis/`](thesis/). The thesis deliberately fixes a **single canonical setup** — SISO on both hops, i.i.d. Rayleigh fast fading, complex baseband, Gray-coded QPSK, uncoded BER — and varies only the relay function. Its **principal contribution** is **learned relaying under unknown/mismatched channels** (carried on BPSK); the higher-order-modulation extension is not part of the current build. MIMO, Rician relay comparison, and 16-PSK were removed from both the thesis and the framework, and are recorded as *future work* (Rician is retained only to draw the fading-distribution figure). See the [Thesis](#thesis-msc) section.
 
 ---
 
@@ -24,6 +24,7 @@ A framework for comparing **classical and AI-based relay strategies** in two-hop
 - [Key Findings](#key-findings)
 - [Unknown-Channel Contribution](#unknown-channel-contribution)
 - [Verifying the Thesis Against Its Data](#verifying-the-thesis-against-its-data)
+- [Appendix — Proof of Claims](#appendix--proof-of-claims)
 - [Recent Experiments Summary](#recent-experiments-summary)
 - [BER Results — Original Models](#ber-results--original-models)
 - [Normalized 3K-Parameter Comparison](#normalized-3k-parameter-comparison)
@@ -124,6 +125,7 @@ Equalization: x̂ = y / h   (perfect CSI)
 - **CGAN (Conditional GAN):** Wasserstein GAN with gradient penalty. The generator learns to denoise conditioned on the noisy input; the critic provides adversarial training signal.
 - **Transformer:** Multi-head self-attention over a sliding window of symbols. Captures global dependencies with O(n²) complexity. Architecture: d_model=32, heads=4, layers=2.
 - **Mamba S6 (Selective State Space):** Linear-time sequence model with input-dependent state transitions. Captures long-range dependencies with O(n) complexity. Architecture: d_model=32, d_state=16, layers=2.
+- **Mamba-2 SSD (Structured State Space Duality):** Successor to Mamba S6 using the SSD formulation, which restricts the state transition to a scalar-times-identity structure to unlock matmul-based training. Architecture: d_model=32, d_state=16, layers=2.
 
 ---
 
@@ -139,7 +141,7 @@ Equalization: x̂ = y / h   (perfect CSI)
                            Classical]
     Topology:  SISO (1x1)
     Channels:  AWGN  |  Rayleigh
-    Relays:    AF │ DF │ MLP │ Hybrid │ VAE │ CGAN │ Transformer │ Mamba S6
+    Relays:    AF │ DF │ MLP │ Hybrid │ VAE │ CGAN │ Transformer │ Mamba S6 │ Mamba-2 SSD
 ```
 
 Each relay strategy is evaluated on both SISO channels (AWGN and Rayleigh) using Monte Carlo simulation with 95% confidence intervals (10 trials × 10,000 bits per SNR point).
@@ -158,7 +160,7 @@ Each relay strategy is evaluated on both SISO channels (AWGN and Rayleigh) using
 
 ### Normalized 3K Comparison (equal parameter budgets)
 
-When all 7 AI models are constrained to ≈3,000 parameters:
+When all 6 AI models are constrained to ≈3,000 parameters:
 
 1. **All architectures converge in performance** — the architecture gap narrows at small scale; DF remains the strongest baseline on most channels
 2. **MLP/Hybrid remain competitive** — simple feedforward networks match sequence models at equal param budgets
@@ -209,6 +211,54 @@ python provenance_audit.py        # every result file is committed and newer tha
 - `tests/test_verifier_catches_drift.py` perturbs a published number in a scratch copy of the thesis and asserts the owning check flags it. Without this, nothing proves a check *can* fail.
 
 Run the whole suite with `pytest`.
+
+---
+
+## Appendix — Proof of Claims
+
+Each headline claim of the unknown-channel study, verified against theory and primary literature. The channel used throughout is the normalized 3-tap FIR $h = [1, 0.7, 0.5]/\lVert\cdot\rVert \approx [0.758, 0.531, 0.379]$ (`e6_viterbi_ported.py`).
+
+### Claim 1 — The learned relay never beats a correctly matched classical receiver
+
+Exact MAP/MLSE detection is optimal by definition given the true channel model and the same observation, so no learned function of that observation can beat it — the claim is a theorem, not an empirical finding [1], [2]. The literature is consistent: learned receivers that "beat classical" beat *mismatched or suboptimal* baselines. SBRNN approaches Viterbi-with-CSI and passes it only under imperfect CSI [3]; ViterbiNet matches the model-based algorithm and wins only under CSI uncertainty [4]; DeepRx beats practical LMMSE receivers, which are not MAP-optimal under the studied impairments [5]; Ye–Li–Juang beat MMSE under pilot shortage, CP removal and clipping — mismatch again [6]; end-to-end autoencoders beat classical *schemes* by redesigning the transmitter, not a receiver-only counterexample [7].
+
+### Claim 2 — The analytic 0.25 BER floor and DF's non-monotonicity
+
+With the normalized taps, the ISI magnitude sum $h_1 + h_2 \approx 0.910$ exceeds the cursor $h_0 \approx 0.758$: the eye is **closed**. Of the four equiprobable BPSK interferer sign patterns, exactly one (both interferers opposing) yields $0.758 - 0.910 = -0.152 < 0$, a deterministic sign flip; the other three ($0.606$, $0.910$, $1.668$) stay correct. A noise-free memoryless slicer therefore errs on exactly one pattern in four: BER $\to$ exactly $1/4$. Non-monotonicity follows from the same geometry: at moderate SNR, noise occasionally pushes the flipped sample back across zero, so the error rate on the bad pattern is below 1 there and rises toward 1 as SNR $\to \infty$ — total BER climbs toward 0.25 from below. This is standard closed-eye behavior [8], [2, ch. 9].
+
+### Claim 3 — Complexity: $M^L$ trellis vs. a fixed forward pass
+
+MLSE maintains $M^{L-1}$ trellis states and evaluates $M^L$ branch metrics per symbol [1], [2, ch. 10]. The $11 \to 13 \to 1$ MLP costs $\approx 2(11 \cdot 13 + 13)$ MACs plus activations $\approx 330$ flops/symbol, constant for the fixed architecture — with the stated caveat that spanning longer memory generally widens the window, after which cost grows roughly linearly in it. One fairness note: reduced-complexity sequence estimation (RSSE [9], DFSE, M-algorithm) also breaks the $M^L$ scaling, so full Viterbi is the steepest classical comparator.
+
+### Claim 4 — Blind regime: CMA converges; decision-directed blind MLSE does not
+
+CMA performs blind equalization of constant-modulus signals [10], [11]. The channel is minimum-phase (zeros at $|z| \approx 0.707$), so a short FIR equalizer can approximately invert it; finite length and noise enhancement leave a residual BER of order $10^{-3}$ at 20 dB, matching the measured $3.3\times10^{-3}$. Known CMA caveats — local minima for under-length equalizers [12] — support "matches but does not excel". Decision-directed blind MLSE, bootstrapping taps from its own decisions, is a crude form of per-survivor processing [13]; misconvergence, sign/shift ambiguities and error propagation are documented failure modes, matching its observed instability.
+
+### Claim 5 — Pilot-budget crossover: reliable at ≥10 pilots, collapse at 5
+
+LS estimation of 3 unknown taps is identifiable from 5 pilots ($5 > 3$), but convolution edge effects leave a near-square, ill-conditioned system whose LS variance $\propto \sigma^2 \operatorname{tr}((X^H X)^{-1})$ explodes; Viterbi with badly wrong taps then error-propagates catastrophically. The collapse is an **estimation-variance plus error-propagation** effect, consistent with CRB scaling $\sigma^2 L / N_p$ [14] — not strict non-identifiability. The result is specific to the classical LS+Viterbi pipeline: meta-learned demodulators adapt from very few pilots [15], which does not contradict the claim but bounds its scope.
+
+### Claim 6 — Genie-CSI MLSE leads the minimal MLP by only 1–1.5 dB
+
+A finite-window symbol-wise detector is bounded below by windowed MAP, itself typically within ~1 dB of MLSE on mild 3-tap channels; a 170-parameter approximation losing 1–1.5 dB is consistent and, if anything, conservative — SBRNN comes within fractions of a dB of Viterbi [3], and ViterbiNet closes the gap essentially to zero with enough capacity [4]. The thesis deliberately fixes a minimal architecture, so the residual gap is a property of the budget, not the method.
+
+### References
+
+1. G. D. Forney, Jr., "Maximum-likelihood sequence estimation of digital sequences in the presence of intersymbol interference," *IEEE Trans. Inf. Theory*, vol. 18, no. 3, pp. 363–378, 1972.
+2. J. G. Proakis and M. Salehi, *Digital Communications*, 5th ed. McGraw-Hill, 2008.
+3. N. Farsad and A. Goldsmith, "Neural network detection of data sequences in communication systems," *IEEE Trans. Signal Process.*, vol. 66, no. 21, pp. 5663–5678, 2018.
+4. N. Shlezinger, Y. C. Eldar, N. Farsad, and A. Goldsmith, "ViterbiNet: A deep learning based Viterbi algorithm for symbol detection," *IEEE Trans. Wireless Commun.*, vol. 19, no. 5, pp. 3319–3331, 2020.
+5. M. Honkala, D. Korpi, and J. M. J. Huttunen, "DeepRx: Fully convolutional deep learning receiver," *IEEE Trans. Wireless Commun.*, vol. 20, no. 6, pp. 3925–3940, 2021.
+6. H. Ye, G. Y. Li, and B.-H. Juang, "Power of deep learning for channel estimation and signal detection in OFDM systems," *IEEE Wireless Commun. Lett.*, vol. 7, no. 1, pp. 114–117, 2018.
+7. T. O'Shea and J. Hoydis, "An introduction to deep learning for the physical layer," *IEEE Trans. Cogn. Commun. Netw.*, vol. 3, no. 4, pp. 563–575, 2017.
+8. R. W. Lucky, J. Salz, and E. J. Weldon, *Principles of Data Communication*. McGraw-Hill, 1968.
+9. M. V. Eyuboğlu and S. U. H. Qureshi, "Reduced-state sequence estimation with set partitioning and decision feedback," *IEEE Trans. Commun.*, vol. 36, no. 1, pp. 13–20, 1988.
+10. D. N. Godard, "Self-recovering equalization and carrier tracking in two-dimensional data communication systems," *IEEE Trans. Commun.*, vol. 28, no. 11, pp. 1867–1875, 1980.
+11. J. R. Treichler and B. G. Agee, "A new approach to multipath correction of constant modulus signals," *IEEE Trans. Acoust., Speech, Signal Process.*, vol. 31, no. 2, pp. 459–472, 1983.
+12. Z. Ding, R. A. Kennedy, B. D. O. Anderson, and C. R. Johnson, Jr., "Ill-convergence of Godard blind equalizers in data communication systems," *IEEE Trans. Commun.*, vol. 39, no. 9, pp. 1313–1327, 1991.
+13. R. Raheli, A. Polydoros, and C.-K. Tzou, "Per-survivor processing: A general approach to MLSE in uncertain environments," *IEEE Trans. Commun.*, vol. 43, no. 2/3/4, pp. 354–364, 1995.
+14. S. M. Kay, *Fundamentals of Statistical Signal Processing: Estimation Theory*. Prentice Hall, 1993.
+15. S. Park, H. Jang, O. Simeone, and J. Kang, "Learning to demodulate from few pilots via offline and online meta-learning," *IEEE Trans. Signal Process.*, vol. 69, pp. 226–239, 2021.
 
 ---
 
@@ -405,7 +455,7 @@ relaynet2/
 │   ├── run_full_comparison.py            # Full pipeline: train + evaluate all
 │   └── plot_normalized_3k.py             # Standalone 3K comparison plots
 │
-├── tests/                            # 60 tests (pytest)
+├── tests/                            # 187 tests (pytest)
 │   ├── test_channels.py                  # AWGN and Rayleigh channel tests
 │   ├── test_modulation.py                # BPSK modulation tests
 │   ├── test_relays.py                    # All relay strategy tests
@@ -537,19 +587,15 @@ for snr, ber, ci_lo, ci_hi in results:
     print(f"SNR={snr:2d} dB  BER={ber:.4e}  CI=[{ci_lo:.4e}, {ci_hi:.4e}]")
 ```
 
-                          channel=lambda s, snr: mimo_2x2_mmse_channel(s, snr, device="auto"),
-                          num_bits=10000, num_trials=10)
-```
-
 ---
 
 ## Testing
 
-All 108 tests pass (104 passed, 4 skipped):
+All 187 tests pass:
 
 ```bash
 python -m pytest tests/ -q
-# 108 tests: 104 passed, 4 skipped
+# 187 passed
 ```
 
 Tests cover:
