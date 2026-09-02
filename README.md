@@ -220,7 +220,7 @@ Each headline claim of the unknown-channel study, verified against theory and pr
 
 ### Claim 1 — The learned relay never beats a correctly matched classical receiver
 
-Exact MAP/MLSE detection is optimal by definition given the true channel model and the same observation, so no learned function of that observation can beat it — the claim is a theorem, not an empirical finding [1], [2]. The literature is consistent: learned receivers that "beat classical" beat *mismatched or suboptimal* baselines. SBRNN approaches Viterbi-with-CSI and passes it only under imperfect CSI [3]; ViterbiNet matches the model-based algorithm and wins only under CSI uncertainty [4]; DeepRx beats practical LMMSE receivers, which are not MAP-optimal under the studied impairments [5]; Ye–Li–Juang beat MMSE under pilot shortage, CP removal and clipping — mismatch again [6]; end-to-end autoencoders beat classical *schemes* by redesigning the transmitter, not a receiver-only counterexample [7].
+The bound is the **symbol-MAP (BCJR/APP)** detector, and the distinction from MLSE matters. Given the true channel model and the same observation, symbol-MAP minimizes *bit* error probability, so no learned function of that observation can beat it on the BER metric used here — against *that* comparator the claim is a theorem. **MLSE minimizes *sequence* error probability and is not BER-optimal** [1], [2], [16], so against genie-CSI Viterbi the claim is an *empirical* finding, not a theorem: a learned relay with lower BER than Viterbi would contradict no optimality result. No comparison in this thesis is made against a BER-optimal detector at either modulation order; that benchmark remains open. The literature is consistent: learned receivers that "beat classical" beat *mismatched or suboptimal* baselines. SBRNN approaches Viterbi-with-CSI and passes it only under imperfect CSI [3]; ViterbiNet matches the model-based algorithm and wins only under CSI uncertainty [4]; DeepRx beats practical LMMSE receivers, which are not MAP-optimal under the studied impairments [5]; Ye–Li–Juang beat MMSE under pilot shortage, CP removal and clipping — mismatch again [6]; end-to-end autoencoders beat classical *schemes* by redesigning the transmitter, not a receiver-only counterexample [7].
 
 ### Claim 2 — The analytic 0.25 BER floor and DF's non-monotonicity
 
@@ -240,7 +240,7 @@ LS estimation of 3 unknown taps is identifiable from 5 pilots ($5 > 3$), but con
 
 ### Claim 6 — Genie-CSI MLSE leads the minimal MLP by only 1–1.5 dB
 
-A finite-window symbol-wise detector is bounded below by windowed MAP, itself typically within ~1 dB of MLSE on mild 3-tap channels; a 170-parameter approximation losing 1–1.5 dB is consistent and, if anything, conservative — SBRNN comes within fractions of a dB of Viterbi [3], and ViterbiNet closes the gap essentially to zero with enough capacity [4]. The thesis deliberately fixes a minimal architecture, so the residual gap is a property of the budget, not the method.
+A finite-window symbol-wise detector cannot beat the MAP detector over that same window, which cannot beat one given the whole sequence: a window truncates the observation, and truncation cannot add information. That ordering is all theory supplies — it fixes no particular gap. No windowed-MAP detector was implemented here, so the measured 1–1.5 dB is **not** decomposed into the window's share and the 170-parameter approximation's. That published learned detectors close the gap further — SBRNN within fractions of a dB of Viterbi [3], ViterbiNet essentially to zero with enough capacity [4] — is consistent with the residual gap being a property of the deliberately minimal budget, but this thesis does not separate the two causes.
 
 ### References
 
@@ -259,6 +259,7 @@ A finite-window symbol-wise detector is bounded below by windowed MAP, itself ty
 13. R. Raheli, A. Polydoros, and C.-K. Tzou, "Per-survivor processing: A general approach to MLSE in uncertain environments," *IEEE Trans. Commun.*, vol. 43, no. 2/3/4, pp. 354–364, 1995.
 14. S. M. Kay, *Fundamentals of Statistical Signal Processing: Estimation Theory*. Prentice Hall, 1993.
 15. S. Park, H. Jang, O. Simeone, and J. Kang, "Learning to demodulate from few pilots via offline and online meta-learning," *IEEE Trans. Signal Process.*, vol. 69, pp. 226–239, 2021.
+16. L. R. Bahl, J. Cocke, F. Jelinek, and J. Raviv, "Optimal decoding of linear codes for minimizing symbol error rate," *IEEE Trans. Inf. Theory*, vol. 20, no. 2, pp. 284–287, 1974.
 
 ---
 
