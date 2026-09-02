@@ -23,6 +23,7 @@ A framework for comparing **classical and AI-based relay strategies** in two-hop
 - [Architecture](#architecture)
 - [Key Findings](#key-findings)
 - [Unknown-Channel Contribution](#unknown-channel-contribution)
+- [Verifying the Thesis Against Its Data](#verifying-the-thesis-against-its-data)
 - [Recent Experiments Summary](#recent-experiments-summary)
 - [BER Results — Original Models](#ber-results--original-models)
 - [Normalized 3K-Parameter Comparison](#normalized-3k-parameter-comparison)
@@ -68,21 +69,24 @@ The M.Sc. thesis *"Deep Learning Architectures for Two-Hop Relay Communication: 
 | Item | Location |
 |------|----------|
 | LaTeX source (chapters, bibliography, figures) | `thesis/main.tex`, `thesis/chapters/`, `thesis/results/` |
-| Compiled PDF (120+ pages) | `thesis/main.pdf`, `thesis_preview.pdf` |
+| Compiled PDF | `thesis/main.pdf`, `thesis_preview.pdf` |
 | **Overleaf-ready package** (self-contained, bundled fonts) | `thesis_overleaf.zip` |
 
 **Building.** Compile with **XeLaTeX** (required for `fontspec` + `polyglossia` Hebrew); all fonts are bundled in `thesis/fonts/`, so no system-font installation is needed. See `thesis/OVERLEAF.md`. To use Overleaf: upload `thesis_overleaf.zip`, set **Menu → Compiler → XeLaTeX**, main document `main.tex`.
 
-**Structure.** The thesis fixes one canonical setup and varies only the relay function:
+**Structure.** The thesis fixes one canonical setup — SISO, i.i.d. Rayleigh fast fading on both hops, complex baseband, Gray-coded **QPSK**, uncoded — and varies only the relay function:
 
 | Chapter | Content |
 |---------|---------|
-| Ch 5 | **Core experiments** on the canonical setup (SISO, Rayleigh, BPSK): channel-model validation, relay comparison, parameter-normalization & complexity (H1–H5) |
-| Ch 6 | **Extension:** higher-order modulations (QPSK, 16-QAM incl. joint 2D $N$-class classification) |
-| Ch 7 | **Principal contribution:** learned relaying under **unknown & mismatched channels** (H6) — see below |
-| Ch 8–9 | Discussion, conclusions, summary |
+| Ch 1–4 | Introduction, background, research objectives (H1–H5), methods |
+| Ch 5 | **Core experiments** on the canonical setup: channel-model validation, relay comparison, parameter normalization and complexity, plus the coded block-DF study |
+| Ch 6 | **Principal contribution:** learned relaying under **unknown and mismatched channels** (H5) — see below |
+| Ch 7–8 | Discussion and conclusions; summary |
+| Ch 9 | Appendices (reproducibility, per-experiment budgets, minimum-relay-size sweep) |
 
-The unknown-channel study (Ch 7) is reproduced in this framework by the `e6_*_ported.py` scripts (see [Unknown-Channel Contribution](#unknown-channel-contribution)).
+The higher-order-modulation extension (16-QAM, joint 2D $N$-class classification) is **not** part of the current build; its source remains under `thesis/chapters/` but is commented out of `main.tex`. QPSK is the canonical modulation rather than an extension.
+
+The unknown-channel study (Ch 6) is reproduced in this framework by the `e6_*_ported.py` scripts (see [Unknown-Channel Contribution](#unknown-channel-contribution)).
 
 ---
 
@@ -165,7 +169,9 @@ When all 7 AI models are constrained to ≈3,000 parameters:
 
 ## Unknown-Channel Contribution
 
-The thesis's principal contribution (Ch 7) studies **learned relaying when the channel is unknown to, or mismatched with, the classical relay's model class** — the regime where a fixed minimal MLP earns its place. It is reproduced in this framework by the `e6_*_ported.py` scripts, with figures/data in [`e6_unknown_channel_results/`](e6_unknown_channel_results/).
+The thesis's principal contribution (Ch 6, hypothesis **H5**) studies **learned relaying when the channel is unknown to, or mismatched with, the classical relay's model class** — the regime where a fixed minimal MLP earns its place. It is reproduced in this framework by the `e6_*_ported.py` scripts, with figures/data in [`e6_unknown_channel_results/`](e6_unknown_channel_results/).
+
+Three relay architectures appear in these studies, and two of them coincidentally have the same parameter count, so the labels are worth reading carefully: the canonical relay is $5 \to 24 \to 1$ (169 parameters), the unknown-ISI and flat-memory relays are $11 \to 13 \to 1$ (**170**), and the composite, blind and pilot-budget relays take complex I/Q pairs, $22 \to 7 \to 1$ (169 again).
 
 | Study | Script | Key result |
 |-------|--------|-----------|
@@ -175,9 +181,34 @@ The thesis's principal contribution (Ch 7) studies **learned relaying when the c
 | Composite cascade | `e6_composite_ported.py` | ISI × PA-nonlinearity × unknown phase: MLP recovers from raw I/Q, ~2 dB behind pilot-aided Viterbi |
 | Posterior-free (blind) | `e6_blind_ported.py` | MLP matches blind CMA while avoiding decision-directed MLSE's instability |
 | Partial posterior | `e6_partial_ported.py` | Pilot-budget crossover: Viterbi wins with ≥10 pilots, collapses at 5; MLP is pilot-free and flat |
-| Complexity | `e6_complexity_ported.py` | Viterbi cost grows as $M^L$; the MLP is constant (~330 flops/sym) and 30–90× faster in wall-clock |
+| Complexity | `e6_complexity_ported.py` | Viterbi cost grows as $M^L$; the relay's cost is constant **for a fixed architecture** (~330 flops/sym) and 30–90× faster in wall-clock. Holding the window fixed as memory grows is a choice, not a law: spanning longer memory generally widens the window, and the relay's cost then grows roughly linearly in it |
 
-**Bottom line (H6):** the learned relay **never beats a matched classical receiver**, but occupies a well-defined niche — *family-agnostic, identification-free, constant-complexity* mitigation of structural model-class mismatch (memory, nonlinearity, absent pilots), where the memoryless classical relays fail outright.
+**Bottom line (H5):** the learned relay **never beats a correctly matched classical receiver**, but occupies a well-defined niche — *identification-free, fixed-complexity* mitigation of structural model-class mismatch (memory, nonlinearity, absent pilots), where the memoryless classical relays fail outright.
+
+The scope is narrower than "family-agnostic": the network is trained on the same impairment family it is tested on, so its weights carry prior information about that family. What it does without is **per-block** channel state — no pilots, no explicit identification, no online adaptation, on a realization it has not seen. It is not evaluated on a structurally different family absent from training.
+
+---
+
+## Verifying the Thesis Against Its Data
+
+Every number the thesis publishes is checked against the file that produced it. Two tools do this, and both are expected to exit `0`:
+
+```bash
+python verify_thesis_tables.py    # published cells vs their data sources
+python provenance_audit.py        # every result file is committed and newer than its script
+```
+
+`verify_thesis_tables.py` reads the LaTeX, extracts each published value, and compares it against the `.json`/`.npy` that generated it, with a tolerance set by the number of decimals shown. It currently checks **498 cells across 26 tables and prose claims**.
+
+`provenance_audit.py` links each experiment to its script, its output files and the commit that produced them, and fails if a result is uncommitted or predates the script that generates it. `python provenance_audit.py --tables` regenerates the per-table reproduction ledger in `memory-bank/table_provenance.md`.
+
+**The checks are themselves tested.** A verifier that examines nothing reports the same "OK" as one that examines everything and finds no problem, and that gap has hidden real defects here — a check that validated constants against their own arithmetic and could never fail, and an earlier one that read three of ten rows while printing OK. So:
+
+- `MIN_CELLS` records the coverage each check is expected to reach; a shortfall fails rather than passing quietly.
+- A check that cannot run at all fails unless explicitly allowlisted in `ALLOWED_SKIPS`.
+- `tests/test_verifier_catches_drift.py` perturbs a published number in a scratch copy of the thesis and asserts the owning check flags it. Without this, nothing proves a check *can* fail.
+
+Run the whole suite with `pytest`.
 
 ---
 
@@ -408,7 +439,7 @@ relaynet2/
 ├── thesis_preview.pdf                # compiled thesis (top-level copy)
 ├── thesis_overleaf.zip               # self-contained Overleaf upload package
 │
-├── e6_sim_ported.py                  # Unknown-channel study (Ch 7) ported to relaynet:
+├── e6_sim_ported.py                  # Unknown-channel study (Ch 6) ported to relaynet:
 ├── e6_viterbi_ported.py              #   ISI, Viterbi-MLSE benchmark, flat control,
 ├── e6_flat_ported.py                 #   composite cascade, blind/partial posterior,
 ├── e6_composite_ported.py            #   and complexity — see Unknown-Channel Contribution

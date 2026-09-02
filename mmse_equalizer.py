@@ -98,7 +98,14 @@ class MMSELinearEqualizerRelay(Relay):
             if best is None or mse < best[0]:
                 best = (mse, w, d)
         self._cache[key] = (best[1], best[2])
+        self._mmse_cache = getattr(self, '_mmse_cache', {})
+        self._mmse_cache[key] = best[0]
         return self._cache[key]
+
+    def mmse_at(self, snr_db):
+        """Attained MMSE at the delay the weight solver selects."""
+        self._weights(float(snr_db))
+        return float(self._mmse_cache[(round(float(snr_db), 6), self.sig_x2)])
 
     def process(self, received_signal):
         y = received_signal
@@ -189,7 +196,7 @@ def main():
     from mlp_min_size_all_channels import CHANNELS, SNRS, evaluate_two_hop
     from ber_metrics import penalty_table
 
-    out = {}
+    out, detail = {}, {}
     for json_key, ch_key, taps_name in TABLE_CHANNELS:
         spec = CHANNELS[ch_key]
         hop1, hop2, mod = spec["make"](1), spec["hop2"](), spec["mod"]
@@ -214,6 +221,17 @@ def main():
             db = (p["worst_db_penalty"] if p["targets_reached"]
                   else float("nan"))
             out[json_key][str(n)] = db
+            # Per-target penalties and the attained MMSE are what show the
+            # published non-monotonicity to be a property of the worst-target
+            # metric rather than of the equalizer, so they are persisted
+            # alongside rather than left to be recomputed by hand.
+            detail.setdefault(json_key, {})[str(n)] = {
+                "worst_db": db,
+                "per_target_db": {str(t): p["per_target"][t]["db_penalty"]
+                                  for t in p["targets_reached"]},
+                "attained_mmse": {str(s): eq.mmse_at(float(s)) for s in SNRS},
+                "ber": [float(b) for b in ber],
+            }
             print(f"    MMSE-LE {n:>2} taps: {db:+.4f} dB vs {base_name}",
                   flush=True)
 
@@ -221,6 +239,11 @@ def main():
                         "results", "mmse_equalizer.json")
     with open(dest, "w") as fh:
         json.dump(out, fh, indent=2)
+    dpath = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                         "results", "mmse_equalizer_detail.json")
+    with open(dpath, "w") as fh:
+        json.dump(detail, fh, indent=2)
+    print(f"Per-target detail -> {dpath}")
     print(f"\nWritten to {dest}")
     return out
 

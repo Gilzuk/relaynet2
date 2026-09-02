@@ -72,7 +72,9 @@ REGISTRY = {
         "transformer_instability.py", ["results/transformer_instability.json"],
         ["fig:transformer-seed-curves", "fig:transformer-loss-penalty"]),
     "MMSE complexity-matched baseline": (
-        "mmse_equalizer.py", ["results/mmse_equalizer.json"], ["tbl:mmse-baseline"]),
+        "mmse_equalizer.py",
+        ["results/mmse_equalizer.json", "results/mmse_equalizer_detail.json"],
+        ["tbl:mmse-baseline", "prose: MMSE monotonicity by tap count"]),
     "Sequence models on memory": (
         "seq_models_on_memory.py", ["results/seq_models_on_memory.json"],
         ["tbl:seq-on-memory"]),
@@ -134,6 +136,14 @@ def last_commit(path):
     return [sha, date, author, subject, ts]
 
 
+# Artefacts that rest on one particular output of a multi-output experiment.
+# Without this the ledger would point a reader at the wrong file.
+ARTEFACT_OUTPUT = {
+    "prose: MMSE monotonicity by tap count": "results/mmse_equalizer_detail.json",
+    "tbl:mmse-baseline": "results/mmse_equalizer.json",
+}
+
+
 # (script, output) pairs where the script is newer than its data on purpose,
 # with the reason. Only for changes that cannot alter a simulated value --
 # persisted metadata, comments, logging. A change to the simulation itself is
@@ -147,6 +157,12 @@ REVIEWED_STALE = {
         "comment correction plus a display-name change to the isi_rayleigh "
         "comparator ('MLSE' -> 'MLSE (taps only)'). Same relay object, same "
         "numbers; only the JSON's `baseline` label would differ on a re-run.",
+    ("mmse_equalizer.py", "results/mmse_equalizer.json"):
+        "additive change (859027f): main() now also persists per-target "
+        "penalties and attained MMSE to mmse_equalizer_detail.json, which was "
+        "committed from the same run. The headline JSON is not stale -- it "
+        "reproduced byte-identically on that re-run, so git recorded no change "
+        "to it and its last commit predates the script edit.",
     ("seq_models_on_memory.py", "results/seq_models_on_memory.json"):
         "6048c95 touched only main()'s console reporting -- a NaN guard around "
         "min() over architectures that reached no target. Every value written "
@@ -210,9 +226,16 @@ def main():
         print("figure, the experiment behind it, the exact command that reproduces it,")
         print("the parameters that run used, and the commit that produced the data it")
         print("rests on. Do not hand-edit; re-run the script.\n")
+        # An experiment with several outputs produces one row per output, each
+        # carrying the whole artefact list, so a plain first-wins mapping would
+        # attribute every artefact to the first output. Where a specific
+        # artefact rests on a specific file, ARTEFACT_OUTPUT says which.
         byart = {}
         for r in rows:
             for a in r["artefacts"]:
+                want = ARTEFACT_OUTPUT.get(a)
+                if want is not None and r["output"] != want:
+                    continue
                 byart.setdefault(a, r)
         for a in sorted(byart):
             r = byart[a]

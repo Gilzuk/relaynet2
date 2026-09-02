@@ -184,6 +184,39 @@ STOCHASTIC_TABLES = {"tbl:tableE6": 0.002, "tbl:tableE6flat": 0.002,
                      "prose:E6partial": 0.004}
 
 
+# ----------------------------------------------------------------------------
+# Coverage floors
+# ----------------------------------------------------------------------------
+# The number of cells each check is expected to examine. A check that examines
+# fewer has stopped seeing part of what it covers -- a renamed row label, a
+# moved anchor, a table it can no longer parse -- and until now that failed
+# silently, because only *mismatches* were reported and a check that examined
+# nothing reported "OK". Three real defects hid here: a parameter-count check
+# that validated constants against themselves, two unguarded find() calls that
+# could slice the wrong region, and an earlier joint-latency check that read 3
+# of 10 rows while printing OK.
+#
+# Raise a floor when a check legitimately gains cells; never lower one to make
+# a failure go away -- a drop means the check lost sight of something.
+MIN_CELLS = {
+    "tbl:table2": 54, "tbl:layers": 14, "tbl:table8": 48,
+    "tbl:tableE6": 20, "tbl:tableE6flat": 24, "tbl:tableE6qpsk": 20,
+    "prose:E6blind": 9, "prose:E6partial": 13, "prose:E6composite": 6,
+    "tbl:table34": 30, "tbl:table37": 6, "tbl:table38": 10,
+    "tbl:table39": 30, "tbl:table40": 12, "tbl:table41": 15,
+    "tbl:table42": 27, "tbl:table43": 18, "tbl:table44": 20,
+    "tbl:mmse-baseline": 12, "tbl:seq-on-memory": 12,
+    "arch:relay-param-counts": 7, "tbl:slicer-floor-inline": 24,
+    "prose:qpsk-decomposition": 4, "prose:mmse-monotonicity": 12,
+    "tbl:joint-latency": 30, "tbl:joint-memory": 21,
+}
+
+# Checks allowed to skip, with the reason. A skip means the check could not run
+# at all; anything not listed here is a failure rather than a quiet line in the
+# report.
+ALLOWED_SKIPS = {}
+
+
 class Report:
     def __init__(self):
         self.checked = 0
@@ -191,6 +224,8 @@ class Report:
         self.skipped = []        # (table, reason)
         self.tables = []         # (table, n_checked, n_flag)
         self.notes = []          # (table, partial-coverage reason)
+        self.coverage = []       # (table, n_checked, floor) - examined too few
+        self.unexpected_skips = []  # (table, reason) - could not run at all
 
     def cell(self, table, where, pub_text, pub_val, src_val):
         # unresolved / non-numeric published cell -> skip silently
@@ -212,9 +247,14 @@ class Report:
         n = self.checked - before
         nf = sum(1 for f in self.flags if f[0] == table)
         self.tables.append((table, n, nf))
+        floor = MIN_CELLS.get(table)
+        if floor is not None and n < floor:
+            self.coverage.append((table, n, floor))
 
     def skip(self, table, reason):
         self.skipped.append((table, reason))
+        if table not in ALLOWED_SKIPS:
+            self.unexpected_skips.append((table, reason))
 
     def note(self, table, reason):
         """Record a partial-coverage note without skipping the whole table.
@@ -1380,6 +1420,94 @@ def check_qpsk_decomposition_prose(tex, rep):
     rep.finish_table(T, before)
 
 
+def check_mmse_monotonicity_prose(tex, rep):
+    """The MMSE-vs-taps figures Chapter 6 uses to explain the non-monotonicity.
+
+    Twelve numbers quoted in prose -- four attained MMSE values at 16 dB and the
+    per-target penalties at 1e-1 and 1e-2 -- against
+    results/mmse_equalizer_detail.json. They are the evidence that the published
+    non-monotonicity belongs to the worst-target metric rather than to the
+    equalizer, so they should not be able to drift away from the run.
+    """
+    T = "prose:mmse-monotonicity"; before = rep.checked
+    src_path = os.path.join(ROOT, "results", "mmse_equalizer_detail.json")
+    if not os.path.exists(src_path):
+        return rep.skip(T, "results/mmse_equalizer_detail.json not found")
+    with open(src_path) as fh:
+        det = json.load(fh).get("isi_complex", {})
+    if not det:
+        return rep.skip(T, "isi_complex not in the detail JSON")
+
+    i = tex.find("is an artefact of the metric, not the equalizer")
+    if i < 0:
+        return rep.skip(T, "monotonicity sentence not found in tex")
+    stop = tex.find("The conclusion is unaffected", i)
+    if stop < 0:
+        return rep.skip(T, "no closing clause after the monotonicity sentence")
+    nums = [float(x) for x in re.findall(r"[-+]?\d+\.\d+", tex[i:stop])]
+    taps = ("3", "5", "7", "11")
+    want = ([det[n]["attained_mmse"]["16"] for n in taps]
+            + [det[n]["per_target_db"]["0.1"] for n in taps]
+            + [det[n]["per_target_db"]["0.01"] for n in taps])
+    if len(nums) != len(want):
+        return rep.skip(T, f"expected {len(want)} numbers, found {len(nums)}")
+    names = ([f"mmse16/{n}tap" for n in taps]
+             + [f"pen1e-1/{n}tap" for n in taps]
+             + [f"pen1e-2/{n}tap" for n in taps])
+    for got, exp, nm in zip(nums, want, names):
+        rep.cell(T, nm, f"{got}", got, exp)
+    rep.finish_table(T, before)
+
+
+# Relay architectures the thesis names by parameter count, and the script that
+# defines each. Three networks of the same class land on two counts, two of them
+# on 169 by coincidence, which is exactly how the unknown-ISI relay came to be
+# published as 169 when it is 170. Checked against the source rather than a
+# stored number so the labels cannot drift again.
+RELAY_ARCHITECTURES = [
+    ("canonical (run_experiments.py)", 5, 24, 169),
+    ("unknown-ISI (e6_sim_ported.py)", 11, 13, 170),
+    ("composite/blind/pilot (2W I/Q)", 22, 7, 169),
+    ("composite large", 22, 48, 1153),
+]
+
+
+def check_relay_param_counts(tex, rep):
+    """Every "i -> h -> 1, N parameters" claim in the thesis, checked two ways.
+
+    A two-layer perceptron with `i` inputs, `h` hidden units and one output has
+    i*h + h + h + 1 parameters. This reads the shape-and-count claims out of the
+    LaTeX rather than trusting a stored number, checks each one's arithmetic,
+    and checks that the shape is one the code actually builds. The earlier
+    version validated only the hardcoded constants against themselves, which
+    could not fail and could not have caught the defect it was written for: the
+    thesis called an 11 -> 13 -> 1 relay "169 parameters" when it is 170.
+    """
+    T = "arch:relay-param-counts"; before = rep.checked
+    known = {(i, h): n for _, i, h, n in RELAY_ARCHITECTURES}
+
+    # "$11 \to 13 \to 1$, which is $170$ parameters" and its variants: take the
+    # first number quoted within a short window after the shape.
+    pat = re.compile(r"\$(\d+)\s*\\to\s*(\d+)\s*\\to\s*1\$(.{0,120}?)\$(\d+)\$", re.S)
+    found = 0
+    for m in pat.finditer(tex):
+        i, h, claimed = int(m.group(1)), int(m.group(2)), int(m.group(4))
+        found += 1
+        rep.cell(T, f"tex {i}->{h}->1", str(claimed), float(claimed),
+                 float(i * h + h + h + 1))
+        if (i, h) not in known:
+            rep.cell(T, f"tex {i}->{h}->1 is an architecture the code builds",
+                     "yes", 0.0, 1.0)
+    if not found:
+        return rep.skip(T, "no 'i -> h -> 1' shape claims found in the tex")
+
+    # and the arithmetic of every architecture the code does build
+    for name, i, h, claimed in RELAY_ARCHITECTURES:
+        rep.cell(T, f"code {name}", str(claimed), float(claimed),
+                 float(i * h + h + h + 1))
+    rep.finish_table(T, before)
+
+
 def check_slicer_floor(tex, rep):
     """The closed-form slicer-BER table in Section~\\ref{sec:unknown-channel-experiment}.
 
@@ -1537,7 +1665,9 @@ def main():
               check_table41, check_table42, check_table43,
               check_table44,
               check_mmse_baseline, check_seq_on_memory,
+              check_relay_param_counts,
               check_slicer_floor, check_qpsk_decomposition_prose,
+              check_mmse_monotonicity_prose,
               check_joint_latency, check_joint_memory]
     for chk in checks:
         try:
@@ -1571,11 +1701,27 @@ def main():
     else:
         print("\nAll checked cells match their data source within display-rounding tolerance.")
 
+    if rep.coverage:
+        print("\nCOVERAGE SHORTFALL (a check stopped seeing part of what it covers):")
+        for t, n, floor in rep.coverage:
+            print(f"  [{t}] examined {n} cells, expected at least {floor}")
+        print("  A drop means the check lost sight of something -- a renamed row,")
+        print("  a moved anchor, a table it can no longer parse. Fix the check, or")
+        print("  raise the floor in MIN_CELLS only if the coverage genuinely shrank.")
+
+    if rep.unexpected_skips:
+        print("\nCHECK COULD NOT RUN (not in ALLOWED_SKIPS):")
+        for t, reason in rep.unexpected_skips:
+            print(f"  [{t}] {reason}")
+
     print("\nInformational (not pass/fail):")
     print("  tbl:table13, tbl:table25 report machine-dependent wall-clock timing;")
     print("  re-run run_experiments.py / the sequence-model benchmark to refresh those.")
 
-    return 1 if rep.flags else 0
+    # A check that examined nothing, or could not run, is a failure. Previously
+    # only mismatches set the exit code, so "I checked nothing" and "everything
+    # matches" were the same green.
+    return 1 if (rep.flags or rep.coverage or rep.unexpected_skips) else 0
 
 
 if __name__ == "__main__":

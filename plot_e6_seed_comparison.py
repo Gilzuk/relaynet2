@@ -95,7 +95,7 @@ def main():
     ax.set_xlabel('SNR (dB)')
     ax.set_ylabel('BER')
     ax.set_title('Seed robustness: 1 vs 3 independent training seeds\n'
-                 'S1 — Unknown ISI relay → AWGN channel, MLP-169')
+                 'S1 — Unknown ISI relay → AWGN channel, MLP-170')
     ax.set_ylim(BER_FLOOR * 0.5, 1.0)
     ax.legend(loc='lower left')
     ax.grid(True, which='both', linestyle=':', alpha=0.5)

@@ -64,7 +64,7 @@ def plot_unknown_channel():
                              ('MLP', palette['MLP'], '^')]:
         mu, ci = s1[relay]
         _semilogy_ber(ax, snrs, mu, ci,
-                      label=f'{relay}' if relay != 'MLP' else 'MLP-169',
+                      label=f'{relay}' if relay != 'MLP' else 'MLP-170',
                       color=col, marker=mk)
 
     # Viterbi benchmarks (from the original verified run — fixed, no training seed)

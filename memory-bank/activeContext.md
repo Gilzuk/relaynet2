@@ -909,6 +909,71 @@ clean, 0 undefined references or citations. Verifier: 479 cells, 2 flags, both
 pre-existing seventh-decimal roundings in `tbl:table44`. Provenance audit clean.
 Tests: 179 passed.
 
+### Theory audit of the thesis text (2026-09-01)
+
+A pass over every theoretical claim against standard references. **The theory is
+sound**: the AWGN/AF/DF/Rayleigh/QPSK closed forms all check out (Proakis, Tse &
+Viswanath, Laneman 2004), the AF section correctly separates Laneman's
+variable-gain formula from the implemented fixed-gain variant, the DF remark
+correctly distinguishes symbol-wise slicing from Cover--El Gamal block DF, the
+`w=0` sufficient-statistic argument is right, half-duplex costs cancel because
+there is no direct link, and the MLSE state/branch counts and the `L*=3.35`
+crossover arithmetic verify exactly.
+
+Six findings fixed:
+- The MAC convention was **promised but never stated** -- ch07 said the crossover
+  held "for the operation-count convention stated above" and no such convention
+  appeared anywhere in the thesis; the derivation lived only in a docstring. Now
+  stated in the text.
+- The MMSE non-monotonicity was left "unexplained". It is a **metric artefact**:
+  MMSE is non-increasing in tap count by nesting (verified numerically), and the
+  1e-1 and 1e-2 penalties are monotone; only the 1e-3 target misbehaves, and
+  `worst_db_penalty` reports the max, so that one target sets the whole row. Its
+  crossing sits on a 4 dB grid where interpolation is coarse.
+- `2Q(sqrt(10))(1-Q(sqrt(10)))` is 0.00156, quoted as "~0.002".
+- Multi-SNR training called "related to minimax"; it minimises **Bayes** risk over
+  the sampled SNRs, not worst-case.
+- "A single-symbol estimator is a sufficient statistic" -- the **observation** is.
+- Universal approximation cited only to a textbook; Cybenko 1989 and Hornik 1991
+  added.
+- The thesis uses **three** observation models under the same symbol; ch04 named
+  two, now names all three.
+
+`results/mmse_equalizer_detail.json` is new: per-target penalties and attained
+MMSE, so the twelve numbers the monotonicity argument quotes have a committed
+source and a verifier check (`check_mmse_monotonicity_prose`).
+
+**The 169/170 label, now fixed.** Checking *why* the counts differed turned up
+a worse problem than the miscount. There are **three** relay architectures, not
+one, and two land on 169 by coincidence:
+
+| where | shape | params |
+|---|---|---|
+| canonical, Ch. 4 (`run_experiments.py`) | 5 -> 24 -> 1 | **169** |
+| unknown-ISI + flat-memory, Ch. 6 (`e6_sim_ported.py`, `e6_flat_ported.py` non-phase) | 11 -> 13 -> 1 | **170** |
+| composite / blind / pilot, and flat-phase (complex I/Q) | 22 -> 7 -> 1 | **169** |
+| composite large | 22 -> 48 -> 1 | 1,153 |
+
+`rem:window-causality` in Ch. 3 justified keeping `w>0` on the memoryless
+canonical channel by claiming "the identical architecture carries over
+unchanged" to the ISI chapter. **It does not**: the window goes 5 -> 11 and the
+hidden layer 24 -> 13. That claim was itself a `\REV` correction written in
+response to the advisor, replacing an earlier "correlated fading" justification,
+so it is text they have already engaged with. A second `\REV` note in Ch. 6 had
+asserted the unknown-channel relay was "$11 \to 13 \to 1$, 169 parameters" --
+arithmetically wrong -- and declared the difference immaterial.
+
+Both are rewritten to state what actually carries over (the input *format* and
+the relay class, not the dimensions), and every label now matches its network:
+170 for the unknown-ISI and flat-memory relays, 169 where the count genuinely is
+169. Figure legends regenerated too (`plot_e6_unknown_channel_awgn.py`,
+`plot_e6_figures.py`, `plot_e6_seed_comparison.py`). A stale `<5e-5` in Ch. 8's
+H5 row was caught in the same pass and corrected to `4.79e-8`.
+
+`verify_thesis_tables.check_relay_param_counts` now recomputes `i*h + h + h + 1`
+for all four architectures, so a stated count and a stated shape can never
+disagree again.
+
 ### How to count the pages (do not quote `pdfinfo`)
 `pdfinfo` reports **142**, and that is not the number the limit is measured
 against -- quoting it is a mistake this project has now made twice. The build is:

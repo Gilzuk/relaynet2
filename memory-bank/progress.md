@@ -316,39 +316,16 @@ reported three-seed numbers backed by single-seed data.
 | ISI slicer floor, closed form | `isi_slicer_floor.py` | `isi_slicer_floor.json` | `0441455` 2026-08-31 | `eq:slicer-floor`, `prose: closed-form slicer BER table` | ok |
 | Joint latency/memory | `joint_latency_memory.py` | `joint_latency_memory.json` | `ef0f4b7` 2026-08-31 | `tbl:joint-latency` | ok |
 | MAC accounting | `unified_latency_axis.py` | `unified_latency_axis.json` | `ab2cb8b` 2026-08-31 | `eq:mac-crossover` | ok |
-| MMSE complexity-matched baseline | `mmse_equalizer.py` | `mmse_equalizer.json` | `b1ea325` 2026-08-31 | `tbl:mmse-baseline` | ok |
+| MMSE complexity-matched baseline | `mmse_equalizer.py` | `mmse_equalizer.json` | `b1ea325` 2026-08-31 | `tbl:mmse-baseline`, `prose: MMSE monotonicity by tap count` | **stale, reviewed: additive change (859027f): main() now also persists per-target penalties and attained MMSE to mmse_equalizer_detail.json, which was committed from the same run. The headline JSON is not stale -- it reproduced byte-identically on that re-run, so git recorded no change to it and its last commit predates the script edit.** |
+| MMSE complexity-matched baseline | `mmse_equalizer.py` | `mmse_equalizer_detail.json` | `859027f` 2026-09-01 | `tbl:mmse-baseline`, `prose: MMSE monotonicity by tap count` | ok |
 | Memory sweep, precision re-run | `joint_memory_precision.py` | `joint_memory_precision.json` | `ef0f4b7` 2026-08-31 | `tbl:joint-memory` | ok |
 | Minimum relay size, 9 channels | `mlp_min_size_all_channels.py` | `mlp_min_size_all_channels.json` | `1336b84` 2026-08-29 | `tbl:table-minsize`, `fig:minsize-crossover`, `fig:minsize-budget` | **stale, reviewed: comment correction plus a display-name change to the isi_rayleigh comparator ('MLSE' -> 'MLSE (taps only)'). Same relay object, same numbers; only the JSON's `baseline` label would differ on a re-run.** |
 | Minimum size, window x depth | `mlp_min_size_bisect.py` | `mlp_min_size_bisect.json` | `a18b10d` 2026-08-29 | `prose: depth 1-3, window 1-7` | ok |
-| QPSK error decomposition | `qpsk_error_decomposition.py` | `qpsk_error_decomposition.json` | `0441455` 2026-08-31 | `prose: QPSK SER/BER and bits-per-symbol-error` | ok |
+| QPSK error decomposition | `qpsk_error_decomposition.py` | `qpsk_error_decomposition.json` | `bcb39ef` 2026-09-01 | `prose: QPSK SER/BER and bits-per-symbol-error` | ok |
 | Seed spread, equal budget | `seed_spread_architectures.py` | `seed_spread_architectures.json` | `0ca3432` 2026-08-30 | `tbl:seed-spread`, `tbl:seed-spread-3k` | ok |
 | Sequence models on memory | `seq_models_on_memory.py` | `seq_models_on_memory.json` | `8880cc0` 2026-08-30 | `tbl:seq-on-memory` | **stale, reviewed: 6048c95 touched only main()'s console reporting -- a NaN guard around min() over architectures that reached no target. Every value written to the JSON is computed before that code runs.** |
 | Transformer instability | `transformer_instability.py` | `transformer_instability.json` | `ce59ed1` 2026-08-30 | `fig:transformer-seed-curves`, `fig:transformer-loss-penalty` | ok |
 
-All declared outputs are committed and no data predates its script.
-
-1 PROVENANCE WARNING(S):
-  [STALE (data older than script)] E6 QPSK unknown channel
-      script e6_qpsk_unknown_channel.py last changed 2026-08-31; data e6_qpsk_unknown_channel_results.npy last committed 2026-08-17
-
-All declared outputs are committed and no data predates its script.
-
-1 PROVENANCE WARNING(S):
-  [STALE (data older than script)] MMSE complexity-matched baseline
-      script mmse_equalizer.py last changed 2026-08-30; data mmse_equalizer.json last committed 2026-08-30
-
-All declared outputs are committed and no data predates its script.
-
-5 PROVENANCE WARNING(S):
-  [STALE (data older than script)] E6 blind / posterior-free
-      script e6_blind_ported.py last changed 2026-08-27; data e6_blind_ported_results.npy last committed 2026-08-15
-  [STALE (data older than script)] E6 composite cascade
-      script e6_composite_ported.py last changed 2026-08-27; data e6_composite_ported_results.npy last committed 2026-08-17
-  [STALE (data older than script)] E6 flat control
-      script e6_flat_ported.py last changed 2026-08-27; data e6_flat_ported_results.npy last committed 2026-08-17
-  [STALE (data older than script)] E6 pilot-budget sweep
-      script e6_partial_ported.py last changed 2026-08-27; data e6_partial_ported_results.npy last committed 2026-08-15
-  [STALE (data older than script)] E6 unknown ISI (S1-S4)
-      script e6_sim_ported.py last changed 2026-08-28; data e6_sim_ported_results.npy last committed 2026-08-17
+**Current audit status** (regenerate; do not hand-edit): clean -- all declared outputs are committed and no data predates its script.
 
 Regenerate with `python provenance_audit.py --markdown`.
