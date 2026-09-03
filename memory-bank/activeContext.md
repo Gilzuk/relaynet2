@@ -2,7 +2,39 @@
 
 _Last updated: 2026-09-03_
 
-### Latest (2026-09-03): first-error bit budget unified to one adaptive rule
+### Latest (2026-09-03): Overleaf bundles regenerated; both were broken
+
+`make bundles` output is committed again, and two defects that made the
+committed bundles unusable are fixed at the generator rather than in the zips.
+
+1. **The bundles could not compile.** `scripts/build_bundles.py` hardcoded
+   `hebrewcal.sty` in its list of extras. `main.tex` was switched to
+   `\usepackage{hebcal}` at some point, so every bundle produced after that
+   shipped a style file its own `main.tex` does not load and omitted the one it
+   does. The extras list is now derived from the sources: any `\usepackage`d
+   name for which `thesis/<name>.sty` exists travels with the bundle, and the
+   build raises if a discovered `.sty` is missing from the finished zip.
+2. **The submission copy rendered differently from the thesis.** `strip_rev`
+   unconditionally swallowed the whitespace after each `\REV{...}` it removed.
+   For an annotation on its own line that is right; for one used *inline* it
+   closed the gap between two sentences ("...(Chapter 6).These additional..."),
+   so `thesis_overleaf_clean.zip` — the copy that would be submitted — differed
+   from `thesis/main.pdf` in 99 places. The swallow now applies only when the
+   annotation occupied the whole line. Six regression tests in
+   `tests/test_strip_rev_spacing.py`; verified that they fail against the old
+   stripper.
+
+Verification: both zips were extracted into empty directories outside the repo
+and compiled with `latexmk -xelatex`. Both build with **0 errors and 0 undefined
+references**, at 132 pages, and both now render **text-identical** to
+`thesis/main.pdf`. Suite 194 passed, verifier 509/0, audit clean. No `.tex` or
+figure changed, so no PDF rebuild.
+
+Still true: the Overleaf *mirror* is a separate matter from the bundles — no
+`overleaf` git remote is configured in this container, so `make overleaf-push`
+cannot be run from here.
+
+### Earlier (2026-09-03): first-error bit budget unified to one adaptive rule
 
 `e6_sim_ported.py`'s per-SNR cap split (`FIRST_ERROR_MAX_BITS_BY_SNR`: 1G at
 16 dB, 10G at 18/20 dB) is gone. Every first-error SNR now stops at the
