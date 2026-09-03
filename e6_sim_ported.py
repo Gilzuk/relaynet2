@@ -52,14 +52,13 @@ BITS_AT_SNR = {
 # we run a first-error experiment: transmit blocks until the first bit
 # error is found, then report BER = 1 / bits_until_first_error.
 FIRST_ERROR_SNRS = {16, 18, 20}  # SNR values (dB) to use first-error estimator
-# Per reviewer requirement: 18 dB and 20 dB must run to first error or
-# timeout at 10G bits.
-FIRST_ERROR_MAX_BITS_BY_SNR = {
-    16: 1_000_000_000,
-    18: 10_000_000_000,
-    20: 10_000_000_000,
-}
-FIRST_ERROR_DEFAULT_MAX_BITS = 100_000_000
+# The bit budget is adaptive, not fixed per SNR: each run stops at
+# FIRST_ERROR_EXTEND_FACTOR * (bits to first error), limited by a single
+# hard ceiling of 10G bits per run. The ceiling binds only when no error
+# (or the first error very late) is found, in which case the rule-of-three
+# bound 3/N is reported. This replaces the earlier per-SNR split
+# (1G at 16 dB, 10G at 18/20 dB).
+FIRST_ERROR_MAX_BITS = 10_000_000_000
 FIRST_ERROR_BLOCK = 100_000        # transmit in 100k-bit blocks for memory efficiency
 # After the first error at N1 bits, keep transmitting to this multiple of N1
 # so the estimate rests on ~10 errors rather than 1 (capped by max_bits).
@@ -203,7 +202,7 @@ def run_ber_trial(relay, hop1_channel, hop2_channel, source, destination, num_bi
 
 
 def run_ber_first_error(relay, hop1_channel, hop2_channel, source, destination,
-                        snr_db, max_bits=FIRST_ERROR_DEFAULT_MAX_BITS,
+                        snr_db, max_bits=FIRST_ERROR_MAX_BITS,
                         block_size=FIRST_ERROR_BLOCK,
                         extend_factor=FIRST_ERROR_EXTEND_FACTOR):
     """Rare-event BER estimator: locate the first error, then keep going.
@@ -358,8 +357,9 @@ def run_experiment(hop1_kind, hop2_kind, mlp_relays, reuse_rare_event=None):
                     results['MLP'][si, col_offset:col_offset + N_TRIALS] = results['MLP'][si, 0]
                     continue
                 # ti == 0: run the actual first-error experiment
-                first_error_max_bits = FIRST_ERROR_MAX_BITS_BY_SNR.get(int(snr), FIRST_ERROR_DEFAULT_MAX_BITS)
-                print(f"    SNR {snr:2d} dB  [first-error, up to {first_error_max_bits//1_000_000}M bits]")
+                first_error_max_bits = FIRST_ERROR_MAX_BITS
+                print(f"    SNR {snr:2d} dB  [first-error, adaptive {FIRST_ERROR_EXTEND_FACTOR}x budget, "
+                      f"up to {first_error_max_bits//1_000_000}M bits]")
                 ber_af, bits_af, _, nerr_af = run_ber_first_error(af_relay, hop1_channel, hop2_channel, source, destination, snr,
                                                          max_bits=first_error_max_bits)
                 ber_df, bits_df, _, nerr_df = run_ber_first_error(df_relay, hop1_channel, hop2_channel, source, destination, snr,
@@ -451,8 +451,7 @@ def _save(all_results, setups, complete, rare_event_meta, rare_event_source):
                   'n_train': N_TRAIN, 'n_trials': N_TRIALS,
                   'bits_at_snr': BITS_AT_SNR,
                   'first_error_snrs': list(FIRST_ERROR_SNRS),
-                  'first_error_max_bits_by_snr': FIRST_ERROR_MAX_BITS_BY_SNR,
-                  'first_error_default_max_bits': FIRST_ERROR_DEFAULT_MAX_BITS,
+                  'first_error_max_bits': FIRST_ERROR_MAX_BITS,
                   'extend_factor': FIRST_ERROR_EXTEND_FACTOR,
                   'rare_event_meta': rare_event_meta,
                   'rare_event_source': rare_event_source,

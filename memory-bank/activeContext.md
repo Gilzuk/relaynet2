@@ -1,6 +1,57 @@
 # Active Context (update this file first, every session)
 
-_Last updated: 2026-08-28_
+_Last updated: 2026-09-03_
+
+### Latest (2026-09-03): first-error bit budget unified to one adaptive rule
+
+`e6_sim_ported.py`'s per-SNR cap split (`FIRST_ERROR_MAX_BITS_BY_SNR`: 1G at
+16 dB, 10G at 18/20 dB) is gone. Every first-error SNR now stops at the
+adaptive budget 10 × (bits to first error), limited by a single hard ceiling
+`FIRST_ERROR_MAX_BITS = 10_000_000_000` per run. No committed number moves:
+the 16 dB run stopped at 334M bits (first error at 33.4M, extended tenfold),
+so the old 1G ceiling never bound and the run is bit-identical under the new
+one; 18/20 dB already used 10G. `provenance_audit.py`'s reviewed-stale entry
+for the pair documents this. Persisted metadata key changed:
+`first_error_max_bits_by_snr` / `first_error_default_max_bits` →
+`first_error_max_bits`. Verifier 509/0, audit clean; Python-only, no PDF
+rebuild.
+
+### Earlier (2026-09-03): four load-bearing items audited; three fixes landed
+
+Independent re-verification of the four items flagged for human review (Ch.7
+posterior-mean equation, the withdrawn QPSK result, the MMSE monotonicity
+argument, the MAP/MLSE correction). All four are sound at their core; three
+defects surfaced and were fixed:
+
+1. **Stale figure caption** (`fig:figE6qpsk`): still stated the *withdrawn*
+   "MLP below genie-CSI Viterbi" claim, contradicting the corrected table and
+   prose around it. Rewritten: MLP separates below the taps-only trellis; the
+   genie-CSI trellis leads everywhere.
+2. **Unprovenanced control SERs** (ch07, sec:qpsk-unknown-channel): the three
+   20 dB controls (0.184 / 0.000 / 0.022) came from an ad-hoc uncommitted run
+   and were internally inconsistent with the published genie BER (0.0001).
+   Root cause found: `ComplexISIRayleighChannel.__init__` normalizes its taps
+   argument **in place** (np.asarray does not copy), so construction order
+   decides whether a trellis built from the shared `H_ISI` sees normalized or
+   raw taps — the ad-hoc run built the trellis first (raw taps → SER 0.184),
+   the published table builds the channel first (normalized → 0.113). New
+   committed script `qpsk_trellis_controls.py` reruns the controls under the
+   exact table configuration with explicit normalization; results in
+   `results/qpsk_trellis_controls.json` (taps-only faded 0.113, fading removed
+   0.000, genie 0.0003), registered in `provenance_audit.py`, guarded by new
+   verifier check `prose:qpsk-controls` (verifier now 509 cells / 0
+   inconsistencies). Prose updated to the reproducible figures. The taps-only
+   value now agrees exactly with `results/qpsk_error_decomposition.json`.
+3. **"symbol-MAP" wording** (Appendix F, headline-claim verification): the
+   BER-optimal comparator is bit-wise MAP (per-bit marginals of BCJR/APP
+   posteriors); symbol-MAP coincides with it only for BPSK. Reworded; the
+   argument's conclusion is unchanged.
+
+Items verified with NO defect: the posterior-mean equation (exact, including
+the zero-forcing conditional-variance form and the fading-mixture caveat) and
+the MMSE non-monotonicity argument (all table+prose numbers reproduce from
+committed JSON; N=5 BER beats N=3 at every sampled SNR, so the worst-target
+penalty inversion is genuinely an interpolation artefact).
 
 ### Latest (2026-08-28): first-error cap policy updated for 18/20 dB
 

@@ -2,6 +2,27 @@
 
 Branch: `copilot/fix-bug-in-data-processing`. Reference spec: `experiments-standalone/PORTING.md`.
 
+Session note (2026-09-03, later): unified the E6 first-error bit budget. The
+per-SNR cap dict (1G at 16 dB / 10G at 18–20 dB) in `e6_sim_ported.py` is
+replaced by the adaptive rule already implemented in `run_ber_first_error`
+— stop at 10 × bits-to-first-error — with one hard ceiling
+`FIRST_ERROR_MAX_BITS = 10G` per run at every first-error SNR. Committed data
+unaffected (16 dB stopped at 334M ≪ 1G; 18/20 dB already 10G); documented in
+`provenance_audit.py` REVIEWED_STALE. Metadata keys renamed to
+`first_error_max_bits`.
+
+Session note (2026-09-03): the three 20 dB trellis-control SERs in the QPSK
+withdrawal prose (0.184 / 0.000 / 0.022) were from an ad-hoc uncommitted run
+built with *unnormalized* taps (`ComplexISIRayleighChannel.__init__` normalizes
+its taps argument in place, so construction order silently decides what a
+trellis sharing `H_ISI` sees). Committed `qpsk_trellis_controls.py` reruns them
+under the exact `tbl:tableE6qpsk` configuration: 0.113 / 0.000 / 0.0003, now
+consistent with `qpsk_error_decomposition.json` and the table's genie BER.
+Registered in `provenance_audit.py`; verifier check `prose:qpsk-controls`
+added (509 cells / 0). Also fixed the stale `fig:figE6qpsk` caption (still
+carried the withdrawn claim) and the Appendix F "symbol-MAP" wording (bit-wise
+MAP is the BER-optimal comparator). PDF rebuilt: 149 pages.
+
 Session note (2026-09-01): the QPSK "genie-CSI Viterbi" benchmark was never
 given the CSI. Hop 1 of the QPSK study is `ComplexISIRayleighChannel`,
 `y[n] = g[n](h*x)[n] + v[n]` with an independent Rayleigh magnitude per symbol;

@@ -207,7 +207,8 @@ MIN_CELLS = {
     "tbl:table42": 27, "tbl:table43": 18, "tbl:table44": 20,
     "tbl:mmse-baseline": 12, "tbl:seq-on-memory": 12,
     "arch:relay-param-counts": 7, "consistency:proof-copies": 7, "tbl:slicer-floor-inline": 24,
-    "prose:qpsk-decomposition": 4, "prose:mmse-monotonicity": 12,
+    "prose:qpsk-decomposition": 4, "prose:qpsk-controls": 3,
+    "prose:mmse-monotonicity": 12,
     "tbl:joint-latency": 30, "tbl:joint-memory": 21,
 }
 
@@ -1420,6 +1421,42 @@ def check_qpsk_decomposition_prose(tex, rep):
     rep.finish_table(T, before)
 
 
+def check_qpsk_controls_prose(tex, rep):
+    """The three 20 dB trellis-control SERs quoted in Chapter 7 prose.
+
+    These are the numbers that pin the withdrawn reversal on the benchmark's
+    channel model rather than on the trellis, so they should not be able to
+    drift away from the run that produced them (qpsk_trellis_controls.py).
+    """
+    T = "prose:qpsk-controls"; before = rep.checked
+    src_path = os.path.join(ROOT, "results", "qpsk_trellis_controls.json")
+    if not os.path.exists(src_path):
+        return rep.skip(T, "results/qpsk_trellis_controls.json not found")
+    with open(src_path) as fh:
+        src = json.load(fh)["controls"]
+
+    i = tex.find("separate the two explanations at 20~dB")
+    if i < 0:
+        return rep.skip(T, "controls sentence not found in tex")
+    # ". The trellis" rather than the first "." -- the last quoted control
+    # value has decimal places, so a bare period search would stop inside it.
+    stop = tex.find(". The trellis", tex.find("given the fading gains as well", i))
+    if stop < 0:
+        return rep.skip(T, "sentence does not reach the expected closing clause")
+    sent = tex[i:stop]
+    nums = [float(m) for m in re.findall(r"\$(\d+\.\d+)\$", sent)]
+    if len(nums) != 3:
+        return rep.skip(T, f"expected 3 numbers in the sentence, found {len(nums)}")
+    for got, want, what in zip(
+            nums,
+            [src["taps_only_faded"]["ser"],
+             src["taps_only_fading_removed"]["ser"],
+             src["genie_csi_faded"]["ser"]],
+            ["taps_only_faded_ser", "fading_removed_ser", "genie_csi_ser"]):
+        rep.cell(T, what, f"{got}", got, want)
+    rep.finish_table(T, before)
+
+
 def check_mmse_monotonicity_prose(tex, rep):
     """The MMSE-vs-taps figures Chapter 6 uses to explain the non-monotonicity.
 
@@ -1716,6 +1753,7 @@ def main():
               check_mmse_baseline, check_seq_on_memory,
               check_relay_param_counts, check_proof_copies_agree,
               check_slicer_floor, check_qpsk_decomposition_prose,
+              check_qpsk_controls_prose,
               check_mmse_monotonicity_prose,
               check_joint_latency, check_joint_memory]
     for chk in checks:

@@ -33,6 +33,9 @@ REGISTRY = {
     "QPSK error decomposition": (
         "qpsk_error_decomposition.py", ["results/qpsk_error_decomposition.json"],
         ["prose: QPSK SER/BER and bits-per-symbol-error"]),
+    "QPSK trellis controls": (
+        "qpsk_trellis_controls.py", ["results/qpsk_trellis_controls.json"],
+        ["prose: three 20 dB trellis controls"]),
     "ISI slicer floor, closed form": (
         "isi_slicer_floor.py", ["results/isi_slicer_floor.json"],
         ["eq:slicer-floor", "prose: closed-form slicer BER table"]),
@@ -114,24 +117,27 @@ def params_of(script):
 
 
 def last_commit(path):
-    """(sha, iso-date, author, subject, iso-timestamp) for path's last commit.
+    """(sha, iso-date, author, subject, epoch-timestamp) for path's last commit.
 
     Both a short date (for display) and a full timestamp (for the staleness
     comparison). Comparing on %cs alone made the check blind to a script edited
     later the same day as the run it describes -- which is precisely how a
     metadata fix to e6_sim_ported.py slipped past this tool while it printed
-    "ok".
+    "ok". The timestamp is %ct (unix epoch, compared as an integer): the %cI
+    used previously carries the committer's local UTC offset, and comparing
+    those as strings ranked a 20:41 UTC commit recorded as 23:41+03:00 *after*
+    a 21:41 UTC one -- hiding a genuinely stale pair the same way.
     """
     if not os.path.exists(os.path.join(ROOT, path)):
         return None
     out = subprocess.run(
-        ["git", "log", "-1", "--format=%h\t%cs\t%an\t%s\t%cI", "--", path],
+        ["git", "log", "-1", "--format=%h\t%cs\t%an\t%s\t%ct", "--", path],
         cwd=ROOT, capture_output=True, text=True).stdout.strip()
     if not out:
         return None
     parts = out.split("\t")
     # subject may itself contain tabs; timestamp is the last field
-    sha, date, author, ts = parts[0], parts[1], parts[2], parts[-1]
+    sha, date, author, ts = parts[0], parts[1], parts[2], int(parts[-1])
     subject = "\t".join(parts[3:-1])
     return [sha, date, author, subject, ts]
 
@@ -152,7 +158,12 @@ REVIEWED_STALE = {
     ("e6_sim_ported.py", "e6_unknown_channel_results/e6_sim_ported_results.npy"):
         "metadata-only fix (3fc7f91): single writer for the .npy plus persisted "
         "rare_event_meta; no simulated value depends on it. That run's error "
-        "counts are in results/e6_sim_rerun_progress.txt.",
+        "counts are in results/e6_sim_rerun_progress.txt. Later, the per-SNR "
+        "cap split (1G at 16 dB / 10G at 18-20 dB) was unified to the adaptive "
+        "rule 10x-first-error with a single 10G ceiling at every first-error "
+        "SNR; the committed 16 dB run stopped at 334M bits (first error at "
+        "33.4M, extended tenfold), so the old 1G ceiling never bound and the "
+        "same run under the new ceiling is bit-identical.",
     ("mlp_min_size_all_channels.py", "results/mlp_min_size_all_channels.json"):
         "comment correction plus a display-name change to the isi_rayleigh "
         "comparator ('MLSE' -> 'MLSE (taps only)'). Same relay object, same "
