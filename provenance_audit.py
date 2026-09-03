@@ -117,24 +117,27 @@ def params_of(script):
 
 
 def last_commit(path):
-    """(sha, iso-date, author, subject, iso-timestamp) for path's last commit.
+    """(sha, iso-date, author, subject, epoch-timestamp) for path's last commit.
 
     Both a short date (for display) and a full timestamp (for the staleness
     comparison). Comparing on %cs alone made the check blind to a script edited
     later the same day as the run it describes -- which is precisely how a
     metadata fix to e6_sim_ported.py slipped past this tool while it printed
-    "ok".
+    "ok". The timestamp is %ct (unix epoch, compared as an integer): the %cI
+    used previously carries the committer's local UTC offset, and comparing
+    those as strings ranked a 20:41 UTC commit recorded as 23:41+03:00 *after*
+    a 21:41 UTC one -- hiding a genuinely stale pair the same way.
     """
     if not os.path.exists(os.path.join(ROOT, path)):
         return None
     out = subprocess.run(
-        ["git", "log", "-1", "--format=%h\t%cs\t%an\t%s\t%cI", "--", path],
+        ["git", "log", "-1", "--format=%h\t%cs\t%an\t%s\t%ct", "--", path],
         cwd=ROOT, capture_output=True, text=True).stdout.strip()
     if not out:
         return None
     parts = out.split("\t")
     # subject may itself contain tabs; timestamp is the last field
-    sha, date, author, ts = parts[0], parts[1], parts[2], parts[-1]
+    sha, date, author, ts = parts[0], parts[1], parts[2], int(parts[-1])
     subject = "\t".join(parts[3:-1])
     return [sha, date, author, subject, ts]
 
