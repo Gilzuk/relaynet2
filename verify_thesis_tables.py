@@ -206,7 +206,7 @@ MIN_CELLS = {
     "tbl:table39": 30, "tbl:table40": 12, "tbl:table41": 15,
     "tbl:table42": 27, "tbl:table43": 18, "tbl:table44": 20,
     "tbl:mmse-baseline": 12, "tbl:seq-on-memory": 12,
-    "arch:relay-param-counts": 7, "tbl:slicer-floor-inline": 24,
+    "arch:relay-param-counts": 7, "consistency:proof-copies": 7, "tbl:slicer-floor-inline": 24,
     "prose:qpsk-decomposition": 4, "prose:mmse-monotonicity": 12,
     "tbl:joint-latency": 30, "tbl:joint-memory": 21,
 }
@@ -1508,6 +1508,55 @@ def check_relay_param_counts(tex, rep):
     rep.finish_table(T, before)
 
 
+# The six headline-claim proofs exist twice: thesis Appendix F (section 9.6) and
+# the README's "Appendix - Proof of Claims". Nothing linked them, and a
+# correction has now landed in one copy and not the other twice running -- the
+# MAP/MLSE conflation and the unsupported windowed-MAP bound were both fixed in
+# the thesis first and left standing in the README. These are the load-bearing
+# quantities the two share; they must agree.
+PROOF_COPIES = {
+    "cursor h0": (r"0\.758", 2),
+    "interferer sum": (r"0\.910", 2),
+    "flipped amplitude": (r"0\.152", 2),
+    "unknown-ISI relay params": (r"\b170\b", 2),
+    "channel zeros": (r"0\.707", 2),
+}
+
+
+def check_proof_copies_agree(tex, rep):
+    """Thesis Appendix F and the README proof-of-claims must not drift apart.
+
+    Both state the same six proofs. This checks the quantities they share appear
+    in both, so a correction to one copy that misses the other is caught here
+    rather than by a reader finding the two documents disagreeing.
+    """
+    T = "consistency:proof-copies"; before = rep.checked
+    readme = os.path.join(ROOT, "README.md")
+    if not os.path.exists(readme):
+        return rep.skip(T, "README.md not found")
+    rm = open(readme, encoding="utf-8").read()
+    i = rm.find("Proof of Claims")
+    if i < 0:
+        return rep.skip(T, "README has no proof-of-claims section")
+    rm = rm[i:]
+    j = tex.find("Verification of Headline Claims")
+    if j < 0:
+        return rep.skip(T, "thesis has no Appendix F")
+    ap = tex[j:]
+
+    for name, (pat, _) in PROOF_COPIES.items():
+        in_tex = 1.0 if re.search(pat, ap) else 0.0
+        in_rm = 1.0 if re.search(pat, rm) else 0.0
+        # both copies must carry it: compare the README against the thesis
+        rep.cell(T, f"{name} in both copies", str(in_rm), in_rm, in_tex)
+
+    # and neither copy may still call MLSE BER-optimal
+    for label, body in (("thesis", ap), ("README", rm)):
+        bad = 1.0 if re.search(r"MAP/MLSE detection is optimal", body) else 0.0
+        rep.cell(T, f"{label}: no MAP/MLSE conflation", str(bad), bad, 0.0)
+    rep.finish_table(T, before)
+
+
 def check_slicer_floor(tex, rep):
     """The closed-form slicer-BER table in Section~\\ref{sec:unknown-channel-experiment}.
 
@@ -1665,7 +1714,7 @@ def main():
               check_table41, check_table42, check_table43,
               check_table44,
               check_mmse_baseline, check_seq_on_memory,
-              check_relay_param_counts,
+              check_relay_param_counts, check_proof_copies_agree,
               check_slicer_floor, check_qpsk_decomposition_prose,
               check_mmse_monotonicity_prose,
               check_joint_latency, check_joint_memory]
