@@ -33,6 +33,9 @@ REGISTRY = {
     "QPSK error decomposition": (
         "qpsk_error_decomposition.py", ["results/qpsk_error_decomposition.json"],
         ["prose: QPSK SER/BER and bits-per-symbol-error"]),
+    "QPSK trellis controls": (
+        "qpsk_trellis_controls.py", ["results/qpsk_trellis_controls.json"],
+        ["prose: three 20 dB trellis controls"]),
     "ISI slicer floor, closed form": (
         "isi_slicer_floor.py", ["results/isi_slicer_floor.json"],
         ["eq:slicer-floor", "prose: closed-form slicer BER table"]),
