@@ -91,6 +91,24 @@ def test_mutation_is_caught(scratch_tex, check, fname, old, new):
         f"the wrong check:\n{out[-3000:]}")
 
 
+def test_proof_copy_drift_is_caught(tmp_path):
+    """The thesis and README state the same six proofs; a fix to one copy that
+    misses the other has slipped through twice. Perturbing the README's copy
+    while the thesis stays correct must be caught."""
+    readme = ROOT / "README.md"
+    original = readme.read_text(encoding="utf-8")
+    i = original.index("Proof of Claims")
+    mutated = original[:i] + original[i:].replace("0.152", "0.999", 1)
+    assert mutated != original, "README proof-of-claims anchor moved"
+    try:
+        readme.write_text(mutated, encoding="utf-8")
+        code, out = _run(CHAPTERS)
+        assert code != 0 and "[consistency:proof-copies]" in out, (
+            f"drift between the two proof copies was not caught:\n{out[-2000:]}")
+    finally:
+        readme.write_text(original, encoding="utf-8")
+
+
 def test_every_check_has_a_coverage_floor():
     """A check with no floor can silently drop to zero cells and still pass."""
     sys.path.insert(0, str(ROOT))
