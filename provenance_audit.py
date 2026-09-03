@@ -155,7 +155,12 @@ REVIEWED_STALE = {
     ("e6_sim_ported.py", "e6_unknown_channel_results/e6_sim_ported_results.npy"):
         "metadata-only fix (3fc7f91): single writer for the .npy plus persisted "
         "rare_event_meta; no simulated value depends on it. That run's error "
-        "counts are in results/e6_sim_rerun_progress.txt.",
+        "counts are in results/e6_sim_rerun_progress.txt. Later, the per-SNR "
+        "cap split (1G at 16 dB / 10G at 18-20 dB) was unified to the adaptive "
+        "rule 10x-first-error with a single 10G ceiling at every first-error "
+        "SNR; the committed 16 dB run stopped at 334M bits (first error at "
+        "33.4M, extended tenfold), so the old 1G ceiling never bound and the "
+        "same run under the new ceiling is bit-identical.",
     ("mlp_min_size_all_channels.py", "results/mlp_min_size_all_channels.json"):
         "comment correction plus a display-name change to the isi_rayleigh "
         "comparator ('MLSE' -> 'MLSE (taps only)'). Same relay object, same "

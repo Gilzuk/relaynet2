@@ -2,7 +2,21 @@
 
 _Last updated: 2026-09-03_
 
-### Latest (2026-09-03): four load-bearing items audited; three fixes landed
+### Latest (2026-09-03): first-error bit budget unified to one adaptive rule
+
+`e6_sim_ported.py`'s per-SNR cap split (`FIRST_ERROR_MAX_BITS_BY_SNR`: 1G at
+16 dB, 10G at 18/20 dB) is gone. Every first-error SNR now stops at the
+adaptive budget 10 × (bits to first error), limited by a single hard ceiling
+`FIRST_ERROR_MAX_BITS = 10_000_000_000` per run. No committed number moves:
+the 16 dB run stopped at 334M bits (first error at 33.4M, extended tenfold),
+so the old 1G ceiling never bound and the run is bit-identical under the new
+one; 18/20 dB already used 10G. `provenance_audit.py`'s reviewed-stale entry
+for the pair documents this. Persisted metadata key changed:
+`first_error_max_bits_by_snr` / `first_error_default_max_bits` →
+`first_error_max_bits`. Verifier 509/0, audit clean; Python-only, no PDF
+rebuild.
+
+### Earlier (2026-09-03): four load-bearing items audited; three fixes landed
 
 Independent re-verification of the four items flagged for human review (Ch.7
 posterior-mean equation, the withdrawn QPSK result, the MMSE monotonicity
