@@ -2,7 +2,49 @@
 
 _Last updated: 2026-09-03_
 
-### Latest (2026-09-03): Overleaf bundles regenerated; both were broken
+### Latest (2026-09-04): Overleaf sync publishes the document, not the directory
+
+`git subtree push --prefix=thesis overleaf master` — the sync this repo
+documented — put the whole working trail into the authoring surface: the
+superseded `chapters/_ch0*.tex` drafts, the two review-response appendices
+`main.tex` no longer includes, every `.aux`/`.log`/`.bbl`/`main.pdf`,
+`CHANGELOG.md`, `RERUN_CHANGELOG.md`, `ak_comments.json`, `submission/`, and the
+inline `\REV{...}` fix records. It is replaced by a sync that publishes the
+*document*.
+
+- `scripts/overleaf_project.py` is now the single definition of what the project
+  is: the transitive closure of `main.tex` — 12 chapters, 22 figures,
+  `references.bib`, 16 fonts, `hebcal.sty`, `OVERLEAF.md`, 54 files. Both the
+  zips and the git sync consume it, so they cannot disagree.
+- `scripts/overleaf_sync.py` rebuilds a generated branch `overleaf-dist` whose
+  **root is the Overleaf project root**, annotations stripped, and pushes it to
+  `overleaf/master`. One commit per publish, naming the `thesis/` commit it came
+  from. The branch is a build output: regenerated in full each run, never edited
+  by hand, never merged into `main`, absent from a fresh clone until
+  `make overleaf-sync`.
+- The sync is **one-way** — stripping is lossy, so Overleaf-side edits cannot be
+  replayed into `thesis/` automatically. `--push` therefore refuses when the
+  remote carries commits the branch lacks and prints them; `make overleaf-pull`
+  now reports those instead of pretending to merge. Both paths were exercised
+  against a local bare repo standing in for Overleaf: first publish succeeds, a
+  simulated Overleaf edit blocks the next push, `--force` overrides.
+- `make bundles` output is now **deterministic** (fixed entry timestamps, stable
+  order). Staging gave every file a fresh mtime, which zip records, so a rebuild
+  that changed nothing still wrote different bytes and put another 4.7 MB blob
+  into history.
+
+Verification: the branch was extracted with `git archive` into an empty
+directory and compiled — 0 errors, 0 undefined references, 132 pages,
+**text-identical to `thesis/main.pdf`**; likewise the deterministic clean zip.
+Suite 205 passed, verifier 509/0, audit clean. No `.tex` or figure changed, so
+no PDF rebuild.
+
+Cannot be exercised here: `git.overleaf.com` is a policy denial in this
+container's egress proxy, so the push to the real project
+(`git.overleaf.com/69cd8f24043dbf2a2982370`, remote already configured) must run
+on a machine with Overleaf git credentials.
+
+### Earlier (2026-09-03): Overleaf bundles regenerated; both were broken
 
 `make bundles` output is committed again, and two defects that made the
 committed bundles unusable are fixed at the generator rather than in the zips.

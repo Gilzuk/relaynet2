@@ -2,6 +2,18 @@
 
 Branch: `copilot/fix-bug-in-data-processing`. Reference spec: `experiments-standalone/PORTING.md`.
 
+Session note (2026-09-04): replaced the Overleaf sync. `git subtree push
+--prefix=thesis` published the working trail (draft chapters, excluded
+review-response appendices, build artefacts, changelogs, `\REV` records) into
+the authoring surface. Now `scripts/overleaf_project.py` defines the project as
+main.tex's transitive closure (54 files) for both the zips and the sync, and
+`scripts/overleaf_sync.py` publishes it on a generated `overleaf-dist` branch
+whose root is the project root, annotations stripped. One-way by construction:
+`--push` refuses when Overleaf has commits the branch lacks (verified against a
+stand-in bare repo, including `--force`). Bundles are now byte-reproducible.
+Branch content compiles standalone and renders text-identical to
+`thesis/main.pdf`; 205 tests pass. `make overleaf-{show,sync,push,pull}`.
+
 Session note (2026-09-03, latest): regenerated and committed the two Overleaf
 bundles, after fixing the generator. `build_bundles.py` hardcoded
 `hebrewcal.sty` while `main.tex` loads `hebcal` — every committed bundle was

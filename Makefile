@@ -38,7 +38,8 @@ endif
 # ──────────────────────────────────────────
 
 .PHONY: help quick full charts test exp list clean clean-results clean-weights clean-logs \
-        setup check verify repro-unknown repro-qpsk repro-full thesis bundles overleaf-push overleaf-pull
+        setup check verify repro-unknown repro-qpsk repro-full thesis bundles \
+        overleaf-sync overleaf-show overleaf-push overleaf-pull
 
 help: ## Show this help
 	@echo ""
@@ -55,8 +56,10 @@ help: ## Show this help
 	@echo "    make bundles         Rebuild the two Overleaf zips from thesis/"
 	@echo ""
 	@echo "  OVERLEAF SYNC (see thesis/OVERLEAF_SYNC.md)"
-	@echo "    make overleaf-push   Push thesis/ up to the linked Overleaf project"
-	@echo "    make overleaf-pull   Pull Overleaf edits back into thesis/"
+	@echo "    make overleaf-show   List what the Overleaf project resolves to"
+	@echo "    make overleaf-sync   Rebuild the overleaf-dist branch (thesis only, no trail)"
+	@echo "    make overleaf-push   Publish overleaf-dist as the Overleaf project root"
+	@echo "    make overleaf-pull   Report Overleaf-side edits (the sync is one-way)"
 	@echo "    make thesis          Build the thesis PDF (needs XeLaTeX + latexmk)"
 	@echo ""
 	@echo "  EXPERIMENT RUNNER"
@@ -103,20 +106,27 @@ repro-full: ## Tier 2: recompute every experiment (hours; requires torch)
 	$(PYTHON) $(RUNNER) --all --seed $(SEED)
 	$(MAKE) verify
 
-overleaf-push: ## Push thesis/ up to the linked Overleaf project
-	@git remote get-url overleaf >/dev/null 2>&1 || \
-	  { echo "ERROR: no 'overleaf' remote. See thesis/OVERLEAF_SYNC.md:"; \
-	    echo "  git remote add overleaf https://git.overleaf.com/<project-id>"; exit 1; }
-	@echo ">> Pushing thesis/ to Overleaf (remote branch: master)..."
-	git subtree push --prefix=thesis overleaf master
+overleaf-sync: ## Rebuild the overleaf-dist branch (thesis only, annotations stripped)
+	$(PYTHON) scripts/overleaf_sync.py
 
-overleaf-pull: ## Pull Overleaf edits back into thesis/
+overleaf-show: ## List what the Overleaf project resolves to, without building
+	@$(PYTHON) scripts/overleaf_sync.py --show
+
+overleaf-push: ## Rebuild overleaf-dist and push it to Overleaf as the project root
+	$(PYTHON) scripts/overleaf_sync.py --push
+
+overleaf-pull: ## Report Overleaf-side edits (this sync is one-way; see OVERLEAF_SYNC.md)
 	@git remote get-url overleaf >/dev/null 2>&1 || \
 	  { echo "ERROR: no 'overleaf' remote. See thesis/OVERLEAF_SYNC.md:"; \
 	    echo "  git remote add overleaf https://git.overleaf.com/<project-id>"; exit 1; }
-	@echo ">> Pulling Overleaf edits into thesis/ ..."
-	git subtree pull --prefix=thesis overleaf master --squash
-	@echo ">> Now re-check the numbers:  make verify"
+	@echo ">> Fetching overleaf/master ..."
+	@git fetch overleaf master
+	@echo ">> Commits on Overleaf that overleaf-dist does not have:"
+	@git log --oneline overleaf-dist..FETCH_HEAD 2>/dev/null || \
+	  echo "  (no overleaf-dist branch yet -- run: make overleaf-sync)"
+	@echo ">> The sync is one-way: annotations are stripped on the way out, so"
+	@echo "   these cannot be replayed into thesis/ automatically. Inspect with"
+	@echo "   'git diff overleaf-dist FETCH_HEAD' and port them into thesis/ by hand."
 
 bundles: ## Rebuild the two Overleaf zips from thesis/
 	$(PYTHON) scripts/build_bundles.py
