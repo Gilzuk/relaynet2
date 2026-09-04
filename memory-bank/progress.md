@@ -12,7 +12,9 @@ whose root is the project root, annotations stripped. One-way by construction:
 `--push` refuses when Overleaf has commits the branch lacks (verified against a
 stand-in bare repo, including `--force`). Bundles are now byte-reproducible.
 Branch content compiles standalone and renders text-identical to
-`thesis/main.pdf`; 205 tests pass. `make overleaf-{show,sync,push,pull}`.
+`thesis/main.pdf`; 205 tests pass. `make overleaf-{show,sync,mirror,push,pull}`.
+The tooling lives on `claude/overleaf-sync`; `overleaf-dist` is mirrored to
+origin so the published state is visible without Overleaf credentials.
 
 Session note (2026-09-03, latest): regenerated and committed the two Overleaf
 bundles, after fixing the generator. `build_bundles.py` hardcoded

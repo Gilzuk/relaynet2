@@ -39,6 +39,13 @@ directory and compiled — 0 errors, 0 undefined references, 132 pages,
 Suite 205 passed, verifier 509/0, audit clean. No `.tex` or figure changed, so
 no PDF rebuild.
 
+Branch layout: this tooling lives on **`claude/overleaf-sync`**, not on the
+thesis branch — `claude/porting-md-file-l6xzsr` is reset back to `main` and
+carries no unique commits. The generated `overleaf-dist` is mirrored to
+`origin` as well (`make overleaf-mirror`, or `--origin --push` for both
+remotes), so the published state is visible from GitHub without Overleaf
+credentials; its history is append-only, so those pushes fast-forward.
+
 Cannot be exercised here: `git.overleaf.com` is a policy denial in this
 container's egress proxy, so the push to the real project
 (`git.overleaf.com/69cd8f24043dbf2a2982370`, remote already configured) must run

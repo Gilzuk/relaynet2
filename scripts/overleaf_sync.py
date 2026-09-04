@@ -136,6 +136,18 @@ def push(branch, remote, force):
                    check=True)
 
 
+def push_origin(branch):
+    """Mirror the generated branch to origin as well.
+
+    Overleaf's remote is the publish target; origin is where the rest of the
+    project lives, so keeping a copy there makes the published state visible
+    (and recoverable) without Overleaf credentials. The branch is append-only,
+    so this fast-forwards.
+    """
+    print(f">> Mirroring {branch} to origin ...")
+    subprocess.run(["git", "-C", ROOT, "push", "origin", branch], check=True)
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -146,6 +158,8 @@ def main():
     ap.add_argument("--remote", default=DEFAULT_REMOTE)
     ap.add_argument("--mode", default="clean", choices=("clean", "annotated"),
                     help="clean (default) strips the \\REV fix records")
+    ap.add_argument("--origin", action="store_true",
+                    help="also mirror the branch to origin (visibility/backup copy)")
     ap.add_argument("--show", action="store_true",
                     help="list what the project resolves to and exit")
     a = ap.parse_args()
@@ -165,9 +179,11 @@ def main():
     print(f"  {a.branch} {'updated' if changed else 'already current'} "
           f"at {sha[:9]}: {n_files} files ({a.mode})")
 
+    if a.origin:
+        push_origin(a.branch)
     if a.push:
         push(a.branch, a.remote, a.force)
-    else:
+    elif not a.origin:
         print(f"  not pushed. To publish:  python3 scripts/overleaf_sync.py --push")
     return 0
 

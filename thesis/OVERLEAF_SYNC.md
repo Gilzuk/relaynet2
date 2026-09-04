@@ -57,9 +57,20 @@ make overleaf-push     # rebuild it and push it to Overleaf as the project root
 `overleaf-dist` is a generated branch whose **root is the Overleaf project**. It
 is rebuilt in full from `thesis/` on every run, so it is never edited by hand and
 never merged into `main`; it is a build output that happens to be a branch. Each
-publish is one commit, its message naming the `thesis/` commit it came from.
+publish is one commit, its message naming the `thesis/` commit it came from, and
+the history is append-only.
 
-There is no `overleaf-dist` in a fresh clone — `make overleaf-sync` creates it.
+It is also mirrored to `origin` so the published state is visible from GitHub
+without Overleaf credentials:
+
+```bash
+make overleaf-mirror                       # rebuild and push it to origin
+python3 scripts/overleaf_sync.py --origin --push   # origin and Overleaf at once
+```
+
+A fresh clone gets it with `git fetch origin overleaf-dist`; `make overleaf-sync`
+rebuilds it locally either way. The tooling that generates it lives on
+`claude/overleaf-sync`, not on the thesis branch.
 
 ## The sync is one-way
 
