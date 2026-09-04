@@ -1,0 +1,134 @@
+\chapter{Research Objectives}\label{sec:research-objectives}
+
+\section{Main Objective}\label{sec:main-objective}
+
+To determine \emph{under which conditions} a learned relay surpasses classical relay processing in two-hop communication, and where it does not. A single canonical setup (SISO on both hops, i.i.d.\ Rayleigh fast fading, complex baseband, QPSK, uncoded BER) serves as the controlled baseline on which classical and AI-based strategies are compared as a function of SNR regime and computational constraints. Two deliberate departures from that baseline then locate the boundary the canonical comparison cannot reach: a coded chain, which tests whether the conclusion survives when the classical relay is allowed to decode a channel code (Section~\ref{sec:coded-block-df}), and channels whose structure lies outside the model class the classical relays assume, which is where the learned relay's value is actually established (Chapter~\ref{sec:unknown-channels}). The canonical setup is therefore the control, not the scope.
+
+\subsection{Two Research Questions}\label{sec:two-objectives}
+
+The main objective resolves into two questions that differ only in whether a budget is imposed, and which for that reason have different answers. Throughout, the classical reference is named explicitly rather than left as ``classical processing'': symbol-wise DF and AF where the channel is memoryless, Viterbi MLSE where it has memory, and block DF --- a channel code decoded and re-encoded at the relay --- where the relay is permitted to spend a frame of delay.
+
+\begin{description}
+\item[\textbf{O1 (unconstrained).}] On a channel with memory, and with no budget on latency or computation, in which regime and under what conditions can a learned relay replace the classical method? This is a question purely about accuracy and about what each detector needs to know. It is answered by the four-layer ladder of Chapter~\ref{sec:unknown-channels}, whose rungs vary exactly one thing: how much the receiver chain knows about the channel.
+
+\item[\textbf{O2 (constrained).}] The same question when the relay must also meet a latency budget and a computational budget. Here the classical method may be the more accurate detector and still be unavailable, because a trellis search that grows as $M^{L}$ eventually cannot be afforded and a relay that decodes a codeword cannot decide before the codeword ends.
+\end{description}
+
+Whether the two boundaries coincide is not settled in advance, and there is reason to expect they do not. O1's turns on \emph{identifiability} --- how well the channel must be known before the classical detector can be run as specified at all --- while O2's turns on \emph{arithmetic and delay}, which the channel's memory governs whether or not the channel is known. Two different resources may well run out at two different points. If they do, the distance between them is a result in its own right rather than a restatement of either, and this thesis is structured to measure it: Section~\ref{sec:partial-posterior} locates the first by sweeping the pilot budget until the classical estimate fails, and Section~\ref{sec:joint-latency-memory} locates the second by measuring a channel with memory under a latency constraint.
+
+Latency is singled out for measurement because it is more often assumed than measured. A sequence detector is commonly treated as latency-expensive on the grounds that it searches a trellis, and a windowed relay as cheap on the grounds that its window is short; neither follows from the structure of the algorithms, since a trellis search need not run to the end of the block and a window must be filled on both sides of the symbol it decides. Section~\ref{sec:joint-latency-memory} therefore measures the decision delay each detector actually imposes, rather than inferring it.
+
+\section{Research Gap and Motivation}\label{sec:research-gap-and-motivation}
+
+Despite growing interest in AI for wireless communication, a systematic comparison of relay processing paradigms (spanning classical signal processing, supervised learning, generative modeling, and modern sequence architectures) is, to the best of our knowledge, absent from the literature. The following specific gaps motivate this thesis:
+
+\begin{enumerate}
+    \item \textbf{Gap 1: No cross-paradigm relay comparison.} Existing work on AI-based relay processing focuses on individual architectures in isolation. Ye et al.~\cite{YeLiJuang2018OFDMDL} demonstrated DNNs for OFDM detection, Dorner et al.~\cite{Dorner2018OverTheAirDL} explored autoencoders for end-to-end communication, and Samuel et al.~\cite{SamuelDiskinWunder2019MIMODetect} applied unfolded networks to MIMO detection. However, no study systematically compares supervised feedforward networks, variational autoencoders, adversarial networks, attention-based Transformers, and state space models (Mamba \cite{gu2023mamba}, Mamba-2 SSD \cite{DaoGu2024TransformersSSM}) for the same relay denoising task under controlled conditions. State space models in particular have begun to be applied to receiver-side physical-layer tasks, such as channel state prediction \cite{Djuhera2026MambaCSP}, but not, to the best of our knowledge, to the relay processing function itself, where the node must re-transmit rather than merely decide. Without such a comparison, practitioners cannot make informed architecture selections.
+    \item \textbf{Gap 2: The complexity--performance relationship is uncharacterized for relay processing.} Network sizing is a well-studied question in machine learning generally, and model-size trade-offs have been examined for other physical-layer learning tasks --- automatic modulation classification, for instance, exhibits a parameter-count band beyond which accuracy degrades \cite{Harper2023AMCDeepNets}; what is missing is the corresponding characterization for the relay, whose denoising task is unusually low-dimensional. Recovering one symbol from a noisy observation has a small minimum description length --- the target is a soft threshold function --- so it is not obvious that capacity helps here at all, and the question of how small a relay network can be before performance degrades has not, to the best of our knowledge, been answered. Nor has an equal-parameter comparison been reported for this task, which is what separates architectural effects from capacity effects.
+
+\end{enumerate}
+
+This thesis addresses both gaps through a unified framework that implements nine relay strategies and compares eight of them on the canonical setup, with both original and normalized parameter counts, full statistical analysis, and a dedicated complexity study; Gap 1's adversarial paradigm (cGAN) is implemented but, being excluded from the canonical comparison on cost grounds, is addressed qualitatively rather than quantitatively. The following table summarizes the positioning of this work relative to the literature:
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
+\caption[Research positioning]{Research positioning: comparison of this thesis against prior work in deep-learning-based relay communication}\label{tbl:table17}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Aspect
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Prior Work
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+This Thesis
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Aspect
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Prior Work
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+This Thesis
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Relay strategies compared & 1--2 (typically AF vs.~DF, or one AI method) & 8 compared (2 classical + 6 AI); a ninth, cGAN, is implemented but excluded on cost grounds \\
+AI paradigms & Single (e.g., supervised only) & 4 implemented (supervised, generative, adversarial, sequential); adversarial (cGAN) excluded from the canonical comparison on cost grounds \\
+Evaluation discipline & Single ad-hoc configuration & One canonical setup (SISO, Rayleigh, QPSK) for the eight-relay comparison, chosen in advance and never varied there, calibrated against closed-form theory on that channel; a supplementary coded study deliberately varies the code, rate, and modulation against this baseline \\
+Complexity analysis & None & Normalized $\sim$3K-parameter comparison + complexity study (does BER rise again with model size?) \\
+State space models & Applied to receiver-side tasks; none as a relay processor & Mamba-S6, Mamba-2 SSD evaluated as relay processors \\
+Statistical rigor & Often missing & Wilcoxon test, 95\% CI, 10 trials per point \\
+\end{longtable}
+
+\paragraph{Relationship between the canonical study and the extension study.} Hypotheses H1--H4 concern the canonical relay scenario introduced in Chapter~\ref{sec:introduction}: a memoryless two-hop channel with white noise and uncoded transmission. Hypothesis H5 studies a deliberately different regime in which the canonical model no longer represents the true channel. It therefore serves as a robustness extension rather than a direct continuation of the canonical experiments.
+
+\section{Research Hypotheses}\label{sec:research-hypotheses}
+
+Based on the theoretical background of Chapter \ref{sec:literature-review}, this thesis tests the following hypotheses. H1--H4 are posed and answered on the canonical setup. H5 is the central hypothesis of the thesis's principal contribution (Chapter~\ref{sec:unknown-channels}), posed on channels \emph{outside} the canonical family:
+
+\begin{enumerate}
+    \item \textbf{H1 (AI advantage over AF at low SNR).} On the canonical setup, some AI-based relay strategies achieve lower BER than AF at low SNR (0--4 dB), where the non-linear denoising learned by the neural network provides an advantage over AF's noise amplification.
+
+\emph{Rationale:} At low SNR, the MMSE-optimal (posterior-mean) denoiser of a BPSK symbol from a single AWGN observation, $f^*(y) = \mathbb{E}[x \mid y] = \tanh(y/\sigma^2)$, is a smooth non-linear mapping that differs substantially from AF's linear scaling; a neural network can approximate $f^*$ closely, whereas AF amplifies noise together with the signal. Note that $f^*$ is optimal in the mean-square sense for the relay's local estimate; it is not claimed to be the end-to-end BER-optimal relay function, which is why H1 is posed as an empirical hypothesis rather than a theorem.
+
+\item \textbf{H2 (DF dominance at high SNR).} The symbol-wise DF relay (Remark~\ref{rem:df-terminology}) achieves the lowest BER at medium-to-high SNR ($\geq 6$ dB), outperforming all AI methods.
+
+\emph{Rationale:} At high SNR, $f^*(y) \approx \text{sign}(y)$, which is exactly the symbol-wise DF operation. AI relays introduce a small but non-zero approximation error, so DF should be optimal among the per-symbol relay functions considered in this uncoded setting. This dominance is asserted only within the uncoded, symbol-wise family evaluated here and is not a claim of information-theoretic optimality (cf.\ Remark~\ref{rem:df-terminology}).
+
+\item \textbf{H3 (Overfitting at excess capacity).} There exists an optimal model size for relay denoising beyond which performance degrades due to overfitting, so that BER rises again once capacity exceeds what the mapping requires. Specifically, models with $\sim$100--200 parameters achieve performance comparable to models with $10$--$100\times$ more parameters. Only the second, weaker part of this hypothesis was testable with the protocol originally adopted: establishing \emph{overfitting} as the mechanism behind any upturn would require seed replication and train/test-gap measurement. The seed replication is performed for the MLP size axis by the sweep of Section~\ref{sec:minimum-relay-size}, and the hypothesis is adjudicated there and in Section~\ref{sec:complexity-curve-turn}; the train/test-gap measurement, and any replication of the \emph{cross-architecture} comparison, remain outstanding and are recorded in Section~\ref{sec:limitations}.
+
+\emph{Rationale:} The bias-variance analysis (Section \ref{sec:theoretical-basis-universal-approximation-and-denoising}) predicts that the low-complexity target function $f^*$ requires minimal model capacity. Excess capacity increases variance without reducing bias.
+
+\item \textbf{H4 (Architecture convergence at an equal parameter budget).} When all AI models are normalized to the same parameter count ($\sim$3,000), the performance differences between architectures narrow significantly, indicating that parameter count is a more important factor than architectural choice. This is an equal-\emph{budget} comparison rather than an isolation of architecture from capacity: as Table~\ref{tbl:table28} records, meeting the budget required adjusting width, depth, state dimension and input window size together, so those degrees of freedom co-vary with architecture and are not separately controlled.
+
+\emph{Rationale:} All architectures are universal approximators and the target function is simple. At equal capacity, architectural inductive biases provide diminishing returns.
+
+\end{enumerate}
+
+Unlike H1--H4, which assume the canonical memoryless channel throughout, H5 deliberately introduces impairments not present in the system model of Chapter~\ref{sec:introduction}, including channel memory, ISI, and nonlinear distortion.
+\begin{enumerate}[start=5]
+\item \textbf{H5 (Principal contribution, unknown-channel mitigation).} On channels with structure unknown to the receiver chain, memory (intersymbol interference) or asymmetry (biased nonlinearity), the \emph{memoryless} classical relays (AF, symbol-wise DF) fail to relay reliably, exhibiting error floors or severe degradation, whereas the minimal $170$-parameter MLP relay restores reliable relaying by learning the impairment from data, approaching the performance of the optimal model-aware detector without requiring knowledge of the channel family.
+
+\emph{Rationale:} AF forwards the channel impairment untouched, and symbol-wise DF applies a fixed memoryless zero-threshold decision; neither can compensate structure they do not model. Classical theory does provide a remedy \emph{once the channel family is known}, estimate-then-MLSE (pilot-based channel estimation followed by Viterbi equalization) is optimal for a linear FIR channel and is included as a benchmark. The hypothesis is therefore not that learning beats classical theory, but that a single fixed learned architecture can approach model-aware performance on an \emph{unseen per-block realization drawn from the impairment family it was trained on}, without per-block CSI, pilots, explicit identification or online adaptation, and that it remains applicable on impairments (e.g.\ nonlinear bias) for which linear MLSE is mis-specified. Its arithmetic is constant per symbol for a \emph{fixed deployed architecture}; across channel memories, keeping the observation window wide enough to cover the memory generally requires widening it, so the learned cost scales roughly linearly in the selected window against MLSE's exponential growth in the full state. How far this holds, and on which impairment structures it breaks down, is determined empirically in Chapter~\ref{sec:unknown-channels}. Conversely, on channels that satisfy the classical assumptions, H2 predicts no learned relay can beat DF, so H5 also delineates the precise boundary of the learned relay's value.
+\end{enumerate}
+
+\section{Specific Objectives}\label{sec:specific-objectives}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  \textbf{Implement nine relay strategies and compare eight of them} spanning four learning paradigms: no learning (AF, DF), supervised learning (MLP, Hybrid), generative modeling (VAE), and sequence modeling (Transformer, Mamba-S6, Mamba-2 SSD); the ninth, a conditional GAN (cGAN), is implemented but excluded from the comparison on cost grounds.
+\item
+  \textbf{Evaluate on the canonical setup:} SISO Rayleigh fast fading with QPSK, with symbol-wise DF checked against the closed-form two-hop composition on that same channel as the analytical calibration.
+\item
+  \textbf{Investigate the complexity--performance trade-off} by testing model architectures ranging from 0 parameters (classical) to 26,179 parameters (Mamba-2 SSD), and by conducting a normalized comparison at approximately 3,000 parameters.
+\item
+  \textbf{Test whether the canonical conclusion survives a coded chain} by replacing the uncoded symbol-wise DF baseline with a genuine block-DF relay --- a convolutional code decoded and re-encoded at the relay --- and comparing it against coded-aware learned relays at equal $E_s/N_0$ and again at equal throughput, since a code that halves the information rate changes what ``better'' means (Section~\ref{sec:coded-block-df}).
+\item
+  \textbf{Delineate the conditions under which a learned relay surpasses classical processing} on channels whose structure the classical relays do not model --- unknown memory, nonlinear asymmetry, and composite cascades of both --- by locating the boundary rather than demonstrating a capability: a memoryless control where learning is expected to buy nothing, a matched-receiver bound (Viterbi MLSE with genie CSI), a pilot-budget sweep to find the crossover, and a blind regime where no channel posterior exists (Chapter~\ref{sec:unknown-channels}).
+\item
+  \textbf{Price the two objectives against each other} by measuring a channel with memory \emph{under} a latency constraint --- the one cell in which MLSE's $M^{L}$ growth and block DF's frame buffering bind simultaneously --- with every relay placed inside one identical coded chain so the comparison is between relays and nothing else, and with cost reported on axes that assume no processor: decision delay in symbols and multiply-accumulates per symbol (Section~\ref{sec:joint-latency-memory}).
+\item
+  \textbf{Identify practical deployment recommendations} for selecting the appropriate relay strategy given specific operational constraints (SNR range, computational budget, channel environment).
+\end{enumerate}
+
+\section{Scope and limitations}\label{sec:scope-and-delimitations}
+
+The following limitations define the scope of the canonical comparison, confined throughout to the setup below (SISO, Rayleigh fast fading, complex baseband, QPSK, uncoded); the supplementary coded and unknown-channel studies depart from it deliberately, as noted where relevant:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Modulation:} QPSK for the canonical relay comparison; the unknown-channel study (Chapter~\ref{sec:unknown-channels}) mainly uses BPSK, with a QPSK re-check of the unknown-ISI result (Section~\ref{sec:qpsk-unknown-channel}), and 16-QAM enters only as a modulation-and-coding rung in the link-adaptation study. Higher-order constellations as a relay design question, and the joint 2D $N$-class formulation they require, are deferred to future work.
+\item
+  \textbf{Channel knowledge:} Perfect CSI in the canonical core; estimation error is not modeled there. Chapter~\ref{sec:unknown-channels} lifts this with finite-pilot estimation, a swept pilot budget, and a zero-CSI blind regime.
+    \item
+  \textbf{Topology:} A single relay, two hops, half-duplex, SISO on both hops. Multi-relay, full-duplex and multi-antenna (MIMO) configurations are deferred to future work.
+\end{itemize}
+
+These delimitations isolate the relay processing function from protocol and system effects.

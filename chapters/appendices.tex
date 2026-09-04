@@ -1,0 +1,272 @@
+\chapter{Appendices}\label{sec:appendices}
+\section{Appendix A: Mathematical Notation}\label{sec:appendix-a-mathematical-notation}
+
+{\def\LTcaptype{table} % do not increment counter
+\begin{longtable}[]{@{}ll@{}}
+\toprule\noalign{}
+Symbol & Description \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\(b\) & Binary bit (\(\in \{0, 1\}\)) \\
+\(x\) & Modulated BPSK symbol (\(\in \{-1, +1\}\)) \\
+\(y\) & Received signal \\
+\(n\) & Noise sample \\
+\(h\) & Fading coefficient \\
+\(\sigma^2\) & Noise variance \\
+\(\text{SNR}\) & Signal-to-Noise Ratio (linear) \\
+\(G\) & AF amplification gain \\
+\(\mathbf{W}\) & Neural network weight matrix \\
+\(\mathbf{b}\) & Bias vector \\
+\(P_e\) & Bit error rate \\
+\(Q(\cdot)\) & Gaussian Q-function \\
+\(\beta\) & VAE KL weight \\
+\(\lambda\) & Regularization parameter \\
+\(\eta\) & Learning rate \\
+\(\Delta\) & State space discretization step \\
+\(\mathbf{A}, \mathbf{B}, \mathbf{C}, D\) & State space model matrices \\
+\end{longtable}
+}
+
+\section{Appendix B: Model Architectures and Hyperparameters}\label{sec:appendix-b-model-architectures-and-hyperparameters}
+
+% column helpers
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+
+\begin{table}[ht]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+
+\begin{tabularx}{\textwidth}{|L{2.1cm}|Y|L{3.2cm}|L{1.7cm}|L{2.3cm}|}
+\hline
+\textbf{Relay} &
+\textbf{Network Topology} &
+\textbf{Train Loss (LR)} &
+\textbf{Total Params} &
+\textbf{Implementation} \\
+\hline
+MLP (Minimal) &
+Feedforward MLP, 5-symbol sliding window &
+MSE, lr=0.01, 100 epochs &
+169 &
+NumPy (CPU) \\
+\hline
+Hybrid &
+MLP + DF switching via learned SNR threshold ($\sim$5 dB) &
+MSE (MLP only), lr=0.01 &
+169 &
+NumPy (CPU) \\
+\hline
+VAE &
+Encoder--decoder latent model (7$\to$8$\to$1) &
+$\beta$-VAE ($\beta=0.1$), Adam lr=$10^{-3}$ &
+1{,}777 &
+PyTorch (CUDA) \\
+\hline
+cGAN (WGAN-GP) &
+Conditional GAN (generator + critic) &
+WGAN-GP, Adam lr=$10^{-4}$ &
+2{,}946 &
+PyTorch (CUDA) \\
+\hline
+Transformer &
+2-layer encoder, 4 heads, $d_{\text{model}}=32$ &
+MSE, Adam lr=$10^{-3}$ &
+17{,}697 &
+PyTorch (CUDA/CPU) \\
+\hline
+Mamba-S6 &
+Selective SSM, 2 S6 layers &
+MSE, Adam lr=$10^{-3}$ &
+24{,}001 &
+PyTorch (CUDA/CPU) \\
+\hline
+Mamba-2 SSD &
+Selective SSM with SSD kernel (2 layers) &
+MSE, Adam lr=$10^{-3}$, clip=1.0 &
+26{,}179 &
+PyTorch (CUDA) \\
+\hline
+\end{tabularx}
+
+\caption[Relay models, objectives and parameter counts]{Comparison of relay models, training objectives, parameter counts, and implementations}
+\label{tab:relay_comparison}
+\end{table}
+
+\section{Appendix C: Reproducibility}\label{sec:appendix-c-software-architecture}
+
+\subsection{Testing} 187 automated tests (pytest) cover the channels, modulation, relay-strategy, simulation and statistics modules with a 100\% pass rate. The suite requires only NumPy and SciPy; PyTorch is optional and needed solely by the neural relays that use it. This is verified rather than asserted: with \texttt{import torch} forced to fail, the Torch-optional layer (\texttt{relaynet/utils/torch\_compat.py}) returns no module, the relays that can fall back to NumPy do so, and the suite reports $183$ passed and $4$ skipped --- the four being the Mamba-2 checkpoint tests, which are guarded by \texttt{skipif} and require a checkpoint file rather than Torch itself. No test fails and none errors, so the dependency claim holds for the suite as committed.
+
+\subsection{Reproducibility} Random seeds are controlled at the source (bit generation) and noise (per-trial seeding) levels to ensure reproducible results.
+
+\paragraph{Provenance of the reported results.} Every result reported in this thesis was regenerated from the archived experiment artifacts and verified against its committed result file, using the experiment-specific budget documented in its own section and in the master ledger above. Those budgets differ substantially by study --- from $10\times100{,}000$ bits per SNR point on the canonical comparison, through $10$-million-bit trials at mid SNR, to billion-bit rare-event runs at the top of the unknown-channel sweep --- and no single figure describes them all. The verification is mechanical rather than manual: each numerical table cell is re-derived from the committed result file it came from, so a table and the data behind it cannot drift apart unnoticed.
+
+\clearpage
+
+\section{Appendix D: Master Experiment Ledger}\label{sec:appendix-e-master-experiment-ledger}
+
+Every numerical table and figure in this thesis traces to exactly one committed result file, verified cell-by-cell against that file by \texttt{verify\_thesis\_tables.py} in the code repository (Section~\ref{sec:reproducibility-and-weight-management}). This ledger lists the modulation, channel, and result source for each major study, grouped in the order they appear. Result-source filenames matching \texttt{e6\_*.npy} are relative to \texttt{e6\_unknown\_channel\_results/}.
+
+{\footnotesize
+\begin{longtable}[]{@{}p{0.19\linewidth}p{0.11\linewidth}p{0.13\linewidth}p{0.09\linewidth}p{0.40\linewidth}@{}}
+\caption[Master experiment ledger]{Master experiment ledger: modulation, channel, and result-file provenance for every major study}\label{tbl:ledger}\tabularnewline
+\toprule\noalign{}
+Study & Modulation & Channel & Tbl/Fig & Result source \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+Study & Modulation & Channel & Tbl/Fig & Result source \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Canonical benchmark & QPSK & Rayleigh & tbl:2, fig:10 & \url{results/modulation/qpsk_rayleigh.json} \\
+Normalized 3K-param.\ comparison & QPSK & Rayleigh & tbl:8 & \url{results/normalized_3k/3k_rayleigh.json} \\
+Coded block-DF, $K$-sweep & QPSK & Rayleigh & tbl:34, 35 & \url{results/coded_df_experiment.json} \\
+Coded high-SNR paired re-test & QPSK & Rayleigh & tbl:37 & \url{results/coded_high_budget_test.json} \\
+Coded relay-error mechanism & QPSK & Rayleigh & tbl:38 & \url{results/coded_error_mechanism.json} \\
+Coded soft-decision relaying & QPSK & Rayleigh & tbl:39 & \url{results/coded_soft_decision.json} \\
+Equal-throughput \& latency & QPSK, 16-QAM & Rayleigh & tbl:40, 41 & \url{results/coded_latency_throughput.json} \\
+Adaptive modulation/coding (AMC) & QPSK, 16-QAM & Rayleigh & tbl:42 & \url{results/coded_rate_adaptation.json} \\
+Capacity under a latency budget & QPSK, 16-QAM & Rayleigh & tbl:43 & \url{results/coded_latency_capacity.json} \\
+Unknown ISI (layer 2) & BPSK & AWGN (2nd hop) & tbl:E6 & \url{e6_sim_ported_results.npy} + \url{e6_viterbi_*.npy} \\
+Flat-channel control & BPSK & Rayleigh & tbl:E6flat & \url{e6_flat_ported_results.npy} \\
+Unknown ISI, QPSK generalization & QPSK & AWGN & tbl:E6qpsk & \url{e6_qpsk_unknown_channel_results.npy} \\
+Composite impairment cascade & DBPSK & Rayleigh & E6composite & \url{e6_composite_ported_results.npy} \\
+Partial posterior (pilot sweep) & BPSK & Rayleigh & E6partial & \url{e6_partial_ported_results.npy} \\
+Blind channel (layer 4) & BPSK & Rayleigh & E6blind & \url{e6_blind_ported_results.npy} \\
+Four-layer summary & mixed (above) & mixed (above) & tbl:layers & combination of the above \\
+\end{longtable}
+}
+
+The result files above are themselves generated by named, committed scripts (e.g.\ \url{coded_rate_adaptation.py} produces \url{coded_rate_adaptation.json}); the correspondence between script and output file is one-to-one and is not separately tabulated here since the filenames make it explicit.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+%% ── Hebrew Abstract (Back Matter) ───────────────────────────
+
+\section{Appendix E: Minimum Relay Size and Initialization Variance}\label{sec:appendix-f-minimum-size}
+
+Supporting material for the minimum-size study of Section~\ref{sec:minimum-relay-size} and the initialization-variance measurements discussed in Section~\ref{sec:capacity-and-overfitting}. The findings themselves are stated in those sections; what follows is the underlying tabulation and the figures, collected here to keep the experiment and discussion chapters to their conclusions.
+
+\begin{longtable}[]{@{}llllllll@{}}
+\caption[Smallest relay per degradation budget]{Smallest relay meeting a given degradation budget against each scenario's own published relay (MLP-169, or MLP-756 for the coded row), written as parameters and window. The reader should observe the window column rather than the parameter column: every memoryless row settles at window~1 while every three-tap row requires window~5 or~7 until a full decibel is conceded, which is the sense in which channel memory rather than model size sets the floor. A dash indicates that no smaller configuration meets that budget}\label{tbl:table-minsize}\tabularnewline
+\toprule\noalign{}
+Channel & Taps & $\le$0~dB & $\le$0.1~dB & $\le$0.25~dB & $\le$0.5~dB & $\le$1~dB & $\le$2~dB \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+Channel & Taps & $\le$0~dB & $\le$0.1~dB & $\le$0.25~dB & $\le$0.5~dB & $\le$1~dB & $\le$2~dB \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+awgn & 1 & 4p w1 & 4p w1 & 4p w1 & 4p w1 & 4p w1 & 4p w1 \\
+rayleigh & 1 & 4p w1 & 4p w1 & 4p w1 & 4p w1 & 4p w1 & 4p w1 \\
+flat gain & 1 & 21p w3 & 21p w3 & 21p w3 & 4p w1 & 4p w1 & 4p w1 \\
+branch asym. & 1 & 4p w1 & 4p w1 & 4p w1 & 4p w1 & 4p w1 & 4p w1 \\
+nonlinear bias & 1 & 29p w5 & 4p w1 & 4p w1 & 4p w1 & 4p w1 & 4p w1 \\
+ISI & 3 & 73p w7 & 73p w7 & 57p w5 & 57p w5 & 37p w7 & 21p w3 \\
+ISI (complex) & 3 & 73p w7 & 73p w7 & 73p w7 & 73p w7 & 57p w5 & 21p w3 \\
+ISI + Rayleigh & 3 & 145p w7 & 73p w7 & 73p w7 & 73p w7 & 37p w7 & 21p w3 \\
+composite & 3 & 145p w7 & 73p w7 & 57p w5 & 21p w3 & 21p w3 & 6p w3 \\
+coded & code & 372p w9 & 244p w5 & 244p w5 & 18p w1 & 18p w1 & 18p w1 \\
+\end{longtable}
+
+\subsection{Results Figures}\label{sec:results-figures-minsize}
+
+\begin{figure}[htbp]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.8\textheight,keepaspectratio]{results/minsize_window_crossover.png}}
+\caption[Window against channel memory]{SNR penalty against each channel's classical comparator as the relay window widens, for the best configuration at each width. The reader should observe that the two panels behave oppositely: on the memoryless channels the penalty is flat to within a fifth of a decibel across every window (see inset), so the window buys nothing, while on the three-tap channels it falls by 8 to 11~dB between window~1 and window~7. This is the sense in which the relay's window must be matched to the channel's impulse response}\label{fig:minsize-crossover}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\pandocbounded{\includegraphics[width=\linewidth,height=0.8\textheight,keepaspectratio]{results/minsize_vs_degradation_budget.png}}
+\caption[Smallest relay per degradation budget]{Smallest relay meeting a given degradation budget against MLP-169, drawn as a step function because the horizontal axis is a budget the designer chooses rather than a measured quantity. The reader should observe the two-order-of-magnitude separation between the panels: the memoryless channels are served by four parameters at every budget shown, while the three-tap channels need between 21 and 145 depending on how much degradation is conceded}\label{fig:minsize-budget}
+\end{figure}
+
+\begin{table}[htbp]
+\centering
+\caption[Across-initialization spread]{Spread in SNR penalty between the best and worst of three initializations at an identical configuration, summarized over all configurations swept on each channel. The reader should observe that on five of the nine channels the median spread is comparable to or larger than the entire effect of varying model size, so a single-initialization size comparison on those channels measures the draw rather than the architecture.}\label{tbl:seed-spread}
+\begin{tabular}{lrrrr}
+\toprule
+Channel & Configs & Median (dB) & 90th pct.\ (dB) & Max (dB) \\
+\midrule
+rayleigh      & 17 & 0.008 & 0.019 & 0.028 \\
+composite     & 16 & 0.036 & 0.165 & 0.195 \\
+awgn          & 17 & 0.055 & 0.116 & 0.138 \\
+isi\_rayleigh & 16 & 0.177 & 0.588 & 0.795 \\
+isi           & 18 & 0.195 & 0.705 & 0.996 \\
+isi\_complex  & 17 & 0.332 & 2.325 & 3.182 \\
+branch\_asym  & 17 & 0.388 & 0.892 & 1.013 \\
+flat\_gain    & 17 & 0.622 & 1.000 & 1.250 \\
+nlbias        & 17 & 1.231 & 1.242 & 1.245 \\
+\midrule
+All           & 152 & 0.180 & 1.229 & 3.182 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption[Across-initialization spread at the 3K budget]{Spread in SNR penalty against symbol-wise DF between the best and worst of three initializations, for the equal-budget architectures on the canonical channel. The reader should observe the Transformer row: its spread is five times the roughly $0.18$~dB that H4's $4.1\%$ high-SNR architecture spread corresponds to, so a single run of that architecture cannot resolve the effect H4 claims. Every other architecture is comfortably inside it}\label{tbl:seed-spread-3k}
+\begin{tabular}{lrrr}
+\toprule
+Architecture & Params & Per-seed penalty vs DF (dB) & Spread (dB) \\
+\midrule
+Mamba2-3K       & 3{,}004 & $+1.113$, $+1.094$, $+1.098$ & 0.019 \\
+Mamba-S6-3K     & 3{,}027 & $+1.123$, $+1.110$, $+1.082$ & 0.041 \\
+MLP-3K          & 3{,}004 & $+0.133$, $+0.162$, $+0.189$ & 0.055 \\
+VAE-3K          & 3{,}037 & $+0.072$, $+0.228$, $+0.142$ & 0.156 \\
+Transformer-3K  & 3{,}007 & $+2.039$, $+1.147$, $+1.133$ & \textbf{0.906} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The Transformer row of Table~\ref{tbl:seed-spread-3k} is a single failing initialization rather than a broadly noisy architecture, and the two figures below are the evidence for that reading. Figure~\ref{fig:transformer-seed-curves} shows all eight runs: seven are indistinguishable at this scale and one separates progressively as SNR rises, which is why a three-seed sample had roughly a one-in-three chance of missing it entirely. Figure~\ref{fig:transformer-loss-penalty} shows why the failure is detectable at training time without reference to BER --- the failing run's final training loss is eleven times the median --- and, equally, why training loss is not a quality signal in the ordinary case.
+
+\begin{figure}[htbp]
+\centering
+\pandocbounded{\includegraphics[width=0.78\linewidth,height=0.34\textheight,keepaspectratio]{results/transformer_seed_ber_curves.png}}
+\caption[Transformer-3K across eight initializations]{Transformer-3K on the canonical channel across eight initializations, against symbol-wise DF. The reader should observe that the failing run is not offset by a constant: it tracks the others at $0$~dB and separates as SNR rises, so an evaluation confined to low SNR would not distinguish it from the seven that converge}\label{fig:transformer-seed-curves}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\pandocbounded{\includegraphics[width=0.78\linewidth,height=0.34\textheight,keepaspectratio]{results/transformer_loss_vs_penalty.png}}
+\caption[Training loss against SNR penalty]{Final training loss against SNR penalty for the eight Transformer initializations and the four-seed Mamba-S6 control. The correlation over all eight seeds is $r=+0.998$, but that figure is the outlier's leverage: among the seven runs that converge it is $r=-0.38$ ($p=0.41$), so loss identifies the failure and carries no information about relative quality once training has succeeded}\label{fig:transformer-loss-penalty}
+\end{figure}
+
+\section{Appendix F: Verification of Headline Claims}\label{sec:appendix-claim-verification}
+
+Each headline claim of Chapter~\ref{sec:unknown-channels} is restated here with the argument or derivation that supports it and the primary reference against which it was checked. The channel used throughout is the normalized 3-tap FIR $\mathbf{h} = [1, 0.7, 0.5]/\lVert\cdot\rVert \approx [0.758, 0.531, 0.379]$.
+
+\subsection{The learned relay never beats a correctly matched classical receiver}
+
+The bound here is the bit-wise MAP detector, computed from the per-bit posteriors a BCJR/APP recursion delivers, and the distinction from MLSE is not pedantic. Given the true channel model and the same observation, bit-wise MAP minimizes the \emph{bit} error probability (for BPSK it coincides with symbol-MAP; for Gray-coded QPSK it is the per-bit marginal of the APPs), so no learned function of that observation can improve on it on the BER metric this thesis uses: against that comparator the claim is a consequence of optimality theory. MLSE minimizes the probability that the whole \emph{sequence} is wrong, which is a different criterion, and it is \emph{not} BER-optimal \cite{Forney1972MLSE, BahlCockeJelinekRaviv1974BCJR, ProakisSalehi2008DigitalComm}. Against genie-CSI MLSE, therefore, the statement that the relay never wins is an \emph{empirical} finding of Chapter~\ref{sec:unknown-channels}, not a theorem --- a learned relay with lower BER than Viterbi would not contradict any optimality result. No comparison in this thesis is made against a BER-optimal detector at either modulation order; that benchmark remains open (Section~\ref{sec:future-work}). The learned-receiver literature is consistent with this reading: reported wins over ``classical'' receivers are wins over mismatched or suboptimal baselines. The sliding bidirectional RNN detector approaches Viterbi with full CSI and passes it only when CSI is imperfect \cite{FarsadGoldsmith2018NNDetection}; ViterbiNet matches the model-based algorithm and gains only under CSI uncertainty \cite{Shlezinger2020ViterbiNet}; DeepRx outperforms practical LMMSE receiver chains, which are not MAP-optimal under the studied impairments \cite{Honkala2021DeepRx}; the OFDM detector of Ye et al.~\cite{YeLiJuang2018OFDMDL} beats MMSE under pilot shortage, cyclic-prefix removal and clipping --- mismatch again. End-to-end autoencoders \cite{OSheaHoydis2017PhysicalLayer} can beat classical \emph{schemes}, but do so by redesigning the transmitter, and are therefore not a receiver-only counterexample.
+
+\subsection{The analytic $0.25$ floor and the non-monotonicity of symbol-wise DF}
+
+With the normalized taps, the interferer magnitude sum $h_1 + h_2 \approx 0.910$ exceeds the cursor $h_0 \approx 0.758$: the eye is closed. Of the four equiprobable BPSK interferer sign patterns, exactly one (both interferers opposing the cursor) yields a noise-free sample of $0.758 - 0.910 = -0.152 < 0$, a deterministic sign flip, while the remaining three ($0.606$, $0.910$, $1.668$) preserve the sign. A memoryless slicer therefore errs on exactly one pattern in four as noise vanishes, giving the analytic floor of exactly $1/4$. The non-monotonicity follows from the same geometry: at moderate SNR, noise occasionally pushes the flipped sample back across the decision boundary, so the conditional error rate on the bad pattern is below one there and rises toward one as SNR grows, and total BER climbs toward $0.25$ from below. This is the standard behaviour of a closed-eye channel under symbol-by-symbol detection \cite{LuckySalzWeldon1968, ProakisSalehi2008DigitalComm}.
+
+\subsection{Complexity: the $M^{L}$ trellis against a fixed forward pass}
+
+MLSE maintains $M^{L-1}$ trellis states and evaluates $M^{L}$ branch metrics per symbol \cite{Forney1972MLSE, ProakisSalehi2008DigitalComm}. The deployed relay, an 11-sample window into 13 hidden units ($11 \to 13 \to 1$, $170$ parameters), costs approximately $2(11 \cdot 13 + 13)$ multiply--accumulates plus activations, about 330 floating-point operations per symbol, constant for the deployed architecture --- with the caveat, stated in Section~\ref{sec:complexity-viterbi-mlp}, that spanning longer memory generally widens the window, after which the cost grows roughly linearly in it. One qualification for fairness: reduced-state sequence estimation \cite{EyuboqluQureshi1988RSSE} and related decision-feedback trellis methods also break the $M^{L}$ scaling, so full Viterbi is the steepest classical comparator, not the only one.
+
+\subsection{The blind regime: CMA converges where decision-directed MLSE does not}
+
+The constant modulus algorithm performs blind equalization of constant-modulus signals \cite{Godard1980SelfRecovering, TreichlerAgee1983CMA}. The study channel is minimum phase (zeros at $|z| \approx 0.707$), so a short FIR equalizer can approximately invert it; finite equalizer length and noise enhancement leave a residual BER of order $10^{-3}$ at 20~dB, consistent with the measured $3.3\times10^{-3}$ of Section~\ref{sec:blind-channel}. The known ill-convergence of Godard equalizers when the equalizer is too short \cite{Ding1991IllConvergence} supports the observed ``matches but does not excel'' behaviour. Decision-directed blind MLSE, which bootstraps channel estimates from its own decisions, is a crude form of per-survivor processing \cite{RaheliPolydorosTzou1995PSP}; misconvergence, sign and shift ambiguities, and error propagation are its documented failure modes and match the instability observed.
+
+\subsection{The pilot-budget crossover: reliable at ten pilots, collapse at five}
+
+Least-squares estimation of three unknown taps is identifiable from five pilots, so the collapse of Section~\ref{sec:partial-posterior} is not one of strict non-identifiability. Convolution edge effects leave a near-square, ill-conditioned system whose least-squares error variance, proportional to $\sigma^{2}\,\mathrm{tr}\!\left((\mathbf{X}^{H}\mathbf{X})^{-1}\right)$, grows without useful bound, and Viterbi run with badly wrong taps then propagates errors catastrophically. The scaling is consistent with the Cram\'er--Rao bound $\sigma^{2}L/N_{p}$ for this estimation problem \cite{Kay1993Estimation}. The result is specific to the classical LS-plus-Viterbi pipeline: meta-learned demodulators adapt from very few pilots \cite{ParkSimeone2021MetaDemod}, which does not contradict the claim but bounds its scope to the pipeline stated.
+
+\subsection{Genie-CSI MLSE leads the minimal relay by only 1--1.5 dB}
+
+A finite-window symbol-wise detector cannot do better than the MAP detector over that same window, which in turn cannot do better than one given the whole sequence: the window truncates the observation, and truncation cannot add information. That ordering is all theory supplies here. How large the resulting penalty is on this particular channel is a quantitative question this thesis does not answer analytically --- no windowed-MAP detector was implemented, so the $1$--$1.5$~dB the relay loses to genie-CSI Viterbi is not decomposed into the part attributable to the window and the part to the 170-parameter approximation of it. Published learned detectors close the gap further: the sliding bidirectional RNN comes within fractions of a dB of Viterbi \cite{FarsadGoldsmith2018NNDetection}, and ViterbiNet closes it essentially to zero given sufficient capacity and data \cite{Shlezinger2020ViterbiNet}. The residual gap reported in Section~\ref{sec:unknown-channel-experiment} is thus a property of the deliberately minimal parameter budget, not of learned detection as a method.

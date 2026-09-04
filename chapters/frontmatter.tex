@@ -1,0 +1,36 @@
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract (English)}
+\markboth{Abstract}{Abstract}
+
+\label{sec:abstract-english}
+
+This thesis compares classical and learned relay strategies for two-hop communication. The core study fixes one configuration: a single-relay SISO link with i.i.d.\ Rayleigh fast fading on both hops, complex baseband, Gray-coded QPSK and uncoded transmission, leaving the relay as the only variable. Eight strategies are evaluated, from AF and symbol-wise DF to generative and sequence models. Results are Monte Carlo estimates with 95\% confidence intervals, calibrated against the closed-form composition.
+
+Under this benchmark the best learned relays outperform AF at low SNR; at medium-to-high SNR, DF matches or exceeds every relay at no parameter cost, an empirical, uncoded per-symbol claim, not general optimality. A size sweep across every channel studied, replicated over three initializations, locates the smallest relay that costs nothing measurable and shows that channel memory rather than parameter count sets it: on a memoryless channel four parameters, a single hidden unit with no window, sit within $0.03$~dB of the classical baseline, whereas three-tap channels need $73$ to $145$ and a window spanning the interference. Error does not rise again as capacity grows, so no overfitting is observed over the range swept. A hybrid relay switching to DF above the measured crossover is near-optimal at no extra cost if SNR is reliably estimated. A coded study raises that baseline: a rate-1/2 convolutional code with a \emph{block}-DF relay, unlike symbol-wise DF, beats uncoded DF from $8$~dB upward. Both learned relays overtake it by $20$~dB (Mamba-S6 already at $16$): a decoding relay spends the code's redundancy, a denoising one leaves it intact. Adapting modulation-and-coding makes rate dominate relay choice by an order of magnitude---unless latency reopens the gap.
+
+The principal contribution is a ladder of four layers of progressively relaxed channel assumptions. At layer~1 classical processing wins: on a memoryless matched channel the MAP hard-decision DF rule is componentwise slicing after coherent equalization. Layer~2 adds an unknown three-tap ISI filter: the memoryless classical relays fail, DF's error rate rising with transmit power; a $170$-parameter windowed MLP restores the link at a per-symbol cost that is constant for the deployed architecture and scales with the window rather than the state, $1$--$1.5$~dB behind a Viterbi detector whose cost grows as $M^{L}$. Layer~3 degrades the channel estimate: the classical advantage holds to twenty pilots, lost by ten. Layer~4 redraws the channel every block, where the learned relay leads the best blind classical equaliser.
+
+Two boundaries follow, set by different resources. Without a budget, the learned relay overtakes classical processing where the channel cannot be identified: the crossover is a pilot count, between twenty and ten. Under a budget, it overtakes where the trellis cannot be afforded: measured in multiply-accumulates rather than wall-clock, sequence detection costs $2M^{L}$ per symbol against a \emph{fixed} windowed relay's $2WH+4H$, equal at $3.35$ taps for the architecture deployed here and $158\times$ larger at seven. That crossover is an arithmetic comparison at fixed $(W,H,M)$, not a universal boundary: a longer memory may require a wider window, and the relay's cost then grows linearly in it. On the three-tap channel measured, latency does not separate the two detectors --- a bounded-traceback MLSE decides in three symbols, fewer than the relay's window requires --- though it does disqualify a block relay, whose $202$ symbols of frame buffering buy no accuracy on a channel with memory. Whether this holds at longer memory or under a tighter code is not tested here. The regimes are delineated by identifiability and by arithmetic: classical processing where the model matches the channel and its memory is short, the learned relay where the channel is unmodeled, poorly estimated, missing per block, or has memory long enough to price the trellis out.
+% \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+% \begin{flushright}
+% \begin{otherlanguage}{hebrew}
+% \textbf{ארכיטקטורות למידה עמוקה לתקשורת ממסר דו-קפיצתית: מחקר השוואתי של אסטרטגיות ממסר קלאסיות ומבוססות רשתות נוירונים}
+% גיל צוקרמן
+% חיבור זה הוגש כמילוי חלקי של הדרישות לקבלת תואר מגיסטר למדעים (M.Sc.)
+% בית הספר להנדסת חשמל — אוניברסיטת תל אביב
+% 2026
+% \end{otherlanguage}
+% \end{flushright}
+
+\clearpage
+
+%% ── Acknowledgments ──────────────────────────────────────────
+\cleardoublepage
+\phantomsection
+\chapter*{Acknowledgments}
+\addcontentsline{toc}{chapter}{Acknowledgments}
+\markboth{Acknowledgments}{Acknowledgments}
+
+I would like to thank my supervisors, Dr. Anatoly Khina and Prof. Raja Giryes at Tel Aviv University, for their guidance and support throughout this research.
+This work was conducted in the School of Electrical and Electronic Engineering, Tel Aviv University.
