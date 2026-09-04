@@ -50,12 +50,20 @@ into that repository. Both were exercised against local bare repos: first
 publish into an empty target, refusal when the target carried an unseen commit,
 `--force` override, and no regression on the original Overleaf path.
 
-**Blocked, needs the user:** the repository itself does not exist and this
-session cannot create one — `POST /user/repos` returns 403 "Resource not
-accessible by integration", and `Gilzuk/relaynet2-thesis` is not reachable.
-Create it empty and private (no README/.gitignore/licence — an auto-created
-commit is one the first publish would have to refuse or overwrite), then
-`git remote add thesis-repo ...` and `make overleaf-repo`.
+**Published (2026-09-04):** the user created `Gilzuk/relaynet2-thesis` and it
+now holds the project at `main` (`8ed4228`, 55 files, identical commit to
+`overleaf-dist`). GitHub's auto-init README made the first publish a
+`--force` — the guard refused the plain push, exactly as designed, over an
+18-byte `# relaynet2-thesis` stub. Subsequent publishes fast-forward.
+Verified by cloning the published repo into an empty directory and compiling
+it: 0 errors, 0 undefined references, 132 pages, text-identical to
+`thesis/main.pdf`.
+
+The generated project now carries a `README.md` at its root (55 files, up from
+54) saying it is generated, that `thesis/` in `Gilzuk/relaynet2` is the source
+of truth, and that direct edits are overwritten — the failure mode the one-way
+design exists to prevent, stated where someone landing on the repo will see it.
+Remaining manual step: link the repo in Overleaf (Menu -> GitHub).
 
 Branch layout: this tooling lives on **`claude/overleaf-sync`**, not on the
 thesis branch — `claude/porting-md-file-l6xzsr` is reset back to `main` and
