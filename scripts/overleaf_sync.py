@@ -37,6 +37,10 @@ from overleaf_project import ROOT, manifest, stage
 EMPTY_TREE = "4b825dc642cb6eb9a060e54bf8d69288fbee4904"
 DEFAULT_BRANCH = "overleaf-dist"
 DEFAULT_REMOTE = "overleaf"
+REPO_REMOTE = "thesis-repo"
+REPO_BRANCH = "main"
+REPO_HINT = ("git remote add thesis-repo "
+             "https://github.com/<you>/relaynet2-thesis")
 
 
 def git(*args, check=True, capture=True):
@@ -104,18 +108,32 @@ def publish(branch, mode):
         git("worktree", "remove", "--force", wt, check=False)
 
 
-def push(branch, remote, force):
+def push(branch, remote, force, remote_branch="master", hint=None):
+    """Publish `branch` to `remote`'s `remote_branch`, refusing to clobber.
+
+    Two publish targets share this path, because both can receive edits made in
+    the Overleaf editor and both must refuse to overwrite them:
+
+      overleaf     Overleaf's own git remote; its only branch is master.
+      thesis-repo  a GitHub repository whose root is the project, linked to
+                   Overleaf through Menu -> GitHub. Overleaf's GitHub
+                   integration pushes editor changes *back* into that
+                   repository, so the guard matters more here, not less.
+    """
     if subprocess.run(["git", "-C", ROOT, "remote", "get-url", remote],
                       capture_output=True).returncode:
         raise SystemExit(
             f"ERROR: no '{remote}' remote. See thesis/OVERLEAF_SYNC.md:\n"
-            f"  git remote add {remote} https://git.overleaf.com/<project-id>")
+            f"  {hint or f'git remote add {remote} https://git.overleaf.com/<project-id>'}")
 
-    fetched = subprocess.run(["git", "-C", ROOT, "fetch", remote, "master"],
+    ref = f"{remote}/{remote_branch}"
+    fetched = subprocess.run(["git", "-C", ROOT, "fetch", remote, remote_branch],
                              capture_output=True, text=True)
     if fetched.returncode:
-        print(f"  note: could not fetch {remote}/master, pushing without the "
-              f"overwrite check ({fetched.stderr.strip().splitlines()[-1:]})")
+        # An empty repository has no branch to fetch yet; that is the normal
+        # first publish, not a failure worth blocking on.
+        print(f"  note: could not fetch {ref} (new or empty target?), "
+              f"pushing without the overwrite check")
     else:
         head = git("rev-parse", "FETCH_HEAD")
         ahead = git("rev-list", f"{branch}..{head}")
@@ -123,16 +141,16 @@ def push(branch, remote, force):
             n = len(ahead.split())
             log = git("log", "--oneline", f"{branch}..{head}")
             raise SystemExit(
-                f"REFUSING TO PUSH: {remote}/master has {n} commit(s) this "
-                f"branch does not have -- edits made in Overleaf:\n{log}\n\n"
+                f"REFUSING TO PUSH: {ref} has {n} commit(s) this branch does "
+                f"not have -- edits made in Overleaf:\n{log}\n\n"
                 f"This sync is one-way: annotations are stripped on the way "
                 f"out, so those edits cannot be replayed into thesis/ "
                 f"automatically. Port them into thesis/ by hand, re-run this "
                 f"script, then push. To discard them instead: --force.")
 
-    print(f">> Pushing {branch} to {remote}/master ...")
+    print(f">> Pushing {branch} to {ref} ...")
     subprocess.run(["git", "-C", ROOT, "push", remote,
-                    f"{branch}:master", *(["--force"] if force else [])],
+                    f"{branch}:{remote_branch}", *(["--force"] if force else [])],
                    check=True)
 
 
@@ -158,6 +176,12 @@ def main():
     ap.add_argument("--remote", default=DEFAULT_REMOTE)
     ap.add_argument("--mode", default="clean", choices=("clean", "annotated"),
                     help="clean (default) strips the \\REV fix records")
+    ap.add_argument("--repo", action="store_true",
+                    help=f"publish to the '{REPO_REMOTE}' remote's "
+                         f"{REPO_BRANCH} branch -- a GitHub repository whose "
+                         f"root is the project, for Overleaf's GitHub integration")
+    ap.add_argument("--repo-remote", default=REPO_REMOTE)
+    ap.add_argument("--repo-branch", default=REPO_BRANCH)
     ap.add_argument("--origin", action="store_true",
                     help="also mirror the branch to origin (visibility/backup copy)")
     ap.add_argument("--show", action="store_true",
@@ -181,9 +205,12 @@ def main():
 
     if a.origin:
         push_origin(a.branch)
+    if a.repo:
+        push(a.branch, a.repo_remote, a.force,
+             remote_branch=a.repo_branch, hint=REPO_HINT)
     if a.push:
         push(a.branch, a.remote, a.force)
-    elif not a.origin:
+    elif not (a.origin or a.repo):
         print(f"  not pushed. To publish:  python3 scripts/overleaf_sync.py --push")
     return 0
 

@@ -39,6 +39,24 @@ directory and compiled — 0 errors, 0 undefined references, 132 pages,
 Suite 205 passed, verifier 509/0, audit clean. No `.tex` or figure changed, so
 no PDF rebuild.
 
+Second publish route added (2026-09-04): Overleaf projects have no branches, so
+besides Overleaf's own git remote (`overleaf-dist:master`) the sync can now
+publish to a **dedicated GitHub repository whose root is the project**
+(`--repo` / `make overleaf-repo`, pushing `overleaf-dist:main` to a
+`thesis-repo` remote), which Overleaf links through Menu -> GitHub. Both routes
+share one code path and the same refuse-to-clobber guard — which matters more on
+the repo route, since Overleaf's GitHub integration pushes editor changes back
+into that repository. Both were exercised against local bare repos: first
+publish into an empty target, refusal when the target carried an unseen commit,
+`--force` override, and no regression on the original Overleaf path.
+
+**Blocked, needs the user:** the repository itself does not exist and this
+session cannot create one — `POST /user/repos` returns 403 "Resource not
+accessible by integration", and `Gilzuk/relaynet2-thesis` is not reachable.
+Create it empty and private (no README/.gitignore/licence — an auto-created
+commit is one the first publish would have to refuse or overwrite), then
+`git remote add thesis-repo ...` and `make overleaf-repo`.
+
 Branch layout: this tooling lives on **`claude/overleaf-sync`**, not on the
 thesis branch — `claude/porting-md-file-l6xzsr` is reset back to `main` and
 carries no unique commits. The generated `overleaf-dist` is mirrored to

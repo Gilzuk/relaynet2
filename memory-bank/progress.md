@@ -15,6 +15,10 @@ Branch content compiles standalone and renders text-identical to
 `thesis/main.pdf`; 205 tests pass. `make overleaf-{show,sync,mirror,push,pull}`.
 The tooling lives on `claude/overleaf-sync`; `overleaf-dist` is mirrored to
 origin so the published state is visible without Overleaf credentials.
+Second route added: `--repo` / `make overleaf-repo` publishes the same tree to
+a dedicated GitHub repo (`thesis-repo` remote, branch `main`) for Overleaf's
+GitHub integration, sharing the clobber guard. The repo must be created by
+hand — this session's GitHub app cannot create repositories (403).
 
 Session note (2026-09-03, latest): regenerated and committed the two Overleaf
 bundles, after fixing the generator. `build_bundles.py` hardcoded

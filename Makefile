@@ -39,7 +39,8 @@ endif
 
 .PHONY: help quick full charts test exp list clean clean-results clean-weights clean-logs \
         setup check verify repro-unknown repro-qpsk repro-full thesis bundles \
-        overleaf-sync overleaf-show overleaf-mirror overleaf-push overleaf-pull
+        overleaf-sync overleaf-show overleaf-mirror \
+        overleaf-repo overleaf-push overleaf-pull
 
 help: ## Show this help
 	@echo ""
@@ -59,6 +60,7 @@ help: ## Show this help
 	@echo "    make overleaf-show   List what the Overleaf project resolves to"
 	@echo "    make overleaf-sync   Rebuild the overleaf-dist branch (thesis only, no trail)"
 	@echo "    make overleaf-mirror Rebuild overleaf-dist and mirror it to origin"
+	@echo "    make overleaf-repo   Publish overleaf-dist to the thesis-repo remote"
 	@echo "    make overleaf-push   Publish overleaf-dist as the Overleaf project root"
 	@echo "    make overleaf-pull   Report Overleaf-side edits (the sync is one-way)"
 	@echo "    make thesis          Build the thesis PDF (needs XeLaTeX + latexmk)"
@@ -115,6 +117,9 @@ overleaf-show: ## List what the Overleaf project resolves to, without building
 
 overleaf-mirror: ## Rebuild overleaf-dist and mirror it to origin
 	$(PYTHON) scripts/overleaf_sync.py --origin
+
+overleaf-repo: ## Rebuild overleaf-dist and push it to the thesis-repo remote (main)
+	$(PYTHON) scripts/overleaf_sync.py --repo
 
 overleaf-push: ## Rebuild overleaf-dist and push it to Overleaf as the project root
 	$(PYTHON) scripts/overleaf_sync.py --push
