@@ -38,7 +38,7 @@ leaving every cross-reference and citation as `??`. If you add a package, put it
 *before* the Language & Hebrew block at the bottom.
 
 ## Notes
-- `hebrewcal.sty` is a local stub that disables polyglossia's Hebrew-calendar
+- `hebcal.sty` is a local stub that disables polyglossia's Hebrew-calendar
   font (not needed here) so the build doesn't depend on the `othello`
   MetaFont font; it is written to work across MiKTeX / TeX Live / Overleaf.
 - Figures live in `results/` and are found via `\graphicspath`.

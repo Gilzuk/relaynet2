@@ -2,7 +2,88 @@
 
 _Last updated: 2026-09-03_
 
-### Latest (2026-09-03): first-error bit budget unified to one adaptive rule
+### Latest (2026-09-04): Overleaf sync publishes the document, not the directory
+
+`git subtree push --prefix=thesis overleaf master` — the sync this repo
+documented — put the whole working trail into the authoring surface: the
+superseded `chapters/_ch0*.tex` drafts, the two review-response appendices
+`main.tex` no longer includes, every `.aux`/`.log`/`.bbl`/`main.pdf`,
+`CHANGELOG.md`, `RERUN_CHANGELOG.md`, `ak_comments.json`, `submission/`, and the
+inline `\REV{...}` fix records. It is replaced by a sync that publishes the
+*document*.
+
+- `scripts/overleaf_project.py` is now the single definition of what the project
+  is: the transitive closure of `main.tex` — 12 chapters, 22 figures,
+  `references.bib`, 16 fonts, `hebcal.sty`, `OVERLEAF.md`, 54 files. Both the
+  zips and the git sync consume it, so they cannot disagree.
+- `scripts/overleaf_sync.py` rebuilds a generated branch `overleaf-dist` whose
+  **root is the Overleaf project root**, annotations stripped, and pushes it to
+  `overleaf/master`. One commit per publish, naming the `thesis/` commit it came
+  from. The branch is a build output: regenerated in full each run, never edited
+  by hand, never merged into `main`, absent from a fresh clone until
+  `make overleaf-sync`.
+- The sync is **one-way** — stripping is lossy, so Overleaf-side edits cannot be
+  replayed into `thesis/` automatically. `--push` therefore refuses when the
+  remote carries commits the branch lacks and prints them; `make overleaf-pull`
+  now reports those instead of pretending to merge. Both paths were exercised
+  against a local bare repo standing in for Overleaf: first publish succeeds, a
+  simulated Overleaf edit blocks the next push, `--force` overrides.
+- `make bundles` output is now **deterministic** (fixed entry timestamps, stable
+  order). Staging gave every file a fresh mtime, which zip records, so a rebuild
+  that changed nothing still wrote different bytes and put another 4.7 MB blob
+  into history.
+
+Verification: the branch was extracted with `git archive` into an empty
+directory and compiled — 0 errors, 0 undefined references, 132 pages,
+**text-identical to `thesis/main.pdf`**; likewise the deterministic clean zip.
+Suite 205 passed, verifier 509/0, audit clean. No `.tex` or figure changed, so
+no PDF rebuild.
+
+Branch layout: this tooling lives on **`claude/overleaf-sync`**, not on the
+thesis branch — `claude/porting-md-file-l6xzsr` is reset back to `main` and
+carries no unique commits. The generated `overleaf-dist` is mirrored to
+`origin` as well (`make overleaf-mirror`, or `--origin --push` for both
+remotes), so the published state is visible from GitHub without Overleaf
+credentials; its history is append-only, so those pushes fast-forward.
+
+Cannot be exercised here: `git.overleaf.com` is a policy denial in this
+container's egress proxy, so the push to the real project
+(`git.overleaf.com/69cd8f24043dbf2a2982370`, remote already configured) must run
+on a machine with Overleaf git credentials.
+
+### Earlier (2026-09-03): Overleaf bundles regenerated; both were broken
+
+`make bundles` output is committed again, and two defects that made the
+committed bundles unusable are fixed at the generator rather than in the zips.
+
+1. **The bundles could not compile.** `scripts/build_bundles.py` hardcoded
+   `hebrewcal.sty` in its list of extras. `main.tex` was switched to
+   `\usepackage{hebcal}` at some point, so every bundle produced after that
+   shipped a style file its own `main.tex` does not load and omitted the one it
+   does. The extras list is now derived from the sources: any `\usepackage`d
+   name for which `thesis/<name>.sty` exists travels with the bundle, and the
+   build raises if a discovered `.sty` is missing from the finished zip.
+2. **The submission copy rendered differently from the thesis.** `strip_rev`
+   unconditionally swallowed the whitespace after each `\REV{...}` it removed.
+   For an annotation on its own line that is right; for one used *inline* it
+   closed the gap between two sentences ("...(Chapter 6).These additional..."),
+   so `thesis_overleaf_clean.zip` — the copy that would be submitted — differed
+   from `thesis/main.pdf` in 99 places. The swallow now applies only when the
+   annotation occupied the whole line. Six regression tests in
+   `tests/test_strip_rev_spacing.py`; verified that they fail against the old
+   stripper.
+
+Verification: both zips were extracted into empty directories outside the repo
+and compiled with `latexmk -xelatex`. Both build with **0 errors and 0 undefined
+references**, at 132 pages, and both now render **text-identical** to
+`thesis/main.pdf`. Suite 194 passed, verifier 509/0, audit clean. No `.tex` or
+figure changed, so no PDF rebuild.
+
+Still true: the Overleaf *mirror* is a separate matter from the bundles — no
+`overleaf` git remote is configured in this container, so `make overleaf-push`
+cannot be run from here.
+
+### Earlier (2026-09-03): first-error bit budget unified to one adaptive rule
 
 `e6_sim_ported.py`'s per-SNR cap split (`FIRST_ERROR_MAX_BITS_BY_SNR`: 1G at
 16 dB, 10G at 18/20 dB) is gone. Every first-error SNR now stops at the

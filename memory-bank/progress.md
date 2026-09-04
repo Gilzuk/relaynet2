@@ -2,6 +2,32 @@
 
 Branch: `copilot/fix-bug-in-data-processing`. Reference spec: `experiments-standalone/PORTING.md`.
 
+Session note (2026-09-04): replaced the Overleaf sync. `git subtree push
+--prefix=thesis` published the working trail (draft chapters, excluded
+review-response appendices, build artefacts, changelogs, `\REV` records) into
+the authoring surface. Now `scripts/overleaf_project.py` defines the project as
+main.tex's transitive closure (54 files) for both the zips and the sync, and
+`scripts/overleaf_sync.py` publishes it on a generated `overleaf-dist` branch
+whose root is the project root, annotations stripped. One-way by construction:
+`--push` refuses when Overleaf has commits the branch lacks (verified against a
+stand-in bare repo, including `--force`). Bundles are now byte-reproducible.
+Branch content compiles standalone and renders text-identical to
+`thesis/main.pdf`; 205 tests pass. `make overleaf-{show,sync,mirror,push,pull}`.
+The tooling lives on `claude/overleaf-sync`; `overleaf-dist` is mirrored to
+origin so the published state is visible without Overleaf credentials.
+
+Session note (2026-09-03, latest): regenerated and committed the two Overleaf
+bundles, after fixing the generator. `build_bundles.py` hardcoded
+`hebrewcal.sty` while `main.tex` loads `hebcal` — every committed bundle was
+missing a style file it needs and could not compile; the extras list is now
+discovered from the sources and the build fails if a local `.sty` is absent
+from the zip. `strip_rev` also ate the space after inline `\REV{...}`, so the
+submission copy ran sentences together in 99 places; it now only collapses
+whitespace for an annotation that occupied its whole line
+(`tests/test_strip_rev_spacing.py`, 6 tests). Both zips were extracted outside
+the repo and compiled: 0 errors, 0 undefined references, 132 pages, text
+identical to `thesis/main.pdf`.
+
 Session note (2026-09-03, later): unified the E6 first-error bit budget. The
 per-SNR cap dict (1G at 16 dB / 10G at 18–20 dB) in `e6_sim_ported.py` is
 replaced by the adaptive rule already implemented in `run_ber_first_error`

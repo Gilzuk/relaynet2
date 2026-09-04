@@ -1,120 +1,126 @@
-# Working in Overleaf and in git at the same time
+# Syncing the thesis to Overleaf
 
-The obstacle is a structural mismatch. Overleaf expects `main.tex` at the **root**
-of its project; this repository keeps the thesis in a `thesis/` subdirectory,
-alongside the simulation code, results and reproduction suite. Pointing Overleaf
-at the repository root would give you a project whose main document is buried one
-level down, cluttered with ~100 MB of code and results that Overleaf has no use
-for.
+Overleaf expects `main.tex` at the **root** of its project. This repository keeps
+the thesis in `thesis/`, alongside the simulation code, results and reproduction
+suite — and `thesis/` carries more than the document:
 
-The fix is to sync only the `thesis/` subdirectory, so that **`thesis/` in git ==
-the Overleaf project root**. Two ways to do that, below. Both need an Overleaf
-plan that includes git access (Standard or Professional).
+| In `thesis/` | Belongs on Overleaf? |
+|---|---|
+| `main.tex`, the chapters `main.tex` includes, `chapters/references.bib` | yes |
+| the figures those chapters include, `fonts/`, `hebcal.sty` | yes |
+| `chapters/_ch0*.tex` — superseded drafts | no |
+| `chapters/ak_response_appendix.tex`, `chapters/appendix_f_review.tex` — review-response appendices `main.tex` no longer includes | no |
+| `*.aux`, `*.log`, `*.bbl`, `*.toc`, `*.xdv`, `main.pdf` — build artefacts | no |
+| `CHANGELOG.md`, `RERUN_CHANGELOG.md`, `ak_comments.json`, `submission/`, `results_reference.html` | no |
+| the inline `\REV{...}` fix records | no |
+
+So `git subtree push --prefix=thesis`, which this repository used to do, put the
+entire working trail into the authoring surface. The sync below publishes the
+**document** instead.
 
 ---
 
-## Option A — git subtree against Overleaf's git remote (recommended)
+## What gets published
 
-Every Overleaf project has its own git remote. `git subtree` maps a subdirectory
-of this repository onto that remote's root, which is exactly the mapping needed.
-You keep one repository, full history, and no duplicated files.
+`scripts/overleaf_project.py` resolves the project from `main.tex`'s include
+graph — the chapters it actually `\include{}`s, the figures those chapters
+actually `\includegraphics{}`, the bibliography, the bundled fonts, and any
+`.sty` that lives in `thesis/` rather than on CTAN. Today that is **54 files**:
+`main.tex`, 12 chapters, `references.bib`, 22 figures, 16 fonts, `hebcal.sty`
+and `OVERLEAF.md`. Nothing else.
 
-### One-time setup
+The `\REV{...}` fix records are stripped on the way out. They render as nothing
+either way — `main.tex` defines `\REV` to discard its argument — so the published
+project produces a PDF identical to `thesis/main.pdf`, page for page.
 
-1. In Overleaf: **Menu → Git**, and copy the URL. It looks like
-   `https://git.overleaf.com/abc123def456`.
-2. Add it as a remote:
-
-   ```bash
-   git remote add overleaf https://git.overleaf.com/<your-project-id>
-   ```
-
-3. Authenticate. Overleaf asks for your email as the username and a **git
-   token** (Account Settings → Git integration) as the password, not your
-   account password. To avoid retyping it:
-
-   ```bash
-   git config credential.helper store   # or: osxkeychain / manager-core
-   ```
-
-### Day to day
+To see the resolved list without building anything:
 
 ```bash
-make overleaf-push     # send thesis/ up to Overleaf
-make overleaf-pull     # bring Overleaf edits back into thesis/
+make overleaf-show
 ```
 
-Which wrap:
+## One-time setup
+
+1. In Overleaf: **Menu → Git**, copy the URL (`https://git.overleaf.com/<id>`).
+2. `git remote add overleaf https://git.overleaf.com/<id>`
+3. Authenticate with your email as the username and a **git token** (Account
+   Settings → Git integration) as the password — not your account password.
+   `git config credential.helper store` avoids retyping it.
+
+## Publishing
 
 ```bash
-git subtree push --prefix=thesis overleaf master
-git subtree pull  --prefix=thesis overleaf master --squash
+make overleaf-sync     # rebuild the overleaf-dist branch from thesis/
+make overleaf-push     # rebuild it and push it to Overleaf as the project root
 ```
 
-Note `master`: Overleaf's git remote uses `master`, regardless of what this
-repository's default branch is called.
+`overleaf-dist` is a generated branch whose **root is the Overleaf project**. It
+is rebuilt in full from `thesis/` on every run, so it is never edited by hand and
+never merged into `main`; it is a build output that happens to be a branch. Each
+publish is one commit, its message naming the `thesis/` commit it came from, and
+the history is append-only.
 
-### Rules that keep it painless
-
-- **Pull before you push.** If both sides changed, `git subtree pull` merges;
-  pushing first will be rejected.
-- **Commit locally before pulling.** Subtree operates on commits, not the
-  working tree.
-- Overleaf is the *authoring* surface; the reproduction suite, the verifier and
-  the experiment code stay on the git side and never travel to Overleaf.
-- After pulling, re-run `make verify` — Overleaf edits can change table cells,
-  and the verifier is what catches a number drifting away from its data source.
-
----
-
-## Option B — Overleaf's GitHub integration
-
-Overleaf can link a project directly to a GitHub repository
-(**Menu → GitHub → Link to GitHub**) and offers push/pull buttons in the UI.
-
-The catch is that it syncs the **whole repository**, so the Overleaf project
-would contain the code, the results tree and the reproduction suite, and you
-would have to set the main document to `thesis/main.tex` in Overleaf's settings.
-It works, but the project becomes slow and cluttered.
-
-If you prefer this route, keep a **thesis-only repository**: publish the
-`thesis/` subtree to a second GitHub repo and link *that* to Overleaf.
+It is also mirrored to `origin` so the published state is visible from GitHub
+without Overleaf credentials:
 
 ```bash
-# one-time: create e.g. Gilzuk/relaynet2-thesis on GitHub, then
-git remote add thesis-repo https://github.com/Gilzuk/relaynet2-thesis
-git subtree push --prefix=thesis thesis-repo main
+make overleaf-mirror                       # rebuild and push it to origin
+python3 scripts/overleaf_sync.py --origin --push   # origin and Overleaf at once
 ```
 
-That repository's root is the thesis, so Overleaf is happy, and the code
-repository stays clean. The cost is a second repository to keep in step.
+A fresh clone gets it with `git fetch origin overleaf-dist`; `make overleaf-sync`
+rebuilds it locally either way. The tooling that generates it lives on
+`claude/overleaf-sync`, not on the thesis branch.
 
----
+## The sync is one-way
 
-## What not to do
+Stripping annotations is lossy, so an edit made in the Overleaf editor cannot be
+replayed back into `thesis/` automatically. Overleaf is the **compile and share**
+surface; `thesis/` in git stays the source of truth.
 
-- **Do not upload a zip over an existing Overleaf project.** Overleaf merges
-  rather than replaces, so deleted files survive and shadow new ones — this is
-  what produced a stale `ch05_experiments.tex` earlier in this project. If you
-  must upload a zip, create a *new* project.
-- **Do not commit Overleaf's build artefacts.** `.aux`, `.log`, `.out`, `.toc`
-  and `.synctex.gz` are already in `.gitignore`; keep them there.
-- **Do not edit the same file on both sides at once.** Subtree will merge, but
-  LaTeX conflict markers inside a `longtable` are unpleasant to untangle.
+To keep that from silently destroying anyone's work, `make overleaf-push`
+**refuses** when Overleaf carries commits the branch does not, and prints them:
 
----
+```
+REFUSING TO PUSH: overleaf/master has 1 commit(s) this branch does not have
+e87b742 Overleaf: tweak by the author
+```
 
-## Regenerating the distributable bundles
+When that happens:
 
-Independently of syncing, the two Overleaf archives are generated from
-`thesis/`, never edited by hand:
+```bash
+make overleaf-pull                      # fetch and list the Overleaf-side commits
+git diff overleaf-dist FETCH_HEAD       # see exactly what changed there
+```
+
+Port those edits into `thesis/` by hand, re-run `make overleaf-push`, and the
+document is consistent again. `--force` publishes over them instead, discarding
+them — `python3 scripts/overleaf_sync.py --push --force`.
+
+After porting Overleaf edits back, re-run `make verify`: edits can change table
+cells, and the verifier is what catches a number drifting from its data source.
+
+## The zips
+
+Independently of the git sync, two archives are generated from the same
+definition, so a zip and a sync can never disagree about what the project is:
 
 ```bash
 make bundles
 ```
 
-- `thesis_overleaf.zip` — annotated working copy, with the inline fix records.
+- `thesis_overleaf.zip` — annotated working copy, `\REV` fix records intact.
 - `thesis_overleaf_clean.zip` — submission copy, annotations stripped.
 
-Both contain only what `main.tex` actually compiles, so uploading either as a
-**new** Overleaf project gives a clean, self-contained build.
+Use these to hand someone a self-contained project, or to start a **new**
+Overleaf project. Do **not** upload a zip over an existing Overleaf project:
+Overleaf merges rather than replaces, so deleted files survive and shadow the new
+ones — that is what produced a stale `ch05_experiments.tex` earlier in this
+project.
+
+## Compiler
+
+XeLaTeX, not pdfLaTeX — `fontspec` and `polyglossia` (Hebrew abstract) require
+it. `main.tex` carries `% !TEX program = xelatex`; set it in **Menu → Settings →
+Compiler** too if Overleaf does not pick it up. See `OVERLEAF.md`, which travels
+inside the project, for the font and package-order notes.
