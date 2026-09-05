@@ -1,0 +1,129 @@
+{
+  "topic": "BER-optimal (BCJR/APP) benchmarking of learned detectors on ISI channels",
+  "checked_at": "2026-09-05T11:32:24.476103+00:00",
+  "standard": "deep-research IRON RULE #4 -- gray zone is a FAIL",
+  "counts": {
+    "VERIFIED": 7,
+    "MISMATCH": 0,
+    "FAIL": 0
+  },
+  "results": [
+    {
+      "arxiv_id": "2006.01125",
+      "reported_title": "Neural Network-Aided BCJR Algorithm for Joint Symbol Detection and Channel Decoding",
+      "actual_title": "Neural Network-Aided BCJR Algorithm for Joint Symbol Detection and Channel Decoding",
+      "authors": [
+        "Wen-Chiao Tsai",
+        "Chieh-Fang Teng",
+        "Han-Mo Ou",
+        "An-Yeu Wu"
+      ],
+      "published": "2020-05-30T10:25:58Z",
+      "updated": "2020-07-21T15:56:27Z",
+      "abstract": "Recently, deep learning-assisted communication systems have achieved many eye-catching results and attracted more and more researchers in this emerging field. Instead of completely replacing the functional blocks of communication systems with neural networks, a hybrid manner of BCJRNet symbol detection is proposed to combine the advantages of the BCJR algorithm and neural networks. However, its separate block design not only degrades the system performance but also results in additional hardware complexity. In this work, we propose a BCJR receiver for joint symbol detection and channel decoding. It can simultaneously utilize the trellis diagram and channel state information for a more accurate calculation of branch probability and thus achieve global optimum with 2.3 dB gain over separate block design. Furthermore, a dedicated neural network model is proposed to replace the channel-model-based computation of the BCJR receiver, which can avoid the requirements of perfect CSI and is more robust under CSI uncertainty with 1.0 dB gain.",
+      "url": "http://arxiv.org/abs/2006.01125v2",
+      "verdict": "VERIFIED",
+      "reason": "title matches the record"
+    },
+    {
+      "arxiv_id": "2405.10814",
+      "reported_title": "Data-Driven Symbol Detection for Intersymbol Interference Channels with Bursty Impulsive Noise",
+      "actual_title": "Data-Driven Symbol Detection for Intersymbol Interference Channels with Bursty Impulsive Noise",
+      "authors": [
+        "Boris Karanov",
+        "Chin-Hung Chen",
+        "Yan Wu",
+        "Alex Young",
+        "Wim van Houtum"
+      ],
+      "published": "2024-05-17T14:35:09Z",
+      "updated": "2024-05-17T14:35:09Z",
+      "abstract": "We developed machine learning approaches for data-driven trellis-based soft symbol detection in coded transmission over intersymbol interference (ISI) channels in presence of bursty impulsive noise (IN), for example encountered in wireless digital broadcasting systems and vehicular communications. This enabled us to obtain optimized detectors based on the Bahl-Cocke-Jelinek-Raviv (BCJR) algorithm while circumventing the use of full channel state information (CSI) for computing likelihoods and trellis state transition probabilities. First, we extended the application of the neural network (NN)-aided BCJR, recently proposed for ISI channels with additive white Gaussian noise (AWGN). Although suitable for estimating likelihoods via labeling of transmission sequences, the BCJR-NN method does not provide a framework for learning the trellis state transitions. In addition to detection over the joint ISI and IN states we also focused on another scenario where trellis transitions are not trivial: detection for the ISI channel with AWGN with inaccurate knowledge of the channel memory at the receiver. Without access to the accurate state transition matrix, the BCJR- NN performance significantly degrades in both settings. To this end, we devised an alternative approach for data-driven BCJR detection based on the unsupervised learning of a hidden Markov model (HMM). The BCJR-HMM allowed us to optimize both the likelihood function and the state transition matrix without labeling. Moreover, we demonstrated the viability of a hybrid NN and HMM BCJR detection where NN is used for learning the likelihoods, while the state transitions are optimized via HMM. While reducing the required prior channel knowledge, the examined data-driven detectors with learned trellis state transitions achieve bit error rates close to the optimal full CSI-based BCJR, significantly outperforming detection with inaccurate CSI.",
+      "url": "http://arxiv.org/abs/2405.10814v1",
+      "verdict": "VERIFIED",
+      "reason": "title matches the record"
+    },
+    {
+      "arxiv_id": "2411.01517",
+      "reported_title": "Enhancing LMMSE Performance with Modest Complexity Increase via Neural Network Equalizers",
+      "actual_title": "Enhancing LMMSE Performance with Modest Complexity Increase via Neural Network Equalizers",
+      "authors": [
+        "Vadim Rozenfeld",
+        "Dan Raphaeli",
+        "Oded Bialer"
+      ],
+      "published": "2024-11-03T10:41:05Z",
+      "updated": "2024-11-03T10:41:05Z",
+      "abstract": "The BCJR algorithm is renowned for its optimal equalization, minimizing bit error rate (BER) over intersymbol interference (ISI) channels. However, its complexity grows exponentially with the channel memory, posing a significant computational burden. In contrast, the linear minimum mean square error (LMMSE) equalizer offers a notably simpler solution, albeit with reduced performance compared to the BCJR. Recently, Neural Network (NN) based equalizers have emerged as promising alternatives. Trained to map observations to the original transmitted symbols, these NNs demonstrate performance similar to the BCJR algorithm. However, they often entail a high number of learnable parameters, resulting in complexities comparable to or even larger than the BCJR. This paper explores the potential of NN-based equalization with a reduced number of learnable parameters and low complexity. We introduce a NN equalizer with complexity comparable to LMMSE, surpassing LMMSE performance and achieving a modest performance gap from the BCJR equalizer. A significant challenge with NNs featuring a limited parameter count is their susceptibility to converging to local minima, leading to suboptimal performance. To address this challenge, we propose a novel NN equalizer architecture with a unique initialization approach based on LMMSE. This innovative method effectively overcomes optimization challenges and enhances LMMSE performance, applicable both with and without turbo decoding.",
+      "url": "http://arxiv.org/abs/2411.01517v1",
+      "verdict": "VERIFIED",
+      "reason": "title matches the record"
+    },
+    {
+      "arxiv_id": "2203.16417",
+      "reported_title": "Low-complexity Near-optimum Symbol Detection Based on Neural Enhancement of Factor Graphs",
+      "actual_title": "Low-complexity Near-optimum Symbol Detection Based on Neural Enhancement of Factor Graphs",
+      "authors": [
+        "Luca Schmid",
+        "Laurent Schmalen"
+      ],
+      "published": "2022-03-30T15:58:53Z",
+      "updated": "2022-08-11T07:04:01Z",
+      "abstract": "We consider the application of the factor graph framework for symbol detection on linear inter-symbol interference channels. Based on the Ungerboeck observation model, a detection algorithm with appealing complexity properties can be derived. However, since the underlying factor graph contains cycles, the sum-product algorithm (SPA) yields a suboptimal algorithm. In this paper, we develop and evaluate efficient strategies to improve the performance of the factor graph-based symbol detection by means of neural enhancement. In particular, we consider neural belief propagation and generalizations of the factor nodes as an effective way to mitigate the effect of cycles within the factor graph. By applying a generic preprocessor to the channel output, we propose a simple technique to vary the underlying factor graph in every SPA iteration. Using this dynamic factor graph transition, we intend to preserve the extrinsic nature of the SPA messages which is otherwise impaired due to cycles. Simulation results show that the proposed methods can massively improve the detection performance, even approaching the maximum a posteriori performance for various transmission scenarios, while preserving a complexity which is linear in both the block length and the channel memory.",
+      "url": "http://arxiv.org/abs/2203.16417v2",
+      "verdict": "VERIFIED",
+      "reason": "title matches the record"
+    },
+    {
+      "arxiv_id": "2401.12645",
+      "reported_title": "On the Robustness of Deep Learning-aided Symbol Detectors to Varying Conditions and Imperfect Channel Knowledge",
+      "actual_title": "On the Robustness of Deep Learning-aided Symbol Detectors to Varying Conditions and Imperfect Channel Knowledge",
+      "authors": [
+        "Chin-Hung Chen",
+        "Boris Karanov",
+        "Wim van Houtum",
+        "Wu Yan",
+        "Alex Young",
+        "Alex Alvarado"
+      ],
+      "published": "2024-01-23T10:55:29Z",
+      "updated": "2024-01-23T10:55:29Z",
+      "abstract": "Recently, a data-driven Bahl-Cocke-Jelinek-Raviv (BCJR) algorithm tailored to channels with intersymbol interference has been introduced. This so-called BCJRNet algorithm utilizes neural networks to calculate channel likelihoods. BCJRNet has demonstrated resilience against inaccurate channel tap estimations when applied to a time-invariant channel with ideal exponential decay profiles. However, its generalization capabilities for practically-relevant time-varying channels, where the receiver can only access incorrect channel parameters, remain largely unexplored. The primary contribution of this paper is to expand upon the results from existing literature to encompass a variety of imperfect channel knowledge cases that appear in real-world transmissions. Our findings demonstrate that BCJRNet significantly outperforms the conventional BCJR algorithm for stationary transmission scenarios when learning from noisy channel data and with imperfect channel decay profiles. However, this advantage is shown to diminish when the operating channel is also rapidly time-varying. Our results also show the importance of memory assumptions for conventional BCJR and BCJRNet. An underestimation of the memory largely degrades the performance of both BCJR and BCJRNet, especially in a slow-decaying channel. To mimic a situation closer to a practical scenario, we also combined channel tap uncertainty with imperfect channel memory knowledge. Somewhat surprisingly, our results revealed improved performance when employing the conventional BCJR with an underestimated memory assumption. BCJRNet, on the other hand, showed a consistent performance improvement as the level of accurate memory knowledge increased.",
+      "url": "http://arxiv.org/abs/2401.12645v1",
+      "verdict": "VERIFIED",
+      "reason": "title matches the record"
+    },
+    {
+      "arxiv_id": "2608.04155",
+      "reported_title": "Low-Complexity Recurrent Neural Network Detector for Faster-than-Nyquist Signaling",
+      "actual_title": "Low-Complexity Recurrent Neural Network Detector for Faster-than-Nyquist Signaling",
+      "authors": [
+        "Nurettin Safak",
+        "Osman Tokluoglu",
+        "Enver Cavus"
+      ],
+      "published": "2026-08-04T19:06:51Z",
+      "updated": "2026-08-04T19:06:51Z",
+      "abstract": "This study proposes a low-complexity, bidirectional, single-pass Elman recurrent neural network detector for binary phase-shift keying signals transmitted with faster-than-Nyquist signaling. Since the faster-than-Nyquist intersymbol interference has a short, finite memory, the classical Elman recurrent neural network, which contains no gating mechanism, is a sufficient and parameter-efficient model. The proposed detector processes the received sequence in both forward and backward directions in a single pass, forming a learned counterpart of the optimal BCJR forward-backward recursion. Under a root-raised-cosine pulse over an additive white Gaussian noise channel, simulations for two compression factors show that the proposed detector, with only twenty-five to sixty-five trainable parameters, attains a bit error rate very close to that of the M-BCJR algorithm, while reducing the look-up-table hardware cost by thirty-eight to forty-six percent and using no explicit division or exponential operations. A more compact configuration offers up to a sixty-seven percent reduction at a small performance penalty. To the best of our knowledge, this is the first study to investigate the classical Elman recurrent neural network architecture for the faster-than-Nyquist detection problem.",
+      "url": "http://arxiv.org/abs/2608.04155v1",
+      "verdict": "VERIFIED",
+      "reason": "title matches the record"
+    },
+    {
+      "arxiv_id": "2607.20745",
+      "reported_title": "Self-Attention Transformer-Based Detector for Faster-than-Nyquist Signaling",
+      "actual_title": "Self-Attention Transformer-Based Detector for Faster-than-Nyquist Signaling",
+      "authors": [
+        "Nurettin Safak",
+        "Osman Tokluoglu",
+        "Enver Cavus"
+      ],
+      "published": "2026-07-22T21:50:49Z",
+      "updated": "2026-07-22T21:50:49Z",
+      "abstract": "In this study, a novel encoder-only Transformer-based receiver architecture is presented for BPSK signals transmitted over Faster-than-Nyquist (FTN) signaling channels that introduce intentional inter-symbol interference (ISI) with a compression factor of $τ=0.8$. A complete end-to-end communication chain encompassing BPSK modulation, RRC pulse shaping, and the ISI coefficients arising from matched filtering was constructed and evaluated. The proposed Transformer receiver was benchmarked against the optimal BCJR detector over an $E_b/N_0$ range of 0-8 dB. To systematically close the BER gap to the BCJR, a two-stage training strategy combining multi-SNR pretraining and per-SNR curriculum fine-tuning was developed. The computational complexity and inference latency of the Transformer receiver were analyzed in comparison with a GRU based receiver. Attention map visualizations revealed that the Transformer autonomously identifies the FTN-induced ISI memory structure without requiring any prior channel knowledge; as the SNR increases, the attention weights become significantly concentrated around the center token and its nearest neighbors.",
+      "url": "http://arxiv.org/abs/2607.20745v1",
+      "verdict": "VERIFIED",
+      "reason": "title matches the record"
+    }
+  ]
+}

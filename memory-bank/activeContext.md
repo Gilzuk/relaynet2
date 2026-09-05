@@ -2,7 +2,39 @@
 
 _Last updated: 2026-09-03_
 
-### Latest (2026-09-05): verified literature folded into Ch.2 and Ch.7
+### Latest (2026-09-05): the BCJR benchmark is measured — the margin does not change
+
+Future Work item 4 is answered on the measurement side. `qpsk_bcjr_benchmark.py`
+-> `results/qpsk_bcjr_benchmark.json`, detector in `relaynet/relays/bcjr.py`,
+seven tests in `tests/test_bcjr_qpsk.py`, registered in `provenance_audit.py`.
+Full chronology in `docs/research/bcjr-benchmark-log.md`.
+
+Controls ran first and passed: fading removed, BCJR and Viterbi agree (8 dB
+0.021424 vs 0.021764, diff +0.00034 ± 0.00016; 20 dB both exactly zero); ISI
+removed, the BER-optimal rule reduces to the per-axis slicer on all 10,000
+symbols.
+
+BCJR is never worse, as optimality requires, but the gain vanishes with SNR:
+4.42% relative at 0 dB, 2.43% at 8 dB, and by 16 dB the 95% interval on the
+paired per-trial difference includes zero. At 20 dB the trellis moves 0.000127
+to 0.000126 against the MLP's 0.0508. **No ordering in Chapter 7 changes.** The
+unresolvable range above 16 dB is the minimum-detectable-difference limit
+Checkpoint 1 required be stated in advance, and it is reported as a bound.
+
+Unplanned finding, stronger than what Chapter 7 claims: on this channel
+**bit-MAP and symbol-MAP are the same detector, exactly**. Real taps and a real
+fading magnitude split `y = g(h*x)+v` into two independent real ISI channels, so
+the symbol posterior factorises as `P(b0)P(b1)` — verified to 5.6e-16. The
+chapter calls the Gray-map effect small (1.073 vs 1.090 bits per symbol error);
+it is zero, structurally. Found because a test asserted the two rules would
+differ and failed: the assertion was wrong, not the code.
+
+Open: BPSK is not measured (the factorisation argument implies the same answer,
+but implication is not measurement), and nothing is written into the thesis —
+closing Future Work item 4 in the text needs a negative-tested verifier check
+for any number that lands there.
+
+### Earlier (2026-09-05): verified literature folded into Ch.2 and Ch.7
 
 The seven CI-verified sources from the BCJR research produced two thesis edits.
 Both are grounded in verified published statements, not in search summaries.
@@ -57,8 +89,36 @@ The corrected scan strips comments and annotation bodies first.
 Verification: 132 pages (unchanged), 0 errors, Undefined References: None,
 verifier 509/0 (the table relabel did not disturb any checked cell), provenance
 clean, 210 tests pass. PDF rebuilt in the same commit; bundles and
-`overleaf-dist` regenerated so no derived artefact lags.
+`overleaf-dist` regenerated so no derived artefact lags.### Earlier (2026-09-05): BCJR benchmark research — Phase 1 done, Phase 2 blocked
 
+Started the `deep-research` pipeline on the thesis's own Future Work item 4 (a
+BER-optimal BCJR/APP benchmark for the unknown-ISI channel). Tracked in
+`docs/research/bcjr-benchmark-log.md`, one dated entry per session.
+
+Phase 1 (scoping) complete: RQ scoped from the author's own text rather than
+generated, FINER scored with Novelty deliberately **low** (BCJR is Bahl et al.
+1974 — completeness work, not a contribution), methodology blueprint written
+against this repo's existing validity standards, Devil's Advocate checkpoint
+PASS with one accepted scope revision (state the minimum detectable difference
+before running, since at BER ~1e-4 the MAP-vs-ML gap may be smaller than the
+CI). The blueprint leads with the trap that already caught this thesis once:
+build the BCJR from the taps alone on a per-symbol-fading channel and it will
+reproduce the withdrawn-QPSK error and look like a finding. Run the
+fading-removed control first.
+
+Phase 2 (literature) **cannot complete here.** `WebSearch` works; every
+verification route is refused by the egress proxy — arxiv.org, wikipedia,
+api.semanticscholar.org, api.crossref.org all 403 on CONNECT. The skill's rule
+is that an unconfirmable source is a FAIL, not an "uncertain", so five
+candidate papers are recorded UNVERIFIED and marked do-not-cite.
+
+One finding survives non-verification, being about expectations rather than the
+world: four independent search results converge on neural detectors being
+benchmarked against BCJR as normal practice in this literature. That raises
+Future Work item 4 from thesis completeness to something an examiner in the
+area may actively expect.
+
+Nothing in the thesis changed.
 ### Earlier (2026-09-04): merged main; rebuilt the PDF it left stale
 
 `main` had moved to `3893abc` (PR #63, plus `e35d9b7` "fixing compilation errors

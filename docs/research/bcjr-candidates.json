@@ -1,0 +1,34 @@
+{
+  "_comment": "Candidate sources for the BCJR/APP benchmark literature phase. 'reported_title' is what a web search claimed; verification compares it against the record. A mismatch is the mashup-fabrication signal, not a formatting nit. The two 2026-dated entries were withheld from the first run and added afterwards on purpose: a run in which every candidate passes says nothing about the checker's ability to catch a bad reference, and search-summarised recent IDs are the likeliest place for a fabrication to hide.",
+  "topic": "BER-optimal (BCJR/APP) benchmarking of learned detectors on ISI channels",
+  "candidates": [
+    {
+      "arxiv_id": "2006.01125",
+      "reported_title": "Neural Network-Aided BCJR Algorithm for Joint Symbol Detection and Channel Decoding"
+    },
+    {
+      "arxiv_id": "2405.10814",
+      "reported_title": "Data-Driven Symbol Detection for Intersymbol Interference Channels with Bursty Impulsive Noise"
+    },
+    {
+      "arxiv_id": "2411.01517",
+      "reported_title": "Enhancing LMMSE Performance with Modest Complexity Increase via Neural Network Equalizers"
+    },
+    {
+      "arxiv_id": "2203.16417",
+      "reported_title": "Low-complexity Near-optimum Symbol Detection Based on Neural Enhancement of Factor Graphs"
+    },
+    {
+      "arxiv_id": "2401.12645",
+      "reported_title": "On the Robustness of Deep Learning-aided Symbol Detectors to Varying Conditions and Imperfect Channel Knowledge"
+    },
+    {
+      "arxiv_id": "2608.04155",
+      "reported_title": "Low-Complexity Recurrent Neural Network Detector for Faster-than-Nyquist Signaling"
+    },
+    {
+      "arxiv_id": "2607.20745",
+      "reported_title": "Self-Attention Transformer-Based Detector for Faster-than-Nyquist Signaling"
+    }
+  ]
+}
