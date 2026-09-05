@@ -2,7 +2,34 @@
 
 _Last updated: 2026-09-03_
 
-### Latest (2026-09-04): Overleaf sync publishes the document, not the directory
+### Latest (2026-09-04): merged main; rebuilt the PDF it left stale
+
+`main` had moved to `3893abc` (PR #63, plus `e35d9b7` "fixing compilation errors
+in latex"). Merged it into the Overleaf branch. Three consequences:
+
+1. **`thesis/main.pdf` was lagging its sources.** `e35d9b7` edited
+   `appendices.tex`, `ch05_experiments.tex` and `main.tex` without rebuilding —
+   the committed PDF still rendered the old `tbl:table44` MCS labels. Rebuilt
+   and committed here: 132 pages, unchanged; 0 errors, 0 undefined references.
+   Numbers are untouched — the edit was formatting only (`QPSK 1/2` →
+   `QPSK $\frac{1}{2}$`, `16-QAM` → `16QAM`), and the verifier still reads
+   509/0.
+2. **`\usepackage{hebcal}` is now commented out**, so `hebcal.sty` no longer
+   travels with the Overleaf project — the generator discovered that by itself
+   and the project dropped to 54 files. `OVERLEAF.md`'s note about the stub was
+   corrected to match.
+3. **Two tests failed and were rewritten.** They asserted "hebcal.sty is
+   discovered", pinning a fact about the document rather than the behaviour they
+   existed to protect. Discovery is now tested against synthetic sources —
+   including that a commented-out `\usepackage` is *not* discovered, the exact
+   case that arose. 210 passing.
+
+Flagged, not changed: `e35d9b7` also wrote `16QAM` in `tbl:table44` where the
+other 134 occurrences in the thesis read `16-QAM`. Almost certainly incidental
+to a compilation fix, but it is the author's text, so it is reported rather than
+reverted.
+
+### Earlier (2026-09-04): Overleaf sync publishes the document, not the directory
 
 `git subtree push --prefix=thesis overleaf master` — the sync this repo
 documented — put the whole working trail into the authoring surface: the

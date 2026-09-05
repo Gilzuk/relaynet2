@@ -38,8 +38,12 @@ leaving every cross-reference and citation as `??`. If you add a package, put it
 *before* the Language & Hebrew block at the bottom.
 
 ## Notes
-- `hebcal.sty` is a local stub that disables polyglossia's Hebrew-calendar
-  font (not needed here) so the build doesn't depend on the `othello`
-  MetaFont font; it is written to work across MiKTeX / TeX Live / Overleaf.
+- `hebcal.sty` is **no longer loaded**: `\usepackage{hebcal}` is commented out
+  in `main.tex`. The stub existed to disable polyglossia's Hebrew-calendar font
+  so the build would not depend on the `othello` MetaFont font; with the package
+  out, nothing requests that font in the first place. The file is still in
+  `thesis/` should it be needed again, but it no longer travels with the project
+  — the bundle carries whichever local `.sty` files `main.tex` actually loads,
+  and right now that is none.
 - Figures live in `results/` and are found via `\graphicspath`.
 - Bibliography: `chapters/references.bib`, IEEEtran style, via bibtex.
