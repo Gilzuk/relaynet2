@@ -208,6 +208,7 @@ MIN_CELLS = {
     "tbl:mmse-baseline": 12, "tbl:seq-on-memory": 12,
     "arch:relay-param-counts": 7, "consistency:proof-copies": 7, "tbl:slicer-floor-inline": 24,
     "prose:qpsk-decomposition": 4, "prose:qpsk-controls": 3,
+    "tbl:bcjr-benchmark": 12, "prose:soft-df-calibration": 2,
     "prose:mmse-monotonicity": 12,
     "tbl:joint-latency": 30, "tbl:joint-memory": 21,
 }
@@ -1457,6 +1458,60 @@ def check_qpsk_controls_prose(tex, rep):
     rep.finish_table(T, before)
 
 
+def check_bcjr_benchmark(tex, rep):
+    """tbl:bcjr-benchmark against results/qpsk_bcjr_benchmark.json.
+
+    These land in the thesis as the answer to Future Work item 4, so they get
+    the same binding as every other published number: the table cannot drift
+    from the run that produced it.
+    """
+    T = "tbl:bcjr-benchmark"; before = rep.checked
+    src_path = os.path.join(ROOT, "results", "qpsk_bcjr_benchmark.json")
+    if not os.path.exists(src_path):
+        return rep.skip(T, "results/qpsk_bcjr_benchmark.json not found")
+    comp = json.load(open(src_path))["comparison"]
+    body = tabular_body(tex, T)
+    if body is None:
+        return rep.skip(T, "label not found in tex")
+    for row in data_rows(body):
+        if not row or row[0][1] is None:
+            continue
+        snr = str(int(row[0][1]))
+        if snr not in comp or len(row) < 3:
+            continue
+        rep.cell(T, f"{snr}dB/viterbi", row[1][0], row[1][1], comp[snr]["viterbi_ber"])
+        rep.cell(T, f"{snr}dB/bcjr", row[2][0], row[2][1], comp[snr]["bcjr_ber"])
+    rep.finish_table(T, before)
+
+
+def check_soft_df_calibration_prose(tex, rep):
+    """The two variance-corrected figures in tbl:table39's footnote.
+
+    They came from coded_soft_df_calibration.py, a different run from the table
+    they annotate, and until now neither the verifier nor the provenance audit
+    knew they existed -- two published numbers with nothing binding them to
+    their source.
+    """
+    T = "prose:soft-df-calibration"; before = rep.checked
+    src_path = os.path.join(ROOT, "results", "coded_soft_df_calibration.json")
+    if not os.path.exists(src_path):
+        return rep.skip(T, "results/coded_soft_df_calibration.json not found")
+    src = json.load(open(src_path))["results"]["20"]
+    i = tex.find("The variance-corrected figure is")
+    if i < 0:
+        return rep.skip(T, "footnote sentence not found in tex")
+    sent = tex[i:i + 260]
+    nums = [float(m) for m in re.findall(r"\$(\d+\.\d+)\$", sent)]
+    if len(nums) != 2:
+        return rep.skip(T, f"expected 2 numbers in the footnote, found {len(nums)}")
+    # the corrected soft figure is the calibration sweep's variance-scaled run;
+    # every factor from 2 upward lands on the same value to the published digits
+    corrected = src["soft_by_factor"]["2.0"]
+    rep.cell(T, "soft_df_variance_corrected", f"{nums[0]}", nums[0], corrected)
+    rep.cell(T, "hard_block_df_20dB", f"{nums[1]}", nums[1], src["hard"])
+    rep.finish_table(T, before)
+
+
 def check_mmse_monotonicity_prose(tex, rep):
     """The MMSE-vs-taps figures Chapter 6 uses to explain the non-monotonicity.
 
@@ -1753,7 +1808,8 @@ def main():
               check_mmse_baseline, check_seq_on_memory,
               check_relay_param_counts, check_proof_copies_agree,
               check_slicer_floor, check_qpsk_decomposition_prose,
-              check_qpsk_controls_prose,
+              check_qpsk_controls_prose, check_bcjr_benchmark,
+              check_soft_df_calibration_prose,
               check_mmse_monotonicity_prose,
               check_joint_latency, check_joint_memory]
     for chk in checks:
