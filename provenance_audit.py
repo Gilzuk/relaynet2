@@ -33,9 +33,12 @@ REGISTRY = {
     "QPSK error decomposition": (
         "qpsk_error_decomposition.py", ["results/qpsk_error_decomposition.json"],
         ["prose: QPSK SER/BER and bits-per-symbol-error"]),
+    "Soft block-DF variance calibration": (
+        "coded_soft_df_calibration.py", ["results/coded_soft_df_calibration.json"],
+        ["tbl:table39 footnote: variance-corrected 20 dB figures"]),
     "QPSK BCJR/APP benchmark": (
         "qpsk_bcjr_benchmark.py", ["results/qpsk_bcjr_benchmark.json"],
-        ["not yet cited in the thesis; closes Future Work item 4"]),
+        ["tbl:bcjr-benchmark; closes Future Work item 4 at QPSK"]),
     "QPSK trellis controls": (
         "qpsk_trellis_controls.py", ["results/qpsk_trellis_controls.json"],
         ["prose: three 20 dB trellis controls"]),
