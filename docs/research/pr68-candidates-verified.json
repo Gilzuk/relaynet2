@@ -1,10 +1,10 @@
 {
   "topic": "PR #68 admitted corpus -- publisher-record re-verification",
-  "checked_at": "2026-09-05T17:14:32.001853+00:00",
+  "checked_at": "2026-09-05T17:17:51.266555+00:00",
   "standard": "deep-research IRON RULE #4 -- gray zone is a FAIL",
   "counts": {
-    "VERIFIED": 10,
-    "MISMATCH": 1,
+    "VERIFIED": 11,
+    "MISMATCH": 0,
     "FAIL": 0
   },
   "results": [
@@ -156,20 +156,20 @@
     },
     {
       "arxiv_id": null,
-      "doi": null,
+      "doi": "10.1109/TCCN.2017.2758370",
       "reported_title": "An Introduction to Deep Learning for the Physical Layer",
-      "route": "crossref-title",
-      "actual_title": "Domain aware deep learning for wireless physical layer",
+      "route": "crossref-doi",
+      "actual_title": "An Introduction to Deep Learning for the Physical Layer",
       "authors": [
-        "",
-        "Shuvam Chakraborty"
+        "Timothy O'Shea",
+        "Jakob Hoydis"
       ],
-      "published": null,
+      "published": "2017",
       "updated": null,
       "abstract": "",
-      "url": "https://doi.org/10.54014/x1rp-ewkt",
-      "verdict": "MISMATCH",
-      "reason": "record exists but the title differs from what was reported; treat as FAIL pending manual check"
+      "url": "https://doi.org/10.1109/tccn.2017.2758370",
+      "verdict": "VERIFIED",
+      "reason": "title matches the record"
     },
     {
       "arxiv_id": null,

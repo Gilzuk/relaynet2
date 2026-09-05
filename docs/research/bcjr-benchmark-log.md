@@ -114,7 +114,7 @@ workflow on a runner with open network access, which writes the results back
 into the block below. Until that block says otherwise, nothing here is citable.
 
 <!-- VERIFICATION:BEGIN -->
-_Checked 2026-09-05T17:13:55.936334+00:00. Standard: deep-research IRON RULE #4 -- gray zone is a FAIL._
+_Checked 2026-09-05T17:17:14.050921+00:00. Standard: deep-research IRON RULE #4 -- gray zone is a FAIL._
 
 **7 verified, 0 mismatched, 0 failed.**
 
