@@ -85,6 +85,23 @@ Sun et al.~\cite{Sun2018LearnToOptimize} applied deep learning to the NP-hard pr
 
 In the context of relay-assisted communication systems, most existing works employ neural networks primarily for \emph{relay-selection} and \emph{resource-allocation}, particularly in decode-and-forward (DF) relaying scenarios, where learning-based classifiers or predictors are used to identify the optimal relay based on channel state information, signal-to-noise ratios, or energy constraints, while the underlying relay operation remains conventional \cite{Akdemir2024DLRelaySelection}.
 
+A line of work closer to this thesis's benchmark places the learned component
+\emph{inside} an optimal detector rather than beside it. Tsai et
+al.~\cite{TsaiTeng2020BCJRNet} replace the channel-model-dependent branch
+likelihoods of the BCJR recursion with a neural network, and Karanov et
+al.~\cite{Karanov2024BurstyISI} extend that construction to ISI channels with
+bursty impulsive noise, in both cases to avoid needing full channel state
+information. What matters here is the condition under which the learned variant
+wins. Chen et al.~\cite{Chen2024BCJRNetRobustness} report that the neural-aided
+BCJR outperforms the conventional algorithm when channel knowledge is
+imperfect, which is the same boundary this thesis draws in
+Chapter~\ref{sec:unknown-channels}: the learned component earns its place under
+model mismatch, not against a correctly matched receiver. That literature also
+fixes the comparator. It benchmarks against BCJR, the detector that minimizes
+bit error probability, rather than against sequence-optimal MLSE; the present
+work benchmarks against MLSE only, a gap recorded in
+Section~\ref{sec:future-work}.
+
 A broader perspective on the role of machine learning in wireless communications is provided in \cite{Gunduz2019MLAir}, which highlights the potential of learning-based methods across multiple protocol layers, including cooperative communications.
 
 Another related line of work exploits the structural similarities between amplify-and-forward (AF) relay networks and neural networks, treating relay nodes as neurons with nonlinear transfer functions and using deep-learning optimization tools to tune relay gains and exploit hardware-induced nonlinearities \cite{Bergel2023RelaysAsNeurons,BergelICASSP2024}. While these approaches demonstrate significant gains over classical linear AF schemes, they focus on analog gain optimization rather than symbol-level detection.
