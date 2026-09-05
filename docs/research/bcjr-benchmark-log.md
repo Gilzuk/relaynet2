@@ -114,7 +114,19 @@ workflow on a runner with open network access, which writes the results back
 into the block below. Until that block says otherwise, nothing here is citable.
 
 <!-- VERIFICATION:BEGIN -->
-_Not yet run on CI._
+_Checked 2026-09-05T11:29:22.517127+00:00. Standard: deep-research IRON RULE #4 -- gray zone is a FAIL._
+
+**5 verified, 0 mismatched, 0 failed.**
+
+| arXiv | Verdict | Title on the record | Published |
+|---|---|---|---|
+| 2006.01125 | VERIFIED | Neural Network-Aided BCJR Algorithm for Joint Symbol Detection and Channel Decoding | 2020-05-30 |
+| 2405.10814 | VERIFIED | Data-Driven Symbol Detection for Intersymbol Interference Channels with Bursty Impulsiv... | 2024-05-17 |
+| 2411.01517 | VERIFIED | Enhancing LMMSE Performance with Modest Complexity Increase via Neural Network Equalizers | 2024-11-03 |
+| 2203.16417 | VERIFIED | Low-complexity Near-optimum Symbol Detection Based on Neural Enhancement of Factor Graphs | 2022-03-30 |
+| 2401.12645 | VERIFIED | On the Robustness of Deep Learning-aided Symbol Detectors to Varying Conditions and Imp... | 2024-01-23 |
+
+Full records, including authors and abstracts, are in `docs/research/bcjr-candidates-verified.json`.
 <!-- VERIFICATION:END -->
 
 Titles as reported by search, none confirmed at the time of writing:
