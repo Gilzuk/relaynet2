@@ -106,7 +106,18 @@ The skill's IRON RULE #4 is that a source which cannot be confirmed is a
 **FAIL**, not an "uncertain". So nothing below may be cited, in the thesis or
 anywhere else, until someone opens these on an unrestricted network.
 
-### Candidates — UNVERIFIED, do not cite
+### Candidates — verification deferred to CI
+
+The list lives in `docs/research/bcjr-candidates.json`. It is checked by
+`scripts/verify_citations.py`, run by the `verify-citations` GitHub Actions
+workflow on a runner with open network access, which writes the results back
+into the block below. Until that block says otherwise, nothing here is citable.
+
+<!-- VERIFICATION:BEGIN -->
+_Not yet run on CI._
+<!-- VERIFICATION:END -->
+
+Titles as reported by search, none confirmed at the time of writing:
 
 Returned by search, titles and identifiers as reported, none confirmed:
 

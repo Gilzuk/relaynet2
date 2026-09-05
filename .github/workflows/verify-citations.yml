@@ -1,0 +1,61 @@
+name: Verify citations
+
+# The development container cannot do this: arxiv.org, wikipedia,
+# api.semanticscholar.org and api.crossref.org are all refused by its egress
+# proxy, so a candidate source can be searched for but never checked against
+# its own record. A search result is not a citation. This runs the check
+# somewhere with open network access and commits the verdicts back.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [claude/research-bcjr-benchmark]
+    paths:
+      - docs/research/bcjr-candidates.json
+      - scripts/verify_citations.py
+      - .github/workflows/verify-citations.yml
+
+permissions:
+  contents: write
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Verify candidate sources against arXiv
+        id: verify
+        continue-on-error: true        # a FAIL is a result worth committing
+        run: |
+          python3 scripts/verify_citations.py \
+            --candidates docs/research/bcjr-candidates.json \
+            --out docs/research/bcjr-candidates-verified.json \
+            --log docs/research/bcjr-benchmark-log.md
+
+      - name: Commit the verdicts
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/research/bcjr-candidates-verified.json \
+                  docs/research/bcjr-benchmark-log.md
+          if git diff --cached --quiet; then
+            echo "No change in the verdicts."
+            exit 0
+          fi
+          git commit -m "Citation verification: record arXiv verdicts
+
+          Run by .github/workflows/verify-citations.yml on a CI runner,
+          which can reach arxiv.org where the development container cannot."
+          git push
+
+      - name: Fail if nothing could be verified
+        if: steps.verify.outcome == 'failure'
+        run: |
+          echo "::error::No candidate source could be verified. The verdicts are"
+          echo "::error::committed; check the table in docs/research/bcjr-benchmark-log.md."
+          exit 1
