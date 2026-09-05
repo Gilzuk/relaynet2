@@ -2,7 +2,34 @@
 
 _Last updated: 2026-09-03_
 
-### Latest (2026-09-04): Overleaf sync publishes the document, not the directory
+### Latest (2026-09-04): merged main; rebuilt the PDF it left stale
+
+`main` had moved to `3893abc` (PR #63, plus `e35d9b7` "fixing compilation errors
+in latex"). Merged it into the Overleaf branch. Three consequences:
+
+1. **`thesis/main.pdf` was lagging its sources.** `e35d9b7` edited
+   `appendices.tex`, `ch05_experiments.tex` and `main.tex` without rebuilding —
+   the committed PDF still rendered the old `tbl:table44` MCS labels. Rebuilt
+   and committed here: 132 pages, unchanged; 0 errors, 0 undefined references.
+   Numbers are untouched — the edit was formatting only (`QPSK 1/2` →
+   `QPSK $\frac{1}{2}$`, `16-QAM` → `16QAM`), and the verifier still reads
+   509/0.
+2. **`\usepackage{hebcal}` is now commented out**, so `hebcal.sty` no longer
+   travels with the Overleaf project — the generator discovered that by itself
+   and the project dropped to 54 files. `OVERLEAF.md`'s note about the stub was
+   corrected to match.
+3. **Two tests failed and were rewritten.** They asserted "hebcal.sty is
+   discovered", pinning a fact about the document rather than the behaviour they
+   existed to protect. Discovery is now tested against synthetic sources —
+   including that a commented-out `\usepackage` is *not* discovered, the exact
+   case that arose. 210 passing.
+
+Flagged, not changed: `e35d9b7` also wrote `16QAM` in `tbl:table44` where the
+other 134 occurrences in the thesis read `16-QAM`. Almost certainly incidental
+to a compilation fix, but it is the author's text, so it is reported rather than
+reverted.
+
+### Earlier (2026-09-04): Overleaf sync publishes the document, not the directory
 
 `git subtree push --prefix=thesis overleaf master` — the sync this repo
 documented — put the whole working trail into the authoring surface: the
@@ -38,6 +65,32 @@ directory and compiled — 0 errors, 0 undefined references, 132 pages,
 **text-identical to `thesis/main.pdf`**; likewise the deterministic clean zip.
 Suite 205 passed, verifier 509/0, audit clean. No `.tex` or figure changed, so
 no PDF rebuild.
+
+Second publish route added (2026-09-04): Overleaf projects have no branches, so
+besides Overleaf's own git remote (`overleaf-dist:master`) the sync can now
+publish to a **dedicated GitHub repository whose root is the project**
+(`--repo` / `make overleaf-repo`, pushing `overleaf-dist:main` to a
+`thesis-repo` remote), which Overleaf links through Menu -> GitHub. Both routes
+share one code path and the same refuse-to-clobber guard — which matters more on
+the repo route, since Overleaf's GitHub integration pushes editor changes back
+into that repository. Both were exercised against local bare repos: first
+publish into an empty target, refusal when the target carried an unseen commit,
+`--force` override, and no regression on the original Overleaf path.
+
+**Published (2026-09-04):** the user created `Gilzuk/relaynet2-thesis` and it
+now holds the project at `main` (`8ed4228`, 55 files, identical commit to
+`overleaf-dist`). GitHub's auto-init README made the first publish a
+`--force` — the guard refused the plain push, exactly as designed, over an
+18-byte `# relaynet2-thesis` stub. Subsequent publishes fast-forward.
+Verified by cloning the published repo into an empty directory and compiling
+it: 0 errors, 0 undefined references, 132 pages, text-identical to
+`thesis/main.pdf`.
+
+The generated project now carries a `README.md` at its root (55 files, up from
+54) saying it is generated, that `thesis/` in `Gilzuk/relaynet2` is the source
+of truth, and that direct edits are overwritten — the failure mode the one-way
+design exists to prevent, stated where someone landing on the repo will see it.
+Remaining manual step: link the repo in Overleaf (Menu -> GitHub).
 
 Branch layout: this tooling lives on **`claude/overleaf-sync`**, not on the
 thesis branch — `claude/porting-md-file-l6xzsr` is reset back to `main` and

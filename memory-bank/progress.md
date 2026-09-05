@@ -15,6 +15,14 @@ Branch content compiles standalone and renders text-identical to
 `thesis/main.pdf`; 205 tests pass. `make overleaf-{show,sync,mirror,push,pull}`.
 The tooling lives on `claude/overleaf-sync`; `overleaf-dist` is mirrored to
 origin so the published state is visible without Overleaf credentials.
+Second route added: `--repo` / `make overleaf-repo` publishes the same tree to
+a dedicated GitHub repo (`thesis-repo` remote, branch `main`) for Overleaf's
+GitHub integration, sharing the clobber guard. `Gilzuk/relaynet2-thesis` was
+created by the user (this session's GitHub app cannot create repositories,
+403) and now holds the project at `main` = `overleaf-dist` = `8ed4228`; the
+first publish needed `--force` to clear GitHub's auto-init README. The
+generated tree gained a root `README.md` marking it generated and
+not-to-be-edited (55 files).
 
 Session note (2026-09-03, latest): regenerated and committed the two Overleaf
 bundles, after fixing the generator. `build_bundles.py` hardcoded

@@ -47,11 +47,49 @@ make overleaf-show
    Settings → Git integration) as the password — not your account password.
    `git config credential.helper store` avoids retyping it.
 
+## Two routes to Overleaf
+
+Pick one. Both publish the same `overleaf-dist` tree; they differ only in what
+sits between git and Overleaf.
+
+| | **A — Overleaf's git remote** | **B — a dedicated GitHub repo** |
+|---|---|---|
+| Setup | `git remote add overleaf https://git.overleaf.com/<id>` | create a repo, link it in Overleaf: **Menu → GitHub** |
+| Publish | `make overleaf-push` | `make overleaf-repo`, then **Pull** in Overleaf |
+| Needs | an Overleaf plan with git access | an Overleaf plan with GitHub sync |
+| Overleaf edits come back | only into Overleaf's own git | pushed into the GitHub repo by Overleaf |
+
+Overleaf projects have no branches — their git remote has only `master`, and the
+GitHub integration syncs one branch. That is not a constraint on *this*
+repository: the push maps our branch onto theirs by refspec
+(`overleaf-dist:master`, or `overleaf-dist:main` for route B), so a local branch
+is fine either way.
+
+### Route B setup
+
+The repository must have the **project at its root**, which is exactly what
+`overleaf-dist` is. Create it empty — no README, no `.gitignore`, no licence;
+anything auto-created becomes a commit the first publish would have to refuse or
+overwrite.
+
+```bash
+# 1. create an EMPTY private repo on GitHub, e.g. <you>/relaynet2-thesis
+# 2. point this repository at it
+git remote add thesis-repo https://github.com/<you>/relaynet2-thesis
+# 3. publish
+make overleaf-repo
+# 4. in Overleaf: Menu -> GitHub -> Link to GitHub, pick that repo
+```
+
+Thereafter `make overleaf-repo` republishes, and you press **Pull** in Overleaf.
+Keep the repo **private**: it carries the full unpublished thesis.
+
 ## Publishing
 
 ```bash
 make overleaf-sync     # rebuild the overleaf-dist branch from thesis/
-make overleaf-push     # rebuild it and push it to Overleaf as the project root
+make overleaf-push     # ... and push it to Overleaf's git remote     (route A)
+make overleaf-repo     # ... or to the thesis-repo GitHub remote      (route B)
 ```
 
 `overleaf-dist` is a generated branch whose **root is the Overleaf project**. It
@@ -78,8 +116,10 @@ Stripping annotations is lossy, so an edit made in the Overleaf editor cannot be
 replayed back into `thesis/` automatically. Overleaf is the **compile and share**
 surface; `thesis/` in git stays the source of truth.
 
-To keep that from silently destroying anyone's work, `make overleaf-push`
-**refuses** when Overleaf carries commits the branch does not, and prints them:
+To keep that from silently destroying anyone's work, both publish targets
+**refuse** when they carry commits the branch does not, and print them. This
+matters most on route B, where Overleaf's GitHub integration pushes editor
+changes back into the repository itself:
 
 ```
 REFUSING TO PUSH: overleaf/master has 1 commit(s) this branch does not have

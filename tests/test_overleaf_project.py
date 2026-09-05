@@ -14,7 +14,7 @@ sys.path.insert(0, os.path.join(ROOT, "scripts"))
 
 import pytest
 
-from overleaf_project import THESIS, manifest, stage
+from overleaf_project import THESIS, local_styles, manifest, stage
 
 
 @pytest.fixture(scope="module")
@@ -79,17 +79,45 @@ def test_clean_mode_carries_no_annotations(staged):
 
 def test_every_local_style_travels(staged, man):
     """A .sty that main.tex loads but the project omits = a build that fails."""
-    assert man["styles"], "expected at least one local .sty (hebcal.sty)"
     for sty in man["styles"]:
         assert os.path.exists(os.path.join(staged, sty))
 
 
-def test_local_styles_are_discovered_not_hardcoded(man):
-    """hebrewcal.sty exists in thesis/ but nothing loads it; it must not travel."""
-    assert "hebcal.sty" in man["styles"]
-    assert "hebrewcal.sty" not in man["styles"]
+def test_only_loaded_styles_travel(staged, man):
+    """A .sty sitting in thesis/ that nothing loads must not be shipped."""
+    shipped = {os.path.basename(p) for p in _relpaths(staged) if p.endswith(".sty")}
+    assert shipped == set(man["styles"])
+
+
+# The discovery rule is tested against synthetic sources rather than whatever
+# main.tex happens to load today. It used to assert "hebcal.sty is discovered",
+# which broke the moment \usepackage{hebcal} was commented out -- the test was
+# pinning a fact about the document, not the behaviour it meant to protect.
+def test_a_loaded_local_style_is_discovered():
+    assert local_styles([r"\usepackage{hebcal}"]) == ["hebcal.sty"]
+
+
+def test_a_ctan_package_is_not_treated_as_local():
+    """amsmath has no thesis/amsmath.sty, so it must not be shipped."""
+    assert local_styles([r"\usepackage{amsmath}"]) == []
+
+
+def test_a_commented_out_package_is_not_discovered():
+    """The exact case that arose: hebcal commented out must stop travelling."""
+    assert local_styles([r"%\usepackage{hebcal}"]) == []
+    assert local_styles([r"% \usepackage{hebcal}"]) == []
+
+
+def test_discovery_reads_options_and_grouped_names():
+    assert local_styles([r"\usepackage[utf8]{hebcal}"]) == ["hebcal.sty"]
+    assert local_styles([r"\usepackage{amsmath,hebcal}"]) == ["hebcal.sty"]
+
+
+def test_the_unused_duplicate_never_travels():
+    """hebrewcal.sty is a byte-identical leftover; nothing loads it."""
     assert os.path.exists(os.path.join(THESIS, "hebrewcal.sty")), \
         "precondition: the unused duplicate is still present in thesis/"
+    assert "hebrewcal.sty" not in manifest()["styles"]
 
 
 def test_every_referenced_figure_travels(staged, man):
