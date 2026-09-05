@@ -1,0 +1,213 @@
+{
+  "topic": "PR #68 admitted corpus -- publisher-record re-verification",
+  "checked_at": "2026-09-05T17:17:51.266555+00:00",
+  "standard": "deep-research IRON RULE #4 -- gray zone is a FAIL",
+  "counts": {
+    "VERIFIED": 11,
+    "MISMATCH": 0,
+    "FAIL": 0
+  },
+  "results": [
+    {
+      "arxiv_id": null,
+      "doi": "10.1109/JSTSP.2017.2784180",
+      "reported_title": "Deep Learning Based Communication Over the Air",
+      "route": "crossref-doi",
+      "actual_title": "Deep Learning Based Communication Over the Air",
+      "authors": [
+        "Sebastian Dorner",
+        "Sebastian Cammerer",
+        "Jakob Hoydis",
+        "Stephan ten Brink"
+      ],
+      "published": "2018",
+      "updated": null,
+      "abstract": "",
+      "url": "https://doi.org/10.1109/jstsp.2017.2784180",
+      "verdict": "VERIFIED",
+      "reason": "title matches the record"
+    },
+    {
+      "arxiv_id": null,
+      "doi": "10.1109/ICASSP40776.2020.9054093",
+      "reported_title": "A Learning Approach to Cooperative Communication System Design",
+      "route": "crossref-doi",
+      "actual_title": "A Learning Approach to Cooperative Communication System Design",
+      "authors": [
+        "Yuxin Lu",
+        "Peng Cheng",
+        "Zhuo Chen",
+        "Wai Ho Mow",
+        "Yonghui Li"
+      ],
+      "published": "2020",
+      "updated": null,
+      "abstract": "",
+      "url": "https://doi.org/10.1109/icassp40776.2020.9054093",
+      "verdict": "VERIFIED",
+      "reason": "title matches the record"
+    },
+    {
+      "arxiv_id": null,
+      "doi": "10.1109/TSP.2019.2899805",
+      "reported_title": "Learning to Detect",
+      "route": "crossref-doi",
+      "actual_title": "Learning to Detect",
+      "authors": [
+        "Neev Samuel",
+        "Tzvi Diskin",
+        "Ami Wiesel"
+      ],
+      "published": "2019",
+      "updated": null,
+      "abstract": "",
+      "url": "https://doi.org/10.1109/tsp.2019.2899805",
+      "verdict": "VERIFIED",
+      "reason": "title matches the record"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "Capacity theorems for the relay channel",
+      "route": "crossref-title",
+      "actual_title": "Capacity theorems for the relay channel",
+      "authors": [
+        "T. Cover",
+        "A.E. Gamal"
+      ],
+      "published": "1979",
+      "updated": null,
+      "abstract": "",
+      "url": "https://doi.org/10.1109/tit.1979.1056084",
+      "verdict": "VERIFIED",
+      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "Cooperative diversity in wireless networks: Efficient protocols and outage behavior",
+      "route": "crossref-title",
+      "actual_title": "Cooperative Diversity in Wireless Networks: Efficient Protocols and Outage Behavior",
+      "authors": [
+        "J.N. Laneman",
+        "D.N.C. Tse",
+        "G.W. Wornell"
+      ],
+      "published": "2004",
+      "updated": null,
+      "abstract": "",
+      "url": "https://doi.org/10.1109/tit.2004.838089",
+      "verdict": "VERIFIED",
+      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "Neural Network Detection of Data Sequences in Communication Systems",
+      "route": "crossref-title",
+      "actual_title": "Neural Network Detection of Data Sequences in Communication Systems",
+      "authors": [
+        "Nariman Farsad",
+        "Andrea Goldsmith"
+      ],
+      "published": "2018",
+      "updated": null,
+      "abstract": "",
+      "url": "https://doi.org/10.1109/tsp.2018.2868322",
+      "verdict": "VERIFIED",
+      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "On deep learning-based channel decoding",
+      "route": "crossref-title",
+      "actual_title": "On deep learning-based channel decoding",
+      "authors": [
+        "Tobias Gruber",
+        "Sebastian Cammerer",
+        "Jakob Hoydis",
+        "Stephan ten Brink"
+      ],
+      "published": "2017",
+      "updated": null,
+      "abstract": "",
+      "url": "https://doi.org/10.1109/ciss.2017.7926071",
+      "verdict": "VERIFIED",
+      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "Learning to decode linear codes using deep learning",
+      "route": "crossref-title",
+      "actual_title": "Learning to decode linear codes using deep learning",
+      "authors": [
+        "Eliya Nachmani",
+        "Yair Be'ery",
+        "David Burshtein"
+      ],
+      "published": "2016",
+      "updated": null,
+      "abstract": "",
+      "url": "https://doi.org/10.1109/allerton.2016.7852251",
+      "verdict": "VERIFIED",
+      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+    },
+    {
+      "arxiv_id": null,
+      "doi": "10.1109/TCCN.2017.2758370",
+      "reported_title": "An Introduction to Deep Learning for the Physical Layer",
+      "route": "crossref-doi",
+      "actual_title": "An Introduction to Deep Learning for the Physical Layer",
+      "authors": [
+        "Timothy O'Shea",
+        "Jakob Hoydis"
+      ],
+      "published": "2017",
+      "updated": null,
+      "abstract": "",
+      "url": "https://doi.org/10.1109/tccn.2017.2758370",
+      "verdict": "VERIFIED",
+      "reason": "title matches the record"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "Power of Deep Learning for Channel Estimation and Signal Detection in OFDM Systems",
+      "route": "crossref-title",
+      "actual_title": "Power of Deep Learning for Channel Estimation and Signal Detection in OFDM Systems",
+      "authors": [
+        "Hao Ye",
+        "Geoffrey Ye Li",
+        "Biing-Hwang Juang"
+      ],
+      "published": "2018",
+      "updated": null,
+      "abstract": "",
+      "url": "https://doi.org/10.1109/lwc.2017.2757490",
+      "verdict": "VERIFIED",
+      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "Process-and-Forward: Deep Joint Source-Channel Coding Over Cooperative Relay Networks",
+      "route": "crossref-title",
+      "actual_title": "Process-and-Forward: Deep Joint Source-Channel Coding Over Cooperative Relay Networks",
+      "authors": [
+        "Chenghong Bian",
+        "Yulin Shao",
+        "Haotian Wu",
+        "Emre Ozfatura",
+        "Deniz Gündüz"
+      ],
+      "published": "2025",
+      "updated": null,
+      "abstract": "",
+      "url": "https://doi.org/10.1109/jsac.2025.3531579",
+      "verdict": "VERIFIED",
+      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+    }
+  ]
+}

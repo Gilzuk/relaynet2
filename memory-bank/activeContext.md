@@ -2,7 +2,44 @@
 
 _Last updated: 2026-09-03_
 
-### Latest (2026-09-05): the BCJR benchmark is measured — the margin does not change
+### Latest (2026-09-05): reviewer-panel fixes; Future Work item 4 closed at QPSK
+
+Acted on four items from the full reviewer panel. All are thesis text; no
+simulation was re-run and no committed datum changed.
+
+1. **The BCJR result is written in.** New Section `sec:bcjr-benchmark` in Ch.6
+   with `tbl:bcjr-benchmark` (6 SNRs, Viterbi vs BCJR, paired CIs) and the two
+   gating controls. Appendix F's "that benchmark remains open" and Ch.7's
+   Future Work item 4 are rewritten as closed at QPSK, explicitly still open at
+   BPSK.
+2. **The Gray-map claim is corrected from "small" to exactly zero**, in both
+   Ch.6 and Ch.7, with the I/Q factorisation argument that makes it structural
+   rather than empirical.
+3. **`tbl:table39`'s footnote figures are now verified.** The reviewer item
+   asked to move 0.001376 into the table body; on inspection that was the wrong
+   fix — the corrected figure comes from `coded_soft_df_calibration.py`, a
+   different run, so promoting it would present a sweep output as the main
+   run's measurement. The real defect was that both footnote numbers had *no*
+   verifier check and *no* provenance row. Both now exist.
+4. **The abstract states the bounded H5 claim**: the relay does not beat a
+   model-aware receiver given the model, and is not shown to.
+
+Verifier: 511 -> 523 cells. Two new checks (`tbl:bcjr-benchmark`,
+`prose:soft-df-calibration`), both negative-tested — mutating the 20 dB BCJR
+cell and the footnote's corrected figure each produced a MISMATCH. The
+`tbl:bcjr-benchmark` check was caught vacuous on first write (0 cells, the
+coverage floor fired) because the new table is a `tabular`, not a `longtable`;
+fixed to use `tabular_body`.
+
+`coded_soft_df_calibration.py` registered in `provenance_audit.py`.
+
+**Page count 132 -> 133**, the wrong direction: the overage against the 120
+limit is now 13 pages.
+
+223 tests, verifier 523/0, provenance clean, 0 errors, Undefined References:
+None. PDF rebuilt in the same commit.
+
+### Earlier (2026-09-05): the BCJR benchmark is measured — the margin does not change
 
 Future Work item 4 is answered on the measurement side. `qpsk_bcjr_benchmark.py`
 -> `results/qpsk_bcjr_benchmark.json`, detector in `relaynet/relays/bcjr.py`,

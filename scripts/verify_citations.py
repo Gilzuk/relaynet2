@@ -29,11 +29,15 @@ import re
 import sys
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
 
 API = "http://export.arxiv.org/api/query?id_list={}"
+CROSSREF_DOI = "https://api.crossref.org/works/{}"
+CROSSREF_QUERY = ("https://api.crossref.org/works?rows=10&select=title,author,"
+                  "issued,container-title,DOI&query.bibliographic={}")
 ATOM = "{http://www.w3.org/2005/Atom}"
 UA = "relaynet2-citation-check (thesis research log; contact via repo issues)"
 
@@ -55,6 +59,37 @@ def fetch(arxiv_id, retries=3):
             last = e
             time.sleep(2 ** attempt * 2)
     raise RuntimeError(f"lookup failed after {retries} attempts: {last}")
+
+
+def fetch_json(url, retries=3):
+    last = None
+    for attempt in range(retries):
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": UA})
+            with urllib.request.urlopen(req, timeout=45) as r:
+                return json.loads(r.read())
+        except (urllib.error.URLError, OSError, TimeoutError, ValueError) as e:
+            last = e
+            time.sleep(2 ** attempt * 2)
+    raise RuntimeError(f"lookup failed after {retries} attempts: {last}")
+
+
+def _crossref_record(item):
+    title = (item.get("title") or [""])[0]
+    authors = [" ".join(x for x in (a.get("given"), a.get("family")) if x)
+               for a in item.get("author", [])]
+    year = None
+    for k in ("issued", "published-print", "published-online"):
+        parts = (item.get(k) or {}).get("date-parts") or [[]]
+        if parts and parts[0]:
+            year = parts[0][0]
+            break
+    return {"title": re.sub(r"\s+", " ", title).strip(),
+            "authors": authors,
+            "published": str(year) if year else None,
+            "updated": None,
+            "abstract": "",
+            "id": "https://doi.org/" + item.get("DOI", "")}
 
 
 def parse(xml_bytes):
@@ -79,10 +114,48 @@ def parse(xml_bytes):
 
 
 def verify(cand):
-    cid, reported = cand["arxiv_id"], cand["reported_title"]
-    row = {"arxiv_id": cid, "reported_title": reported}
+    """Resolve a candidate against a publisher or preprint record.
+
+    Three routes, in order of how much the identifier pins down: an arXiv id,
+    a DOI, or -- for a reference carrying neither -- a Crossref bibliographic
+    search on the reported title. The search route is the weakest: it confirms
+    that a record with this title exists, not that the reference's other fields
+    are right, and it is labelled as such in the reason.
+    """
+    reported = cand["reported_title"]
+    cid = cand.get("arxiv_id") or cand.get("doi") or "(title search)"
+    row = {"arxiv_id": cand.get("arxiv_id"), "doi": cand.get("doi"),
+           "reported_title": reported, "route": None}
     try:
-        rec = parse(fetch(cid))
+        if cand.get("arxiv_id"):
+            row["route"] = "arxiv"
+            rec = parse(fetch(cand["arxiv_id"]))
+        elif cand.get("doi"):
+            row["route"] = "crossref-doi"
+            rec = _crossref_record(fetch_json(
+                CROSSREF_DOI.format(urllib.parse.quote(cand["doi"])))["message"])
+        else:
+            row["route"] = "crossref-title"
+            items = fetch_json(CROSSREF_QUERY.format(
+                urllib.parse.quote(reported)))["message"]["items"]
+            rec = None
+            for it in items:
+                cand_rec = _crossref_record(it)
+                if normalise(cand_rec["title"]) == normalise(reported):
+                    rec = cand_rec
+                    break
+            if rec is None:
+                # No exact title match. Reporting the top hit as a MISMATCH
+                # would accuse a possibly-correct reference of being a
+                # different paper; a title search cannot support that claim.
+                # MISMATCH is reserved for a pinned identifier resolving
+                # elsewhere. This is an unresolved lookup, i.e. a FAIL.
+                near = _crossref_record(items[0])["title"] if items else "--"
+                row.update(verdict="FAIL",
+                           reason="no record with this title in the top 10 "
+                                  f"Crossref results (nearest: {near!r}); "
+                                  "supply a DOI to pin it")
+                return row
     except Exception as e:                       # network, parse, anything
         row.update(verdict="FAIL", reason=f"lookup error: {e}")
         return row
@@ -93,7 +166,10 @@ def verify(cand):
                published=rec["published"], updated=rec["updated"],
                abstract=rec["abstract"], url=rec["id"])
     if normalise(rec["title"]) == normalise(reported):
-        row.update(verdict="VERIFIED", reason="title matches the record")
+        note = ("title matches the record" if row["route"] != "crossref-title"
+                else "title matches a Crossref record found by title search; "
+                     "confirms existence, not the reference's other fields")
+        row.update(verdict="VERIFIED", reason=note)
     else:
         row.update(verdict="MISMATCH",
                    reason="record exists but the title differs from what was "
@@ -152,9 +228,15 @@ def main():
     a = ap.parse_args()
 
     src = json.load(open(a.candidates))
+    for c in src["candidates"]:
+        if not (c.get("arxiv_id") or c.get("doi") or c.get("reported_title")):
+            raise SystemExit(f"candidate has no identifier and no title: {c}")
     rows = []
     for c in src["candidates"]:
-        print(f"  checking arXiv:{c['arxiv_id']} ...", flush=True)
+        label = (f"arXiv:{c['arxiv_id']}" if c.get("arxiv_id")
+                 else f"doi:{c['doi']}" if c.get("doi")
+                 else f"title:{c['reported_title'][:52]}")
+        print(f"  checking {label} ...", flush=True)
         row = verify(c)
         print(f"    {row['verdict']}: {row['reason']}", flush=True)
         rows.append(row)

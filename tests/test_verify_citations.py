@@ -69,3 +69,76 @@ def test_cosmetic_differences_do_not_trip_mismatch(monkeypatch):
     _stub(monkeypatch, _record("  neural network-aided BCJR algorithm for joint\n"
                                "symbol detection and channel decoding.  "))
     assert vc.verify({"arxiv_id": "x", "reported_title": REAL})["verdict"] == "VERIFIED"
+
+
+# --- main() dispatch -------------------------------------------------------
+# The tests above call verify() directly with a stubbed lookup, so none of them
+# executed main(). That is how a hard c['arxiv_id'] survived in main()'s
+# progress line while verify() had already moved to .get(): the first DOI-only
+# candidate raised KeyError on CI. These cover the dispatch itself.
+
+import json
+import pytest
+
+
+def _run_main(monkeypatch, tmp_path, candidates, record=None):
+    src = tmp_path / "cands.json"
+    src.write_text(json.dumps({"topic": "t", "candidates": candidates}))
+    out = tmp_path / "out.json"
+    monkeypatch.setattr(vc, "fetch", lambda _i, retries=3: b"<xml/>")
+    monkeypatch.setattr(vc, "parse", lambda _b: record)
+    monkeypatch.setattr(vc, "fetch_json", lambda _u, retries=3: {
+        "message": {"title": [record["title"]], "author": [], "issued": {}}
+        if record else {}})
+    monkeypatch.setattr(vc.time, "sleep", lambda _s: None)
+    monkeypatch.setattr(vc.sys, "argv",
+                        ["verify_citations.py", "--candidates", str(src),
+                         "--out", str(out)])
+    code = vc.main()
+    return code, json.loads(out.read_text())
+
+
+def test_main_handles_a_doi_only_candidate(monkeypatch, tmp_path):
+    """The exact CI failure: no arxiv_id key at all."""
+    code, out = _run_main(monkeypatch, tmp_path,
+                          [{"doi": "10.1109/TSP.2019.2899805",
+                            "reported_title": REAL}], _record(REAL))
+    assert out["results"][0]["verdict"] == "VERIFIED"
+    assert out["results"][0]["route"] == "crossref-doi"
+
+
+def test_main_handles_a_title_only_candidate(monkeypatch, tmp_path):
+    code, out = _run_main(monkeypatch, tmp_path,
+                          [{"reported_title": REAL}], _record(REAL))
+    assert out["results"][0]["route"] == "crossref-title"
+
+
+def test_main_handles_a_mixed_corpus(monkeypatch, tmp_path):
+    code, out = _run_main(monkeypatch, tmp_path, [
+        {"arxiv_id": "2006.01125", "reported_title": REAL},
+        {"doi": "10.1109/TSP.2019.2899805", "reported_title": REAL},
+        {"reported_title": REAL},
+    ], _record(REAL))
+    assert [r["route"] for r in out["results"]] == \
+        ["arxiv", "crossref-doi", "crossref-title"]
+
+
+def test_main_rejects_a_candidate_with_nothing_to_look_up(monkeypatch, tmp_path):
+    with pytest.raises(SystemExit):
+        _run_main(monkeypatch, tmp_path, [{"note": "no id, no title"}], None)
+
+
+def test_title_search_with_no_exact_match_is_a_fail_not_a_mismatch(monkeypatch, tmp_path):
+    """A title search cannot support the claim 'this is a different paper'.
+
+    The first PR #68 run reported MISMATCH for O'Shea & Hoydis 2017 because the
+    search's top hit was an unrelated paper and the code fell back to it. That
+    accuses a correct reference of being something it is not. MISMATCH is now
+    reserved for a pinned identifier -- arXiv or DOI -- resolving elsewhere.
+    """
+    monkeypatch.setattr(vc, "fetch_json", lambda _u, retries=3: {
+        "message": {"items": [{"title": ["Domain aware deep learning for wireless physical layer"],
+                               "author": [], "issued": {}}]}})
+    r = vc.verify({"reported_title": "An Introduction to Deep Learning for the Physical Layer"})
+    assert r["verdict"] == "FAIL"
+    assert "supply a DOI" in r["reason"]
