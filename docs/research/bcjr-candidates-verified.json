@@ -1,6 +1,6 @@
 {
   "topic": "BER-optimal (BCJR/APP) benchmarking of learned detectors on ISI channels",
-  "checked_at": "2026-09-05T11:32:24.476103+00:00",
+  "checked_at": "2026-09-05T17:13:55.936334+00:00",
   "standard": "deep-research IRON RULE #4 -- gray zone is a FAIL",
   "counts": {
     "VERIFIED": 7,
@@ -10,7 +10,9 @@
   "results": [
     {
       "arxiv_id": "2006.01125",
+      "doi": null,
       "reported_title": "Neural Network-Aided BCJR Algorithm for Joint Symbol Detection and Channel Decoding",
+      "route": "arxiv",
       "actual_title": "Neural Network-Aided BCJR Algorithm for Joint Symbol Detection and Channel Decoding",
       "authors": [
         "Wen-Chiao Tsai",
@@ -27,7 +29,9 @@
     },
     {
       "arxiv_id": "2405.10814",
+      "doi": null,
       "reported_title": "Data-Driven Symbol Detection for Intersymbol Interference Channels with Bursty Impulsive Noise",
+      "route": "arxiv",
       "actual_title": "Data-Driven Symbol Detection for Intersymbol Interference Channels with Bursty Impulsive Noise",
       "authors": [
         "Boris Karanov",
@@ -45,7 +49,9 @@
     },
     {
       "arxiv_id": "2411.01517",
+      "doi": null,
       "reported_title": "Enhancing LMMSE Performance with Modest Complexity Increase via Neural Network Equalizers",
+      "route": "arxiv",
       "actual_title": "Enhancing LMMSE Performance with Modest Complexity Increase via Neural Network Equalizers",
       "authors": [
         "Vadim Rozenfeld",
@@ -61,7 +67,9 @@
     },
     {
       "arxiv_id": "2203.16417",
+      "doi": null,
       "reported_title": "Low-complexity Near-optimum Symbol Detection Based on Neural Enhancement of Factor Graphs",
+      "route": "arxiv",
       "actual_title": "Low-complexity Near-optimum Symbol Detection Based on Neural Enhancement of Factor Graphs",
       "authors": [
         "Luca Schmid",
@@ -76,7 +84,9 @@
     },
     {
       "arxiv_id": "2401.12645",
+      "doi": null,
       "reported_title": "On the Robustness of Deep Learning-aided Symbol Detectors to Varying Conditions and Imperfect Channel Knowledge",
+      "route": "arxiv",
       "actual_title": "On the Robustness of Deep Learning-aided Symbol Detectors to Varying Conditions and Imperfect Channel Knowledge",
       "authors": [
         "Chin-Hung Chen",
@@ -95,7 +105,9 @@
     },
     {
       "arxiv_id": "2608.04155",
+      "doi": null,
       "reported_title": "Low-Complexity Recurrent Neural Network Detector for Faster-than-Nyquist Signaling",
+      "route": "arxiv",
       "actual_title": "Low-Complexity Recurrent Neural Network Detector for Faster-than-Nyquist Signaling",
       "authors": [
         "Nurettin Safak",
@@ -111,7 +123,9 @@
     },
     {
       "arxiv_id": "2607.20745",
+      "doi": null,
       "reported_title": "Self-Attention Transformer-Based Detector for Faster-than-Nyquist Signaling",
+      "route": "arxiv",
       "actual_title": "Self-Attention Transformer-Based Detector for Faster-than-Nyquist Signaling",
       "authors": [
         "Nurettin Safak",
