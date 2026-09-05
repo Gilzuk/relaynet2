@@ -2,7 +2,35 @@
 
 _Last updated: 2026-09-03_
 
-### Latest (2026-09-04): merged main; rebuilt the PDF it left stale
+### Latest (2026-09-04): prose cleanup from the humanizer/reviewer passes
+
+Mechanical items only, from running the two newly installed plugin skills over
+the thesis (their instructions followed from disk; the plugins themselves do not
+load until a new session). No result, table, figure or conclusion touched.
+
+- `serves as` -> `is` in 5 places (ch03 x2, ch04 x3).
+- The `not merely ...` construction appeared 5 times, 4 of them in ch07 and two
+  of those making the same point about the asymptote. Four rephrased; ch07:386
+  ("do not merely lose, they fail") kept, since it is the one doing real work.
+- `16QAM` -> `16-QAM` in `tbl:table44` (10 occurrences). `e35d9b7` had
+  introduced the unhyphenated form against 134 hyphenated uses elsewhere.
+- ch07's complexity paragraph already invoked reduced-state equalizers; it now
+  carries the `EyuboqluQureshi1988RSSE` citation and says plainly that those
+  methods are not benchmarked, so full Viterbi is the conservative comparator
+  and the reduced-state middle ground is unmeasured. This states scope; it adds
+  no scientific claim.
+
+The first humanizer scan was wrong and was redone: it counted text inside
+`%`-comments and `\REV{}`/`\AK{}` bodies, flagging a "valuable" that sits in a
+commented-out line whose supervisor query had already been answered beneath it.
+The corrected scan strips comments and annotation bodies first.
+
+Verification: 132 pages (unchanged), 0 errors, Undefined References: None,
+verifier 509/0 (the table relabel did not disturb any checked cell), provenance
+clean, 210 tests pass. PDF rebuilt in the same commit; bundles and
+`overleaf-dist` regenerated so no derived artefact lags.
+
+### Earlier (2026-09-04): merged main; rebuilt the PDF it left stale
 
 `main` had moved to `3893abc` (PR #63, plus `e35d9b7` "fixing compilation errors
 in latex"). Merged it into the Overleaf branch. Three consequences:
