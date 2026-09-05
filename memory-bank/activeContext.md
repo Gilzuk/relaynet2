@@ -2,7 +2,38 @@
 
 _Last updated: 2026-09-03_
 
-### Latest (2026-09-04): merged main; rebuilt the PDF it left stale
+### Latest (2026-09-05): BCJR benchmark research — Phase 1 done, Phase 2 blocked
+
+Started the `deep-research` pipeline on the thesis's own Future Work item 4 (a
+BER-optimal BCJR/APP benchmark for the unknown-ISI channel). Tracked in
+`docs/research/bcjr-benchmark-log.md`, one dated entry per session.
+
+Phase 1 (scoping) complete: RQ scoped from the author's own text rather than
+generated, FINER scored with Novelty deliberately **low** (BCJR is Bahl et al.
+1974 — completeness work, not a contribution), methodology blueprint written
+against this repo's existing validity standards, Devil's Advocate checkpoint
+PASS with one accepted scope revision (state the minimum detectable difference
+before running, since at BER ~1e-4 the MAP-vs-ML gap may be smaller than the
+CI). The blueprint leads with the trap that already caught this thesis once:
+build the BCJR from the taps alone on a per-symbol-fading channel and it will
+reproduce the withdrawn-QPSK error and look like a finding. Run the
+fading-removed control first.
+
+Phase 2 (literature) **cannot complete here.** `WebSearch` works; every
+verification route is refused by the egress proxy — arxiv.org, wikipedia,
+api.semanticscholar.org, api.crossref.org all 403 on CONNECT. The skill's rule
+is that an unconfirmable source is a FAIL, not an "uncertain", so five
+candidate papers are recorded UNVERIFIED and marked do-not-cite.
+
+One finding survives non-verification, being about expectations rather than the
+world: four independent search results converge on neural detectors being
+benchmarked against BCJR as normal practice in this literature. That raises
+Future Work item 4 from thesis completeness to something an examiner in the
+area may actively expect.
+
+Nothing in the thesis changed.
+
+### Earlier (2026-09-04): merged main; rebuilt the PDF it left stale
 
 `main` had moved to `3893abc` (PR #63, plus `e35d9b7` "fixing compilation errors
 in latex"). Merged it into the Overleaf branch. Three consequences:
