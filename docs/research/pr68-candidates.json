@@ -1,0 +1,17 @@
+{
+  "_comment": "The 11 admitted references of docs/deep_research_learned_relays.md (PR #68). That report verified them against GitHub .bib files and author repositories, because its container could reach only github.com, and it states that publisher/database re-verification remains outstanding (its Section 5.2). This is that re-verification. Entries with a DOI resolve against Crossref directly; the rest go through a Crossref title search, which confirms a record exists but not the reference's other fields.",
+  "topic": "PR #68 admitted corpus -- publisher-record re-verification",
+  "candidates": [
+    {"doi": "10.1109/JSTSP.2017.2784180", "reported_title": "Deep Learning Based Communication Over the Air"},
+    {"doi": "10.1109/ICASSP40776.2020.9054093", "reported_title": "A Learning Approach to Cooperative Communication System Design"},
+    {"doi": "10.1109/TSP.2019.2899805", "reported_title": "Learning to Detect"},
+    {"reported_title": "Capacity theorems for the relay channel"},
+    {"reported_title": "Cooperative diversity in wireless networks: Efficient protocols and outage behavior"},
+    {"reported_title": "Neural Network Detection of Data Sequences in Communication Systems"},
+    {"reported_title": "On deep learning-based channel decoding"},
+    {"reported_title": "Learning to decode linear codes using deep learning"},
+    {"reported_title": "An Introduction to Deep Learning for the Physical Layer"},
+    {"reported_title": "Power of Deep Learning for Channel Estimation and Signal Detection in OFDM Systems"},
+    {"reported_title": "Process-and-Forward: Deep Joint Source-Channel Coding Over Cooperative Relay Networks"}
+  ]
+}

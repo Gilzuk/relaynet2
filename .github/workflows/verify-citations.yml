@@ -9,9 +9,10 @@ name: Verify citations
 on:
   workflow_dispatch:
   push:
-    branches: [claude/research-bcjr-benchmark]
+    branches: [claude/research-bcjr-benchmark, claude/verify-pr68]
     paths:
       - docs/research/bcjr-candidates.json
+      - docs/research/pr68-candidates.json
       - scripts/verify_citations.py
       - .github/workflows/verify-citations.yml
 
@@ -37,12 +38,21 @@ jobs:
             --out docs/research/bcjr-candidates-verified.json \
             --log docs/research/bcjr-benchmark-log.md
 
+      - name: Re-verify the PR #68 corpus against publisher records
+        id: verify68
+        continue-on-error: true
+        run: |
+          python3 scripts/verify_citations.py \
+            --candidates docs/research/pr68-candidates.json \
+            --out docs/research/pr68-candidates-verified.json
+
       - name: Commit the verdicts
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add docs/research/bcjr-candidates-verified.json \
-                  docs/research/bcjr-benchmark-log.md
+                  docs/research/bcjr-benchmark-log.md \
+                  docs/research/pr68-candidates-verified.json
           if git diff --cached --quiet; then
             echo "No change in the verdicts."
             exit 0
