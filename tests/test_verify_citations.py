@@ -126,3 +126,19 @@ def test_main_handles_a_mixed_corpus(monkeypatch, tmp_path):
 def test_main_rejects_a_candidate_with_nothing_to_look_up(monkeypatch, tmp_path):
     with pytest.raises(SystemExit):
         _run_main(monkeypatch, tmp_path, [{"note": "no id, no title"}], None)
+
+
+def test_title_search_with_no_exact_match_is_a_fail_not_a_mismatch(monkeypatch, tmp_path):
+    """A title search cannot support the claim 'this is a different paper'.
+
+    The first PR #68 run reported MISMATCH for O'Shea & Hoydis 2017 because the
+    search's top hit was an unrelated paper and the code fell back to it. That
+    accuses a correct reference of being something it is not. MISMATCH is now
+    reserved for a pinned identifier -- arXiv or DOI -- resolving elsewhere.
+    """
+    monkeypatch.setattr(vc, "fetch_json", lambda _u, retries=3: {
+        "message": {"items": [{"title": ["Domain aware deep learning for wireless physical layer"],
+                               "author": [], "issued": {}}]}})
+    r = vc.verify({"reported_title": "An Introduction to Deep Learning for the Physical Layer"})
+    assert r["verdict"] == "FAIL"
+    assert "supply a DOI" in r["reason"]

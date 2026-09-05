@@ -36,7 +36,7 @@ from datetime import datetime, timezone
 
 API = "http://export.arxiv.org/api/query?id_list={}"
 CROSSREF_DOI = "https://api.crossref.org/works/{}"
-CROSSREF_QUERY = ("https://api.crossref.org/works?rows=3&select=title,author,"
+CROSSREF_QUERY = ("https://api.crossref.org/works?rows=10&select=title,author,"
                   "issued,container-title,DOI&query.bibliographic={}")
 ATOM = "{http://www.w3.org/2005/Atom}"
 UA = "relaynet2-citation-check (thesis research log; contact via repo issues)"
@@ -144,8 +144,18 @@ def verify(cand):
                 if normalise(cand_rec["title"]) == normalise(reported):
                     rec = cand_rec
                     break
-            if rec is None and items:
-                rec = _crossref_record(items[0])
+            if rec is None:
+                # No exact title match. Reporting the top hit as a MISMATCH
+                # would accuse a possibly-correct reference of being a
+                # different paper; a title search cannot support that claim.
+                # MISMATCH is reserved for a pinned identifier resolving
+                # elsewhere. This is an unresolved lookup, i.e. a FAIL.
+                near = _crossref_record(items[0])["title"] if items else "--"
+                row.update(verdict="FAIL",
+                           reason="no record with this title in the top 10 "
+                                  f"Crossref results (nearest: {near!r}); "
+                                  "supply a DOI to pin it")
+                return row
     except Exception as e:                       # network, parse, anything
         row.update(verdict="FAIL", reason=f"lookup error: {e}")
         return row
