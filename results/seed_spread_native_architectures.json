@@ -1,0 +1,37 @@
+{
+  "snr_db": [
+    0,
+    4,
+    8,
+    12,
+    16,
+    20
+  ],
+  "n_trials": 20,
+  "bits_per_trial": 20000,
+  "train_seeds": [
+    0,
+    1,
+    2
+  ],
+  "epochs": 100,
+  "samples": 25000,
+  "budget_note": "equalised across architectures; published run uses 25k for MLP/Hybrid and 50k for VAE/sequence models",
+  "df_ber": [
+    0.33339250000000004,
+    0.22184500000000001,
+    0.120385,
+    0.0558675,
+    0.024002500000000003,
+    0.009680000000000001
+  ],
+  "af_ber": [
+    0.4088425,
+    0.3140475,
+    0.18644,
+    0.08200249999999999,
+    0.030542500000000007,
+    0.010934999999999999
+  ],
+  "architectures": {}
+}
