@@ -29,6 +29,7 @@ Output: results/seed_spread_native_architectures.json
 """
 
 import contextlib
+import inspect
 import io as _io
 import json
 import os
@@ -73,12 +74,15 @@ def evaluate(relay):
     return np.asarray(ber)
 
 
-def n_params(relay):
-    m = getattr(relay, "model", None)
-    try:
-        return sum(q.numel() for q in m.parameters()) if m is not None else -1
-    except Exception:
-        return -1
+# No parameter count is recorded here, deliberately. Three storage conventions
+# coexist in these relays -- a public torch module, a private _torch_model with
+# a numpy mirror, plain numpy matrices -- and the minimal MLP additionally
+# re-exposes copies of its weights through an inner _TinyNN, so an introspecting
+# counter double-counts it (338 for a relay the thesis calls 169-parameter) and
+# identity deduplication does not help because the copies are distinct objects.
+# Rather than ship a number that disagrees with the document, the field is
+# omitted: the parameter counts have one source already, the arch:relay-param-counts
+# check in verify_thesis_tables.py, which reads them from the thesis and passes.
 
 
 def main():
@@ -105,7 +109,7 @@ def main():
 
     flush()
     for name, (snrs, kw) in ARCHS.items():
-        out["architectures"][name] = {"params": -1, "runs": [],
+        out["architectures"][name] = {"runs": [],
                                       "spread_db": float("nan")}
         for ts in TRAIN_SEEDS:
             t0 = time.time()
@@ -124,7 +128,6 @@ def main():
             rec["runs"].append({"train_seed": ts,
                                 "ber": [float(x) for x in ber],
                                 "db_penalty": pen})
-            rec["params"] = n_params(relay)
             vals = [r["db_penalty"] for r in rec["runs"]
                     if r["db_penalty"] == r["db_penalty"]]
             rec["spread_db"] = float(max(vals) - min(vals)) if len(vals) > 1 \
@@ -132,8 +135,7 @@ def main():
             flush()
             print(f"  {name:<14} seed {ts}  penalty {pen:+7.3f} dB   "
                   f"[{time.time()-t0:.0f}s]", flush=True)
-        print(f"  {name:<14} spread {rec['spread_db']:+.3f} dB "
-              f"({rec['params']} params)\n", flush=True)
+        print(f"  {name:<14} spread {rec['spread_db']:+.3f} dB\n", flush=True)
 
     print("=" * 74)
     sp = {k: v["spread_db"] for k, v in out["architectures"].items()

@@ -35,7 +35,6 @@
   ],
   "architectures": {
     "MLP (169p)": {
-      "params": -1,
       "runs": [
         {
           "train_seed": 0,
@@ -77,7 +76,6 @@
       "spread_db": 0.04323661889947772
     },
     "Hybrid": {
-      "params": -1,
       "runs": [
         {
           "train_seed": 0,
@@ -119,7 +117,6 @@
       "spread_db": 0.006571126326456067
     },
     "VAE": {
-      "params": -1,
       "runs": [
         {
           "train_seed": 0,
@@ -161,7 +158,6 @@
       "spread_db": 0.09079256494255006
     },
     "Transformer": {
-      "params": 17697,
       "runs": [
         {
           "train_seed": 0,
@@ -203,7 +199,6 @@
       "spread_db": 0.07517430264440961
     },
     "Mamba S6": {
-      "params": 24001,
       "runs": [
         {
           "train_seed": 0,
@@ -245,7 +240,6 @@
       "spread_db": 0.004285319820615641
     },
     "Mamba2 (SSD)": {
-      "params": 26179,
       "runs": [
         {
           "train_seed": 0,
@@ -270,9 +264,22 @@
             0.009947500000000001
           ],
           "db_penalty": 1.136685250475436
+        },
+        {
+          "train_seed": 2,
+          "ber": [
+            0.418795,
+            0.30720499999999995,
+            0.160225,
+            0.0654975,
+            0.025509999999999998,
+            0.009895
+          ],
+          "db_penalty": 1.1412378299897785
         }
       ],
-      "spread_db": 0.008609053816353907
+      "spread_db": 0.013161633330696532
     }
-  }
+  },
+  "params_note": "parameter counts are deliberately not recorded here: they have a single source in the thesis, checked by arch:relay-param-counts in verify_thesis_tables.py. See the note in seed_spread_native_architectures.py for why introspecting them here produced a value disagreeing with the document."
 }

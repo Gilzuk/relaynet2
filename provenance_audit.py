@@ -33,6 +33,10 @@ REGISTRY = {
     "QPSK error decomposition": (
         "qpsk_error_decomposition.py", ["results/qpsk_error_decomposition.json"],
         ["prose: QPSK SER/BER and bits-per-symbol-error"]),
+    "Cross-architecture seed spread (native)": (
+        "seed_spread_native_architectures.py",
+        ["results/seed_spread_native_architectures.json"],
+        ["reviewer item M2; not yet cited in the thesis"]),
     "Soft block-DF variance calibration": (
         "coded_soft_df_calibration.py", ["results/coded_soft_df_calibration.json"],
         ["tbl:table39 footnote: variance-corrected 20 dB figures"]),
