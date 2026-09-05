@@ -2,7 +2,36 @@
 
 _Last updated: 2026-09-03_
 
-### Latest (2026-09-04): prose cleanup from the humanizer/reviewer passes
+### Latest (2026-09-05): verified literature folded into Ch.2 and Ch.7
+
+The seven CI-verified sources from the BCJR research produced two thesis edits.
+Both are grounded in verified published statements, not in search summaries.
+
+1. **Chapter 2 gains the BCJRNet thread** (`sec:prior-work-in-deep-learning...`).
+   Tsai et al. 2020, Karanov et al. 2024 and Chen et al. 2024 put the learned
+   component *inside* an optimal detector. Chen et al. report neural-aided BCJR
+   beating conventional BCJR under imperfect channel knowledge — the same
+   boundary this thesis draws in Ch.7, so it corroborates H5's honest reading.
+   The paragraph also states plainly that this literature benchmarks against
+   BCJR while this thesis benchmarks against MLSE only, pointing at
+   `sec:future-work`.
+2. **Chapter 7's constant-cost claim is scoped.** Rozenfeld et al. 2024 report
+   that neural equalizers are often parameterized heavily enough to reach
+   complexity comparable to or larger than the trellis they replace. As a
+   blanket claim about learned equalizers, constant cost is therefore not safe;
+   it survives for this relay at 170--193 parameters, and the text now says so.
+   This narrows a claim rather than widening one.
+
+Four `@misc` arXiv entries added to `references.bib` with authors and titles
+taken from the verified records, not from memory.
+
+Checks: 132 pages unchanged, 0 errors, `Undefined References: None`, no `[?]`
+in the rendered PDF, verifier 509/0 (including `consistency:proof-copies`),
+210 tests, provenance clean. PDF rebuilt and committed in the same commit.
+
+No numerical result, table value or figure changed.
+
+### Earlier (2026-09-04): prose cleanup from the humanizer/reviewer passes
 
 Mechanical items only, from running the two newly installed plugin skills over
 the thesis (their instructions followed from disk; the plugins themselves do not
