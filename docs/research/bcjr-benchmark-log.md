@@ -114,9 +114,9 @@ workflow on a runner with open network access, which writes the results back
 into the block below. Until that block says otherwise, nothing here is citable.
 
 <!-- VERIFICATION:BEGIN -->
-_Checked 2026-09-05T11:29:22.517127+00:00. Standard: deep-research IRON RULE #4 -- gray zone is a FAIL._
+_Checked 2026-09-05T11:32:24.476103+00:00. Standard: deep-research IRON RULE #4 -- gray zone is a FAIL._
 
-**5 verified, 0 mismatched, 0 failed.**
+**7 verified, 0 mismatched, 0 failed.**
 
 | arXiv | Verdict | Title on the record | Published |
 |---|---|---|---|
@@ -125,6 +125,8 @@ _Checked 2026-09-05T11:29:22.517127+00:00. Standard: deep-research IRON RULE #4 
 | 2411.01517 | VERIFIED | Enhancing LMMSE Performance with Modest Complexity Increase via Neural Network Equalizers | 2024-11-03 |
 | 2203.16417 | VERIFIED | Low-complexity Near-optimum Symbol Detection Based on Neural Enhancement of Factor Graphs | 2022-03-30 |
 | 2401.12645 | VERIFIED | On the Robustness of Deep Learning-aided Symbol Detectors to Varying Conditions and Imp... | 2024-01-23 |
+| 2608.04155 | VERIFIED | Low-Complexity Recurrent Neural Network Detector for Faster-than-Nyquist Signaling | 2026-08-04 |
+| 2607.20745 | VERIFIED | Self-Attention Transformer-Based Detector for Faster-than-Nyquist Signaling | 2026-07-22 |
 
 Full records, including authors and abstracts, are in `docs/research/bcjr-candidates-verified.json`.
 <!-- VERIFICATION:END -->

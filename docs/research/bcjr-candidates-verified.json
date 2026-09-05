@@ -1,9 +1,9 @@
 {
   "topic": "BER-optimal (BCJR/APP) benchmarking of learned detectors on ISI channels",
-  "checked_at": "2026-09-05T11:29:22.517127+00:00",
+  "checked_at": "2026-09-05T11:32:24.476103+00:00",
   "standard": "deep-research IRON RULE #4 -- gray zone is a FAIL",
   "counts": {
-    "VERIFIED": 5,
+    "VERIFIED": 7,
     "MISMATCH": 0,
     "FAIL": 0
   },
@@ -90,6 +90,38 @@
       "updated": "2024-01-23T10:55:29Z",
       "abstract": "Recently, a data-driven Bahl-Cocke-Jelinek-Raviv (BCJR) algorithm tailored to channels with intersymbol interference has been introduced. This so-called BCJRNet algorithm utilizes neural networks to calculate channel likelihoods. BCJRNet has demonstrated resilience against inaccurate channel tap estimations when applied to a time-invariant channel with ideal exponential decay profiles. However, its generalization capabilities for practically-relevant time-varying channels, where the receiver can only access incorrect channel parameters, remain largely unexplored. The primary contribution of this paper is to expand upon the results from existing literature to encompass a variety of imperfect channel knowledge cases that appear in real-world transmissions. Our findings demonstrate that BCJRNet significantly outperforms the conventional BCJR algorithm for stationary transmission scenarios when learning from noisy channel data and with imperfect channel decay profiles. However, this advantage is shown to diminish when the operating channel is also rapidly time-varying. Our results also show the importance of memory assumptions for conventional BCJR and BCJRNet. An underestimation of the memory largely degrades the performance of both BCJR and BCJRNet, especially in a slow-decaying channel. To mimic a situation closer to a practical scenario, we also combined channel tap uncertainty with imperfect channel memory knowledge. Somewhat surprisingly, our results revealed improved performance when employing the conventional BCJR with an underestimated memory assumption. BCJRNet, on the other hand, showed a consistent performance improvement as the level of accurate memory knowledge increased.",
       "url": "http://arxiv.org/abs/2401.12645v1",
+      "verdict": "VERIFIED",
+      "reason": "title matches the record"
+    },
+    {
+      "arxiv_id": "2608.04155",
+      "reported_title": "Low-Complexity Recurrent Neural Network Detector for Faster-than-Nyquist Signaling",
+      "actual_title": "Low-Complexity Recurrent Neural Network Detector for Faster-than-Nyquist Signaling",
+      "authors": [
+        "Nurettin Safak",
+        "Osman Tokluoglu",
+        "Enver Cavus"
+      ],
+      "published": "2026-08-04T19:06:51Z",
+      "updated": "2026-08-04T19:06:51Z",
+      "abstract": "This study proposes a low-complexity, bidirectional, single-pass Elman recurrent neural network detector for binary phase-shift keying signals transmitted with faster-than-Nyquist signaling. Since the faster-than-Nyquist intersymbol interference has a short, finite memory, the classical Elman recurrent neural network, which contains no gating mechanism, is a sufficient and parameter-efficient model. The proposed detector processes the received sequence in both forward and backward directions in a single pass, forming a learned counterpart of the optimal BCJR forward-backward recursion. Under a root-raised-cosine pulse over an additive white Gaussian noise channel, simulations for two compression factors show that the proposed detector, with only twenty-five to sixty-five trainable parameters, attains a bit error rate very close to that of the M-BCJR algorithm, while reducing the look-up-table hardware cost by thirty-eight to forty-six percent and using no explicit division or exponential operations. A more compact configuration offers up to a sixty-seven percent reduction at a small performance penalty. To the best of our knowledge, this is the first study to investigate the classical Elman recurrent neural network architecture for the faster-than-Nyquist detection problem.",
+      "url": "http://arxiv.org/abs/2608.04155v1",
+      "verdict": "VERIFIED",
+      "reason": "title matches the record"
+    },
+    {
+      "arxiv_id": "2607.20745",
+      "reported_title": "Self-Attention Transformer-Based Detector for Faster-than-Nyquist Signaling",
+      "actual_title": "Self-Attention Transformer-Based Detector for Faster-than-Nyquist Signaling",
+      "authors": [
+        "Nurettin Safak",
+        "Osman Tokluoglu",
+        "Enver Cavus"
+      ],
+      "published": "2026-07-22T21:50:49Z",
+      "updated": "2026-07-22T21:50:49Z",
+      "abstract": "In this study, a novel encoder-only Transformer-based receiver architecture is presented for BPSK signals transmitted over Faster-than-Nyquist (FTN) signaling channels that introduce intentional inter-symbol interference (ISI) with a compression factor of $τ=0.8$. A complete end-to-end communication chain encompassing BPSK modulation, RRC pulse shaping, and the ISI coefficients arising from matched filtering was constructed and evaluated. The proposed Transformer receiver was benchmarked against the optimal BCJR detector over an $E_b/N_0$ range of 0-8 dB. To systematically close the BER gap to the BCJR, a two-stage training strategy combining multi-SNR pretraining and per-SNR curriculum fine-tuning was developed. The computational complexity and inference latency of the Transformer receiver were analyzed in comparison with a GRU based receiver. Attention map visualizations revealed that the Transformer autonomously identifies the FTN-induced ISI memory structure without requiring any prior channel knowledge; as the SNR increases, the attention weights become significantly concentrated around the center token and its nearest neighbors.",
+      "url": "http://arxiv.org/abs/2607.20745v1",
       "verdict": "VERIFIED",
       "reason": "title matches the record"
     }
