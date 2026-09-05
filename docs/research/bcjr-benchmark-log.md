@@ -174,12 +174,18 @@ ubuntu runner. **5 of 5 candidates VERIFIED** — exact title matches against th
 arXiv record, real authors, plausible dates. No MISMATCH, no FAIL. The
 egress block was an environment limit, not a sign the sources were bad.
 
-**Caveat on what that proves.** A run in which everything passes says nothing
-about the checker's ability to catch a bad reference. Two further candidates
-carrying 2026 identifiers, which the first pass deliberately withheld, have
-been added for the next run: search-summarised recent IDs are the likeliest
-place for a fabrication to hide, so they are the real test of the MISMATCH and
-FAIL paths.
+**Second run: 7 of 7 VERIFIED.** The two withheld 2026-dated candidates
+(2608.04155, 2607.20745, both Faster-than-Nyquist detectors) are real records
+with matching titles. The suspicion that search-summarised recent identifiers
+were the likely place for a fabrication to hide was wrong here.
+
+**What two clean runs do not prove.** A checker that returned VERIFIED
+unconditionally would have scored 7 of 7 as well. FAIL has been exercised for
+real -- every lookup 403s from the development container -- but MISMATCH, the
+record-exists-title-differs case that catches a mashed-up reference, had never
+fired against anything. `tests/test_verify_citations.py` now fires it: a real
+record under a wrong title, a plausible one-word alteration, a missing record,
+a lookup error, and cosmetic differences that must *not* trip it. Six tests.
 
 ## 2026-09-05 — Phase 3: synthesis
 
@@ -230,8 +236,9 @@ papers uses.
 
 ### Next actions
 
-- [x] Verify the candidate sources (CI, 5/5)
-- [ ] Confirm the two 2026-dated candidates, or record them as FAIL
+- [x] Verify the candidate sources (CI, 7/7 over two runs)
+- [x] Confirm the two 2026-dated candidates -- both real
+- [x] Negative-test the checker's MISMATCH path (`tests/test_verify_citations.py`)
 - [ ] Consider citing the BCJRNet thread in Chapter 2 — it corroborates H5's mismatch reading
 - [ ] Scope the constant-cost claim in Chapter 7 to the parameter regime, per 2411.01517
 - [ ] Implement the fading-aware BCJR; run the fading-removed control **first**
