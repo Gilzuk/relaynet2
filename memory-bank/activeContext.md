@@ -2,7 +2,94 @@
 
 _Last updated: 2026-09-03_
 
-### Latest (2026-09-05): BCJR benchmark research — Phase 1 done, Phase 2 blocked
+### Latest (2026-09-05): the BCJR benchmark is measured — the margin does not change
+
+Future Work item 4 is answered on the measurement side. `qpsk_bcjr_benchmark.py`
+-> `results/qpsk_bcjr_benchmark.json`, detector in `relaynet/relays/bcjr.py`,
+seven tests in `tests/test_bcjr_qpsk.py`, registered in `provenance_audit.py`.
+Full chronology in `docs/research/bcjr-benchmark-log.md`.
+
+Controls ran first and passed: fading removed, BCJR and Viterbi agree (8 dB
+0.021424 vs 0.021764, diff +0.00034 ± 0.00016; 20 dB both exactly zero); ISI
+removed, the BER-optimal rule reduces to the per-axis slicer on all 10,000
+symbols.
+
+BCJR is never worse, as optimality requires, but the gain vanishes with SNR:
+4.42% relative at 0 dB, 2.43% at 8 dB, and by 16 dB the 95% interval on the
+paired per-trial difference includes zero. At 20 dB the trellis moves 0.000127
+to 0.000126 against the MLP's 0.0508. **No ordering in Chapter 7 changes.** The
+unresolvable range above 16 dB is the minimum-detectable-difference limit
+Checkpoint 1 required be stated in advance, and it is reported as a bound.
+
+Unplanned finding, stronger than what Chapter 7 claims: on this channel
+**bit-MAP and symbol-MAP are the same detector, exactly**. Real taps and a real
+fading magnitude split `y = g(h*x)+v` into two independent real ISI channels, so
+the symbol posterior factorises as `P(b0)P(b1)` — verified to 5.6e-16. The
+chapter calls the Gray-map effect small (1.073 vs 1.090 bits per symbol error);
+it is zero, structurally. Found because a test asserted the two rules would
+differ and failed: the assertion was wrong, not the code.
+
+Open: BPSK is not measured (the factorisation argument implies the same answer,
+but implication is not measurement), and nothing is written into the thesis —
+closing Future Work item 4 in the text needs a negative-tested verifier check
+for any number that lands there.
+
+### Earlier (2026-09-05): verified literature folded into Ch.2 and Ch.7
+
+The seven CI-verified sources from the BCJR research produced two thesis edits.
+Both are grounded in verified published statements, not in search summaries.
+
+1. **Chapter 2 gains the BCJRNet thread** (`sec:prior-work-in-deep-learning...`).
+   Tsai et al. 2020, Karanov et al. 2024 and Chen et al. 2024 put the learned
+   component *inside* an optimal detector. Chen et al. report neural-aided BCJR
+   beating conventional BCJR under imperfect channel knowledge — the same
+   boundary this thesis draws in Ch.7, so it corroborates H5's honest reading.
+   The paragraph also states plainly that this literature benchmarks against
+   BCJR while this thesis benchmarks against MLSE only, pointing at
+   `sec:future-work`.
+2. **Chapter 7's constant-cost claim is scoped.** Rozenfeld et al. 2024 report
+   that neural equalizers are often parameterized heavily enough to reach
+   complexity comparable to or larger than the trellis they replace. As a
+   blanket claim about learned equalizers, constant cost is therefore not safe;
+   it survives for this relay at 170--193 parameters, and the text now says so.
+   This narrows a claim rather than widening one.
+
+Four `@misc` arXiv entries added to `references.bib` with authors and titles
+taken from the verified records, not from memory.
+
+Checks: 132 pages unchanged, 0 errors, `Undefined References: None`, no `[?]`
+in the rendered PDF, verifier 509/0 (including `consistency:proof-copies`),
+210 tests, provenance clean. PDF rebuilt and committed in the same commit.
+
+No numerical result, table value or figure changed.
+
+### Earlier (2026-09-04): prose cleanup from the humanizer/reviewer passes
+
+Mechanical items only, from running the two newly installed plugin skills over
+the thesis (their instructions followed from disk; the plugins themselves do not
+load until a new session). No result, table, figure or conclusion touched.
+
+- `serves as` -> `is` in 5 places (ch03 x2, ch04 x3).
+- The `not merely ...` construction appeared 5 times, 4 of them in ch07 and two
+  of those making the same point about the asymptote. Four rephrased; ch07:386
+  ("do not merely lose, they fail") kept, since it is the one doing real work.
+- `16QAM` -> `16-QAM` in `tbl:table44` (10 occurrences). `e35d9b7` had
+  introduced the unhyphenated form against 134 hyphenated uses elsewhere.
+- ch07's complexity paragraph already invoked reduced-state equalizers; it now
+  carries the `EyuboqluQureshi1988RSSE` citation and says plainly that those
+  methods are not benchmarked, so full Viterbi is the conservative comparator
+  and the reduced-state middle ground is unmeasured. This states scope; it adds
+  no scientific claim.
+
+The first humanizer scan was wrong and was redone: it counted text inside
+`%`-comments and `\REV{}`/`\AK{}` bodies, flagging a "valuable" that sits in a
+commented-out line whose supervisor query had already been answered beneath it.
+The corrected scan strips comments and annotation bodies first.
+
+Verification: 132 pages (unchanged), 0 errors, Undefined References: None,
+verifier 509/0 (the table relabel did not disturb any checked cell), provenance
+clean, 210 tests pass. PDF rebuilt in the same commit; bundles and
+`overleaf-dist` regenerated so no derived artefact lags.### Earlier (2026-09-05): BCJR benchmark research — Phase 1 done, Phase 2 blocked
 
 Started the `deep-research` pipeline on the thesis's own Future Work item 4 (a
 BER-optimal BCJR/APP benchmark for the unknown-ISI channel). Tracked in
@@ -32,7 +119,6 @@ Future Work item 4 from thesis completeness to something an examiner in the
 area may actively expect.
 
 Nothing in the thesis changed.
-
 ### Earlier (2026-09-04): merged main; rebuilt the PDF it left stale
 
 `main` had moved to `3893abc` (PR #63, plus `e35d9b7` "fixing compilation errors
