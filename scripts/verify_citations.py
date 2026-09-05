@@ -218,9 +218,15 @@ def main():
     a = ap.parse_args()
 
     src = json.load(open(a.candidates))
+    for c in src["candidates"]:
+        if not (c.get("arxiv_id") or c.get("doi") or c.get("reported_title")):
+            raise SystemExit(f"candidate has no identifier and no title: {c}")
     rows = []
     for c in src["candidates"]:
-        print(f"  checking arXiv:{c['arxiv_id']} ...", flush=True)
+        label = (f"arXiv:{c['arxiv_id']}" if c.get("arxiv_id")
+                 else f"doi:{c['doi']}" if c.get("doi")
+                 else f"title:{c['reported_title'][:52]}")
+        print(f"  checking {label} ...", flush=True)
         row = verify(c)
         print(f"    {row['verdict']}: {row['reason']}", flush=True)
         rows.append(row)

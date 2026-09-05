@@ -50,9 +50,13 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/research/bcjr-candidates-verified.json \
-                  docs/research/bcjr-benchmark-log.md \
-                  docs/research/pr68-candidates-verified.json
+          # add only what exists: a corpus whose step crashed writes nothing,
+          # and that must not stop the other corpus's verdicts being recorded
+          for f in docs/research/bcjr-candidates-verified.json \
+                   docs/research/bcjr-benchmark-log.md \
+                   docs/research/pr68-candidates-verified.json; do
+            [ -f "$f" ] && git add "$f"
+          done
           if git diff --cached --quiet; then
             echo "No change in the verdicts."
             exit 0
