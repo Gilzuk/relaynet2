@@ -5,8 +5,8 @@ Chapter~7 (`sec:qpsk-unknown-channel`), Appendix F, and Future Work item 4.
 Append one dated entry per session. Newest last, so the file reads as a
 chronology.
 
-**Status: Phase 1 complete. Phase 2 complete via CI. Phase 3 synthesis below.
-Experiment not started.**
+**Status: Phases 1-3 complete. Experiment run; the question is answered.
+Not yet written into the thesis.**
 
 **Question.** On the 3-tap unknown-ISI relay channel, does the genie-CSI
 classical benchmark's margin over the learned relay change when the benchmark
@@ -244,3 +244,64 @@ papers uses.
 - [ ] Implement the fading-aware BCJR; run the fading-removed control **first**
 - [ ] State the minimum detectable difference before running the comparison
 - [ ] Register the experiment in `provenance_audit.py` REGISTRY
+
+---
+
+## 2026-09-05 — The experiment: answered
+
+`qpsk_bcjr_benchmark.py` -> `results/qpsk_bcjr_benchmark.json`. Registered in
+`provenance_audit.py`. Detector in `relaynet/relays/bcjr.py`, tests in
+`tests/test_bcjr_qpsk.py`.
+
+### Controls, run first and passed
+
+| Control | Result |
+|---|---|
+| C1 fading removed: BCJR and Viterbi must agree | 8 dB, 0.021424 vs 0.021764 (diff +0.00034 ± 0.00016); 20 dB, 0.000000 both |
+| C2 no ISI: BER-optimal must reduce to the per-axis slicer | identical on every one of 10,000 symbols |
+
+### The answer: the margin does not change
+
+Both detectors given the taps *and* the per-symbol gains. Paired per-trial
+differences, 10 trials, `t(9,0.975)=2.262`.
+
+| SNR | Viterbi BER | BCJR BER | gain | relative | 95% CI on the paired difference |
+|---|---|---|---|---|---|
+| 0 | 0.250177 | 0.239113 | 0.011064 | 4.42% | [+1.03e-02, +1.18e-02] resolved |
+| 4 | 0.162702 | 0.155861 | 0.006841 | 4.20% | [+6.30e-03, +7.38e-03] resolved |
+| 8 | 0.068918 | 0.067245 | 0.001673 | 2.43% | [+1.42e-03, +1.93e-03] resolved |
+| 12 | 0.015075 | 0.014857 | 0.000218 | 1.45% | [+1.16e-04, +3.20e-04] resolved |
+| 16 | 0.001726 | 0.001725 | 0.000001 | 0.06% | [-2.46e-05, +2.66e-05] **not resolved** |
+| 20 | 0.000127 | 0.000126 | 0.000001 | 0.79% | [-1.26e-06, +3.26e-06] **not resolved** |
+
+BCJR is never worse, as optimality requires. The gain is real and measurable at
+low SNR and shrinks to nothing by 16 dB, where the CI includes zero — exactly
+the minimum-detectable-difference limit Checkpoint 1 required be stated in
+advance. At 20 dB the trellis moves from 0.000127 to 0.000126 against the MLP's
+0.0508. **No ordering in Chapter 7 changes.** The Devil's Advocate prediction
+that the answer would be a null result was correct.
+
+### An unplanned finding, stronger than what Chapter 7 claims
+
+On this channel **bit-MAP and symbol-MAP are the same detector, exactly.** The
+taps are real and the fading gain is a real magnitude, so `y = g(h*x) + v`
+splits into two independent real ISI channels and the symbol posterior
+factorises as `P(b0)P(b1)` — verified to 5.6e-16, machine precision, in
+`tests/test_bcjr_qpsk.py`.
+
+Chapter 7 currently treats the Gray-map effect as *small*, citing 1.073 against
+1.090 bits per symbol error. It is not small; it is zero, and for a structural
+reason. Future Work item 4's third sub-question ("does per-bit marginalisation
+interact with the Gray map?") is therefore answered in the negative on
+principle, not just by measurement.
+
+This was found because a test asserted the two rules would differ and failed.
+The assertion was wrong, not the code.
+
+### What remains
+
+- [x] Implement the fading-aware BCJR; run the fading-removed control first
+- [x] State the minimum detectable difference before running (16 dB and above: unresolvable)
+- [x] Register the experiment in `provenance_audit.py`
+- [ ] BPSK. Only QPSK is measured. The I/Q factorisation argument says BPSK is the same trellis per axis, so the expected answer is identical, but it is not measured
+- [ ] Decide whether to write this into the thesis and close Future Work item 4. Doing so needs a verifier check for any number that lands in the text, negative-tested
