@@ -33,6 +33,10 @@ REGISTRY = {
     "QPSK error decomposition": (
         "qpsk_error_decomposition.py", ["results/qpsk_error_decomposition.json"],
         ["prose: QPSK SER/BER and bits-per-symbol-error"]),
+    "Cross-architecture seed spread (native)": (
+        "seed_spread_native_architectures.py",
+        ["results/seed_spread_native_architectures.json"],
+        ["reviewer item M2; not yet cited in the thesis"]),
     "QPSK BCJR/APP benchmark": (
         "qpsk_bcjr_benchmark.py", ["results/qpsk_bcjr_benchmark.json"],
         ["not yet cited in the thesis; closes Future Work item 4"]),
