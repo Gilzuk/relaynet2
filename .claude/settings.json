@@ -1,13 +1,20 @@
 {
+  "enabledPlugins": {
+    "academic-research-skills@academic-research-skills": true,
+    "humanizer@humanizer": true
+  },
   "extraKnownMarketplaces": {
     "academic-research-skills": {
       "source": {
         "source": "github",
         "repo": "Imbad0202/academic-research-skills"
       }
+    },
+    "humanizer": {
+      "source": {
+        "source": "github",
+        "repo": "blader/humanizer"
+      }
     }
-  },
-  "enabledPlugins": {
-    "academic-research-skills@academic-research-skills": true
   }
 }
