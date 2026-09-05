@@ -5,8 +5,8 @@ Chapter~7 (`sec:qpsk-unknown-channel`), Appendix F, and Future Work item 4.
 Append one dated entry per session. Newest last, so the file reads as a
 chronology.
 
-**Status: Phase 1 complete, Phase 2 blocked on network egress, experiment not
-started.**
+**Status: Phase 1 complete. Phase 2 complete via CI. Phase 3 synthesis below.
+Experiment not started.**
 
 **Question.** On the 3-tap unknown-ISI relay channel, does the genie-CSI
 classical benchmark's margin over the learned relay change when the benchmark
@@ -162,3 +162,76 @@ about what to expect from a reviewer, not a claim about the world.
 - [ ] If proceeding: implement the fading-aware BCJR, run the fading-removed control **first**
 - [ ] State the minimum detectable difference before running the comparison
 - [ ] Register the new experiment in `provenance_audit.py` REGISTRY
+
+---
+
+## 2026-09-05 — Phase 2 re-run on CI: complete
+
+The block above was filled by `.github/workflows/verify-citations.yml` on an
+ubuntu runner. **5 of 5 candidates VERIFIED** — exact title matches against the
+arXiv record, real authors, plausible dates. No MISMATCH, no FAIL. The
+egress block was an environment limit, not a sign the sources were bad.
+
+**Caveat on what that proves.** A run in which everything passes says nothing
+about the checker's ability to catch a bad reference. Two further candidates
+carrying 2026 identifiers, which the first pass deliberately withheld, have
+been added for the next run: search-summarised recent IDs are the likeliest
+place for a fabrication to hide, so they are the real test of the MISMATCH and
+FAIL paths.
+
+## 2026-09-05 — Phase 3: synthesis
+
+### The framing question is settled, and in the thesis's favour
+
+Rozenfeld, Raphaeli et al. (arXiv:2411.01517) open with: *"The BCJR algorithm
+is renowned for its optimal equalization, minimizing bit error rate (BER) over
+intersymbol interference (ISI) channels."* That is a verified, published
+statement of exactly the position Appendix F argues from. The thesis's
+distinction between sequence-optimal MLSE and bit-optimal MAP is standard, not
+idiosyncratic, and Future Work item 4 is asking for the benchmark this
+literature treats as **the** reference point.
+
+### A whole thread the thesis does not cite
+
+There is an active BCJRNet line — neural networks computing the branch
+likelihoods inside a BCJR recursion — spanning at least 2020 to 2024
+(2006.01125, 2405.10814, 2401.12645). Chen, Karanov et al. (2401.12645) report
+that *BCJRNet significantly outperforms conventional BCJR under imperfect
+channel knowledge*. That is the thesis's own thesis: learned components win
+under model mismatch, not against a correctly matched receiver. It is
+corroborating evidence for H5's honest reading, and none of it appears in
+Chapter 2.
+
+### One finding that cuts against the thesis
+
+The same paper (2411.01517) notes that NN equalizers *"often entail a high
+number of learnable parameters, resulting in complexities comparable to or even
+larger than the BCJR"*. Chapter 7 argues the learned relay's advantage is
+constant cost as the channel scales. That argument is not safe in general —
+this is published evidence against it as a blanket claim. It survives for
+*this* relay specifically, at 170 to 193 parameters, which sits at the
+favourable extreme of that distribution. The claim should be scoped to the
+parameter regime rather than asserted of learned equalizers as a class.
+
+### Gap analysis: the thesis's niche is unoccupied
+
+All five verified papers are **point-to-point** detection or equalization. None
+is a two-hop relay study, and none places the learned component at a relay node
+that must forward rather than decide. The thesis's actual contribution is not
+crowded. What is standard in the literature is the *benchmark*, not the setting.
+
+### Consequence for the experiment
+
+Unchanged in design, raised in priority. An examiner who knows this literature
+will expect a MAP-family comparator, because that is what every one of these
+papers uses.
+
+### Next actions
+
+- [x] Verify the candidate sources (CI, 5/5)
+- [ ] Confirm the two 2026-dated candidates, or record them as FAIL
+- [ ] Consider citing the BCJRNet thread in Chapter 2 — it corroborates H5's mismatch reading
+- [ ] Scope the constant-cost claim in Chapter 7 to the parameter regime, per 2411.01517
+- [ ] Implement the fading-aware BCJR; run the fading-removed control **first**
+- [ ] State the minimum detectable difference before running the comparison
+- [ ] Register the experiment in `provenance_audit.py` REGISTRY
