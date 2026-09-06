@@ -1,5 +1,5 @@
 {
-  "_comment": "Every entry in thesis/chapters/references.bib, for Stage 4.5 Mode 2. Entries with an arXiv eprint or DOI resolve against that identifier; the rest go through a Crossref title search, which confirms a record exists but not the entry's other fields. Nine entries carry author attestation: the author supplied a link to the paper where no machine-resolvable record was found. One of those (Samuel et al.) is upgraded to a DOI already resolved in the PR #68 corpus, so it is machine-verified rather than attested. Two conference papers (Gulrajani et al., Gu et al.) carry a proposed arXiv preprint id rather than an attestation, so the run checks them against a record instead of taking them on trust.",
+  "_comment": "Every entry in thesis/chapters/references.bib, for Stage 4.5 Mode 2. Entries with an arXiv eprint or DOI resolve against that identifier; the rest go through a Crossref title search, which confirms a record exists but not the entry's other fields. Nine entries carry author attestation: the author supplied a link to the paper where no machine-resolvable record was found. One of those (Samuel et al.) is upgraded to a DOI already resolved in the PR #68 corpus, so it is machine-verified rather than attested. Two conference papers (Gulrajani et al., Gu et al.) carry a proposed arXiv preprint id rather than an attestation, so the run checks them against a record instead of taking them on trust. One entry (Higgins et al.) is ACCEPTED: OpenReview-only, so there is no record to resolve and no link that is not the paper itself.",
   "topic": "thesis bibliography -- full publisher-record verification",
   "candidates": [
     {
@@ -141,7 +141,7 @@
     {
       "bibkey": "Higgins2017betaVAE",
       "reported_title": "$\\beta$-VAE: Learning basic visual concepts with a constrained variational framework",
-      "_unresolved": "ICLR 2017, OpenReview only: no DOI, and no arXiv preprint of this paper. Left unresolved rather than pinned to the later 'Understanding disentangling in beta-VAE' (arXiv:1804.03599), which is a different paper."
+      "accepted_by_author": "ICLR 2017, OpenReview only -- no Crossref DOI and no arXiv preprint of this paper. Accepted by the author as correct rather than pinned to the later 'Understanding disentangling in beta-VAE' (arXiv:1804.03599), which is a different paper."
     },
     {
       "bibkey": "He2015DelvingRectifiers",

@@ -259,3 +259,28 @@ def test_the_bibkey_survives_into_the_record(monkeypatch):
     _stub(monkeypatch, _record(REAL))
     assert vc.verify({"bibkey": "K2024", "arxiv_id": "x",
                       "reported_title": REAL})["bibkey"] == "K2024"
+
+
+def test_author_acceptance_is_weaker_than_attestation():
+    """No record and no link is not the same evidence as a supplied link, and
+    must not be counted as though it were."""
+    r = vc.verify({"bibkey": "H2017", "reported_title": "beta-VAE",
+                   "accepted_by_author": "OpenReview only"})
+    assert r["verdict"] == "ACCEPTED" and r["url"] is None
+    assert "weaker than attestation" in r["reason"]
+
+
+def test_acceptance_does_not_short_circuit_a_resolvable_identifier(monkeypatch):
+    """The same precedence bug attestation had: a note must never stop a
+    lookup that could have resolved."""
+    _stub(monkeypatch, _record(REAL))
+    r = vc.verify({"arxiv_id": "x", "reported_title": REAL,
+                   "accepted_by_author": "author says so"})
+    assert r["verdict"] == "VERIFIED" and r["route"] == "arxiv"
+
+
+def test_a_supplied_link_beats_a_bare_acceptance():
+    """A candidate carrying both is attested, not merely accepted."""
+    r = vc.verify({"reported_title": "T", "attested_url": "https://example.org/p",
+                   "accepted_by_author": "author says so"})
+    assert r["verdict"] == "ATTESTED"

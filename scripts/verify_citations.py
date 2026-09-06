@@ -15,6 +15,14 @@ cannot be confirmed is a FAIL, not an "uncertain". Three verdicts:
               the paper. Recorded as author attestation, kept distinct from
               VERIFIED: it is evidence a human checked, not a publisher-record
               match, and it says nothing about the entry's year, venue or pages.
+  ACCEPTED    weaker still: no record, no link -- the author accepted the entry
+              as correct from their own knowledge of it. The one entry in this
+              bibliography that earns it is OpenReview-only, so there is nothing
+              to resolve and nothing to link that is not already the paper. It
+              is labelled rather than quietly promoted, because the difference
+              between "a human confirmed this against a record" and "a human
+              says this is right" is the whole point of keeping the buckets
+              apart.
   VERIFIED    the record exists and its title matches what was reported
   EQUIVALENT  the record exists and its title matches once the things a
               publisher adds but a bibliography does not are removed: a
@@ -176,12 +184,21 @@ def verify(cand):
     reported = cand["reported_title"]
     # a resolvable identifier always wins: attestation is the fallback for
     # entries no index can confirm, never a shortcut past one that can
-    if cand.get("attested_url") and not (cand.get("arxiv_id") or cand.get("doi")):
+    pinned = cand.get("arxiv_id") or cand.get("doi")
+    if cand.get("attested_url") and not pinned:
         return {"bibkey": cand.get("bibkey"), "reported_title": reported,
                 "route": "author-attestation", "verdict": "ATTESTED",
                 "url": cand["attested_url"],
                 "reason": "author supplied a link to the paper; not a "
                           "publisher-record match"}
+    if cand.get("accepted_by_author") and not pinned:
+        return {"bibkey": cand.get("bibkey"), "reported_title": reported,
+                "route": "author-acceptance", "verdict": "ACCEPTED",
+                "url": None,
+                "reason": "author accepted the entry as correct; no record "
+                          "resolved and no link supplied, so this is weaker "
+                          "than attestation: "
+                          + str(cand.get("accepted_by_author"))}
     row = {"bibkey": cand.get("bibkey"),
            "arxiv_id": cand.get("arxiv_id"), "doi": cand.get("doi"),
            "reported_title": reported, "route": None}
@@ -265,7 +282,8 @@ def render_into_log(path, out):
          f"_Checked {out['checked_at']}. Standard: {out['standard']}._",
          "",
          f"**{c['VERIFIED']} verified, {c.get('EQUIVALENT', 0)} equivalent, "
-         f"{c.get('ATTESTED', 0)} attested, {c['MISMATCH']} mismatched, "
+         f"{c.get('ATTESTED', 0)} attested, {c.get('ACCEPTED', 0)} accepted, "
+         f"{c['MISMATCH']} mismatched, "
          f"{c['FAIL']} failed.**",
          "",
          "| arXiv | Verdict | Title on the record | Published |",
@@ -279,7 +297,8 @@ def render_into_log(path, out):
         verdict = icon.get(r["verdict"], r["verdict"])
         L.append(f"| {ident} | {verdict} | {title} | {pub} |")
     bad = [r for r in out["results"]
-           if r["verdict"] not in ("VERIFIED", "EQUIVALENT", "ATTESTED")]
+           if r["verdict"] not in ("VERIFIED", "EQUIVALENT", "ATTESTED",
+                                   "ACCEPTED")]
     if bad:
         L += ["", "Not citable:"]
         for r in bad:
@@ -323,7 +342,8 @@ def main():
         time.sleep(3)                            # arXiv asks for >=3s between calls
 
     counts = {v: sum(1 for r in rows if r["verdict"] == v)
-              for v in ("VERIFIED", "EQUIVALENT", "ATTESTED", "MISMATCH", "FAIL")}
+              for v in ("VERIFIED", "EQUIVALENT", "ATTESTED", "ACCEPTED",
+                        "MISMATCH", "FAIL")}
     out = {"topic": src.get("topic"),
            "checked_at": datetime.now(timezone.utc).isoformat(),
            "standard": "deep-research IRON RULE #4 -- gray zone is a FAIL",
@@ -337,12 +357,12 @@ def main():
         print(f"  log block updated -> {a.log}")
 
     print(f"\n  {counts['VERIFIED']} verified, {counts['EQUIVALENT']} equivalent, "
-          f"{counts['ATTESTED']} attested, {counts['MISMATCH']} mismatched, "
-          f"{counts['FAIL']} failed -> {a.out}")
+          f"{counts['ATTESTED']} attested, {counts['ACCEPTED']} accepted, "
+          f"{counts['MISMATCH']} mismatched, {counts['FAIL']} failed -> {a.out}")
     # A citable source is the point; a run that resolves nothing has failed at
     # its job even though every lookup "worked".
     return 0 if (counts["VERIFIED"] or counts["EQUIVALENT"]
-                 or counts["ATTESTED"]) else 1
+                 or counts["ATTESTED"] or counts["ACCEPTED"]) else 1
 
 
 if __name__ == "__main__":
