@@ -78,7 +78,9 @@
     },
     {
       "bibkey": "TseViswanath2005Fundamentals",
-      "reported_title": "Fundamentals of Wireless Communications"
+      "reported_title": "Fundamentals of Wireless Communications",
+      "attested_url": "https://books.google.co.il/books/about/Fundamentals_of_Wireless_Communication.html?id=66XBb5tZX6EC",
+      "_attestation": "https://books.google.co.il/books/about/Fundamentals_of_Wireless_Communication.html?id=66XBb5tZX6EC"
     },
     {
       "bibkey": "Wolniansky1998VBLAST",
@@ -90,19 +92,27 @@
     },
     {
       "bibkey": "SimonAlouini2005FadingChannels",
-      "reported_title": "Digital Communication over Fading Channels"
+      "reported_title": "Digital Communication over Fading Channels",
+      "attested_url": "https://books.google.co.il/books/about/Digital_Communication_over_Fading_Channe.html?id=OYrDN0Q6BacC",
+      "_attestation": "https://books.google.co.il/books/about/Digital_Communication_over_Fading_Channe.html?id=OYrDN0Q6BacC"
     },
     {
       "bibkey": "GoodfellowBengioCourville2016DeepLearning",
-      "reported_title": "Deep Learning"
+      "reported_title": "Deep Learning",
+      "attested_url": "https://www.deeplearningbook.org/",
+      "_attestation": "https://www.deeplearningbook.org/"
     },
     {
       "bibkey": "Sklar2001DigitalCommFundamentals",
-      "reported_title": "Digital Communications: Fundamentals and Applications"
+      "reported_title": "Digital Communications: Fundamentals and Applications",
+      "attested_url": "https://www.mangoud.com/EENG373_files/Book-Sklar.pdf",
+      "_attestation": "https://www.mangoud.com/EENG373_files/Book-Sklar.pdf"
     },
     {
       "bibkey": "SuttonBarto2018RL",
-      "reported_title": "Reinforcement Learning: An Introduction"
+      "reported_title": "Reinforcement Learning: An Introduction",
+      "attested_url": "http://incompleteideas.net/book/RLbook2020.pdf",
+      "_attestation": "http://incompleteideas.net/book/RLbook2020.pdf"
     },
     {
       "bibkey": "Telatar1999MIMO",
@@ -226,7 +236,10 @@
     },
     {
       "bibkey": "LuckySalzWeldon1968",
-      "reported_title": "Principles of Data Communication"
+      "reported_title": "Principles of Data Communication",
+      "attested_url": "https://garfield.library.upenn.edu/classics1979/A1979HS09600001.pdf",
+      "_attestation": "https://garfield.library.upenn.edu/classics1979/A1979HS09600001.pdf",
+      "_attestation_note": "Garfield Citation Classics commentary on the book, not the book's own record; attests the work and its standing, not its bibliographic fields"
     },
     {
       "bibkey": "EyuboqluQureshi1988RSSE",
