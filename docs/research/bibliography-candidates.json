@@ -1,0 +1,271 @@
+{
+  "_comment": "Every entry in thesis/chapters/references.bib, for Stage 4.5 Mode 2. Entries with an arXiv eprint or DOI resolve against that identifier; the rest go through a Crossref title search, which confirms a record exists but not the entry's other fields.",
+  "topic": "thesis bibliography -- full publisher-record verification",
+  "candidates": [
+    {
+      "bibkey": "Laneman2004CooperativeDiversity",
+      "reported_title": "Cooperative diversity in wireless networks: Efficient protocols and outage behavior"
+    },
+    {
+      "bibkey": "Nosratinia2004CooperativeCommunication",
+      "reported_title": "Cooperative communication in wireless networks"
+    },
+    {
+      "bibkey": "CoverGamal1979RelayChannel",
+      "reported_title": "Capacity theorems for the relay channel"
+    },
+    {
+      "bibkey": "ElGamalKim2011NetworkIT",
+      "reported_title": "Network Information Theory"
+    },
+    {
+      "bibkey": "NazerGastpar2011ComputeForward",
+      "reported_title": "Compute-and-forward: Harnessing interference through structured codes"
+    },
+    {
+      "bibkey": "RankovWittneben2007HalfDuplexRelay",
+      "reported_title": "Spectral efficient protocols for half-duplex fading relay channels"
+    },
+    {
+      "bibkey": "YeLiJuang2018OFDMDL",
+      "reported_title": "Power of deep learning for channel estimation and signal detection in OFDM systems"
+    },
+    {
+      "bibkey": "SamuelDiskinWunder2019MIMODetect",
+      "reported_title": "Learning to detect"
+    },
+    {
+      "bibkey": "Dorner2018OverTheAirDL",
+      "reported_title": "Deep learning based communication over the air"
+    },
+    {
+      "bibkey": "Sun2018LearnToOptimize",
+      "reported_title": "Learning to optimize: Training deep neural networks for interference management"
+    },
+    {
+      "bibkey": "KingmaWelling2014VAE",
+      "reported_title": "Auto-encoding variational Bayes"
+    },
+    {
+      "bibkey": "MirzaOsindero2014cGAN",
+      "reported_title": "Conditional generative adversarial nets",
+      "arxiv_id": "1411.1784"
+    },
+    {
+      "bibkey": "Gulrajani2017WGANgp",
+      "reported_title": "Improved training of Wasserstein GANs"
+    },
+    {
+      "bibkey": "Goodfellow2014GAN",
+      "reported_title": "Generative adversarial nets"
+    },
+    {
+      "bibkey": "Vaswani2017Attention",
+      "reported_title": "Attention is all you need"
+    },
+    {
+      "bibkey": "GuGoelRe2022SSM",
+      "reported_title": "Efficiently modeling long sequences with structured state spaces"
+    },
+    {
+      "bibkey": "DaoGu2024TransformersSSM",
+      "reported_title": "Transformers are SSMs: Generalized models and efficient algorithms through structured state space duality",
+      "arxiv_id": "2405.21060"
+    },
+    {
+      "bibkey": "TseViswanath2005Fundamentals",
+      "reported_title": "Fundamentals of Wireless Communications"
+    },
+    {
+      "bibkey": "Wolniansky1998VBLAST",
+      "reported_title": "V-BLAST: An architecture for realizing very high data rates over the rich-scattering wireless channel"
+    },
+    {
+      "bibkey": "ProakisSalehi2008DigitalComm",
+      "reported_title": "Digital Communications"
+    },
+    {
+      "bibkey": "SimonAlouini2005FadingChannels",
+      "reported_title": "Digital Communication over Fading Channels"
+    },
+    {
+      "bibkey": "GoodfellowBengioCourville2016DeepLearning",
+      "reported_title": "Deep Learning"
+    },
+    {
+      "bibkey": "Sklar2001DigitalCommFundamentals",
+      "reported_title": "Digital Communications: Fundamentals and Applications"
+    },
+    {
+      "bibkey": "SuttonBarto2018RL",
+      "reported_title": "Reinforcement Learning: An Introduction"
+    },
+    {
+      "bibkey": "Telatar1999MIMO",
+      "reported_title": "Capacity of multi-antenna Gaussian channels"
+    },
+    {
+      "bibkey": "Foschini1996LayeredST",
+      "reported_title": "Layered space-time architecture for wireless communication in a fading environment when using multi-element antennas"
+    },
+    {
+      "bibkey": "ZhengTse2003DMT",
+      "reported_title": "Diversity and multiplexing: A fundamental tradeoff in multiple-antenna channels"
+    },
+    {
+      "bibkey": "TseHanly1999LinearMultiuser",
+      "reported_title": "Linear multiuser receivers: Effective interference, effective bandwidth and user capacity"
+    },
+    {
+      "bibkey": "LoykaGagnon2004VBLASTAnalysis",
+      "reported_title": "Performance analysis of the V-BLAST algorithm: An analytical approach"
+    },
+    {
+      "bibkey": "Higgins2017betaVAE",
+      "reported_title": "$\\beta$-VAE: Learning basic visual concepts with a constrained variational framework"
+    },
+    {
+      "bibkey": "He2015DelvingRectifiers",
+      "reported_title": "Delving deep into rectifiers: Surpassing human-level performance on ImageNet classification"
+    },
+    {
+      "bibkey": "Akdemir2024DLRelaySelection",
+      "reported_title": "A Comparative Study of Deep Learning-Aided Relay Selection Protocols in Cooperative Communication"
+    },
+    {
+      "bibkey": "Gunduz2019MLAir",
+      "reported_title": "Machine Learning in the Air"
+    },
+    {
+      "bibkey": "Bergel2023RelaysAsNeurons",
+      "reported_title": "Network Optimization Using Relays as Neurons"
+    },
+    {
+      "bibkey": "BergelICASSP2024",
+      "reported_title": "Deep Optimization of Relay Networks Using Relays as Neurons"
+    },
+    {
+      "bibkey": "shleifer2021normformer",
+      "reported_title": "NormFormer: Improved Transformer Pretraining with Extra Normalization",
+      "arxiv_id": "2110.09456"
+    },
+    {
+      "bibkey": "gu2023mamba",
+      "reported_title": "Mamba: Linear-Time Sequence Modeling with Selective State Spaces",
+      "arxiv_id": "2312.00752"
+    },
+    {
+      "bibkey": "Clarke1968Mobile",
+      "reported_title": "A statistical theory of mobile-radio reception"
+    },
+    {
+      "bibkey": "Jakes1974Microwave",
+      "reported_title": "Microwave Mobile Communications"
+    },
+    {
+      "bibkey": "BahlCockeJelinekRaviv1974BCJR",
+      "reported_title": "Optimal decoding of linear codes for minimizing symbol error rate"
+    },
+    {
+      "bibkey": "Djuhera2026MambaCSP",
+      "reported_title": "MambaCSP: Hybrid-attention state space models for hardware-efficient channel state prediction",
+      "arxiv_id": "2604.21957"
+    },
+    {
+      "bibkey": "Harper2023AMCDeepNets",
+      "reported_title": "Automatic modulation classification with deep neural networks"
+    },
+    {
+      "bibkey": "Shlezinger2020ViterbiNet",
+      "reported_title": "ViterbiNet: A deep learning based Viterbi algorithm for symbol detection"
+    },
+    {
+      "bibkey": "Forney1972MLSE",
+      "reported_title": "Maximum-likelihood sequence estimation of digital sequences in the presence of intersymbol interference"
+    },
+    {
+      "bibkey": "DivsalarSimon1990MSDD",
+      "reported_title": "Multiple-symbol differential detection of MPSK"
+    },
+    {
+      "bibkey": "PolyanskiyPoorVerdu2010FiniteBlocklength",
+      "reported_title": "Channel coding rate in the finite blocklength regime"
+    },
+    {
+      "bibkey": "HanlyTse1998DelayLimited",
+      "reported_title": "Multiaccess fading channels---part II: Delay-limited capacities"
+    },
+    {
+      "bibkey": "Cybenko1989UAT",
+      "reported_title": "Approximation by superpositions of a sigmoidal function"
+    },
+    {
+      "bibkey": "Hornik1991UAT",
+      "reported_title": "Approximation capabilities of multilayer feedforward networks"
+    },
+    {
+      "bibkey": "FarsadGoldsmith2018NNDetection",
+      "reported_title": "Neural Network Detection of Data Sequences in Communication Systems"
+    },
+    {
+      "bibkey": "Honkala2021DeepRx",
+      "reported_title": "DeepRx: Fully Convolutional Deep Learning Receiver"
+    },
+    {
+      "bibkey": "OSheaHoydis2017PhysicalLayer",
+      "reported_title": "An Introduction to Deep Learning for the Physical Layer"
+    },
+    {
+      "bibkey": "LuckySalzWeldon1968",
+      "reported_title": "Principles of Data Communication"
+    },
+    {
+      "bibkey": "EyuboqluQureshi1988RSSE",
+      "reported_title": "Reduced-State Sequence Estimation with Set Partitioning and Decision Feedback"
+    },
+    {
+      "bibkey": "Godard1980SelfRecovering",
+      "reported_title": "Self-Recovering Equalization and Carrier Tracking in Two-Dimensional Data Communication Systems"
+    },
+    {
+      "bibkey": "TreichlerAgee1983CMA",
+      "reported_title": "A New Approach to Multipath Correction of Constant Modulus Signals"
+    },
+    {
+      "bibkey": "Ding1991IllConvergence",
+      "reported_title": "Ill-Convergence of Godard Blind Equalizers in Data Communication Systems"
+    },
+    {
+      "bibkey": "RaheliPolydorosTzou1995PSP",
+      "reported_title": "Per-Survivor Processing: A General Approach to MLSE in Uncertain Environments"
+    },
+    {
+      "bibkey": "Kay1993Estimation",
+      "reported_title": "Fundamentals of Statistical Signal Processing: Estimation Theory"
+    },
+    {
+      "bibkey": "ParkSimeone2021MetaDemod",
+      "reported_title": "Learning to Demodulate from Few Pilots via Offline and Online Meta-Learning"
+    },
+    {
+      "bibkey": "TsaiTeng2020BCJRNet",
+      "reported_title": "Neural Network-Aided BCJR Algorithm for Joint Symbol Detection and Channel Decoding",
+      "arxiv_id": "2006.01125"
+    },
+    {
+      "bibkey": "Karanov2024BurstyISI",
+      "reported_title": "Data-Driven Symbol Detection for Intersymbol Interference Channels with Bursty Impulsive Noise",
+      "arxiv_id": "2405.10814"
+    },
+    {
+      "bibkey": "Chen2024BCJRNetRobustness",
+      "reported_title": "On the Robustness of Deep Learning-aided Symbol Detectors to Varying Conditions and Imperfect Channel Knowledge",
+      "arxiv_id": "2401.12645"
+    },
+    {
+      "bibkey": "Rozenfeld2024NNEqualizer",
+      "reported_title": "Enhancing LMMSE Performance with Modest Complexity Increase via Neural Network Equalizers",
+      "arxiv_id": "2411.01517"
+    }
+  ]
+}
