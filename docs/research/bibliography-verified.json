@@ -1,15 +1,17 @@
 {
   "topic": "thesis bibliography -- full publisher-record verification",
-  "checked_at": "2026-09-06T05:56:33.031217+00:00",
+  "checked_at": "2026-09-06T06:08:45.741724+00:00",
   "standard": "deep-research IRON RULE #4 -- gray zone is a FAIL",
   "counts": {
-    "VERIFIED": 48,
+    "VERIFIED": 52,
+    "EQUIVALENT": 2,
     "ATTESTED": 9,
-    "MISMATCH": 1,
-    "FAIL": 6
+    "MISMATCH": 0,
+    "FAIL": 1
   },
   "results": [
     {
+      "bibkey": "Laneman2004CooperativeDiversity",
       "arxiv_id": null,
       "doi": null,
       "reported_title": "Cooperative diversity in wireless networks: Efficient protocols and outage behavior",
@@ -25,7 +27,7 @@
       "abstract": "",
       "url": "https://doi.org/10.1109/tit.2004.838089",
       "verdict": "VERIFIED",
-      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+      "reason": "title matches the record; found by title search, so this confirms existence, not the reference's other fields"
     },
     {
       "bibkey": "Nosratinia2004CooperativeCommunication",
@@ -36,6 +38,7 @@
       "reason": "author supplied a link to the paper; not a publisher-record match"
     },
     {
+      "bibkey": "CoverGamal1979RelayChannel",
       "arxiv_id": null,
       "doi": null,
       "reported_title": "Capacity theorems for the relay channel",
@@ -50,9 +53,10 @@
       "abstract": "",
       "url": "https://doi.org/10.1109/tit.1979.1056084",
       "verdict": "VERIFIED",
-      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+      "reason": "title matches the record; found by title search, so this confirms existence, not the reference's other fields"
     },
     {
+      "bibkey": "ElGamalKim2011NetworkIT",
       "arxiv_id": null,
       "doi": null,
       "reported_title": "Network Information Theory",
@@ -64,9 +68,10 @@
       "abstract": "",
       "url": "https://doi.org/10.1002/0471200611.ch14",
       "verdict": "VERIFIED",
-      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+      "reason": "title matches the record; found by title search, so this confirms existence, not the reference's other fields"
     },
     {
+      "bibkey": "NazerGastpar2011ComputeForward",
       "arxiv_id": null,
       "doi": null,
       "reported_title": "Compute-and-forward: Harnessing interference through structured codes",
@@ -81,9 +86,10 @@
       "abstract": "",
       "url": "https://doi.org/10.1109/tit.2011.2165816",
       "verdict": "VERIFIED",
-      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+      "reason": "title matches the record; found by title search, so this confirms existence, not the reference's other fields"
     },
     {
+      "bibkey": "RankovWittneben2007HalfDuplexRelay",
       "arxiv_id": null,
       "doi": null,
       "reported_title": "Spectral efficient protocols for half-duplex fading relay channels",
@@ -98,9 +104,10 @@
       "abstract": "",
       "url": "https://doi.org/10.1109/jsac.2007.070213",
       "verdict": "VERIFIED",
-      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+      "reason": "title matches the record; found by title search, so this confirms existence, not the reference's other fields"
     },
     {
+      "bibkey": "YeLiJuang2018OFDMDL",
       "arxiv_id": null,
       "doi": null,
       "reported_title": "Power of deep learning for channel estimation and signal detection in OFDM systems",
@@ -116,9 +123,10 @@
       "abstract": "",
       "url": "https://doi.org/10.1109/lwc.2017.2757490",
       "verdict": "VERIFIED",
-      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+      "reason": "title matches the record; found by title search, so this confirms existence, not the reference's other fields"
     },
     {
+      "bibkey": "SamuelDiskinWunder2019MIMODetect",
       "arxiv_id": null,
       "doi": "10.1109/TSP.2019.2899805",
       "reported_title": "Learning to detect",
@@ -137,6 +145,7 @@
       "reason": "title matches the record"
     },
     {
+      "bibkey": "Dorner2018OverTheAirDL",
       "arxiv_id": null,
       "doi": null,
       "reported_title": "Deep learning based communication over the air",
@@ -153,9 +162,10 @@
       "abstract": "",
       "url": "https://doi.org/10.1109/jstsp.2017.2784180",
       "verdict": "VERIFIED",
-      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+      "reason": "title matches the record; found by title search, so this confirms existence, not the reference's other fields"
     },
     {
+      "bibkey": "Sun2018LearnToOptimize",
       "arxiv_id": null,
       "doi": null,
       "reported_title": "Learning to optimize: Training deep neural networks for interference management",
@@ -174,9 +184,10 @@
       "abstract": "",
       "url": "https://doi.org/10.1109/tsp.2018.2866382",
       "verdict": "VERIFIED",
-      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+      "reason": "title matches the record; found by title search, so this confirms existence, not the reference's other fields"
     },
     {
+      "bibkey": "KingmaWelling2014VAE",
       "arxiv_id": null,
       "doi": null,
       "reported_title": "Auto-encoding variational Bayes",
@@ -195,9 +206,10 @@
       "abstract": "",
       "url": "https://doi.org/10.61603/ceas.v2i1.33",
       "verdict": "VERIFIED",
-      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+      "reason": "title matches the record; found by title search, so this confirms existence, not the reference's other fields"
     },
     {
+      "bibkey": "MirzaOsindero2014cGAN",
       "arxiv_id": "1411.1784",
       "doi": null,
       "reported_title": "Conditional generative adversarial nets",
@@ -215,14 +227,28 @@
       "reason": "title matches the record"
     },
     {
-      "arxiv_id": null,
+      "bibkey": "Gulrajani2017WGANgp",
+      "arxiv_id": "1704.00028",
       "doi": null,
       "reported_title": "Improved training of Wasserstein GANs",
-      "route": "crossref-title",
-      "verdict": "FAIL",
-      "reason": "no record with this title in the top 10 Crossref results (nearest: 'Self‐supervised non‐rigid structure from motion with improved training of Wasserstein GANs'); supply a DOI to pin it"
+      "route": "arxiv",
+      "actual_title": "Improved Training of Wasserstein GANs",
+      "authors": [
+        "Ishaan Gulrajani",
+        "Faruk Ahmed",
+        "Martin Arjovsky",
+        "Vincent Dumoulin",
+        "Aaron Courville"
+      ],
+      "published": "2017-03-31T19:25:00Z",
+      "updated": "2017-12-25T23:03:49Z",
+      "abstract": "Generative Adversarial Networks (GANs) are powerful generative models, but suffer from training instability. The recently proposed Wasserstein GAN (WGAN) makes progress toward stable training of GANs, but sometimes can still generate only low-quality samples or fail to converge. We find that these problems are often due to the use of weight clipping in WGAN to enforce a Lipschitz constraint on the critic, which can lead to undesired behavior. We propose an alternative to clipping weights: penalize the norm of gradient of the critic with respect to its input. Our proposed method performs better than standard WGAN and enables stable training of a wide variety of GAN architectures with almost no hyperparameter tuning, including 101-layer ResNets and language models over discrete data. We also achieve high quality generations on CIFAR-10 and LSUN bedrooms.",
+      "url": "http://arxiv.org/abs/1704.00028v3",
+      "verdict": "VERIFIED",
+      "reason": "title matches the record"
     },
     {
+      "bibkey": "Goodfellow2014GAN",
       "arxiv_id": null,
       "doi": null,
       "reported_title": "Generative adversarial nets",
@@ -236,9 +262,10 @@
       "abstract": "",
       "url": "https://doi.org/10.1007/978-3-658-40442-0_9",
       "verdict": "VERIFIED",
-      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+      "reason": "title matches the record; found by title search, so this confirms existence, not the reference's other fields"
     },
     {
+      "bibkey": "Vaswani2017Attention",
       "arxiv_id": null,
       "doi": null,
       "reported_title": "Attention is all you need",
@@ -259,17 +286,29 @@
       "abstract": "",
       "url": "https://doi.org/10.65215/ysbyhc05",
       "verdict": "VERIFIED",
-      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+      "reason": "title matches the record; found by title search, so this confirms existence, not the reference's other fields"
     },
     {
-      "arxiv_id": null,
+      "bibkey": "GuGoelRe2022SSM",
+      "arxiv_id": "2111.00396",
       "doi": null,
       "reported_title": "Efficiently modeling long sequences with structured state spaces",
-      "route": "crossref-title",
-      "verdict": "FAIL",
-      "reason": "no record with this title in the top 10 Crossref results (nearest: 'Chemical Language Modeling with Structured State Spaces'); supply a DOI to pin it"
+      "route": "arxiv",
+      "actual_title": "Efficiently Modeling Long Sequences with Structured State Spaces",
+      "authors": [
+        "Albert Gu",
+        "Karan Goel",
+        "Christopher Ré"
+      ],
+      "published": "2021-10-31T03:32:18Z",
+      "updated": "2022-08-05T17:54:38Z",
+      "abstract": "A central goal of sequence modeling is designing a single principled model that can address sequence data across a range of modalities and tasks, particularly on long-range dependencies. Although conventional models including RNNs, CNNs, and Transformers have specialized variants for capturing long dependencies, they still struggle to scale to very long sequences of $10000$ or more steps. A promising recent approach proposed modeling sequences by simulating the fundamental state space model (SSM) \\( x'(t) = Ax(t) + Bu(t), y(t) = Cx(t) + Du(t) \\), and showed that for appropriate choices of the state matrix \\( A \\), this system could handle long-range dependencies mathematically and empirically. However, this method has prohibitive computation and memory requirements, rendering it infeasible as a general sequence modeling solution. We propose the Structured State Space sequence model (S4) based on a new parameterization for the SSM, and show that it can be computed much more efficiently than prior approaches while preserving their theoretical strengths. Our technique involves conditioning \\( A \\) with a low-rank correction, allowing it to be diagonalized stably and reducing the SSM to the well-studied computation of a Cauchy kernel. S4 achieves strong empirical results across a diverse range of established benchmarks, including (i) 91\\% accuracy on sequential CIFAR-10 with no data augmentation or auxiliary losses, on par with a larger 2-D ResNet, (ii) substantially closing the gap to Transformers on image and language modeling tasks, while performing generation $60\\times$ faster (iii) SoTA on every task from the Long Range Arena benchmark, including solving the challenging Path-X task of length 16k that all prior work fails on, while being as efficient as all competitors.",
+      "url": "http://arxiv.org/abs/2111.00396v3",
+      "verdict": "VERIFIED",
+      "reason": "title matches the record"
     },
     {
+      "bibkey": "DaoGu2024TransformersSSM",
       "arxiv_id": "2405.21060",
       "doi": null,
       "reported_title": "Transformers are SSMs: Generalized models and efficient algorithms through structured state space duality",
@@ -295,6 +334,7 @@
       "reason": "author supplied a link to the paper; not a publisher-record match"
     },
     {
+      "bibkey": "Wolniansky1998VBLAST",
       "arxiv_id": null,
       "doi": null,
       "reported_title": "V-BLAST: An architecture for realizing very high data rates over the rich-scattering wireless channel",
@@ -311,9 +351,10 @@
       "abstract": "",
       "url": "https://doi.org/10.1109/issse.1998.738086",
       "verdict": "VERIFIED",
-      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+      "reason": "title matches the record; found by title search, so this confirms existence, not the reference's other fields"
     },
     {
+      "bibkey": "ProakisSalehi2008DigitalComm",
       "arxiv_id": null,
       "doi": null,
       "reported_title": "Digital Communications",
@@ -328,7 +369,7 @@
       "abstract": "",
       "url": "https://doi.org/10.1016/b978-1-78548-037-9.50001-6",
       "verdict": "VERIFIED",
-      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+      "reason": "title matches the record; found by title search, so this confirms existence, not the reference's other fields"
     },
     {
       "bibkey": "SimonAlouini2005FadingChannels",
@@ -363,6 +404,7 @@
       "reason": "author supplied a link to the paper; not a publisher-record match"
     },
     {
+      "bibkey": "Telatar1999MIMO",
       "arxiv_id": null,
       "doi": null,
       "reported_title": "Capacity of multi-antenna Gaussian channels",
@@ -376,9 +418,10 @@
       "abstract": "",
       "url": "https://doi.org/10.1002/ett.4460100604",
       "verdict": "VERIFIED",
-      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+      "reason": "title matches the record; found by title search, so this confirms existence, not the reference's other fields"
     },
     {
+      "bibkey": "Foschini1996LayeredST",
       "arxiv_id": null,
       "doi": null,
       "reported_title": "Layered space-time architecture for wireless communication in a fading environment when using multi-element antennas",
@@ -392,9 +435,10 @@
       "abstract": "",
       "url": "https://doi.org/10.1002/bltj.2015",
       "verdict": "VERIFIED",
-      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+      "reason": "title matches the record; found by title search, so this confirms existence, not the reference's other fields"
     },
     {
+      "bibkey": "ZhengTse2003DMT",
       "arxiv_id": null,
       "doi": null,
       "reported_title": "Diversity and multiplexing: A fundamental tradeoff in multiple-antenna channels",
@@ -409,9 +453,10 @@
       "abstract": "",
       "url": "https://doi.org/10.1109/tit.2003.810646",
       "verdict": "VERIFIED",
-      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+      "reason": "title matches the record; found by title search, so this confirms existence, not the reference's other fields"
     },
     {
+      "bibkey": "TseHanly1999LinearMultiuser",
       "arxiv_id": null,
       "doi": null,
       "reported_title": "Linear multiuser receivers: Effective interference, effective bandwidth and user capacity",
@@ -426,9 +471,10 @@
       "abstract": "",
       "url": "https://doi.org/10.1109/18.749008",
       "verdict": "VERIFIED",
-      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+      "reason": "title matches the record; found by title search, so this confirms existence, not the reference's other fields"
     },
     {
+      "bibkey": "LoykaGagnon2004VBLASTAnalysis",
       "arxiv_id": null,
       "doi": null,
       "reported_title": "Performance analysis of the V-BLAST algorithm: An analytical approach",
@@ -443,17 +489,21 @@
       "abstract": "",
       "url": "https://doi.org/10.1109/twc.2004.830853",
       "verdict": "VERIFIED",
-      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+      "reason": "title matches the record; found by title search, so this confirms existence, not the reference's other fields"
     },
     {
+      "bibkey": "Higgins2017betaVAE",
       "arxiv_id": null,
       "doi": null,
       "reported_title": "$\\beta$-VAE: Learning basic visual concepts with a constrained variational framework",
       "route": "crossref-title",
       "verdict": "FAIL",
-      "reason": "no record with this title in the top 10 Crossref results (nearest: 'A beta-variational autoencoder (beta-VAE) to retrieve relevant degrees of freedom in a physical system'); supply a DOI to pin it"
+      "nearest_title": "A beta-variational autoencoder (beta-VAE) to retrieve relevant degrees of freedom in a physical system",
+      "nearest_url": "https://doi.org/10.1117/12.2632749",
+      "reason": "no record with this title in the top 10 Crossref results (nearest: 'A beta-variational autoencoder (beta-VAE) to retrieve relevant degrees of freedom in a physical system' at https://doi.org/10.1117/12.2632749); supply a DOI to pin it"
     },
     {
+      "bibkey": "He2015DelvingRectifiers",
       "arxiv_id": null,
       "doi": null,
       "reported_title": "Delving deep into rectifiers: Surpassing human-level performance on ImageNet classification",
@@ -470,7 +520,7 @@
       "abstract": "",
       "url": "https://doi.org/10.1109/iccv.2015.123",
       "verdict": "VERIFIED",
-      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+      "reason": "title matches the record; found by title search, so this confirms existence, not the reference's other fields"
     },
     {
       "bibkey": "Akdemir2024DLRelaySelection",
@@ -489,6 +539,7 @@
       "reason": "author supplied a link to the paper; not a publisher-record match"
     },
     {
+      "bibkey": "Bergel2023RelaysAsNeurons",
       "arxiv_id": "2306.14253",
       "doi": null,
       "reported_title": "Network Optimization Using Relays as Neurons",
@@ -501,18 +552,28 @@
       "updated": "2023-06-25T14:12:05Z",
       "abstract": "We consider the optimization of a network with amplify-and-forward relays. Observing that each relay has a power limit, and hence a non-linear transfer function, we focus on the similarity between relay networks and neural networks. This similarity allows us to treat relays as neurons, and use deep learning tools to achieve better optimization of the network. Deep learning optimization allows relays to work in their non-linear regime (and hence increase their transmission power) while still avoiding harmful distortion. Moreover, like neural networks, which can implement almost any functionality, we can take advantage of the non-linearities and implement parts of the received functionalities over the relay network. By treating each relay element as a node in a deep neural network, our optimization results in huge gains over traditional relay optimization, and also allows the use of simpler receivers.",
       "url": "http://arxiv.org/abs/2306.14253v1",
-      "verdict": "MISMATCH",
-      "reason": "record exists but the title differs from what was reported; treat as FAIL pending manual check"
+      "verdict": "VERIFIED",
+      "reason": "title matches the record"
     },
     {
+      "bibkey": "BergelICASSP2024",
       "arxiv_id": null,
       "doi": null,
       "reported_title": "Deep Optimization of Relay Networks Using Relays as Neurons",
       "route": "crossref-title",
-      "verdict": "FAIL",
-      "reason": "no record with this title in the top 10 Crossref results (nearest: 'Deep Optimization of Relay Networks-Using Relays as Neurons'); supply a DOI to pin it"
+      "actual_title": "Deep Optimization of Relay Networks-Using Relays as Neurons",
+      "authors": [
+        "Itsik Bergel"
+      ],
+      "published": "2024",
+      "updated": null,
+      "abstract": "",
+      "url": "https://doi.org/10.1109/icassp48485.2024.10447401",
+      "verdict": "VERIFIED",
+      "reason": "title matches the record; found by title search, so this confirms existence, not the reference's other fields"
     },
     {
+      "bibkey": "shleifer2021normformer",
       "arxiv_id": "2110.09456",
       "doi": null,
       "reported_title": "NormFormer: Improved Transformer Pretraining with Extra Normalization",
@@ -531,6 +592,7 @@
       "reason": "title matches the record"
     },
     {
+      "bibkey": "gu2023mamba",
       "arxiv_id": "2312.00752",
       "doi": null,
       "reported_title": "Mamba: Linear-Time Sequence Modeling with Selective State Spaces",
@@ -548,6 +610,7 @@
       "reason": "title matches the record"
     },
     {
+      "bibkey": "Clarke1968Mobile",
       "arxiv_id": null,
       "doi": null,
       "reported_title": "A statistical theory of mobile-radio reception",
@@ -561,9 +624,10 @@
       "abstract": "",
       "url": "https://doi.org/10.1002/j.1538-7305.1968.tb00069.x",
       "verdict": "VERIFIED",
-      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+      "reason": "title matches the record; found by title search, so this confirms existence, not the reference's other fields"
     },
     {
+      "bibkey": "Jakes1974Microwave",
       "arxiv_id": null,
       "doi": null,
       "reported_title": "Microwave Mobile Communications",
@@ -577,17 +641,31 @@
       "abstract": "",
       "url": "https://doi.org/10.1109/9780470545287",
       "verdict": "VERIFIED",
-      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+      "reason": "title matches the record; found by title search, so this confirms existence, not the reference's other fields"
     },
     {
+      "bibkey": "BahlCockeJelinekRaviv1974BCJR",
       "arxiv_id": null,
       "doi": null,
       "reported_title": "Optimal decoding of linear codes for minimizing symbol error rate",
       "route": "crossref-title",
-      "verdict": "FAIL",
-      "reason": "no record with this title in the top 10 Crossref results (nearest: 'Optimal decoding of linear codes for minimizing symbol error rate (Corresp.)'); supply a DOI to pin it"
+      "actual_title": "Optimal decoding of linear codes for minimizing symbol error rate (Corresp.)",
+      "authors": [
+        "L. Bahl",
+        "J. Cocke",
+        "F. Jelinek",
+        "J. Raviv"
+      ],
+      "published": "1974",
+      "updated": null,
+      "abstract": "",
+      "url": "https://doi.org/10.1109/tit.1974.1055186",
+      "verdict": "EQUIVALENT",
+      "title_normalisation": "a trailing parenthetical annotation",
+      "reason": "title matches the record once a trailing parenthetical annotation is removed; found by title search, so this confirms existence, not the reference's other fields"
     },
     {
+      "bibkey": "Djuhera2026MambaCSP",
       "arxiv_id": "2604.21957",
       "doi": null,
       "reported_title": "MambaCSP: Hybrid-attention state space models for hardware-efficient channel state prediction",
@@ -606,6 +684,7 @@
       "reason": "title matches the record"
     },
     {
+      "bibkey": "Harper2023AMCDeepNets",
       "arxiv_id": null,
       "doi": null,
       "reported_title": "Automatic modulation classification with deep neural networks",
@@ -621,9 +700,10 @@
       "abstract": "",
       "url": "https://doi.org/10.3390/electronics12183962",
       "verdict": "VERIFIED",
-      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+      "reason": "title matches the record; found by title search, so this confirms existence, not the reference's other fields"
     },
     {
+      "bibkey": "Shlezinger2020ViterbiNet",
       "arxiv_id": null,
       "doi": null,
       "reported_title": "ViterbiNet: A deep learning based Viterbi algorithm for symbol detection",
@@ -640,9 +720,10 @@
       "abstract": "",
       "url": "https://doi.org/10.1109/twc.2020.2972352",
       "verdict": "VERIFIED",
-      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+      "reason": "title matches the record; found by title search, so this confirms existence, not the reference's other fields"
     },
     {
+      "bibkey": "Forney1972MLSE",
       "arxiv_id": null,
       "doi": null,
       "reported_title": "Maximum-likelihood sequence estimation of digital sequences in the presence of intersymbol interference",
@@ -656,9 +737,10 @@
       "abstract": "",
       "url": "https://doi.org/10.1109/tit.1972.1054829",
       "verdict": "VERIFIED",
-      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+      "reason": "title matches the record; found by title search, so this confirms existence, not the reference's other fields"
     },
     {
+      "bibkey": "DivsalarSimon1990MSDD",
       "arxiv_id": null,
       "doi": null,
       "reported_title": "Multiple-symbol differential detection of MPSK",
@@ -670,9 +752,10 @@
       "abstract": "",
       "url": "https://doi.org/10.1109/9780470546543.ch9",
       "verdict": "VERIFIED",
-      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+      "reason": "title matches the record; found by title search, so this confirms existence, not the reference's other fields"
     },
     {
+      "bibkey": "PolyanskiyPoorVerdu2010FiniteBlocklength",
       "arxiv_id": null,
       "doi": null,
       "reported_title": "Channel coding rate in the finite blocklength regime",
@@ -688,17 +771,29 @@
       "abstract": "",
       "url": "https://doi.org/10.1109/tit.2010.2043769",
       "verdict": "VERIFIED",
-      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+      "reason": "title matches the record; found by title search, so this confirms existence, not the reference's other fields"
     },
     {
+      "bibkey": "HanlyTse1998DelayLimited",
       "arxiv_id": null,
       "doi": null,
       "reported_title": "Multiaccess fading channels---part II: Delay-limited capacities",
       "route": "crossref-title",
-      "verdict": "FAIL",
-      "reason": "no record with this title in the top 10 Crossref results (nearest: 'Multiaccess fading channels. II. Delay-limited capacities'); supply a DOI to pin it"
+      "actual_title": "Multiaccess fading channels. II. Delay-limited capacities",
+      "authors": [
+        "S.V. Hanly",
+        "D.N.C. Tse"
+      ],
+      "published": "1998",
+      "updated": null,
+      "abstract": "",
+      "url": "https://doi.org/10.1109/18.737514",
+      "verdict": "EQUIVALENT",
+      "title_normalisation": "a spelled-out part label",
+      "reason": "title matches the record once a spelled-out part label is removed; found by title search, so this confirms existence, not the reference's other fields"
     },
     {
+      "bibkey": "Cybenko1989UAT",
       "arxiv_id": null,
       "doi": null,
       "reported_title": "Approximation by superpositions of a sigmoidal function",
@@ -713,9 +808,10 @@
       "abstract": "",
       "url": "https://doi.org/10.4171/zaa/1156",
       "verdict": "VERIFIED",
-      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+      "reason": "title matches the record; found by title search, so this confirms existence, not the reference's other fields"
     },
     {
+      "bibkey": "Hornik1991UAT",
       "arxiv_id": null,
       "doi": null,
       "reported_title": "Approximation capabilities of multilayer feedforward networks",
@@ -729,9 +825,10 @@
       "abstract": "",
       "url": "https://doi.org/10.1016/0893-6080(91)90009-t",
       "verdict": "VERIFIED",
-      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+      "reason": "title matches the record; found by title search, so this confirms existence, not the reference's other fields"
     },
     {
+      "bibkey": "FarsadGoldsmith2018NNDetection",
       "arxiv_id": null,
       "doi": null,
       "reported_title": "Neural Network Detection of Data Sequences in Communication Systems",
@@ -746,9 +843,10 @@
       "abstract": "",
       "url": "https://doi.org/10.1109/tsp.2018.2868322",
       "verdict": "VERIFIED",
-      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+      "reason": "title matches the record; found by title search, so this confirms existence, not the reference's other fields"
     },
     {
+      "bibkey": "Honkala2021DeepRx",
       "arxiv_id": null,
       "doi": null,
       "reported_title": "DeepRx: Fully Convolutional Deep Learning Receiver",
@@ -764,9 +862,10 @@
       "abstract": "",
       "url": "https://doi.org/10.1109/twc.2021.3054520",
       "verdict": "VERIFIED",
-      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+      "reason": "title matches the record; found by title search, so this confirms existence, not the reference's other fields"
     },
     {
+      "bibkey": "OSheaHoydis2017PhysicalLayer",
       "arxiv_id": null,
       "doi": null,
       "reported_title": "An Introduction to Deep Learning for the Physical Layer",
@@ -781,7 +880,7 @@
       "abstract": "",
       "url": "https://doi.org/10.1109/tccn.2017.2758370",
       "verdict": "VERIFIED",
-      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+      "reason": "title matches the record; found by title search, so this confirms existence, not the reference's other fields"
     },
     {
       "bibkey": "LuckySalzWeldon1968",
@@ -792,6 +891,7 @@
       "reason": "author supplied a link to the paper; not a publisher-record match"
     },
     {
+      "bibkey": "EyuboqluQureshi1988RSSE",
       "arxiv_id": null,
       "doi": null,
       "reported_title": "Reduced-State Sequence Estimation with Set Partitioning and Decision Feedback",
@@ -806,9 +906,10 @@
       "abstract": "",
       "url": "https://doi.org/10.1109/26.2724",
       "verdict": "VERIFIED",
-      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+      "reason": "title matches the record; found by title search, so this confirms existence, not the reference's other fields"
     },
     {
+      "bibkey": "Godard1980SelfRecovering",
       "arxiv_id": null,
       "doi": null,
       "reported_title": "Self-Recovering Equalization and Carrier Tracking in Two-Dimensional Data Communication Systems",
@@ -822,9 +923,10 @@
       "abstract": "",
       "url": "https://doi.org/10.1109/tcom.1980.1094608",
       "verdict": "VERIFIED",
-      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+      "reason": "title matches the record; found by title search, so this confirms existence, not the reference's other fields"
     },
     {
+      "bibkey": "TreichlerAgee1983CMA",
       "arxiv_id": null,
       "doi": null,
       "reported_title": "A New Approach to Multipath Correction of Constant Modulus Signals",
@@ -839,9 +941,10 @@
       "abstract": "",
       "url": "https://doi.org/10.1109/tassp.1983.1164062",
       "verdict": "VERIFIED",
-      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+      "reason": "title matches the record; found by title search, so this confirms existence, not the reference's other fields"
     },
     {
+      "bibkey": "Ding1991IllConvergence",
       "arxiv_id": null,
       "doi": null,
       "reported_title": "Ill-Convergence of Godard Blind Equalizers in Data Communication Systems",
@@ -858,9 +961,10 @@
       "abstract": "",
       "url": "https://doi.org/10.1109/26.99137",
       "verdict": "VERIFIED",
-      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+      "reason": "title matches the record; found by title search, so this confirms existence, not the reference's other fields"
     },
     {
+      "bibkey": "RaheliPolydorosTzou1995PSP",
       "arxiv_id": null,
       "doi": null,
       "reported_title": "Per-Survivor Processing: A General Approach to MLSE in Uncertain Environments",
@@ -876,9 +980,10 @@
       "abstract": "",
       "url": "https://doi.org/10.1109/26.380054",
       "verdict": "VERIFIED",
-      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+      "reason": "title matches the record; found by title search, so this confirms existence, not the reference's other fields"
     },
     {
+      "bibkey": "Kay1993Estimation",
       "arxiv_id": null,
       "doi": null,
       "reported_title": "Fundamentals of Statistical Signal Processing: Estimation Theory",
@@ -892,9 +997,10 @@
       "abstract": "",
       "url": "https://doi.org/10.1080/00401706.1995.10484391",
       "verdict": "VERIFIED",
-      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+      "reason": "title matches the record; found by title search, so this confirms existence, not the reference's other fields"
     },
     {
+      "bibkey": "ParkSimeone2021MetaDemod",
       "arxiv_id": null,
       "doi": null,
       "reported_title": "Learning to Demodulate from Few Pilots via Offline and Online Meta-Learning",
@@ -911,9 +1017,10 @@
       "abstract": "",
       "url": "https://doi.org/10.1109/tsp.2020.3043879",
       "verdict": "VERIFIED",
-      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+      "reason": "title matches the record; found by title search, so this confirms existence, not the reference's other fields"
     },
     {
+      "bibkey": "TsaiTeng2020BCJRNet",
       "arxiv_id": "2006.01125",
       "doi": null,
       "reported_title": "Neural Network-Aided BCJR Algorithm for Joint Symbol Detection and Channel Decoding",
@@ -933,6 +1040,7 @@
       "reason": "title matches the record"
     },
     {
+      "bibkey": "Karanov2024BurstyISI",
       "arxiv_id": "2405.10814",
       "doi": null,
       "reported_title": "Data-Driven Symbol Detection for Intersymbol Interference Channels with Bursty Impulsive Noise",
@@ -953,6 +1061,7 @@
       "reason": "title matches the record"
     },
     {
+      "bibkey": "Chen2024BCJRNetRobustness",
       "arxiv_id": "2401.12645",
       "doi": null,
       "reported_title": "On the Robustness of Deep Learning-aided Symbol Detectors to Varying Conditions and Imperfect Channel Knowledge",
@@ -974,6 +1083,7 @@
       "reason": "title matches the record"
     },
     {
+      "bibkey": "Rozenfeld2024NNEqualizer",
       "arxiv_id": "2411.01517",
       "doi": null,
       "reported_title": "Enhancing LMMSE Performance with Modest Complexity Increase via Neural Network Equalizers",
