@@ -208,6 +208,7 @@ MIN_CELLS = {
     "tbl:mmse-baseline": 12, "tbl:seq-on-memory": 12,
     "arch:relay-param-counts": 7, "consistency:proof-copies": 7, "tbl:slicer-floor-inline": 24,
     "prose:qpsk-decomposition": 4, "prose:qpsk-controls": 3,
+    "prose:seed-spread-native": 6,
     "tbl:bcjr-benchmark": 12, "prose:soft-df-calibration": 2,
     "prose:mmse-monotonicity": 12,
     "tbl:joint-latency": 30, "tbl:joint-memory": 21,
@@ -1512,6 +1513,34 @@ def check_soft_df_calibration_prose(tex, rep):
     rep.finish_table(T, before)
 
 
+def check_seed_spread_native_prose(tex, rep):
+    """The six across-seed spreads quoted in Limitations item 8.
+
+    These entered the thesis as the answer to reviewer item M2, so they get the
+    same binding as every other published number.
+    """
+    T = "prose:seed-spread-native"; before = rep.checked
+    src_path = os.path.join(ROOT, "results", "seed_spread_native_architectures.json")
+    if not os.path.exists(src_path):
+        return rep.skip(T, "results/seed_spread_native_architectures.json not found")
+    src = json.load(open(src_path))["architectures"]
+    i = tex.find("The across-seed spread in SNR")
+    if i < 0:
+        return rep.skip(T, "spread sentence not found in tex")
+    sent = tex[i:i + 460]
+    names = {"Mamba-S6": "Mamba S6", "the Hybrid": "Hybrid", "Mamba-2": "Mamba2 (SSD)",
+             "the MLP": "MLP (169p)", "the Transformer": "Transformer", "the VAE": "VAE"}
+    found = re.findall(r"\$(\d+\.\d+)\$(?:~dB)? for ([A-Za-z0-9 -]+?)(?=,|\s+and|\.)", sent)
+    if len(found) != 6:
+        return rep.skip(T, f"expected 6 spreads in the sentence, found {len(found)}")
+    for val, label in found:
+        key = names.get(label.strip())
+        if key is None:
+            return rep.skip(T, f"unrecognised architecture label {label!r}")
+        rep.cell(T, f"spread/{key}", val, float(val), src[key]["spread_db"])
+    rep.finish_table(T, before)
+
+
 def check_mmse_monotonicity_prose(tex, rep):
     """The MMSE-vs-taps figures Chapter 6 uses to explain the non-monotonicity.
 
@@ -1809,6 +1838,7 @@ def main():
               check_relay_param_counts, check_proof_copies_agree,
               check_slicer_floor, check_qpsk_decomposition_prose,
               check_qpsk_controls_prose, check_bcjr_benchmark,
+              check_seed_spread_native_prose,
               check_soft_df_calibration_prose,
               check_mmse_monotonicity_prose,
               check_joint_latency, check_joint_memory]

@@ -36,7 +36,7 @@ REGISTRY = {
     "Cross-architecture seed spread (native)": (
         "seed_spread_native_architectures.py",
         ["results/seed_spread_native_architectures.json"],
-        ["reviewer item M2; not yet cited in the thesis"]),
+        ["Limitations item 8: six across-seed spreads; prose:seed-spread-native"]),
     "Soft block-DF variance calibration": (
         "coded_soft_df_calibration.py", ["results/coded_soft_df_calibration.json"],
         ["tbl:table39 footnote: variance-corrected 20 dB figures"]),
