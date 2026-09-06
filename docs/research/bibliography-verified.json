@@ -1,11 +1,12 @@
 {
   "topic": "thesis bibliography -- full publisher-record verification",
-  "checked_at": "2026-09-06T05:31:02.457128+00:00",
+  "checked_at": "2026-09-06T05:49:19.409131+00:00",
   "standard": "deep-research IRON RULE #4 -- gray zone is a FAIL",
   "counts": {
-    "VERIFIED": 47,
-    "MISMATCH": 0,
-    "FAIL": 17
+    "VERIFIED": 48,
+    "ATTESTED": 3,
+    "MISMATCH": 1,
+    "FAIL": 12
   },
   "results": [
     {
@@ -27,12 +28,12 @@
       "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
     },
     {
-      "arxiv_id": null,
-      "doi": null,
+      "bibkey": "Nosratinia2004CooperativeCommunication",
       "reported_title": "Cooperative communication in wireless networks",
-      "route": "crossref-title",
-      "verdict": "FAIL",
-      "reason": "no record with this title in the top 10 Crossref results (nearest: 'Selfishness-Aware Energy-Efficient Cooperative Networks'); supply a DOI to pin it"
+      "route": "author-attestation",
+      "verdict": "ATTESTED",
+      "url": "https://www.researchgate.net/publication/3199250_Cooperative_communication_in_wireless_networks",
+      "reason": "author supplied a link to the paper; not a publisher-record match"
     },
     {
       "arxiv_id": null,
@@ -119,11 +120,21 @@
     },
     {
       "arxiv_id": null,
-      "doi": null,
+      "doi": "10.1109/TSP.2019.2899805",
       "reported_title": "Learning to detect",
-      "route": "crossref-title",
-      "verdict": "FAIL",
-      "reason": "no record with this title in the top 10 Crossref results (nearest: 'Learning to detect objects with unsupervised learning'); supply a DOI to pin it"
+      "route": "crossref-doi",
+      "actual_title": "Learning to Detect",
+      "authors": [
+        "Neev Samuel",
+        "Tzvi Diskin",
+        "Ami Wiesel"
+      ],
+      "published": "2019",
+      "updated": null,
+      "abstract": "",
+      "url": "https://doi.org/10.1109/tsp.2019.2899805",
+      "verdict": "VERIFIED",
+      "reason": "title matches the record"
     },
     {
       "arxiv_id": null,
@@ -462,28 +473,36 @@
       "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
     },
     {
-      "arxiv_id": null,
-      "doi": null,
+      "bibkey": "Akdemir2024DLRelaySelection",
       "reported_title": "A Comparative Study of Deep Learning-Aided Relay Selection Protocols in Cooperative Communication",
-      "route": "crossref-title",
-      "verdict": "FAIL",
-      "reason": "no record with this title in the top 10 Crossref results (nearest: 'A Comparative Study of Deep Leaning-Aided Relay Selection Protocols in Cooperative Communication'); supply a DOI to pin it"
+      "route": "author-attestation",
+      "verdict": "ATTESTED",
+      "url": "https://www.researchgate.net/publication/381484704_A_Comparative_Study_of_Deep_Leaning-Aided_Relay_Selection_Protocols_in_Cooperative_Communication",
+      "reason": "author supplied a link to the paper; not a publisher-record match"
     },
     {
-      "arxiv_id": null,
-      "doi": null,
+      "bibkey": "Gunduz2019MLAir",
       "reported_title": "Machine Learning in the Air",
-      "route": "crossref-title",
-      "verdict": "FAIL",
-      "reason": "no record with this title in the top 10 Crossref results (nearest: 'Machine Learning-Aided All-Organic Air-Permeable Piezoelectric Nanogenerator'); supply a DOI to pin it"
+      "route": "author-attestation",
+      "verdict": "ATTESTED",
+      "url": "https://ieeexplore.ieee.org/document/8839651",
+      "reason": "author supplied a link to the paper; not a publisher-record match"
     },
     {
-      "arxiv_id": null,
+      "arxiv_id": "2306.14253",
       "doi": null,
       "reported_title": "Network Optimization Using Relays as Neurons",
-      "route": "crossref-title",
-      "verdict": "FAIL",
-      "reason": "no record with this title in the top 10 Crossref results (nearest: 'Deep Optimization of Relay Networks-Using Relays as Neurons'); supply a DOI to pin it"
+      "route": "arxiv",
+      "actual_title": "Network Optimization -- Using Relays as Neurons",
+      "authors": [
+        "Itsik Bergel"
+      ],
+      "published": "2023-06-25T14:12:05Z",
+      "updated": "2023-06-25T14:12:05Z",
+      "abstract": "We consider the optimization of a network with amplify-and-forward relays. Observing that each relay has a power limit, and hence a non-linear transfer function, we focus on the similarity between relay networks and neural networks. This similarity allows us to treat relays as neurons, and use deep learning tools to achieve better optimization of the network. Deep learning optimization allows relays to work in their non-linear regime (and hence increase their transmission power) while still avoiding harmful distortion. Moreover, like neural networks, which can implement almost any functionality, we can take advantage of the non-linearities and implement parts of the received functionalities over the relay network. By treating each relay element as a node in a deep neural network, our optimization results in huge gains over traditional relay optimization, and also allows the use of simpler receivers.",
+      "url": "http://arxiv.org/abs/2306.14253v1",
+      "verdict": "MISMATCH",
+      "reason": "record exists but the title differs from what was reported; treat as FAIL pending manual check"
     },
     {
       "arxiv_id": null,
