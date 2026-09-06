@@ -40,7 +40,17 @@
       countable = pdfinfo total − (Roman front-matter pages) − (Hebrew back matter)
 
   and cross-check against `main.toc`, whose last `{chapter}` entry gives the
-  appendices' opening folio. At the time of writing: 142 − 14 − 3 = **125**.
+  appendices' opening folio. **Re-derive both offsets each time**: they are
+  properties of the current build, not constants, and a stale figure quoted as
+  current is the same mistake in a new costume.
+
+  **Measured 2026-09-06 on `61a6200`: 150 − 14 − 3 = 133, i.e. 13 pages over.**
+  Cross-checked two ways: folio 1 sits on PDF p15, and the last body page (PDF
+  p147) carries folio 133. The Hebrew back matter is PDF pp148-150. The earlier
+  figure of 125 in this file was correct for a 142-page build and is now eight
+  pages stale -- the BCJR benchmark section, the Appendix F rewrite, the
+  BCJRNet paragraph in Ch. 2 and the seed-spread table were all added after it
+  was written.
 - Margins are at the faculty minimum already (`top=2.5cm, bottom=2cm, left=3cm,
   right=2cm` — *Guidelines* A.3, 3 cm binding side and 2 cm elsewhere). They are
   not a lever for getting under the limit; reducing them breaches the format

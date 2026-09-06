@@ -1329,6 +1329,18 @@ back-matter pages. The offset is verifiable two ways: folio 1 sits on PDF p15,
 and `main.toc` puts Chapter 9 (Appendices) at folio 119 on PDF p133. The limit
 includes the appendices.
 
+> **The table above is the 142-page build and is now stale.** Re-measured on
+> `61a6200` (2026-09-06): `pdfinfo` reports **150**, front matter is still PDF
+> pp1-14, the body runs pp15-147 (folio 133 on p147), and the Hebrew back
+> matter is pp148-150. **Countable = 150 - 14 - 3 = 133, i.e. 13 pages over the
+> 120 limit**, not the 5 the stale figure implies. Re-derive both offsets on
+> every measurement rather than reusing 14 and 3 as constants.
+>
+> The growth since the 142-page build is accounted for: the BCJR benchmark
+> section and its table in Ch. 7, the Appendix F rewrite, the BCJRNet paragraph
+> in Ch. 2, and the seed-spread material. The em-dash and draft-history passes
+> trimmed less than those added.
+
 **Margins are already at the faculty minimum** and are not a lever. `main.tex`
 sets `top=2.5cm, bottom=2cm, left=3cm, right=2cm`, which is TAU Faculty of
 Engineering *Guidelines* A.3 exactly -- 3 cm binding side, 2 cm on the other

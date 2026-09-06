@@ -14,6 +14,7 @@ This repo is an M.Sc. thesis ("Deep Learning Architectures for Two-Hop Relay Com
 ## Working agreement (this session, carried forward)
 - Develop on the assigned feature branch (currently `claude/porting-md-file-l6xzsr`); never push elsewhere without explicit permission.
 - Do not create a pull request unless the user explicitly asks for one.
+- **Never merge a pull request this session did not open.** PR #78 (`main` -> `clean-thesis`, 835 files, 537 commits) was opened from the UI; merging it would push to `clean-thesis`, which the rule above forbids. Verified by git on 2026-09-06: `clean-thesis` last moved 2026-07-18 (`c8cc9b0`), is 549 commits behind `main`, and is an *ancestor* of `main` -- it holds nothing `main` lacks, so anything merged into it is discarded. Leave such PRs for their author to close.
 - Follow the SNR convention documented in `memory-bank/techContext.md` exactly (γ = 10^(SNR_dB/10)) — this is load-bearing across every chapter's results, not just E6.
 - New relays/channels for `relaynet` should follow the interface patterns in `memory-bank/systemPatterns.md` (`.process()` for relays, callable `channel(signal, snr_db)` for channels) rather than inventing new conventions.
 - Simulation result numbers are scientific claims. Never fabricate, adjust, or silently drop Monte Carlo trials to hit an expected number — if a result doesn't match a spec (e.g., the E6_FLAT control gap ≤0.0036 target), report the discrepancy plainly rather than tuning until it matches.
