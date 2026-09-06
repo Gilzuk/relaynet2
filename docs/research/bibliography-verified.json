@@ -1,0 +1,976 @@
+{
+  "topic": "thesis bibliography -- full publisher-record verification",
+  "checked_at": "2026-09-06T05:31:02.457128+00:00",
+  "standard": "deep-research IRON RULE #4 -- gray zone is a FAIL",
+  "counts": {
+    "VERIFIED": 47,
+    "MISMATCH": 0,
+    "FAIL": 17
+  },
+  "results": [
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "Cooperative diversity in wireless networks: Efficient protocols and outage behavior",
+      "route": "crossref-title",
+      "actual_title": "Cooperative Diversity in Wireless Networks: Efficient Protocols and Outage Behavior",
+      "authors": [
+        "J.N. Laneman",
+        "D.N.C. Tse",
+        "G.W. Wornell"
+      ],
+      "published": "2004",
+      "updated": null,
+      "abstract": "",
+      "url": "https://doi.org/10.1109/tit.2004.838089",
+      "verdict": "VERIFIED",
+      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "Cooperative communication in wireless networks",
+      "route": "crossref-title",
+      "verdict": "FAIL",
+      "reason": "no record with this title in the top 10 Crossref results (nearest: 'Selfishness-Aware Energy-Efficient Cooperative Networks'); supply a DOI to pin it"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "Capacity theorems for the relay channel",
+      "route": "crossref-title",
+      "actual_title": "Capacity theorems for the relay channel",
+      "authors": [
+        "T. Cover",
+        "A.E. Gamal"
+      ],
+      "published": "1979",
+      "updated": null,
+      "abstract": "",
+      "url": "https://doi.org/10.1109/tit.1979.1056084",
+      "verdict": "VERIFIED",
+      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "Network Information Theory",
+      "route": "crossref-title",
+      "actual_title": "Network Information Theory",
+      "authors": [],
+      "published": "2001",
+      "updated": null,
+      "abstract": "",
+      "url": "https://doi.org/10.1002/0471200611.ch14",
+      "verdict": "VERIFIED",
+      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "Compute-and-forward: Harnessing interference through structured codes",
+      "route": "crossref-title",
+      "actual_title": "Compute-and-Forward: Harnessing Interference Through Structured Codes",
+      "authors": [
+        "Bobak Nazer",
+        "Michael Gastpar"
+      ],
+      "published": "2011",
+      "updated": null,
+      "abstract": "",
+      "url": "https://doi.org/10.1109/tit.2011.2165816",
+      "verdict": "VERIFIED",
+      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "Spectral efficient protocols for half-duplex fading relay channels",
+      "route": "crossref-title",
+      "actual_title": "Spectral efficient protocols for half-duplex fading relay channels",
+      "authors": [
+        "Boris Rankov",
+        "Armin Wittneben"
+      ],
+      "published": "2007",
+      "updated": null,
+      "abstract": "",
+      "url": "https://doi.org/10.1109/jsac.2007.070213",
+      "verdict": "VERIFIED",
+      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "Power of deep learning for channel estimation and signal detection in OFDM systems",
+      "route": "crossref-title",
+      "actual_title": "Power of Deep Learning for Channel Estimation and Signal Detection in OFDM Systems",
+      "authors": [
+        "Hao Ye",
+        "Geoffrey Ye Li",
+        "Biing-Hwang Juang"
+      ],
+      "published": "2018",
+      "updated": null,
+      "abstract": "",
+      "url": "https://doi.org/10.1109/lwc.2017.2757490",
+      "verdict": "VERIFIED",
+      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "Learning to detect",
+      "route": "crossref-title",
+      "verdict": "FAIL",
+      "reason": "no record with this title in the top 10 Crossref results (nearest: 'Learning to detect objects with unsupervised learning'); supply a DOI to pin it"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "Deep learning based communication over the air",
+      "route": "crossref-title",
+      "actual_title": "Deep Learning Based Communication Over the Air",
+      "authors": [
+        "Sebastian Dorner",
+        "Sebastian Cammerer",
+        "Jakob Hoydis",
+        "Stephan ten Brink"
+      ],
+      "published": "2018",
+      "updated": null,
+      "abstract": "",
+      "url": "https://doi.org/10.1109/jstsp.2017.2784180",
+      "verdict": "VERIFIED",
+      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "Learning to optimize: Training deep neural networks for interference management",
+      "route": "crossref-title",
+      "actual_title": "Learning to Optimize: Training Deep Neural Networks for Interference Management",
+      "authors": [
+        "Haoran Sun",
+        "Xiangyi Chen",
+        "Qingjiang Shi",
+        "Mingyi Hong",
+        "Xiao Fu",
+        "Nicholas D. Sidiropoulos"
+      ],
+      "published": "2018",
+      "updated": null,
+      "abstract": "",
+      "url": "https://doi.org/10.1109/tsp.2018.2866382",
+      "verdict": "VERIFIED",
+      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "Auto-encoding variational Bayes",
+      "route": "crossref-title",
+      "actual_title": "Auto-Encoding Variational Bayes",
+      "authors": [
+        "Yankun Chen",
+        "Jingxuan Liu",
+        "Lingyun Peng",
+        "Yiqi Wu",
+        "Yige Xu",
+        "Zhanhao Zhang"
+      ],
+      "published": "2024",
+      "updated": null,
+      "abstract": "",
+      "url": "https://doi.org/10.61603/ceas.v2i1.33",
+      "verdict": "VERIFIED",
+      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+    },
+    {
+      "arxiv_id": "1411.1784",
+      "doi": null,
+      "reported_title": "Conditional generative adversarial nets",
+      "route": "arxiv",
+      "actual_title": "Conditional Generative Adversarial Nets",
+      "authors": [
+        "Mehdi Mirza",
+        "Simon Osindero"
+      ],
+      "published": "2014-11-06T22:33:22Z",
+      "updated": "2014-11-06T22:33:22Z",
+      "abstract": "Generative Adversarial Nets [8] were recently introduced as a novel way to train generative models. In this work we introduce the conditional version of generative adversarial nets, which can be constructed by simply feeding the data, y, we wish to condition on to both the generator and discriminator. We show that this model can generate MNIST digits conditioned on class labels. We also illustrate how this model could be used to learn a multi-modal model, and provide preliminary examples of an application to image tagging in which we demonstrate how this approach can generate descriptive tags which are not part of training labels.",
+      "url": "http://arxiv.org/abs/1411.1784v1",
+      "verdict": "VERIFIED",
+      "reason": "title matches the record"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "Improved training of Wasserstein GANs",
+      "route": "crossref-title",
+      "verdict": "FAIL",
+      "reason": "no record with this title in the top 10 Crossref results (nearest: 'Self‐supervised non‐rigid structure from motion with improved training of Wasserstein GANs'); supply a DOI to pin it"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "Generative adversarial nets",
+      "route": "crossref-title",
+      "actual_title": "Generative Adversarial Nets",
+      "authors": [
+        "Raphael Labaca-Castro"
+      ],
+      "published": "2023",
+      "updated": null,
+      "abstract": "",
+      "url": "https://doi.org/10.1007/978-3-658-40442-0_9",
+      "verdict": "VERIFIED",
+      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "Attention is all you need",
+      "route": "crossref-title",
+      "actual_title": "Attention Is All You Need",
+      "authors": [
+        "Ashish Vaswani",
+        "Noam Shazeer",
+        "Niki Parmar",
+        "Jakob Uszkoreit",
+        "Llion Jones",
+        "Aidan N.Gomez",
+        "Lukasz Kaiser",
+        "Illia Polosukhin"
+      ],
+      "published": "2025",
+      "updated": null,
+      "abstract": "",
+      "url": "https://doi.org/10.65215/ysbyhc05",
+      "verdict": "VERIFIED",
+      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "Efficiently modeling long sequences with structured state spaces",
+      "route": "crossref-title",
+      "verdict": "FAIL",
+      "reason": "no record with this title in the top 10 Crossref results (nearest: 'Chemical Language Modeling with Structured State Spaces'); supply a DOI to pin it"
+    },
+    {
+      "arxiv_id": "2405.21060",
+      "doi": null,
+      "reported_title": "Transformers are SSMs: Generalized models and efficient algorithms through structured state space duality",
+      "route": "arxiv",
+      "actual_title": "Transformers are SSMs: Generalized Models and Efficient Algorithms Through Structured State Space Duality",
+      "authors": [
+        "Tri Dao",
+        "Albert Gu"
+      ],
+      "published": "2024-05-31T17:50:01Z",
+      "updated": "2024-05-31T17:50:01Z",
+      "abstract": "While Transformers have been the main architecture behind deep learning's success in language modeling, state-space models (SSMs) such as Mamba have recently been shown to match or outperform Transformers at small to medium scale. We show that these families of models are actually quite closely related, and develop a rich framework of theoretical connections between SSMs and variants of attention, connected through various decompositions of a well-studied class of structured semiseparable matrices. Our state space duality (SSD) framework allows us to design a new architecture (Mamba-2) whose core layer is an a refinement of Mamba's selective SSM that is 2-8X faster, while continuing to be competitive with Transformers on language modeling.",
+      "url": "http://arxiv.org/abs/2405.21060v1",
+      "verdict": "VERIFIED",
+      "reason": "title matches the record"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "Fundamentals of Wireless Communications",
+      "route": "crossref-title",
+      "verdict": "FAIL",
+      "reason": "no record with this title in the top 10 Crossref results (nearest: 'Advanced Topics in MIMO Wireless Communications'); supply a DOI to pin it"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "V-BLAST: An architecture for realizing very high data rates over the rich-scattering wireless channel",
+      "route": "crossref-title",
+      "actual_title": "V-BLAST: an architecture for realizing very high data rates over the rich-scattering wireless channel",
+      "authors": [
+        "P.W. Wolniansky",
+        "G.J. Foschini",
+        "G.D. Golden",
+        "R.A. Valenzuela"
+      ],
+      "published": null,
+      "updated": null,
+      "abstract": "",
+      "url": "https://doi.org/10.1109/issse.1998.738086",
+      "verdict": "VERIFIED",
+      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "Digital Communications",
+      "route": "crossref-title",
+      "actual_title": "Digital Communications",
+      "authors": [
+        "Pierre Jarry",
+        "Jacques N. Beneat"
+      ],
+      "published": "2015",
+      "updated": null,
+      "abstract": "",
+      "url": "https://doi.org/10.1016/b978-1-78548-037-9.50001-6",
+      "verdict": "VERIFIED",
+      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "Digital Communication over Fading Channels",
+      "route": "crossref-title",
+      "verdict": "FAIL",
+      "reason": "no record with this title in the top 10 Crossref results (nearest: 'Coded Communication over Fading Channels'); supply a DOI to pin it"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "Deep Learning",
+      "route": "crossref-title",
+      "verdict": "FAIL",
+      "reason": "no record with this title in the top 10 Crossref results (nearest: 'What’s Deep About Deep Learning?'); supply a DOI to pin it"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "Digital Communications: Fundamentals and Applications",
+      "route": "crossref-title",
+      "verdict": "FAIL",
+      "reason": "no record with this title in the top 10 Crossref results (nearest: 'Digital Signal Processing'); supply a DOI to pin it"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "Reinforcement Learning: An Introduction",
+      "route": "crossref-title",
+      "verdict": "FAIL",
+      "reason": "no record with this title in the top 10 Crossref results (nearest: 'Introduction: The Challenge of Reinforcement Learning'); supply a DOI to pin it"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "Capacity of multi-antenna Gaussian channels",
+      "route": "crossref-title",
+      "actual_title": "Capacity of Multi‐antenna Gaussian Channels",
+      "authors": [
+        "Emre Telatar"
+      ],
+      "published": "1999",
+      "updated": null,
+      "abstract": "",
+      "url": "https://doi.org/10.1002/ett.4460100604",
+      "verdict": "VERIFIED",
+      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "Layered space-time architecture for wireless communication in a fading environment when using multi-element antennas",
+      "route": "crossref-title",
+      "actual_title": "Layered space-time architecture for wireless communication in a fading environment when using multi-element antennas",
+      "authors": [
+        "Gerard J. Foschini"
+      ],
+      "published": "2002",
+      "updated": null,
+      "abstract": "",
+      "url": "https://doi.org/10.1002/bltj.2015",
+      "verdict": "VERIFIED",
+      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "Diversity and multiplexing: A fundamental tradeoff in multiple-antenna channels",
+      "route": "crossref-title",
+      "actual_title": "Diversity and multiplexing: a fundamental tradeoff in multiple-antenna channels",
+      "authors": [
+        "Lizhong Zheng",
+        "D.N.C. Tse"
+      ],
+      "published": "2003",
+      "updated": null,
+      "abstract": "",
+      "url": "https://doi.org/10.1109/tit.2003.810646",
+      "verdict": "VERIFIED",
+      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "Linear multiuser receivers: Effective interference, effective bandwidth and user capacity",
+      "route": "crossref-title",
+      "actual_title": "Linear multiuser receivers: effective interference, effective bandwidth and user capacity",
+      "authors": [
+        "D.N.C. Tse",
+        "S.V. Hanly"
+      ],
+      "published": "1999",
+      "updated": null,
+      "abstract": "",
+      "url": "https://doi.org/10.1109/18.749008",
+      "verdict": "VERIFIED",
+      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "Performance analysis of the V-BLAST algorithm: An analytical approach",
+      "route": "crossref-title",
+      "actual_title": "Performance Analysis of the V-BLAST Algorithm: An Analytical Approach",
+      "authors": [
+        "S. Loyka",
+        "F. Gagnon"
+      ],
+      "published": "2004",
+      "updated": null,
+      "abstract": "",
+      "url": "https://doi.org/10.1109/twc.2004.830853",
+      "verdict": "VERIFIED",
+      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "$\\beta$-VAE: Learning basic visual concepts with a constrained variational framework",
+      "route": "crossref-title",
+      "verdict": "FAIL",
+      "reason": "no record with this title in the top 10 Crossref results (nearest: 'A beta-variational autoencoder (beta-VAE) to retrieve relevant degrees of freedom in a physical system'); supply a DOI to pin it"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "Delving deep into rectifiers: Surpassing human-level performance on ImageNet classification",
+      "route": "crossref-title",
+      "actual_title": "Delving Deep into Rectifiers: Surpassing Human-Level Performance on ImageNet Classification",
+      "authors": [
+        "Kaiming He",
+        "Xiangyu Zhang",
+        "Shaoqing Ren",
+        "Jian Sun"
+      ],
+      "published": "2015",
+      "updated": null,
+      "abstract": "",
+      "url": "https://doi.org/10.1109/iccv.2015.123",
+      "verdict": "VERIFIED",
+      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "A Comparative Study of Deep Learning-Aided Relay Selection Protocols in Cooperative Communication",
+      "route": "crossref-title",
+      "verdict": "FAIL",
+      "reason": "no record with this title in the top 10 Crossref results (nearest: 'A Comparative Study of Deep Leaning-Aided Relay Selection Protocols in Cooperative Communication'); supply a DOI to pin it"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "Machine Learning in the Air",
+      "route": "crossref-title",
+      "verdict": "FAIL",
+      "reason": "no record with this title in the top 10 Crossref results (nearest: 'Machine Learning-Aided All-Organic Air-Permeable Piezoelectric Nanogenerator'); supply a DOI to pin it"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "Network Optimization Using Relays as Neurons",
+      "route": "crossref-title",
+      "verdict": "FAIL",
+      "reason": "no record with this title in the top 10 Crossref results (nearest: 'Deep Optimization of Relay Networks-Using Relays as Neurons'); supply a DOI to pin it"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "Deep Optimization of Relay Networks Using Relays as Neurons",
+      "route": "crossref-title",
+      "verdict": "FAIL",
+      "reason": "no record with this title in the top 10 Crossref results (nearest: 'Deep Optimization of Relay Networks-Using Relays as Neurons'); supply a DOI to pin it"
+    },
+    {
+      "arxiv_id": "2110.09456",
+      "doi": null,
+      "reported_title": "NormFormer: Improved Transformer Pretraining with Extra Normalization",
+      "route": "arxiv",
+      "actual_title": "NormFormer: Improved Transformer Pretraining with Extra Normalization",
+      "authors": [
+        "Sam Shleifer",
+        "Jason Weston",
+        "Myle Ott"
+      ],
+      "published": "2021-10-18T16:47:45Z",
+      "updated": "2021-11-01T15:34:23Z",
+      "abstract": "During pretraining, the Pre-LayerNorm transformer suffers from a gradient magnitude mismatch: gradients at early layers are much larger than at later layers. These issues can be alleviated by our proposed NormFormer architecture, which adds three normalization operations to each layer: a Layer Norm after self attention, head-wise scaling of self-attention outputs, and a Layer Norm after the first fully connected layer. The extra operations incur negligible compute cost (+0.4% parameter increase), but improve pretraining perplexity and downstream task performance for both causal and masked language models ranging from 125 Million to 2.7 Billion parameters. For example, adding NormFormer on top of our strongest 1.3B parameter baseline can reach equal perplexity 24% faster, or converge 0.27 perplexity better in the same compute budget. This model reaches GPT3-Large (1.3B) zero shot performance 60% faster. For masked language modeling, NormFormer improves fine-tuned GLUE performance by 1.9% on average. Code to train NormFormer models is available in fairseq https://github.com/pytorch/fairseq/tree/main/examples/normformer .",
+      "url": "http://arxiv.org/abs/2110.09456v2",
+      "verdict": "VERIFIED",
+      "reason": "title matches the record"
+    },
+    {
+      "arxiv_id": "2312.00752",
+      "doi": null,
+      "reported_title": "Mamba: Linear-Time Sequence Modeling with Selective State Spaces",
+      "route": "arxiv",
+      "actual_title": "Mamba: Linear-Time Sequence Modeling with Selective State Spaces",
+      "authors": [
+        "Albert Gu",
+        "Tri Dao"
+      ],
+      "published": "2023-12-01T18:01:34Z",
+      "updated": "2024-05-31T17:55:27Z",
+      "abstract": "Foundation models, now powering most of the exciting applications in deep learning, are almost universally based on the Transformer architecture and its core attention module. Many subquadratic-time architectures such as linear attention, gated convolution and recurrent models, and structured state space models (SSMs) have been developed to address Transformers' computational inefficiency on long sequences, but they have not performed as well as attention on important modalities such as language. We identify that a key weakness of such models is their inability to perform content-based reasoning, and make several improvements. First, simply letting the SSM parameters be functions of the input addresses their weakness with discrete modalities, allowing the model to selectively propagate or forget information along the sequence length dimension depending on the current token. Second, even though this change prevents the use of efficient convolutions, we design a hardware-aware parallel algorithm in recurrent mode. We integrate these selective SSMs into a simplified end-to-end neural network architecture without attention or even MLP blocks (Mamba). Mamba enjoys fast inference (5$\\times$ higher throughput than Transformers) and linear scaling in sequence length, and its performance improves on real data up to million-length sequences. As a general sequence model backbone, Mamba achieves state-of-the-art performance across several modalities such as language, audio, and genomics. On language modeling, our Mamba-3B model outperforms Transformers of the same size and matches Transformers twice its size, both in pretraining and downstream evaluation.",
+      "url": "http://arxiv.org/abs/2312.00752v2",
+      "verdict": "VERIFIED",
+      "reason": "title matches the record"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "A statistical theory of mobile-radio reception",
+      "route": "crossref-title",
+      "actual_title": "A Statistical Theory of Mobile-Radio Reception",
+      "authors": [
+        "R. H. Clarke"
+      ],
+      "published": "1968",
+      "updated": null,
+      "abstract": "",
+      "url": "https://doi.org/10.1002/j.1538-7305.1968.tb00069.x",
+      "verdict": "VERIFIED",
+      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "Microwave Mobile Communications",
+      "route": "crossref-title",
+      "actual_title": "Microwave Mobile Communications",
+      "authors": [
+        "William C. Jakes"
+      ],
+      "published": "1994",
+      "updated": null,
+      "abstract": "",
+      "url": "https://doi.org/10.1109/9780470545287",
+      "verdict": "VERIFIED",
+      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "Optimal decoding of linear codes for minimizing symbol error rate",
+      "route": "crossref-title",
+      "verdict": "FAIL",
+      "reason": "no record with this title in the top 10 Crossref results (nearest: 'Optimal decoding of linear codes for minimizing symbol error rate (Corresp.)'); supply a DOI to pin it"
+    },
+    {
+      "arxiv_id": "2604.21957",
+      "doi": null,
+      "reported_title": "MambaCSP: Hybrid-attention state space models for hardware-efficient channel state prediction",
+      "route": "arxiv",
+      "actual_title": "MambaCSP: Hybrid-Attention State Space Models for Hardware-Efficient Channel State Prediction",
+      "authors": [
+        "Aladin Djuhera",
+        "Haris Gacanin",
+        "Holger Boche"
+      ],
+      "published": "2026-04-23T10:05:33Z",
+      "updated": "2026-08-27T10:41:08Z",
+      "abstract": "Recent works have demonstrated that attention-based transformer and large language model (LLM) architectures can achieve strong channel state prediction (CSP) performance by capturing long-range temporal dependencies across channel state information (CSI) sequences. However, these models suffer from quadratic scaling in sequence length, leading to substantial computational cost, memory consumption, and inference latency, which limits their applicability in real-time and resource-constrained wireless deployments. In this paper, we investigate whether selective state space models (SSMs) can serve as a hardware-efficient alternative for CSI prediction. We propose MambaCSP, a hybrid-attention SSM architecture that replaces LLM-based prediction backbones with a linear-time Mamba model. To overcome the local-only dependencies of pure SSMs, we introduce lightweight patch-mixer attention layers that periodically inject cross-token attentions, helping with long-context CSI prediction. Extensive MISO-OFDM simulations show that MambaCSP improves prediction accuracy over LLM-based approaches by 9-12%, while delivering up to 3.0x higher throughput, 2.6x lower VRAM usage, and 2.9x faster inference. Our results demonstrate that hybrid state space architectures provide a promising direction for scalable and hardware-efficient AI-native CSI prediction in future wireless networks.",
+      "url": "http://arxiv.org/abs/2604.21957v2",
+      "verdict": "VERIFIED",
+      "reason": "title matches the record"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "Automatic modulation classification with deep neural networks",
+      "route": "crossref-title",
+      "actual_title": "Automatic Modulation Classification with Deep Neural Networks",
+      "authors": [
+        "Clayton A. Harper",
+        "Mitchell A. Thornton",
+        "Eric C. Larson"
+      ],
+      "published": "2023",
+      "updated": null,
+      "abstract": "",
+      "url": "https://doi.org/10.3390/electronics12183962",
+      "verdict": "VERIFIED",
+      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "ViterbiNet: A deep learning based Viterbi algorithm for symbol detection",
+      "route": "crossref-title",
+      "actual_title": "ViterbiNet: A Deep Learning Based Viterbi Algorithm for Symbol Detection",
+      "authors": [
+        "Nir Shlezinger",
+        "Nariman Farsad",
+        "Yonina C. Eldar",
+        "Andrea J. Goldsmith"
+      ],
+      "published": "2020",
+      "updated": null,
+      "abstract": "",
+      "url": "https://doi.org/10.1109/twc.2020.2972352",
+      "verdict": "VERIFIED",
+      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "Maximum-likelihood sequence estimation of digital sequences in the presence of intersymbol interference",
+      "route": "crossref-title",
+      "actual_title": "Maximum-likelihood sequence estimation of digital sequences in the presence of intersymbol interference",
+      "authors": [
+        "G. Forney"
+      ],
+      "published": "1972",
+      "updated": null,
+      "abstract": "",
+      "url": "https://doi.org/10.1109/tit.1972.1054829",
+      "verdict": "VERIFIED",
+      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "Multiple-symbol differential detection of MPSK",
+      "route": "crossref-title",
+      "actual_title": "Multiple-Symbol Differential Detection of MPSK",
+      "authors": [],
+      "published": "2009",
+      "updated": null,
+      "abstract": "",
+      "url": "https://doi.org/10.1109/9780470546543.ch9",
+      "verdict": "VERIFIED",
+      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "Channel coding rate in the finite blocklength regime",
+      "route": "crossref-title",
+      "actual_title": "Channel Coding Rate in the Finite Blocklength Regime",
+      "authors": [
+        "Yury Polyanskiy",
+        "H. Vincent Poor",
+        "Sergio Verdu"
+      ],
+      "published": "2010",
+      "updated": null,
+      "abstract": "",
+      "url": "https://doi.org/10.1109/tit.2010.2043769",
+      "verdict": "VERIFIED",
+      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "Multiaccess fading channels---part II: Delay-limited capacities",
+      "route": "crossref-title",
+      "verdict": "FAIL",
+      "reason": "no record with this title in the top 10 Crossref results (nearest: 'Multiaccess fading channels. II. Delay-limited capacities'); supply a DOI to pin it"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "Approximation by superpositions of a sigmoidal function",
+      "route": "crossref-title",
+      "actual_title": "Approximation by Superpositions of a Sigmoidal Function",
+      "authors": [
+        "Grzegorz Lewicki",
+        "G. Marino"
+      ],
+      "published": "2003",
+      "updated": null,
+      "abstract": "",
+      "url": "https://doi.org/10.4171/zaa/1156",
+      "verdict": "VERIFIED",
+      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "Approximation capabilities of multilayer feedforward networks",
+      "route": "crossref-title",
+      "actual_title": "Approximation capabilities of multilayer feedforward networks",
+      "authors": [
+        "Kurt Hornik"
+      ],
+      "published": "1991",
+      "updated": null,
+      "abstract": "",
+      "url": "https://doi.org/10.1016/0893-6080(91)90009-t",
+      "verdict": "VERIFIED",
+      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "Neural Network Detection of Data Sequences in Communication Systems",
+      "route": "crossref-title",
+      "actual_title": "Neural Network Detection of Data Sequences in Communication Systems",
+      "authors": [
+        "Nariman Farsad",
+        "Andrea Goldsmith"
+      ],
+      "published": "2018",
+      "updated": null,
+      "abstract": "",
+      "url": "https://doi.org/10.1109/tsp.2018.2868322",
+      "verdict": "VERIFIED",
+      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "DeepRx: Fully Convolutional Deep Learning Receiver",
+      "route": "crossref-title",
+      "actual_title": "DeepRx: Fully Convolutional Deep Learning Receiver",
+      "authors": [
+        "Mikko Honkala",
+        "Dani Korpi",
+        "Janne M. J. Huttunen"
+      ],
+      "published": "2021",
+      "updated": null,
+      "abstract": "",
+      "url": "https://doi.org/10.1109/twc.2021.3054520",
+      "verdict": "VERIFIED",
+      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "An Introduction to Deep Learning for the Physical Layer",
+      "route": "crossref-title",
+      "actual_title": "An Introduction to Deep Learning for the Physical Layer",
+      "authors": [
+        "Timothy O'Shea",
+        "Jakob Hoydis"
+      ],
+      "published": "2017",
+      "updated": null,
+      "abstract": "",
+      "url": "https://doi.org/10.1109/tccn.2017.2758370",
+      "verdict": "VERIFIED",
+      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "Principles of Data Communication",
+      "route": "crossref-title",
+      "verdict": "FAIL",
+      "reason": "no record with this title in the top 10 Crossref results (nearest: 'Data Communication Principles'); supply a DOI to pin it"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "Reduced-State Sequence Estimation with Set Partitioning and Decision Feedback",
+      "route": "crossref-title",
+      "actual_title": "Reduced-state sequence estimation with set partitioning and decision feedback",
+      "authors": [
+        "M.V. Eyuboglu",
+        "S.U.H. Qureshi"
+      ],
+      "published": "1988",
+      "updated": null,
+      "abstract": "",
+      "url": "https://doi.org/10.1109/26.2724",
+      "verdict": "VERIFIED",
+      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "Self-Recovering Equalization and Carrier Tracking in Two-Dimensional Data Communication Systems",
+      "route": "crossref-title",
+      "actual_title": "Self-Recovering Equalization and Carrier Tracking in Two-Dimensional Data Communication Systems",
+      "authors": [
+        "D. Godard"
+      ],
+      "published": "1980",
+      "updated": null,
+      "abstract": "",
+      "url": "https://doi.org/10.1109/tcom.1980.1094608",
+      "verdict": "VERIFIED",
+      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "A New Approach to Multipath Correction of Constant Modulus Signals",
+      "route": "crossref-title",
+      "actual_title": "A new approach to multipath correction of constant modulus signals",
+      "authors": [
+        "J. Treichler",
+        "B. Agee"
+      ],
+      "published": "1983",
+      "updated": null,
+      "abstract": "",
+      "url": "https://doi.org/10.1109/tassp.1983.1164062",
+      "verdict": "VERIFIED",
+      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "Ill-Convergence of Godard Blind Equalizers in Data Communication Systems",
+      "route": "crossref-title",
+      "actual_title": "Ill-convergence of Godard blind equalizers in data communication systems",
+      "authors": [
+        "Z. Ding",
+        "R.A. Kennedy",
+        "B.D.O. Anderson",
+        "C.R. Johnson"
+      ],
+      "published": "1991",
+      "updated": null,
+      "abstract": "",
+      "url": "https://doi.org/10.1109/26.99137",
+      "verdict": "VERIFIED",
+      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "Per-Survivor Processing: A General Approach to MLSE in Uncertain Environments",
+      "route": "crossref-title",
+      "actual_title": "Per-Survivor Processing: a general approach to MLSE in uncertain environments",
+      "authors": [
+        "R. Raheli",
+        "A. Polydoros",
+        "Ching-Kae Tzou"
+      ],
+      "published": "1995",
+      "updated": null,
+      "abstract": "",
+      "url": "https://doi.org/10.1109/26.380054",
+      "verdict": "VERIFIED",
+      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "Fundamentals of Statistical Signal Processing: Estimation Theory",
+      "route": "crossref-title",
+      "actual_title": "Fundamentals of Statistical Signal Processing: Estimation Theory",
+      "authors": [
+        "Sailes K. Sengijpta"
+      ],
+      "published": "1995",
+      "updated": null,
+      "abstract": "",
+      "url": "https://doi.org/10.1080/00401706.1995.10484391",
+      "verdict": "VERIFIED",
+      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+    },
+    {
+      "arxiv_id": null,
+      "doi": null,
+      "reported_title": "Learning to Demodulate from Few Pilots via Offline and Online Meta-Learning",
+      "route": "crossref-title",
+      "actual_title": "Learning to Demodulate From Few Pilots via Offline and Online Meta-Learning",
+      "authors": [
+        "Sangwoo Park",
+        "Hyeryung Jang",
+        "Osvaldo Simeone",
+        "Joonhyuk Kang"
+      ],
+      "published": "2021",
+      "updated": null,
+      "abstract": "",
+      "url": "https://doi.org/10.1109/tsp.2020.3043879",
+      "verdict": "VERIFIED",
+      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+    },
+    {
+      "arxiv_id": "2006.01125",
+      "doi": null,
+      "reported_title": "Neural Network-Aided BCJR Algorithm for Joint Symbol Detection and Channel Decoding",
+      "route": "arxiv",
+      "actual_title": "Neural Network-Aided BCJR Algorithm for Joint Symbol Detection and Channel Decoding",
+      "authors": [
+        "Wen-Chiao Tsai",
+        "Chieh-Fang Teng",
+        "Han-Mo Ou",
+        "An-Yeu Wu"
+      ],
+      "published": "2020-05-30T10:25:58Z",
+      "updated": "2020-07-21T15:56:27Z",
+      "abstract": "Recently, deep learning-assisted communication systems have achieved many eye-catching results and attracted more and more researchers in this emerging field. Instead of completely replacing the functional blocks of communication systems with neural networks, a hybrid manner of BCJRNet symbol detection is proposed to combine the advantages of the BCJR algorithm and neural networks. However, its separate block design not only degrades the system performance but also results in additional hardware complexity. In this work, we propose a BCJR receiver for joint symbol detection and channel decoding. It can simultaneously utilize the trellis diagram and channel state information for a more accurate calculation of branch probability and thus achieve global optimum with 2.3 dB gain over separate block design. Furthermore, a dedicated neural network model is proposed to replace the channel-model-based computation of the BCJR receiver, which can avoid the requirements of perfect CSI and is more robust under CSI uncertainty with 1.0 dB gain.",
+      "url": "http://arxiv.org/abs/2006.01125v2",
+      "verdict": "VERIFIED",
+      "reason": "title matches the record"
+    },
+    {
+      "arxiv_id": "2405.10814",
+      "doi": null,
+      "reported_title": "Data-Driven Symbol Detection for Intersymbol Interference Channels with Bursty Impulsive Noise",
+      "route": "arxiv",
+      "actual_title": "Data-Driven Symbol Detection for Intersymbol Interference Channels with Bursty Impulsive Noise",
+      "authors": [
+        "Boris Karanov",
+        "Chin-Hung Chen",
+        "Yan Wu",
+        "Alex Young",
+        "Wim van Houtum"
+      ],
+      "published": "2024-05-17T14:35:09Z",
+      "updated": "2024-05-17T14:35:09Z",
+      "abstract": "We developed machine learning approaches for data-driven trellis-based soft symbol detection in coded transmission over intersymbol interference (ISI) channels in presence of bursty impulsive noise (IN), for example encountered in wireless digital broadcasting systems and vehicular communications. This enabled us to obtain optimized detectors based on the Bahl-Cocke-Jelinek-Raviv (BCJR) algorithm while circumventing the use of full channel state information (CSI) for computing likelihoods and trellis state transition probabilities. First, we extended the application of the neural network (NN)-aided BCJR, recently proposed for ISI channels with additive white Gaussian noise (AWGN). Although suitable for estimating likelihoods via labeling of transmission sequences, the BCJR-NN method does not provide a framework for learning the trellis state transitions. In addition to detection over the joint ISI and IN states we also focused on another scenario where trellis transitions are not trivial: detection for the ISI channel with AWGN with inaccurate knowledge of the channel memory at the receiver. Without access to the accurate state transition matrix, the BCJR- NN performance significantly degrades in both settings. To this end, we devised an alternative approach for data-driven BCJR detection based on the unsupervised learning of a hidden Markov model (HMM). The BCJR-HMM allowed us to optimize both the likelihood function and the state transition matrix without labeling. Moreover, we demonstrated the viability of a hybrid NN and HMM BCJR detection where NN is used for learning the likelihoods, while the state transitions are optimized via HMM. While reducing the required prior channel knowledge, the examined data-driven detectors with learned trellis state transitions achieve bit error rates close to the optimal full CSI-based BCJR, significantly outperforming detection with inaccurate CSI.",
+      "url": "http://arxiv.org/abs/2405.10814v1",
+      "verdict": "VERIFIED",
+      "reason": "title matches the record"
+    },
+    {
+      "arxiv_id": "2401.12645",
+      "doi": null,
+      "reported_title": "On the Robustness of Deep Learning-aided Symbol Detectors to Varying Conditions and Imperfect Channel Knowledge",
+      "route": "arxiv",
+      "actual_title": "On the Robustness of Deep Learning-aided Symbol Detectors to Varying Conditions and Imperfect Channel Knowledge",
+      "authors": [
+        "Chin-Hung Chen",
+        "Boris Karanov",
+        "Wim van Houtum",
+        "Wu Yan",
+        "Alex Young",
+        "Alex Alvarado"
+      ],
+      "published": "2024-01-23T10:55:29Z",
+      "updated": "2024-01-23T10:55:29Z",
+      "abstract": "Recently, a data-driven Bahl-Cocke-Jelinek-Raviv (BCJR) algorithm tailored to channels with intersymbol interference has been introduced. This so-called BCJRNet algorithm utilizes neural networks to calculate channel likelihoods. BCJRNet has demonstrated resilience against inaccurate channel tap estimations when applied to a time-invariant channel with ideal exponential decay profiles. However, its generalization capabilities for practically-relevant time-varying channels, where the receiver can only access incorrect channel parameters, remain largely unexplored. The primary contribution of this paper is to expand upon the results from existing literature to encompass a variety of imperfect channel knowledge cases that appear in real-world transmissions. Our findings demonstrate that BCJRNet significantly outperforms the conventional BCJR algorithm for stationary transmission scenarios when learning from noisy channel data and with imperfect channel decay profiles. However, this advantage is shown to diminish when the operating channel is also rapidly time-varying. Our results also show the importance of memory assumptions for conventional BCJR and BCJRNet. An underestimation of the memory largely degrades the performance of both BCJR and BCJRNet, especially in a slow-decaying channel. To mimic a situation closer to a practical scenario, we also combined channel tap uncertainty with imperfect channel memory knowledge. Somewhat surprisingly, our results revealed improved performance when employing the conventional BCJR with an underestimated memory assumption. BCJRNet, on the other hand, showed a consistent performance improvement as the level of accurate memory knowledge increased.",
+      "url": "http://arxiv.org/abs/2401.12645v1",
+      "verdict": "VERIFIED",
+      "reason": "title matches the record"
+    },
+    {
+      "arxiv_id": "2411.01517",
+      "doi": null,
+      "reported_title": "Enhancing LMMSE Performance with Modest Complexity Increase via Neural Network Equalizers",
+      "route": "arxiv",
+      "actual_title": "Enhancing LMMSE Performance with Modest Complexity Increase via Neural Network Equalizers",
+      "authors": [
+        "Vadim Rozenfeld",
+        "Dan Raphaeli",
+        "Oded Bialer"
+      ],
+      "published": "2024-11-03T10:41:05Z",
+      "updated": "2024-11-03T10:41:05Z",
+      "abstract": "The BCJR algorithm is renowned for its optimal equalization, minimizing bit error rate (BER) over intersymbol interference (ISI) channels. However, its complexity grows exponentially with the channel memory, posing a significant computational burden. In contrast, the linear minimum mean square error (LMMSE) equalizer offers a notably simpler solution, albeit with reduced performance compared to the BCJR. Recently, Neural Network (NN) based equalizers have emerged as promising alternatives. Trained to map observations to the original transmitted symbols, these NNs demonstrate performance similar to the BCJR algorithm. However, they often entail a high number of learnable parameters, resulting in complexities comparable to or even larger than the BCJR. This paper explores the potential of NN-based equalization with a reduced number of learnable parameters and low complexity. We introduce a NN equalizer with complexity comparable to LMMSE, surpassing LMMSE performance and achieving a modest performance gap from the BCJR equalizer. A significant challenge with NNs featuring a limited parameter count is their susceptibility to converging to local minima, leading to suboptimal performance. To address this challenge, we propose a novel NN equalizer architecture with a unique initialization approach based on LMMSE. This innovative method effectively overcomes optimization challenges and enhances LMMSE performance, applicable both with and without turbo decoding.",
+      "url": "http://arxiv.org/abs/2411.01517v1",
+      "verdict": "VERIFIED",
+      "reason": "title matches the record"
+    }
+  ]
+}
