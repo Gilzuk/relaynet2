@@ -1,11 +1,12 @@
 {
   "topic": "BER-optimal (BCJR/APP) benchmarking of learned detectors on ISI channels",
-  "checked_at": "2026-09-06T06:04:37.026715+00:00",
+  "checked_at": "2026-09-06T06:10:31.484322+00:00",
   "standard": "deep-research IRON RULE #4 -- gray zone is a FAIL",
   "counts": {
     "VERIFIED": 7,
     "EQUIVALENT": 0,
     "ATTESTED": 0,
+    "ACCEPTED": 0,
     "MISMATCH": 0,
     "FAIL": 0
   },

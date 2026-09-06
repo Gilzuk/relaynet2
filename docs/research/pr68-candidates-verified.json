@@ -1,11 +1,12 @@
 {
   "topic": "PR #68 admitted corpus -- publisher-record re-verification",
-  "checked_at": "2026-09-06T06:05:13.701535+00:00",
+  "checked_at": "2026-09-06T06:11:14.267316+00:00",
   "standard": "deep-research IRON RULE #4 -- gray zone is a FAIL",
   "counts": {
     "VERIFIED": 11,
     "EQUIVALENT": 0,
     "ATTESTED": 0,
+    "ACCEPTED": 0,
     "MISMATCH": 0,
     "FAIL": 0
   },

@@ -1,13 +1,14 @@
 {
   "topic": "thesis bibliography -- full publisher-record verification",
-  "checked_at": "2026-09-06T06:08:45.741724+00:00",
+  "checked_at": "2026-09-06T06:14:48.036274+00:00",
   "standard": "deep-research IRON RULE #4 -- gray zone is a FAIL",
   "counts": {
     "VERIFIED": 52,
     "EQUIVALENT": 2,
     "ATTESTED": 9,
+    "ACCEPTED": 1,
     "MISMATCH": 0,
-    "FAIL": 1
+    "FAIL": 0
   },
   "results": [
     {
@@ -493,14 +494,11 @@
     },
     {
       "bibkey": "Higgins2017betaVAE",
-      "arxiv_id": null,
-      "doi": null,
       "reported_title": "$\\beta$-VAE: Learning basic visual concepts with a constrained variational framework",
-      "route": "crossref-title",
-      "verdict": "FAIL",
-      "nearest_title": "A beta-variational autoencoder (beta-VAE) to retrieve relevant degrees of freedom in a physical system",
-      "nearest_url": "https://doi.org/10.1117/12.2632749",
-      "reason": "no record with this title in the top 10 Crossref results (nearest: 'A beta-variational autoencoder (beta-VAE) to retrieve relevant degrees of freedom in a physical system' at https://doi.org/10.1117/12.2632749); supply a DOI to pin it"
+      "route": "author-acceptance",
+      "verdict": "ACCEPTED",
+      "url": null,
+      "reason": "author accepted the entry as correct; no record resolved and no link supplied, so this is weaker than attestation: ICLR 2017, OpenReview only -- no Crossref DOI and no arXiv preprint of this paper. Accepted by the author as correct rather than pinned to the later 'Understanding disentangling in beta-VAE' (arXiv:1804.03599), which is a different paper."
     },
     {
       "bibkey": "He2015DelvingRectifiers",
