@@ -1,14 +1,18 @@
 {
   "topic": "PR #68 admitted corpus -- publisher-record re-verification",
-  "checked_at": "2026-09-05T17:17:51.266555+00:00",
+  "checked_at": "2026-09-06T06:11:14.267316+00:00",
   "standard": "deep-research IRON RULE #4 -- gray zone is a FAIL",
   "counts": {
     "VERIFIED": 11,
+    "EQUIVALENT": 0,
+    "ATTESTED": 0,
+    "ACCEPTED": 0,
     "MISMATCH": 0,
     "FAIL": 0
   },
   "results": [
     {
+      "bibkey": null,
       "arxiv_id": null,
       "doi": "10.1109/JSTSP.2017.2784180",
       "reported_title": "Deep Learning Based Communication Over the Air",
@@ -28,6 +32,7 @@
       "reason": "title matches the record"
     },
     {
+      "bibkey": null,
       "arxiv_id": null,
       "doi": "10.1109/ICASSP40776.2020.9054093",
       "reported_title": "A Learning Approach to Cooperative Communication System Design",
@@ -48,6 +53,7 @@
       "reason": "title matches the record"
     },
     {
+      "bibkey": null,
       "arxiv_id": null,
       "doi": "10.1109/TSP.2019.2899805",
       "reported_title": "Learning to Detect",
@@ -66,6 +72,7 @@
       "reason": "title matches the record"
     },
     {
+      "bibkey": null,
       "arxiv_id": null,
       "doi": null,
       "reported_title": "Capacity theorems for the relay channel",
@@ -80,9 +87,10 @@
       "abstract": "",
       "url": "https://doi.org/10.1109/tit.1979.1056084",
       "verdict": "VERIFIED",
-      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+      "reason": "title matches the record; found by title search, so this confirms existence, not the reference's other fields"
     },
     {
+      "bibkey": null,
       "arxiv_id": null,
       "doi": null,
       "reported_title": "Cooperative diversity in wireless networks: Efficient protocols and outage behavior",
@@ -98,9 +106,10 @@
       "abstract": "",
       "url": "https://doi.org/10.1109/tit.2004.838089",
       "verdict": "VERIFIED",
-      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+      "reason": "title matches the record; found by title search, so this confirms existence, not the reference's other fields"
     },
     {
+      "bibkey": null,
       "arxiv_id": null,
       "doi": null,
       "reported_title": "Neural Network Detection of Data Sequences in Communication Systems",
@@ -115,9 +124,10 @@
       "abstract": "",
       "url": "https://doi.org/10.1109/tsp.2018.2868322",
       "verdict": "VERIFIED",
-      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+      "reason": "title matches the record; found by title search, so this confirms existence, not the reference's other fields"
     },
     {
+      "bibkey": null,
       "arxiv_id": null,
       "doi": null,
       "reported_title": "On deep learning-based channel decoding",
@@ -134,9 +144,10 @@
       "abstract": "",
       "url": "https://doi.org/10.1109/ciss.2017.7926071",
       "verdict": "VERIFIED",
-      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+      "reason": "title matches the record; found by title search, so this confirms existence, not the reference's other fields"
     },
     {
+      "bibkey": null,
       "arxiv_id": null,
       "doi": null,
       "reported_title": "Learning to decode linear codes using deep learning",
@@ -152,9 +163,10 @@
       "abstract": "",
       "url": "https://doi.org/10.1109/allerton.2016.7852251",
       "verdict": "VERIFIED",
-      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+      "reason": "title matches the record; found by title search, so this confirms existence, not the reference's other fields"
     },
     {
+      "bibkey": null,
       "arxiv_id": null,
       "doi": "10.1109/TCCN.2017.2758370",
       "reported_title": "An Introduction to Deep Learning for the Physical Layer",
@@ -172,6 +184,7 @@
       "reason": "title matches the record"
     },
     {
+      "bibkey": null,
       "arxiv_id": null,
       "doi": null,
       "reported_title": "Power of Deep Learning for Channel Estimation and Signal Detection in OFDM Systems",
@@ -187,9 +200,10 @@
       "abstract": "",
       "url": "https://doi.org/10.1109/lwc.2017.2757490",
       "verdict": "VERIFIED",
-      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+      "reason": "title matches the record; found by title search, so this confirms existence, not the reference's other fields"
     },
     {
+      "bibkey": null,
       "arxiv_id": null,
       "doi": null,
       "reported_title": "Process-and-Forward: Deep Joint Source-Channel Coding Over Cooperative Relay Networks",
@@ -207,7 +221,7 @@
       "abstract": "",
       "url": "https://doi.org/10.1109/jsac.2025.3531579",
       "verdict": "VERIFIED",
-      "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
+      "reason": "title matches the record; found by title search, so this confirms existence, not the reference's other fields"
     }
   ]
 }

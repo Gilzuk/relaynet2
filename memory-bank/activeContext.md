@@ -1335,3 +1335,59 @@ Engineering *Guidelines* A.3 exactly -- 3 cm binding side, 2 cm on the other
 three, measured from the built PDF in commit `8610554`. Cutting further would
 breach the format rule rather than exploit it, so the five pages have to come
 out of content.
+
+## Stage 4.5 Mode 2 (fabricated / unverifiable citations) — CLEAR
+
+Every entry in `thesis/chapters/references.bib` has been checked against a
+publisher or preprint record by `.github/workflows/verify-citations.yml`, which
+runs `scripts/verify_citations.py` on a CI runner. The development container
+cannot do this: arxiv.org, api.crossref.org, wikipedia and
+api.semanticscholar.org are all refused by its egress proxy, so a source can be
+searched for here but never checked against its own record.
+
+Final state across the three corpora — **0 MISMATCH, 0 FAIL in all of them**:
+
+| corpus | VERIFIED | EQUIVALENT | ATTESTED | ACCEPTED |
+|---|---|---|---|---|
+| `bibliography-verified.json` (64) | 52 | 2 | 9 | 1 |
+| `pr68-candidates-verified.json` (11) | 11 | 0 | 0 | 0 |
+| `bcjr-candidates-verified.json` (7) | 7 | 0 | 0 | 0 |
+
+Nothing in the bibliography is fabricated or misattributed. What the verdicts
+mean, weakest last:
+
+- **VERIFIED** — an arXiv id or DOI resolved, or a Crossref title search found a
+  record with this exact title. A title search confirms the work exists; it does
+  not confirm the entry's year, venue, volume or pages.
+- **EQUIVALENT** — the record's title matches once a trailing parenthetical
+  annotation or a spelled-out part label is removed. Two entries: IEEE files the
+  BCJR paper as "… symbol error rate (Corresp.)", and Hanly & Tse's "---part II:"
+  as ". II.". Kept out of VERIFIED so that every entry needing the weaker
+  comparison stays visible.
+- **ATTESTED** — no machine-resolvable record; the author supplied a link. Nine
+  entries: six monographs plus Nosratinia 2004, Akdemir 2024 and Gündüz 2019.
+  `LuckySalzWeldon1968` carries an `_attestation_note`: the supplied link is
+  Garfield's *Citation Classics* commentary, not the book's own record.
+- **ACCEPTED** — no record and no link; the author accepted the entry as correct.
+  One entry, Higgins et al.'s β-VAE (ICLR 2017, OpenReview-only). Deliberately
+  **not** pinned to arXiv:1804.03599, "Understanding disentangling in β-VAE",
+  which is a different paper.
+
+### Two things this exposed, both fixed
+1. **Four entries were failing on the comparator, not the reference.**
+   `normalise()` collapsed whitespace *before* stripping punctuation, so an em
+   dash left a doubled space and a title failed to match itself. Punctuation now
+   becomes a space and whitespace collapses after.
+2. **Verdict rows were written with `bibkey: null`**, so a FAIL in the JSON could
+   not be traced back to the entry it came from.
+
+A failed title search now also records the nearest hit's DOI, so an entry can be
+pinned without redoing the search by hand.
+
+**Do not fold ACCEPTED or ATTESTED into a "verified" headline count.** The whole
+value of the run is that "a human confirmed this against a record" and "a human
+says this is right" stay distinguishable. `tests/test_verify_citations.py` (27
+tests) holds the line, including the negative cases: Part I must never match
+Part II, "(Corresp.)" must not excuse *symbol* → *bit*, a longer title that
+contains the reported one is not a match, and neither an attestation nor an
+acceptance may short-circuit a lookup that could have resolved.

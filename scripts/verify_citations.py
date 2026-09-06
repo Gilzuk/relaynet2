@@ -11,7 +11,24 @@ network access -- a CI runner -- and records the outcome.
 The standard it applies (deep-research skill, IRON RULE #4): a source that
 cannot be confirmed is a FAIL, not an "uncertain". Three verdicts:
 
+  ATTESTED    no machine-resolvable record, but the author supplied a link to
+              the paper. Recorded as author attestation, kept distinct from
+              VERIFIED: it is evidence a human checked, not a publisher-record
+              match, and it says nothing about the entry's year, venue or pages.
+  ACCEPTED    weaker still: no record, no link -- the author accepted the entry
+              as correct from their own knowledge of it. The one entry in this
+              bibliography that earns it is OpenReview-only, so there is nothing
+              to resolve and nothing to link that is not already the paper. It
+              is labelled rather than quietly promoted, because the difference
+              between "a human confirmed this against a record" and "a human
+              says this is right" is the whole point of keeping the buckets
+              apart.
   VERIFIED    the record exists and its title matches what was reported
+  EQUIVALENT  the record exists and its title matches once the things a
+              publisher adds but a bibliography does not are removed: a
+              trailing parenthetical annotation, a spelled-out part label.
+              Kept distinct from VERIFIED so that every entry which needed
+              the weaker comparison is visible rather than folded in.
   MISMATCH    the record exists but the title differs -- treat as FAIL. This
               is the signature of a fabricated or mashed-up reference, which
               is the hardest kind to catch by eye, so it is reported loudly
@@ -42,9 +59,51 @@ ATOM = "{http://www.w3.org/2005/Atom}"
 UA = "relaynet2-citation-check (thesis research log; contact via repo issues)"
 
 
+_PARENTHETICAL = re.compile(r"\s*\([^)]*\)\s*$")
+_PART_LABEL = re.compile(r"\b(?:part|pt)\b")
+
+
 def normalise(t):
-    """Compare titles on words, not whitespace or punctuation."""
-    return re.sub(r"[^a-z0-9 ]", "", re.sub(r"\s+", " ", (t or "").lower())).strip()
+    """Compare titles on words, not whitespace or punctuation.
+
+    Punctuation is replaced by a space and the whitespace collapsed after, not
+    before: the original did it the other way round, so an em dash became a
+    doubled space and "Network Optimization -- Using Relays as Neurons" failed
+    to match the same title written without the dash. Replacing rather than
+    deleting also keeps "channels. II." from becoming "channelsii".
+    """
+    return re.sub(r"\s+", " ", re.sub(r"[^a-z0-9 ]", " ", (t or "").lower())).strip()
+
+
+def title_relation(reported, actual):
+    """How a record's title relates to the reported one.
+
+    Returns ("exact", None) when the two normalise to the same words,
+    ("equivalent", rules) when they do so only after removing what a publisher
+    record carries and a bibliography does not, and (None, None) otherwise.
+
+    Two such differences show up in this bibliography. IEEE files the BCJR
+    paper as "... minimizing symbol error rate (Corresp.)", a record annotation
+    rather than part of the title; and it files Hanly & Tse's "Multiaccess
+    fading channels---part II: ..." as "Multiaccess fading channels. II. ...",
+    dropping the word "part". Each rule is applied to both titles, so neither
+    can make two different papers match unless they differ by nothing else.
+    """
+    if normalise(reported) == normalise(actual):
+        return "exact", None
+    rules = []
+    a, b = (reported or "").strip(), (actual or "").strip()
+    if _PARENTHETICAL.search(a) or _PARENTHETICAL.search(b):
+        a, b = _PARENTHETICAL.sub("", a), _PARENTHETICAL.sub("", b)
+        rules.append("a trailing parenthetical annotation")
+    a, b = normalise(a), normalise(b)
+    if a != b:
+        a2, b2 = (re.sub(r"\s+", " ", _PART_LABEL.sub(" ", x)).strip()
+                  for x in (a, b))
+        if a2 != b2:
+            return None, None
+        rules.append("a spelled-out part label")
+    return "equivalent", " and ".join(rules)
 
 
 def fetch(arxiv_id, retries=3):
@@ -123,8 +182,25 @@ def verify(cand):
     are right, and it is labelled as such in the reason.
     """
     reported = cand["reported_title"]
-    cid = cand.get("arxiv_id") or cand.get("doi") or "(title search)"
-    row = {"arxiv_id": cand.get("arxiv_id"), "doi": cand.get("doi"),
+    # a resolvable identifier always wins: attestation is the fallback for
+    # entries no index can confirm, never a shortcut past one that can
+    pinned = cand.get("arxiv_id") or cand.get("doi")
+    if cand.get("attested_url") and not pinned:
+        return {"bibkey": cand.get("bibkey"), "reported_title": reported,
+                "route": "author-attestation", "verdict": "ATTESTED",
+                "url": cand["attested_url"],
+                "reason": "author supplied a link to the paper; not a "
+                          "publisher-record match"}
+    if cand.get("accepted_by_author") and not pinned:
+        return {"bibkey": cand.get("bibkey"), "reported_title": reported,
+                "route": "author-acceptance", "verdict": "ACCEPTED",
+                "url": None,
+                "reason": "author accepted the entry as correct; no record "
+                          "resolved and no link supplied, so this is weaker "
+                          "than attestation: "
+                          + str(cand.get("accepted_by_author"))}
+    row = {"bibkey": cand.get("bibkey"),
+           "arxiv_id": cand.get("arxiv_id"), "doi": cand.get("doi"),
            "reported_title": reported, "route": None}
     try:
         if cand.get("arxiv_id"):
@@ -138,23 +214,34 @@ def verify(cand):
             row["route"] = "crossref-title"
             items = fetch_json(CROSSREF_QUERY.format(
                 urllib.parse.quote(reported)))["message"]["items"]
-            rec = None
-            for it in items:
-                cand_rec = _crossref_record(it)
-                if normalise(cand_rec["title"]) == normalise(reported):
-                    rec = cand_rec
+            rec, relation, rules = None, None, None
+            # exact first, over the whole result set: an equivalent match
+            # further down the list must never displace an exact one
+            for want in ("exact", "equivalent"):
+                for it in items:
+                    cand_rec = _crossref_record(it)
+                    rel, rl = title_relation(reported, cand_rec["title"])
+                    if rel == want:
+                        rec, relation, rules = cand_rec, rel, rl
+                        break
+                if rec is not None:
                     break
             if rec is None:
-                # No exact title match. Reporting the top hit as a MISMATCH
-                # would accuse a possibly-correct reference of being a
-                # different paper; a title search cannot support that claim.
-                # MISMATCH is reserved for a pinned identifier resolving
-                # elsewhere. This is an unresolved lookup, i.e. a FAIL.
-                near = _crossref_record(items[0])["title"] if items else "--"
-                row.update(verdict="FAIL",
+                # No title match. Reporting the top hit as a MISMATCH would
+                # accuse a possibly-correct reference of being a different
+                # paper; a title search cannot support that claim. MISMATCH is
+                # reserved for a pinned identifier resolving elsewhere. This is
+                # an unresolved lookup, i.e. a FAIL. The nearest hit's DOI goes
+                # in the record so the entry can be pinned without re-running
+                # the search by hand.
+                nearest = _crossref_record(items[0]) if items else None
+                near = nearest["title"] if nearest else "--"
+                near_doi = (nearest["id"] if nearest else None)
+                row.update(verdict="FAIL", nearest_title=near,
+                           nearest_url=near_doi,
                            reason="no record with this title in the top 10 "
-                                  f"Crossref results (nearest: {near!r}); "
-                                  "supply a DOI to pin it")
+                                  f"Crossref results (nearest: {near!r} at "
+                                  f"{near_doi}); supply a DOI to pin it")
                 return row
     except Exception as e:                       # network, parse, anything
         row.update(verdict="FAIL", reason=f"lookup error: {e}")
@@ -165,11 +252,17 @@ def verify(cand):
     row.update(actual_title=rec["title"], authors=rec["authors"],
                published=rec["published"], updated=rec["updated"],
                abstract=rec["abstract"], url=rec["id"])
-    if normalise(rec["title"]) == normalise(reported):
-        note = ("title matches the record" if row["route"] != "crossref-title"
-                else "title matches a Crossref record found by title search; "
-                     "confirms existence, not the reference's other fields")
-        row.update(verdict="VERIFIED", reason=note)
+    relation, rules = title_relation(reported, rec["title"])
+    searched = row["route"] == "crossref-title"
+    caveat = ("" if not searched else
+              "; found by title search, so this confirms existence, not the "
+              "reference's other fields")
+    if relation == "exact":
+        row.update(verdict="VERIFIED", reason="title matches the record" + caveat)
+    elif relation == "equivalent":
+        row.update(verdict="EQUIVALENT", title_normalisation=rules,
+                   reason=f"title matches the record once {rules} is removed"
+                          + caveat)
     else:
         row.update(verdict="MISMATCH",
                    reason="record exists but the title differs from what was "
@@ -183,13 +276,14 @@ BEGIN, END = "<!-- VERIFICATION:BEGIN -->", "<!-- VERIFICATION:END -->"
 def render_into_log(path, out):
     """Replace the marked block in the markdown log. Idempotent by design:
     the block is regenerated whole, so reruns do not stack entries."""
-    icon = {"VERIFIED": "VERIFIED", "MISMATCH": "MISMATCH (treat as FAIL)",
-            "FAIL": "FAIL"}
+    icon = {"MISMATCH": "MISMATCH (treat as FAIL)"}
     c = out["counts"]
     L = [BEGIN,
          f"_Checked {out['checked_at']}. Standard: {out['standard']}._",
          "",
-         f"**{c['VERIFIED']} verified, {c['MISMATCH']} mismatched, "
+         f"**{c['VERIFIED']} verified, {c.get('EQUIVALENT', 0)} equivalent, "
+         f"{c.get('ATTESTED', 0)} attested, {c.get('ACCEPTED', 0)} accepted, "
+         f"{c['MISMATCH']} mismatched, "
          f"{c['FAIL']} failed.**",
          "",
          "| arXiv | Verdict | Title on the record | Published |",
@@ -199,12 +293,17 @@ def render_into_log(path, out):
         if len(title) > 90:
             title = title[:87] + "..."
         pub = (r.get("published") or "--")[:10]
-        L.append(f"| {r['arxiv_id']} | {icon[r['verdict']]} | {title} | {pub} |")
-    bad = [r for r in out["results"] if r["verdict"] != "VERIFIED"]
+        ident = r.get("arxiv_id") or r.get("doi") or r.get("bibkey") or "--"
+        verdict = icon.get(r["verdict"], r["verdict"])
+        L.append(f"| {ident} | {verdict} | {title} | {pub} |")
+    bad = [r for r in out["results"]
+           if r["verdict"] not in ("VERIFIED", "EQUIVALENT", "ATTESTED",
+                                   "ACCEPTED")]
     if bad:
         L += ["", "Not citable:"]
         for r in bad:
-            L.append(f"- **{r['arxiv_id']}** -- {r['reason']}")
+            ident = r.get("arxiv_id") or r.get("doi") or r.get("bibkey") or "--"
+            L.append(f"- **{ident}** -- {r['reason']}")
     L += ["", "Full records, including authors and abstracts, are in "
               "`docs/research/bcjr-candidates-verified.json`.", END]
     block = "\n".join(L)
@@ -243,7 +342,8 @@ def main():
         time.sleep(3)                            # arXiv asks for >=3s between calls
 
     counts = {v: sum(1 for r in rows if r["verdict"] == v)
-              for v in ("VERIFIED", "MISMATCH", "FAIL")}
+              for v in ("VERIFIED", "EQUIVALENT", "ATTESTED", "ACCEPTED",
+                        "MISMATCH", "FAIL")}
     out = {"topic": src.get("topic"),
            "checked_at": datetime.now(timezone.utc).isoformat(),
            "standard": "deep-research IRON RULE #4 -- gray zone is a FAIL",
@@ -256,11 +356,13 @@ def main():
         render_into_log(a.log, out)
         print(f"  log block updated -> {a.log}")
 
-    print(f"\n  {counts['VERIFIED']} verified, {counts['MISMATCH']} mismatched, "
-          f"{counts['FAIL']} failed -> {a.out}")
-    # A citable source is the point; a run that verifies nothing has failed at
+    print(f"\n  {counts['VERIFIED']} verified, {counts['EQUIVALENT']} equivalent, "
+          f"{counts['ATTESTED']} attested, {counts['ACCEPTED']} accepted, "
+          f"{counts['MISMATCH']} mismatched, {counts['FAIL']} failed -> {a.out}")
+    # A citable source is the point; a run that resolves nothing has failed at
     # its job even though every lookup "worked".
-    return 0 if counts["VERIFIED"] else 1
+    return 0 if (counts["VERIFIED"] or counts["EQUIVALENT"]
+                 or counts["ATTESTED"] or counts["ACCEPTED"]) else 1
 
 
 if __name__ == "__main__":

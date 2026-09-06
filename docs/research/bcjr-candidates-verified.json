@@ -1,14 +1,18 @@
 {
   "topic": "BER-optimal (BCJR/APP) benchmarking of learned detectors on ISI channels",
-  "checked_at": "2026-09-05T17:17:14.050921+00:00",
+  "checked_at": "2026-09-06T06:10:31.484322+00:00",
   "standard": "deep-research IRON RULE #4 -- gray zone is a FAIL",
   "counts": {
     "VERIFIED": 7,
+    "EQUIVALENT": 0,
+    "ATTESTED": 0,
+    "ACCEPTED": 0,
     "MISMATCH": 0,
     "FAIL": 0
   },
   "results": [
     {
+      "bibkey": null,
       "arxiv_id": "2006.01125",
       "doi": null,
       "reported_title": "Neural Network-Aided BCJR Algorithm for Joint Symbol Detection and Channel Decoding",
@@ -28,6 +32,7 @@
       "reason": "title matches the record"
     },
     {
+      "bibkey": null,
       "arxiv_id": "2405.10814",
       "doi": null,
       "reported_title": "Data-Driven Symbol Detection for Intersymbol Interference Channels with Bursty Impulsive Noise",
@@ -48,6 +53,7 @@
       "reason": "title matches the record"
     },
     {
+      "bibkey": null,
       "arxiv_id": "2411.01517",
       "doi": null,
       "reported_title": "Enhancing LMMSE Performance with Modest Complexity Increase via Neural Network Equalizers",
@@ -66,6 +72,7 @@
       "reason": "title matches the record"
     },
     {
+      "bibkey": null,
       "arxiv_id": "2203.16417",
       "doi": null,
       "reported_title": "Low-complexity Near-optimum Symbol Detection Based on Neural Enhancement of Factor Graphs",
@@ -83,6 +90,7 @@
       "reason": "title matches the record"
     },
     {
+      "bibkey": null,
       "arxiv_id": "2401.12645",
       "doi": null,
       "reported_title": "On the Robustness of Deep Learning-aided Symbol Detectors to Varying Conditions and Imperfect Channel Knowledge",
@@ -104,6 +112,7 @@
       "reason": "title matches the record"
     },
     {
+      "bibkey": null,
       "arxiv_id": "2608.04155",
       "doi": null,
       "reported_title": "Low-Complexity Recurrent Neural Network Detector for Faster-than-Nyquist Signaling",
@@ -122,6 +131,7 @@
       "reason": "title matches the record"
     },
     {
+      "bibkey": null,
       "arxiv_id": "2607.20745",
       "doi": null,
       "reported_title": "Self-Attention Transformer-Based Detector for Faster-than-Nyquist Signaling",

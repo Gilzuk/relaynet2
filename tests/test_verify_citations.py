@@ -142,3 +142,145 @@ def test_title_search_with_no_exact_match_is_a_fail_not_a_mismatch(monkeypatch, 
     r = vc.verify({"reported_title": "An Introduction to Deep Learning for the Physical Layer"})
     assert r["verdict"] == "FAIL"
     assert "supply a DOI" in r["reason"]
+
+
+def test_author_attestation_is_its_own_verdict_not_verified():
+    """An author's link is evidence, but not a publisher-record match.
+
+    Folding it into VERIFIED would let a count of "64/64 verified" imply
+    machine confirmation the run never performed.
+    """
+    r = vc.verify({"bibkey": "X", "reported_title": REAL,
+                   "attested_url": "https://ieeexplore.ieee.org/document/8642915"})
+    assert r["verdict"] == "ATTESTED"
+    assert r["route"] == "author-attestation"
+    assert "not a publisher-record match" in r["reason"]
+
+
+def test_attestation_does_not_short_circuit_a_resolvable_identifier(monkeypatch):
+    """A DOI beats an attestation: prefer the record when one exists."""
+    monkeypatch.setattr(vc, "fetch_json", lambda _u, retries=3: {
+        "message": {"title": [REAL], "author": [], "issued": {}, "DOI": "10.1/x"}})
+    r = vc.verify({"bibkey": "X", "reported_title": REAL, "doi": "10.1/x",
+                   "attested_url": "https://example.org/paper"})
+    assert r["verdict"] == "VERIFIED" and r["route"] == "crossref-doi"
+
+
+# --- title equivalence -----------------------------------------------------
+# Four bibliography entries sat in the FAIL bucket because the comparison, not
+# the reference, was wrong: normalise() collapsed whitespace before stripping
+# punctuation, so an em dash became a doubled space and a correct title failed
+# to match itself. The rest is what a publisher record carries and a
+# bibliography does not. The negative tests below are the point of this block:
+# a looser comparison that also matches two different papers is worse than the
+# strict one it replaces.
+
+def test_dash_in_the_record_is_not_a_difference():
+    """The normalise() bug: "A -- B" must match "A B", not "A  B"."""
+    assert vc.title_relation("Network Optimization Using Relays as Neurons",
+                             "Network Optimization -- Using Relays as Neurons") \
+        == ("exact", None)
+
+
+def test_punctuation_becomes_a_space_not_nothing():
+    assert vc.normalise("Multiaccess fading channels. II. Delay-limited") \
+        == "multiaccess fading channels ii delay limited"
+
+
+def test_trailing_annotation_is_equivalent_not_verified():
+    """IEEE files the BCJR paper with a "(Corresp.)" suffix. Same paper --
+    but it matched only after a weaker comparison, and the record says so."""
+    rel, rules = vc.title_relation(
+        "Optimal decoding of linear codes for minimizing symbol error rate",
+        "Optimal decoding of linear codes for minimizing symbol error rate (Corresp.)")
+    assert rel == "equivalent" and "parenthetical" in rules
+
+
+def test_spelled_out_part_label_is_equivalent():
+    rel, rules = vc.title_relation(
+        "Multiaccess fading channels---part II: Delay-limited capacities",
+        "Multiaccess fading channels. II. Delay-limited capacities")
+    assert rel == "equivalent" and "part label" in rules
+
+
+def test_part_i_never_matches_part_ii():
+    """The failure mode the part-label rule could introduce, and must not."""
+    assert vc.title_relation(
+        "Multiaccess fading channels---part I: Polymatroid structure",
+        "Multiaccess fading channels. II. Delay-limited capacities") == (None, None)
+
+
+def test_a_longer_title_containing_the_reported_one_is_not_equivalent():
+    """The nearest Crossref hit for WGAN-GP embeds the reported title whole."""
+    assert vc.title_relation(
+        "Improved training of Wasserstein GANs",
+        "Self-supervised non-rigid structure from motion with improved "
+        "training of Wasserstein GANs") == (None, None)
+
+
+def test_a_swapped_word_under_an_annotation_is_still_no_match():
+    """Stripping "(Corresp.)" must not also excuse symbol -> bit."""
+    assert vc.title_relation(
+        "Optimal decoding of linear codes for minimizing symbol error rate",
+        "Optimal decoding of linear codes for minimizing bit error rate (Corresp.)") \
+        == (None, None)
+
+
+def test_equivalent_title_gets_its_own_verdict(monkeypatch):
+    _stub(monkeypatch, _record(REAL + " (Corresp.)"))
+    r = vc.verify({"arxiv_id": "x", "reported_title": REAL})
+    assert r["verdict"] == "EQUIVALENT"
+    assert r["title_normalisation"]
+
+
+def test_exact_match_wins_over_an_equivalent_one_further_down(monkeypatch):
+    """An equivalent hit at position 1 must not displace the exact hit at 2."""
+    items = [{"title": [REAL + " (Corresp.)"], "DOI": "10.0/near"},
+             {"title": [REAL], "DOI": "10.0/exact"}]
+    monkeypatch.setattr(vc, "fetch_json",
+                        lambda _u, retries=3: {"message": {"items": items}})
+    r = vc.verify({"reported_title": REAL})
+    assert r["verdict"] == "VERIFIED" and r["url"].endswith("10.0/exact")
+
+
+def test_a_failed_title_search_records_the_nearest_doi(monkeypatch):
+    """So the entry can be pinned without redoing the search by hand."""
+    items = [{"title": ["Something else entirely"], "DOI": "10.0/near"}]
+    monkeypatch.setattr(vc, "fetch_json",
+                        lambda _u, retries=3: {"message": {"items": items}})
+    r = vc.verify({"reported_title": REAL})
+    assert r["verdict"] == "FAIL"
+    assert r["nearest_url"] == "https://doi.org/10.0/near"
+
+
+def test_the_bibkey_survives_into_the_record(monkeypatch):
+    """Verdicts were being written with bibkey: None, so a FAIL in the JSON
+    could not be traced back to the entry it came from."""
+    _stub(monkeypatch, _record(REAL))
+    assert vc.verify({"bibkey": "K2024", "arxiv_id": "x",
+                      "reported_title": REAL})["bibkey"] == "K2024"
+
+
+def test_author_acceptance_is_weaker_than_attestation():
+    """No record and no link is not the same evidence as a supplied link, and
+    must not be counted as though it were."""
+    r = vc.verify({"bibkey": "H2017", "reported_title": "beta-VAE",
+                   "accepted_by_author": "OpenReview only"})
+    assert r["verdict"] == "ACCEPTED" and r["url"] is None
+    assert "weaker than attestation" in r["reason"]
+
+
+def test_acceptance_does_not_short_circuit_a_resolvable_identifier(monkeypatch):
+    """The same precedence bug attestation had: a note must never stop a
+    lookup that could have resolved."""
+    _stub(monkeypatch, _record(REAL))
+    r = vc.verify({"arxiv_id": "x", "reported_title": REAL,
+                   "accepted_by_author": "author says so"})
+    assert r["verdict"] == "VERIFIED" and r["route"] == "arxiv"
+
+
+def test_a_supplied_link_beats_a_bare_acceptance():
+    """A candidate carrying both is attested, not merely accepted."""
+    r = vc.verify({"reported_title": "T", "attested_url": "https://example.org/p",
+                   "accepted_by_author": "author says so"})
+    assert r["verdict"] == "ATTESTED"

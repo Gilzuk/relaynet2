@@ -9,10 +9,11 @@ name: Verify citations
 on:
   workflow_dispatch:
   push:
-    branches: [claude/research-bcjr-benchmark, claude/verify-pr68]
+    branches: [claude/research-bcjr-benchmark, claude/verify-pr68, claude/verify-full-bibliography]
     paths:
       - docs/research/bcjr-candidates.json
       - docs/research/pr68-candidates.json
+      - docs/research/bibliography-candidates.json
       - scripts/verify_citations.py
       - .github/workflows/verify-citations.yml
 
@@ -46,6 +47,14 @@ jobs:
             --candidates docs/research/pr68-candidates.json \
             --out docs/research/pr68-candidates-verified.json
 
+      - name: Verify the full thesis bibliography
+        id: verifybib
+        continue-on-error: true
+        run: |
+          python3 scripts/verify_citations.py \
+            --candidates docs/research/bibliography-candidates.json \
+            --out docs/research/bibliography-verified.json
+
       - name: Commit the verdicts
         run: |
           git config user.name  "github-actions[bot]"
@@ -54,7 +63,8 @@ jobs:
           # and that must not stop the other corpus's verdicts being recorded
           for f in docs/research/bcjr-candidates-verified.json \
                    docs/research/bcjr-benchmark-log.md \
-                   docs/research/pr68-candidates-verified.json; do
+                   docs/research/pr68-candidates-verified.json \
+                   docs/research/bibliography-verified.json; do
             [ -f "$f" ] && git add "$f"
           done
           if git diff --cached --quiet; then
