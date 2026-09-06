@@ -1,3 +1,0 @@
-Local ch00 files:
-  chapters\ch00_cover_page.tex
-  chapters\ch00_frontmatter.tex

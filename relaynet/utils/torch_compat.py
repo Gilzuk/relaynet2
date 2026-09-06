@@ -35,11 +35,20 @@ def to_numpy(value, dtype=None):
 
 
 def save_state(state, path):
-    """Save an arbitrary state dict.  Uses ``torch.save`` when available, else numpy."""
+    """Save an arbitrary state dict.  Uses ``torch.save`` when available, else numpy.
+
+    The NumPy fallback writes through an explicit file handle rather than
+    passing the path to :func:`numpy.save`. Given a path, ``np.save`` appends a
+    ``.npy`` suffix unless one is already present, so a checkpoint requested at
+    ``mlp.pt`` would land at ``mlp.pt.npy`` and :func:`load_state` would then
+    fail to find it. Writing to an open handle keeps the caller's filename
+    exactly, so the round-trip works for any extension with or without torch.
+    """
     if torch is not None:
         torch.save(state, path)
     else:
-        np.save(path, state, allow_pickle=True)
+        with open(path, "wb") as fh:
+            np.save(fh, state, allow_pickle=True)
 
 
 def load_state(path):

@@ -23,7 +23,18 @@ universal claim -- reported honestly as numpy-MLP vs Python-Viterbi.
 """
 
 import time
+import os
 import numpy as np
+
+# Results are written into the repository, never /tmp: a container reset
+# discards /tmp, and results that reach the repo only by manual copy drift
+# out of step with the scripts that made them (CLAUDE.md).
+_HERE = os.path.dirname(os.path.abspath(__file__))
+_OUT_NPY = os.path.join(_HERE, 'e6_unknown_channel_results')
+_OUT_FIG = os.path.join(_HERE, 'results')
+os.makedirs(_OUT_NPY, exist_ok=True)
+os.makedirs(_OUT_FIG, exist_ok=True)
+
 
 from relaynet.relays import MLPRelay
 from relaynet.relays.viterbi import ViterbiMLSERelay
@@ -121,7 +132,7 @@ def main():
     print("The wall-clock ratio above is numpy-MLP vs Python-Viterbi in THIS codebase -- implementation")
     print("specific, not a universal claim. The M^L vs constant scaling in panel (a) is the robust claim.")
 
-    output_path = '/tmp/e6_complexity_ported_results.npy'
+    output_path = os.path.join(_OUT_NPY, 'e6_complexity_ported_results.npy')
     np.save(output_path, {
         'panel_a_grid': grid, 'panel_a': panel_a,
         'mlp_flops': mlp_flops, 'mlp_params': mlp_params,

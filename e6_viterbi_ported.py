@@ -7,7 +7,18 @@ Viterbi-est:   200 pilot symbols -> LS channel estimate -> MLSE (practical).
 Following PORTING.md section 1 acceptance criteria.
 """
 
+import os
 import numpy as np
+
+# Results are written into the repository, never /tmp: a container reset
+# discards /tmp, and results that reach the repo only by manual copy drift
+# out of step with the scripts that made them (CLAUDE.md).
+_HERE = os.path.dirname(os.path.abspath(__file__))
+_OUT_NPY = os.path.join(_HERE, 'e6_unknown_channel_results')
+_OUT_FIG = os.path.join(_HERE, 'results')
+os.makedirs(_OUT_NPY, exist_ok=True)
+os.makedirs(_OUT_FIG, exist_ok=True)
+
 from relaynet.relays import ViterbiMLSERelay
 from relaynet.channels import ISIChannel, awgn_channel, RayleighChannel
 from relaynet.modulation.bpsk import calculate_ber
@@ -169,7 +180,7 @@ def main():
 
         # Save
         output = {'VIT-genie': res_genie, 'VIT-est': res_est}
-        output_path = f'/tmp/e6_viterbi_{hop2_kind}.npy'
+        output_path = os.path.join(_OUT_NPY, f'e6_viterbi_{hop2_kind}.npy')
         np.save(output_path, output, allow_pickle=True)
         print(f"  Saved to {output_path}")
 

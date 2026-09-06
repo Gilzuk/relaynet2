@@ -1,6 +1,14 @@
 # Makefile for relaynet2 thesis experiments
 # ==========================================
-# Usage: make <target>
+# Reproduction suite (start here after cloning -- see REPRODUCE.md):
+#   make setup          - Install pinned dependencies
+#   make check          - Report what this machine can reproduce
+#   make verify         - Check all thesis values against their data sources
+#   make repro-unknown  - Re-run the unknown-channel study, then verify
+#   make repro-full     - Re-run everything (hours, needs torch)
+#   make thesis         - Build the thesis PDF
+#
+# Experiment runner:
 #   make quick          - Run all experiments in quick mode
 #   make full           - Run all experiments (full quality, GPU)
 #   make charts         - Regenerate charts from existing JSON
@@ -11,7 +19,8 @@
 #   make exp SECTION=7.17
 #   make exp SECTION="7.2 7.10 7.17"
 
-PYTHON   ?= python
+# python3 by default: `python` is often absent on Linux/macOS.
+PYTHON   ?= python3
 VENV     ?= .venv
 ACTIVATE  = $(VENV)/Scripts/activate
 RUNNER    = run_experiments.py
@@ -28,24 +37,114 @@ endif
 # Main targets
 # ──────────────────────────────────────────
 
-.PHONY: help quick full charts test exp list clean clean-results clean-weights clean-logs
+.PHONY: help quick full charts test exp list clean clean-results clean-weights clean-logs \
+        setup check verify repro-unknown repro-qpsk repro-full thesis bundles \
+        overleaf-sync overleaf-show overleaf-mirror \
+        overleaf-repo overleaf-push overleaf-pull
 
 help: ## Show this help
-	@echo.
-	@echo   relaynet2 Experiment Makefile
-	@echo   ============================
-	@echo.
-	@echo   make quick           Run all experiments (quick mode)
-	@echo   make full            Run all experiments (full, GPU)
-	@echo   make charts          Regenerate charts from JSON
-	@echo   make test            Run pytest suite
-	@echo   make exp SECTION=7.17   Run specific experiment(s)
-	@echo   make list            List available experiments
-	@echo   make clean           Clean all outputs
-	@echo   make clean-results   Clean results only
-	@echo   make clean-weights   Clean weights only
-	@echo   make clean-logs      Clean logs only
-	@echo.
+	@echo ""
+	@echo "  relaynet2 -- thesis reproduction and experiment suite"
+	@echo "  ====================================================="
+	@echo ""
+	@echo "  REPRODUCTION (see REPRODUCE.md)"
+	@echo "    make setup           Install pinned dependencies"
+	@echo "    make check           Report what this machine can reproduce"
+	@echo "    make verify          Tier 0: check every thesis value vs its data source (~1 min)"
+	@echo "    make repro-unknown   Tier 1: re-run unknown-channel study + verify (~40 min)"
+	@echo "    make repro-qpsk      Tier 1b: re-run the QPSK unknown-channel study (~20 min)"
+	@echo "    make repro-full      Tier 2: re-run every experiment (hours, needs torch)"
+	@echo "    make bundles         Rebuild the two Overleaf zips from thesis/"
+	@echo ""
+	@echo "  OVERLEAF SYNC (see thesis/OVERLEAF_SYNC.md)"
+	@echo "    make overleaf-show   List what the Overleaf project resolves to"
+	@echo "    make overleaf-sync   Rebuild the overleaf-dist branch (thesis only, no trail)"
+	@echo "    make overleaf-mirror Rebuild overleaf-dist and mirror it to origin"
+	@echo "    make overleaf-repo   Publish overleaf-dist to the thesis-repo remote"
+	@echo "    make overleaf-push   Publish overleaf-dist as the Overleaf project root"
+	@echo "    make overleaf-pull   Report Overleaf-side edits (the sync is one-way)"
+	@echo "    make thesis          Build the thesis PDF (needs XeLaTeX + latexmk)"
+	@echo ""
+	@echo "  EXPERIMENT RUNNER"
+	@echo "    make quick           Run all experiments (quick mode)"
+	@echo "    make full            Run all experiments (full, GPU)"
+	@echo "    make charts          Regenerate charts from JSON"
+	@echo "    make test            Run pytest suite"
+	@echo "    make exp SECTION=7.17   Run specific experiment(s)"
+	@echo "    make list            List available experiments"
+	@echo ""
+	@echo "  CLEANING"
+	@echo "    make clean           Clean all outputs"
+	@echo "    make clean-results   Clean results only"
+	@echo "    make clean-weights   Clean weights only"
+	@echo "    make clean-logs      Clean logs only"
+	@echo ""
+
+# ──────────────────────────────────────────
+# Reproduction suite
+# ──────────────────────────────────────────
+
+setup: ## Install the pinned dependency set
+	$(PYTHON) -m pip install -r requirements-repro.txt
+
+check: ## Report which reproduction tiers this machine can run
+	@$(PYTHON) scripts/check_env.py
+
+verify: ## Tier 0: verify every thesis number against its data source
+	@echo ">> Verifying every thesis table cell and quantitative claim..."
+	$(PYTHON) verify_thesis_tables.py
+
+repro-unknown: ## Tier 1: recompute the unknown-channel study, then verify
+	@echo ">> Re-running the unknown-channel experiments, then verifying..."
+	$(PYTHON) verify_thesis_tables.py --rerun
+
+repro-qpsk: ## Tier 1b: recompute the QPSK unknown-channel study
+	@echo ">> QPSK unknown channel: ISI hop 1, AWGN and Rayleigh hop 2..."
+	$(PYTHON) e6_qpsk_unknown_channel.py
+
+repro-full: ## Tier 2: recompute every experiment (hours; requires torch)
+	@$(PYTHON) -c "import torch" 2>/dev/null || \
+	  { echo "ERROR: torch required for this target -- see requirements-repro.txt"; exit 1; }
+	@echo ">> Re-running all experiments. Hours; a GPU is strongly advised."
+	$(PYTHON) $(RUNNER) --all --seed $(SEED)
+	$(MAKE) verify
+
+overleaf-sync: ## Rebuild the overleaf-dist branch (thesis only, annotations stripped)
+	$(PYTHON) scripts/overleaf_sync.py
+
+overleaf-show: ## List what the Overleaf project resolves to, without building
+	@$(PYTHON) scripts/overleaf_sync.py --show
+
+overleaf-mirror: ## Rebuild overleaf-dist and mirror it to origin
+	$(PYTHON) scripts/overleaf_sync.py --origin
+
+overleaf-repo: ## Rebuild overleaf-dist and push it to the thesis-repo remote (main)
+	$(PYTHON) scripts/overleaf_sync.py --repo
+
+overleaf-push: ## Rebuild overleaf-dist and push it to Overleaf as the project root
+	$(PYTHON) scripts/overleaf_sync.py --push
+
+overleaf-pull: ## Report Overleaf-side edits (this sync is one-way; see OVERLEAF_SYNC.md)
+	@git remote get-url overleaf >/dev/null 2>&1 || \
+	  { echo "ERROR: no 'overleaf' remote. See thesis/OVERLEAF_SYNC.md:"; \
+	    echo "  git remote add overleaf https://git.overleaf.com/<project-id>"; exit 1; }
+	@echo ">> Fetching overleaf/master ..."
+	@git fetch overleaf master
+	@echo ">> Commits on Overleaf that overleaf-dist does not have:"
+	@git log --oneline overleaf-dist..FETCH_HEAD 2>/dev/null || \
+	  echo "  (no overleaf-dist branch yet -- run: make overleaf-sync)"
+	@echo ">> The sync is one-way: annotations are stripped on the way out, so"
+	@echo "   these cannot be replayed into thesis/ automatically. Inspect with"
+	@echo "   'git diff overleaf-dist FETCH_HEAD' and port them into thesis/ by hand."
+
+bundles: ## Rebuild the two Overleaf zips from thesis/
+	$(PYTHON) scripts/build_bundles.py
+
+thesis: ## Build the thesis PDF
+	@command -v latexmk >/dev/null || \
+	  { echo "ERROR: latexmk not found -- install TeX Live with XeLaTeX"; exit 1; }
+	cd thesis && latexmk -xelatex -interaction=nonstopmode main.tex
+	@echo ">> thesis/main.pdf"
 
 list: ## List all available experiments
 	$(PYTHON) $(RUNNER) --list

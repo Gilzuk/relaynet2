@@ -95,8 +95,12 @@ class ViterbiMLSERelay(Relay):
 
         for s, state in enumerate(self.states):
             for u_idx, u in enumerate((-1.0, 1.0)):
-                # Next state: (state[1:], u)
-                next_state = state[1:] + (u,)
+                # Next state: drop the oldest symbol, append the new one.
+                # Written as (state + (u,))[1:] rather than state[1:] + (u,)
+                # so that L=1 works: there the state is empty and the successor
+                # of the single state is itself, where the latter form produces
+                # a one-element tuple that is not a state at all.
+                next_state = (state + (u,))[1:]
                 next_s = self.states.index(next_state)
                 self.nxt[s, u_idx] = next_s
 
@@ -244,7 +248,7 @@ class ViterbiMLSEQPSKRelay(Relay):
 
         for s, state in enumerate(self.states):
             for u in range(self.M):
-                next_state = state[1:] + (u,)
+                next_state = (state + (u,))[1:]      # L=1 safe; see ViterbiMLSERelay
                 self.nxt[s, u] = state_index[next_state]
 
                 expected = self.h[0] * self.ALPHABET[u]
@@ -320,3 +324,198 @@ class ViterbiMLSEQPSKRelay(Relay):
             raise ValueError("Either channel_taps or pilot_symbols must be provided")
 
         self._build_trellis()
+
+
+class TruncatedViterbiQPSKRelay(ViterbiMLSEQPSKRelay):
+    """QPSK MLSE with a bounded decision delay (sliding-window traceback).
+
+    :class:`ViterbiMLSEQPSKRelay` traces back from the end of the block, so
+    its structural latency is the whole block -- it cannot be placed on a
+    latency axis alongside a windowed relay. This subclass emits the
+    decision for symbol ``n`` after observing ``y[n + traceback]``, which is
+    how MLSE is actually deployed, and makes the decision delay an explicit
+    parameter of the equalizer.
+
+    The add-compare-select step is vectorized over the trellis (a gather on
+    the predecessor table rather than a Python loop over states), so the
+    ``M**(L-1)`` state count can be swept without the runtime becoming the
+    limiting factor.
+
+    Parameters
+    ----------
+    channel_taps : array-like, optional
+        Known real-valued taps (genie CSI).
+    pilot_symbols : tuple, optional
+        ``(y_pilot, x_pilot)`` for LS estimation.
+    channel_len : int, optional
+        Channel length used for LS estimation.
+    traceback : int, optional
+        Decision delay in symbols (default 5 * channel_len, the usual rule
+        of thumb). ``traceback=0`` commits each symbol as soon as it is
+        observed; the decision still comes from the accumulated path
+        metric over the whole history, so it is zero *look-ahead* rather
+        than a memoryless slicer.
+    """
+
+    def __init__(self, channel_taps=None, pilot_symbols=None, channel_len=3,
+                 traceback=None):
+        super().__init__(channel_taps=channel_taps, pilot_symbols=pilot_symbols,
+                         channel_len=channel_len)
+        self.traceback = int(5 * self.L) if traceback is None else int(traceback)
+        if self.traceback < 0:
+            raise ValueError("traceback must be non-negative, got "
+                             f"{self.traceback}")
+        self._build_predecessors()
+
+    def _build_predecessors(self):
+        """Invert the trellis: for each state, the M branches arriving at it."""
+        S, M = self.num_states, self.M
+        self.pred_state = np.zeros((S, M), dtype=np.int64)
+        self.pred_input = np.zeros((S, M), dtype=np.int64)
+        fill = np.zeros(S, dtype=np.int64)
+        for s in range(S):
+            for u in range(M):
+                ns = self.nxt[s, u]
+                self.pred_state[ns, fill[ns]] = s
+                self.pred_input[ns, fill[ns]] = u
+                fill[ns] += 1
+        if not np.all(fill == M):
+            raise RuntimeError("trellis is not M-regular; predecessor table invalid")
+
+    def n_states(self):
+        return self.num_states
+
+    def process(self, received_signal):
+        y = np.asarray(received_signal)
+        n = len(y)
+        D = self.traceback
+        S, M = self.num_states, self.M
+        depth = D + 1
+
+        bp_state = np.zeros((depth, S), dtype=np.int64)
+        bp_input = np.zeros((depth, S), dtype=np.int64)
+        metric = np.zeros(S)
+        rows = np.arange(S)
+        out_idx = np.zeros(n, dtype=np.int64)
+
+        for i in range(n):
+            cand = metric[:, None] + np.abs(y[i] - self.exp_y) ** 2   # (S, M)
+            arriving = cand[self.pred_state, self.pred_input]          # (S, M)
+            k = np.argmin(arriving, axis=1)
+            metric = arriving[rows, k]
+            metric -= metric.min()
+
+            slot = i % depth
+            bp_state[slot] = self.pred_state[rows, k]
+            bp_input[slot] = self.pred_input[rows, k]
+
+            if i >= D:
+                s = int(np.argmin(metric))
+                for j in range(i, i - D, -1):
+                    s = bp_state[j % depth, s]
+                out_idx[i - D] = bp_input[(i - D) % depth, s]
+
+        # Flush the final D symbols from the surviving path.
+        if n:
+            s = int(np.argmin(metric))
+            start = max(n - D, 0)
+            for j in range(n - 1, start - 1, -1):
+                out_idx[j] = bp_input[j % depth, s]
+                s = bp_state[j % depth, s]
+
+        return self.ALPHABET[out_idx]
+
+    def set_channel(self, channel_taps=None, pilot_symbols=None):
+        """Update the channel estimate and re-invert the new trellis.
+
+        The inherited implementation rebuilds ``nxt`` and ``exp_y`` (and,
+        for a different tap count, ``num_states``) but knows nothing about
+        the predecessor table this class decodes from. Without the rebuild
+        below, a relay re-estimated from pilots would decode against a
+        trellis inversion belonging to the previous channel.
+        """
+        default_before = self.traceback == 5 * self.L
+        super().set_channel(channel_taps=channel_taps, pilot_symbols=pilot_symbols)
+        # A default traceback is a function of the channel length, so it has to
+        # follow the channel. An explicitly chosen one is the caller's and is
+        # left alone -- the point of the parameter is to fix the delay budget.
+        if default_before:
+            self.traceback = 5 * self.L
+        self._build_predecessors()
+
+
+class FadingAwareViterbiQPSKRelay(ViterbiMLSEQPSKRelay):
+    """QPSK MLSE told the per-symbol fading gain as well as the channel taps.
+
+    :class:`ViterbiMLSEQPSKRelay` assumes ``y[n] = (h * x)[n] + v[n]``. The
+    channel used in the QPSK unknown-ISI study is
+    :class:`~relaynet.channels.e6_channels.ComplexISIRayleighChannel`, which is
+
+        y[n] = g[n] (h * x)[n] + v[n],   g[n] = |CN(0,1)|,
+
+    an independent fading magnitude on every symbol. A detector given only ``h``
+    is therefore *not* genie CSI on that channel: its branch metrics compare
+    ``y[n]`` against unfaded expected values, so the residual
+    ``|g[n] A - A|^2 = A^2 (g[n] - 1)^2`` does not vanish as the noise does, and
+    its error rate flattens instead of falling. That mismatch, not any
+    sequence-versus-bit subtlety, is what a learned relay trained on the faded
+    channel exploits.
+
+    This subclass takes the gains and scales each branch's expected observation
+    by ``g[n]``, which is the genie-CSI detector for that channel. Pass them
+    with :meth:`set_gains` before :meth:`process`, or leave them unset to get
+    the unfaded behaviour of the parent unchanged.
+    """
+
+    def __init__(self, channel_taps=None, pilot_symbols=None, channel_len=3,
+                 gains=None):
+        super().__init__(channel_taps=channel_taps, pilot_symbols=pilot_symbols,
+                         channel_len=channel_len)
+        self.gains = None if gains is None else np.asarray(gains, dtype=float)
+
+    def set_gains(self, gains):
+        """Supply the per-symbol fading magnitudes for the next block."""
+        self.gains = None if gains is None else np.asarray(gains, dtype=float)
+        return self
+
+    def process(self, received_signal):
+        if self.gains is None:
+            return super().process(received_signal)
+
+        y = received_signal
+        n = len(y)
+        g = self.gains
+        if g.size != n:
+            raise ValueError(f"got {g.size} gains for {n} symbols; call "
+                             "set_gains() with one gain per received symbol")
+
+        metric = np.zeros(self.num_states)
+        bp_state = np.zeros((n, self.num_states), dtype=np.int32)
+        bp_input = np.zeros((n, self.num_states), dtype=np.int32)
+
+        for i in range(n):
+            # the only change from the parent: the expected observation for
+            # every branch is scaled by this symbol's fading gain
+            cand = metric[:, None] + np.abs(y[i] - g[i] * self.exp_y) ** 2
+
+            new_metric = np.full(self.num_states, np.inf, dtype=float)
+            bs = np.zeros(self.num_states, dtype=np.int32)
+            bi = np.zeros(self.num_states, dtype=np.int32)
+            for s in range(self.num_states):
+                for u in range(self.M):
+                    ns = self.nxt[s, u]
+                    if cand[s, u] < new_metric[ns]:
+                        new_metric[ns] = cand[s, u]
+                        bs[ns] = s
+                        bi[ns] = u
+            metric = new_metric
+            bp_state[i] = bs
+            bp_input[i] = bi
+
+        s = int(np.argmin(metric))
+        decoded = np.empty(n, dtype=complex)
+        for i in range(n - 1, -1, -1):
+            u_idx = bp_input[i, s]
+            decoded[i] = self.ALPHABET[u_idx]
+            s = bp_state[i, s]
+        return decoded

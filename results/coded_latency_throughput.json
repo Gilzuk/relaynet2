@@ -1,0 +1,75 @@
+{
+  "spectral_efficiency": {
+    "uncoded_qpsk": 2.0,
+    "coded_qpsk": 0.9900990099009901,
+    "coded_qam16": 1.9801980198019802
+  },
+  "equal_throughput": [
+    {
+      "snr_db": 0,
+      "uncoded_qpsk": 0.3336836,
+      "coded_qam16": 0.4680289999999999,
+      "ratio_uncoded_over_coded": 0.7129549664657534
+    },
+    {
+      "snr_db": 4,
+      "uncoded_qpsk": 0.22159650000000003,
+      "coded_qam16": 0.42030140000000005,
+      "ratio_uncoded_over_coded": 0.5272323623000066
+    },
+    {
+      "snr_db": 8,
+      "uncoded_qpsk": 0.1204802,
+      "coded_qam16": 0.27263639999999995,
+      "ratio_uncoded_over_coded": 0.44190797707129353
+    },
+    {
+      "snr_db": 12,
+      "uncoded_qpsk": 0.055978200000000006,
+      "coded_qam16": 0.10005789999999998,
+      "ratio_uncoded_over_coded": 0.5594580737752843
+    },
+    {
+      "snr_db": 16,
+      "uncoded_qpsk": 0.0239426,
+      "coded_qam16": 0.027283799999999997,
+      "ratio_uncoded_over_coded": 0.8775390524780274
+    },
+    {
+      "snr_db": 20,
+      "uncoded_qpsk": 0.0098041,
+      "coded_qam16": 0.0075897000000000004,
+      "ratio_uncoded_over_coded": 1.2917638378328522
+    }
+  ],
+  "structural_latency_symbols": {
+    "AF / symbol-wise DF": 0,
+    "MLP / Mamba, window 21": 10,
+    "hard block-DF (Viterbi)": 202,
+    "soft block-DF (BCJR)": 202
+  },
+  "compute": {
+    "hard block-DF (Viterbi)": {
+      "total_s": 1.0593384250023519,
+      "us_per_symbol": 21.2317798733786,
+      "msym_per_s": 0.04709920722444221
+    },
+    "soft block-DF (BCJR)": {
+      "total_s": 2.056015699999989,
+      "us_per_symbol": 41.20767426945102,
+      "msym_per_s": 0.024267324417804916
+    },
+    "MLP hard (756p)": {
+      "total_s": 0.01694926799973473,
+      "us_per_symbol": 0.3397055357304431,
+      "msym_per_s": 2.9437259473849187
+    },
+    "MLP soft (756p)": {
+      "total_s": 0.017286400001466973,
+      "us_per_symbol": 0.346462500530464,
+      "msym_per_s": 2.886315253364833
+    }
+  },
+  "n_symbols": 49894,
+  "frame_symbols": 202
+}

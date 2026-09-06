@@ -1,0 +1,53 @@
+{
+ "snrs": [
+  4,
+  10,
+  16
+ ],
+ "n_bits": 2000000,
+ "n_trials": 10,
+ "convention": "snr_db is Eb/N0; noise variance N0/2 per real dimension",
+ "results": {
+  "awgn": {
+   "4": {
+    "theory": 0.012500818040737563,
+    "sim_mean": 0.0124718,
+    "sim_ci": 6.549291111427435e-05,
+    "resolvable": true
+   },
+   "10": {
+    "theory": 3.872108215522048e-06,
+    "sim_mean": 3.85e-06,
+    "sim_ci": 5.852714469941845e-07,
+    "resolvable": true
+   },
+   "16": {
+    "theory": 2.2673958444544388e-19,
+    "sim_mean": 0.0,
+    "sim_ci": 0.0,
+    "resolvable": false
+   }
+  },
+  "rayleigh": {
+   "4": {
+    "theory": 0.07713691605639106,
+    "sim_mean": 0.07724589999999999,
+    "sim_ci": 0.00020578785593799038,
+    "resolvable": true
+   },
+   "10": {
+    "theory": 0.023268705377203824,
+    "sim_mean": 0.02322995,
+    "sim_ci": 9.579729889256328e-05,
+    "resolvable": true
+   },
+   "16": {
+    "theory": 0.006163834746364505,
+    "sim_mean": 0.0061547500000000005,
+    "sim_ci": 3.288358810511203e-05,
+    "resolvable": true
+   }
+  }
+ },
+ "max_relative_error_resolvable": 0.005709606832118691
+}

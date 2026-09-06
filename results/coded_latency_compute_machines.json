@@ -1,0 +1,54 @@
+{
+  "_comment": "Two independent wall-clock readouts of the same benchmark (coded_latency_throughput.py, median of 7 runs over 49,894 symbols, single-threaded CPU, discarded warm-up) on two different containers. Kept side by side because Table 41 of the thesis quotes both as direct evidence that these figures are machine-dependent while the ratios between relays are not. Machine A is recovered from the value committed at 4f4a8e0; Machine B is the run committed at 0e52f72, re-measured on an idle container (load 0.28) to confirm it is machine speed and not contention. Neither readout is more correct than the other.",
+  "n_symbols": 49894,
+  "machine_A": {
+    "provenance": "committed at 4f4a8e0 and earlier",
+    "compute": {
+      "hard block-DF (Viterbi)": {
+        "total_s": 0.7519297640000104,
+        "us_per_symbol": 15.070544835050516,
+        "msym_per_s": 0.06635460170452744
+      },
+      "soft block-DF (BCJR)": {
+        "total_s": 1.4617593969999803,
+        "us_per_symbol": 29.297298212209487,
+        "msym_per_s": 0.03413284026249409
+      },
+      "MLP hard (756p)": {
+        "total_s": 0.014893051000001378,
+        "us_per_symbol": 0.2984938269130833,
+        "msym_per_s": 3.3501530344585126
+      },
+      "MLP soft (756p)": {
+        "total_s": 0.011004863999971803,
+        "us_per_symbol": 0.2205648775398205,
+        "msym_per_s": 4.533813411972
+      }
+    }
+  },
+  "machine_B": {
+    "provenance": "committed at 0e52f72; re-measured idle, reproduced",
+    "compute": {
+      "hard block-DF (Viterbi)": {
+        "total_s": 1.0593384250023519,
+        "us_per_symbol": 21.2317798733786,
+        "msym_per_s": 0.04709920722444221
+      },
+      "soft block-DF (BCJR)": {
+        "total_s": 2.056015699999989,
+        "us_per_symbol": 41.20767426945102,
+        "msym_per_s": 0.024267324417804916
+      },
+      "MLP hard (756p)": {
+        "total_s": 0.01694926799973473,
+        "us_per_symbol": 0.3397055357304431,
+        "msym_per_s": 2.9437259473849187
+      },
+      "MLP soft (756p)": {
+        "total_s": 0.017286400001466973,
+        "us_per_symbol": 0.346462500530464,
+        "msym_per_s": 2.886315253364833
+      }
+    }
+  }
+}

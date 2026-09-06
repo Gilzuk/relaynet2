@@ -1,0 +1,58 @@
+\chapter*{List of Symbols}
+\addcontentsline{toc}{chapter}{List of Symbols}
+\markboth{List of Symbols}{List of Symbols}
+
+\noindent Symbols are grouped as Latin capitals, Latin lowercase, Greek letters
+and other notation. Where a symbol carries more than one meaning, every meaning
+is listed and the context that disambiguates it is named.
+
+\begin{longtable}{@{}p{2.6cm}p{\dimexpr\linewidth-3.1cm\relax}@{}}
+\endfirsthead
+\endhead
+
+\multicolumn{2}{@{}l}{\textbf{Latin capitals}}\\[2pt]
+$C$              & Ergodic Rayleigh (Shannon) capacity, bits per channel symbol \\
+$E_b$            & Energy per information bit \\
+$E_s$            & Average energy per transmitted symbol \\
+$G$              & Goodput, information bits per channel symbol; $G=\eta(1-\mathrm{FER})$ \\
+$K$              & Constraint length of the convolutional code \\
+$L$              & Channel memory, i.e.\ the number of ISI taps (Chapter~\ref{sec:unknown-channels}); \emph{also} block length in symbols in the pilot-overhead study \\
+$L_{\max}$       & Round-trip latency budget, in symbols \\
+$M$              & Constellation order (points per constellation) \\
+$N_0$            & One-sided noise power spectral density \\
+$P_e$            & Bit error probability \\
+$Q(\cdot)$       & Gaussian $Q$-function \\
+$R$              & Code rate, $k/n$ \\
+$S$              & Number of trellis states, $2^{K-1}$ for a rate-$1/n$ code \\[6pt]
+
+\multicolumn{2}{@{}l}{\textbf{Latin lowercase}}\\[2pt]
+$f_\theta(\cdot)$    & Relay processing function; the only block varied in the canonical comparison \\
+$g$                  & Unknown channel gain in the flat-channel control \\
+$h_1[i],\,h_2[i]$    & Hop-1 and hop-2 fading coefficients at symbol index $i$ \\
+$i$                  & Symbol (time) index \\
+$k$                  & Information bits per code input group; \emph{also} bits per symbol, $\log_2 M$ \\
+$n$                  & Coded output bits per input group \\
+$n_1[i],\,n_2[i]$    & Additive noise on hops 1 and 2 \\
+$w$                  & Window half-width; the relay observes $2w+1$ samples \\
+$x[i]$               & Symbol transmitted by the source \\
+$x_R[i]$             & Symbol transmitted by the relay \\
+$y_R[i],\,y_D[i]$    & Signal received at the relay and at the destination \\[6pt]
+
+\multicolumn{2}{@{}l}{\textbf{Greek letters}}\\[2pt]
+$\alpha_k(s)$        & BCJR forward recursion at trellis state $s$, step $k$ \\
+$\beta_k(s)$         & BCJR backward recursion at trellis state $s$, step $k$ \\
+$\gamma$             & Linear signal-to-noise ratio, $\gamma=10^{\mathrm{SNR_{dB}}/10}=E_s/N_0$ \\
+$\bar{\gamma}$       & Average signal-to-noise ratio \\
+$\gamma_k(s',s)$     & BCJR branch transition-and-observation probability; distinct from the SNR $\gamma$ above, disambiguated by its arguments \\
+$\eta$               & Spectral efficiency, $\eta=R\log_2 M$ bits per symbol \\
+$\theta$             & Learned relay parameters; \emph{also} unknown carrier phase in the flat-channel control (Section~\ref{sec:flat-unknown-channels}) \\
+$\sigma^2$           & Noise variance \\[6pt]
+
+\multicolumn{2}{@{}l}{\textbf{Other notation}}\\[2pt]
+$\mathcal{CN}(0,1)$  & Circularly-symmetric complex Gaussian distribution, unit variance \\
+$\mathbb{E}[\cdot]$  & Expectation \\
+$\mathbb{1}[\cdot]$  & Indicator function \\
+$\hat{\;\cdot\;}$    & Estimate of the quantity beneath the hat \\
+\end{longtable}
+
+\clearpage

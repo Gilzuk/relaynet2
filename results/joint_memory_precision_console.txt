@@ -1,0 +1,14 @@
+L=3 MLP w=11     errors=   354/1500000  BER=2.360e-04  95% CI [2.127e-04, 2.619e-04]
+L=3 MLSE D=15    errors=    48/1500000  BER=3.200e-05  95% CI [2.414e-05, 4.242e-05]
+L=3 block DF     errors= 60635/1500000  BER=4.042e-02  95% CI [4.011e-02, 4.074e-02]
+L=5 MLP w=11     errors=   294/1500000  BER=1.960e-04  95% CI [1.748e-04, 2.197e-04]
+L=5 MLSE D=25    errors=    63/1500000  BER=4.200e-05  95% CI [3.283e-05, 5.373e-05]
+L=5 block DF     errors=104621/1500000  BER=6.975e-02  95% CI [6.934e-02, 7.016e-02]
+L=7 MLP w=11     errors=   286/1500000  BER=1.907e-04  95% CI [1.698e-04, 2.141e-04]
+L=7 MLSE D=35    errors=    37/1500000  BER=2.467e-05  95% CI [1.790e-05, 3.400e-05]
+L=7 block DF     errors=125519/1500000  BER=8.368e-02  95% CI [8.324e-02, 8.412e-02]
+L=3 MLP/MLSE ratio 7.4 (range 5.0-10.9) resolvable
+L=5 MLP/MLSE ratio 4.7 (range 3.3-6.7) resolvable
+L=7 MLP/MLSE ratio 7.7 (range 5.0-12.0) resolvable
+
+wrote results/joint_memory_precision.json

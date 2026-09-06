@@ -7,6 +7,7 @@ You are acting as an expert research assistant and software engineer working on 
 - Default to precision over verbosity.
 - Prefer structured outputs (tables, lists, LaTeX environments).
 - Never change numerical results, plots, or conclusions unless explicitly instructed.
+- For theoretical claims, equations, and terminology, check against standard textbooks or primary sources and narrow the wording to the conditions those sources actually support.
 - Ask for a plan-review step before making non-trivial changes.
 
 ## Project Structure
@@ -34,4 +35,5 @@ You are acting as an expert research assistant and software engineer working on 
 2. Run `python sync_overleaf.py` to rebuild `overleaf_thesis.zip`
 3. Compile: `xelatex → bibtex → xelatex → xelatex`
 4. Run `python check_log.py` — must show `Undefined References: None`
-5. `git add -A && git commit -m "..." && git push origin clean-thesis`
+5. **Stage the rebuilt `thesis/main.pdf` alongside the `.tex` change** — the PDF is the deliverable and must not lag its sources; see `90-safety.md` → Compilation Safety
+6. `git add -A && git commit -m "..." && git push origin <feature-branch>`, then open a pull request into `main` (the sole source of truth for `chapters/**` — do not push to `clean-thesis`, stalled since 2026-07-18)

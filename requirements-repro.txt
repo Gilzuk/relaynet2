@@ -1,0 +1,24 @@
+# Pinned dependency set used to produce the committed results.
+#
+# These are the exact versions the reproduction suite was last validated
+# against. Newer versions will very likely work -- the code uses only stable
+# NumPy/SciPy APIs -- but pin here if you need bit-identical output.
+#
+# Install:  python3 -m pip install -r requirements-repro.txt
+
+numpy==2.4.6
+scipy==1.17.1
+matplotlib==3.11.1
+pytest==9.1.1
+
+# ── Optional: PyTorch ────────────────────────────────────────────────────────
+# Required ONLY for the neural relays that use it (VAE, CGAN, Transformer,
+# Mamba S6, Mamba-2) and therefore only for `make repro-full`. The
+# unknown-channel study (`make repro-unknown`) and the table verification
+# (`make verify`) are pure NumPy and run without it.
+#
+# CPU-only build:
+#   python3 -m pip install torch --index-url https://download.pytorch.org/whl/cpu
+#
+# Note: training the CGAN took ~2 h on CUDA. On CPU it is substantially
+# slower; see REPRODUCE.md for measured runtimes.

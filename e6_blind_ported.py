@@ -25,6 +25,7 @@ is UNSTABLE (mid-SNR CI ~0.164 vs MLP's ~0.014) -- the instability itself is
 the finding, not a bug to fix.
 """
 
+import os
 import numpy as np
 from relaynet.channels import RandomISICompositeChannel, ComplexISIRayleighChannel
 from relaynet.relays import MLPRelay
@@ -32,7 +33,14 @@ from relaynet.relays import MLPRelay
 W = 11
 SNRS = np.arange(0, 21, 2)
 TRAIN_SNRS = [5, 10, 15]
-N_TRIALS, N_BITS = 5, 40_000
+# The hop-1 channel here (RandomISICompositeChannel) redraws its ISI/PA/phase
+# realization on every call, i.e. once per trial. Trials are therefore CHANNEL
+# DRAWS, and the ensemble average over the impairment family is limited by the
+# trial count, not by bits per trial. 50 x 20k gives 1,000,000 bits (5x the old
+# 5 x 40k budget) over 50 channel realizations (10x the old ensemble), with
+# blocks still long enough for the blind equalizers to converge.
+N_TRIALS, N_BITS = 50, 20_000
+N_TRAIN = 3   # independent training seeds; effective MC columns = N_TRAIN * N_TRIALS
 
 rng = np.random.default_rng(41)
 
@@ -56,7 +64,7 @@ def cwin(y, window=W):
     return np.concatenate([vi, vq], axis=1)
 
 
-def cma_dfe(y, taps=7, mu=1e-3, iters=2):
+def cma_dfe(y, taps=7, mu=1e-3, iters=2, eps=1e-6):
     """Blind constant-modulus linear equalizer (no pilots).
 
     Ported verbatim from experiments-standalone/e6_blind.py's cma_dfe().
@@ -73,7 +81,13 @@ def cma_dfe(y, taps=7, mu=1e-3, iters=2):
             o = np.vdot(w, seg)
             out[i] = o
             e = o * (np.abs(o) ** 2 - 1.0)  # CMA (R2=1 for unit-modulus)
-            w -= mu * e * np.conj(seg)
+            # NLMS-normalised step. The CMA error is cubic in |o|, so a fixed
+            # step size is a positive-feedback loop: the original unnormalised
+            # update stayed bounded over 40k samples but overflowed to inf over
+            # 100k, turning the equaliser output into noise. Dividing by the
+            # segment energy bounds the update and keeps CMA stable at any
+            # block length.
+            w -= (mu / (eps + np.vdot(seg, seg).real)) * e * np.conj(seg)
     return out
 
 
@@ -198,24 +212,32 @@ def main():
     channel = RandomISICompositeChannel(pa_sat=1.2, seed=1)
     hop2 = ComplexISIRayleighChannel(taps=np.array([1.0]), seed=2)  # trivial taps = no ISI, always-complex AWGN
 
-    print("\nTraining MLP-169...")
-    mlp = train_mlp(hidden_size=7, seed=2)
+    print(f"\nTraining MLP-169 ({N_TRAIN} independent seeds)...")
+    mlps = []
+    for ti in range(N_TRAIN):
+        mlp = train_mlp(hidden_size=7, seed=2 + ti)
+        mlps.append(mlp)
 
     keys = ('DF-diff', 'CMA-blind', 'Viterbi-blind', 'MLP-169')
-    results = {k: np.zeros((len(SNRS), N_TRIALS)) for k in keys}
+    total_cols = N_TRAIN * N_TRIALS
+    results = {k: np.zeros((len(SNRS), total_cols)) for k in keys}
 
     print(f"\nSNR (dB): " + " ".join(f"{s:>7d}" for s in SNRS))
-    for si, snr in enumerate(SNRS):
-        for tr in range(N_TRIALS):
-            seed_base = 8000 * si + tr
-            for name in keys:
-                ber = run_ber_trial(name, mlp, channel, hop2, N_BITS, snr, seed=seed_base)
-                results[name][si, tr] = ber
+    for ti, mlp in enumerate(mlps):
+        col_offset = ti * N_TRIALS
+        print(f"  [Training instance {ti + 1}/{N_TRAIN}]")
+        for si, snr in enumerate(SNRS):
+            for tr in range(N_TRIALS):
+                col = col_offset + tr
+                seed_base = 8000 * si + tr
+                for name in keys:
+                    ber = run_ber_trial(name, mlp, channel, hop2, N_BITS, snr, seed=seed_base)
+                    results[name][si, col] = ber
 
     summary = {}
     for name in keys:
         mu = results[name].mean(axis=1)
-        ci = 1.96 * results[name].std(axis=1) / np.sqrt(N_TRIALS)
+        ci = 1.96 * results[name].std(axis=1) / np.sqrt(total_cols)
         summary[name] = (mu, ci)
         print(f"  {name:>14}: " + " ".join(f"{m:7.4f}" for m in mu))
 
@@ -225,8 +247,13 @@ def main():
         mu, ci = summary[name]
         print(f"    {name:>14}: {mu[mid_idx]:.4f} +/- {ci[mid_idx]:.4f}")
 
-    output_path = '/tmp/e6_blind_ported_results.npy'
-    np.save(output_path, {'snrs': SNRS, 'summary': summary}, allow_pickle=True)
+    output_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                               'e6_unknown_channel_results', 'e6_blind_ported_results.npy')
+    # /tmp does not persist between sessions (CLAUDE.md); writing straight
+    # into the repo is what keeps the committed data and the script in step.
+    np.save(output_path, {'snrs': SNRS, 'summary': summary,
+                          'n_train': N_TRAIN, 'n_trials': N_TRIALS,
+                          'n_bits': N_BITS}, allow_pickle=True)
     print(f"\nResults saved to {output_path}")
     print("\n" + "=" * 80)
     print("E6_BLIND: Complete")

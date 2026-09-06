@@ -1,6 +1,157 @@
 # Progress — E6 Porting Checklist
 
-Branch: `claude/porting-md-file-l6xzsr`. Reference spec: `experiments-standalone/PORTING.md`.
+Branch: `copilot/fix-bug-in-data-processing`. Reference spec: `experiments-standalone/PORTING.md`.
+
+Session note (2026-09-04): replaced the Overleaf sync. `git subtree push
+--prefix=thesis` published the working trail (draft chapters, excluded
+review-response appendices, build artefacts, changelogs, `\REV` records) into
+the authoring surface. Now `scripts/overleaf_project.py` defines the project as
+main.tex's transitive closure (54 files) for both the zips and the sync, and
+`scripts/overleaf_sync.py` publishes it on a generated `overleaf-dist` branch
+whose root is the project root, annotations stripped. One-way by construction:
+`--push` refuses when Overleaf has commits the branch lacks (verified against a
+stand-in bare repo, including `--force`). Bundles are now byte-reproducible.
+Branch content compiles standalone and renders text-identical to
+`thesis/main.pdf`; 205 tests pass. `make overleaf-{show,sync,mirror,push,pull}`.
+The tooling lives on `claude/overleaf-sync`; `overleaf-dist` is mirrored to
+origin so the published state is visible without Overleaf credentials.
+Second route added: `--repo` / `make overleaf-repo` publishes the same tree to
+a dedicated GitHub repo (`thesis-repo` remote, branch `main`) for Overleaf's
+GitHub integration, sharing the clobber guard. `Gilzuk/relaynet2-thesis` was
+created by the user (this session's GitHub app cannot create repositories,
+403) and now holds the project at `main` = `overleaf-dist` = `8ed4228`; the
+first publish needed `--force` to clear GitHub's auto-init README. The
+generated tree gained a root `README.md` marking it generated and
+not-to-be-edited (55 files).
+
+Session note (2026-09-03, latest): regenerated and committed the two Overleaf
+bundles, after fixing the generator. `build_bundles.py` hardcoded
+`hebrewcal.sty` while `main.tex` loads `hebcal` — every committed bundle was
+missing a style file it needs and could not compile; the extras list is now
+discovered from the sources and the build fails if a local `.sty` is absent
+from the zip. `strip_rev` also ate the space after inline `\REV{...}`, so the
+submission copy ran sentences together in 99 places; it now only collapses
+whitespace for an annotation that occupied its whole line
+(`tests/test_strip_rev_spacing.py`, 6 tests). Both zips were extracted outside
+the repo and compiled: 0 errors, 0 undefined references, 132 pages, text
+identical to `thesis/main.pdf`.
+
+Session note (2026-09-03, later): unified the E6 first-error bit budget. The
+per-SNR cap dict (1G at 16 dB / 10G at 18–20 dB) in `e6_sim_ported.py` is
+replaced by the adaptive rule already implemented in `run_ber_first_error`
+— stop at 10 × bits-to-first-error — with one hard ceiling
+`FIRST_ERROR_MAX_BITS = 10G` per run at every first-error SNR. Committed data
+unaffected (16 dB stopped at 334M ≪ 1G; 18/20 dB already 10G); documented in
+`provenance_audit.py` REVIEWED_STALE. Metadata keys renamed to
+`first_error_max_bits`.
+
+Session note (2026-09-03): the three 20 dB trellis-control SERs in the QPSK
+withdrawal prose (0.184 / 0.000 / 0.022) were from an ad-hoc uncommitted run
+built with *unnormalized* taps (`ComplexISIRayleighChannel.__init__` normalizes
+its taps argument in place, so construction order silently decides what a
+trellis sharing `H_ISI` sees). Committed `qpsk_trellis_controls.py` reruns them
+under the exact `tbl:tableE6qpsk` configuration: 0.113 / 0.000 / 0.0003, now
+consistent with `qpsk_error_decomposition.json` and the table's genie BER.
+Registered in `provenance_audit.py`; verifier check `prose:qpsk-controls`
+added (509 cells / 0). Also fixed the stale `fig:figE6qpsk` caption (still
+carried the withdrawn claim) and the Appendix F "symbol-MAP" wording (bit-wise
+MAP is the BER-optimal comparator). PDF rebuilt: 149 pages.
+
+Session note (2026-09-01): the QPSK "genie-CSI Viterbi" benchmark was never
+given the CSI. Hop 1 of the QPSK study is `ComplexISIRayleighChannel`,
+`y[n] = g[n](h*x)[n] + v[n]` with an independent Rayleigh magnitude per symbol;
+the trellis was built from `h` alone, so it was model-mismatched, not genie.
+`FadingAwareViterbiQPSKRelay` scales each branch by `g[n]`, and the channels now
+record `last_gains`. With the correct benchmark the published "reversal"
+disappears: genie CSI leads MLP-QPSK at every SNR, 0.0001 against 0.0508 at
+20 dB. The criterion-mismatch conjecture the thesis offered was ruled out first
+by `qpsk_error_decomposition.py` (the MLP led on symbol error rate too). The
+BPSK study is unaffected -- `ISIChannel` does not fade. Chapter 7's QPSK
+subsection rewritten; `tbl:tableE6qpsk` gains a fifth row.
+
+Session note (2026-09-01): confidence intervals are now hierarchical. Pooling
+3 seeds x 10 trials as 30 i.i.d. understates the MLP interval by 7-8x, since the
+10 trials inside a seed share a trained network. `ber_metrics.hierarchical_ci`
+averages within a seed and puts a Student-t interval on the seed means, and
+returns the pooled interval alongside. `e6_sim_ported.py` computes both and
+persists raw per-column BERs so intervals can be recomputed without re-running.
+`--reuse-rare-event` carries the 16-20 dB cells (single measurements, no
+interval either way) over from the committed run rather than spending hours of
+10-billion-bit searches reproducing numbers that cannot move. Note that skipping
+them changes the RNG stream, so the 8 and 12 dB means moved by ~2e-4; the thesis
+carries the new run's values.
+
+Session note (2026-09-01): the 0.25 memoryless-relay floor is now derived rather
+than asserted, for AF as well as DF (`isi_slicer_floor.py`). Both closed forms
+track their measured columns to 3-4 decimals across the sweep, which is an
+independent check on two columns of `tbl:tableE6` and on the rare-event
+estimator behind their high-SNR entries.
+
+Session note (2026-08-31): replaced the first-error estimator with an
+error-counting one. `run_ber_first_error` in `e6_sim_ported.py` no longer stops at
+the first error -- it fixes the budget at `10 x N1` bits (capped per SNR) and
+reports accumulated errors / total exposure; a cell with no error inside the cap
+reports the rule-of-three `3/N` 95% upper bound, not `1/N` and not zero. The
+2026-08-28 note below is superseded: its 16 dB figure of $1.61\times10^{-7}$ came
+from mean reciprocal waiting time, one event per trial. All four E6 setups were
+regenerated on three seeds (`a3a07ab`, full log in
+`results/e6_sim_rerun_progress.txt`) and
+`tbl:tableE6` repointed to that run. The old estimator was wrong by more than
+rounding at high SNR: DF at 16 dB read `0.500` from a single error in two bits
+against `0.2296` from 22,959 errors. MLP S1 is now `0.0064` / `9.55e-5` /
+`4.79e-8` / `<3.0e-10` at 8/12/16/20 dB. Results are written to
+`e6_unknown_channel_results/`, never `/tmp/`, and checkpointed after each setup.
+
+Session note (2026-08-28): enforced the high-SNR first-error runtime policy in
+`e6_sim_ported.py` so 18 dB and 20 dB now run until the first observed failure
+or a 10G-bit timeout (`FIRST_ERROR_MAX_BITS_BY_SNR`), with the per-SNR caps
+saved in output metadata.
+
+Session note (2026-08-28): reran 16 dB with 100 independent first-error trials
+and a 1G-bit cap per trial. All trials found an error; mean reciprocal
+waiting-time BER was $1.61\times10^{-7}$ with 95% CI $\pm5.60\times10^{-8}$,
+and mean stopping time was 20.5M bits. Updated the Chapter 7 table and
+rebuilt `thesis/main.pdf` to 130 pages.
+
+Session note (2026-08-28): synchronized the five regenerated E6 figures from
+the adaptive-bit result set into `thesis/results/`. The adaptive-bit metadata
+was verified in `e6_multi_training_results/e6_sim_ported_results.npy`. The
+thesis PDF was subsequently rebuilt with `latexmk -xelatex`; it is now 130
+pages and reflects the synchronized figures.
+
+Session note (2026-08-28): N_TRAIN=3 multi-seed robustness study completed.
+All 5 MLP scripts modified to pool 3 training seeds × N_TRIALS trials.
+Runs completed; results in `e6_multi_training_results/`. ch07 text, table
+values, and 5 conclusion paragraphs updated. All 5 thesis figures regenerated
+from new data via `plot_e6_figures.py`. New 1-vs-3-seed comparison figure
+saved to `e6_multi_training_results/e6_seed_comparison.png` via
+`plot_e6_seed_comparison.py`. `thesis/main.pdf` rebuilt to **129 pages**.
+The 120-page target is 9 pages over; author must decide what to cut.
+
+Session note (2026-08-27, later): merged the one kissing-figure pair in
+compiled Chapter 6 (old Figures 6.7/6.8 -> a single two-panel Figure 6.7) and
+moved it above the closing paragraphs, removing the float-only page. Compiled
+Chapter 6 is `ch07_unknown_and_mismatch_channels.tex`;
+`ch06_experiments_extension_Higher_Order_Modulation.tex` is not included in
+`main.tex`. PDF still 128 pages.
+
+Session note (2026-08-27): rebuilt `thesis/main.pdf` (128 pages, no unresolved
+refs/citations) so it matches the sources after PR #39's `[H]` → `[htbp]` figure
+placement change, which merged without a PDF rebuild. TeX is not preinstalled in
+the agent container but is installable via apt — see `activeContext.md` for the
+exact package list and the `latexmk -C` caveat.
+
+Session note (2026-08-26, later): thesis layout cleanup removed near-empty
+pages by tightening the live abstract, tightening the Chapter 3 closing
+sentence, and reducing TOC chapter-entry spacing in `thesis/main.tex`.
+Also removed stale cGAN re-run commentary from the thesis text/captions and
+rebuilt `thesis/main.pdf` to 125 pages.
+
+Session note (2026-08-26): thesis theory wording was corrected in the compiled
+chapter files and `thesis/main.pdf` was rebuilt to 128 pages. A new general
+rule now lives in `.clinerules/00-general.md`: check theory claims against
+standard textbooks or primary sources and narrow wording to the conditions they
+actually support.
 
 ## Done ✅ (verified at 5 trials × 50k bits, SNR 0–20dB/2dB)
 
@@ -92,7 +243,144 @@ All 7 PORTING.md experiments are ported, rescaled/bug-fixed, and now integrated 
 4. Update Appendix C reproducibility statement to state Chapter 7 results are relaynet-generated.
 5. Open a PR only if/when the user explicitly asks for one (per repo working agreement).
 
+## Thesis state — 2026-08-17 (canonical restructure)
+The thesis side has moved on past the E6 checklist above; current state:
+- **Canonical setup is now SISO / i.i.d. Rayleigh fast fading / complex baseband / BPSK **and** QPSK / uncoded BER.** Ch5 §5.3 carries both constellations on the canonical channel (QPSK table moved in from Ch6, now Table 5.6); Ch5 §5.2 is the AWGN *baseline* (calibration + a lean AF/DF/MLP/Transformer/Mamba-2 comparison, 0–8 dB, no ranking drawn from it); Ch6 is now 16-QAM only.
+- **Lean relay set for re-runs** is AF / DF / MLP / Transformer / Mamba-2 (cGAN, VAE, Hybrid, Mamba-S6 dropped from re-runs via `run_experiments.py --skip-relays`). Existing committed results for the dropped relays are untouched, not deleted.
+- **All channel SNR is on the Eb/N0 axis** after the 3 dB `sigma^2 = N0/2` correction; `tests/test_snr_convention.py` pins every BPSK channel to its closed form and fails if the old convention returns.
+- **Verification status:** cold `latexmk -xelatex` exit 0 / 149 pp / 0 undefined refs; `verify_thesis_tables.py` 352 cells / 0 inconsistencies; `pytest tests/` 119 passed.
+
+### Outstanding (do these next)
+1. **Ch6 AWGN tables `tbl:table14` / `table15` / `table24` still use the pre-correction AWGN convention** — must be re-run before submission. The verifier explicitly does not cover them.
+2. **Ch7 flat-channel control passes by only 0.0097 against a 0.010 tolerance** — margin too thin; needs a larger trial budget.
+3. **Overleaf sync — OUT OF SCOPE, the user does it manually.** Per instruction 2026-08-17. Do not push to the `overleaf` remote, do not rebuild subtree splits, do not treat the divergence between the Overleaf project and this branch as a defect to fix. GitHub (`claude/porting-md-file-l6xzsr`) is the delivery target.
+
 ## Reference documents already in repo (don't duplicate, update instead)
 - `E6_PORTING_STATUS.md` — running progress tracker (slightly stale vs this file as of last edit; treat this `memory-bank/progress.md` as the live source of truth going forward and update `E6_PORTING_STATUS.md` in sync if it's kept)
 - `E6_VERIFICATION_REPORT.md` — full numeric verification writeup for the 3 completed experiments
 - `E6_PORTING_COMPLETE.md` — final report snapshot for the 3/7 completed state
+
+## New: Coded block-DF experiment (2026-08-19) — complete
+Added as a supplementary study, not a re-run of existing results. Rate-1/2 convolutional code (K∈{3,5,7}) with soft-decision Viterbi decoding, genuine block-DF relay, on both canonical constellations (QPSK, 16-QAM); two coded-aware learned relays (MLP, Mamba-S6) trained on the same task for comparison. Full writeup: `activeContext.md` "Latest (2026-08-19)" entry. Code: `relaynet/coding/`, `relaynet/relays/coded_df*.py`. Results: `results/coded_df_experiment.json`. Thesis: new §5.x in `ch05_experiments.tex` + pointers from Ch1/Ch8/both abstracts. Tests: `tests/test_coding.py` (19, all passing). Verifier: 421/0 (was 349/0).
+
+Note found in passing: this file's "Thesis state — 2026-08-17 (canonical restructure)" section above is now stale (describes a BPSK+QPSK dual-canonical setup that was later corrected to QPSK-only canonical, BPSK confined to AWGN calibration) — not reconciled in this pass since it wasn't the ask; flagging so a future session doesn't trust it at face value.
+
+## 2026-08-24: E6_SIM's S2/S4 (Rayleigh variants) removed from the thesis
+
+The "Done" row above for `e6_sim_ported.py` describes all four S1-S4 setups
+(S2 = unknown ISI -> Rayleigh, S4 = canonical-Rayleigh control) as verified —
+that remains true of the underlying simulation/data, which is untouched. What
+changed is which of them the thesis *reports*: per author instruction, every
+BPSK-with-Rayleigh configuration was removed from Ch.6 (`tbl:tableE6`'s S2
+and S4 rows, and `tbl:tableE6qpsk`'s QPSK-Rayleigh row), leaving only the S1
+(ISI -> AWGN) variant in each table. The `.npy` data files still contain
+S2/S4/Rayleigh — nothing was deleted from `e6_unknown_channel_results/` —
+only the thesis's *use* of them was cut. Full detail in `activeContext.md`,
+"Latest (2026-08-24)".
+
+## 2026-08-25: coded family re-measured at 100 trials; Ch2 coding background added
+
+The coded study above was re-run end to end at 100 trials (author's bar:
+update only where the delta exceeds 5%). Nine scripts regenerated; Tables 5.4,
+5.7, 5.9, 40, 42, 43 and the K-sweep prose updated to match. **Verifier now
+reports 361 cells / 2 inconsistencies** — both are 5.5e-07 rounding artifacts
+at `tbl:table44` 20 dB where the published cells are correct as printed (see
+`activeContext.md`); they are not defects and should not be "corrected".
+pytest 159 passed. The 421/0 figure quoted in the 2026-08-19 entry above
+predates several table retirements and is no longer the current count.
+
+Three more scripts needed the unseeded-global-RNG fix (`coded_k_sweep_qpsk`,
+`coded_k_sweep_qam16`, `coded_mamba_relay`), bringing that total to nine.
+
+Ch2 gained §2.6 (convolutional codes, Viterbi, BCJR, puncturing/AMC), which
+Ch5's coded study had been relying on without ever introducing. Thesis is now
+**124 pages**, up from 120; the author accepted this on 2026-08-25 and will
+review the document later.
+
+Two things a future session should not have to rediscover:
+- `verify_thesis_tables.py` checks table cells only. Figures quoted in
+  **prose** are unguarded, and a stale 10-trial `1.35×` survived four commits
+  of table updates because of it. After any re-run, grep the prose for the old
+  values as well as running the verifier.
+- Table 41's compute timings are now reported for **two machines** on purpose,
+  as the evidence for their machine-dependence. Add a machine rather than
+  overwriting if they are ever measured again.
+
+## 2026-08-25 (later): evidence audit, objectives restructure, page-budget findings
+
+Three PRs merged (#25, #26, #27); `main` at `8a4306a`. Beyond the 100-trial
+re-run recorded above:
+
+- **Chapter 3 restructured.** The main objective scoped itself to "a single
+  canonical setup" while 30% of the body — the 14-page coded study and the
+  20-page unknown-channel chapter, the latter being the principal
+  contribution — sat under no objective at all. Reframed to the question the
+  thesis answers (under which conditions a learned relay surpasses classical
+  processing), canonical setup named as control rather than scope, two
+  objectives added. Objective 4 (SSMs vs attention) removed as an NN-vs-NN
+  question that serves no part of the main objective.
+- **Gap 3 removed, folded into Gap 1; Gap 2 narrowed.** Both had claims that
+  a literature check falsifies. Both now concede prior work *with* citations.
+- **ViterbiNet cited.** Chapter 6 previously cited one work, Forney 1972, and
+  did not engage the data-driven-detection literature it sits inside.
+  Shlezinger et al. already establish H5's capability statement; the chapter
+  now concedes that and claims the boundary instead, which is what it
+  actually measured.
+
+**Page budget: 125 against a 120 target.** See `activeContext.md` for the
+measured list of what does and does not recover pages — the short version is
+that only figure merging works, and it is nearly exhausted. Do not re-try
+prose trimming, table merging, the equation list, or font/margin changes.
+
+**Citations added this session were verified against search results, not
+publishers** — `arxiv.org` and `link.springer.com` are blocked by the egress
+proxy. Worth one verification pass before submission.
+
+- 2026-08-27: Compressed Chapter 2 background exposition, then reverted the
+  compression at the user's request (all seven equations restored, back to
+  128 pages). Kept the claim fixes: a thesis-wide audit found TWO live
+  instances of the retracted "VAE is a consistent underperformer" reading --
+  Sec 2.3.1 and, more seriously, Chapter 5's Table 8 conclusion, which
+  contradicted both its own table (VAE-3K sits inside the feedforward group
+  at every SNR) and Chapter 8's explicit retraction. Both now state what the
+  data shows. PDF rebuilt in the same commit.
+
+---
+
+## Experiment provenance ledger
+
+Generated by `provenance_audit.py` -- do not hand-edit this table; re-run the
+script. It links every experiment to its script, its committed data, the commit
+that produced that data, and the published table or figure resting on it.
+
+**Read this before touching any published number.** The audit fails when an
+output is uncommitted, or when its data is older than the script that produces
+it. That second condition was silently true for all five E6 datasets between
+27 August (when N_TRAIN=3 was added) and 31 August, during which the thesis
+reported three-seed numbers backed by single-seed data.
+
+| Experiment | Script | Data | Produced by | Backs | Status |
+|---|---|---|---|---|---|
+| Coded minimum size | `coded_min_size.py` | `coded_min_size.json` | `ac26dab` 2026-08-29 | `prose: coded row` | ok |
+| E6 QPSK unknown channel | `e6_qpsk_unknown_channel.py` | `e6_qpsk_unknown_channel_results.npy` | `aaddb79` 2026-09-01 | `tbl:tableE6qpsk` | ok |
+| E6 blind / posterior-free | `e6_blind_ported.py` | `e6_blind_ported_results.npy` | `455c119` 2026-08-31 | `fig:figE6blind`, `prose:E6blind` | ok |
+| E6 composite cascade | `e6_composite_ported.py` | `e6_composite_ported_results.npy` | `455c119` 2026-08-31 | `fig:figE6composite`, `prose:E6composite` | ok |
+| E6 flat control | `e6_flat_ported.py` | `e6_flat_ported_results.npy` | `96e8884` 2026-08-31 | `tbl:tableE6flat` | ok |
+| E6 pilot-budget sweep | `e6_partial_ported.py` | `e6_partial_ported_results.npy` | `2512cb2` 2026-08-31 | `fig:e6-partial`, `prose:E6partial` | ok |
+| E6 unknown ISI (S1-S4) | `e6_sim_ported.py` | `e6_sim_ported_results.npy` | `aaddb79` 2026-09-01 | `tbl:tableE6` | ok |
+| ISI slicer floor, closed form | `isi_slicer_floor.py` | `isi_slicer_floor.json` | `0441455` 2026-08-31 | `eq:slicer-floor`, `prose: closed-form slicer BER table` | ok |
+| Joint latency/memory | `joint_latency_memory.py` | `joint_latency_memory.json` | `ef0f4b7` 2026-08-31 | `tbl:joint-latency` | ok |
+| MAC accounting | `unified_latency_axis.py` | `unified_latency_axis.json` | `ab2cb8b` 2026-08-31 | `eq:mac-crossover` | ok |
+| MMSE complexity-matched baseline | `mmse_equalizer.py` | `mmse_equalizer.json` | `b1ea325` 2026-08-31 | `tbl:mmse-baseline`, `prose: MMSE monotonicity by tap count` | **stale, reviewed: additive change (859027f): main() now also persists per-target penalties and attained MMSE to mmse_equalizer_detail.json, which was committed from the same run. The headline JSON is not stale -- it reproduced byte-identically on that re-run, so git recorded no change to it and its last commit predates the script edit.** |
+| MMSE complexity-matched baseline | `mmse_equalizer.py` | `mmse_equalizer_detail.json` | `859027f` 2026-09-01 | `tbl:mmse-baseline`, `prose: MMSE monotonicity by tap count` | ok |
+| Memory sweep, precision re-run | `joint_memory_precision.py` | `joint_memory_precision.json` | `ef0f4b7` 2026-08-31 | `tbl:joint-memory` | ok |
+| Minimum relay size, 9 channels | `mlp_min_size_all_channels.py` | `mlp_min_size_all_channels.json` | `1336b84` 2026-08-29 | `tbl:table-minsize`, `fig:minsize-crossover`, `fig:minsize-budget` | **stale, reviewed: comment correction plus a display-name change to the isi_rayleigh comparator ('MLSE' -> 'MLSE (taps only)'). Same relay object, same numbers; only the JSON's `baseline` label would differ on a re-run.** |
+| Minimum size, window x depth | `mlp_min_size_bisect.py` | `mlp_min_size_bisect.json` | `a18b10d` 2026-08-29 | `prose: depth 1-3, window 1-7` | ok |
+| QPSK error decomposition | `qpsk_error_decomposition.py` | `qpsk_error_decomposition.json` | `bcb39ef` 2026-09-01 | `prose: QPSK SER/BER and bits-per-symbol-error` | ok |
+| Seed spread, equal budget | `seed_spread_architectures.py` | `seed_spread_architectures.json` | `0ca3432` 2026-08-30 | `tbl:seed-spread`, `tbl:seed-spread-3k` | ok |
+| Sequence models on memory | `seq_models_on_memory.py` | `seq_models_on_memory.json` | `8880cc0` 2026-08-30 | `tbl:seq-on-memory` | **stale, reviewed: 6048c95 touched only main()'s console reporting -- a NaN guard around min() over architectures that reached no target. Every value written to the JSON is computed before that code runs.** |
+| Transformer instability | `transformer_instability.py` | `transformer_instability.json` | `ce59ed1` 2026-08-30 | `fig:transformer-seed-curves`, `fig:transformer-loss-penalty` | ok |
+
+**Current audit status** (regenerate; do not hand-edit): clean -- all declared outputs are committed and no data predates its script.
+
+Regenerate with `python provenance_audit.py --markdown`.

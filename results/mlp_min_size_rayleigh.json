@@ -1,0 +1,3880 @@
+{
+  "snr_db": [
+    0,
+    4,
+    8,
+    12,
+    16,
+    20
+  ],
+  "n_trials": 20,
+  "bits_per_trial": 20000,
+  "tolerance_rel": 0.02,
+  "alpha": 0.05,
+  "train_seeds": [
+    0,
+    1,
+    2
+  ],
+  "torch_version": "2.13.0+cu130",
+  "df_ber": [
+    0.33339250000000004,
+    0.22184500000000001,
+    0.120385,
+    0.0558675,
+    0.024002500000000003,
+    0.009680000000000001
+  ],
+  "af_ber": [
+    0.4088425,
+    0.3140475,
+    0.18644,
+    0.08200249999999999,
+    0.030542500000000007,
+    0.010934999999999999
+  ],
+  "sweep": [
+    {
+      "window": 1,
+      "hidden": 1,
+      "params": 4,
+      "worst_rel_penalty_over_seeds": 50.7370867768595,
+      "best_rel_penalty_over_seeds": -0.0004474873584824462,
+      "matches_tolerance_all_seeds": false,
+      "matches_tolerance_any_seed": true,
+      "matches_wilcoxon_all_seeds": false,
+      "seed_runs": [
+        {
+          "train_seed": 0,
+          "ber": [
+            0.5043899999999999,
+            0.5020399999999999,
+            0.50128,
+            0.5008525,
+            0.500955,
+            0.500815
+          ],
+          "worst_rel_penalty": 50.7370867768595,
+          "tolerance_ok": false,
+          "wilcoxon_ok": false,
+          "per_snr": [
+            {
+              "snr_db": 0,
+              "mlp_ber": 0.5043899999999999,
+              "df_ber": 0.33339250000000004,
+              "rel_penalty": 0.5129014599908511,
+              "wilcoxon_p": 1.9073486328125e-06,
+              "wilcoxon_loses": true,
+              "wins": 0,
+              "losses": 20
+            },
+            {
+              "snr_db": 4,
+              "mlp_ber": 0.5020399999999999,
+              "df_ber": 0.22184500000000001,
+              "rel_penalty": 1.263021478960535,
+              "wilcoxon_p": 1.9073486328125e-06,
+              "wilcoxon_loses": true,
+              "wins": 0,
+              "losses": 20
+            },
+            {
+              "snr_db": 8,
+              "mlp_ber": 0.50128,
+              "df_ber": 0.120385,
+              "rel_penalty": 3.163973917016239,
+              "wilcoxon_p": 8.844915021211901e-05,
+              "wilcoxon_loses": true,
+              "wins": 0,
+              "losses": 20
+            },
+            {
+              "snr_db": 12,
+              "mlp_ber": 0.5008525,
+              "df_ber": 0.0558675,
+              "rel_penalty": 7.965006488566698,
+              "wilcoxon_p": 1.9073486328125e-06,
+              "wilcoxon_loses": true,
+              "wins": 0,
+              "losses": 20
+            },
+            {
+              "snr_db": 16,
+              "mlp_ber": 0.500955,
+              "df_ber": 0.024002500000000003,
+              "rel_penalty": 19.870950942610143,
+              "wilcoxon_p": 8.832385863081277e-05,
+              "wilcoxon_loses": true,
+              "wins": 0,
+              "losses": 20
+            },
+            {
+              "snr_db": 20,
+              "mlp_ber": 0.500815,
+              "df_ber": 0.009680000000000001,
+              "rel_penalty": 50.7370867768595,
+              "wilcoxon_p": 8.844915021211901e-05,
+              "wilcoxon_loses": true,
+              "wins": 0,
+              "losses": 20
+            }
+          ]
+        },
+        {
+          "train_seed": 1,
+          "ber": [
+            0.5084025,
+            0.5063625,
+            0.5038325000000001,
+            0.5013624999999999,
+            0.50017,
+            0.49964000000000003
+          ],
+          "worst_rel_penalty": 50.615702479338836,
+          "tolerance_ok": false,
+          "wilcoxon_ok": false,
+          "per_snr": [
+            {
+              "snr_db": 0,
+              "mlp_ber": 0.5084025,
+              "df_ber": 0.33339250000000004,
+              "rel_penalty": 0.5249368237137906,
+              "wilcoxon_p": 1.9073486328125e-06,
+              "wilcoxon_loses": true,
+              "wins": 0,
+              "losses": 20
+            },
+            {
+              "snr_db": 4,
+              "mlp_ber": 0.5063625,
+              "df_ber": 0.22184500000000001,
+              "rel_penalty": 1.2825058036016137,
+              "wilcoxon_p": 1.9073486328125e-06,
+              "wilcoxon_loses": true,
+              "wins": 0,
+              "losses": 20
+            },
+            {
+              "snr_db": 8,
+              "mlp_ber": 0.5038325000000001,
+              "df_ber": 0.120385,
+              "rel_penalty": 3.1851767246750016,
+              "wilcoxon_p": 1.9073486328125e-06,
+              "wilcoxon_loses": true,
+              "wins": 0,
+              "losses": 20
+            },
+            {
+              "snr_db": 12,
+              "mlp_ber": 0.5013624999999999,
+              "df_ber": 0.0558675,
+              "rel_penalty": 7.974135230679732,
+              "wilcoxon_p": 8.844915021211901e-05,
+              "wilcoxon_loses": true,
+              "wins": 0,
+              "losses": 20
+            },
+            {
+              "snr_db": 16,
+              "mlp_ber": 0.50017,
+              "df_ber": 0.024002500000000003,
+              "rel_penalty": 19.838246016039996,
+              "wilcoxon_p": 1.9073486328125e-06,
+              "wilcoxon_loses": true,
+              "wins": 0,
+              "losses": 20
+            },
+            {
+              "snr_db": 20,
+              "mlp_ber": 0.49964000000000003,
+              "df_ber": 0.009680000000000001,
+              "rel_penalty": 50.615702479338836,
+              "wilcoxon_p": 1.9073486328125e-06,
+              "wilcoxon_loses": true,
+              "wins": 0,
+              "losses": 20
+            }
+          ]
+        },
+        {
+          "train_seed": 2,
+          "ber": [
+            0.3307999999999999,
+            0.21963999999999997,
+            0.11968749999999999,
+            0.05584249999999998,
+            0.023924999999999995,
+            0.009645
+          ],
+          "worst_rel_penalty": -0.0004474873584824462,
+          "tolerance_ok": true,
+          "wilcoxon_ok": true,
+          "per_snr": [
+            {
+              "snr_db": 0,
+              "mlp_ber": 0.3307999999999999,
+              "df_ber": 0.33339250000000004,
+              "rel_penalty": -0.007776119738746697,
+              "wilcoxon_p": 8.819870204194453e-05,
+              "wilcoxon_loses": false,
+              "wins": 20,
+              "losses": 0
+            },
+            {
+              "snr_db": 4,
+              "mlp_ber": 0.21963999999999997,
+              "df_ber": 0.22184500000000001,
+              "rel_penalty": -0.009939372084112962,
+              "wilcoxon_p": 8.844915021211901e-05,
+              "wilcoxon_loses": false,
+              "wins": 20,
+              "losses": 0
+            },
+            {
+              "snr_db": 8,
+              "mlp_ber": 0.11968749999999999,
+              "df_ber": 0.120385,
+              "rel_penalty": -0.005793911201561802,
+              "wilcoxon_p": 0.00038886029271181555,
+              "wilcoxon_loses": false,
+              "wins": 17,
+              "losses": 3
+            },
+            {
+              "snr_db": 12,
+              "mlp_ber": 0.05584249999999998,
+              "df_ber": 0.0558675,
+              "rel_penalty": -0.0004474873584824462,
+              "wilcoxon_p": 0.808053727872876,
+              "wilcoxon_loses": false,
+              "wins": 11,
+              "losses": 9
+            },
+            {
+              "snr_db": 16,
+              "mlp_ber": 0.023924999999999995,
+              "df_ber": 0.024002500000000003,
+              "rel_penalty": -0.003228830330174278,
+              "wilcoxon_p": 0.32343005326661556,
+              "wilcoxon_loses": false,
+              "wins": 11,
+              "losses": 8
+            },
+            {
+              "snr_db": 20,
+              "mlp_ber": 0.009645,
+              "df_ber": 0.009680000000000001,
+              "rel_penalty": -0.0036157024793388743,
+              "wilcoxon_p": 0.28385613494896045,
+              "wilcoxon_loses": false,
+              "wins": 10,
+              "losses": 4
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "window": 1,
+      "hidden": 2,
+      "params": 7,
+      "worst_rel_penalty_over_seeds": -0.0003124674513073234,
+      "best_rel_penalty_over_seeds": -0.0010415581710238814,
+      "matches_tolerance_all_seeds": true,
+      "matches_tolerance_any_seed": true,
+      "matches_wilcoxon_all_seeds": true,
+      "seed_runs": [
+        {
+          "train_seed": 0,
+          "ber": [
+            0.3307875,
+            0.219515,
+            0.1197625,
+            0.05572250000000001,
+            0.023977500000000002,
+            0.009635000000000001
+          ],
+          "worst_rel_penalty": -0.0010415581710238814,
+          "tolerance_ok": true,
+          "wilcoxon_ok": true,
+          "per_snr": [
+            {
+              "snr_db": 0,
+              "mlp_ber": 0.3307875,
+              "df_ber": 0.33339250000000004,
+              "rel_penalty": -0.007813613083677718,
+              "wilcoxon_p": 8.844915021211901e-05,
+              "wilcoxon_loses": false,
+              "wins": 20,
+              "losses": 0
+            },
+            {
+              "snr_db": 4,
+              "mlp_ber": 0.219515,
+              "df_ber": 0.22184500000000001,
+              "rel_penalty": -0.010502828551466233,
+              "wilcoxon_p": 8.819870204194453e-05,
+              "wilcoxon_loses": false,
+              "wins": 20,
+              "losses": 0
+            },
+            {
+              "snr_db": 8,
+              "mlp_ber": 0.1197625,
+              "df_ber": 0.120385,
+              "rel_penalty": -0.0051709099970927595,
+              "wilcoxon_p": 0.0005855919257290155,
+              "wilcoxon_loses": false,
+              "wins": 17,
+              "losses": 3
+            },
+            {
+              "snr_db": 12,
+              "mlp_ber": 0.05572250000000001,
+              "df_ber": 0.0558675,
+              "rel_penalty": -0.002595426679196176,
+              "wilcoxon_p": 0.2609286752554313,
+              "wilcoxon_loses": false,
+              "wins": 12,
+              "losses": 8
+            },
+            {
+              "snr_db": 16,
+              "mlp_ber": 0.023977500000000002,
+              "df_ber": 0.024002500000000003,
+              "rel_penalty": -0.0010415581710238814,
+              "wilcoxon_p": 0.6869517202469118,
+              "wilcoxon_loses": false,
+              "wins": 9,
+              "losses": 8
+            },
+            {
+              "snr_db": 20,
+              "mlp_ber": 0.009635000000000001,
+              "df_ber": 0.009680000000000001,
+              "rel_penalty": -0.004648760330578501,
+              "wilcoxon_p": 0.1608427880105595,
+              "wilcoxon_loses": false,
+              "wins": 12,
+              "losses": 4
+            }
+          ]
+        },
+        {
+          "train_seed": 1,
+          "ber": [
+            0.33115,
+            0.21988499999999997,
+            0.1198425,
+            0.0558225,
+            0.023995,
+            0.009652499999999998
+          ],
+          "worst_rel_penalty": -0.0003124674513073234,
+          "tolerance_ok": true,
+          "wilcoxon_ok": true,
+          "per_snr": [
+            {
+              "snr_db": 0,
+              "mlp_ber": 0.33115,
+              "df_ber": 0.33339250000000004,
+              "rel_penalty": -0.006726306080670788,
+              "wilcoxon_p": 8.844915021211901e-05,
+              "wilcoxon_loses": false,
+              "wins": 20,
+              "losses": 0
+            },
+            {
+              "snr_db": 4,
+              "mlp_ber": 0.21988499999999997,
+              "df_ber": 0.22184500000000001,
+              "rel_penalty": -0.008834997408100453,
+              "wilcoxon_p": 8.832385863081277e-05,
+              "wilcoxon_loses": false,
+              "wins": 20,
+              "losses": 0
+            },
+            {
+              "snr_db": 8,
+              "mlp_ber": 0.1198425,
+              "df_ber": 0.120385,
+              "rel_penalty": -0.00450637537899241,
+              "wilcoxon_p": 0.0005364183127574762,
+              "wilcoxon_loses": false,
+              "wins": 16,
+              "losses": 3
+            },
+            {
+              "snr_db": 12,
+              "mlp_ber": 0.0558225,
+              "df_ber": 0.0558675,
+              "rel_penalty": -0.0008054772452678815,
+              "wilcoxon_p": 0.9850942962791378,
+              "wilcoxon_loses": false,
+              "wins": 11,
+              "losses": 9
+            },
+            {
+              "snr_db": 16,
+              "mlp_ber": 0.023995,
+              "df_ber": 0.024002500000000003,
+              "rel_penalty": -0.0003124674513073234,
+              "wilcoxon_p": 0.7942763349028523,
+              "wilcoxon_loses": false,
+              "wins": 8,
+              "losses": 9
+            },
+            {
+              "snr_db": 20,
+              "mlp_ber": 0.009652499999999998,
+              "df_ber": 0.009680000000000001,
+              "rel_penalty": -0.0028409090909094228,
+              "wilcoxon_p": 0.302097148283326,
+              "wilcoxon_loses": false,
+              "wins": 9,
+              "losses": 6
+            }
+          ]
+        },
+        {
+          "train_seed": 2,
+          "ber": [
+            0.33079000000000003,
+            0.21961500000000003,
+            0.1196,
+            0.055827499999999995,
+            0.0239125,
+            0.009652500000000003
+          ],
+          "worst_rel_penalty": -0.0007159797735714916,
+          "tolerance_ok": true,
+          "wilcoxon_ok": true,
+          "per_snr": [
+            {
+              "snr_db": 0,
+              "mlp_ber": 0.33079000000000003,
+              "df_ber": 0.33339250000000004,
+              "rel_penalty": -0.007806114414691414,
+              "wilcoxon_p": 8.844915021211901e-05,
+              "wilcoxon_loses": false,
+              "wins": 20,
+              "losses": 0
+            },
+            {
+              "snr_db": 4,
+              "mlp_ber": 0.21961500000000003,
+              "df_ber": 0.22184500000000001,
+              "rel_penalty": -0.010052063377583366,
+              "wilcoxon_p": 8.844915021211901e-05,
+              "wilcoxon_loses": false,
+              "wins": 20,
+              "losses": 0
+            },
+            {
+              "snr_db": 8,
+              "mlp_ber": 0.1196,
+              "df_ber": 0.120385,
+              "rel_penalty": -0.006520745940108883,
+              "wilcoxon_p": 0.00041805552238936426,
+              "wilcoxon_loses": false,
+              "wins": 16,
+              "losses": 2
+            },
+            {
+              "snr_db": 12,
+              "mlp_ber": 0.055827499999999995,
+              "df_ber": 0.0558675,
+              "rel_penalty": -0.0007159797735714916,
+              "wilcoxon_p": 0.6537639801580551,
+              "wilcoxon_loses": false,
+              "wins": 12,
+              "losses": 8
+            },
+            {
+              "snr_db": 16,
+              "mlp_ber": 0.0239125,
+              "df_ber": 0.024002500000000003,
+              "rel_penalty": -0.0037496094156860018,
+              "wilcoxon_p": 0.09321447013347045,
+              "wilcoxon_loses": false,
+              "wins": 12,
+              "losses": 6
+            },
+            {
+              "snr_db": 20,
+              "mlp_ber": 0.009652500000000003,
+              "df_ber": 0.009680000000000001,
+              "rel_penalty": -0.0028409090909088854,
+              "wilcoxon_p": 0.4003808031520797,
+              "wilcoxon_loses": false,
+              "wins": 9,
+              "losses": 4
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "window": 1,
+      "hidden": 3,
+      "params": 10,
+      "worst_rel_penalty_over_seeds": 0.0011457139881260816,
+      "best_rel_penalty_over_seeds": -8.949747169651408e-05,
+      "matches_tolerance_all_seeds": true,
+      "matches_tolerance_any_seed": true,
+      "matches_wilcoxon_all_seeds": true,
+      "seed_runs": [
+        {
+          "train_seed": 0,
+          "ber": [
+            0.330795,
+            0.21969500000000006,
+            0.11980249999999999,
+            0.05588499999999998,
+            0.0240175,
+            0.009655
+          ],
+          "worst_rel_penalty": 0.0006249349026142132,
+          "tolerance_ok": true,
+          "wilcoxon_ok": true,
+          "per_snr": [
+            {
+              "snr_db": 0,
+              "mlp_ber": 0.330795,
+              "df_ber": 0.33339250000000004,
+              "rel_penalty": -0.0077911170767189725,
+              "wilcoxon_p": 1.9073486328125e-06,
+              "wilcoxon_loses": false,
+              "wins": 20,
+              "losses": 0
+            },
+            {
+              "snr_db": 4,
+              "mlp_ber": 0.21969500000000006,
+              "df_ber": 0.22184500000000001,
+              "rel_penalty": -0.009691451238477124,
+              "wilcoxon_p": 8.844915021211901e-05,
+              "wilcoxon_loses": false,
+              "wins": 20,
+              "losses": 0
+            },
+            {
+              "snr_db": 8,
+              "mlp_ber": 0.11980249999999999,
+              "df_ber": 0.120385,
+              "rel_penalty": -0.004838642688042643,
+              "wilcoxon_p": 0.0012337303580952591,
+              "wilcoxon_loses": false,
+              "wins": 16,
+              "losses": 4
+            },
+            {
+              "snr_db": 12,
+              "mlp_ber": 0.05588499999999998,
+              "df_ber": 0.0558675,
+              "rel_penalty": 0.00031324115093717825,
+              "wilcoxon_p": 0.7083714365676915,
+              "wilcoxon_loses": false,
+              "wins": 10,
+              "losses": 10
+            },
+            {
+              "snr_db": 16,
+              "mlp_ber": 0.0240175,
+              "df_ber": 0.024002500000000003,
+              "rel_penalty": 0.0006249349026142132,
+              "wilcoxon_p": 0.9303688076294168,
+              "wilcoxon_loses": false,
+              "wins": 10,
+              "losses": 8
+            },
+            {
+              "snr_db": 20,
+              "mlp_ber": 0.009655,
+              "df_ber": 0.009680000000000001,
+              "rel_penalty": -0.0025826446280992474,
+              "wilcoxon_p": 0.8610534405728086,
+              "wilcoxon_loses": false,
+              "wins": 8,
+              "losses": 10
+            }
+          ]
+        },
+        {
+          "train_seed": 1,
+          "ber": [
+            0.33120249999999996,
+            0.21990000000000004,
+            0.1198075,
+            0.055819999999999995,
+            0.02403,
+            0.009657500000000001
+          ],
+          "worst_rel_penalty": 0.0011457139881260816,
+          "tolerance_ok": true,
+          "wilcoxon_ok": true,
+          "per_snr": [
+            {
+              "snr_db": 0,
+              "mlp_ber": 0.33120249999999996,
+              "df_ber": 0.33339250000000004,
+              "rel_penalty": -0.006568834031959569,
+              "wilcoxon_p": 8.832385863081277e-05,
+              "wilcoxon_loses": false,
+              "wins": 20,
+              "losses": 0
+            },
+            {
+              "snr_db": 4,
+              "mlp_ber": 0.21990000000000004,
+              "df_ber": 0.22184500000000001,
+              "rel_penalty": -0.008767382632017736,
+              "wilcoxon_p": 8.844915021211901e-05,
+              "wilcoxon_loses": false,
+              "wins": 20,
+              "losses": 0
+            },
+            {
+              "snr_db": 8,
+              "mlp_ber": 0.1198075,
+              "df_ber": 0.120385,
+              "rel_penalty": -0.004797109274411335,
+              "wilcoxon_p": 0.0005742452328978288,
+              "wilcoxon_loses": false,
+              "wins": 17,
+              "losses": 2
+            },
+            {
+              "snr_db": 12,
+              "mlp_ber": 0.055819999999999995,
+              "df_ber": 0.0558675,
+              "rel_penalty": -0.0008502259811161386,
+              "wilcoxon_p": 0.9404395430099405,
+              "wilcoxon_loses": false,
+              "wins": 9,
+              "losses": 11
+            },
+            {
+              "snr_db": 16,
+              "mlp_ber": 0.02403,
+              "df_ber": 0.024002500000000003,
+              "rel_penalty": 0.0011457139881260816,
+              "wilcoxon_p": 0.6575541125161442,
+              "wilcoxon_loses": false,
+              "wins": 9,
+              "losses": 10
+            },
+            {
+              "snr_db": 20,
+              "mlp_ber": 0.009657500000000001,
+              "df_ber": 0.009680000000000001,
+              "rel_penalty": -0.0023243801652892506,
+              "wilcoxon_p": 0.9810099241976586,
+              "wilcoxon_loses": false,
+              "wins": 6,
+              "losses": 11
+            }
+          ]
+        },
+        {
+          "train_seed": 2,
+          "ber": [
+            0.3307275,
+            0.2196475,
+            0.119655,
+            0.055862499999999995,
+            0.0239125,
+            0.009640000000000001
+          ],
+          "worst_rel_penalty": -8.949747169651408e-05,
+          "tolerance_ok": true,
+          "wilcoxon_ok": true,
+          "per_snr": [
+            {
+              "snr_db": 0,
+              "mlp_ber": 0.3307275,
+              "df_ber": 0.33339250000000004,
+              "rel_penalty": -0.00799358113934785,
+              "wilcoxon_p": 8.807368035275503e-05,
+              "wilcoxon_loses": false,
+              "wins": 20,
+              "losses": 0
+            },
+            {
+              "snr_db": 4,
+              "mlp_ber": 0.2196475,
+              "df_ber": 0.22184500000000001,
+              "rel_penalty": -0.009905564696071666,
+              "wilcoxon_p": 1.9073486328125e-06,
+              "wilcoxon_loses": false,
+              "wins": 20,
+              "losses": 0
+            },
+            {
+              "snr_db": 8,
+              "mlp_ber": 0.119655,
+              "df_ber": 0.120385,
+              "rel_penalty": -0.006063878390164958,
+              "wilcoxon_p": 0.00029244717207297787,
+              "wilcoxon_loses": false,
+              "wins": 17,
+              "losses": 3
+            },
+            {
+              "snr_db": 12,
+              "mlp_ber": 0.055862499999999995,
+              "df_ber": 0.0558675,
+              "rel_penalty": -8.949747169651408e-05,
+              "wilcoxon_p": 0.9478901339636624,
+              "wilcoxon_loses": false,
+              "wins": 10,
+              "losses": 8
+            },
+            {
+              "snr_db": 16,
+              "mlp_ber": 0.0239125,
+              "df_ber": 0.024002500000000003,
+              "rel_penalty": -0.0037496094156860018,
+              "wilcoxon_p": 0.13606096170087895,
+              "wilcoxon_loses": false,
+              "wins": 12,
+              "losses": 7
+            },
+            {
+              "snr_db": 20,
+              "mlp_ber": 0.009640000000000001,
+              "df_ber": 0.009680000000000001,
+              "rel_penalty": -0.004132231404958688,
+              "wilcoxon_p": 0.21970245418209033,
+              "wilcoxon_loses": false,
+              "wins": 10,
+              "losses": 5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "window": 1,
+      "hidden": 4,
+      "params": 13,
+      "worst_rel_penalty_over_seeds": -0.0006264823018751018,
+      "best_rel_penalty_over_seeds": -0.0007607285094196244,
+      "matches_tolerance_all_seeds": true,
+      "matches_tolerance_any_seed": true,
+      "matches_wilcoxon_all_seeds": true,
+      "seed_runs": [
+        {
+          "train_seed": 0,
+          "ber": [
+            0.3307625,
+            0.21959499999999998,
+            0.11968750000000002,
+            0.055830000000000005,
+            0.0239825,
+            0.009612500000000001
+          ],
+          "worst_rel_penalty": -0.0006712310377231104,
+          "tolerance_ok": true,
+          "wilcoxon_ok": true,
+          "per_snr": [
+            {
+              "snr_db": 0,
+              "mlp_ber": 0.3307625,
+              "df_ber": 0.33339250000000004,
+              "rel_penalty": -0.00788859977354026,
+              "wilcoxon_p": 8.807368035275503e-05,
+              "wilcoxon_loses": false,
+              "wins": 20,
+              "losses": 0
+            },
+            {
+              "snr_db": 4,
+              "mlp_ber": 0.21959499999999998,
+              "df_ber": 0.22184500000000001,
+              "rel_penalty": -0.010142216412360114,
+              "wilcoxon_p": 8.832385863081277e-05,
+              "wilcoxon_loses": false,
+              "wins": 20,
+              "losses": 0
+            },
+            {
+              "snr_db": 8,
+              "mlp_ber": 0.11968750000000002,
+              "df_ber": 0.120385,
+              "rel_penalty": -0.005793911201561571,
+              "wilcoxon_p": 0.0008334077061965065,
+              "wilcoxon_loses": false,
+              "wins": 16,
+              "losses": 3
+            },
+            {
+              "snr_db": 12,
+              "mlp_ber": 0.055830000000000005,
+              "df_ber": 0.0558675,
+              "rel_penalty": -0.0006712310377231104,
+              "wilcoxon_p": 0.5224312849615645,
+              "wilcoxon_loses": false,
+              "wins": 11,
+              "losses": 6
+            },
+            {
+              "snr_db": 16,
+              "mlp_ber": 0.0239825,
+              "df_ber": 0.024002500000000003,
+              "rel_penalty": -0.0008332465368191918,
+              "wilcoxon_p": 0.8445010428076558,
+              "wilcoxon_loses": false,
+              "wins": 9,
+              "losses": 9
+            },
+            {
+              "snr_db": 20,
+              "mlp_ber": 0.009612500000000001,
+              "df_ber": 0.009680000000000001,
+              "rel_penalty": -0.006973140495867752,
+              "wilcoxon_p": 0.020013640572679025,
+              "wilcoxon_loses": false,
+              "wins": 13,
+              "losses": 4
+            }
+          ]
+        },
+        {
+          "train_seed": 1,
+          "ber": [
+            0.330835,
+            0.21964999999999998,
+            0.11977250000000002,
+            0.055825,
+            0.023977500000000002,
+            0.0096475
+          ],
+          "worst_rel_penalty": -0.0007607285094196244,
+          "tolerance_ok": true,
+          "wilcoxon_ok": true,
+          "per_snr": [
+            {
+              "snr_db": 0,
+              "mlp_ber": 0.330835,
+              "df_ber": 0.33339250000000004,
+              "rel_penalty": -0.00767113837293894,
+              "wilcoxon_p": 8.732637791829415e-05,
+              "wilcoxon_loses": false,
+              "wins": 20,
+              "losses": 0
+            },
+            {
+              "snr_db": 4,
+              "mlp_ber": 0.21964999999999998,
+              "df_ber": 0.22184500000000001,
+              "rel_penalty": -0.00989429556672465,
+              "wilcoxon_p": 1.9073486328125e-06,
+              "wilcoxon_loses": false,
+              "wins": 20,
+              "losses": 0
+            },
+            {
+              "snr_db": 8,
+              "mlp_ber": 0.11977250000000002,
+              "df_ber": 0.120385,
+              "rel_penalty": -0.005087843169830029,
+              "wilcoxon_p": 0.0010167606758369801,
+              "wilcoxon_loses": false,
+              "wins": 16,
+              "losses": 4
+            },
+            {
+              "snr_db": 12,
+              "mlp_ber": 0.055825,
+              "df_ber": 0.0558675,
+              "rel_penalty": -0.0007607285094196244,
+              "wilcoxon_p": 0.9037912760588149,
+              "wilcoxon_loses": false,
+              "wins": 10,
+              "losses": 9
+            },
+            {
+              "snr_db": 16,
+              "mlp_ber": 0.023977500000000002,
+              "df_ber": 0.024002500000000003,
+              "rel_penalty": -0.0010415581710238814,
+              "wilcoxon_p": 0.48509524352594735,
+              "wilcoxon_loses": false,
+              "wins": 10,
+              "losses": 8
+            },
+            {
+              "snr_db": 20,
+              "mlp_ber": 0.0096475,
+              "df_ber": 0.009680000000000001,
+              "rel_penalty": -0.003357438016529057,
+              "wilcoxon_p": 0.1993687797436281,
+              "wilcoxon_loses": false,
+              "wins": 11,
+              "losses": 6
+            }
+          ]
+        },
+        {
+          "train_seed": 2,
+          "ber": [
+            0.3306175,
+            0.21947,
+            0.1196375,
+            0.05583249999999999,
+            0.0239725,
+            0.009605
+          ],
+          "worst_rel_penalty": -0.0006264823018751018,
+          "tolerance_ok": true,
+          "wilcoxon_ok": true,
+          "per_snr": [
+            {
+              "snr_db": 0,
+              "mlp_ber": 0.3306175,
+              "df_ber": 0.33339250000000004,
+              "rel_penalty": -0.008323522574743064,
+              "wilcoxon_p": 1.9073486328125e-06,
+              "wilcoxon_loses": false,
+              "wins": 20,
+              "losses": 0
+            },
+            {
+              "snr_db": 4,
+              "mlp_ber": 0.21947,
+              "df_ber": 0.22184500000000001,
+              "rel_penalty": -0.010705672879713385,
+              "wilcoxon_p": 8.844915021211901e-05,
+              "wilcoxon_loses": false,
+              "wins": 20,
+              "losses": 0
+            },
+            {
+              "snr_db": 8,
+              "mlp_ber": 0.1196375,
+              "df_ber": 0.120385,
+              "rel_penalty": -0.00620924533787442,
+              "wilcoxon_p": 0.0003127701129890782,
+              "wilcoxon_loses": false,
+              "wins": 19,
+              "losses": 1
+            },
+            {
+              "snr_db": 12,
+              "mlp_ber": 0.05583249999999999,
+              "df_ber": 0.0558675,
+              "rel_penalty": -0.0006264823018751018,
+              "wilcoxon_p": 0.7225194208513843,
+              "wilcoxon_loses": false,
+              "wins": 11,
+              "losses": 9
+            },
+            {
+              "snr_db": 16,
+              "mlp_ber": 0.0239725,
+              "df_ber": 0.024002500000000003,
+              "rel_penalty": -0.0012498698052287155,
+              "wilcoxon_p": 0.8810249486522268,
+              "wilcoxon_loses": false,
+              "wins": 8,
+              "losses": 12
+            },
+            {
+              "snr_db": 20,
+              "mlp_ber": 0.009605,
+              "df_ber": 0.009680000000000001,
+              "rel_penalty": -0.0077479338842975625,
+              "wilcoxon_p": 0.02188374140772608,
+              "wilcoxon_loses": false,
+              "wins": 13,
+              "losses": 5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "window": 1,
+      "hidden": 8,
+      "params": 25,
+      "worst_rel_penalty_over_seeds": 0.00013424620754452272,
+      "best_rel_penalty_over_seeds": -0.0006712310377229862,
+      "matches_tolerance_all_seeds": true,
+      "matches_tolerance_any_seed": true,
+      "matches_wilcoxon_all_seeds": true,
+      "seed_runs": [
+        {
+          "train_seed": 0,
+          "ber": [
+            0.3309575,
+            0.2196025,
+            0.1197575,
+            0.055874999999999994,
+            0.02398,
+            0.009632499999999999
+          ],
+          "worst_rel_penalty": 0.00013424620754452272,
+          "tolerance_ok": true,
+          "wilcoxon_ok": true,
+          "per_snr": [
+            {
+              "snr_db": 0,
+              "mlp_ber": 0.3309575,
+              "df_ber": 0.33339250000000004,
+              "rel_penalty": -0.007303703592612372,
+              "wilcoxon_p": 1.9073486328125e-06,
+              "wilcoxon_loses": false,
+              "wins": 20,
+              "losses": 0
+            },
+            {
+              "snr_db": 4,
+              "mlp_ber": 0.2196025,
+              "df_ber": 0.22184500000000001,
+              "rel_penalty": -0.010108409024318818,
+              "wilcoxon_p": 1.9073486328125e-06,
+              "wilcoxon_loses": false,
+              "wins": 20,
+              "losses": 0
+            },
+            {
+              "snr_db": 8,
+              "mlp_ber": 0.1197575,
+              "df_ber": 0.120385,
+              "rel_penalty": -0.005212443410723953,
+              "wilcoxon_p": 0.0016922152516558537,
+              "wilcoxon_loses": false,
+              "wins": 16,
+              "losses": 3
+            },
+            {
+              "snr_db": 12,
+              "mlp_ber": 0.055874999999999994,
+              "df_ber": 0.0558675,
+              "rel_penalty": 0.00013424620754452272,
+              "wilcoxon_p": 0.6405987916361712,
+              "wilcoxon_loses": false,
+              "wins": 9,
+              "losses": 11
+            },
+            {
+              "snr_db": 16,
+              "mlp_ber": 0.02398,
+              "df_ber": 0.024002500000000003,
+              "rel_penalty": -0.0009374023539215367,
+              "wilcoxon_p": 0.9552958956345594,
+              "wilcoxon_loses": false,
+              "wins": 9,
+              "losses": 11
+            },
+            {
+              "snr_db": 20,
+              "mlp_ber": 0.009632499999999999,
+              "df_ber": 0.009680000000000001,
+              "rel_penalty": -0.004907024793388677,
+              "wilcoxon_p": 0.20006609056316782,
+              "wilcoxon_loses": false,
+              "wins": 10,
+              "losses": 7
+            }
+          ]
+        },
+        {
+          "train_seed": 1,
+          "ber": [
+            0.330975,
+            0.21972,
+            0.11971000000000001,
+            0.05583000000000001,
+            0.0239775,
+            0.00965
+          ],
+          "worst_rel_penalty": -0.0006712310377229862,
+          "tolerance_ok": true,
+          "wilcoxon_ok": true,
+          "per_snr": [
+            {
+              "snr_db": 0,
+              "mlp_ber": 0.330975,
+              "df_ber": 0.33339250000000004,
+              "rel_penalty": -0.007251212909708577,
+              "wilcoxon_p": 8.844915021211901e-05,
+              "wilcoxon_loses": false,
+              "wins": 20,
+              "losses": 0
+            },
+            {
+              "snr_db": 4,
+              "mlp_ber": 0.21972,
+              "df_ber": 0.22184500000000001,
+              "rel_penalty": -0.00957875994500672,
+              "wilcoxon_p": 8.832385863081277e-05,
+              "wilcoxon_loses": false,
+              "wins": 20,
+              "losses": 0
+            },
+            {
+              "snr_db": 8,
+              "mlp_ber": 0.11971000000000001,
+              "df_ber": 0.120385,
+              "rel_penalty": -0.005607010840220916,
+              "wilcoxon_p": 0.0002736522139236351,
+              "wilcoxon_loses": false,
+              "wins": 17,
+              "losses": 1
+            },
+            {
+              "snr_db": 12,
+              "mlp_ber": 0.05583000000000001,
+              "df_ber": 0.0558675,
+              "rel_penalty": -0.0006712310377229862,
+              "wilcoxon_p": 0.9433445071736766,
+              "wilcoxon_loses": false,
+              "wins": 8,
+              "losses": 9
+            },
+            {
+              "snr_db": 16,
+              "mlp_ber": 0.0239775,
+              "df_ber": 0.024002500000000003,
+              "rel_penalty": -0.0010415581710240258,
+              "wilcoxon_p": 0.4991472413605187,
+              "wilcoxon_loses": false,
+              "wins": 11,
+              "losses": 7
+            },
+            {
+              "snr_db": 20,
+              "mlp_ber": 0.00965,
+              "df_ber": 0.009680000000000001,
+              "rel_penalty": -0.003099173553719061,
+              "wilcoxon_p": 0.27381993687546047,
+              "wilcoxon_loses": false,
+              "wins": 11,
+              "losses": 6
+            }
+          ]
+        },
+        {
+          "train_seed": 2,
+          "ber": [
+            0.330785,
+            0.21966000000000002,
+            0.11974,
+            0.055865,
+            0.023932500000000002,
+            0.00963
+          ],
+          "worst_rel_penalty": -4.474873584825704e-05,
+          "tolerance_ok": true,
+          "wilcoxon_ok": true,
+          "per_snr": [
+            {
+              "snr_db": 0,
+              "mlp_ber": 0.330785,
+              "df_ber": 0.33339250000000004,
+              "rel_penalty": -0.007821111752664022,
+              "wilcoxon_p": 8.844915021211901e-05,
+              "wilcoxon_loses": false,
+              "wins": 20,
+              "losses": 0
+            },
+            {
+              "snr_db": 4,
+              "mlp_ber": 0.21966000000000002,
+              "df_ber": 0.22184500000000001,
+              "rel_penalty": -0.009849219049336213,
+              "wilcoxon_p": 8.819870204194453e-05,
+              "wilcoxon_loses": false,
+              "wins": 20,
+              "losses": 0
+            },
+            {
+              "snr_db": 8,
+              "mlp_ber": 0.11974,
+              "df_ber": 0.120385,
+              "rel_penalty": -0.005357810358433415,
+              "wilcoxon_p": 0.0018102516433276129,
+              "wilcoxon_loses": false,
+              "wins": 15,
+              "losses": 4
+            },
+            {
+              "snr_db": 12,
+              "mlp_ber": 0.055865,
+              "df_ber": 0.0558675,
+              "rel_penalty": -4.474873584825704e-05,
+              "wilcoxon_p": 0.9305257117306303,
+              "wilcoxon_loses": false,
+              "wins": 10,
+              "losses": 8
+            },
+            {
+              "snr_db": 16,
+              "mlp_ber": 0.023932500000000002,
+              "df_ber": 0.024002500000000003,
+              "rel_penalty": -0.00291636287886681,
+              "wilcoxon_p": 0.3830161279829598,
+              "wilcoxon_loses": false,
+              "wins": 11,
+              "losses": 7
+            },
+            {
+              "snr_db": 20,
+              "mlp_ber": 0.00963,
+              "df_ber": 0.009680000000000001,
+              "rel_penalty": -0.005165289256198495,
+              "wilcoxon_p": 0.11385843996277085,
+              "wilcoxon_loses": false,
+              "wins": 12,
+              "losses": 4
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "window": 1,
+      "hidden": 16,
+      "params": 49,
+      "worst_rel_penalty_over_seeds": 0.003893140018794388,
+      "best_rel_penalty_over_seeds": 0.0008332465368187582,
+      "matches_tolerance_all_seeds": true,
+      "matches_tolerance_any_seed": true,
+      "matches_wilcoxon_all_seeds": true,
+      "seed_runs": [
+        {
+          "train_seed": 0,
+          "ber": [
+            0.33094250000000003,
+            0.2197275,
+            0.11977000000000002,
+            0.05595499999999999,
+            0.023982499999999997,
+            0.009662500000000001
+          ],
+          "worst_rel_penalty": 0.0015662057546872575,
+          "tolerance_ok": true,
+          "wilcoxon_ok": true,
+          "per_snr": [
+            {
+              "snr_db": 0,
+              "mlp_ber": 0.33094250000000003,
+              "df_ber": 0.33339250000000004,
+              "rel_penalty": -0.007348695606529863,
+              "wilcoxon_p": 8.844915021211901e-05,
+              "wilcoxon_loses": false,
+              "wins": 20,
+              "losses": 0
+            },
+            {
+              "snr_db": 4,
+              "mlp_ber": 0.2197275,
+              "df_ber": 0.22184500000000001,
+              "rel_penalty": -0.009544952556965547,
+              "wilcoxon_p": 8.732637791829415e-05,
+              "wilcoxon_loses": false,
+              "wins": 20,
+              "losses": 0
+            },
+            {
+              "snr_db": 8,
+              "mlp_ber": 0.11977000000000002,
+              "df_ber": 0.120385,
+              "rel_penalty": -0.005108609876645683,
+              "wilcoxon_p": 0.0020759193495233424,
+              "wilcoxon_loses": false,
+              "wins": 16,
+              "losses": 3
+            },
+            {
+              "snr_db": 12,
+              "mlp_ber": 0.05595499999999999,
+              "df_ber": 0.0558675,
+              "rel_penalty": 0.0015662057546872575,
+              "wilcoxon_p": 0.4994529087491246,
+              "wilcoxon_loses": false,
+              "wins": 9,
+              "losses": 9
+            },
+            {
+              "snr_db": 16,
+              "mlp_ber": 0.023982499999999997,
+              "df_ber": 0.024002500000000003,
+              "rel_penalty": -0.0008332465368193364,
+              "wilcoxon_p": 0.9825921851036757,
+              "wilcoxon_loses": false,
+              "wins": 9,
+              "losses": 9
+            },
+            {
+              "snr_db": 20,
+              "mlp_ber": 0.009662500000000001,
+              "df_ber": 0.009680000000000001,
+              "rel_penalty": -0.0018078512396694372,
+              "wilcoxon_p": 0.584432397901983,
+              "wilcoxon_loses": false,
+              "wins": 11,
+              "losses": 6
+            }
+          ]
+        },
+        {
+          "train_seed": 1,
+          "ber": [
+            0.33143749999999994,
+            0.22016999999999998,
+            0.1199225,
+            0.055865,
+            0.024022499999999995,
+            0.0096675
+          ],
+          "worst_rel_penalty": 0.0008332465368187582,
+          "tolerance_ok": true,
+          "wilcoxon_ok": true,
+          "per_snr": [
+            {
+              "snr_db": 0,
+              "mlp_ber": 0.33143749999999994,
+              "df_ber": 0.33339250000000004,
+              "rel_penalty": -0.0058639591472516486,
+              "wilcoxon_p": 8.819870204194453e-05,
+              "wilcoxon_loses": false,
+              "wins": 20,
+              "losses": 0
+            },
+            {
+              "snr_db": 4,
+              "mlp_ber": 0.22016999999999998,
+              "df_ber": 0.22184500000000001,
+              "rel_penalty": -0.007550316662534822,
+              "wilcoxon_p": 8.807368035275503e-05,
+              "wilcoxon_loses": false,
+              "wins": 20,
+              "losses": 0
+            },
+            {
+              "snr_db": 8,
+              "mlp_ber": 0.1199225,
+              "df_ber": 0.120385,
+              "rel_penalty": -0.0038418407608921757,
+              "wilcoxon_p": 0.0006321580703373669,
+              "wilcoxon_loses": false,
+              "wins": 16,
+              "losses": 4
+            },
+            {
+              "snr_db": 12,
+              "mlp_ber": 0.055865,
+              "df_ber": 0.0558675,
+              "rel_penalty": -4.474873584825704e-05,
+              "wilcoxon_p": 0.6868929770794905,
+              "wilcoxon_loses": false,
+              "wins": 9,
+              "losses": 10
+            },
+            {
+              "snr_db": 16,
+              "mlp_ber": 0.024022499999999995,
+              "df_ber": 0.024002500000000003,
+              "rel_penalty": 0.0008332465368187582,
+              "wilcoxon_p": 0.777804553302243,
+              "wilcoxon_loses": false,
+              "wins": 9,
+              "losses": 10
+            },
+            {
+              "snr_db": 20,
+              "mlp_ber": 0.0096675,
+              "df_ber": 0.009680000000000001,
+              "rel_penalty": -0.0012913223140496237,
+              "wilcoxon_p": 0.9245321904368573,
+              "wilcoxon_loses": false,
+              "wins": 6,
+              "losses": 8
+            }
+          ]
+        },
+        {
+          "train_seed": 2,
+          "ber": [
+            0.330755,
+            0.21980000000000005,
+            0.1199025,
+            0.056084999999999996,
+            0.024024999999999998,
+            0.009677499999999997
+          ],
+          "worst_rel_penalty": 0.003893140018794388,
+          "tolerance_ok": true,
+          "wilcoxon_ok": true,
+          "per_snr": [
+            {
+              "snr_db": 0,
+              "mlp_ber": 0.330755,
+              "df_ber": 0.33339250000000004,
+              "rel_penalty": -0.007911095780499006,
+              "wilcoxon_p": 1.9073486328125e-06,
+              "wilcoxon_loses": false,
+              "wins": 20,
+              "losses": 0
+            },
+            {
+              "snr_db": 4,
+              "mlp_ber": 0.21980000000000005,
+              "df_ber": 0.22184500000000001,
+              "rel_penalty": -0.009218147805900351,
+              "wilcoxon_p": 0.0001032027839634719,
+              "wilcoxon_loses": false,
+              "wins": 19,
+              "losses": 1
+            },
+            {
+              "snr_db": 8,
+              "mlp_ber": 0.1199025,
+              "df_ber": 0.120385,
+              "rel_penalty": -0.004007974415417292,
+              "wilcoxon_p": 0.006039559048656822,
+              "wilcoxon_loses": false,
+              "wins": 16,
+              "losses": 4
+            },
+            {
+              "snr_db": 12,
+              "mlp_ber": 0.056084999999999996,
+              "df_ber": 0.0558675,
+              "rel_penalty": 0.003893140018794388,
+              "wilcoxon_p": 0.06693172076912834,
+              "wilcoxon_loses": false,
+              "wins": 6,
+              "losses": 13
+            },
+            {
+              "snr_db": 16,
+              "mlp_ber": 0.024024999999999998,
+              "df_ber": 0.024002500000000003,
+              "rel_penalty": 0.0009374023539212475,
+              "wilcoxon_p": 0.7602580057326189,
+              "wilcoxon_loses": false,
+              "wins": 6,
+              "losses": 12
+            },
+            {
+              "snr_db": 20,
+              "mlp_ber": 0.009677499999999997,
+              "df_ber": 0.009680000000000001,
+              "rel_penalty": -0.00025826446281035484,
+              "wilcoxon_p": 0.9838135422695976,
+              "wilcoxon_loses": false,
+              "wins": 10,
+              "losses": 9
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "window": 3,
+      "hidden": 1,
+      "params": 6,
+      "worst_rel_penalty_over_seeds": 0.0080061983471072,
+      "best_rel_penalty_over_seeds": 0.0006264823018747291,
+      "matches_tolerance_all_seeds": true,
+      "matches_tolerance_any_seed": true,
+      "matches_wilcoxon_all_seeds": false,
+      "seed_runs": [
+        {
+          "train_seed": 0,
+          "ber": [
+            0.33124249999999994,
+            0.21993250000000003,
+            0.11993000000000001,
+            0.05590249999999999,
+            0.0240175,
+            0.009664999999999998
+          ],
+          "worst_rel_penalty": 0.0006264823018747291,
+          "tolerance_ok": true,
+          "wilcoxon_ok": true,
+          "per_snr": [
+            {
+              "snr_db": 0,
+              "mlp_ber": 0.33124249999999994,
+              "df_ber": 0.33339250000000004,
+              "rel_penalty": -0.006448855328179536,
+              "wilcoxon_p": 8.819870204194453e-05,
+              "wilcoxon_loses": false,
+              "wins": 20,
+              "losses": 0
+            },
+            {
+              "snr_db": 4,
+              "mlp_ber": 0.21993250000000003,
+              "df_ber": 0.22184500000000001,
+              "rel_penalty": -0.00862088395050591,
+              "wilcoxon_p": 8.844915021211901e-05,
+              "wilcoxon_loses": false,
+              "wins": 20,
+              "losses": 0
+            },
+            {
+              "snr_db": 8,
+              "mlp_ber": 0.11993000000000001,
+              "df_ber": 0.120385,
+              "rel_penalty": -0.003779540640445214,
+              "wilcoxon_p": 0.004528821896304303,
+              "wilcoxon_loses": false,
+              "wins": 15,
+              "losses": 5
+            },
+            {
+              "snr_db": 12,
+              "mlp_ber": 0.05590249999999999,
+              "df_ber": 0.0558675,
+              "rel_penalty": 0.0006264823018747291,
+              "wilcoxon_p": 0.5857540578951475,
+              "wilcoxon_loses": false,
+              "wins": 7,
+              "losses": 10
+            },
+            {
+              "snr_db": 16,
+              "mlp_ber": 0.0240175,
+              "df_ber": 0.024002500000000003,
+              "rel_penalty": 0.0006249349026142132,
+              "wilcoxon_p": 0.8662621045291885,
+              "wilcoxon_loses": false,
+              "wins": 9,
+              "losses": 11
+            },
+            {
+              "snr_db": 20,
+              "mlp_ber": 0.009664999999999998,
+              "df_ber": 0.009680000000000001,
+              "rel_penalty": -0.0015495867768597993,
+              "wilcoxon_p": 0.6785328663153862,
+              "wilcoxon_loses": false,
+              "wins": 10,
+              "losses": 8
+            }
+          ]
+        },
+        {
+          "train_seed": 1,
+          "ber": [
+            0.3314075,
+            0.22054749999999998,
+            0.12017000000000003,
+            0.05614,
+            0.024159999999999997,
+            0.009757499999999999
+          ],
+          "worst_rel_penalty": 0.0080061983471072,
+          "tolerance_ok": true,
+          "wilcoxon_ok": false,
+          "per_snr": [
+            {
+              "snr_db": 0,
+              "mlp_ber": 0.3314075,
+              "df_ber": 0.33339250000000004,
+              "rel_penalty": -0.005953943175086465,
+              "wilcoxon_p": 8.844915021211901e-05,
+              "wilcoxon_loses": false,
+              "wins": 20,
+              "losses": 0
+            },
+            {
+              "snr_db": 4,
+              "mlp_ber": 0.22054749999999998,
+              "df_ber": 0.22184500000000001,
+              "rel_penalty": -0.005848678131127745,
+              "wilcoxon_p": 0.0001032027839634719,
+              "wilcoxon_loses": false,
+              "wins": 19,
+              "losses": 1
+            },
+            {
+              "snr_db": 8,
+              "mlp_ber": 0.12017000000000003,
+              "df_ber": 0.120385,
+              "rel_penalty": -0.0017859367861442796,
+              "wilcoxon_p": 0.2395213480091859,
+              "wilcoxon_loses": false,
+              "wins": 12,
+              "losses": 8
+            },
+            {
+              "snr_db": 12,
+              "mlp_ber": 0.05614,
+              "df_ber": 0.0558675,
+              "rel_penalty": 0.004877612207455174,
+              "wilcoxon_p": 0.013318219794158174,
+              "wilcoxon_loses": true,
+              "wins": 4,
+              "losses": 15
+            },
+            {
+              "snr_db": 16,
+              "mlp_ber": 0.024159999999999997,
+              "df_ber": 0.024002500000000003,
+              "rel_penalty": 0.006561816477450033,
+              "wilcoxon_p": 0.10711021402663477,
+              "wilcoxon_loses": false,
+              "wins": 5,
+              "losses": 14
+            },
+            {
+              "snr_db": 20,
+              "mlp_ber": 0.009757499999999999,
+              "df_ber": 0.009680000000000001,
+              "rel_penalty": 0.0080061983471072,
+              "wilcoxon_p": 0.08490731493127553,
+              "wilcoxon_loses": false,
+              "wins": 7,
+              "losses": 11
+            }
+          ]
+        },
+        {
+          "train_seed": 2,
+          "ber": [
+            0.33153,
+            0.2203,
+            0.1199625,
+            0.05619999999999999,
+            0.024005000000000006,
+            0.009705000000000002
+          ],
+          "worst_rel_penalty": 0.0059515818678121,
+          "tolerance_ok": true,
+          "wilcoxon_ok": false,
+          "per_snr": [
+            {
+              "snr_db": 0,
+              "mlp_ber": 0.33153,
+              "df_ber": 0.33339250000000004,
+              "rel_penalty": -0.005586508394760064,
+              "wilcoxon_p": 8.832385863081277e-05,
+              "wilcoxon_loses": false,
+              "wins": 20,
+              "losses": 0
+            },
+            {
+              "snr_db": 4,
+              "mlp_ber": 0.2203,
+              "df_ber": 0.22184500000000001,
+              "rel_penalty": -0.00696432193648727,
+              "wilcoxon_p": 0.0001202578206387046,
+              "wilcoxon_loses": false,
+              "wins": 19,
+              "losses": 1
+            },
+            {
+              "snr_db": 8,
+              "mlp_ber": 0.1199625,
+              "df_ber": 0.120385,
+              "rel_penalty": -0.0035095734518420583,
+              "wilcoxon_p": 0.052682197481083964,
+              "wilcoxon_loses": false,
+              "wins": 11,
+              "losses": 8
+            },
+            {
+              "snr_db": 12,
+              "mlp_ber": 0.05619999999999999,
+              "df_ber": 0.0558675,
+              "rel_penalty": 0.0059515818678121,
+              "wilcoxon_p": 0.008365991847961897,
+              "wilcoxon_loses": true,
+              "wins": 3,
+              "losses": 16
+            },
+            {
+              "snr_db": 16,
+              "mlp_ber": 0.024005000000000006,
+              "df_ber": 0.024002500000000003,
+              "rel_penalty": 0.00010415581710248932,
+              "wilcoxon_p": 0.8246592570416605,
+              "wilcoxon_loses": false,
+              "wins": 9,
+              "losses": 10
+            },
+            {
+              "snr_db": 20,
+              "mlp_ber": 0.009705000000000002,
+              "df_ber": 0.009680000000000001,
+              "rel_penalty": 0.0025826446280992474,
+              "wilcoxon_p": 0.3706090500946223,
+              "wilcoxon_loses": false,
+              "wins": 6,
+              "losses": 12
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "window": 3,
+      "hidden": 2,
+      "params": 11,
+      "worst_rel_penalty_over_seeds": 0.006712310377231973,
+      "best_rel_penalty_over_seeds": 0.0020136931131694556,
+      "matches_tolerance_all_seeds": true,
+      "matches_tolerance_any_seed": true,
+      "matches_wilcoxon_all_seeds": false,
+      "seed_runs": [
+        {
+          "train_seed": 0,
+          "ber": [
+            0.3313675,
+            0.22025,
+            0.119955,
+            0.055979999999999995,
+            0.023979999999999994,
+            0.009679999999999998
+          ],
+          "worst_rel_penalty": 0.0020136931131694556,
+          "tolerance_ok": true,
+          "wilcoxon_ok": true,
+          "per_snr": [
+            {
+              "snr_db": 0,
+              "mlp_ber": 0.3313675,
+              "df_ber": 0.33339250000000004,
+              "rel_penalty": -0.006073921878866664,
+              "wilcoxon_p": 8.832385863081277e-05,
+              "wilcoxon_loses": false,
+              "wins": 20,
+              "losses": 0
+            },
+            {
+              "snr_db": 4,
+              "mlp_ber": 0.22025,
+              "df_ber": 0.22184500000000001,
+              "rel_penalty": -0.007189704523428578,
+              "wilcoxon_p": 8.832385863081277e-05,
+              "wilcoxon_loses": false,
+              "wins": 20,
+              "losses": 0
+            },
+            {
+              "snr_db": 8,
+              "mlp_ber": 0.119955,
+              "df_ber": 0.120385,
+              "rel_penalty": -0.0035718735722889048,
+              "wilcoxon_p": 0.011037757553758245,
+              "wilcoxon_loses": false,
+              "wins": 15,
+              "losses": 5
+            },
+            {
+              "snr_db": 12,
+              "mlp_ber": 0.055979999999999995,
+              "df_ber": 0.0558675,
+              "rel_penalty": 0.0020136931131694556,
+              "wilcoxon_p": 0.20397528004205123,
+              "wilcoxon_loses": false,
+              "wins": 7,
+              "losses": 13
+            },
+            {
+              "snr_db": 16,
+              "mlp_ber": 0.023979999999999994,
+              "df_ber": 0.024002500000000003,
+              "rel_penalty": -0.0009374023539218257,
+              "wilcoxon_p": 0.6868929770794905,
+              "wilcoxon_loses": false,
+              "wins": 11,
+              "losses": 8
+            },
+            {
+              "snr_db": 20,
+              "mlp_ber": 0.009679999999999998,
+              "df_ber": 0.009680000000000001,
+              "rel_penalty": -3.584139413175221e-16,
+              "wilcoxon_p": 0.8101220235939773,
+              "wilcoxon_loses": false,
+              "wins": 8,
+              "losses": 10
+            }
+          ]
+        },
+        {
+          "train_seed": 1,
+          "ber": [
+            0.33318,
+            0.22138,
+            0.12052500000000002,
+            0.05624250000000001,
+            0.024147499999999995,
+            0.00971
+          ],
+          "worst_rel_penalty": 0.006712310377231973,
+          "tolerance_ok": true,
+          "wilcoxon_ok": false,
+          "per_snr": [
+            {
+              "snr_db": 0,
+              "mlp_ber": 0.33318,
+              "df_ber": 0.33339250000000004,
+              "rel_penalty": -0.0006373868638318494,
+              "wilcoxon_p": 0.431916321723703,
+              "wilcoxon_loses": false,
+              "wins": 12,
+              "losses": 7
+            },
+            {
+              "snr_db": 4,
+              "mlp_ber": 0.22138,
+              "df_ber": 0.22184500000000001,
+              "rel_penalty": -0.0020960580585544903,
+              "wilcoxon_p": 0.03818473541616514,
+              "wilcoxon_loses": false,
+              "wins": 14,
+              "losses": 6
+            },
+            {
+              "snr_db": 8,
+              "mlp_ber": 0.12052500000000002,
+              "df_ber": 0.120385,
+              "rel_penalty": 0.0011629355816755833,
+              "wilcoxon_p": 0.285864935741026,
+              "wilcoxon_loses": false,
+              "wins": 5,
+              "losses": 13
+            },
+            {
+              "snr_db": 12,
+              "mlp_ber": 0.05624250000000001,
+              "df_ber": 0.0558675,
+              "rel_penalty": 0.006712310377231973,
+              "wilcoxon_p": 0.006025699896005433,
+              "wilcoxon_loses": true,
+              "wins": 5,
+              "losses": 12
+            },
+            {
+              "snr_db": 16,
+              "mlp_ber": 0.024147499999999995,
+              "df_ber": 0.024002500000000003,
+              "rel_penalty": 0.00604103739193802,
+              "wilcoxon_p": 0.05209907091126194,
+              "wilcoxon_loses": false,
+              "wins": 6,
+              "losses": 14
+            },
+            {
+              "snr_db": 20,
+              "mlp_ber": 0.00971,
+              "df_ber": 0.009680000000000001,
+              "rel_penalty": 0.0030991735537188817,
+              "wilcoxon_p": 0.25477435931328674,
+              "wilcoxon_loses": false,
+              "wins": 6,
+              "losses": 11
+            }
+          ]
+        },
+        {
+          "train_seed": 2,
+          "ber": [
+            0.3315325,
+            0.2203175,
+            0.11994250000000002,
+            0.05619999999999999,
+            0.024007500000000005,
+            0.009705000000000002
+          ],
+          "worst_rel_penalty": 0.0059515818678121,
+          "tolerance_ok": true,
+          "wilcoxon_ok": false,
+          "per_snr": [
+            {
+              "snr_db": 0,
+              "mlp_ber": 0.3315325,
+              "df_ber": 0.33339250000000004,
+              "rel_penalty": -0.005579009725773759,
+              "wilcoxon_p": 8.832385863081277e-05,
+              "wilcoxon_loses": false,
+              "wins": 20,
+              "losses": 0
+            },
+            {
+              "snr_db": 4,
+              "mlp_ber": 0.2203175,
+              "df_ber": 0.22184500000000001,
+              "rel_penalty": -0.006885438031057787,
+              "wilcoxon_p": 5.7220458984375e-06,
+              "wilcoxon_loses": false,
+              "wins": 19,
+              "losses": 1
+            },
+            {
+              "snr_db": 8,
+              "mlp_ber": 0.11994250000000002,
+              "df_ber": 0.120385,
+              "rel_penalty": -0.003675707106366944,
+              "wilcoxon_p": 0.0253710949280293,
+              "wilcoxon_loses": false,
+              "wins": 11,
+              "losses": 8
+            },
+            {
+              "snr_db": 12,
+              "mlp_ber": 0.05619999999999999,
+              "df_ber": 0.0558675,
+              "rel_penalty": 0.0059515818678121,
+              "wilcoxon_p": 0.006777938573265023,
+              "wilcoxon_loses": true,
+              "wins": 4,
+              "losses": 16
+            },
+            {
+              "snr_db": 16,
+              "mlp_ber": 0.024007500000000005,
+              "df_ber": 0.024002500000000003,
+              "rel_penalty": 0.0002083116342048341,
+              "wilcoxon_p": 0.7792752010933265,
+              "wilcoxon_loses": false,
+              "wins": 9,
+              "losses": 11
+            },
+            {
+              "snr_db": 20,
+              "mlp_ber": 0.009705000000000002,
+              "df_ber": 0.009680000000000001,
+              "rel_penalty": 0.0025826446280992474,
+              "wilcoxon_p": 0.3706090500946223,
+              "wilcoxon_loses": false,
+              "wins": 6,
+              "losses": 12
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "window": 3,
+      "hidden": 4,
+      "params": 21,
+      "worst_rel_penalty_over_seeds": 0.024268305384855728,
+      "best_rel_penalty_over_seeds": 0.0034456526603123144,
+      "matches_tolerance_all_seeds": false,
+      "matches_tolerance_any_seed": true,
+      "matches_wilcoxon_all_seeds": false,
+      "seed_runs": [
+        {
+          "train_seed": 0,
+          "ber": [
+            0.3319225,
+            0.22055750000000002,
+            0.12010999999999998,
+            0.05606,
+            0.023985000000000003,
+            0.0096575
+          ],
+          "worst_rel_penalty": 0.0034456526603123144,
+          "tolerance_ok": true,
+          "wilcoxon_ok": false,
+          "per_snr": [
+            {
+              "snr_db": 0,
+              "mlp_ber": 0.3319225,
+              "df_ber": 0.33339250000000004,
+              "rel_penalty": -0.004409217363917984,
+              "wilcoxon_p": 0.00013162704518922692,
+              "wilcoxon_loses": false,
+              "wins": 19,
+              "losses": 0
+            },
+            {
+              "snr_db": 4,
+              "mlp_ber": 0.22055750000000002,
+              "df_ber": 0.22184500000000001,
+              "rel_penalty": -0.005803601613739309,
+              "wilcoxon_p": 0.00010305922341480608,
+              "wilcoxon_loses": false,
+              "wins": 19,
+              "losses": 1
+            },
+            {
+              "snr_db": 8,
+              "mlp_ber": 0.12010999999999998,
+              "df_ber": 0.120385,
+              "rel_penalty": -0.0022843377497198587,
+              "wilcoxon_p": 0.07256306616479193,
+              "wilcoxon_loses": false,
+              "wins": 15,
+              "losses": 5
+            },
+            {
+              "snr_db": 12,
+              "mlp_ber": 0.05606,
+              "df_ber": 0.0558675,
+              "rel_penalty": 0.0034456526603123144,
+              "wilcoxon_p": 0.024166294765933675,
+              "wilcoxon_loses": true,
+              "wins": 4,
+              "losses": 15
+            },
+            {
+              "snr_db": 16,
+              "mlp_ber": 0.023985000000000003,
+              "df_ber": 0.024002500000000003,
+              "rel_penalty": -0.0007290907197167025,
+              "wilcoxon_p": 0.6408780111259087,
+              "wilcoxon_loses": false,
+              "wins": 10,
+              "losses": 6
+            },
+            {
+              "snr_db": 20,
+              "mlp_ber": 0.0096575,
+              "df_ber": 0.009680000000000001,
+              "rel_penalty": -0.00232438016528943,
+              "wilcoxon_p": 0.4760490517250793,
+              "wilcoxon_loses": false,
+              "wins": 11,
+              "losses": 6
+            }
+          ]
+        },
+        {
+          "train_seed": 1,
+          "ber": [
+            0.33152,
+            0.2212975,
+            0.1215025,
+            0.0570975,
+            0.024585000000000003,
+            0.0098625
+          ],
+          "worst_rel_penalty": 0.024268305384855728,
+          "tolerance_ok": false,
+          "wilcoxon_ok": false,
+          "per_snr": [
+            {
+              "snr_db": 0,
+              "mlp_ber": 0.33152,
+              "df_ber": 0.33339250000000004,
+              "rel_penalty": -0.005616503070705113,
+              "wilcoxon_p": 8.832385863081277e-05,
+              "wilcoxon_loses": false,
+              "wins": 20,
+              "losses": 0
+            },
+            {
+              "snr_db": 4,
+              "mlp_ber": 0.2212975,
+              "df_ber": 0.22184500000000001,
+              "rel_penalty": -0.002467939327007624,
+              "wilcoxon_p": 0.184953587236653,
+              "wilcoxon_loses": false,
+              "wins": 11,
+              "losses": 9
+            },
+            {
+              "snr_db": 8,
+              "mlp_ber": 0.1215025,
+              "df_ber": 0.120385,
+              "rel_penalty": 0.009282717946587976,
+              "wilcoxon_p": 0.00016242747372303843,
+              "wilcoxon_loses": true,
+              "wins": 1,
+              "losses": 19
+            },
+            {
+              "snr_db": 12,
+              "mlp_ber": 0.0570975,
+              "df_ber": 0.0558675,
+              "rel_penalty": 0.02201637803732048,
+              "wilcoxon_p": 8.794879347050151e-05,
+              "wilcoxon_loses": true,
+              "wins": 0,
+              "losses": 20
+            },
+            {
+              "snr_db": 16,
+              "mlp_ber": 0.024585000000000003,
+              "df_ber": 0.024002500000000003,
+              "rel_penalty": 0.024268305384855728,
+              "wilcoxon_p": 0.00011960183626439956,
+              "wilcoxon_loses": true,
+              "wins": 1,
+              "losses": 19
+            },
+            {
+              "snr_db": 20,
+              "mlp_ber": 0.0098625,
+              "df_ber": 0.009680000000000001,
+              "rel_penalty": 0.018853305785123824,
+              "wilcoxon_p": 0.002512465337856872,
+              "wilcoxon_loses": true,
+              "wins": 2,
+              "losses": 17
+            }
+          ]
+        },
+        {
+          "train_seed": 2,
+          "ber": [
+            0.3320675,
+            0.220715,
+            0.12008749999999999,
+            0.056345,
+            0.024100000000000003,
+            0.009740000000000002
+          ],
+          "worst_rel_penalty": 0.008547008547008525,
+          "tolerance_ok": true,
+          "wilcoxon_ok": false,
+          "per_snr": [
+            {
+              "snr_db": 0,
+              "mlp_ber": 0.3320675,
+              "df_ber": 0.33339250000000004,
+              "rel_penalty": -0.00397429456271518,
+              "wilcoxon_p": 0.00020274474147600812,
+              "wilcoxon_loses": false,
+              "wins": 19,
+              "losses": 1
+            },
+            {
+              "snr_db": 4,
+              "mlp_ber": 0.220715,
+              "df_ber": 0.22184500000000001,
+              "rel_penalty": -0.005093646464874213,
+              "wilcoxon_p": 0.0003131487623133757,
+              "wilcoxon_loses": false,
+              "wins": 17,
+              "losses": 3
+            },
+            {
+              "snr_db": 8,
+              "mlp_ber": 0.12008749999999999,
+              "df_ber": 0.120385,
+              "rel_penalty": -0.002471238111060514,
+              "wilcoxon_p": 0.11628529884486855,
+              "wilcoxon_loses": false,
+              "wins": 12,
+              "losses": 7
+            },
+            {
+              "snr_db": 12,
+              "mlp_ber": 0.056345,
+              "df_ber": 0.0558675,
+              "rel_penalty": 0.008547008547008525,
+              "wilcoxon_p": 0.0019336889810182127,
+              "wilcoxon_loses": true,
+              "wins": 3,
+              "losses": 17
+            },
+            {
+              "snr_db": 16,
+              "mlp_ber": 0.024100000000000003,
+              "df_ber": 0.024002500000000003,
+              "rel_penalty": 0.004062076866993036,
+              "wilcoxon_p": 0.2556421508608725,
+              "wilcoxon_loses": false,
+              "wins": 7,
+              "losses": 10
+            },
+            {
+              "snr_db": 20,
+              "mlp_ber": 0.009740000000000002,
+              "df_ber": 0.009680000000000001,
+              "rel_penalty": 0.006198347107438122,
+              "wilcoxon_p": 0.09742797748123776,
+              "wilcoxon_loses": false,
+              "wins": 4,
+              "losses": 12
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "window": 3,
+      "hidden": 8,
+      "params": 41,
+      "worst_rel_penalty_over_seeds": 0.016959770886472526,
+      "best_rel_penalty_over_seeds": 0.010694947867722751,
+      "matches_tolerance_all_seeds": true,
+      "matches_tolerance_any_seed": true,
+      "matches_wilcoxon_all_seeds": false,
+      "seed_runs": [
+        {
+          "train_seed": 0,
+          "ber": [
+            0.33222,
+            0.22111000000000006,
+            0.12034249999999999,
+            0.0564925,
+            0.024132499999999994,
+            0.009767499999999998
+          ],
+          "worst_rel_penalty": 0.011187183962053081,
+          "tolerance_ok": true,
+          "wilcoxon_ok": false,
+          "per_snr": [
+            {
+              "snr_db": 0,
+              "mlp_ber": 0.33222,
+              "df_ber": 0.33339250000000004,
+              "rel_penalty": -0.0035168757545536284,
+              "wilcoxon_p": 0.0002529651592112549,
+              "wilcoxon_loses": false,
+              "wins": 18,
+              "losses": 2
+            },
+            {
+              "snr_db": 4,
+              "mlp_ber": 0.22111000000000006,
+              "df_ber": 0.22184500000000001,
+              "rel_penalty": -0.0033131240280374038,
+              "wilcoxon_p": 0.006589705026454776,
+              "wilcoxon_loses": false,
+              "wins": 15,
+              "losses": 4
+            },
+            {
+              "snr_db": 8,
+              "mlp_ber": 0.12034249999999999,
+              "df_ber": 0.120385,
+              "rel_penalty": -0.0003530340158658865,
+              "wilcoxon_p": 0.7770661110949808,
+              "wilcoxon_loses": false,
+              "wins": 9,
+              "losses": 9
+            },
+            {
+              "snr_db": 12,
+              "mlp_ber": 0.0564925,
+              "df_ber": 0.0558675,
+              "rel_penalty": 0.011187183962053081,
+              "wilcoxon_p": 0.00028960224312257066,
+              "wilcoxon_loses": true,
+              "wins": 2,
+              "losses": 18
+            },
+            {
+              "snr_db": 16,
+              "mlp_ber": 0.024132499999999994,
+              "df_ber": 0.024002500000000003,
+              "rel_penalty": 0.005416102489323663,
+              "wilcoxon_p": 0.04014773766597646,
+              "wilcoxon_loses": true,
+              "wins": 4,
+              "losses": 14
+            },
+            {
+              "snr_db": 20,
+              "mlp_ber": 0.009767499999999998,
+              "df_ber": 0.009680000000000001,
+              "rel_penalty": 0.009039256198346828,
+              "wilcoxon_p": 0.027862485402190156,
+              "wilcoxon_loses": true,
+              "wins": 5,
+              "losses": 14
+            }
+          ]
+        },
+        {
+          "train_seed": 1,
+          "ber": [
+            0.33338999999999996,
+            0.22238499999999997,
+            0.12134,
+            0.056815000000000004,
+            0.024270000000000003,
+            0.009747499999999997
+          ],
+          "worst_rel_penalty": 0.016959770886472526,
+          "tolerance_ok": true,
+          "wilcoxon_ok": false,
+          "per_snr": [
+            {
+              "snr_db": 0,
+              "mlp_ber": 0.33338999999999996,
+              "df_ber": 0.33339250000000004,
+              "rel_penalty": -7.498668986470568e-06,
+              "wilcoxon_p": 0.8721180313900541,
+              "wilcoxon_loses": false,
+              "wins": 10,
+              "losses": 9
+            },
+            {
+              "snr_db": 4,
+              "mlp_ber": 0.22238499999999997,
+              "df_ber": 0.22184500000000001,
+              "rel_penalty": 0.002434131938966202,
+              "wilcoxon_p": 0.0160144221967771,
+              "wilcoxon_loses": true,
+              "wins": 5,
+              "losses": 15
+            },
+            {
+              "snr_db": 8,
+              "mlp_ber": 0.12134,
+              "df_ber": 0.120385,
+              "rel_penalty": 0.007932882003571853,
+              "wilcoxon_p": 0.00016157339856378992,
+              "wilcoxon_loses": true,
+              "wins": 1,
+              "losses": 19
+            },
+            {
+              "snr_db": 12,
+              "mlp_ber": 0.056815000000000004,
+              "df_ber": 0.0558675,
+              "rel_penalty": 0.016959770886472526,
+              "wilcoxon_p": 0.0001534318915079138,
+              "wilcoxon_loses": true,
+              "wins": 1,
+              "losses": 18
+            },
+            {
+              "snr_db": 16,
+              "mlp_ber": 0.024270000000000003,
+              "df_ber": 0.024002500000000003,
+              "rel_penalty": 0.011144672429955227,
+              "wilcoxon_p": 0.0063646964107348545,
+              "wilcoxon_loses": true,
+              "wins": 5,
+              "losses": 15
+            },
+            {
+              "snr_db": 20,
+              "mlp_ber": 0.009747499999999997,
+              "df_ber": 0.009680000000000001,
+              "rel_penalty": 0.006973140495867394,
+              "wilcoxon_p": 0.02909904898561174,
+              "wilcoxon_loses": true,
+              "wins": 5,
+              "losses": 12
+            }
+          ]
+        },
+        {
+          "train_seed": 2,
+          "ber": [
+            0.3327675,
+            0.22147,
+            0.12051750000000001,
+            0.056465,
+            0.024185,
+            0.009745
+          ],
+          "worst_rel_penalty": 0.010694947867722751,
+          "tolerance_ok": true,
+          "wilcoxon_ok": false,
+          "per_snr": [
+            {
+              "snr_db": 0,
+              "mlp_ber": 0.3327675,
+              "df_ber": 0.33339250000000004,
+              "rel_penalty": -0.0018746672465638613,
+              "wilcoxon_p": 0.013026091616319358,
+              "wilcoxon_loses": false,
+              "wins": 15,
+              "losses": 5
+            },
+            {
+              "snr_db": 4,
+              "mlp_ber": 0.22147,
+              "df_ber": 0.22184500000000001,
+              "rel_penalty": -0.0016903694020600608,
+              "wilcoxon_p": 0.055890214986340815,
+              "wilcoxon_loses": false,
+              "wins": 13,
+              "losses": 6
+            },
+            {
+              "snr_db": 8,
+              "mlp_ber": 0.12051750000000001,
+              "df_ber": 0.120385,
+              "rel_penalty": 0.0011006354612286215,
+              "wilcoxon_p": 0.3904502982130381,
+              "wilcoxon_loses": false,
+              "wins": 9,
+              "losses": 11
+            },
+            {
+              "snr_db": 12,
+              "mlp_ber": 0.056465,
+              "df_ber": 0.0558675,
+              "rel_penalty": 0.010694947867722751,
+              "wilcoxon_p": 0.0006769368386288777,
+              "wilcoxon_loses": true,
+              "wins": 2,
+              "losses": 18
+            },
+            {
+              "snr_db": 16,
+              "mlp_ber": 0.024185,
+              "df_ber": 0.024002500000000003,
+              "rel_penalty": 0.00760337464847406,
+              "wilcoxon_p": 0.013634507983889679,
+              "wilcoxon_loses": true,
+              "wins": 3,
+              "losses": 17
+            },
+            {
+              "snr_db": 20,
+              "mlp_ber": 0.009745,
+              "df_ber": 0.009680000000000001,
+              "rel_penalty": 0.006714876033057756,
+              "wilcoxon_p": 0.0487364020791124,
+              "wilcoxon_loses": true,
+              "wins": 4,
+              "losses": 13
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "window": 5,
+      "hidden": 1,
+      "params": 8,
+      "worst_rel_penalty_over_seeds": 0.006175325547053262,
+      "best_rel_penalty_over_seeds": 0.0011187183962053082,
+      "matches_tolerance_all_seeds": true,
+      "matches_tolerance_any_seed": true,
+      "matches_wilcoxon_all_seeds": false,
+      "seed_runs": [
+        {
+          "train_seed": 0,
+          "ber": [
+            0.33172500000000005,
+            0.2204,
+            0.12015500000000001,
+            0.05589500000000001,
+            0.0240575,
+            0.009652500000000001
+          ],
+          "worst_rel_penalty": 0.0022914279762523077,
+          "tolerance_ok": true,
+          "wilcoxon_ok": true,
+          "per_snr": [
+            {
+              "snr_db": 0,
+              "mlp_ber": 0.33172500000000005,
+              "df_ber": 0.33339250000000004,
+              "rel_penalty": -0.005001612213832009,
+              "wilcoxon_p": 8.844915021211901e-05,
+              "wilcoxon_loses": false,
+              "wins": 20,
+              "losses": 0
+            },
+            {
+              "snr_db": 4,
+              "mlp_ber": 0.2204,
+              "df_ber": 0.22184500000000001,
+              "rel_penalty": -0.006513556762604529,
+              "wilcoxon_p": 8.844915021211901e-05,
+              "wilcoxon_loses": false,
+              "wins": 20,
+              "losses": 0
+            },
+            {
+              "snr_db": 8,
+              "mlp_ber": 0.12015500000000001,
+              "df_ber": 0.120385,
+              "rel_penalty": -0.0019105370270382032,
+              "wilcoxon_p": 0.07009973386533333,
+              "wilcoxon_loses": false,
+              "wins": 12,
+              "losses": 8
+            },
+            {
+              "snr_db": 12,
+              "mlp_ber": 0.05589500000000001,
+              "df_ber": 0.0558675,
+              "rel_penalty": 0.0004922360943304549,
+              "wilcoxon_p": 0.5721560475351813,
+              "wilcoxon_loses": false,
+              "wins": 7,
+              "losses": 12
+            },
+            {
+              "snr_db": 16,
+              "mlp_ber": 0.0240575,
+              "df_ber": 0.024002500000000003,
+              "rel_penalty": 0.0022914279762523077,
+              "wilcoxon_p": 0.14999002253015056,
+              "wilcoxon_loses": false,
+              "wins": 8,
+              "losses": 12
+            },
+            {
+              "snr_db": 20,
+              "mlp_ber": 0.009652500000000001,
+              "df_ber": 0.009680000000000001,
+              "rel_penalty": -0.0028409090909090645,
+              "wilcoxon_p": 0.9357481207091697,
+              "wilcoxon_loses": false,
+              "wins": 8,
+              "losses": 11
+            }
+          ]
+        },
+        {
+          "train_seed": 1,
+          "ber": [
+            0.33266999999999997,
+            0.22105999999999998,
+            0.12040999999999999,
+            0.0562125,
+            0.024077499999999998,
+            0.0097325
+          ],
+          "worst_rel_penalty": 0.006175325547053262,
+          "tolerance_ok": true,
+          "wilcoxon_ok": false,
+          "per_snr": [
+            {
+              "snr_db": 0,
+              "mlp_ber": 0.33266999999999997,
+              "df_ber": 0.33339250000000004,
+              "rel_penalty": -0.002167115337027888,
+              "wilcoxon_p": 0.011722342834729406,
+              "wilcoxon_loses": false,
+              "wins": 16,
+              "losses": 4
+            },
+            {
+              "snr_db": 4,
+              "mlp_ber": 0.22105999999999998,
+              "df_ber": 0.22184500000000001,
+              "rel_penalty": -0.0035385066149790875,
+              "wilcoxon_p": 0.003171919890403444,
+              "wilcoxon_loses": false,
+              "wins": 16,
+              "losses": 4
+            },
+            {
+              "snr_db": 8,
+              "mlp_ber": 0.12040999999999999,
+              "df_ber": 0.120385,
+              "rel_penalty": 0.0002076670681561936,
+              "wilcoxon_p": 0.7626988461155364,
+              "wilcoxon_loses": false,
+              "wins": 9,
+              "losses": 10
+            },
+            {
+              "snr_db": 12,
+              "mlp_ber": 0.0562125,
+              "df_ber": 0.0558675,
+              "rel_penalty": 0.006175325547053262,
+              "wilcoxon_p": 0.013626309398763657,
+              "wilcoxon_loses": true,
+              "wins": 6,
+              "losses": 14
+            },
+            {
+              "snr_db": 16,
+              "mlp_ber": 0.024077499999999998,
+              "df_ber": 0.024002500000000003,
+              "rel_penalty": 0.003124674513071355,
+              "wilcoxon_p": 0.17850152838613453,
+              "wilcoxon_loses": false,
+              "wins": 8,
+              "losses": 12
+            },
+            {
+              "snr_db": 20,
+              "mlp_ber": 0.0097325,
+              "df_ber": 0.009680000000000001,
+              "rel_penalty": 0.005423553719008133,
+              "wilcoxon_p": 0.1015714173936982,
+              "wilcoxon_loses": false,
+              "wins": 6,
+              "losses": 13
+            }
+          ]
+        },
+        {
+          "train_seed": 2,
+          "ber": [
+            0.3318725,
+            0.22036000000000003,
+            0.1200275,
+            0.05593,
+            0.023995,
+            0.009667499999999999
+          ],
+          "worst_rel_penalty": 0.0011187183962053082,
+          "tolerance_ok": true,
+          "wilcoxon_ok": true,
+          "per_snr": [
+            {
+              "snr_db": 0,
+              "mlp_ber": 0.3318725,
+              "df_ber": 0.33339250000000004,
+              "rel_penalty": -0.004559190743643067,
+              "wilcoxon_p": 8.844915021211901e-05,
+              "wilcoxon_loses": false,
+              "wins": 20,
+              "losses": 0
+            },
+            {
+              "snr_db": 4,
+              "mlp_ber": 0.22036000000000003,
+              "df_ber": 0.22184500000000001,
+              "rel_penalty": -0.006693862832157525,
+              "wilcoxon_p": 0.00011111585449913125,
+              "wilcoxon_loses": false,
+              "wins": 19,
+              "losses": 1
+            },
+            {
+              "snr_db": 8,
+              "mlp_ber": 0.1200275,
+              "df_ber": 0.120385,
+              "rel_penalty": -0.002969639074635632,
+              "wilcoxon_p": 0.011271943806411056,
+              "wilcoxon_loses": false,
+              "wins": 13,
+              "losses": 3
+            },
+            {
+              "snr_db": 12,
+              "mlp_ber": 0.05593,
+              "df_ber": 0.0558675,
+              "rel_penalty": 0.0011187183962053082,
+              "wilcoxon_p": 0.6432831399489009,
+              "wilcoxon_loses": false,
+              "wins": 8,
+              "losses": 11
+            },
+            {
+              "snr_db": 16,
+              "mlp_ber": 0.023995,
+              "df_ber": 0.024002500000000003,
+              "rel_penalty": -0.0003124674513073234,
+              "wilcoxon_p": 0.8269956237470373,
+              "wilcoxon_loses": false,
+              "wins": 10,
+              "losses": 8
+            },
+            {
+              "snr_db": 20,
+              "mlp_ber": 0.009667499999999999,
+              "df_ber": 0.009680000000000001,
+              "rel_penalty": -0.0012913223140498028,
+              "wilcoxon_p": 0.8306312779804517,
+              "wilcoxon_loses": false,
+              "wins": 7,
+              "losses": 10
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "window": 5,
+      "hidden": 2,
+      "params": 15,
+      "worst_rel_penalty_over_seeds": 0.01190316373562445,
+      "best_rel_penalty_over_seeds": 0.009352485792276282,
+      "matches_tolerance_all_seeds": true,
+      "matches_tolerance_any_seed": true,
+      "matches_wilcoxon_all_seeds": false,
+      "seed_runs": [
+        {
+          "train_seed": 0,
+          "ber": [
+            0.33394999999999997,
+            0.22222499999999998,
+            0.1208525,
+            0.056389999999999996,
+            0.024125,
+            0.009720000000000001
+          ],
+          "worst_rel_penalty": 0.009352485792276282,
+          "tolerance_ok": true,
+          "wilcoxon_ok": false,
+          "per_snr": [
+            {
+              "snr_db": 0,
+              "mlp_ber": 0.33394999999999997,
+              "df_ber": 0.33339250000000004,
+              "rel_penalty": 0.0016722031839346506,
+              "wilcoxon_p": 0.00157784883755203,
+              "wilcoxon_loses": true,
+              "wins": 3,
+              "losses": 16
+            },
+            {
+              "snr_db": 4,
+              "mlp_ber": 0.22222499999999998,
+              "df_ber": 0.22184500000000001,
+              "rel_penalty": 0.0017129076607539664,
+              "wilcoxon_p": 0.09282075231801065,
+              "wilcoxon_loses": false,
+              "wins": 6,
+              "losses": 14
+            },
+            {
+              "snr_db": 8,
+              "mlp_ber": 0.1208525,
+              "df_ber": 0.120385,
+              "rel_penalty": 0.003883374174523368,
+              "wilcoxon_p": 0.011890044684392302,
+              "wilcoxon_loses": true,
+              "wins": 4,
+              "losses": 15
+            },
+            {
+              "snr_db": 12,
+              "mlp_ber": 0.056389999999999996,
+              "df_ber": 0.0558675,
+              "rel_penalty": 0.009352485792276282,
+              "wilcoxon_p": 0.000723873060973,
+              "wilcoxon_loses": true,
+              "wins": 2,
+              "losses": 18
+            },
+            {
+              "snr_db": 16,
+              "mlp_ber": 0.024125,
+              "df_ber": 0.024002500000000003,
+              "rel_penalty": 0.005103635038016773,
+              "wilcoxon_p": 0.023207182564101817,
+              "wilcoxon_loses": true,
+              "wins": 4,
+              "losses": 14
+            },
+            {
+              "snr_db": 20,
+              "mlp_ber": 0.009720000000000001,
+              "df_ber": 0.009680000000000001,
+              "rel_penalty": 0.004132231404958688,
+              "wilcoxon_p": 0.11309638765092364,
+              "wilcoxon_loses": false,
+              "wins": 5,
+              "losses": 13
+            }
+          ]
+        },
+        {
+          "train_seed": 1,
+          "ber": [
+            0.33378,
+            0.22224499999999997,
+            0.12089749999999999,
+            0.056457499999999994,
+            0.024114999999999998,
+            0.0097225
+          ],
+          "worst_rel_penalty": 0.01056070166017798,
+          "tolerance_ok": true,
+          "wilcoxon_ok": false,
+          "per_snr": [
+            {
+              "snr_db": 0,
+              "mlp_ber": 0.33378,
+              "df_ber": 0.33339250000000004,
+              "rel_penalty": 0.0011622936928694708,
+              "wilcoxon_p": 0.038182329819191424,
+              "wilcoxon_loses": true,
+              "wins": 7,
+              "losses": 12
+            },
+            {
+              "snr_db": 4,
+              "mlp_ber": 0.22224499999999997,
+              "df_ber": 0.22184500000000001,
+              "rel_penalty": 0.0018030606955304646,
+              "wilcoxon_p": 0.07926935930838233,
+              "wilcoxon_loses": false,
+              "wins": 7,
+              "losses": 13
+            },
+            {
+              "snr_db": 8,
+              "mlp_ber": 0.12089749999999999,
+              "df_ber": 0.120385,
+              "rel_penalty": 0.0042571748972046785,
+              "wilcoxon_p": 0.005410396461745987,
+              "wilcoxon_loses": true,
+              "wins": 5,
+              "losses": 15
+            },
+            {
+              "snr_db": 12,
+              "mlp_ber": 0.056457499999999994,
+              "df_ber": 0.0558675,
+              "rel_penalty": 0.01056070166017798,
+              "wilcoxon_p": 0.0004267328293469688,
+              "wilcoxon_loses": true,
+              "wins": 3,
+              "losses": 16
+            },
+            {
+              "snr_db": 16,
+              "mlp_ber": 0.024114999999999998,
+              "df_ber": 0.024002500000000003,
+              "rel_penalty": 0.004687011769607105,
+              "wilcoxon_p": 0.039088195903967844,
+              "wilcoxon_loses": true,
+              "wins": 4,
+              "losses": 13
+            },
+            {
+              "snr_db": 20,
+              "mlp_ber": 0.0097225,
+              "df_ber": 0.009680000000000001,
+              "rel_penalty": 0.004390495867768505,
+              "wilcoxon_p": 0.10438899564490091,
+              "wilcoxon_loses": false,
+              "wins": 3,
+              "losses": 12
+            }
+          ]
+        },
+        {
+          "train_seed": 2,
+          "ber": [
+            0.33363000000000004,
+            0.22221000000000007,
+            0.12083000000000002,
+            0.0565325,
+            0.02414,
+            0.009772500000000002
+          ],
+          "worst_rel_penalty": 0.01190316373562445,
+          "tolerance_ok": true,
+          "wilcoxon_ok": false,
+          "per_snr": [
+            {
+              "snr_db": 0,
+              "mlp_ber": 0.33363000000000004,
+              "df_ber": 0.33339250000000004,
+              "rel_penalty": 0.000712373553694224,
+              "wilcoxon_p": 0.10022096024112565,
+              "wilcoxon_loses": false,
+              "wins": 7,
+              "losses": 13
+            },
+            {
+              "snr_db": 4,
+              "mlp_ber": 0.22221000000000007,
+              "df_ber": 0.22184500000000001,
+              "rel_penalty": 0.0016452928846719993,
+              "wilcoxon_p": 0.034588585761742716,
+              "wilcoxon_loses": true,
+              "wins": 7,
+              "losses": 12
+            },
+            {
+              "snr_db": 8,
+              "mlp_ber": 0.12083000000000002,
+              "df_ber": 0.120385,
+              "rel_penalty": 0.0036964738131828284,
+              "wilcoxon_p": 0.005147087724729178,
+              "wilcoxon_loses": true,
+              "wins": 5,
+              "losses": 14
+            },
+            {
+              "snr_db": 12,
+              "mlp_ber": 0.0565325,
+              "df_ber": 0.0558675,
+              "rel_penalty": 0.01190316373562445,
+              "wilcoxon_p": 0.00021209589919181417,
+              "wilcoxon_loses": true,
+              "wins": 1,
+              "losses": 18
+            },
+            {
+              "snr_db": 16,
+              "mlp_ber": 0.02414,
+              "df_ber": 0.024002500000000003,
+              "rel_penalty": 0.0057285699406311305,
+              "wilcoxon_p": 0.05536902989152929,
+              "wilcoxon_loses": false,
+              "wins": 7,
+              "losses": 12
+            },
+            {
+              "snr_db": 20,
+              "mlp_ber": 0.009772500000000002,
+              "df_ber": 0.009680000000000001,
+              "rel_penalty": 0.009555785123967,
+              "wilcoxon_p": 0.005354010218124988,
+              "wilcoxon_loses": true,
+              "wins": 3,
+              "losses": 14
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "window": 5,
+      "hidden": 4,
+      "params": 29,
+      "worst_rel_penalty_over_seeds": 0.022777106546740103,
+      "best_rel_penalty_over_seeds": 0.016959770886472526,
+      "matches_tolerance_all_seeds": false,
+      "matches_tolerance_any_seed": true,
+      "matches_wilcoxon_all_seeds": false,
+      "seed_runs": [
+        {
+          "train_seed": 0,
+          "ber": [
+            0.33746499999999996,
+            0.22492750000000003,
+            0.12243499999999999,
+            0.05714,
+            0.024445,
+            0.009840000000000003
+          ],
+          "worst_rel_penalty": 0.022777106546740103,
+          "tolerance_ok": false,
+          "wilcoxon_ok": false,
+          "per_snr": [
+            {
+              "snr_db": 0,
+              "mlp_ber": 0.33746499999999996,
+              "df_ber": 0.33339250000000004,
+              "rel_penalty": 0.012215331778609066,
+              "wilcoxon_p": 8.844915021211901e-05,
+              "wilcoxon_loses": true,
+              "wins": 0,
+              "losses": 20
+            },
+            {
+              "snr_db": 4,
+              "mlp_ber": 0.22492750000000003,
+              "df_ber": 0.22184500000000001,
+              "rel_penalty": 0.013894836484933244,
+              "wilcoxon_p": 1.9073486328125e-06,
+              "wilcoxon_loses": true,
+              "wins": 0,
+              "losses": 20
+            },
+            {
+              "snr_db": 8,
+              "mlp_ber": 0.12243499999999999,
+              "df_ber": 0.120385,
+              "rel_penalty": 0.017028699588819057,
+              "wilcoxon_p": 8.819870204194453e-05,
+              "wilcoxon_loses": true,
+              "wins": 0,
+              "losses": 20
+            },
+            {
+              "snr_db": 12,
+              "mlp_ber": 0.05714,
+              "df_ber": 0.0558675,
+              "rel_penalty": 0.022777106546740103,
+              "wilcoxon_p": 8.732637791829415e-05,
+              "wilcoxon_loses": true,
+              "wins": 0,
+              "losses": 20
+            },
+            {
+              "snr_db": 16,
+              "mlp_ber": 0.024445,
+              "df_ber": 0.024002500000000003,
+              "rel_penalty": 0.018435579627122108,
+              "wilcoxon_p": 0.00011080948171098794,
+              "wilcoxon_loses": true,
+              "wins": 1,
+              "losses": 19
+            },
+            {
+              "snr_db": 20,
+              "mlp_ber": 0.009840000000000003,
+              "df_ber": 0.009680000000000001,
+              "rel_penalty": 0.01652892561983493,
+              "wilcoxon_p": 0.0009921588912373408,
+              "wilcoxon_loses": true,
+              "wins": 2,
+              "losses": 18
+            }
+          ]
+        },
+        {
+          "train_seed": 1,
+          "ber": [
+            0.33318749999999997,
+            0.22216249999999998,
+            0.1214275,
+            0.056815000000000004,
+            0.024285,
+            0.009755000000000002
+          ],
+          "worst_rel_penalty": 0.016959770886472526,
+          "tolerance_ok": true,
+          "wilcoxon_ok": false,
+          "per_snr": [
+            {
+              "snr_db": 0,
+              "mlp_ber": 0.33318749999999997,
+              "df_ber": 0.33339250000000004,
+              "rel_penalty": -0.0006148908568731037,
+              "wilcoxon_p": 0.4589241989113886,
+              "wilcoxon_loses": false,
+              "wins": 9,
+              "losses": 9
+            },
+            {
+              "snr_db": 4,
+              "mlp_ber": 0.22216249999999998,
+              "df_ber": 0.22184500000000001,
+              "rel_penalty": 0.0014311794270773313,
+              "wilcoxon_p": 0.36024963221911843,
+              "wilcoxon_loses": false,
+              "wins": 8,
+              "losses": 12
+            },
+            {
+              "snr_db": 8,
+              "mlp_ber": 0.1214275,
+              "df_ber": 0.120385,
+              "rel_penalty": 0.008659716742118934,
+              "wilcoxon_p": 0.0001880373560999226,
+              "wilcoxon_loses": true,
+              "wins": 2,
+              "losses": 18
+            },
+            {
+              "snr_db": 12,
+              "mlp_ber": 0.056815000000000004,
+              "df_ber": 0.0558675,
+              "rel_penalty": 0.016959770886472526,
+              "wilcoxon_p": 0.0001885242483306177,
+              "wilcoxon_loses": true,
+              "wins": 1,
+              "losses": 19
+            },
+            {
+              "snr_db": 16,
+              "mlp_ber": 0.024285,
+              "df_ber": 0.024002500000000003,
+              "rel_penalty": 0.01176960733256944,
+              "wilcoxon_p": 0.008917724077088822,
+              "wilcoxon_loses": true,
+              "wins": 3,
+              "losses": 15
+            },
+            {
+              "snr_db": 20,
+              "mlp_ber": 0.009755000000000002,
+              "df_ber": 0.009680000000000001,
+              "rel_penalty": 0.0077479338842975625,
+              "wilcoxon_p": 0.03368108907456244,
+              "wilcoxon_loses": true,
+              "wins": 5,
+              "losses": 12
+            }
+          ]
+        },
+        {
+          "train_seed": 2,
+          "ber": [
+            0.33396750000000003,
+            0.22244250000000002,
+            0.12120250000000002,
+            0.0568875,
+            0.0242425,
+            0.00987
+          ],
+          "worst_rel_penalty": 0.019628099173553633,
+          "tolerance_ok": true,
+          "wilcoxon_ok": false,
+          "per_snr": [
+            {
+              "snr_db": 0,
+              "mlp_ber": 0.33396750000000003,
+              "df_ber": 0.33339250000000004,
+              "rel_penalty": 0.0017246938668386124,
+              "wilcoxon_p": 0.0007203544990031482,
+              "wilcoxon_loses": true,
+              "wins": 2,
+              "losses": 17
+            },
+            {
+              "snr_db": 4,
+              "mlp_ber": 0.22244250000000002,
+              "df_ber": 0.22184500000000001,
+              "rel_penalty": 0.002693321913948932,
+              "wilcoxon_p": 0.0035859909244870176,
+              "wilcoxon_loses": true,
+              "wins": 4,
+              "losses": 16
+            },
+            {
+              "snr_db": 8,
+              "mlp_ber": 0.12120250000000002,
+              "df_ber": 0.120385,
+              "rel_penalty": 0.006790713128712154,
+              "wilcoxon_p": 0.0007787676862143366,
+              "wilcoxon_loses": true,
+              "wins": 2,
+              "losses": 18
+            },
+            {
+              "snr_db": 12,
+              "mlp_ber": 0.0568875,
+              "df_ber": 0.0558675,
+              "rel_penalty": 0.018257484226070615,
+              "wilcoxon_p": 8.794879347050151e-05,
+              "wilcoxon_loses": true,
+              "wins": 0,
+              "losses": 20
+            },
+            {
+              "snr_db": 16,
+              "mlp_ber": 0.0242425,
+              "df_ber": 0.024002500000000003,
+              "rel_penalty": 0.009998958441828857,
+              "wilcoxon_p": 0.009956790279142308,
+              "wilcoxon_loses": true,
+              "wins": 5,
+              "losses": 14
+            },
+            {
+              "snr_db": 20,
+              "mlp_ber": 0.00987,
+              "df_ber": 0.009680000000000001,
+              "rel_penalty": 0.019628099173553633,
+              "wilcoxon_p": 0.002471182508506612,
+              "wilcoxon_loses": true,
+              "wins": 4,
+              "losses": 16
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "window": 5,
+      "hidden": 8,
+      "params": 57,
+      "worst_rel_penalty_over_seeds": 0.02789256198347101,
+      "best_rel_penalty_over_seeds": 0.01660178099968672,
+      "matches_tolerance_all_seeds": false,
+      "matches_tolerance_any_seed": true,
+      "matches_wilcoxon_all_seeds": false,
+      "seed_runs": [
+        {
+          "train_seed": 0,
+          "ber": [
+            0.335605,
+            0.22390250000000003,
+            0.122,
+            0.05729749999999999,
+            0.0244725,
+            0.00995
+          ],
+          "worst_rel_penalty": 0.02789256198347101,
+          "tolerance_ok": false,
+          "wilcoxon_ok": false,
+          "per_snr": [
+            {
+              "snr_db": 0,
+              "mlp_ber": 0.335605,
+              "df_ber": 0.33339250000000004,
+              "rel_penalty": 0.006636322052835473,
+              "wilcoxon_p": 0.00010262944757719752,
+              "wilcoxon_loses": true,
+              "wins": 1,
+              "losses": 19
+            },
+            {
+              "snr_db": 4,
+              "mlp_ber": 0.22390250000000003,
+              "df_ber": 0.22184500000000001,
+              "rel_penalty": 0.009274493452635929,
+              "wilcoxon_p": 8.832385863081277e-05,
+              "wilcoxon_loses": true,
+              "wins": 0,
+              "losses": 20
+            },
+            {
+              "snr_db": 8,
+              "mlp_ber": 0.122,
+              "df_ber": 0.120385,
+              "rel_penalty": 0.01341529260289896,
+              "wilcoxon_p": 8.782404130245517e-05,
+              "wilcoxon_loses": true,
+              "wins": 0,
+              "losses": 20
+            },
+            {
+              "snr_db": 12,
+              "mlp_ber": 0.05729749999999999,
+              "df_ber": 0.0558675,
+              "rel_penalty": 0.02559627690517719,
+              "wilcoxon_p": 8.782404130245517e-05,
+              "wilcoxon_loses": true,
+              "wins": 0,
+              "losses": 20
+            },
+            {
+              "snr_db": 16,
+              "mlp_ber": 0.0244725,
+              "df_ber": 0.024002500000000003,
+              "rel_penalty": 0.019581293615248335,
+              "wilcoxon_p": 0.00025170853516275424,
+              "wilcoxon_loses": true,
+              "wins": 2,
+              "losses": 18
+            },
+            {
+              "snr_db": 20,
+              "mlp_ber": 0.00995,
+              "df_ber": 0.009680000000000001,
+              "rel_penalty": 0.02789256198347101,
+              "wilcoxon_p": 0.00021021822462749374,
+              "wilcoxon_loses": true,
+              "wins": 1,
+              "losses": 18
+            }
+          ]
+        },
+        {
+          "train_seed": 1,
+          "ber": [
+            0.33520249999999996,
+            0.22401,
+            0.12176500000000001,
+            0.05697500000000001,
+            0.0243525,
+            0.009812499999999998
+          ],
+          "worst_rel_penalty": 0.019823689980758244,
+          "tolerance_ok": true,
+          "wilcoxon_ok": false,
+          "per_snr": [
+            {
+              "snr_db": 0,
+              "mlp_ber": 0.33520249999999996,
+              "df_ber": 0.33339250000000004,
+              "rel_penalty": 0.005429036346048344,
+              "wilcoxon_p": 8.844915021211901e-05,
+              "wilcoxon_loses": true,
+              "wins": 0,
+              "losses": 20
+            },
+            {
+              "snr_db": 4,
+              "mlp_ber": 0.22401,
+              "df_ber": 0.22184500000000001,
+              "rel_penalty": 0.00975906601455959,
+              "wilcoxon_p": 8.819870204194453e-05,
+              "wilcoxon_loses": true,
+              "wins": 0,
+              "losses": 20
+            },
+            {
+              "snr_db": 8,
+              "mlp_ber": 0.12176500000000001,
+              "df_ber": 0.120385,
+              "rel_penalty": 0.011463222162229565,
+              "wilcoxon_p": 8.807368035275503e-05,
+              "wilcoxon_loses": true,
+              "wins": 0,
+              "losses": 20
+            },
+            {
+              "snr_db": 12,
+              "mlp_ber": 0.05697500000000001,
+              "df_ber": 0.0558675,
+              "rel_penalty": 0.019823689980758244,
+              "wilcoxon_p": 0.00010050086380237307,
+              "wilcoxon_loses": true,
+              "wins": 1,
+              "losses": 19
+            },
+            {
+              "snr_db": 16,
+              "mlp_ber": 0.0243525,
+              "df_ber": 0.024002500000000003,
+              "rel_penalty": 0.014581814394333762,
+              "wilcoxon_p": 0.0005894953445255375,
+              "wilcoxon_loses": true,
+              "wins": 2,
+              "losses": 18
+            },
+            {
+              "snr_db": 20,
+              "mlp_ber": 0.009812499999999998,
+              "df_ber": 0.009680000000000001,
+              "rel_penalty": 0.01368801652892533,
+              "wilcoxon_p": 0.0016760465035296367,
+              "wilcoxon_loses": true,
+              "wins": 4,
+              "losses": 14
+            }
+          ]
+        },
+        {
+          "train_seed": 2,
+          "ber": [
+            0.33417749999999996,
+            0.22281500000000004,
+            0.12153999999999998,
+            0.056795,
+            0.0242325,
+            0.009827500000000001
+          ],
+          "worst_rel_penalty": 0.01660178099968672,
+          "tolerance_ok": true,
+          "wilcoxon_ok": false,
+          "per_snr": [
+            {
+              "snr_db": 0,
+              "mlp_ber": 0.33417749999999996,
+              "df_ber": 0.33339250000000004,
+              "rel_penalty": 0.0023545820616838247,
+              "wilcoxon_p": 0.0006784046428008314,
+              "wilcoxon_loses": true,
+              "wins": 2,
+              "losses": 18
+            },
+            {
+              "snr_db": 4,
+              "mlp_ber": 0.22281500000000004,
+              "df_ber": 0.22184500000000001,
+              "rel_penalty": 0.0043724221866619775,
+              "wilcoxon_p": 0.0007277622489709132,
+              "wilcoxon_loses": true,
+              "wins": 3,
+              "losses": 17
+            },
+            {
+              "snr_db": 8,
+              "mlp_ber": 0.12153999999999998,
+              "df_ber": 0.120385,
+              "rel_penalty": 0.009594218548822324,
+              "wilcoxon_p": 0.0001199294913179547,
+              "wilcoxon_loses": true,
+              "wins": 1,
+              "losses": 19
+            },
+            {
+              "snr_db": 12,
+              "mlp_ber": 0.056795,
+              "df_ber": 0.0558675,
+              "rel_penalty": 0.01660178099968672,
+              "wilcoxon_p": 8.782404130245517e-05,
+              "wilcoxon_loses": true,
+              "wins": 0,
+              "losses": 20
+            },
+            {
+              "snr_db": 16,
+              "mlp_ber": 0.0242325,
+              "df_ber": 0.024002500000000003,
+              "rel_penalty": 0.009582335173419334,
+              "wilcoxon_p": 0.005666576264828899,
+              "wilcoxon_loses": true,
+              "wins": 4,
+              "losses": 16
+            },
+            {
+              "snr_db": 20,
+              "mlp_ber": 0.009827500000000001,
+              "df_ber": 0.009680000000000001,
+              "rel_penalty": 0.015237603305785129,
+              "wilcoxon_p": 0.011343649253645494,
+              "wilcoxon_loses": true,
+              "wins": 4,
+              "losses": 14
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "window": 5,
+      "hidden": 16,
+      "params": 113,
+      "worst_rel_penalty_over_seeds": 0.026601239669421566,
+      "best_rel_penalty_over_seeds": 0.016512283527990453,
+      "matches_tolerance_all_seeds": false,
+      "matches_tolerance_any_seed": true,
+      "matches_wilcoxon_all_seeds": false,
+      "seed_runs": [
+        {
+          "train_seed": 0,
+          "ber": [
+            0.33515249999999996,
+            0.22389249999999997,
+            0.12210499999999998,
+            0.05731000000000001,
+            0.024534999999999994,
+            0.009937500000000002
+          ],
+          "worst_rel_penalty": 0.026601239669421566,
+          "tolerance_ok": false,
+          "wilcoxon_ok": false,
+          "per_snr": [
+            {
+              "snr_db": 0,
+              "mlp_ber": 0.33515249999999996,
+              "df_ber": 0.33339250000000004,
+              "rel_penalty": 0.005279062966323262,
+              "wilcoxon_p": 3.814697265625e-06,
+              "wilcoxon_loses": true,
+              "wins": 1,
+              "losses": 19
+            },
+            {
+              "snr_db": 4,
+              "mlp_ber": 0.22389249999999997,
+              "df_ber": 0.22184500000000001,
+              "rel_penalty": 0.009229416935247366,
+              "wilcoxon_p": 8.819870204194453e-05,
+              "wilcoxon_loses": true,
+              "wins": 0,
+              "losses": 20
+            },
+            {
+              "snr_db": 8,
+              "mlp_ber": 0.12210499999999998,
+              "df_ber": 0.120385,
+              "rel_penalty": 0.014287494289155388,
+              "wilcoxon_p": 8.832385863081277e-05,
+              "wilcoxon_loses": true,
+              "wins": 0,
+              "losses": 20
+            },
+            {
+              "snr_db": 12,
+              "mlp_ber": 0.05731000000000001,
+              "df_ber": 0.0558675,
+              "rel_penalty": 0.025820020584418603,
+              "wilcoxon_p": 8.794879347050151e-05,
+              "wilcoxon_loses": true,
+              "wins": 0,
+              "losses": 20
+            },
+            {
+              "snr_db": 16,
+              "mlp_ber": 0.024534999999999994,
+              "df_ber": 0.024002500000000003,
+              "rel_penalty": 0.022185189042807675,
+              "wilcoxon_p": 0.00011797364504552007,
+              "wilcoxon_loses": true,
+              "wins": 1,
+              "losses": 19
+            },
+            {
+              "snr_db": 20,
+              "mlp_ber": 0.009937500000000002,
+              "df_ber": 0.009680000000000001,
+              "rel_penalty": 0.026601239669421566,
+              "wilcoxon_p": 0.0011014156299517066,
+              "wilcoxon_loses": true,
+              "wins": 4,
+              "losses": 15
+            }
+          ]
+        },
+        {
+          "train_seed": 1,
+          "ber": [
+            0.3350025,
+            0.22386500000000004,
+            0.122,
+            0.05713,
+            0.0244575,
+            0.009875
+          ],
+          "worst_rel_penalty": 0.0225981116033472,
+          "tolerance_ok": false,
+          "wilcoxon_ok": false,
+          "per_snr": [
+            {
+              "snr_db": 0,
+              "mlp_ber": 0.3350025,
+              "df_ber": 0.33339250000000004,
+              "rel_penalty": 0.004829142827148015,
+              "wilcoxon_p": 8.844915021211901e-05,
+              "wilcoxon_loses": true,
+              "wins": 0,
+              "losses": 20
+            },
+            {
+              "snr_db": 4,
+              "mlp_ber": 0.22386500000000004,
+              "df_ber": 0.22184500000000001,
+              "rel_penalty": 0.009105456512429947,
+              "wilcoxon_p": 0.0001314204445389205,
+              "wilcoxon_loses": true,
+              "wins": 0,
+              "losses": 19
+            },
+            {
+              "snr_db": 8,
+              "mlp_ber": 0.122,
+              "df_ber": 0.120385,
+              "rel_penalty": 0.01341529260289896,
+              "wilcoxon_p": 8.832385863081277e-05,
+              "wilcoxon_loses": true,
+              "wins": 0,
+              "losses": 20
+            },
+            {
+              "snr_db": 12,
+              "mlp_ber": 0.05713,
+              "df_ber": 0.0558675,
+              "rel_penalty": 0.0225981116033472,
+              "wilcoxon_p": 8.807368035275503e-05,
+              "wilcoxon_loses": true,
+              "wins": 0,
+              "losses": 20
+            },
+            {
+              "snr_db": 16,
+              "mlp_ber": 0.0244575,
+              "df_ber": 0.024002500000000003,
+              "rel_penalty": 0.018956358712633976,
+              "wilcoxon_p": 0.00038612866634790184,
+              "wilcoxon_loses": true,
+              "wins": 3,
+              "losses": 17
+            },
+            {
+              "snr_db": 20,
+              "mlp_ber": 0.009875,
+              "df_ber": 0.009680000000000001,
+              "rel_penalty": 0.02014462809917345,
+              "wilcoxon_p": 0.0006642830512461564,
+              "wilcoxon_loses": true,
+              "wins": 4,
+              "losses": 15
+            }
+          ]
+        },
+        {
+          "train_seed": 2,
+          "ber": [
+            0.334445,
+            0.222865,
+            0.121505,
+            0.05679000000000001,
+            0.024285,
+            0.009825
+          ],
+          "worst_rel_penalty": 0.016512283527990453,
+          "tolerance_ok": true,
+          "wilcoxon_ok": false,
+          "per_snr": [
+            {
+              "snr_db": 0,
+              "mlp_ber": 0.334445,
+              "df_ber": 0.33339250000000004,
+              "rel_penalty": 0.003156939643213198,
+              "wilcoxon_p": 0.0003135277415746933,
+              "wilcoxon_loses": true,
+              "wins": 3,
+              "losses": 17
+            },
+            {
+              "snr_db": 4,
+              "mlp_ber": 0.222865,
+              "df_ber": 0.22184500000000001,
+              "rel_penalty": 0.00459780477360316,
+              "wilcoxon_p": 0.000446759756327704,
+              "wilcoxon_loses": true,
+              "wins": 3,
+              "losses": 17
+            },
+            {
+              "snr_db": 8,
+              "mlp_ber": 0.121505,
+              "df_ber": 0.120385,
+              "rel_penalty": 0.009303484653403629,
+              "wilcoxon_p": 0.0002921499310921639,
+              "wilcoxon_loses": true,
+              "wins": 2,
+              "losses": 17
+            },
+            {
+              "snr_db": 12,
+              "mlp_ber": 0.05679000000000001,
+              "df_ber": 0.0558675,
+              "rel_penalty": 0.016512283527990453,
+              "wilcoxon_p": 0.00010291581390073258,
+              "wilcoxon_loses": true,
+              "wins": 1,
+              "losses": 19
+            },
+            {
+              "snr_db": 16,
+              "mlp_ber": 0.024285,
+              "df_ber": 0.024002500000000003,
+              "rel_penalty": 0.01176960733256944,
+              "wilcoxon_p": 0.0008926754018728109,
+              "wilcoxon_loses": true,
+              "wins": 3,
+              "losses": 16
+            },
+            {
+              "snr_db": 20,
+              "mlp_ber": 0.009825,
+              "df_ber": 0.009680000000000001,
+              "rel_penalty": 0.014979338842975132,
+              "wilcoxon_p": 0.012988027970661299,
+              "wilcoxon_loses": true,
+              "wins": 3,
+              "losses": 13
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "window": 5,
+      "hidden": 24,
+      "params": 169,
+      "worst_rel_penalty_over_seeds": 0.0317665289256197,
+      "best_rel_penalty_over_seeds": 0.02169421487603289,
+      "matches_tolerance_all_seeds": false,
+      "matches_tolerance_any_seed": false,
+      "matches_wilcoxon_all_seeds": false,
+      "seed_runs": [
+        {
+          "train_seed": 0,
+          "ber": [
+            0.33604000000000006,
+            0.22454750000000004,
+            0.12238249999999999,
+            0.0570225,
+            0.024492500000000004,
+            0.00989
+          ],
+          "worst_rel_penalty": 0.02169421487603289,
+          "tolerance_ok": false,
+          "wilcoxon_ok": false,
+          "per_snr": [
+            {
+              "snr_db": 0,
+              "mlp_ber": 0.33604000000000006,
+              "df_ber": 0.33339250000000004,
+              "rel_penalty": 0.007941090456444054,
+              "wilcoxon_p": 8.807368035275503e-05,
+              "wilcoxon_loses": true,
+              "wins": 0,
+              "losses": 20
+            },
+            {
+              "snr_db": 4,
+              "mlp_ber": 0.22454750000000004,
+              "df_ber": 0.22184500000000001,
+              "rel_penalty": 0.012181928824179154,
+              "wilcoxon_p": 0.00013162704518922692,
+              "wilcoxon_loses": true,
+              "wins": 0,
+              "losses": 19
+            },
+            {
+              "snr_db": 8,
+              "mlp_ber": 0.12238249999999999,
+              "df_ber": 0.120385,
+              "rel_penalty": 0.016592598745690787,
+              "wilcoxon_p": 1.9073486328125e-06,
+              "wilcoxon_loses": true,
+              "wins": 0,
+              "losses": 20
+            },
+            {
+              "snr_db": 12,
+              "mlp_ber": 0.0570225,
+              "df_ber": 0.0558675,
+              "rel_penalty": 0.020673915961874012,
+              "wilcoxon_p": 8.844915021211901e-05,
+              "wilcoxon_loses": true,
+              "wins": 0,
+              "losses": 20
+            },
+            {
+              "snr_db": 16,
+              "mlp_ber": 0.024492500000000004,
+              "df_ber": 0.024002500000000003,
+              "rel_penalty": 0.020414540152067527,
+              "wilcoxon_p": 0.0001388227750052415,
+              "wilcoxon_loses": true,
+              "wins": 2,
+              "losses": 18
+            },
+            {
+              "snr_db": 20,
+              "mlp_ber": 0.00989,
+              "df_ber": 0.009680000000000001,
+              "rel_penalty": 0.02169421487603289,
+              "wilcoxon_p": 0.0011027027229409698,
+              "wilcoxon_loses": true,
+              "wins": 2,
+              "losses": 17
+            }
+          ]
+        },
+        {
+          "train_seed": 1,
+          "ber": [
+            0.3359150000000001,
+            0.2249275,
+            0.12240250000000001,
+            0.05739000000000001,
+            0.02452,
+            0.0098975
+          ],
+          "worst_rel_penalty": 0.02725198013156146,
+          "tolerance_ok": false,
+          "wilcoxon_ok": false,
+          "per_snr": [
+            {
+              "snr_db": 0,
+              "mlp_ber": 0.3359150000000001,
+              "df_ber": 0.33339250000000004,
+              "rel_penalty": 0.007566157007131349,
+              "wilcoxon_p": 8.832385863081277e-05,
+              "wilcoxon_loses": true,
+              "wins": 0,
+              "losses": 20
+            },
+            {
+              "snr_db": 4,
+              "mlp_ber": 0.2249275,
+              "df_ber": 0.22184500000000001,
+              "rel_penalty": 0.013894836484933119,
+              "wilcoxon_p": 1.9073486328125e-06,
+              "wilcoxon_loses": true,
+              "wins": 0,
+              "losses": 20
+            },
+            {
+              "snr_db": 8,
+              "mlp_ber": 0.12240250000000001,
+              "df_ber": 0.120385,
+              "rel_penalty": 0.01675873240021602,
+              "wilcoxon_p": 8.794879347050151e-05,
+              "wilcoxon_loses": true,
+              "wins": 0,
+              "losses": 20
+            },
+            {
+              "snr_db": 12,
+              "mlp_ber": 0.05739000000000001,
+              "df_ber": 0.0558675,
+              "rel_penalty": 0.02725198013156146,
+              "wilcoxon_p": 8.844915021211901e-05,
+              "wilcoxon_loses": true,
+              "wins": 0,
+              "losses": 20
+            },
+            {
+              "snr_db": 16,
+              "mlp_ber": 0.02452,
+              "df_ber": 0.024002500000000003,
+              "rel_penalty": 0.021560254140193608,
+              "wilcoxon_p": 0.0003406091945720466,
+              "wilcoxon_loses": true,
+              "wins": 1,
+              "losses": 18
+            },
+            {
+              "snr_db": 20,
+              "mlp_ber": 0.0098975,
+              "df_ber": 0.009680000000000001,
+              "rel_penalty": 0.022469008264462697,
+              "wilcoxon_p": 0.0015571398009376874,
+              "wilcoxon_loses": true,
+              "wins": 4,
+              "losses": 15
+            }
+          ]
+        },
+        {
+          "train_seed": 2,
+          "ber": [
+            0.335415,
+            0.22421000000000002,
+            0.122265,
+            0.057407500000000014,
+            0.0245925,
+            0.0099875
+          ],
+          "worst_rel_penalty": 0.0317665289256197,
+          "tolerance_ok": false,
+          "wilcoxon_ok": false,
+          "per_snr": [
+            {
+              "snr_db": 0,
+              "mlp_ber": 0.335415,
+              "df_ber": 0.33339250000000004,
+              "rel_penalty": 0.0060664232098801936,
+              "wilcoxon_p": 3.814697265625e-06,
+              "wilcoxon_loses": true,
+              "wins": 1,
+              "losses": 19
+            },
+            {
+              "snr_db": 4,
+              "mlp_ber": 0.22421000000000002,
+              "df_ber": 0.22184500000000001,
+              "rel_penalty": 0.010660596362325072,
+              "wilcoxon_p": 1.9073486328125e-06,
+              "wilcoxon_loses": true,
+              "wins": 0,
+              "losses": 20
+            },
+            {
+              "snr_db": 8,
+              "mlp_ber": 0.122265,
+              "df_ber": 0.120385,
+              "rel_penalty": 0.015616563525356088,
+              "wilcoxon_p": 8.844915021211901e-05,
+              "wilcoxon_loses": true,
+              "wins": 0,
+              "losses": 20
+            },
+            {
+              "snr_db": 12,
+              "mlp_ber": 0.057407500000000014,
+              "df_ber": 0.0558675,
+              "rel_penalty": 0.02756522128249901,
+              "wilcoxon_p": 8.844915021211901e-05,
+              "wilcoxon_loses": true,
+              "wins": 0,
+              "losses": 20
+            },
+            {
+              "snr_db": 16,
+              "mlp_ber": 0.0245925,
+              "df_ber": 0.024002500000000003,
+              "rel_penalty": 0.02458077283616276,
+              "wilcoxon_p": 0.00010291581390073258,
+              "wilcoxon_loses": true,
+              "wins": 1,
+              "losses": 19
+            },
+            {
+              "snr_db": 20,
+              "mlp_ber": 0.0099875,
+              "df_ber": 0.009680000000000001,
+              "rel_penalty": 0.0317665289256197,
+              "wilcoxon_p": 0.00015987525905956842,
+              "wilcoxon_loses": true,
+              "wins": 2,
+              "losses": 18
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "min_params_tolerance": 6,
+  "min_params_both_criteria": 7
+}
