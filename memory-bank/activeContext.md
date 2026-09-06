@@ -1454,3 +1454,33 @@ supplementary rather than counted pages, which has not been verified).
 just the earlier "47 orphaned figures" note) -- irrelevant to the page
 count (they cost nothing unreferenced) but still an open decision from
 earlier in this project: keep as archival, or delete.
+
+## Page reduction, continued: still 130, cut-a-finding declined again
+
+One more commit (`29873ab`) after the "stopped by user choice" entry above:
+removed ch02's cGAN theory subsection (its one load-bearing fact was already
+stated one subsection later; its citations moved to ch04 where the
+architecture is actually specified) and a second duplicated equation
+(ch08's Bias-Variance Analysis had its own numbered copy of ch02's
+bias-variance decomposition; now cross-references it). No page moved yet.
+
+At this point every remaining lever for sentence-level compression was
+confirmed exhausted: a grep sweep for the "reported as measured", "it is
+important to note" family of throwaway meta-commentary across ch04, ch05
+and ch07 turned up only the one instance already cut. The user was given
+concrete, word-counted candidates for what a further cut would actually
+require -- three ch05 coded-study subsections (Adaptive Modulation and
+Coding, Capacity Under a Latency Constraint, Throughput and Latency; each
+~900-1100 words plus tables/figures, roughly 2-3 printed pages, each
+carrying a real finding the Summary chapter or Chapter 8's discussion
+depends on) -- and **chose to stop at 130 rather than cut a finding without
+more thought**, for the second time this session.
+
+**Status: 130 countable pages, 10 over the 120-page limit, open.** This is
+not a soft target anyone is close to hitting through prose editing alone --
+closing it requires either removing a genuine result (one of the three
+subsections above, or an equivalent elsewhere) or resolving the constraint
+a different way (the TAU supplementary-material question, still
+unverified). Whoever picks this up next should not re-attempt sentence-level
+tightening as the primary lever; it has been tried twice, thoroughly, across
+every chapter, for a combined yield of 3.5 pages.
