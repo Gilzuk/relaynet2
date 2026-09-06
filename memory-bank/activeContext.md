@@ -1403,3 +1403,84 @@ tests) holds the line, including the negative cases: Part I must never match
 Part II, "(Corresp.)" must not excuse *symbol* → *bit*, a longer title that
 contains the reported one is not a match, and neither an attestation nor an
 acceptance may short-circuit a lookup that could have resolved.
+
+## Page-count reduction: 133 -> 130, stopped there by explicit decision
+
+Five commits on `claude/page-reduction` (`9f7e1c9`, `022f2d2`, `368e46e`,
+`ec4498f`, `5117fbf`) recovered 3 of the 13 pages the thesis was over the
+120-page limit, entirely through prose-level edits verified to change no
+number, table, figure, or conclusion:
+
+- Cut six passages that stated the same finding twice across chapters --
+  once where it belongs (a results section) and again in Discussion or
+  Summary, in two cases explicitly flagged "not repeated here" and then
+  repeated anyway a few lines later.
+- Tightened throat-clearing and restatement in Chapter 2's literature
+  review, Chapter 1's opening, Chapter 8's Limitations/Future Work items,
+  and Appendix F's six claim-verification subsections (~25% shorter, no
+  citation or number dropped).
+
+**Stopped at 130, nine pages still over, by the user's explicit choice.**
+Every chapter (1-9, appendices) was surveyed. What remains falls into four
+categories, none of which are safe to cut by continuing the same kind of
+edit:
+
+1. **Chapter 6/7 (Unknown Channels)**, the thesis's central chapter --
+   every sentence carries argumentative weight (the four-layer ladder, the
+   precise "family-agnostic" scoping), already through multiple correctness
+   passes.
+2. **Chapter 4 Methods and the AWGN/Rayleigh derivations in Chapter 2** --
+   equations later referenced for validation; cutting risks the
+   theory-validates-simulation chain.
+3. **Appendix F** -- already tightened; further cuts mean dropping entire
+   claim-verification subsections rather than compressing them.
+4. **H1-H5 in Chapter 3** -- the formal hypotheses every later chapter is
+   adjudicated against; deliberately left untouched even where a nearby
+   paragraph (the Gap-1 citation summary) was safely trimmed.
+
+Offered the user four options for closing the remaining 9 pages: cut the
+cGAN theory subsection (~0.2-0.3pp, low risk), cut one coded-study
+subsection (a real finding, 1-2pp), drop 2-3 of Appendix F's six
+verification subsections (~0.3-0.5pp each), or stop and report the overage
+plainly. **The user chose to stop.** The 9-page overage against the
+120-page limit is therefore an open, acknowledged item, not a solved one --
+closing it requires either a content-scope decision this session did not
+make, or resolving the constraint a different way (e.g. checking whether
+TAU's guidelines allow any of this thesis's appendix material as
+supplementary rather than counted pages, which has not been verified).
+
+25 of the 46 PNGs under `thesis/results/` are not referenced by any
+`\includegraphics` in a live chapter file (checked via a script scan, not
+just the earlier "47 orphaned figures" note) -- irrelevant to the page
+count (they cost nothing unreferenced) but still an open decision from
+earlier in this project: keep as archival, or delete.
+
+## Page reduction, continued: still 130, cut-a-finding declined again
+
+One more commit (`29873ab`) after the "stopped by user choice" entry above:
+removed ch02's cGAN theory subsection (its one load-bearing fact was already
+stated one subsection later; its citations moved to ch04 where the
+architecture is actually specified) and a second duplicated equation
+(ch08's Bias-Variance Analysis had its own numbered copy of ch02's
+bias-variance decomposition; now cross-references it). No page moved yet.
+
+At this point every remaining lever for sentence-level compression was
+confirmed exhausted: a grep sweep for the "reported as measured", "it is
+important to note" family of throwaway meta-commentary across ch04, ch05
+and ch07 turned up only the one instance already cut. The user was given
+concrete, word-counted candidates for what a further cut would actually
+require -- three ch05 coded-study subsections (Adaptive Modulation and
+Coding, Capacity Under a Latency Constraint, Throughput and Latency; each
+~900-1100 words plus tables/figures, roughly 2-3 printed pages, each
+carrying a real finding the Summary chapter or Chapter 8's discussion
+depends on) -- and **chose to stop at 130 rather than cut a finding without
+more thought**, for the second time this session.
+
+**Status: 130 countable pages, 10 over the 120-page limit, open.** This is
+not a soft target anyone is close to hitting through prose editing alone --
+closing it requires either removing a genuine result (one of the three
+subsections above, or an equivalent elsewhere) or resolving the constraint
+a different way (the TAU supplementary-material question, still
+unverified). Whoever picks this up next should not re-attempt sentence-level
+tightening as the primary lever; it has been tried twice, thoroughly, across
+every chapter, for a combined yield of 3.5 pages.
