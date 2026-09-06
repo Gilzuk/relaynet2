@@ -1,5 +1,5 @@
 {
-  "_comment": "Every entry in thesis/chapters/references.bib, for Stage 4.5 Mode 2. Entries with an arXiv eprint or DOI resolve against that identifier; the rest go through a Crossref title search, which confirms a record exists but not the entry's other fields. Four entries carry author attestation: the author supplied a link to the paper where no machine-resolvable record was found. One of those (Samuel et al.) is upgraded to a DOI already resolved in the PR #68 corpus, so it is machine-verified rather than attested.",
+  "_comment": "Every entry in thesis/chapters/references.bib, for Stage 4.5 Mode 2. Entries with an arXiv eprint or DOI resolve against that identifier; the rest go through a Crossref title search, which confirms a record exists but not the entry's other fields. Nine entries carry author attestation: the author supplied a link to the paper where no machine-resolvable record was found. One of those (Samuel et al.) is upgraded to a DOI already resolved in the PR #68 corpus, so it is machine-verified rather than attested. Two conference papers (Gulrajani et al., Gu et al.) carry a proposed arXiv preprint id rather than an attestation, so the run checks them against a record instead of taking them on trust.",
   "topic": "thesis bibliography -- full publisher-record verification",
   "candidates": [
     {
@@ -57,7 +57,9 @@
     },
     {
       "bibkey": "Gulrajani2017WGANgp",
-      "reported_title": "Improved training of Wasserstein GANs"
+      "reported_title": "Improved training of Wasserstein GANs",
+      "arxiv_id": "1704.00028",
+      "_identifier_source": "NeurIPS proceedings carry no Crossref DOI; proposed arXiv preprint, confirmed or refused by the title comparison in this run"
     },
     {
       "bibkey": "Goodfellow2014GAN",
@@ -69,7 +71,9 @@
     },
     {
       "bibkey": "GuGoelRe2022SSM",
-      "reported_title": "Efficiently modeling long sequences with structured state spaces"
+      "reported_title": "Efficiently modeling long sequences with structured state spaces",
+      "arxiv_id": "2111.00396",
+      "_identifier_source": "ICLR proceedings carry no Crossref DOI; proposed arXiv preprint, confirmed or refused by the title comparison in this run"
     },
     {
       "bibkey": "DaoGu2024TransformersSSM",
@@ -136,7 +140,8 @@
     },
     {
       "bibkey": "Higgins2017betaVAE",
-      "reported_title": "$\\beta$-VAE: Learning basic visual concepts with a constrained variational framework"
+      "reported_title": "$\\beta$-VAE: Learning basic visual concepts with a constrained variational framework",
+      "_unresolved": "ICLR 2017, OpenReview only: no DOI, and no arXiv preprint of this paper. Left unresolved rather than pinned to the later 'Understanding disentangling in beta-VAE' (arXiv:1804.03599), which is a different paper."
     },
     {
       "bibkey": "He2015DelvingRectifiers",
