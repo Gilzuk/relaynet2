@@ -10,13 +10,9 @@ The experimental results reveal several consistent patterns across the canonical
 
 \subsection{Low-SNR Advantage of Neural Relays over AF (H1: Confirmed)}\label{sec:low-snr-advantage-of-neural-relays-h1-confirmed}
 
-\textbf{Low SNR (0-4 dB): AI advantage over AF.} At low SNR, AI-based relays consistently outperform AF on the canonical channel, confirming H1. The mechanism is the structure of the MMSE-optimal (posterior-mean) relay estimate. The scalar AWGN form below is \emph{qualitative motivation}, not the exact canonical estimator: it holds for a fixed noise variance, whereas the canonical link is Rayleigh-faded, so the exact posterior is conditioned on the retained fading magnitude --- $\mathbb{E}[x \mid \tilde{y}, |h|{=}a] = \tanh(a^{2}\tilde{y}/\sigma^{2})$ under the zero-forcing convention of Section~\ref{sec:system-model-1}, where $\tilde{y} = y/h$ carries conditional noise variance $\sigma^{2}/a^{2}$ rather than $\sigma^{2}$ --- or, where that magnitude is not supplied to the relay explicitly, marginalizes over it to give a fading-mixture posterior rather than a single fixed-variance $\tanh$. What the trained network approximates empirically is that mixture. With that scope stated, the fixed-variance form makes the shape of the mapping plain:
+\textbf{Low SNR (0-4 dB): AI advantage over AF.} At low SNR, AI-based relays consistently outperform AF on the canonical channel, confirming H1. The mechanism is the structure of the MMSE-optimal (posterior-mean) relay estimate, whose fixed-variance AWGN form is Equation~\ref{eq:optimal-denoiser-awgn}. That form is \emph{qualitative motivation}, not the exact canonical estimator: it holds for a fixed noise variance, whereas the canonical link is Rayleigh-faded, so the exact posterior is conditioned on the retained fading magnitude --- $\mathbb{E}[x \mid \tilde{y}, |h|{=}a] = \tanh(a^{2}\tilde{y}/\sigma^{2})$ under the zero-forcing convention of Section~\ref{sec:system-model-1}, where $\tilde{y} = y/h$ carries conditional noise variance $\sigma^{2}/a^{2}$ rather than $\sigma^{2}$ --- or, where that magnitude is not supplied to the relay explicitly, marginalizes over it to give a fading-mixture posterior rather than a single fixed-variance $\tanh$. What the trained network approximates empirically is that mixture.
 
-\begin{equation}\protect\phantomsection\label{eq:optimal-denoiser-relay}{f^*(y) = \mathbb{E}[x | y] = \tanh\left(\frac{y}{\sigma^2}\right)
-}\end{equation}
-\addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad optimal-denoiser-relay}
-
-At low SNR (e.g., 0 dB, \(\sigma^2 = 1\)), this is a gentle sigmoid: \(f^*(y) = \tanh(y)\). The fading case rescales its slope per symbol and, unconditioned, softens it into a mixture, but the qualitative point is unchanged: the optimal relay map is a smooth saturating non-linearity rather than a linear gain. The neural network can approximate such a mapping accurately, producing a \textbf{soft estimate} that preserves information about the confidence of the decision. By contrast:
+At low SNR (e.g., 0 dB, \(\sigma^2 = 1\)), the fixed-variance form is a gentle sigmoid, \(f^*(y) = \tanh(y)\); the fading case rescales its slope per symbol and, unconditioned, softens it into a mixture, but the qualitative point is unchanged: the optimal relay map is a smooth saturating non-linearity rather than a linear gain. The neural network can approximate such a mapping accurately, producing a \textbf{soft estimate} that preserves information about the confidence of the decision. By contrast:
 
 \begin{itemize}
 \item
@@ -55,11 +51,7 @@ As a heuristic, the minimum description length (MDL) principle suggests matching
 
 \subsection{Bias-Variance Analysis}\label{sec:bias-variance-analysis}
 
-The bias-variance decomposition \cite{GoodfellowBengioCourville2016DeepLearning} provides a quantitative framework:
-
-\begin{equation}\protect\phantomsection\label{eq:bias-variance-relay}{\text{MSE}(\hat{x}) = \underbrace{(\mathbb{E}[\hat{x}] - f^*(y))^2}_{\text{Bias}^2} + \underbrace{\mathbb{E}[(\hat{x} - \mathbb{E}[\hat{x}])^2]}_{\text{Variance}} + \underbrace{\sigma^2_{\text{irred}}}_{\text{Noise floor}}
-}\end{equation}
-\addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad bias-variance-relay}
+Applying the bias-variance decomposition of Equation~\ref{eq:bias-variance-decomp} to the three evaluated sizes:
 
 \begin{itemize}
 \tightlist
