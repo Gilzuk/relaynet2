@@ -1,12 +1,12 @@
 {
   "topic": "thesis bibliography -- full publisher-record verification",
-  "checked_at": "2026-09-06T05:49:19.409131+00:00",
+  "checked_at": "2026-09-06T05:56:33.031217+00:00",
   "standard": "deep-research IRON RULE #4 -- gray zone is a FAIL",
   "counts": {
     "VERIFIED": 48,
-    "ATTESTED": 3,
+    "ATTESTED": 9,
     "MISMATCH": 1,
-    "FAIL": 12
+    "FAIL": 6
   },
   "results": [
     {
@@ -287,12 +287,12 @@
       "reason": "title matches the record"
     },
     {
-      "arxiv_id": null,
-      "doi": null,
+      "bibkey": "TseViswanath2005Fundamentals",
       "reported_title": "Fundamentals of Wireless Communications",
-      "route": "crossref-title",
-      "verdict": "FAIL",
-      "reason": "no record with this title in the top 10 Crossref results (nearest: 'Advanced Topics in MIMO Wireless Communications'); supply a DOI to pin it"
+      "route": "author-attestation",
+      "verdict": "ATTESTED",
+      "url": "https://books.google.co.il/books/about/Fundamentals_of_Wireless_Communication.html?id=66XBb5tZX6EC",
+      "reason": "author supplied a link to the paper; not a publisher-record match"
     },
     {
       "arxiv_id": null,
@@ -331,36 +331,36 @@
       "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
     },
     {
-      "arxiv_id": null,
-      "doi": null,
+      "bibkey": "SimonAlouini2005FadingChannels",
       "reported_title": "Digital Communication over Fading Channels",
-      "route": "crossref-title",
-      "verdict": "FAIL",
-      "reason": "no record with this title in the top 10 Crossref results (nearest: 'Coded Communication over Fading Channels'); supply a DOI to pin it"
+      "route": "author-attestation",
+      "verdict": "ATTESTED",
+      "url": "https://books.google.co.il/books/about/Digital_Communication_over_Fading_Channe.html?id=OYrDN0Q6BacC",
+      "reason": "author supplied a link to the paper; not a publisher-record match"
     },
     {
-      "arxiv_id": null,
-      "doi": null,
+      "bibkey": "GoodfellowBengioCourville2016DeepLearning",
       "reported_title": "Deep Learning",
-      "route": "crossref-title",
-      "verdict": "FAIL",
-      "reason": "no record with this title in the top 10 Crossref results (nearest: 'What’s Deep About Deep Learning?'); supply a DOI to pin it"
+      "route": "author-attestation",
+      "verdict": "ATTESTED",
+      "url": "https://www.deeplearningbook.org/",
+      "reason": "author supplied a link to the paper; not a publisher-record match"
     },
     {
-      "arxiv_id": null,
-      "doi": null,
+      "bibkey": "Sklar2001DigitalCommFundamentals",
       "reported_title": "Digital Communications: Fundamentals and Applications",
-      "route": "crossref-title",
-      "verdict": "FAIL",
-      "reason": "no record with this title in the top 10 Crossref results (nearest: 'Digital Signal Processing'); supply a DOI to pin it"
+      "route": "author-attestation",
+      "verdict": "ATTESTED",
+      "url": "https://www.mangoud.com/EENG373_files/Book-Sklar.pdf",
+      "reason": "author supplied a link to the paper; not a publisher-record match"
     },
     {
-      "arxiv_id": null,
-      "doi": null,
+      "bibkey": "SuttonBarto2018RL",
       "reported_title": "Reinforcement Learning: An Introduction",
-      "route": "crossref-title",
-      "verdict": "FAIL",
-      "reason": "no record with this title in the top 10 Crossref results (nearest: 'Introduction: The Challenge of Reinforcement Learning'); supply a DOI to pin it"
+      "route": "author-attestation",
+      "verdict": "ATTESTED",
+      "url": "http://incompleteideas.net/book/RLbook2020.pdf",
+      "reason": "author supplied a link to the paper; not a publisher-record match"
     },
     {
       "arxiv_id": null,
@@ -784,12 +784,12 @@
       "reason": "title matches a Crossref record found by title search; confirms existence, not the reference's other fields"
     },
     {
-      "arxiv_id": null,
-      "doi": null,
+      "bibkey": "LuckySalzWeldon1968",
       "reported_title": "Principles of Data Communication",
-      "route": "crossref-title",
-      "verdict": "FAIL",
-      "reason": "no record with this title in the top 10 Crossref results (nearest: 'Data Communication Principles'); supply a DOI to pin it"
+      "route": "author-attestation",
+      "verdict": "ATTESTED",
+      "url": "https://garfield.library.upenn.edu/classics1979/A1979HS09600001.pdf",
+      "reason": "author supplied a link to the paper; not a publisher-record match"
     },
     {
       "arxiv_id": null,
