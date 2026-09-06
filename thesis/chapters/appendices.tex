@@ -103,7 +103,7 @@ PyTorch (CUDA) \\
 
 \subsection{Reproducibility} Random seeds are controlled at the source (bit generation) and noise (per-trial seeding) levels to ensure reproducible results.
 
-\paragraph{Provenance of the reported results.} Every result reported in this thesis was regenerated from the archived experiment artifacts and verified against its committed result file, using the experiment-specific budget documented in its own section and in the master ledger above. Those budgets differ substantially by study --- from $10\times100{,}000$ bits per SNR point on the canonical comparison, through $10$-million-bit trials at mid SNR, to billion-bit rare-event runs at the top of the unknown-channel sweep --- and no single figure describes them all. The verification is mechanical rather than manual: each numerical table cell is re-derived from the committed result file it came from, so a table and the data behind it cannot drift apart unnoticed.
+\paragraph{Provenance of the reported results.} Every result reported in this thesis was regenerated from the archived experiment artifacts and verified against its committed result file, using the experiment-specific budget documented in its own section and in the master ledger above. Those budgets differ substantially by study (from $10\times100{,}000$ bits per SNR point on the canonical comparison, through $10$-million-bit trials at mid SNR, to billion-bit rare-event runs at the top of the unknown-channel sweep) and no single figure describes them all. The verification is mechanical rather than manual: each numerical table cell is re-derived from the committed result file it came from, so a table and the data behind it cannot drift apart unnoticed.
 
 
 
@@ -233,7 +233,7 @@ Transformer-3K  & 3{,}007 & $+2.039$, $+1.147$, $+1.133$ & \textbf{0.906} \\
 \end{tabular}
 \end{table}
 
-The Transformer row of Table~\ref{tbl:seed-spread-3k} is a single failing initialization rather than a broadly noisy architecture, and the two figures below are the evidence for that reading. Figure~\ref{fig:transformer-seed-curves} shows all eight runs: seven are indistinguishable at this scale and one separates progressively as SNR rises, which is why a three-seed sample had roughly a one-in-three chance of missing it entirely. Figure~\ref{fig:transformer-loss-penalty} shows why the failure is detectable at training time without reference to BER --- the failing run's final training loss is eleven times the median --- and, equally, why training loss is not a quality signal in the ordinary case.
+The Transformer row of Table~\ref{tbl:seed-spread-3k} is a single failing initialization rather than a broadly noisy architecture, and the two figures below are the evidence for that reading. Figure~\ref{fig:transformer-seed-curves} shows all eight runs: seven are indistinguishable at this scale and one separates progressively as SNR rises, which is why a three-seed sample had roughly a one-in-three chance of missing it entirely. Figure~\ref{fig:transformer-loss-penalty} shows why the failure is detectable at training time without reference to BER, the failing run's final training loss is eleven times the median, and, equally, why training loss is not a quality signal in the ordinary case.
 
 \begin{figure}[htbp]
 \centering
