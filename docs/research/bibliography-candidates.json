@@ -1,5 +1,5 @@
 {
-  "_comment": "Every entry in thesis/chapters/references.bib, for Stage 4.5 Mode 2. Entries with an arXiv eprint or DOI resolve against that identifier; the rest go through a Crossref title search, which confirms a record exists but not the entry's other fields.",
+  "_comment": "Every entry in thesis/chapters/references.bib, for Stage 4.5 Mode 2. Entries with an arXiv eprint or DOI resolve against that identifier; the rest go through a Crossref title search, which confirms a record exists but not the entry's other fields. Four entries carry author attestation: the author supplied a link to the paper where no machine-resolvable record was found. One of those (Samuel et al.) is upgraded to a DOI already resolved in the PR #68 corpus, so it is machine-verified rather than attested.",
   "topic": "thesis bibliography -- full publisher-record verification",
   "candidates": [
     {
@@ -8,7 +8,9 @@
     },
     {
       "bibkey": "Nosratinia2004CooperativeCommunication",
-      "reported_title": "Cooperative communication in wireless networks"
+      "reported_title": "Cooperative communication in wireless networks",
+      "attested_url": "https://www.researchgate.net/publication/3199250_Cooperative_communication_in_wireless_networks",
+      "_attestation": "https://www.researchgate.net/publication/3199250_Cooperative_communication_in_wireless_networks"
     },
     {
       "bibkey": "CoverGamal1979RelayChannel",
@@ -32,7 +34,9 @@
     },
     {
       "bibkey": "SamuelDiskinWunder2019MIMODetect",
-      "reported_title": "Learning to detect"
+      "reported_title": "Learning to detect",
+      "doi": "10.1109/TSP.2019.2899805",
+      "_attestation": "https://ieeexplore.ieee.org/document/8642915"
     },
     {
       "bibkey": "Dorner2018OverTheAirDL",
@@ -130,15 +134,20 @@
     },
     {
       "bibkey": "Akdemir2024DLRelaySelection",
-      "reported_title": "A Comparative Study of Deep Learning-Aided Relay Selection Protocols in Cooperative Communication"
+      "reported_title": "A Comparative Study of Deep Learning-Aided Relay Selection Protocols in Cooperative Communication",
+      "attested_url": "https://www.researchgate.net/publication/381484704_A_Comparative_Study_of_Deep_Leaning-Aided_Relay_Selection_Protocols_in_Cooperative_Communication",
+      "_attestation": "https://www.researchgate.net/publication/381484704_A_Comparative_Study_of_Deep_Leaning-Aided_Relay_Selection_Protocols_in_Cooperative_Communication"
     },
     {
       "bibkey": "Gunduz2019MLAir",
-      "reported_title": "Machine Learning in the Air"
+      "reported_title": "Machine Learning in the Air",
+      "attested_url": "https://ieeexplore.ieee.org/document/8839651",
+      "_attestation": "https://ieeexplore.ieee.org/document/8839651"
     },
     {
       "bibkey": "Bergel2023RelaysAsNeurons",
-      "reported_title": "Network Optimization Using Relays as Neurons"
+      "reported_title": "Network Optimization Using Relays as Neurons",
+      "arxiv_id": "2306.14253"
     },
     {
       "bibkey": "BergelICASSP2024",

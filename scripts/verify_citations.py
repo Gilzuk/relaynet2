@@ -11,6 +11,10 @@ network access -- a CI runner -- and records the outcome.
 The standard it applies (deep-research skill, IRON RULE #4): a source that
 cannot be confirmed is a FAIL, not an "uncertain". Three verdicts:
 
+  ATTESTED    no machine-resolvable record, but the author supplied a link to
+              the paper. Recorded as author attestation, kept distinct from
+              VERIFIED: it is evidence a human checked, not a publisher-record
+              match, and it says nothing about the entry's year, venue or pages.
   VERIFIED    the record exists and its title matches what was reported
   MISMATCH    the record exists but the title differs -- treat as FAIL. This
               is the signature of a fabricated or mashed-up reference, which
@@ -123,6 +127,14 @@ def verify(cand):
     are right, and it is labelled as such in the reason.
     """
     reported = cand["reported_title"]
+    # a resolvable identifier always wins: attestation is the fallback for
+    # entries no index can confirm, never a shortcut past one that can
+    if cand.get("attested_url") and not (cand.get("arxiv_id") or cand.get("doi")):
+        return {"bibkey": cand.get("bibkey"), "reported_title": reported,
+                "route": "author-attestation", "verdict": "ATTESTED",
+                "url": cand["attested_url"],
+                "reason": "author supplied a link to the paper; not a "
+                          "publisher-record match"}
     cid = cand.get("arxiv_id") or cand.get("doi") or "(title search)"
     row = {"arxiv_id": cand.get("arxiv_id"), "doi": cand.get("doi"),
            "reported_title": reported, "route": None}
@@ -243,7 +255,7 @@ def main():
         time.sleep(3)                            # arXiv asks for >=3s between calls
 
     counts = {v: sum(1 for r in rows if r["verdict"] == v)
-              for v in ("VERIFIED", "MISMATCH", "FAIL")}
+              for v in ("VERIFIED", "ATTESTED", "MISMATCH", "FAIL")}
     out = {"topic": src.get("topic"),
            "checked_at": datetime.now(timezone.utc).isoformat(),
            "standard": "deep-research IRON RULE #4 -- gray zone is a FAIL",
@@ -256,11 +268,11 @@ def main():
         render_into_log(a.log, out)
         print(f"  log block updated -> {a.log}")
 
-    print(f"\n  {counts['VERIFIED']} verified, {counts['MISMATCH']} mismatched, "
-          f"{counts['FAIL']} failed -> {a.out}")
+    print(f"\n  {counts['VERIFIED']} verified, {counts['ATTESTED']} attested, "
+          f"{counts['MISMATCH']} mismatched, {counts['FAIL']} failed -> {a.out}")
     # A citable source is the point; a run that verifies nothing has failed at
     # its job even though every lookup "worked".
-    return 0 if counts["VERIFIED"] else 1
+    return 0 if (counts["VERIFIED"] or counts["ATTESTED"]) else 1
 
 
 if __name__ == "__main__":

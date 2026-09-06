@@ -142,3 +142,25 @@ def test_title_search_with_no_exact_match_is_a_fail_not_a_mismatch(monkeypatch, 
     r = vc.verify({"reported_title": "An Introduction to Deep Learning for the Physical Layer"})
     assert r["verdict"] == "FAIL"
     assert "supply a DOI" in r["reason"]
+
+
+def test_author_attestation_is_its_own_verdict_not_verified():
+    """An author's link is evidence, but not a publisher-record match.
+
+    Folding it into VERIFIED would let a count of "64/64 verified" imply
+    machine confirmation the run never performed.
+    """
+    r = vc.verify({"bibkey": "X", "reported_title": REAL,
+                   "attested_url": "https://ieeexplore.ieee.org/document/8642915"})
+    assert r["verdict"] == "ATTESTED"
+    assert r["route"] == "author-attestation"
+    assert "not a publisher-record match" in r["reason"]
+
+
+def test_attestation_does_not_short_circuit_a_resolvable_identifier(monkeypatch):
+    """A DOI beats an attestation: prefer the record when one exists."""
+    monkeypatch.setattr(vc, "fetch_json", lambda _u, retries=3: {
+        "message": {"title": [REAL], "author": [], "issued": {}, "DOI": "10.1/x"}})
+    r = vc.verify({"bibkey": "X", "reported_title": REAL, "doi": "10.1/x",
+                   "attested_url": "https://example.org/paper"})
+    assert r["verdict"] == "VERIFIED" and r["route"] == "crossref-doi"
