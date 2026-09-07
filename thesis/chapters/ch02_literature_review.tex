@@ -75,7 +75,7 @@ The irreducible term is the minimum achievable MSE, set by the channel noise. In
 
 \subsection{Prior Work in Deep Learning for Physical-Layer Processing}\label{sec:prior-work-in-deep-learning-for-physical-layer-processing}
 
-Ye et al.~\cite{YeLiJuang2018OFDMDL} showed that a DNN can jointly perform channel estimation and signal detection in OFDM systems, implicitly learning the channel's statistical structure well enough to remove the need for explicit pilot-based estimation. Samuel et al.~\cite{SamuelDiskinWunder2019MIMODetect} proposed DetNet, unrolling MIMO detection's iterative optimization into a fixed stack of network layers to reach near-maximum-likelihood performance at \(O(N_t^2)\) complexity against exhaustive ML search's exponential cost -- encoding the problem's iterative structure directly into the architecture. Sun et al.~\cite{Sun2018LearnToOptimize} applied deep learning to the NP-hard resource-allocation problem in interference networks, learning near-optimal power control policies orders of magnitude faster than conventional iterative algorithms.
+Ye et al.~\cite{YeLiJuang2018OFDMDL} demonstrated joint DNN-based channel estimation and signal detection in OFDM systems using received pilot and data information. Their approach replaces separately implemented estimation and equalization stages and was reported to be robust under several modeled impairments; it does not eliminate pilots.
 
 Dorner et al.~\cite{Dorner2018OverTheAirDL} proposed treating the modulator, channel, and demodulator as an autoencoder trained end-to-end with a differentiable message-reconstruction objective and evaluated by error rate. This approach jointly optimizes the communication chain rather than directly minimizing the nondifferentiable BER.
 

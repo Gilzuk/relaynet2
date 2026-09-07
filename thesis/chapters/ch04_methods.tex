@@ -131,6 +131,8 @@ Beyond its role as the noise term of every channel model and its use in the clos
 }\end{equation}
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad power-normalization}
 
+Here \(P_{\text{current}}\) is estimated over the complete simulated relay-output block. The normalization is therefore block-adaptive and noncausal at the symbol level; it is appropriate to the block-buffered simulation but should not be read as an online gain known before the block has been observed.
+
 \subsection{Relay Processing}\label{sec:relay-processing-methods}
 
 On Hop 1 the relay's single receive antenna observes, as shown in Equation~\ref{eq:relay-received-siso}:
