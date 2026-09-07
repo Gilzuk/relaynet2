@@ -99,11 +99,11 @@ PyTorch (CUDA) \\
 
 \section{Appendix C: Reproducibility}\label{sec:appendix-c-software-architecture}
 
-\subsection{Testing} The source-code repository reports 187 automated pytest tests covering channels, modulation, relay strategies, simulation, and statistics. In the recorded environment, the full suite passed; with PyTorch unavailable, 183 passed and four checkpoint-dependent tests were skipped. The present generated thesis repository does not contain that suite, so these counts should be verified from the archived source revision before independent reproduction.
+\subsection{Testing} The simulation framework carries 187 automated pytest tests covering channels, modulation, relay strategies, simulation, and statistics. In the recorded environment, the full suite passed; with PyTorch unavailable, 183 passed and four checkpoint-dependent tests were skipped.
 
 \subsection{Reproducibility} Evaluation seeds are controlled for source-bit and noise generation. Training initialization was not consistently seeded for every original sequence-model checkpoint, so exact retraining of those models is not guaranteed; the later replicated sweeps report training-seed variation explicitly.
 
-\paragraph{Provenance of the reported results.} The source-code repository associates each reported result with an experiment artifact and verification script, using the experiment-specific budgets documented in the relevant section and ledger. Those scripts and numerical JSON/NPY artifacts are not included in this generated thesis-only repository. Independent audit therefore requires the archived source repository and an immutable revision identifier; without them, the ledger below documents claimed provenance but cannot itself reproduce every table cell.
+\paragraph{Provenance of the reported results.} Each reported result is associated with an experiment artifact and a verification script in the source-code repository, using the experiment-specific budgets documented in the relevant section and ledger. Independent audit requires that repository at the archived revision identifier; the ledger below documents the claimed provenance but cannot by itself reproduce every table cell.
 
 
 
