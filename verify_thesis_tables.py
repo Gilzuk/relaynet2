@@ -1137,7 +1137,7 @@ def check_E6blind_prose(tex, rep):
     sm = d["summary"]
     i8, i16, i20 = snrs.index(8), snrs.index(16), snrs.index(20)
 
-    m = re.search(r"corrected CMA converges smoothly to BER \$([\d.]+)\\times10\^\{-3\}\$ at 20 dB", tex)
+    m = re.search(r"corrected CMA (?:converges smoothly to|reaches) BER \$([\d.]+)\\times10\^\{-3\}\$ at 20 dB", tex)
     if m:
         rep.cell(T, "CMA-blind/20dB", m.group(1) + "e-3", float(m.group(1)) * 1e-3,
                  sm["CMA-blind"][0][i20])
@@ -1145,14 +1145,20 @@ def check_E6blind_prose(tex, rep):
     if m:
         rep.cell(T, "MLP-169/20dB", m.group(1) + "e-3", float(m.group(1)) * 1e-3,
                  sm["MLP-169"][0][i20])
-    m = re.search(r"\(\$([\d.]+)\$ vs\.\\ \$([\d.]+)\$ at 8 dB\)\. This is the correct answer", tex)
+    m = re.search(r"(?:\(\$([\d.]+)\$ vs\.\\ \$([\d.]+)\$ at 8 dB\)\. This is the correct answer"
+                  r"|MLP at \$([\d.]+)\$ against CMA's \$([\d.]+)\$ at 8 dB)", tex)
     if m:
-        rep.cell(T, "MLP-169/8dB", m.group(1), float(m.group(1)), sm["MLP-169"][0][i8])
-        rep.cell(T, "CMA-blind/8dB", m.group(2), float(m.group(2)), sm["CMA-blind"][0][i8])
-    m = re.search(r"falling to \$([\d.]+)\$ at 16 dB before rising again to \$([\d.]+)\$ at 20 dB", tex)
+        mlp8, cma8 = (m.group(1) or m.group(3)), (m.group(2) or m.group(4))
+        rep.cell(T, "MLP-169/8dB", mlp8, float(mlp8), sm["MLP-169"][0][i8])
+        rep.cell(T, "CMA-blind/8dB", cma8, float(cma8), sm["CMA-blind"][0][i8])
+    # Two phrasings of the same pair of numbers; the second branch fills groups
+    # 3/4, so read whichever branch matched rather than assuming groups 1/2.
+    m = re.search(r"(?:falling to \$([\d.]+)\$ at 16 dB before rising again to \$([\d.]+)\$ at 20 dB"
+                  r"|\$([\d.]+)\$ at 16 dB and \$([\d.]+)\$ at 20 dB)", tex)
     if m:
-        rep.cell(T, "Viterbi-blind/16dB", m.group(1), float(m.group(1)), sm["Viterbi-blind"][0][i16])
-        rep.cell(T, "Viterbi-blind/20dB", m.group(2), float(m.group(2)), sm["Viterbi-blind"][0][i20])
+        v16, v20 = (m.group(1) or m.group(3)), (m.group(2) or m.group(4))
+        rep.cell(T, "Viterbi-blind/16dB", v16, float(v16), sm["Viterbi-blind"][0][i16])
+        rep.cell(T, "Viterbi-blind/20dB", v20, float(v20), sm["Viterbi-blind"][0][i20])
     m = re.search(r"interval at 8 dB is \$\\pm([\d.]+)\$.*?MLP's \$\\pm([\d.]+)\$.*?CMA's \$\\pm([\d.]+)\$", tex, re.S)
     if m:
         rep.cell(T, "Viterbi-blind CI/8dB", m.group(1), float(m.group(1)), sm["Viterbi-blind"][1][i8])
@@ -1180,19 +1186,19 @@ def check_E6partial_prose(tex, rep):
     m = re.search(r"MLP's pilot-free \$([\d.]+)\$", tex)
     if m:
         rep.cell(T, "MLP pilot-free ref", m.group(1), float(m.group(1)), d["mlp_ref"][0])
-    m = re.search(r"At 10 pilots Viterbi has already lost its edge, \$([\d.]+)\$ against the MLP's \$([\d.]+)\$", tex)
+    m = re.search(r"At 10 pilots Viterbi has (?:already )?lost its edge, \$([\d.]+)\$ against the MLP's \$([\d.]+)\$", tex)
     if m:
         rep.cell(T, "Viterbi/10 pilots", m.group(1), float(m.group(1)), pa[10][0])
         rep.cell(T, "MLP ref (10-pilot cmp)", m.group(2), float(m.group(2)), d["mlp_ref"][0])
-    m = re.search(r"at 5 pilots it collapses to \$([\d.]+)\$", tex)
+    m = re.search(r"at 5 pilots it (?:collapses to|reaches) \$([\d.]+)\$", tex)
     if m:
         rep.cell(T, "Viterbi/5 pilots", m.group(1), float(m.group(1)), pa[5][0])
-    m = re.search(r"\(\$([\d.]+) \\pm ([\d.]+)\$, against \$\\pm ([\d.]+)\$ at 50 pilots\)", tex)
+    m = re.search(r"\$([\d.]+) \\pm ([\d.]+)\$, against \$\\pm ([\d.]+)\$ at 50 pilots", tex)
     if m:
         rep.cell(T, "Viterbi/5 pilots (CI ctx)", m.group(1), float(m.group(1)), pa[5][0])
         rep.cell(T, "Viterbi CI/5 pilots", m.group(2), float(m.group(2)), pa[5][1])
         rep.cell(T, "Viterbi CI/50 pilots", m.group(3), float(m.group(3)), pa[50][1])
-    m = re.search(r"flat across the entire sweep at \$([\d.]+)\$", tex)
+    m = re.search(r"(?:flat across the entire sweep at|MLP remains at) \$([\d.]+)\$", tex)
     if m:
         rep.cell(T, "MLP flat ref", m.group(1), float(m.group(1)), d["mlp_ref"][0])
     # panel (b): blind CMA per-block convergence failure
