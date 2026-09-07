@@ -87,7 +87,7 @@ The canonical simulator (\texttt{relaynet/channels/fading.py}) applies \textbf{z
 
 with conditional noise variance $\sigma^{2}/|h[i]|^{2}$ per real axis given $h[i]$ --- a random, exponentially-tailed quantity, not the constant $\sigma^{2}$ a phase-compensated model would give. The unknown-channel study of Chapter~\ref{sec:unknown-channels} does not use this convention throughout, and the difference is worth naming once here because the same symbol $\tilde{y}$ denotes three different observations across this thesis. Its core unknown-ISI experiment has no fading at all: the hop is the deterministic filter plus noise, $\tilde{y}[i] = (h \ast x)[i] + n[i]$ at constant $\sigma^{2}$, which is what makes a trellis built from $h$ a genuine genie-CSI detector there. Its QPSK subsection adds a per-symbol Rayleigh magnitude on top of that filter and retains it rather than dividing it out, $\tilde{y}[i] = g[i]\,(h \ast x)[i] + n[i]$ with $g[i] = |h[i]|$, again at constant $\sigma^{2}$ --- phase compensation rather than zero forcing. All three are legitimate receivers; they are simply different observations, and each chapter's derivations refer to the one its own simulator forms. Where it matters (soft relay inputs, posterior means, and the branch metrics of a genie detector) the distinction is stated at the point of use rather than assumed. Because the channel is complex, the canonical constellation is two-dimensional: QPSK places one bit on each axis, so both dimensions the channel acts in are used and the relay processes the pair; the real reduction above then applies per axis rather than discarding one. BPSK is not transmitted over the complex canonical fading channel here --- a choice of experimental design, not of validity, since coherent BPSK over complex flat Rayleigh is perfectly well posed and loses nothing by projecting onto the real decision axis (Section~\ref{sec:evaluated-configurations}). Besides its use as the transmitted alphabet of the unknown-channel study (Chapter~\ref{sec:unknown-channels}), it appears only in the real AWGN special case below and the closed-form expressions of Chapter~\ref{sec:literature-review}. The \emph{AWGN limit} referenced in those closed forms is the special case $|h[i]| \equiv 1$, i.e.\ $y_R[i] = x[i] + n_1[i]$ and $y_D[i] = x_R[i] + n_2[i]$.
 
-The noise terms are independent and identically distributed with variance
+The complex noise terms are independent and identically distributed with total power
 
 \begin{equation}\protect\phantomsection\label{eq:awgn-sigma2}
 \sigma^2 = \frac{P_s}{\gamma}
@@ -125,7 +125,7 @@ Beyond its role as the noise term of every channel model and its use in the clos
 
 \textbf{A consequence worth stating plainly.} The SNR argument sets the noise power from the average \emph{symbol} energy, so it denotes \(E_s/N_0\) in every configuration. Since \(E_b = E_s/k\), \(E_b/N_0\) is \(3.01\)~dB below the stated value for QPSK. Where a BER figure is read against a BPSK closed form, this conversion is stated explicitly at the point of use.
 
-\textbf{Power Normalization.} All relay strategies normalize their output power to ensure fair comparison:
+\textbf{Power Normalization.} All relay strategies normalize their output power to ensure a common empirical transmit-power constraint:
 
 \begin{equation}\protect\phantomsection\label{eq:power-normalization}{x_R \leftarrow x_R \cdot \sqrt{\frac{P_{\text{target}}}{P_{\text{current}}}}
 }\end{equation}
@@ -135,7 +135,7 @@ Beyond its role as the noise term of every channel model and its use in the clos
 
 On Hop 1 the relay's single receive antenna observes, as shown in Equation~\ref{eq:relay-received-siso}:
 
-\begin{equation}\protect\phantomsection\label{eq:relay-received-siso}{\tilde{y}_R[i] = x[i] + \frac{n_1[i]}{h_1[i]}, \quad \frac{n_1[i]}{h_1[i]} \sim \mathcal{N}\!\left(0, \frac{\sigma^2}{|h_1[i]|^2}\right)
+\begin{equation}\protect\phantomsection\label{eq:relay-received-siso}{\tilde{y}_R[i] = x[i] + \frac{n_1[i]}{h_1[i]}, \quad \frac{n_1[i]}{h_1[i]} \sim \mathcal{CN}\!\left(0, \frac{\sigma^2}{|h_1[i]|^2}\right)
 }\end{equation}
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad relay-received-siso}
 
@@ -175,7 +175,7 @@ The selected nine relay strategies are drawn from four distinct architectural co
 
 \item \textbf{Supervised MLP (Minimal):} A two-layer feedforward neural network (multilayer perceptron, MLP) with 169 parameters following the relay architecture defined in Equation~\ref{eq:mlp-relay},
 
-where \(\mathbf{w} \in \mathbb{R}^5\) is a sliding window of received symbols (\(w=2\) neighbors on each side), and the hidden layer has 24 neurons. Parameters: \((5 \times 24 + 24) + (24 \times 1 + 1) = 169\).
+where \(\mathbf{w} \in \mathbb{R}^5\) is a sliding window from one rescaled real decision axis (\(w=2\) neighbors on each side), and the hidden layer has 24 neurons. Parameters: \((5 \times 24 + 24) + (24 \times 1 + 1) = 169\).
 
 \textbf{Real network on a complex channel.} The network above is real-valued, while the canonical channel and its QPSK constellation are complex. The two are reconciled the same way the DF baseline is, by operating \emph{per axis}: after zero-forcing equalization the equalized sample $\tilde{y}[i]$ decomposes into two independent real streams, its in-phase and quadrature components, each carrying one Gray-coded bit at $\pm 1$ with equal noise variance (Section~\ref{sec:system-model-1}). The relay therefore applies the identical 169-parameter network twice per symbol, once to the $I$ window and once to the $Q$ window, and recombines the two outputs as $\hat{x}_R = \hat{x}_I + j\hat{x}_Q$ before power normalization. The parameter count is unchanged by this (one set of weights is shared across both axes, which is what makes the two sub-problems the \emph{same} problem) but the arithmetic cost per transmitted symbol is twice the per-window figure. Every learned relay in the canonical comparison of Chapter~\ref{sec:experiments} (MLP, hybrid, VAE, cGAN and the sequence models) is applied this way; AF and symbol-wise DF operate on the complex sample directly.
 
@@ -186,7 +186,7 @@ This is a design choice rather than the only option, and the coded study of Sect
 \end{quote}
 
 \emph{Design rationale:} The tanh output activation naturally constrains the output to \([-1, +1]\), matching the binary $\pm 1$ alphabet each axis carries under the per-axis application described above (and, in the real-valued unknown-channel study of Chapter~\ref{sec:unknown-channels}, the BPSK symbol range directly).
-The ReLU hidden layer provides the non-linearity needed to approximate a Bayes-optimal soft threshold. The fixed-variance form \(\tanh(y/\sigma^{2})\) is the shape being approximated, not the target itself: under the zero-forcing convention of Eq.~\eqref{eq:relay-received-siso} the conditional variance is \(\sigma^{2}/|h_1[i]|^{2}\), so the optimal map is \(\tanh(|h_1[i]|^{2}\tilde{y}/\sigma^{2})\) --- a \emph{family} of thresholds indexed by the per-symbol fading, which one set of multi-SNR-trained weights approximates rather than represents exactly (Section~\ref{sec:theoretical-basis-universal-approximation-and-denoising}). With 24 hidden neurons and a 5-dimensional input, the network has approximately 34 parameters per input dimension: sufficient for the low-complexity denoising task while avoiding overfitting. He initialization is used for ReLU layers to maintain proper gradient flow.
+The ReLU hidden layer provides the non-linearity needed to approximate a soft threshold. The fixed-variance form \(\tanh(y/\sigma^{2})\) is qualitative motivation, not the exact target: under zero forcing, reliability varies with \(|h_1[i]|^2\), so the CSI-conditioned posterior mean forms a family of fading-dependent thresholds. Because \(|h_1[i]|\) is not supplied explicitly, the network instead learns an empirical estimator marginalized over the fading distribution and training SNRs. With 24 hidden neurons and a 5-dimensional input, the network has approximately 34 parameters per input dimension; whether this capacity is sufficient is determined experimentally, not from the parameter count alone. He initialization is used for ReLU layers to maintain proper gradient flow.
 \REV{Resolved: checked against the implementation, \texttt{MinimalGenAIRelay} (\texttt{relaynet/relays/genai.py}) uses a \emph{ReLU} hidden layer and a \emph{tanh} output, exactly as stated here and in Eq.~\ref{eq:mlp-relay}. The imprecise text was the experiment-configuration lines in Chapter~\ref{sec:experiments}, reworded to ``ReLU hidden, tanh output''. Parameter count $(5{\times}24+24)+(24{\times}1+1)=169$ confirmed.}
 
 Training uses MSE loss with multi-SNR training data (i.e., 5, 10, and 15 dB), 25,000 samples, and 100 epochs with a learning rate of 0.01.
@@ -263,11 +263,11 @@ where \(\mathbb{1}(\cdot)\) is the indicator function and \(N = 10{,}000\) is th
 
 \textbf{Confidence Intervals.} The 95\% confidence interval is computed from the \(M = 10\) independent trial estimates as:
 
-\begin{equation}\protect\phantomsection\label{eq:confidence-interval}{\text{CI}_{95\%} = \bar{P}_e \pm t_{0.025, M-1} \cdot \frac{s}{\sqrt{M}}
+\begin{equation}\protect\phantomsection\label{eq:confidence-interval}{\text{CI}_{95\%} = \bar{P}_e \pm t_{0.975, M-1} \cdot \frac{s}{\sqrt{M}}
 }\end{equation}
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad confidence-interval}
 
-where \(\bar{P}_e\) is the sample mean BER across trials, \(s\) is the sample standard deviation, and \(t_{0.025, 9} = 2.262\) is the critical value of the Student's \(t\)-distribution with 9 degrees of freedom. At low BER (\(\hat{P}_e \lesssim 10^{-4}\)), the normal approximation may become unreliable due to the small number of observed errors; however, in this regime the relay methods converge and the relative ranking is stable.
+where \(\bar{P}_e\) is the sample mean BER across trials, \(s\) is the sample standard deviation, and \(t_{0.975, 9} = 2.262\) is the two-sided critical value of the Student's \(t\)-distribution with 9 degrees of freedom. At low BER (\(\hat{P}_e \lesssim 10^{-4}\)), the normal approximation may become unreliable due to the small number of observed errors; however, in this regime the relay methods converge and the relative ranking is stable.
 
 \textbf{BER resolution.} With \(N \cdot M = 100{,}000\) total bits per SNR point, the minimum detectable BER is approximately \(1/N = 10^{-4}\) per trial, or \(10^{-5}\) for the aggregate. BER values below this threshold are reported as 0.
 
@@ -279,15 +279,15 @@ where \(\bar{P}_e\) is the sample mean BER across trials, \(s\) is the sample st
 
 Differences between relay methods are assessed using the \textbf{Wilcoxon signed-rank test}, a non-parametric paired test. For each pair of relay strategies \((A, B)\) at each SNR point, the test compares the \(M = 10\) paired BER observations (Equation~\ref{eq:wilcoxon-test}):
 
-\begin{equation}\protect\phantomsection\label{eq:wilcoxon-test}{H_0: \text{median}(P_{e,A} - P_{e,B}) = 0 \quad \text{vs.} \quad H_1: \text{median}(P_{e,A} - P_{e,B}) \neq 0
+\begin{equation}\protect\phantomsection\label{eq:wilcoxon-test}{H_0: \text{the paired-difference distribution is symmetric about }0
 }\end{equation}
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad wilcoxon-test}
 
-The Wilcoxon test is preferred over the parametric paired \(t\)-test for two reasons: (i) BER distributions are bounded (\([0, 0.5]\)) and potentially skewed, violating the normality assumption, and (ii) the test is robust to outlier trials. The significance level is set at \(\alpha = 0.05\) \emph{per comparison}; no multiple-comparison correction (e.g.\ Holm or Bonferroni, or false-discovery-rate control) is applied across the many relay-pair and SNR-point comparisons made throughout this thesis, so the reported significance claims should be read at the per-comparison level rather than as holding jointly across the full set of tests performed.
+The Wilcoxon test is preferred over the parametric paired \(t\)-test because BER observations are bounded in \([0,1]\) and may be skewed. Under a symmetric paired-difference distribution the test can be interpreted as testing a zero median difference; without that assumption it tests a zero pseudomedian. Failure to reject this null is not evidence of equivalence, which would require a prespecified practical margin and an equivalence test. The significance level is set at \(\alpha = 0.05\) \emph{per comparison}; no multiple-comparison correction (e.g.\ Holm or Bonferroni, or false-discovery-rate control) is applied across the many relay-pair and SNR-point comparisons made throughout this thesis, so the reported significance claims should be read at the per-comparison level rather than as holding jointly across the full set of tests performed.
 
 \subsection{Training Protocol}\label{sec:training-protocol}
 
-All AI relays are trained \textbf{once} at the beginning of each experiment using: - \textbf{Multi-SNR training data:} Signals generated at SNR = 5, 10, 15 dB in equal proportions - \textbf{Training samples:} 25,000 (supervised), 20,000 (generative), 10,000 (sequence models) - \textbf{Single training per channel:} The same trained model is evaluated across all SNR points
+In the original canonical comparisons, each AI relay is trained \textbf{once} at the beginning of the experiment using: - \textbf{Multi-SNR training data:} Signals generated at SNR = 5, 10, 15 dB in equal proportions - \textbf{Training samples:} 25,000 (supervised), 20,000 (generative), 10,000 (sequence models) - \textbf{Single training per channel:} The same trained model is evaluated across all SNR points
 
 The multi-SNR training protocol is critical: training at a single SNR would produce a model that performs well at that SNR but poorly at others (overfitting to a specific noise level). By training at three representative SNR values spanning the low-to-moderate range, the network learns a robust denoising function that generalizes across operating conditions. The SNR values 5, 10, 15 dB were chosen to cover the regime where AI relays provide the most benefit (low-to-medium SNR).
 
@@ -416,11 +416,11 @@ Figure~\ref{fig:fig8} presents the constellation diagrams for the modulation sch
 \subsection{I/Q Splitting for AI Relay Processing of Complex Constellations}\label{sec:iq-splitting-for-ai-relay-processing-of-complex-constellations}
 
 
-\begin{equation}\protect\phantomsection\label{eq:iq-splitting}{\hat{x}_R = f_\theta(\text{Re}(y_R)) + j \cdot f_\theta(\text{Im}(y_R))
+\begin{equation}\protect\phantomsection\label{eq:iq-splitting}{\hat{x}_R = \frac{f_\theta(\sqrt{2}\,\text{Re}(y_R)) + j f_\theta(\sqrt{2}\,\text{Im}(y_R))}{\sqrt{2}}
 }\end{equation}
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad iq-splitting}
 
-\textbf{Justification and caveat.} For rectangular constellations (QPSK, QAM), the I and Q components carry independent information and are corrupted by independent noise, so per-axis denoising with a shared real-valued function is a natural and parameter-efficient decomposition. It is, however, a \emph{restriction} of the hypothesis class to axis-separable functions, not an equivalence to joint 2D processing: per-axis errors accumulate independently. For QPSK, where each axis carries a single binary decision, the restriction costs nothing; for denser constellations it becomes a structural limitation that a joint two-dimensional relay formulation would be needed to remove, which is left to future work.
+\textbf{Justification and caveat.} For rectangular constellations (QPSK, QAM), the I and Q components carry independent information and are corrupted by independent noise conditional on the channel, so per-axis denoising with a shared real-valued function is a natural and parameter-efficient decomposition. It is, however, a \emph{restriction} of the hypothesis class to axis-separable functions, not an equivalence to joint 2D processing. In particular, when fading reliability is not supplied explicitly, a joint processor could use the shared I/Q magnitude as information about that reliability. No joint-QPSK ablation was run, so zero cost from splitting is not claimed; for denser constellations it becomes a structural limitation that a joint two-dimensional relay formulation would be needed to remove, which is left to future work.
 
 \textbf{Relay-specific handling:}
 
