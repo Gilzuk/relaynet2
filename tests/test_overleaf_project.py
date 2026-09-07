@@ -136,3 +136,15 @@ def test_annotated_mode_keeps_the_annotations(tmp_path, man):
 def test_unknown_mode_is_rejected(tmp_path, man):
     with pytest.raises(ValueError):
         stage(str(tmp_path), "sanitised", man)
+
+
+def test_the_built_pdf_travels(staged):
+    """The published repository is read as well as compiled, so the PDF ships."""
+    assert os.path.exists(os.path.join(staged, "thesis.pdf"))
+
+
+def test_the_pdf_does_not_shadow_overleafs_build_output(staged):
+    """Overleaf writes main.pdf when it compiles main.tex. A source file of
+    that name in the project root collides with it, so the shipped PDF is
+    called thesis.pdf and main.pdf must not appear in the staged tree."""
+    assert not os.path.exists(os.path.join(staged, "main.pdf"))
