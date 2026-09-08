@@ -56,14 +56,38 @@ def branch_exists(branch):
                            f"refs/heads/{branch}"]).returncode == 0
 
 
-def ensure_branch(branch):
-    """Create `branch` as a root commit with an empty tree if it is not there.
+def ensure_branch(branch, remotes=(REPO_REMOTE, DEFAULT_REMOTE)):
+    """Make `branch` exist, continuing the published lineage where there is one.
 
-    An orphan branch without checking one out: commit-tree against the empty
-    tree, then point a ref at it.
+    Adopt an already-published branch before creating anything. A fresh clone
+    -- a new machine, a rebuilt container -- has no local `branch`, and simply
+    starting a new orphan there produces a lineage unrelated to what is already
+    published. Every later push then reports the entire remote history as
+    "commits this branch does not have", so the overwrite guard fires forever
+    and --force becomes the only way through. That is precisely the guard this
+    module relies on to protect edits made in Overleaf, so silently arranging
+    for it to be bypassed is worse than not having it.
+
+    Only when nothing is published anywhere is an orphan root correct: commit
+    -tree against the empty tree, then point a ref at it.
     """
     if branch_exists(branch):
         return False
+    for remote, remote_branch in ((REPO_REMOTE, REPO_BRANCH),
+                                  (DEFAULT_REMOTE, "master")):
+        if remote not in remotes:
+            continue
+        if subprocess.run(["git", "-C", ROOT, "remote", "get-url", remote],
+                          capture_output=True).returncode:
+            continue
+        if subprocess.run(["git", "-C", ROOT, "fetch", remote, remote_branch],
+                          capture_output=True).returncode:
+            continue
+        head = git("rev-parse", "FETCH_HEAD")
+        git("branch", branch, head)
+        print(f"  adopted published {remote}/{remote_branch} ({head[:9]}) as "
+              f"{branch}; regenerating on top of it")
+        return True
     sha = git("commit-tree", EMPTY_TREE, "-m",
               f"Initialise {branch}: generated Overleaf project root")
     git("branch", branch, sha)
