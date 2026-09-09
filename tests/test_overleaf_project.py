@@ -136,3 +136,68 @@ def test_annotated_mode_keeps_the_annotations(tmp_path, man):
 def test_unknown_mode_is_rejected(tmp_path, man):
     with pytest.raises(ValueError):
         stage(str(tmp_path), "sanitised", man)
+
+
+def test_the_built_pdf_travels(staged):
+    """The published repository is read as well as compiled, so the PDF ships."""
+    assert os.path.exists(os.path.join(staged, "thesis.pdf"))
+
+
+def test_the_pdf_does_not_shadow_overleafs_build_output(staged):
+    """Overleaf writes main.pdf when it compiles main.tex. A source file of
+    that name in the project root collides with it, so the shipped PDF is
+    called thesis.pdf and main.pdf must not appear in the staged tree."""
+    assert not os.path.exists(os.path.join(staged, "main.pdf"))
+
+
+# --- publish lineage -------------------------------------------------------
+# A rebuilt container has no local overleaf-dist. If ensure_branch starts a
+# fresh orphan there, its lineage is unrelated to what is already published,
+# every subsequent push reports the whole remote history as missing, and the
+# overwrite guard can only be satisfied with --force. The guard exists to stop
+# edits made in Overleaf being destroyed, so that path must not be the default.
+
+import subprocess as _sp
+import sys as _sys
+_sys.path.insert(0, os.path.join(ROOT, "scripts"))
+
+
+def _git(d, *a):
+    return _sp.run(["git", "-C", d, *a], capture_output=True, text=True,
+                   check=True).stdout.strip()
+
+
+def test_ensure_branch_adopts_the_published_branch(tmp_path, monkeypatch):
+    published = tmp_path / "published"
+    published.mkdir()
+    _git(str(published), "init", "-q", "--initial-branch=main")
+    (published / "main.tex").write_text("x")
+    _git(str(published), "add", "-A")
+    _git(str(published), "-c", "user.email=t@t", "-c", "user.name=t",
+         "commit", "-qm", "published state")
+    published_head = _git(str(published), "rev-parse", "HEAD")
+
+    local = tmp_path / "local"
+    local.mkdir()
+    _git(str(local), "init", "-q")
+    _git(str(local), "remote", "add", "thesis-repo", str(published))
+
+    import overleaf_sync as osync
+    monkeypatch.setattr(osync, "ROOT", str(local))
+    created = osync.ensure_branch("overleaf-dist")
+
+    assert created
+    assert _git(str(local), "rev-parse", "overleaf-dist") == published_head, \
+        "ensure_branch started a new orphan instead of continuing the " \
+        "published lineage; every later push would need --force"
+
+
+def test_ensure_branch_still_makes_a_root_when_nothing_is_published(tmp_path,
+                                                                    monkeypatch):
+    local = tmp_path / "local"
+    local.mkdir()
+    _git(str(local), "init", "-q")
+    import overleaf_sync as osync
+    monkeypatch.setattr(osync, "ROOT", str(local))
+    assert osync.ensure_branch("overleaf-dist")
+    assert _git(str(local), "rev-list", "--count", "overleaf-dist") == "1"

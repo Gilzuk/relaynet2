@@ -14,10 +14,10 @@ is listed and the context that disambiguates it is named.
 $C$              & Ergodic Rayleigh (Shannon) capacity, bits per channel symbol \\
 $E_b$            & Energy per information bit \\
 $E_s$            & Average energy per transmitted symbol \\
-$G$              & Goodput, information bits per channel symbol; $G=\eta(1-\mathrm{FER})$ \\
+$G$              & Goodput, information bits per channel symbol; $G=\eta(1-\mathrm{FER})$; \emph{also} AF amplification gain where explicitly stated \\
 $K$              & Constraint length of the convolutional code \\
-$L$              & Channel memory, i.e.\ the number of ISI taps (Chapter~\ref{sec:unknown-channels}); \emph{also} block length in symbols in the pilot-overhead study \\
-$L_{\max}$       & Round-trip latency budget, in symbols \\
+$L$              & FIR channel length (number of taps; memory order $L-1$); \emph{also} block length in symbols where explicitly stated \\
+$L_{\max}$       & Idealized buffer-readiness budget in the coded study, in symbols \\
 $M$              & Constellation order (points per constellation) \\
 $N_0$            & One-sided noise power spectral density \\
 $P_e$            & Bit error probability \\
@@ -44,9 +44,9 @@ $\beta_k(s)$         & BCJR backward recursion at trellis state $s$, step $k$ \\
 $\gamma$             & Linear signal-to-noise ratio, $\gamma=10^{\mathrm{SNR_{dB}}/10}=E_s/N_0$ \\
 $\bar{\gamma}$       & Average signal-to-noise ratio \\
 $\gamma_k(s',s)$     & BCJR branch transition-and-observation probability; distinct from the SNR $\gamma$ above, disambiguated by its arguments \\
-$\eta$               & Spectral efficiency, $\eta=R\log_2 M$ bits per symbol \\
+$\eta$               & Spectral efficiency, $\eta=R\log_2 M$ bits per symbol; \emph{also} learning rate in Appendix~\ref{sec:appendix-b-model-architectures-and-hyperparameters} \\
 $\theta$             & Learned relay parameters; \emph{also} unknown carrier phase in the flat-channel control (Section~\ref{sec:flat-unknown-channels}) \\
-$\sigma^2$           & Noise variance \\[6pt]
+$\sigma^2$           & Real-noise variance in real AWGN sections; total complex-noise power where \(n\sim\mathcal{CN}(0,\sigma^2)\), giving variance \(\sigma^2/2\) per real axis \\[6pt]
 
 \multicolumn{2}{@{}l}{\textbf{Other notation}}\\[2pt]
 $\mathcal{CN}(0,1)$  & Circularly-symmetric complex Gaussian distribution, unit variance \\
