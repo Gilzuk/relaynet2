@@ -1476,7 +1476,7 @@ carrying a real finding the Summary chapter or Chapter 8's discussion
 depends on) -- and **chose to stop at 130 rather than cut a finding without
 more thought**, for the second time this session.
 
-**Status: 130 countable pages, 10 over the 120-page limit, open.** This is
+**Status: 129 countable pages, 9 over the 120-page limit, open.** This is
 not a soft target anyone is close to hitting through prose editing alone --
 closing it requires either removing a genuine result (one of the three
 subsections above, or an equivalent elsewhere) or resolving the constraint
@@ -1484,3 +1484,28 @@ a different way (the TAU supplementary-material question, still
 unverified). Whoever picks this up next should not re-attempt sentence-level
 tightening as the primary lever; it has been tried twice, thoroughly, across
 every chapter, for a combined yield of 3.5 pages.
+
+## 2026-09-09 -- page count re-derived; branch-lineage facts corrected
+
+Page count re-derived from the built `thesis/main.pdf` rather than carried
+forward: `pdfinfo` reports 146 total, the Roman front matter ends on page 14
+(folio xii), the last body page is 143 carrying folio 129, and the Hebrew back
+matter occupies 144-146. So countable = 146 - 14 - 3 = **129**, cross-checked
+against the folio. The figure above was 130 before this pass; the difference is
+the port and review-fix commits landing after it was written. Never quote
+`pdfinfo` directly -- re-derive both offsets each time, as they move.
+
+Separately, the `clean-thesis` characterisation written into `CLAUDE.md`,
+`.clinerules/00-general.md`, `.clinerules/90-safety.md` and this bank's
+`techContext.md` gotcha #5 said the branch had been "stalled since 2026-07-18".
+That was true when written on the morning of 2026-09-06 and false by that
+afternoon: the author merged PR #78 themselves at 14:11, moving `clean-thesis`
+to `37c6804`. Re-verified 2026-09-09 -- that merge's tree is byte-identical to
+`main@67a8e6d`, so the single commit `clean-thesis` holds that `main` lacks is
+the empty-diff merge itself, and `main` has since moved 9 commits ahead
+(`af6f0a3`). The *rules* were unaffected (`main` remains the sole source of
+truth for `chapters/**`; do not push to `clean-thesis`; never merge a PR this
+session did not open) -- only the supporting facts were stale. All four files
+now state the durable form, "a downstream mirror that carries nothing `main`
+lacks", instead of a commit count or a last-moved date, both of which go stale
+the moment the author merges again.
