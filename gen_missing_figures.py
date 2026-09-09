@@ -221,7 +221,11 @@ def fig_reliable_regime():
     ax.set_xlabel(r"$E_s/N_0$ (dB)")
     ax.set_ylabel("BER")
     ax.set_title("Reliable-decoding regime: BER at extended SNR (QPSK / Rayleigh, rate-1/2 K=3)")
-    ax.legend(fontsize=9)
+    # Pinned lower-left, not loc="best". The curves fall left-to-right, so "best"
+    # picks the upper right -- which is exactly where the zoom inset is added a few
+    # lines below, and matplotlib places the legend before the inset exists. The
+    # result was a legend hidden behind the inset with only one entry showing.
+    ax.legend(fontsize=9, loc="lower left", framealpha=0.9)
     ax.grid(True, which="both", ls="--", alpha=0.4)
     ax.set_xticks(snr)
 
