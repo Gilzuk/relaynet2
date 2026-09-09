@@ -33,9 +33,12 @@ MUTATIONS = [
     ("tbl:tableE6", "ch07_unknown_and_mismatch_channels.tex",
      r"Unknown ISI $\to$ AWGN & AF & 0.1813",
      r"Unknown ISI $\to$ AWGN & AF & 0.9999"),
-    ("arch:relay-param-counts", "ch07_unknown_and_mismatch_channels.tex",
-     r"$11 \to 13 \to 1$, which is $170$ parameters",
-     r"$11 \to 13 \to 1$, which is $169$ parameters"),
+    # The ch07 copy of this claim lived in a \REV{} annotation, which renders as
+    # nothing; it was removed with the rest of the revision history. The appendix
+    # copy is the one a reader actually sees, so mutate that.
+    ("arch:relay-param-counts", "appendices.tex",
+     r"($11 \to 13 \to 1$, $170$ parameters)",
+     r"($11 \to 13 \to 1$, $169$ parameters)"),
     ("tbl:slicer-floor-inline", "ch07_unknown_and_mismatch_channels.tex",
      r"DF closed form, Eq.~\eqref{eq:slicer-floor} & $0.1786$",
      r"DF closed form, Eq.~\eqref{eq:slicer-floor} & $0.9999$"),

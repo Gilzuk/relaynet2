@@ -7,6 +7,7 @@ of it compiles into the thesis and none of it belongs on Overleaf. These tests
 pin that boundary so a future change cannot quietly widen it.
 """
 import os
+import re
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -15,6 +16,7 @@ sys.path.insert(0, os.path.join(ROOT, "scripts"))
 import pytest
 
 from overleaf_project import THESIS, local_styles, manifest, stage
+from strip_rev import strip_rev
 
 
 @pytest.fixture(scope="module")
@@ -125,12 +127,44 @@ def test_every_referenced_figure_travels(staged, man):
         assert os.path.exists(os.path.join(staged, fig)), f"missing figure {fig}"
 
 
-def test_annotated_mode_keeps_the_annotations(tmp_path, man):
-    stage(str(tmp_path), "annotated", man)
-    total = sum(open(os.path.join(base, f)).read().count("\\REV{")
-                for base, _, fs in os.walk(tmp_path)
-                for f in fs if f.endswith(".tex"))
-    assert total > 0
+def test_strip_rev_removes_an_annotation_and_keeps_its_surroundings():
+    """The clean/annotated distinction is this function; test it directly.
+
+    It used to be tested by staging the real thesis and counting \\REV{}
+    occurrences, which broke the moment the thesis stopped containing any.
+    A test of the stripping logic should not depend on the manuscript still
+    carrying revision annotations.
+    """
+    src = r"Before. \REV{a note with \emph{nested} braces} After."
+    assert strip_rev(src) == "Before.  After."
+
+
+def test_the_two_modes_differ_only_in_whitespace_now(tmp_path, man):
+    """The thesis carries no \\REV{} any more, so the modes must agree on content.
+
+    strip_rev also collapses the blank lines an annotation leaves behind, so the
+    two are not byte-identical; they are identical once runs of blank lines are
+    normalised, and neither may contain an annotation.
+    """
+    def norm(t):
+        return re.sub(r"\n{2,}", "\n\n", t)
+
+    a, c = tmp_path / "a", tmp_path / "c"
+    stage(str(a), "annotated", man)
+    stage(str(c), "clean", man)
+    seen = 0
+    for base, _, fs in os.walk(a):
+        for f in fs:
+            if not f.endswith(".tex"):
+                continue
+            rel = os.path.relpath(os.path.join(base, f), a)
+            A = open(os.path.join(a, rel)).read()
+            C = open(os.path.join(c, rel)).read()
+            assert "\\REV{" not in A, rel
+            assert "\\REV{" not in C, rel
+            assert norm(A) == norm(C), rel
+            seen += 1
+    assert seen > 5, "staged almost no .tex files -- the walk found nothing to check"
 
 
 def test_unknown_mode_is_rejected(tmp_path, man):
