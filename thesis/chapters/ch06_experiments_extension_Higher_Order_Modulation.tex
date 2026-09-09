@@ -8,23 +8,23 @@ This chapter reports one study: reformulating the relay as a joint $N$-class cla
 
 The ladder proper resumes in Chapter~\ref{sec:unknown-channels}, which holds the constellation fixed and removes the channel assumptions one at a time. That is where learned relaying stops matching classical processing and starts beating it.
 
-\begin{figure}[htbp] 
-\noindent 
-\makebox[\textwidth][l]{% 
-\begin{tikzpicture}[ >=latex, node distance=2.6cm, block/.style={rectangle, draw, thick, minimum width=2.2cm, minimum height=1.0cm, align=center}, relayblock/.style={rectangle, draw, very thick, dashed, minimum width=2.6cm, minimum height=1.2cm, align=center} ] 
-\node[block] (S) {Source\\QPSK / 16-QAM}; 
-\node[relayblock, right=2.6cm of S] (R) {Relay $f_\theta(\cdot)$\\[2pt] 
+\begin{figure}[htbp]
+\noindent
+\makebox[\textwidth][l]{%
+\begin{tikzpicture}[ >=latex, node distance=2.6cm, block/.style={rectangle, draw, thick, minimum width=2.2cm, minimum height=1.0cm, align=center}, relayblock/.style={rectangle, draw, very thick, dashed, minimum width=2.6cm, minimum height=1.2cm, align=center} ]
+\node[block] (S) {Source\\QPSK / 16-QAM};
+\node[relayblock, right=2.6cm of S] (R) {Relay $f_\theta(\cdot)$\\[2pt]
 \footnotesize (a) I/Q-split\\[-1pt]
-\footnotesize (b) joint $N$-class 2D}; 
-\node[block, right=2.6cm of R] (D) {Destination\\Decision}; 
+\footnotesize (b) joint $N$-class 2D};
+\node[block, right=2.6cm of R] (D) {Destination\\Decision};
 \draw[->,thick] (S) -- node[above,align=center]{Hop 1\\$h_1[i],n_1[i]$} (R);
-\draw[->,thick] (R) -- node[above,align=center]{Hop 2\\$h_2[i],n_2[i]$} (D); 
-\node[below=0.9cm of R, align=center, font=\footnotesize] (note) {Canonical channel unchanged (memoryless, white noise);\\ only the \emph{modulation} and the relay's \emph{output formulation} vary.}; 
-\draw[dotted] (R.south) -- (note.north); 
-\end{tikzpicture}% 
-} 
-\caption[Modulation extension]{Modulation extension (Chapter~\ref{sec:extensions}). The canonical memoryless benchmark of Figure~\ref{fig:canonical-relay-benchmark} is retained; only the constellation (QPSK/16-QAM) and the relay output formulation change: (a) per-axis I/Q splitting versus (b) a joint $N$-class 2D classifier over the full constellation} 
-\label{fig:ext-modulation} 
+\draw[->,thick] (R) -- node[above,align=center]{Hop 2\\$h_2[i],n_2[i]$} (D);
+\node[below=0.9cm of R, align=center, font=\footnotesize] (note) {Canonical channel unchanged (memoryless, white noise);\\ only the \emph{modulation} and the relay's \emph{output formulation} vary.};
+\draw[dotted] (R.south) -- (note.north);
+\end{tikzpicture}%
+}
+\caption[Modulation extension]{Modulation extension (Chapter~\ref{sec:extensions}). The canonical memoryless benchmark of Figure~\ref{fig:canonical-relay-benchmark} is retained; only the constellation (QPSK/16-QAM) and the relay output formulation change: (a) per-axis I/Q splitting versus (b) a joint $N$-class 2D classifier over the full constellation}
+\label{fig:ext-modulation}
 \end{figure}
 
 \paragraph{Scope relative to the canonical model.} This chapter extends the canonical study along the modulation axis only. The underlying channel model remains unchanged: the relay channel is memoryless, the noise is white, transmission is uncoded, and relay processing is evaluated on a per-symbol basis. Consequently, the experiments reported here continue to address matched-model relay processing rather than channel memory, sequence detection, or channel estimation. These effects are introduced only in the unknown-channel study of Chapter~\ref{sec:unknown-channels}, which deliberately departs from the canonical assumptions by introducing impairments such as intersymbol interference (ISI), nonlinear distortion, and unknown phase.
@@ -42,7 +42,7 @@ Two things follow. The improvement factor in raw BER is a near-identical $1.38$-
 \subsection{Results Tables}\label{sec:results-tables-5}
 
 Table \ref{tbl:table24}
-\REV{Fix applied (data provenance): every cell of Table~\ref{tbl:table24} is now taken from the committed 16-class results file, and Figure~\ref{fig:fig51} was regenerated from that same file, both previously carried values from a superseded run, and the VAE and Hybrid cells were blank although the data existed. Table, figure, and captions now share one source. A former Table~16 (CSI/LayerNorm) and the three conclusions citing it were removed, since those experiments were cut in the restructure (Appendix~E).}
+
  presents the BER at 20 dB for all variants alongside the classical AF and DF baselines.
 
 \begin{longtable}[]{@{}lccc@{}}

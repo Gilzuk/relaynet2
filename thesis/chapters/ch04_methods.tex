@@ -34,7 +34,6 @@ The system under study is a two-hop relay network with a single relay node. All 
 \label{fig:relay-system-simple}
 \end{figure}
 
-
 Source bits are QPSK-modulated on the canonical setup, passed through Hop 1 (SISO Rayleigh), processed by the relay (classical or neural), transmitted over Hop 2 (SISO Rayleigh), and demodulated at the destination after one-tap zero-forcing equalization at the corresponding receiver. Chapter~\ref{sec:unknown-channels} reuses this chain with BPSK (DBPSK where phase must be removed by differencing), replacing Hop 1 with unknown ISI, a composite cascade, or a per-block redraw; Hop 2 is AWGN for the unknown-ISI comparison, Rayleigh otherwise. In the canonical setup, both hop channels are known perfectly at their respective receivers (Chapter~\ref{sec:introduction}); the unknown-ISI departure keeps perfect CSI, while the finite-pilot and blind departures relax it.
 
 \begin{equation}\protect\phantomsection\label{eq:two-hop-system}{\text{Source} \xrightarrow{\text{Hop 1}} \text{Relay} \xrightarrow{\text{Hop 2}} \text{Destination}
@@ -48,9 +47,6 @@ QPSK carries data in every canonical relay comparison; BPSK carries data mainly 
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad bpsk-mapping}
 
 with hard-decision demodulation \(\hat{b} = \mathbb{1}[\hat{x} < 0]\) at the destination. QPSK is defined in Section~\ref{sec:modulation-schemes}. Both are normalized to unit average symbol energy, \(E_s = 1\), so they differ in bits per symbol rather than in transmit power: \(k = 1\) and \(2\) respectively, giving \(E_b = E_s/k\). Higher-order constellations as a relay design question are future work; 16-QAM appears only as a link-adaptation rung.
-
-
-
 
 \subsection{Hop Model}\label{sec:hop-model}\label{sec:two-hop-relay-model}
 
@@ -71,7 +67,6 @@ Each hop applies a channel function followed by optional equalization (Equation~
 \begin{equation}\protect\phantomsection\label{eq:hop-model-selection}{y = \mathcal{H}(x, \text{SNR}) + n}
 \end{equation}
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad hop-model}
-
 
 where \(\mathcal{H}(\cdot)\) denotes the canonical Rayleigh fast-fading channel operator (the AWGN special case, $|h|\equiv1$, is retained because the closed forms of Chapter~\ref{sec:literature-review} are stated in it). The calligraphic symbol distinguishes the channel \emph{operator} from the scalar fading \emph{coefficient} \(h\) used throughout the rest of this thesis.
 
@@ -142,7 +137,6 @@ On Hop 1 the relay's single receive antenna observes, as shown in Equation~\ref{
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad relay-received-siso}
 
 matching Eq.~\eqref{eq:awgn-hop1}: the effective observation follows one-tap zero-forcing equalization of the Rayleigh fading coefficient (Section~\ref{sec:system-model-1}), which removes the gain and leaves conditional complex-noise power $\sigma^{2}/|h_1[i]|^{2}$, or variance $\sigma^{2}/(2|h_1[i]|^{2})$ per real axis, rather than the fixed per-axis variance $\sigma^{2}/2$ that phase compensation would leave. Note that the per-symbol effective SNR is \(|h_1[i]|^2\gamma\) (a random, exponentially distributed quantity) not a constant --- the same value either convention would give, which is why the two are easy to conflate --- and the AWGN limit is recovered by setting \(|h_1[i]| \equiv 1\). The relay applies its processing function to a sliding window of received samples and transmits a cleaner estimate \(\hat{x}_R = f_\theta(\tilde{y}_{R,i-w:i+w})\); classical AF/DF use \(w=0\). This is purely a noise-removal task: in the canonical SISO setup there is no inter-stream interference at any stage, and the destination demodulates the Hop-2 output after that one-tap equalization with no further equalizer.
-\REV{Fix applied: Eq.~\ref{eq:relay-received-siso} originally showed a \emph{fixed} noise variance, i.e.\ the AWGN calibration case, although the canonical channel is Rayleigh with a random per-symbol effective SNR. A first correction rewrote it in phase-compensation form, $|h_1|x + \tilde{n}$ with fixed $\sigma^2$, which stated the effective SNR correctly but still did not describe the statistic the simulator forms: \texttt{relaynet/channels/fading.py} divides by $h$. It is now in zero-forcing form, consistent with Eq.~\ref{eq:awgn-hop1} and with the implementation. Separately, the channel \emph{operator} in Eq.~\ref{eq:hop-model-selection} was renamed $\mathcal{H}(\cdot)$ to stop colliding with the fading \emph{coefficient} $h$.}
 
 \begin{remark}[Realizability of the symmetric window]\label{rem:window-causality}
 The canonical \emph{channel} of this chapter is memoryless: $y_R[i]$ is already a sufficient statistic for $x[i]$, so $w=0$ loses nothing, and the classical AF and symbol-wise DF baselines do use $w=0$ and are strictly causal. The learned relays nevertheless take a symmetric window $y_R[i-w:i+w]$ with $w>0$ everywhere they appear, the canonical experiments included: the MLP uses $w=2$ (a 5-sample window, Section~\ref{sec:relay-strategies}) and the sequence models $w=5$. This is an \emph{architectural input convention}, not a claim about the channel. Under the canonical i.i.d.\ assumptions the extra samples are redundant, they carry no additional information about $x[i]$, and the convention is adopted so that the same \emph{input format}, a symmetric window of received samples, carries over to the three-tap ISI channel of Chapter~\ref{sec:unknown-channels}, where the window is what spans the memory and is no longer redundant.
@@ -152,14 +146,13 @@ What carries over is the format, not the dimensions, and it is worth being exact
 Two consequences follow, and both apply to the canonical experiments rather than only to Chapter~\ref{sec:unknown-channels}. First, a symmetric window is not causal: it reads $w$ samples ahead. It is admissible in the half-duplex protocol only because the relay buffers the whole listening-phase block before transmitting, and it costs a fixed $w$-symbol processing latency. Second, that non-causality is a limitation of the learned relays, recorded as such rather than justified: a strictly causal past-only window $y_R[i-2w:i]$ is what a streaming deployment would require, and it is not evaluated in this thesis. Because the window is redundant on the canonical channel, none of the canonical results depend on the look-ahead; the cost is real only where the window is doing work, which is Chapter~\ref{sec:unknown-channels}.
 \end{remark}
 
-
 \section{Relay Strategies}\label{sec:relay-strategies}
 
 Nine relay strategies were implemented, spanning four learning paradigms. The selection of these nine strategies is designed to systematically explore the relay design space along three axes:
 \begin{enumerate}
     \item  the degree of processing (from no learning to deep generative models).
     \item the type of inductive bias (feedforward, recurrent, attention, generative).
-    \item the model capacity (from 0 to 26K parameters). 
+    \item the model capacity (from 0 to 26K parameters).
 \end{enumerate}
 This section describes each strategy's architecture, training procedure, and the design rationale motivating each choice.
 
@@ -189,7 +182,6 @@ This is a design choice rather than the only option, and the coded study of Sect
 
 \emph{Design rationale:} The tanh output activation naturally constrains the output to \([-1, +1]\), matching the binary $\pm 1$ alphabet each axis carries under the per-axis application described above (and, in the real-valued unknown-channel study of Chapter~\ref{sec:unknown-channels}, the BPSK symbol range directly).
 The ReLU hidden layer provides the non-linearity needed to approximate a soft threshold. The fixed-variance form \(\tanh(y/\sigma^{2})\) is qualitative motivation, not the exact target: under zero forcing, reliability varies with \(|h_1[i]|^2\), so the CSI-conditioned posterior mean forms a family of fading-dependent thresholds. Because \(|h_1[i]|\) is not supplied explicitly, the network instead learns an empirical estimator marginalized over the fading distribution and training SNRs. With 24 hidden neurons and a 5-dimensional input, the network has approximately 34 parameters per input dimension; whether this capacity is sufficient is determined experimentally, not from the parameter count alone. He initialization is used for ReLU layers to maintain proper gradient flow.
-\REV{Resolved: checked against the implementation, \texttt{MinimalGenAIRelay} (\texttt{relaynet/relays/genai.py}) uses a \emph{ReLU} hidden layer and a \emph{tanh} output, exactly as stated here and in Eq.~\ref{eq:mlp-relay}. The imprecise text was the experiment-configuration lines in Chapter~\ref{sec:experiments}, reworded to ``ReLU hidden, tanh output''. Parameter count $(5{\times}24+24)+(24{\times}1+1)=169$ confirmed.}
 
 Training uses MSE loss with multi-SNR training data (i.e., 5, 10, and 15 dB), 25,000 samples, and 100 epochs with a learning rate of 0.01.
 
@@ -274,8 +266,6 @@ where \(\bar{P}_e\) is the sample mean BER across trials, \(s\) is the sample st
 \textbf{BER resolution.} With \(N \cdot M = 100{,}000\) total bits per SNR point, the minimum detectable BER is approximately \(1/N = 10^{-4}\) per trial, or \(10^{-5}\) for the aggregate. BER values below this threshold are reported as 0.
 
 \textbf{Per-experiment simulation budgets.} The budget above ($M=10$ trials $\times\,N=10{,}000$ bits $=100{,}000$ bits per SNR point) applies to the canonical relay comparison and the parameter-normalization/complexity study (E2--E3). Other experiments use different budgets, stated in their respective sections: the main unknown-ISI study, the flat-channel control, and the QPSK generalization check (Chapter~\ref{sec:unknown-channels}, Sections~\ref{sec:unknown-channel-experiment}, \ref{sec:flat-unknown-channels}, \ref{sec:qpsk-unknown-channel}) use $10\times100{,}000=1{,}000{,}000$ bits per SNR point, matching the project-wide $M=10$ standard; the composite cascade (Section~\ref{sec:composite-channel}) likewise uses $10\times100{,}000$; and the blind and partial-posterior sub-studies (Sections~\ref{sec:blind-channel}--\ref{sec:partial-posterior}) use $50\times20{,}000=1{,}000{,}000$ bits per SNR or operating point. The larger trial count in those last two is deliberate rather than incidental: their hop-1 channel redraws its ISI, amplifier and phase realization for every block, so a trial is a draw from the impairment family and the ensemble average is limited by the trial count, not by bits per trial. Increasing bits per trial sharpens the estimate for one particular channel; only increasing trials averages over the family the study is about. Every experiment therefore uses $M\geq10$ trials, so the Wilcoxon signed-rank test is attainable throughout (at $M=5$ its smallest two-sided $p$ is $2^{-4}=0.0625$, which could not reach $p<0.05$).
-\REV{Fix applied: the per-experiment budget paragraph above replaces a former blanket claim that one budget applied to all results (E1 $20\times50$k, E2--E3 $10\times10$k, unknown-channel $5\times50$k), and the $M=5$ Wilcoxon caveat is now stated explicitly. The abstract was reworded to match.} 
-
 
 \subsection{Statistical Significance Testing}\label{sec:statistical-significance-testing}
 
@@ -417,7 +407,6 @@ Figure~\ref{fig:fig8} presents the constellation diagrams for the modulation sch
 
 \subsection{I/Q Splitting for AI Relay Processing of Complex Constellations}\label{sec:iq-splitting-for-ai-relay-processing-of-complex-constellations}
 
-
 \begin{equation}\protect\phantomsection\label{eq:iq-splitting}{\hat{x}_R = \frac{f_\theta(\sqrt{2}\,\text{Re}(y_R)) + j f_\theta(\sqrt{2}\,\text{Im}(y_R))}{\sqrt{2}}
 }\end{equation}
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad iq-splitting}
@@ -458,6 +447,5 @@ Rationale
 \end{longtable}
 
 \textbf{Limitation beyond binary-per-axis constellations.} I/Q splitting works here because QPSK places a single binary decision on each axis, which is exactly what a \(\tanh\)-output relay trained on \(\{\pm 1\}\) represents. Constellations with more than two levels per axis (16-QAM and denser) break that correspondence and would require either modulation-specific retraining or a joint two-dimensional relay formulation; neither is evaluated here, and both are identified as future work.
-
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}

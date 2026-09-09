@@ -13,7 +13,6 @@ coded study of Section~\ref{sec:coded-block-df}, which deliberately
 departs from the uncoded, symbol-wise core to measure the
 Remark~\ref{rem:df-terminology} caveat directly.
 
-
 Following the single-model convention fixed in Chapter~\ref{sec:introduction}, the core of this chapter evaluates the relay strategies on the \emph{canonical setup}: a two-hop SISO link, i.i.d.\ Rayleigh fast fading on both hops, complex baseband, QPSK, uncoded BER. A supplementary coded study (Section~\ref{sec:coded-block-df}) deliberately departs from that setup within this same chapter, adding a rate-1/2 convolutional code, a block-DF relay, and an adaptive modulation-and-coding scheme. Two experiments constitute the core: the canonical relay comparison (E2) and the parameter-normalization and complexity study (E3), which together answer every canonical hypothesis (H1--H4). The principal contribution (Chapter~\ref{sec:unknown-channels}) is the unknown-channel study (E6), which tests hypothesis H5. All other departures from the canonical setup are identified as future work in Chapter~\ref{sec:discussion-and-conclusions}.
 The core (E2, E3) and unknown-channel (E6) experimental configurations are summarised in the table below; the supplementary coded study's configuration is described separately in Section~\ref{sec:coded-block-df}.
 
@@ -77,7 +76,6 @@ Minimum relay size and the overfitting hypothesis H3, with three initializations
 
 \subsection{Results Tables}\label{sec:results-tables}
 
-
 \begingroup\footnotesize
 \begin{longtable}[]{@{}lccccccccc@{}}
 \caption[BER on the canonical setup]{BER on the canonical setup: QPSK over i.i.d.\ Rayleigh fast fading, SISO on both hops, uncoded, $10\times10{,}000$ bits per SNR point. ``DF th.'' is the closed-form two-hop composition of Eq.~\ref{eq:df-ber-rayleigh} (Section~\ref{sec:rayleigh-two-hop-df-ber}), included for direct comparison against the measured DF column. Column abbreviations: Transf.\ is the Transformer relay, Mamba2 the Mamba-2 SSD relay}\label{tbl:table2}\tabularnewline
@@ -110,28 +108,23 @@ Two comments on Table~\ref{tbl:table2}. First, symbol-wise DF is the best or tie
 
 \subsection{Results Figures}\label{sec:results-figures-1}
 
-
 \begin{figure}[htbp]
 \centering
 \pandocbounded{\includegraphics[width=\linewidth,height=0.8\textheight,keepaspectratio]{results/canonical_qpsk_rayleigh_ci.png}}
 \caption[The canonical setup]{The canonical setup: QPSK over i.i.d.\ Rayleigh fast fading, BER vs.\ $E_s/N_0$ for the eight relays of Table~\ref{tbl:table2}, with 95\% confidence intervals, plus two theoretical reference curves: ``DF (theory)'' (dashed), the closed-form two-hop composition, which the measured DF curve tracks closely, within a few percent relative error everywhere (worst case $3.6\%$, at 12~dB); and the ``single-hop floor'' (dotted), the BER a genie that recovered hop~1 perfectly would still incur on hop~2 -- a reference floor for this fixed-rate, fixed-power relay chain. AF is uniformly worst; symbol-wise DF and the feedforward learned relays are indistinguishable from 4~dB upward; the two sequence models trail at low SNR and converge by 16~dB}\label{fig:fig10}
 \end{figure}
 
-
 \section{Parameter Normalization \& Complexity Trade-off}\label{sec:parameter-normalization-complexity-trade-off}
 
 This study tests H3 (complexity versus BER) and H4 (architecture convergence at an equal parameter budget) on the canonical setup.
-\REV{``inverted-U'' \(\to\) ``overfitting at excess capacity'', consistent with the retitled H3 in Chapter~\ref{sec:research-objectives} (BER is U-shaped in model size; equivalently, accuracy is inverted-U).}
 
 \textbf{Goal:} Isolate architectural inductive biases from parameter count effects and characterize the complexity-performance trade-off for relay denoising.
 
 \textbf{Trials:} - \textbf{Topology:} SISO (both hops) - \textbf{Modulation scheme:} QPSK - \textbf{Channel:} i.i.d.\ Rayleigh fast fading (canonical) - \textbf{Equalizers:} One-tap coherent (per hop); no ISI equalizer needed (memoryless) - \textbf{NN architecture:} All normalized to \textasciitilde3,000 parameters, plus original sizes (169 to 26K) - \textbf{NN activation:} ReLU hidden, tanh output
 
 \textbf{Conclusion:} A minimal 169-parameter MLP matches models roughly 140$\times$ larger, and no larger model evaluated here improves on it; whether the curve eventually turns upward, and whether overfitting would be the reason, is not tested by \emph{these} experiments (Section~\ref{sec:capacity-and-overfitting}). It is tested by the size sweep of Section~\ref{sec:minimum-relay-size}, which replicates every configuration across three initializations and finds no upward arm above the initialization spread. At an equal budget of 3,000 parameters the gap between feedforward and sequence architectures is strongly SNR-dependent: it falls monotonically from $17.4\%$ at 0~dB to $4.1\%$ at 20~dB (Table~\ref{tbl:table8}). Parameter count therefore accounts for the comparison at high SNR, where the choice of model is nearly irrelevant, but not at low SNR, where the six equal-sized models separate cleanly into a feedforward group tracking DF and a sequence group tracking AF. Since all six carry the same budget, that separation is not explained by capacity; it is attributable to the remaining differences between the models, of which architecture is the most salient but not the only one, since depth, width, state dimension and window size were adjusted to meet the budget (Table~\ref{tbl:table28}). The generative VAE falls inside the feedforward group at every SNR rather than apart from it, ending at $0.0101$ against MLP-3K's $0.0099$, and it is ahead of all three sequence models from 0 to 16~dB; the generative paradigm is therefore not a handicap at this budget (Section~\ref{sec:generative-vs.-discriminative-paradigms-for-relay-processing}).
-\REV{``inverted-U'' \(\to\) ``overfitting at excess capacity''. The VAE conclusion, previously ``a consistent underperformer \ldots due to probabilistic overhead'' and then softened to an inference-time caveat, is now stated as what Table~\ref{tbl:table8} actually shows: the VAE sits inside the feedforward group at every SNR. The ``consistent underperformer'' reading does not survive re-measurement (Chapter~\ref{sec:discussion}).}
 
 \subsection{Results Tables}\label{sec:results-tables-2}
-
 
 \begingroup\footnotesize
 \begin{longtable}[]{@{}lcccccccc@{}}
@@ -158,8 +151,6 @@ SNR (dB) & MLP & Hybrid & VAE & Transf. & Mamba-S6 & Mamba2 & AF & DF \\
 \begin{figure}[htbp]
 \pandocbounded{\includegraphics[width=\linewidth,height=0.8\textheight,keepaspectratio]{results/normalized_3k_rayleigh_ber.png}}
 \caption[Equal-parameter-budget BER (3K), QPSK/Rayleigh]{BER vs $E_s/N_0$ for all relay variants normalised to $\approx$3{,}000 parameters, QPSK over Rayleigh fading. AF and DF (dashed) are the unparameterised references. Shaded bands show 95\% confidence intervals for the learned relays. The feedforward group (MLP-3K, Hybrid-3K, VAE-3K) tracks DF across the full range; the sequence models (Transformer-3K, Mamba-3K, Mamba2-3K) converge with them only at high SNR}\label{fig:fig-3k-ber}\end{figure}
-
-
 
 \section{Minimum Relay Size Across Channel Families}\label{sec:minimum-relay-size}
 

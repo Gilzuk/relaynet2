@@ -3,8 +3,6 @@
 \section{Main Objective}\label{sec:main-objective}
 
 To determine \emph{under which conditions} a learned relay surpasses classical relay processing in two-hop communication, and where it does not. A single canonical setup (SISO on both hops, i.i.d.\ Rayleigh fast fading, complex baseband, QPSK, uncoded BER) is the controlled baseline on which classical and AI-based strategies are compared as a function of SNR regime and computational constraints. Two deliberate departures from that baseline then locate the boundary the canonical comparison cannot reach: a coded chain, which tests whether the conclusion survives when the classical relay is allowed to decode a channel code (Section~\ref{sec:coded-block-df}), and channels whose structure lies outside the model class the classical relays assume, which is where the learned relay's value is actually established (Chapter~\ref{sec:unknown-channels}). The canonical setup is therefore the control, not the scope.
-\REV{Relocated the revision note out of the middle of the objective sentence (it previously split ``To systematically \ldots evaluate''), so the main objective now reads cleanly. Note content preserved below.}
-\REV{Fix applied: Chapter~\ref{sec:literature-review} was reduced to a literature review only. Removed duplicate E1 channel-validation material (including relocated theoretical-SNR results), duplicated validation figures, the Rician fading distribution discussion (future work only), the relay-positioning table duplicated from Chapter~\ref{sec:research-objectives}, and the unused MIMO equalization section (ZF/LMMSE/LMMSE-SIC), since no MIMO experiment appears in the thesis. The term MMSE is now used only in its estimator-theoretic sense, consistent with the canonical-study scope and supervisor comments documented in Appendix~E.}
 
 \subsection{Two Research Questions}\label{sec:two-objectives}
 
@@ -66,8 +64,6 @@ Complexity analysis & None & Normalized $\sim$3K-parameter comparison + complexi
 State space models & Applied to receiver-side tasks; none as a relay processor & Mamba-S6, Mamba-2 SSD evaluated as relay processors \\
 Statistical reporting & Varies among the cited studies & Paired Wilcoxon tests reported per comparison without multiplicity correction; 95\% intervals and at least 10 trials per point \\
 \end{longtable}
-\REV{Table fixes: ``U-shaped study''$\to$``complexity study (does BER rise again with model size?)'' to stay consistent with the U-shaped-in-BER wording adopted in Chapter~\ref{sec:literature-review}; (3) unified ``Mamba $S_6$''$\to$``Mamba-S6''; (4) en-dash for the ``1--2'' range.}
-
 
 \paragraph{Relationship between the canonical study and the extension study.} Hypotheses H1--H4 concern the canonical relay scenario introduced in Chapter~\ref{sec:introduction}: a memoryless two-hop channel with white noise and uncoded transmission. Hypothesis H5 studies a deliberately different regime in which the canonical model no longer represents the true channel. It is therefore a robustness extension rather than a direct continuation of the canonical experiments.
 
@@ -82,9 +78,9 @@ Based on the theoretical background of Chapter \ref{sec:literature-review}, this
 
 \item \textbf{H2 (DF dominance at high SNR).} The symbol-wise DF relay (Remark~\ref{rem:df-terminology}) achieves the lowest BER at medium-to-high SNR ($\geq 6$ dB), outperforming all AI methods.
 
-\emph{Rationale:} In the scalar AWGN limit the posterior mean approaches a sign decision; on the canonical QPSK channel the corresponding high-SNR rule is nearest-neighbor slicing after channel compensation. This motivates DF as the strongest evaluated hard-regeneration baseline, not as a proof that it is end-to-end BER-optimal among all power-constrained per-symbol relay mappings.\REV{ Added the last sentence to bound the H2 optimality claim to the uncoded symbol-wise family, mirroring the abstract fix that separates DF's finite-length behaviour from its asymptotic capacity guarantees.}
+\emph{Rationale:} In the scalar AWGN limit the posterior mean approaches a sign decision; on the canonical QPSK channel the corresponding high-SNR rule is nearest-neighbor slicing after channel compensation. This motivates DF as the strongest evaluated hard-regeneration baseline, not as a proof that it is end-to-end BER-optimal among all power-constrained per-symbol relay mappings.
 
-\item \textbf{H3 (Overfitting at excess capacity).} There exists an optimal model size for relay denoising beyond which performance degrades due to overfitting, so that BER rises again once capacity exceeds what the mapping requires. Specifically, models with $\sim$100--200 parameters achieve performance comparable to models with $10$--$100\times$ more parameters. Only the second, weaker part of this hypothesis was testable with the protocol originally adopted: establishing \emph{overfitting} as the mechanism behind any upturn would require seed replication and train/test-gap measurement. The seed replication is performed for the MLP size axis by the sweep of Section~\ref{sec:minimum-relay-size}, and the hypothesis is adjudicated there and in Section~\ref{sec:complexity-curve-turn}; the train/test-gap measurement, and any replication of the \emph{cross-architecture} comparison, remain outstanding and are recorded in Section~\ref{sec:limitations}.\REV{ Retitled to name the mechanism the hypothesis actually claims, ``overfitting at excess capacity'', rather than the shape that mechanism would produce. The rename names the mechanism so that the size sweep of Section~\ref{sec:minimum-relay-size} can adjudicate the hypothesis under its own name. En-dashes applied to the parameter ranges.}
+\item \textbf{H3 (Overfitting at excess capacity).} There exists an optimal model size for relay denoising beyond which performance degrades due to overfitting, so that BER rises again once capacity exceeds what the mapping requires. Specifically, models with $\sim$100--200 parameters achieve performance comparable to models with $10$--$100\times$ more parameters. Only the second, weaker part of this hypothesis was testable with the protocol originally adopted: establishing \emph{overfitting} as the mechanism behind any upturn would require seed replication and train/test-gap measurement. The seed replication is performed for the MLP size axis by the sweep of Section~\ref{sec:minimum-relay-size}, and the hypothesis is adjudicated there and in Section~\ref{sec:complexity-curve-turn}; the train/test-gap measurement, and any replication of the \emph{cross-architecture} comparison, remain outstanding and are recorded in Section~\ref{sec:limitations}.
 
 \emph{Rationale:} The low-dimensional target in the memoryless special case motivates testing whether modest capacity is sufficient. The effect of excess capacity on predictive variance is not fixed a priori and must be established by replicated training and held-out evaluation.
 
@@ -106,7 +102,7 @@ Unlike H1--H4, which assume the canonical memoryless channel throughout, H5 deli
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
 \item
-  \textbf{Implement nine relay strategies and compare eight of them} spanning four learning paradigms: no learning (AF, DF), supervised learning (MLP, Hybrid), generative modeling (VAE), and sequence modeling (Transformer, Mamba-S6, Mamba-2 SSD); the ninth, a conditional GAN (cGAN), is implemented but excluded from the comparison on cost grounds.\REV{Unified ``CGAN''$\to$``cGAN'' and ``Mamba S6''$\to$``Mamba-S6'' to match the abstract and Chapter~\ref{sec:literature-review}.}
+  \textbf{Implement nine relay strategies and compare eight of them} spanning four learning paradigms: no learning (AF, DF), supervised learning (MLP, Hybrid), generative modeling (VAE), and sequence modeling (Transformer, Mamba-S6, Mamba-2 SSD); the ninth, a conditional GAN (cGAN), is implemented but excluded from the comparison on cost grounds.
 \item
   \textbf{Evaluate on the canonical setup:} SISO Rayleigh fast fading with QPSK, with symbol-wise DF checked against the closed-form two-hop composition on that same channel as the analytical calibration.
 \item
@@ -131,7 +127,7 @@ The following limitations define the scope of the canonical comparison, confined
   \textbf{Modulation:} QPSK for the canonical relay comparison; the unknown-channel study (Chapter~\ref{sec:unknown-channels}) mainly uses BPSK, with a QPSK re-check of the unknown-ISI result (Section~\ref{sec:qpsk-unknown-channel}), and 16-QAM enters only as a modulation-and-coding rung in the link-adaptation study. Higher-order constellations as a relay design question, and the joint 2D $N$-class formulation they require, are deferred to future work.
 \item
   \textbf{Channel knowledge:} Perfect CSI in the canonical core; estimation error is not modeled there. Chapter~\ref{sec:unknown-channels} lifts this with finite-pilot estimation, a swept pilot budget, and a zero-CSI blind regime.
-    \REV{Fix applied: this item previously read ``perfect CSI is assumed; channel estimation errors are not modeled'' without qualification, which contradicted the thesis's own principal contribution. It is now scoped to the canonical core, with the assumptions lifted in Chapter~\ref{sec:unknown-channels} named explicitly.}
+
 \item
   \textbf{Topology:} A single relay, two hops, half-duplex, SISO on both hops. Multi-relay, full-duplex and multi-antenna (MIMO) configurations are deferred to future work.
 \end{itemize}
