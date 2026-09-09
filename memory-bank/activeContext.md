@@ -1557,3 +1557,39 @@ against folio 130 on the last body page, 144). Up one from 129: the
 assumptions-and-claims table costs a page and the item-15 relocation moved text
 within the document rather than out of it. Ten over the 120 limit.
 
+## 2026-09-09 (later) -- revision history purged, abstract rewritten
+
+**All revision-history residue removed from the manuscript.** 35 `\REV{}` blocks
+across eight chapters, one dead `\AK{}` supervisor comment in a commented-out
+ch02 line, and every rendered "an earlier version reported / superseded /
+withdrawn / this item is closed / once only proposed" passage in ch06, ch07,
+ch08 and the appendix. The withdrawn-QPSK-benchmark narrative relocated earlier
+today was deleted outright rather than kept in an appendix: `main.tex` states the
+policy explicitly at lines 409-414, that review-response material is "retained in
+the repository for the audit trail but excluded from the final submitted
+manuscript". In every case the *current* result and its scope qualification stay;
+only the account of how the text got there is gone. A grep for the whole family
+now returns nothing in any rendered file.
+
+**A real miss in the earlier Copilot triage, now fixed.** Item 10 was classified
+already-satisfied on the strength of ch09's careful wording. The categorical
+sentence Copilot actually quoted lives in ch07 and was still there: "the learned
+relay earns its place when channel memory exceeds roughly three and a half taps".
+It now states the crossover as measured, at the stated architecture and counting
+convention, between the evaluated three- and five-tap settings. Check every site
+of a claim, not the one that reads best.
+
+**Abstract rewritten: 695 words -> 381, five paragraphs.** Question, setup,
+matched-channel result, unknown-channel result with the two boundaries, then the
+bound on the claim. The coded study, the four-layer ladder enumeration and the
+traceback-depth latency detail were dropped from the abstract and remain in the
+body. `thesis/HEBREW_ABSTRACT_SYNC.md` is rewritten accordingly: the four-passage
+delta it used to describe is obsolete, and the Hebrew abstract now renders a
+superseded English text and needs replacing wholesale.
+
+**Page count: 146 total, 13 Roman, 3 Hebrew, 130 countable** (folio 130 on the
+last body page, 143). The shorter abstract saved a *Roman* page, not a countable
+one, so the body is unchanged at 130 -- ten over the 120 limit. The assumptions
+table added earlier today is the one countable page this session added; reverting
+it returns 129.
+

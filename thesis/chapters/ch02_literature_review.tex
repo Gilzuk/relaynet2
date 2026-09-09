@@ -4,13 +4,12 @@
 
 \section{Classical Relay Strategies}\label{sec:classical-relay-strategies}
 
-The fundamental question that motivates this thesis is: can a learned relay function \(f_\theta(\cdot)\) complement classical relay functions (AF scaling, DF regeneration) when their channel assumptions are mismatched or the relevant mapping is difficult to specify analytically? On the matched memoryless channel, the relevant symbol statistics are already captured by the classical MAP rule; the potential advantage of learning must therefore be established empirically in low-SNR or mismatched regimes rather than presumed.\REV{ ``substantive advantage'' $\to$ ``potential advantage'': the section frames an open question, so the wording no longer pre-judges its own answer (consistent with the ``may offer''$\to$``have been reported'' fix in the Introduction).}
+The fundamental question that motivates this thesis is: can a learned relay function \(f_\theta(\cdot)\) complement classical relay functions (AF scaling, DF regeneration) when their channel assumptions are mismatched or the relevant mapping is difficult to specify analytically? On the matched memoryless channel, the relevant symbol statistics are already captured by the classical MAP rule; the potential advantage of learning must therefore be established empirically in low-SNR or mismatched regimes rather than presumed.
 
 \subsection{Amplify-and-Forward (AF)}\label{sec:classical-relay-strategies-af}
-\REV{Removed stray period in the subsection title.}
+
 The AF relay amplifies the received signal by a gain factor \(G\) that normalizes the output power: (Equation~\ref{eq:af-gain})
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad af-gain}
-
 
 \begin{equation}\protect\phantomsection\label{eq:af-gain}{G = \sqrt{\frac{P_{\text{target}}}{\mathbb{E}[|y_R|^2]}}
 }\end{equation}
@@ -38,7 +37,7 @@ The end-to-end BER for DF is: (Equation~\ref{eq:df-ber-hops})
 }\end{equation}
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad df-ber-hops}
 
-where \(P_{e,1}\) and \(P_{e,2}\) are the BER of the first and second hops, respectively: an end-to-end bit error occurs exactly when \emph{one} of the two hops flips the bit (two flips cancel), so this expands to \(P_{e,1} + P_{e,2} - 2P_{e,1}P_{e,2}\), the same expression used in the AWGN analysis (Equation~\ref{eq:df-ber-awgn}). For BPSK modulation over AWGN (real-valued noise with variance \(1/\text{SNR}\)), each hop's BER is \(P_e = Q\left(\sqrt{\text{SNR}}\right)\). DF provides clean regeneration at high SNR but suffers from error propagation when the first-hop BER is non-negligible. As discussed in Remark~\ref{rem:df-terminology}, the ``DF'' baseline used here is the uncoded symbol-wise slicer, not practical finite-length coded block-DF; its optimality claims are therefore confined to the uncoded setting.\REV{ Added cross-reference to the symbol-wise/block-DF distinction, mirroring the abstract fix that avoids presenting DF as a universal optimum.}
+where \(P_{e,1}\) and \(P_{e,2}\) are the BER of the first and second hops, respectively: an end-to-end bit error occurs exactly when \emph{one} of the two hops flips the bit (two flips cancel), so this expands to \(P_{e,1} + P_{e,2} - 2P_{e,1}P_{e,2}\), the same expression used in the AWGN analysis (Equation~\ref{eq:df-ber-awgn}). For BPSK modulation over AWGN (real-valued noise with variance \(1/\text{SNR}\)), each hop's BER is \(P_e = Q\left(\sqrt{\text{SNR}}\right)\). DF provides clean regeneration at high SNR but suffers from error propagation when the first-hop BER is non-negligible. As discussed in Remark~\ref{rem:df-terminology}, the ``DF'' baseline used here is the uncoded symbol-wise slicer, not practical finite-length coded block-DF; its optimality claims are therefore confined to the uncoded setting.
 
 \subsection{Other Classical Relay Techniques}
 
@@ -55,7 +54,6 @@ The theoretical justification for applying neural networks to relay signal proce
 \begin{equation}\protect\phantomsection\label{eq:optimal-denoiser}{f^*: \mathbb{R}^{2w+1} \to [-1, 1], \quad f^*(y_{i-w}, \dots, y_{i+w}) = \mathbb{E}[x_i \mid y_{i-w}, \dots, y_{i+w}]
 }\end{equation}
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad optimal-denoiser}
-
 
 This conditional expectation \(f^*\) is the Bayes-optimal denoiser: it minimizes the mean squared error (MSE) over all possible estimators. For BPSK symbols corrupted by AWGN, \(f^*\) reduces to the posterior mean:
 
@@ -97,16 +95,15 @@ For relay processing specifically, a supervised learning approach trains a neura
 
 where \(\hat{x}_i = f_\theta(y_{i-w:i+w})\) is the network output based on a sliding window of \(2w+1\) received symbols, and \(x_i\) is the clean transmitted symbol. This window-based approach provides temporal context that enables the network to exploit statistical dependencies in the noise-corrupted signal.
 
-A well-known example of \(f_\theta(\cdot)\) is the \emph{multilayer perceptron (MLP)}, a feedforward artificial neural network composed of an input layer, one or more fully connected hidden layers with nonlinear activation functions, and an output layer, trained using backpropagation to model nonlinear input--output relationships.\REV{ ``An well known example for'' $\to$ ``A well-known example of''; ``Multi-layer-perceptron'' $\to$ ``multilayer perceptron'' to match the abstract; double spaces removed.}
+A well-known example of \(f_\theta(\cdot)\) is the \emph{multilayer perceptron (MLP)}, a feedforward artificial neural network composed of an input layer, one or more fully connected hidden layers with nonlinear activation functions, and an output layer, trained using backpropagation to model nonlinear input--output relationships.
 The MLP equation is shown in equation \ref{eq:mlp-relay}:
 
 \begin{equation}\protect\phantomsection\label{eq:mlp-relay}{\mathbf{h} = \text{ReLU}(\mathbf{W}_1 \mathbf{w} + \mathbf{b}_1), \quad \hat{x} = \tanh(\mathbf{W}_2 \mathbf{h} + \mathbf{b}_2)
 }\end{equation}
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad mlp-relay}
 
-The sliding window formulation ($i \in [i-w:i+w]$) is motivated by the observation that adjacent received symbols share common noise statistics and channel conditions. 
-%While AWGN noise is i.i.d.\ across symbols (making the window unnecessary for a single-symbol estimator), the window provides the network with a local context that helps it learn a more robust decision boundary: effectively performing a form of implicit averaging that reduces variance. For fading channels, where adjacent symbols may experience correlated fading, the window becomes even more valuable. \AK{Didn't you assume white noise and i.i.d.\ Rayleigh fading? If so, why do you talk about correlation and how can $w>0$ help?}
-Under the canonical model (i.i.d.\ fast fading, white noise), adjacent symbols are statistically independent, so the single received sample $y_R[i]$ is already a sufficient statistic for $x[i]$; a single-symbol estimator ($w=0$) therefore loses nothing and a window confers no theoretical benefit. The window is therefore not motivated by temporal correlation in the canonical setting; it is retained because it is required by the unknown-channel study of Chapter~\ref{sec:unknown-channels}, where a 3-tap ISI channel couples adjacent symbols and the relay must span that memory. Keeping a fixed windowed architecture across all experiments isolates the effect of the channel assumptions from the network structure. \REV{Corrected: the earlier text invoked ``correlated fading'' to justify $w>0$, contradicting the canonical i.i.d.\ fast-fading, white-noise assumption (AK). The window is now correctly justified only by the Chapter~\ref{sec:unknown-channels} ISI extension, consistent with Remark~\ref{rem:window-causality}.}
+The sliding window formulation ($i \in [i-w:i+w]$) is motivated by the observation that adjacent received symbols share common noise statistics and channel conditions.
+Under the canonical model (i.i.d.\ fast fading, white noise), adjacent symbols are statistically independent, so the single received sample $y_R[i]$ is already a sufficient statistic for $x[i]$; a single-symbol estimator ($w=0$) therefore loses nothing and a window confers no theoretical benefit. The window is therefore not motivated by temporal correlation in the canonical setting; it is retained because it is required by the unknown-channel study of Chapter~\ref{sec:unknown-channels}, where a 3-tap ISI channel couples adjacent symbols and the relay must span that memory. Keeping a fixed windowed architecture across all experiments isolates the effect of the channel assumptions from the network structure.
 
 \textbf{Multi-SNR training} is a key design choice: training on data generated at multiple SNR levels (5, 10, 15 dB here) yields a single estimator whose denoising function generalizes across operating conditions rather than specializing to one noise level. In decision-theoretic terms the training objective averages the loss over the sampled SNRs, so what it minimises is \emph{Bayes} risk under the empirical SNR distribution, not the worst-case (minimax) risk over that range: nothing in the objective protects the SNR at which the network happens to do worst.
 
@@ -117,7 +114,6 @@ A critical question in applying neural networks to relay processing, essential f
 Generative models offer an alternative to directly learning a denoising function (the discriminative approach above): they instead learn the distribution of clean signals \(p(\mathbf{x})\) and reconstruct the transmitted signal from noisy observations via Bayes' rule:
 \begin{equation}\protect\phantomsection\label{eq:bayes-rule}{p(\mathbf{x} | \mathbf{y}) \propto p(\mathbf{y} | \mathbf{x}) p(\mathbf{x})}
 \end{equation}
-
 
 The generative approach is theoretically appealing because it separates the modeling of the signal prior from the noise model, potentially enabling better generalization to unseen noise conditions.
 
@@ -135,7 +131,7 @@ Since the KL divergence is non-negative, the ELBO is a lower bound on the log-ev
 }\end{equation}
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad vae-loss}
 
-The reconstruction term encourages the decoder to accurately reproduce the input from the latent code, while the KL term regularizes the latent space to be close to the standard Gaussian prior \(p(\mathbf{z})\). The \(\beta\) parameter (\(\beta\)-VAE) \cite{Higgins2017betaVAE} in Equation~\ref{eq:vae-loss} controls the trade-off between reconstruction quality and latent space smoothness: \(\beta < 1\) prioritizes reconstruction (beneficial for the relay task where accurate signal recovery is paramount), while \(\beta > 1\) encourages disentangled latent representations.\REV{ HTML artifacts \texttt{\&lt;}/\texttt{\&gt;} restored to \(<\)/\(>\) for compilation.}
+The reconstruction term encourages the decoder to accurately reproduce the input from the latent code, while the KL term regularizes the latent space to be close to the standard Gaussian prior \(p(\mathbf{z})\). The \(\beta\) parameter (\(\beta\)-VAE) \cite{Higgins2017betaVAE} in Equation~\ref{eq:vae-loss} controls the trade-off between reconstruction quality and latent space smoothness: \(\beta < 1\) prioritizes reconstruction (beneficial for the relay task where accurate signal recovery is paramount), while \(\beta > 1\) encourages disentangled latent representations.
 
 The \emph{reparameterization-trick} enables gradient-based optimization through the stochastic sampling layer:
 \begin{equation}\protect\phantomsection\label{eq:repremtrized-trick}
@@ -150,15 +146,15 @@ Instead of sampling from equation \ref{eq:repremtrized-trick}, the sample is exp
 where \(\boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \mathbf{I})\).
 This moves the stochasticity outside the computational graph, allowing backpropagation through the encoder.
 
-The implemented relay is a supervised denoising VAE rather than the unconditional model above: its encoder receives the noisy observation window, while reconstruction is evaluated against the clean target. The latent regularization supplies a generative inductive bias, but the denoising property follows from this noisy-input/clean-target training objective rather than from the standard VAE derivation alone. Sampling \(\mathbf{z}\) at inference also injects variance into an otherwise deterministic estimation task; Section~\ref{sec:generative-vs.-discriminative-paradigms-for-relay-processing} reports the measured outcome without attributing a causal effect to that sampling.\REV{ This sentence previously attributed ``the consistent VAE under-performance observed in this thesis'' to inference-time sampling. That reading does not survive re-measurement (Section~\ref{sec:generative-vs.-discriminative-paradigms-for-relay-processing}, Table~\ref{tbl:table2}), so the claim is no longer asserted here.}
+The implemented relay is a supervised denoising VAE rather than the unconditional model above: its encoder receives the noisy observation window, while reconstruction is evaluated against the clean target. The latent regularization supplies a generative inductive bias, but the denoising property follows from this noisy-input/clean-target training objective rather than from the standard VAE derivation alone. Sampling \(\mathbf{z}\) at inference also injects variance into an otherwise deterministic estimation task; Section~\ref{sec:generative-vs.-discriminative-paradigms-for-relay-processing} reports the measured outcome without attributing a causal effect to that sampling.
 
 \subsection{Generative vs.~Discriminative Paradigms for Relay Processing}\label{sec:generative-vs.-discriminative-paradigms-for-relay-processing}
 
-The application of generative models to relay processing has, to the best of our knowledge, not been extensively studied.\REV{ Softened the novelty claim with ``to the best of our knowledge'' (same caution applied to the ``first''/``unexplored'' claims elsewhere in this chapter).} The key question is whether the generative inductive bias (learning the data distribution rather than just the input-output mapping) provides any advantage for the relay denoising task. For BPSK, the clean signal distribution is trivially simple (a discrete distribution on \(\{-1, +1\}\)), suggesting that the generative overhead may not be justified. This thesis compares VAE-based relay processing against classical and supervised learning methods on a common benchmark, and the results show that the generative paradigm provides no significant advantage for this particular task. A conditional GAN relay is implemented and described in Chapter~\ref{sec:methods} but is excluded from the reported comparison on cost grounds, so no claim is made about it here. On the canonical setup the VAE tracks the supervised MLP and symbol-wise DF rather than trailing them, reaching $0.00972$ at 20~dB against DF's $0.00972$ and the MLP's $0.00992$ (Table~\ref{tbl:table2}), and it stays inside the feedforward group at every SNR in the equal-parameter comparison as well (Table~\ref{tbl:table8}). The generative bias is therefore neither an advantage nor a handicap here: it costs parameters and training time to arrive where a 169-parameter regressor already is. One qualification remains, unchanged by this: the relay samples $\mathbf{z}\sim q_\phi(\mathbf{z}\mid\mathbf{x})$ stochastically at inference, and the deterministic variant that substitutes the posterior mean $\boldsymbol{\mu}$ at test time was not evaluated, so nothing here bears on whether that variant would do better.
+The application of generative models to relay processing has, to the best of our knowledge, not been extensively studied. The key question is whether the generative inductive bias (learning the data distribution rather than just the input-output mapping) provides any advantage for the relay denoising task. For BPSK, the clean signal distribution is trivially simple (a discrete distribution on \(\{-1, +1\}\)), suggesting that the generative overhead may not be justified. This thesis compares VAE-based relay processing against classical and supervised learning methods on a common benchmark, and the results show that the generative paradigm provides no significant advantage for this particular task. A conditional GAN relay is implemented and described in Chapter~\ref{sec:methods} but is excluded from the reported comparison on cost grounds, so no claim is made about it here. On the canonical setup the VAE tracks the supervised MLP and symbol-wise DF rather than trailing them, reaching $0.00972$ at 20~dB against DF's $0.00972$ and the MLP's $0.00992$ (Table~\ref{tbl:table2}), and it stays inside the feedforward group at every SNR in the equal-parameter comparison as well (Table~\ref{tbl:table8}). The generative bias is therefore neither an advantage nor a handicap here: it costs parameters and training time to arrive where a 169-parameter regressor already is. One qualification remains, unchanged by this: the relay samples $\mathbf{z}\sim q_\phi(\mathbf{z}\mid\mathbf{x})$ stochastically at inference, and the deterministic variant that substitutes the posterior mean $\boldsymbol{\mu}$ at test time was not evaluated, so nothing here bears on whether that variant would do better.
 
 \section{Sequence Models: Transformers, State Space Models}\label{sec:sequence-models-transformers-and-state-space-models}
 
-Recent advances in sequence modeling have produced two competing paradigms with distinct computational properties and inductive biases. Both have achieved state-of-the-art results in natural language processing, but their relative merits for physical-layer signal processing (where sequences are real-valued temporal signals rather than discrete tokens) have, to the best of our knowledge, not been previously investigated.\REV{ Softened the novelty claim with ``to the best of our knowledge''.}
+Recent advances in sequence modeling have produced two competing paradigms with distinct computational properties and inductive biases. Both have achieved state-of-the-art results in natural language processing, but their relative merits for physical-layer signal processing (where sequences are real-valued temporal signals rather than discrete tokens) have, to the best of our knowledge, not been previously investigated.
 
 \subsection{Transformers and the Attention Mechanism}\label{sec:transformers-and-the-attention-mechanism}
 
@@ -232,10 +228,9 @@ These adaptive-filtering connections become directly relevant only in the unknow
 
 \subsection{State Space Models for Signal Processing}\label{sec:state-space-models-for-signal-processing}
 
-The application of state space models to physical-layer signal processing is, to the best of our knowledge, largely unexplored.\REV{ Softened the novelty claim with ``to the best of our knowledge''.} Classical signal processing relies extensively on LTI state space models (Kalman filters, Wiener filters), and the SSM framework provides a natural neural extension of these classical tools. The connection is direct: a trained SSM with fixed (input-independent) parameters implements a learnable linear filter, while the selective Mamba variant implements a learnable \emph{adaptive} filter. For the relay denoising task, this means Mamba can potentially learn the optimal filter structure from data, without requiring manual specification of filter order, cutoff frequencies, or adaptation algorithms.
+The application of state space models to physical-layer signal processing is, to the best of our knowledge, largely unexplored. Classical signal processing relies extensively on LTI state space models (Kalman filters, Wiener filters), and the SSM framework provides a natural neural extension of these classical tools. The connection is direct: a trained SSM with fixed (input-independent) parameters implements a learnable linear filter, while the selective Mamba variant implements a learnable \emph{adaptive} filter. For the relay denoising task, this means Mamba can potentially learn the optimal filter structure from data, without requiring manual specification of filter order, cutoff frequencies, or adaptation algorithms.
 
 Within the literature reviewed for this thesis, no prior controlled comparison of Mamba-S6, Mamba-2 SSD, and Transformers for the same relay-processing task was identified. The relay window used throughout is short ($n=11$), which is precisely the regime where attention's quadratic cost is negligible and a linear-time recurrence has nothing to recover; the throughput advantages reported for the SSD formulation at longer context lengths \cite{DaoGu2024TransformersSSM} are therefore not exercised by this application and are not measured here.
-
 
 \section{Theoretical Foundations: Channel Models}\label{sec:theoretical-foundations-channel-models}
 
@@ -285,7 +280,6 @@ under the same real-noise convention as the single-hop case (Remark~\ref{noise-c
 \begin{equation}\protect\phantomsection\label{eq:gamma-high-snr}{\text{SNR}_{\text{eff}} \approx \frac{\gamma}{2}}
 \end{equation}
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad gamma-high-snr}
-
 
 confirming the well-known 3 dB penalty of AF relaying.
 

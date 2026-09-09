@@ -1,90 +1,56 @@
-# Hebrew abstract: four passages to write
+# Hebrew abstract: needs rewriting against the new English abstract
 
-The English abstract (`chapters/frontmatter.tex`) and the Hebrew one
-(`chapters/hebrew_abstract.tex`) diverged during the 2026-09-07 port of the
-un-ported `relaynet2-thesis` edits. Both abstracts received the
-copilot-swe-agent rewrites, but the English one additionally received a hybrid
-that kept a sentence those rewrites had deleted. The Hebrew never got that
-hybrid, and three smaller pieces are missing with it.
+**Status as of 2026-09-09: superseded task.** The previous version of this note
+listed four passages missing from the Hebrew. That delta no longer applies. The
+English abstract has been rewritten from scratch, cut from 695 words to 381 in
+5 paragraphs, to lead with the research question and the headline results
+rather than carrying every scope qualification inline. The Hebrew abstract still
+renders the old English text, so it is now a translation of a document that no
+longer exists.
 
-Paragraph lengths show where: paragraphs 1 and 2 track (71/74 and 195/191
-words), paragraphs 3 and 4 do not (205 vs 129, 207 vs 117). Roughly 165 words
-are missing, all in the two paragraphs that were touched.
+The Hebrew is the author's to write. The full new English source is below,
+paragraph by paragraph. Nothing else in the thesis depends on the Hebrew wording,
+so this can be done last.
 
-The Hebrew is the author's to write. Each item below gives the English source
-and the exact anchor to place it against.
+## What changed and why
 
----
+- Paragraph 1 is now the **question**, in one sentence, rather than a description
+  of what the thesis compares.
+- Paragraph 2 is the **setup**, compressed to the fixed configuration and the
+  eight strategies.
+- Paragraph 3 is the **matched-channel result**: DF wins from 6 dB, and channel
+  memory rather than parameter count sets the size floor.
+- Paragraph 4 is the **unknown-channel result and the two boundaries**, the pilot
+  count and the arithmetic. This is the thesis's principal claim.
+- Paragraph 5 states the **bound**: never better than a correctly modelled
+  classical receiver; valuable where no such model or estimate exists.
+- The coded study, the four-layer ladder enumeration and the traceback-depth
+  latency detail were **dropped from the abstract** and remain in the body. The
+  Hebrew should drop them too.
 
-## 1. Paragraph 3 — the bounding claim and the BER-optimal result
+## New English source
 
-**Insert** in line 27, after `...מגלאי Viterbi שעלותו גדלה כ־$M^{L}$.`
-and before `בשכבה 3, בנקודת העבודה היחידה שנמדדה של 10~dB...`
+### Paragraph 1 (43 words)
 
-English source (from `frontmatter.tex`):
+> A relay carries traffic between a source and a destination that have no direct path between them. This thesis asks a single question: when is a \emph{learned} relay worth using in place of a classical one, and what sets the boundary between them?
 
-> The claim is bounded deliberately: the learned relay does not beat a
-> model-aware receiver that has been given the model, and it is not shown to.
-> What it offers is near-optimal reliability at fixed arithmetic with no
-> per-block channel identification stage, and that ordering is unchanged when
-> the classical comparator is made BER-optimal rather than sequence-optimal.
+### Paragraph 2 (62 words)
 
-This is the most important of the four. It is the thesis's central bounding
-claim, and its final clause carries the BCJR/APP benchmark result. Verified
-absent from the live Hebrew: `אינו עולה` occurs only in the commented-out
-older block at lines 11-21.
+> The comparison is run on one configuration, fixed in advance --- a single-relay SISO link with i.i.d.\ Rayleigh fast fading on both hops, complex baseband, Gray-coded QPSK, uncoded transmission --- leaving the relay function as the only variable. Eight strategies are evaluated, from amplify-and-forward (AF) and symbol-wise decode-and-forward (DF) to generative and sequence models, as Monte Carlo estimates with 95\% confidence intervals.
 
-Terms needing an author decision: *model-aware receiver*, *BER-optimal* vs
-*sequence-optimal*, *per-block channel identification*.
+### Paragraph 3 (95 words)
 
-## 2. Paragraph 2 — the hybrid relay is currently unhedged
+> On a matched, memoryless channel the classical relay wins. Learned relays beat AF at low SNR, but from $6$~dB upward DF matches or exceeds every learned relay at no parameter cost. Capacity is not the binding constraint: a size sweep replicated over three initializations locates the smallest relay that costs nothing measurable, and \emph{channel memory} rather than parameter count sets it. Four parameters suffice on the memoryless channel, while the evaluated three-tap channels need $73$ to $145$ and a window spanning the interference. Error does not rise beyond the spread across initializations as capacity grows.
 
-**Replace**, in line 25:
+### Paragraph 4 (114 words)
 
-> ממסר Hybrid העובר ל-DF מעל נקודת המעבר הנמדדת קרוב לאופטימלי ללא עלות נוספת, אם ה-SNR מוערך באמינות.
+> The picture inverts once the channel is unknown. Against an unmodeled three-tap ISI filter both memoryless classical relays fail outright, DF's error rate rising as transmit power grows, while a $170$-parameter windowed network restores reliable relaying to within $1$--$1.5$~dB of a Viterbi detector handed the exact taps. Two measured boundaries locate the crossover. The first is the reliability of the channel estimate: at a $10$~dB operating point, pilot-aided classical detection stays ahead at twenty pilots and loses by ten. The second is arithmetic: sequence detection costs $2M^{L}$ multiply-accumulates per symbol against the fixed relay's $2WH+4H$, the two equal near three and a half taps for the architecture deployed here and $158\times$ apart at seven.
 
-The Hebrew still says "near optimal, **at no extra cost**" and carries no
-caveat. The English was narrowed and now reads:
+### Paragraph 5 (67 words)
 
-> A hybrid relay switching to DF above the measured crossover performs near
-> the best evaluated relay if SNR is reliably estimated; threshold robustness
-> was not tested.
+> The learned relay is therefore never better than a classical receiver that has been given the right model. Its value is that it still works when no such model, or no reliable estimate of one, is available, and that its cost does not grow with channel memory. Both statements are bounded to the classical pipelines implemented here and to the impairment family the relay was trained on.
 
-Two changes: "near optimal" becomes "near the best *evaluated* relay", and the
-untested-robustness caveat is added. The Hebrew currently makes the stronger
-claim of the two, which is the wrong direction for them to differ.
+## Current Hebrew (to be replaced)
 
-## 3. Paragraph 4 — the scope caveat
-
-**Append** to line 29, after `...ולא הראה יתרון דיוק מדיד בניסוי זה.`
-
-> Whether this holds at longer memory or under a tighter code is not tested
-> here.
-
-## 4. Paragraph 4 — the closing sentence
-
-**Append** to line 29, after item 3.
-
-> The regimes are delineated by identifiability and by arithmetic: classical
-> processing where the model matches the channel and its memory is short, the
-> learned relay where the channel is unmodeled, poorly estimated, missing per
-> block, or has memory long enough to price the trellis out.
-
-Term needing an author decision: *identifiability*.
-
----
-
-## After editing
-
-`hebrew_abstract.tex` is rendered, so the PDF must be rebuilt and committed in
-the same commit (`CLAUDE.md`, PDF-must-not-lag rule):
-
-```
-cd thesis && latexmk -xelatex main.tex
-```
-
-Then re-check the paragraph balance; paragraphs 3 and 4 should land near the
-English word counts rather than at two-thirds of them.
-
-This file is working notes, not part of the document: `main.tex` does not
-include it, so it never reaches the published Overleaf project.
+`chapters/hebrew_abstract.tex` holds 4 content paragraphs rendering the
+superseded text. Replace them wholesale rather than patching.
