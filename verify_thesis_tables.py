@@ -206,7 +206,11 @@ MIN_CELLS = {
     "tbl:table39": 30, "tbl:table40": 12, "tbl:table41": 15,
     "tbl:table42": 27, "tbl:table43": 18, "tbl:table44": 20,
     "tbl:mmse-baseline": 12, "tbl:seq-on-memory": 12,
-    "arch:relay-param-counts": 7, "consistency:proof-copies": 7, "tbl:slicer-floor-inline": 24,
+    # arch:relay-param-counts was 7. Two of those cells came from a shape claim
+    # inside a \REV{} annotation, which renders as nothing and was removed with
+    # the rest of the revision history; the rendered appendix claim remains.
+    "arch:relay-param-counts": 5,
+    "consistency:proof-copies": 7, "tbl:slicer-floor-inline": 24,
     "prose:qpsk-decomposition": 4, "prose:qpsk-controls": 3,
     "prose:seed-spread-native": 6,
     "tbl:bcjr-benchmark": 12, "prose:soft-df-calibration": 2,

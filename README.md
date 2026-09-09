@@ -4,10 +4,10 @@
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.6+-red.svg)](https://pytorch.org)
 [![CUDA](https://img.shields.io/badge/CUDA-12.4-green.svg)](https://developer.nvidia.com/cuda-toolkit)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Tests](https://img.shields.io/badge/Tests-187%20passed-brightgreen.svg)](#testing)
+[![Tests](https://img.shields.io/badge/Tests-249%20passed-brightgreen.svg)](#testing)
 [![Experiments](https://img.shields.io/badge/Experiments-18-blue.svg)](#recent-experiments-summary)
 
-A framework for comparing **classical and AI-based relay strategies** in two-hop cooperative communication, over **AWGN and Rayleigh fading** SISO channels, with **BPSK, QPSK and 16-QAM** modulation.
+A framework for comparing **classical and AI-based relay strategies** in two-hop relay communication, over **AWGN and Rayleigh fading** SISO channels, with **BPSK, QPSK and 16-QAM** modulation.
 
 > **Thesis vs. framework scope.** This repository contains both the `relaynet` simulation **framework** (whose full capabilities are described below) and the M.Sc. **thesis** it supports, under [`thesis/`](thesis/). The thesis deliberately fixes a **single canonical setup** — SISO on both hops, i.i.d. Rayleigh fast fading, complex baseband, Gray-coded QPSK, uncoded BER — and varies only the relay function. Its **principal contribution** is **learned relaying under unknown/mismatched channels** (carried on BPSK); the higher-order-modulation extension is not part of the current build. MIMO, Rician relay comparison, and 16-PSK were removed from both the thesis and the framework, and are recorded as *future work* (Rician is retained only to draw the fading-distribution figure). See the [Thesis](#thesis-msc) section.
 
@@ -40,7 +40,7 @@ A framework for comparing **classical and AI-based relay strategies** in two-hop
 
 ## Overview
 
-This project implements and compares **9 relay strategies** (2 classical + 7 AI-based) across **2 channel types** (AWGN, Rayleigh) and **3 modulation schemes** (BPSK, QPSK, 16-QAM) to evaluate the potential of generative AI and modern sequence models for cooperative relay communication.
+This project implements and compares **9 relay strategies** (2 classical + 7 AI-based) across **2 channel types** (AWGN, Rayleigh) and **3 modulation schemes** (BPSK, QPSK, 16-QAM) to evaluate the potential of generative AI and modern sequence models for two-hop relay communication. The link has no direct source--destination path, so the thesis uses "relay" rather than "cooperative", which conventionally implies a direct path combined with the relayed one.
 
 ### Relay Methods
 
@@ -72,6 +72,12 @@ The M.Sc. thesis *"Deep Learning Architectures for Two-Hop Relay Communication: 
 | LaTeX source (chapters, bibliography, figures) | `thesis/main.tex`, `thesis/chapters/`, `thesis/results/` |
 | Compiled PDF | `thesis/main.pdf`, `thesis_preview.pdf` |
 | **Overleaf-ready package** (self-contained, bundled fonts) | `thesis_overleaf.zip` |
+| Submission variant of the same package | `thesis_overleaf_clean.zip` |
+
+> The two bundles once differed: `thesis_overleaf.zip` kept the inline `\REV{}`
+> revision records and the `_clean` one stripped them. The manuscript no longer
+> contains any, so both now build from identical sources and differ only in the
+> variant line of their generated README. Either can be uploaded.
 
 **Building.** Compile with **XeLaTeX** (required for `fontspec` + `polyglossia` Hebrew); all fonts are bundled in `thesis/fonts/`, so no system-font installation is needed. See `thesis/OVERLEAF.md`. To use Overleaf: upload `thesis_overleaf.zip`, set **Menu → Compiler → XeLaTeX**, main document `main.tex`.
 
@@ -171,7 +177,7 @@ When all 6 AI models are constrained to ≈3,000 parameters:
 
 ## Unknown-Channel Contribution
 
-The thesis's principal contribution (Ch 6, hypothesis **H5**) studies **learned relaying when the channel is unknown to, or mismatched with, the classical relay's model class** — the regime where a fixed minimal MLP earns its place. It is reproduced in this framework by the `e6_*_ported.py` scripts, with figures/data in [`e6_unknown_channel_results/`](e6_unknown_channel_results/).
+The thesis's principal contribution (Ch 6, hypothesis **H5**) studies **learned relaying when the channel is unknown to, or mismatched with, the classical relay's model class** — the regime where a fixed minimal MLP is the one that still works. It is reproduced in this framework by the `e6_*_ported.py` scripts, with figures/data in [`e6_unknown_channel_results/`](e6_unknown_channel_results/).
 
 Three relay architectures appear in these studies, and two of them coincidentally have the same parameter count, so the labels are worth reading carefully: the canonical relay is $5 \to 24 \to 1$ (169 parameters), the unknown-ISI and flat-memory relays are $11 \to 13 \to 1$ (**170**), and the composite, blind and pilot-budget relays take complex I/Q pairs, $22 \to 7 \to 1$ (169 again).
 
@@ -208,7 +214,16 @@ python provenance_audit.py        # every result file is committed and newer tha
 
 - `MIN_CELLS` records the coverage each check is expected to reach; a shortfall fails rather than passing quietly.
 - A check that cannot run at all fails unless explicitly allowlisted in `ALLOWED_SKIPS`.
-- `tests/test_verifier_catches_drift.py` perturbs a published number in a scratch copy of the thesis and asserts the owning check flags it. Without this, nothing proves a check *can* fail.
+- `tests/test_verifier_catches_drift.py` perturbs a published number in a scratch copy of the thesis and asserts the owning check flags it.
+
+**Bibliography identifiers.** `scripts/verify_citations.py` checks each entry in
+`thesis/chapters/references.bib` against the publisher record, and its output is
+committed under `docs/research/`. 47 of the 64 entries carry a DOI or arXiv
+eprint; `docs/research/bib-identifiers-applied.json` records which were written
+and on what basis. The remaining 17 are listed there too, with the reason each
+was withheld -- nine are books whose record carries no DOI, and eight had only a
+nearest-title Crossref hit whose registrant prefix disagreed with the entry's own
+venue, which is how a title match can point at a different work. Without this, nothing proves a check *can* fail.
 
 Run the whole suite with `pytest`.
 
@@ -456,7 +471,7 @@ relaynet2/
 │   ├── run_full_comparison.py            # Full pipeline: train + evaluate all
 │   └── plot_normalized_3k.py             # Standalone 3K comparison plots
 │
-├── tests/                            # 187 tests (pytest)
+├── tests/                            # 249 tests (pytest)
 │   ├── test_channels.py                  # AWGN and Rayleigh channel tests
 │   ├── test_modulation.py                # BPSK modulation tests
 │   ├── test_relays.py                    # All relay strategy tests
@@ -489,6 +504,7 @@ relaynet2/
 │   └── OVERLEAF.md                       # Overleaf compile instructions
 ├── thesis_preview.pdf                # compiled thesis (top-level copy)
 ├── thesis_overleaf.zip               # self-contained Overleaf upload package
+├── thesis_overleaf_clean.zip         # same sources; the annotation-stripped variant
 │
 ├── e6_sim_ported.py                  # Unknown-channel study (Ch 6) ported to relaynet:
 ├── e6_viterbi_ported.py              #   ISI, Viterbi-MLSE benchmark, flat control,
@@ -592,7 +608,7 @@ for snr, ber, ci_lo, ci_hi in results:
 
 ## Testing
 
-All 187 tests pass:
+All 249 tests pass:
 
 ```bash
 python -m pytest tests/ -q
