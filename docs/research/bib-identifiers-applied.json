@@ -1,0 +1,218 @@
+[
+ {
+  "bibkey": "Laneman2004CooperativeDiversity",
+  "field": "doi",
+  "value": "10.1109/tit.2004.838089",
+  "basis": "10.1109 consistent with venue"
+ },
+ {
+  "bibkey": "CoverGamal1979RelayChannel",
+  "field": "doi",
+  "value": "10.1109/tit.1979.1056084",
+  "basis": "10.1109 consistent with venue"
+ },
+ {
+  "bibkey": "NazerGastpar2011ComputeForward",
+  "field": "doi",
+  "value": "10.1109/tit.2011.2165816",
+  "basis": "10.1109 consistent with venue"
+ },
+ {
+  "bibkey": "RankovWittneben2007HalfDuplexRelay",
+  "field": "doi",
+  "value": "10.1109/jsac.2007.070213",
+  "basis": "10.1109 consistent with venue"
+ },
+ {
+  "bibkey": "YeLiJuang2018OFDMDL",
+  "field": "doi",
+  "value": "10.1109/lwc.2017.2757490",
+  "basis": "10.1109 consistent with venue"
+ },
+ {
+  "bibkey": "SamuelDiskinWunder2019MIMODetect",
+  "field": "doi",
+  "value": "10.1109/TSP.2019.2899805",
+  "basis": "10.1109 consistent with venue"
+ },
+ {
+  "bibkey": "Dorner2018OverTheAirDL",
+  "field": "doi",
+  "value": "10.1109/jstsp.2017.2784180",
+  "basis": "10.1109 consistent with venue"
+ },
+ {
+  "bibkey": "Sun2018LearnToOptimize",
+  "field": "doi",
+  "value": "10.1109/tsp.2018.2866382",
+  "basis": "10.1109 consistent with venue"
+ },
+ {
+  "bibkey": "Gulrajani2017WGANgp",
+  "field": "eprint",
+  "value": "1704.00028",
+  "basis": "arxiv verified"
+ },
+ {
+  "bibkey": "GuGoelRe2022SSM",
+  "field": "eprint",
+  "value": "2111.00396",
+  "basis": "arxiv verified"
+ },
+ {
+  "bibkey": "Wolniansky1998VBLAST",
+  "field": "doi",
+  "value": "10.1109/issse.1998.738086",
+  "basis": "10.1109 consistent with venue"
+ },
+ {
+  "bibkey": "Telatar1999MIMO",
+  "field": "doi",
+  "value": "10.1002/ett.4460100604",
+  "basis": "10.1002 consistent with venue"
+ },
+ {
+  "bibkey": "Foschini1996LayeredST",
+  "field": "doi",
+  "value": "10.1002/bltj.2015",
+  "basis": "10.1002 consistent with venue"
+ },
+ {
+  "bibkey": "ZhengTse2003DMT",
+  "field": "doi",
+  "value": "10.1109/tit.2003.810646",
+  "basis": "10.1109 consistent with venue"
+ },
+ {
+  "bibkey": "TseHanly1999LinearMultiuser",
+  "field": "doi",
+  "value": "10.1109/18.749008",
+  "basis": "10.1109 consistent with venue"
+ },
+ {
+  "bibkey": "LoykaGagnon2004VBLASTAnalysis",
+  "field": "doi",
+  "value": "10.1109/twc.2004.830853",
+  "basis": "10.1109 consistent with venue"
+ },
+ {
+  "bibkey": "He2015DelvingRectifiers",
+  "field": "doi",
+  "value": "10.1109/iccv.2015.123",
+  "basis": "10.1109 consistent with venue"
+ },
+ {
+  "bibkey": "BergelICASSP2024",
+  "field": "doi",
+  "value": "10.1109/icassp48485.2024.10447401",
+  "basis": "10.1109 consistent with venue"
+ },
+ {
+  "bibkey": "Clarke1968Mobile",
+  "field": "doi",
+  "value": "10.1002/j.1538-7305.1968.tb00069.x",
+  "basis": "10.1002 consistent with venue"
+ },
+ {
+  "bibkey": "BahlCockeJelinekRaviv1974BCJR",
+  "field": "doi",
+  "value": "10.1109/tit.1974.1055186",
+  "basis": "10.1109 consistent with venue"
+ },
+ {
+  "bibkey": "Harper2023AMCDeepNets",
+  "field": "doi",
+  "value": "10.3390/electronics12183962",
+  "basis": "10.3390 consistent with venue"
+ },
+ {
+  "bibkey": "Shlezinger2020ViterbiNet",
+  "field": "doi",
+  "value": "10.1109/twc.2020.2972352",
+  "basis": "10.1109 consistent with venue"
+ },
+ {
+  "bibkey": "Forney1972MLSE",
+  "field": "doi",
+  "value": "10.1109/tit.1972.1054829",
+  "basis": "10.1109 consistent with venue"
+ },
+ {
+  "bibkey": "DivsalarSimon1990MSDD",
+  "field": "doi",
+  "value": "10.1109/9780470546543.ch9",
+  "basis": "10.1109 consistent with venue"
+ },
+ {
+  "bibkey": "PolyanskiyPoorVerdu2010FiniteBlocklength",
+  "field": "doi",
+  "value": "10.1109/tit.2010.2043769",
+  "basis": "10.1109 consistent with venue"
+ },
+ {
+  "bibkey": "HanlyTse1998DelayLimited",
+  "field": "doi",
+  "value": "10.1109/18.737514",
+  "basis": "10.1109 consistent with venue"
+ },
+ {
+  "bibkey": "Hornik1991UAT",
+  "field": "doi",
+  "value": "10.1016/0893-6080(91)90009-t",
+  "basis": "10.1016 consistent with venue"
+ },
+ {
+  "bibkey": "FarsadGoldsmith2018NNDetection",
+  "field": "doi",
+  "value": "10.1109/tsp.2018.2868322",
+  "basis": "10.1109 consistent with venue"
+ },
+ {
+  "bibkey": "Honkala2021DeepRx",
+  "field": "doi",
+  "value": "10.1109/twc.2021.3054520",
+  "basis": "10.1109 consistent with venue"
+ },
+ {
+  "bibkey": "OSheaHoydis2017PhysicalLayer",
+  "field": "doi",
+  "value": "10.1109/tccn.2017.2758370",
+  "basis": "10.1109 consistent with venue"
+ },
+ {
+  "bibkey": "EyuboqluQureshi1988RSSE",
+  "field": "doi",
+  "value": "10.1109/26.2724",
+  "basis": "10.1109 consistent with venue"
+ },
+ {
+  "bibkey": "Godard1980SelfRecovering",
+  "field": "doi",
+  "value": "10.1109/tcom.1980.1094608",
+  "basis": "10.1109 consistent with venue"
+ },
+ {
+  "bibkey": "TreichlerAgee1983CMA",
+  "field": "doi",
+  "value": "10.1109/tassp.1983.1164062",
+  "basis": "10.1109 consistent with venue"
+ },
+ {
+  "bibkey": "Ding1991IllConvergence",
+  "field": "doi",
+  "value": "10.1109/26.99137",
+  "basis": "10.1109 consistent with venue"
+ },
+ {
+  "bibkey": "RaheliPolydorosTzou1995PSP",
+  "field": "doi",
+  "value": "10.1109/26.380054",
+  "basis": "10.1109 consistent with venue"
+ },
+ {
+  "bibkey": "ParkSimeone2021MetaDemod",
+  "field": "doi",
+  "value": "10.1109/tsp.2020.3043879",
+  "basis": "10.1109 consistent with venue"
+ }
+]
