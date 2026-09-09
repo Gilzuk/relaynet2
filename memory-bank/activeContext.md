@@ -1509,3 +1509,51 @@ session did not open) -- only the supporting facts were stale. All four files
 now state the durable form, "a downstream mirror that carries nothing `main`
 lacks", instead of a commit count or a last-moved date, both of which go stale
 the moment the author merges again.
+
+## 2026-09-09 -- Copilot required-revisions pass (branch claude/copilot-required-revisions)
+
+An 18-item Copilot review was relayed for action. **It was written against a
+pre-port draft**: items 1, 5, 6, 8-fallback, 9, 10 and 11 were already satisfied
+on `main` by PR #82, in several cases in almost the wording Copilot proposed.
+Verify against the current text before acting on any further round of this
+feedback.
+
+Applied: 2 (identifiability -> channel-estimate reliability, five rendered
+sites), 3 (two remaining family-agnostic/model-agnostic contradictions), 4 (BCJR
+scoped by constellation), 7 (zero-error upper bound; exploratory-inference and
+seed-coverage declaration), 12 (deployment footprint vs IoT suitability), 13
+(section retitled), 14 (QPSK constellation), 15 (withdrawn-benchmark narrative
+moved to the rendered appendix), 17 (assumptions-and-claims table in ch03), 18
+(central claim scoped to the evaluated pipelines).
+
+**Where Copilot was wrong.** Item 4 instructed that all statements saying BCJR
+was unevaluated be removed. BCJR was run at QPSK and not at BPSK, so obeying
+that would have asserted a benchmark that does not exist; each site was scoped
+by constellation instead. Item 4 also named the abstract, introduction, summary
+and Hebrew abstract as needing updates -- none of them mentions BCJR. Item 17's
+premise that scope qualifications "appear repeatedly" does not hold: each
+appears one to three times and each does local work, so the disclaimer-trimming
+half of that item was not performed and no page was recovered from it.
+
+**Three structural discoveries, each worth acting on separately.**
+
+1. `\include{chapters/ak_response_appendix}` and
+   `\include{chapters/appendix_f_review}` are **commented out** in
+   `thesis/main.tex` (lines 413-414). Neither file renders. An item-15
+   relocation into `appendix_f_review.tex` would silently have deleted the
+   withdrawn-benchmark record from the thesis; it was caught by an undefined
+   reference and re-homed in `appendices.tex`, which does render. Anything
+   edited in those two files changes nothing in the PDF.
+2. `api.crossref.org` is denied by this environment's network policy (403 at the
+   proxy). **Item 16 is not done**: 53 of 64 bib entries carry no DOI, eprint or
+   URL. DOIs were not written from memory and must not be. Needs a session with
+   Crossref reachable.
+3. 17 underscore-prefixed files sit in `thesis/chapters/` (`_ch04_methods.tex`
+   and friends) and are included by nothing. One still holds the pre-port
+   `t_{0.025, M-1}`. Harmless to the build, a trap for a future reader.
+
+**Page count: 130 countable** (147 total - 14 Roman - 3 Hebrew, cross-checked
+against folio 130 on the last body page, 144). Up one from 129: the
+assumptions-and-claims table costs a page and the item-15 relocation moved text
+within the document rather than out of it. Ten over the 120 limit.
+
