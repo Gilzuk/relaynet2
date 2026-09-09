@@ -1593,3 +1593,45 @@ one, so the body is unchanged at 130 -- ten over the 120 limit. The assumptions
 table added earlier today is the one countable page this session added; reverting
 it returns 129.
 
+## 2026-09-09 (later still) -- verifier repaired, README refreshed, mirror published
+
+**The history purge broke verify_thesis_tables.py in two ways, both now fixed.**
+`prose:qpsk-decomposition` lost its sentence because the deleted
+withdrawn-benchmark paragraph carried *measurements*, not only narrative --
+ch08 was left citing "1.073 against 1.090 bits per symbol error" with nothing in
+the body reporting it. Restored in ch07 as corroboration, no reference to any
+earlier version. The purge had also orphaned three ch07 paragraphs still
+speaking of "the apparent reversal"; all three now stand alone.
+`arch:relay-param-counts` fell 7 -> 5 because two cells came from a shape claim
+inside a `\REV{}` annotation that never rendered; the floor is lowered with a
+comment, and the drift test repointed at the appendix copy a reader can see.
+
+**Lesson worth keeping: a source-scraping verifier counts text the PDF never
+shows.** Part of its coverage was annotations. Deleting invisible markup is not
+a no-op for the checks.
+
+`tests/test_overleaf_project.py` asserted annotated mode preserves `\REV{}`,
+which the source can no longer satisfy. Replaced with a direct `strip_rev` unit
+test plus a mode-parity test -- the two modes now differ only in the blank lines
+stripping leaves behind, so the two published bundles are equivalent.
+
+**Status: verify_thesis_tables 526 cells / 0 inconsistencies / no shortfall / no
+skips; provenance_audit passes; 249 tests pass.**
+
+README corrected: test badge and two prose counts said 187 against 249;
+"cooperative" replaced by "relay" (no direct source--destination path); the
+"earns its place" phrasing aligned with ch07; a bibliography-identifiers
+paragraph added; both Overleaf bundles documented. `thesis_preview.pdf` and both
+bundles regenerated -- they were four days and two merged PRs stale, and both
+bundles now report 0 annotations.
+
+**Mirror published.** `Gilzuk/relaynet2-thesis` main advanced 714251c -> dc53f73
+as a fast-forward, "Thesis at 6b1a0e1 (clean)": 55 files, new abstract, zero
+`\REV`, 34 doi plus 2 eprint fields, and `thesis.pdf` byte-identical to
+`thesis/main.pdf` (146 pages).
+
+**Note the asymmetry:** the mirror now reflects branch
+`claude/copilot-required-revisions`, which is NOT merged into relaynet2 `main`.
+Until that branch merges, the published thesis is ahead of this repository's
+default branch.
+
