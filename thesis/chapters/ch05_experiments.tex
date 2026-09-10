@@ -297,7 +297,7 @@ SNR (dB) & coded-DF & MLP (5/10/15) & MLP (5--30) & oracle & coded-DF FER \\
 The mechanism of Table~\ref{tbl:table38} suggests an obvious repair. If the trouble with block-DF is that it commits to a codeword, replace the commitment with soft information: run BCJR (forward-backward MAP) at the relay instead of Viterbi and forward the posterior-mean symbol per trellis step, so a symbol the relay is unsure of is shrunk toward the origin rather than asserted. The same idea applies to the learned relay, whose softmax already carries a posterior it was throwing away: forwarding $\sum_k p_k s_k$ instead of $\arg\max_k p_k$ costs nothing, needs no retraining, and reuses the identical weights, so any difference isolates the read-out rule alone. Table~\ref{tbl:table39} evaluates both against their hard counterparts and against an oracle relay that forwards the clean codeword, on paired trials.
 
 \begin{longtable}[]{@{}lccccc@{}}
-\caption[Soft- versus hard-decision relaying on the coded link]{Soft- versus hard-decision relaying, canonical QPSK/Rayleigh, rate-1/2 $K{=}3$, 100 paired trials $\times$ 100{,}000 information bits. The MLP hard/soft pair shares one set of trained weights and differs only in the read-out. The oracle relay forwards the clean codeword, giving the hop-2-only floor. Both block-DF variants are marked at 8~dB, where they are a statistical tie}\label{tbl:table39}\tabularnewline
+\caption[Soft- versus hard-decision relaying on the coded link]{Soft- versus hard-decision relaying, canonical QPSK/Rayleigh, rate-1/2 $K{=}3$, 100 paired trials $\times$ 100{,}000 information bits. The MLP hard/soft pair shares one set of trained weights and differs only in the read-out. The oracle relay forwards the clean codeword, giving the hop-2-only floor. Both block-DF variants are marked at 8~dB, where they are a statistical tie. $^{\dagger}$Nominal-noise-variance run; not calibrated at high SNR (see text below). The variance-corrected figure is $0.001376$, a statistical tie with hard block-DF's $0.001375$.}\label{tbl:table39}\tabularnewline
 \toprule\noalign{}
 SNR (dB) & hard block-DF & soft block-DF & MLP hard & MLP soft & oracle \\
 \midrule\noalign{}
@@ -314,7 +314,6 @@ SNR (dB) & hard block-DF & soft block-DF & MLP hard & MLP soft & oracle \\
 12 & \textbf{0.01537} & 0.01537 & 0.02142 & 0.01768 & 0.00768 \\
 16 & 0.004222 & 0.004222 & 0.004403 & \textbf{0.003633} & 0.002105 \\
 20 & 0.001354 & 0.002348$^{\dagger}$ & 0.001056 & \textbf{0.000912} & 0.000682 \\
-\multicolumn{6}{l}{\footnotesize $^{\dagger}$Nominal-noise-variance run; miscalibrated at high SNR (see text below). The variance-corrected figure is $0.001376$, a statistical tie with hard block-DF's $0.001375$.} \\
 \end{longtable}
 
 \begin{figure}[htbp]
