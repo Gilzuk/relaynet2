@@ -134,52 +134,6 @@ The following limitations define the scope of the canonical comparison, confined
 
 These delimitations isolate the relay processing function from protocol and system effects.
 
-Table~\ref{tbl:assumptions-claims} collects the assumptions that bound every result reported in this
-thesis, together with what each one does and does not license. It is the single reference for scope;
-the individual chapters state a qualification only where it is needed to read a specific number.
-
-\begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.20}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.40}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.40}}@{}}
-\caption[Assumptions, supported claims and unsupported generalizations]{Assumptions as implemented,
-the claims they support, and the generalizations they do not}\label{tbl:assumptions-claims}\tabularnewline
-\toprule\noalign{}
-Dimension & As implemented & Does not support \\
-\midrule\noalign{}
-\endfirsthead
-\toprule\noalign{}
-Dimension & As implemented & Does not support \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-Channel & Two-hop SISO, half-duplex, i.i.d.\ Rayleigh fast fading, complex baseband, Gray-coded QPSK,
-uncoded, with the relay function as the only varied axis. Chapters~\ref{sec:experiments}
-and~\ref{sec:unknown-channels} depart from this deliberately and say so. &
-Multi-relay, full-duplex, MIMO, or constellations denser than 16-QAM. No direct source--destination
-path is modeled, so nothing here bears on cooperative diversity. \\
-Relay channel knowledge & No per-block channel estimate and no online adaptation. The relay is trained
-on the impairment family it is later tested on; layers~3 and~4 redraw realizations from that family. &
-Family-agnostic or model-agnostic operation. The supported property is
-\emph{realization-agnostic} inference amortized over a trained family; a structurally different family
-is untested. \\
-Comparator knowledge & AF and symbol-wise DF are memoryless; Viterbi MLSE is run with genie taps or
-with an LS estimate from a stated pilot budget; CMA is blind. BCJR/APP is measured at QPSK only. &
-A claim against classical receiver design in general. The comparators are the specific pipelines
-implemented here; reduced-state sequence estimation, decision feedback and hybrid model-based
-detectors are not evaluated. \\
-Statistical basis & 95\% intervals over Monte Carlo channel and noise realizations at fixed trained
-weights; paired Wilcoxon tests at $\alpha=0.05$ per comparison. Training-seed replication over three
-initializations in Sections~\ref{sec:minimum-relay-size} and~\ref{sec:complexity-curve-turn} only. &
-Joint significance across the full set of tests (no multiplicity correction), confirmatory inference
-(comparisons were not prespecified), equivalence from a null result, or seed-robustness for any
-single-run result. \\
-Cost accounting & Multiply-accumulates per symbol at fixed $(W,H,M)$, plus wall-clock for reference
-implementations (vectorized NumPy against an interpreted trellis). &
-An implementation-independent speed advantage, or a universal crossover in channel memory: the
-$L^{\star}$ figure is arithmetic at one architecture and one counting convention. \\
-Deployment & Parameter count and float32 footprint. &
-Embedded or IoT suitability. Quantized accuracy, throughput, memory traffic, energy per symbol and a
-hardware implementation are all unmeasured. \\
-\end{longtable}
+The scope that bounds every result in this thesis, and the generalizations it does not
+license, is set out once in Section~\ref{sec:introduction-scope} and not restated per chapter.
+The delimitations below are the ones specific to the objectives above.
