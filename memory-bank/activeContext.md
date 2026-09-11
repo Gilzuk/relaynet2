@@ -1663,3 +1663,20 @@ The "never merge a pull request this session did not open" rule survives, now
 stated generally rather than in terms of `clean-thesis`. PR #87
 (`main` -> `clean-thesis`, opened from the UI) is the author's to merge or close.
 
+## 2026-09-11 -- branch workflow fixed: main is always the baseline
+
+Standing instruction from the author: **the baseline is always `main`; every fix
+gets a new branch off `main`, and every branch gets a pull request.** Written
+into `CLAUDE.md`, replacing two rules it contradicted -- the "assigned feature
+branch" line (which named a single long-lived branch) and "do not create a pull
+request unless the user explicitly asks".
+
+What went wrong that this fixes: branches were carried across unrelated fixes,
+so a branch whose PR had merged kept accumulating commits. That produced a
+squash/replay mismatch needing a cherry-pick recovery, and twice a UI-opened PR
+pointed at a base that could not deliver the work (`clean-thesis`), needing a
+retarget. Branching fresh off `origin/main` per fix avoids both.
+
+Also nuanced the "never merge a PR this session did not open" rule: an explicit
+instruction from the author to merge overrides it. That happened with PR #89.
+

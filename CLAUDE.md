@@ -12,9 +12,13 @@ This repo is an M.Sc. thesis ("Deep Learning Architectures for Two-Hop Relay Com
 - **`main` is the sole authoritative branch for `chapters/**`.** Always branch off `main` for thesis work and merge back through a pull request. `main` is the only branch this project targets; the Overleaf mirror at `Gilzuk/relaynet2-thesis` is a *generated publish target*, produced by `scripts/overleaf_sync.py --repo`, never edited directly and never a source. See `memory-bank/techContext.md` gotcha #5 for the historical branch incident this policy supersedes.
 
 ## Working agreement (this session, carried forward)
-- Develop on the assigned feature branch (currently `claude/porting-md-file-l6xzsr`); never push elsewhere without explicit permission.
-- Do not create a pull request unless the user explicitly asks for one.
-- **Never merge a pull request this session did not open.** Leave such PRs for their author to merge or close, whatever their base branch. This has come up twice with UI-opened PRs targeting branches other than `main`.
+- **`main` is always the baseline, and every fix gets its own branch and its own pull request.** Branch off the
+  current `origin/main` (not off the previous working branch), apply the one fix, push, and open a PR into
+  `main`. Do not continue stacking commits onto a branch whose PR has merged, and do not carry a branch
+  forward across unrelated fixes -- start a new one each time. Rebase onto `main` before opening the PR if
+  `main` has moved, so the PR contains only the new work.
+- Never push directly to `main`.
+- **Never merge a pull request this session did not open, unless the author explicitly says to merge it.** Otherwise leave such PRs for their author. This has come up three times with UI-opened PRs; two targeted branches other than `main` and had to be retargeted before they could deliver anything.
 - Follow the SNR convention documented in `memory-bank/techContext.md` exactly (γ = 10^(SNR_dB/10)) — this is load-bearing across every chapter's results, not just E6.
 - New relays/channels for `relaynet` should follow the interface patterns in `memory-bank/systemPatterns.md` (`.process()` for relays, callable `channel(signal, snr_db)` for channels) rather than inventing new conventions.
 - Simulation result numbers are scientific claims. Never fabricate, adjust, or silently drop Monte Carlo trials to hit an expected number — if a result doesn't match a spec (e.g., the E6_FLAT control gap ≤0.0036 target), report the discrepancy plainly rather than tuning until it matches.
