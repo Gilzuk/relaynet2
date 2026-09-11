@@ -41,27 +41,22 @@ One of the most practically useful findings is that relay BER does not improve w
 
 This result has important theoretical and practical implications:
 
-\subsection{Information-Theoretic Perspective}\label{sec:information-theoretic-perspective}
+\subsection{Why Capacity Is Not the Binding Constraint}\label{sec:information-theoretic-perspective}
 
-The canonical memoryless relay-denoising task maps a window of \(2w+1\) real-valued noisy observations to a single real-valued clean estimate, applied per axis to the canonical QPSK symbol (equivalently, the real BPSK-over-AWGN form of the same problem). Each real axis carries exactly 1 bit of information, and under the canonical i.i.d.\ model the sufficient statistic for the current bit is the current observation alone, with Bayes-optimal posterior mean \(f^*(y_i) = \tanh(y_i / \sigma^2)\). The neighboring window samples used by the learned relays are therefore redundant architectural inputs in this setting rather than part of the sufficient statistic, so the \textbf{effective dimensionality} of the target mapping is still 1: far below the \(2w+1 = 5\) or \(11\) input dimensions.
+The canonical relay-denoising task maps a window of $2w+1$ noisy observations to one clean estimate per
+axis, but under the canonical i.i.d.\ model the sufficient statistic for the current bit is the current
+observation alone, with Bayes-optimal posterior mean $f^*(y_i)$. The other window taps are incidental inputs
+rather than part of the sufficient statistic, so the effective dimensionality of the target mapping is one.
+Matching model complexity to that dimensionality --- the minimum-description-length heuristic --- already
+suggests that a very small network suffices, and the measurements agree: $3{,}000$ parameters perform
+near-identically to $169$, and Mamba-S6 at $24{,}001$ parameters, $140\times$ larger than the MLP, does not
+improve on it and is worse at low SNR.
 
-As a heuristic, the minimum description length (MDL) principle suggests matching model complexity to the effective dimensionality of the target mapping. Since the target here is a one-dimensional monotone function of the current sufficient statistic, even the 169-parameter network has capacity far in excess of what the mapping requires; this is offered as an intuition for why the larger models did not improve on the smallest one, not as a formal MDL bound.
-
-\subsection{Bias-Variance Analysis}\label{sec:bias-variance-analysis}
-
-Applying the bias-variance decomposition of Equation~\ref{eq:bias-variance-decomp} to the three evaluated sizes:
-
-\begin{itemize}
-\tightlist
-\item
-  \textbf{169 parameters:} This model is sufficient to attain the reported BER, but its bias and variance were not estimated separately.
-\item
-  \textbf{3,000 parameters:} Performance is nearly identical to 169 parameters; the measurements do not establish higher predictive variance.
-\item
-  \textbf{24,001 parameters (Mamba-S6):} Despite having 140$\times$ more parameters than the MLP, it does not improve on it; on the canonical channel it is worse at low SNR (Table~\ref{tbl:table2}). The marginal utility of the additional parameters is at best vanishingly small.
-\end{itemize}
-
-This decomposition is a framework for interpreting the observation, not a measurement of it: bias and variance were not estimated separately, which would require training each configuration repeatedly across seeds and comparing training against held-out error.
+What this does \emph{not} establish is the mechanism. The bias--variance decomposition of
+Equation~\ref{eq:bias-variance-decomp} is a framework for interpreting that observation, not a measurement of
+it: bias and variance were never estimated separately, which would require training each configuration
+repeatedly across seeds and comparing training against held-out error. The plateau is measured; its
+decomposition is not.
 
 \subsection{Does the Complexity Curve Turn Upward?}\label{sec:complexity-curve-turn}
 
