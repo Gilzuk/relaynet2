@@ -67,7 +67,7 @@ Second, the \textbf{bias-variance decomposition} provides a framework for unders
 }\end{equation}
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad bias-variance-decomp}
 
-The irreducible term is the minimum achievable MSE, set by the channel noise. Increasing capacity can change both bias and variance, but it does not necessarily reduce one or increase the other in modern regularized networks. Since the target \(f^*\) is a smooth low-dimensional mapping in the memoryless special case, the working hypothesis is that additional capacity may buy little. Whether that occurs is an empirical question; Section~\ref{sec:capacity-and-overfitting} reports only what was measured and does not infer overfitting without train--test-gap evidence.
+For the denoising problem considered here the irreducible term is the Bayes risk $\mathbb{E}[\operatorname{Var}(X \mid Y)]$, the conditional uncertainty that remains after observing $Y$, rather than the channel-noise variance $\sigma^2$ itself. The decomposition is used as a conceptual framework; the irreducible term should be read that way. Increasing capacity can change both bias and variance, but it does not necessarily reduce one or increase the other in modern regularized networks. Since the target \(f^*\) is a smooth low-dimensional mapping in the memoryless special case, the working hypothesis is that additional capacity may buy little. Whether that occurs is an empirical question; Section~\ref{sec:capacity-and-overfitting} reports only what was measured and does not infer overfitting without train--test-gap evidence.
 
 \subsection{Prior Work in Deep Learning for Physical-Layer Processing}\label{sec:prior-work-in-deep-learning-for-physical-layer-processing}
 
@@ -100,7 +100,7 @@ The MLP equation is shown in equation \ref{eq:mlp-relay}:
 }\end{equation}
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad mlp-relay}
 
-The sliding window formulation ($i \in [i-w:i+w]$) is motivated by the observation that adjacent received symbols share common noise statistics and channel conditions.
+The sliding window formulation ($i \in [i-w:i+w]$) is retained for architectural consistency with the unknown-ISI experiments of Chapter~\ref{sec:unknown-channels}. Under the canonical i.i.d.\ per-symbol fading model, adjacent observations carry no additional information about the current symbol, and the window is redundant there by construction.
 Under the canonical model (i.i.d.\ fast fading, white noise), adjacent symbols are statistically independent, so the single received sample $y_R[i]$ is already a sufficient statistic for $x[i]$; a single-symbol estimator ($w=0$) therefore loses nothing and a window confers no theoretical benefit. The window is therefore not motivated by temporal correlation in the canonical setting; it is retained because it is required by the unknown-channel study of Chapter~\ref{sec:unknown-channels}, where a 3-tap ISI channel couples adjacent symbols and the relay must span that memory. Keeping a fixed windowed architecture across all experiments isolates the effect of the channel assumptions from the network structure.
 
 \textbf{Multi-SNR training} is a key design choice: training on data generated at multiple SNR levels (5, 10, 15 dB here) yields a single estimator whose denoising function generalizes across operating conditions rather than specializing to one noise level. In decision-theoretic terms the training objective averages the loss over the sampled SNRs, so what it minimises is \emph{Bayes} risk under the empirical SNR distribution, not the worst-case (minimax) risk over that range: nothing in the objective protects the SNR at which the network happens to do worst.
@@ -109,11 +109,11 @@ A critical question in applying neural networks to relay processing, essential f
 
 \section{Generative Models for Signal Processing}\label{sec:generative-models-for-signal-processing}
 
-Generative models offer an alternative to directly learning a denoising function (the discriminative approach above): they instead learn the distribution of clean signals \(p(\mathbf{x})\) and reconstruct the transmitted signal from noisy observations via Bayes' rule:
+Generative models offer an alternative to directly learning a denoising function (the discriminative approach above): they instead learn the distribution of clean signals \(p(\mathbf{x})\). Bayesian denoising provides the general probabilistic framing:
 \begin{equation}\protect\phantomsection\label{eq:bayes-rule}{p(\mathbf{x} | \mathbf{y}) \propto p(\mathbf{y} | \mathbf{x}) p(\mathbf{x})}
 \end{equation}
 
-The generative approach is theoretically appealing because it separates the modeling of the signal prior from the noise model, potentially enabling better generalization to unseen noise conditions.
+The generative approach is theoretically appealing because it separates the modeling of the signal prior from the noise model, potentially enabling better generalization to unseen noise conditions. The VAE implemented in this thesis does not compute that posterior explicitly. It is a latent-variable generative architecture trained supervised, with noisy observations at the encoder and the clean symbol as the reconstruction target, under a KL regulariser; Eq.~\eqref{eq:bayes-rule} frames the problem it addresses rather than describing the operation it performs.
 
 \subsection{Variational Autoencoders}\label{sec:variational-autoencoders}
 
@@ -226,7 +226,7 @@ These adaptive-filtering connections become directly relevant only in the unknow
 
 \subsection{State Space Models for Signal Processing}\label{sec:state-space-models-for-signal-processing}
 
-The application of state space models to physical-layer signal processing is, to the best of our knowledge, largely unexplored. Classical signal processing relies extensively on LTI state space models (Kalman filters, Wiener filters), and the SSM framework provides a natural neural extension of these classical tools. The connection is direct: a trained SSM with fixed (input-independent) parameters implements a learnable linear filter, while the selective Mamba variant implements a learnable \emph{adaptive} filter. For the relay denoising task, this means Mamba can potentially learn the optimal filter structure from data, without requiring manual specification of filter order, cutoff frequencies, or adaptation algorithms.
+The application of state space models as the \emph{relay-side} processing function is, to the best of our knowledge, largely unexamined. Transformers and state-space models have already been applied to a range of wireless receiver and signal-processing tasks; what the literature reviewed here did not turn up is a controlled comparison of these architectures against one another, at a matched parameter budget, in the two-hop relay benchmark studied in this thesis. Classical signal processing relies extensively on LTI state space models (Kalman filters, Wiener filters), and the SSM framework provides a natural neural extension of these classical tools. The connection is direct: a trained SSM with fixed (input-independent) parameters implements a learnable linear filter, while the selective Mamba variant implements a learnable \emph{adaptive} filter. For the relay denoising task, this means Mamba can potentially learn the optimal filter structure from data, without requiring manual specification of filter order, cutoff frequencies, or adaptation algorithms.
 
 Within the literature reviewed for this thesis, no prior controlled comparison of Mamba-S6, Mamba-2 SSD, and Transformers for the same relay-processing task was identified. The relay window used throughout is short ($n=11$), which is precisely the regime where attention's quadratic cost is negligible and a linear-time recurrence has nothing to recover; the throughput advantages reported for the SSD formulation at longer context lengths \cite{DaoGu2024TransformersSSM} are therefore not exercised by this application and are not measured here.
 
@@ -279,7 +279,7 @@ under the same real-noise convention as the single-hop case (Remark~\ref{noise-c
 \end{equation}
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad gamma-high-snr}
 
-confirming the well-known 3 dB penalty of AF relaying.
+confirming the well-known 3 dB penalty of AF relaying. This penalty is a property of the analytical CSI-assisted variable-gain model above. The AF relay implemented in this thesis uses a single block-adaptive scalar estimated from the empirical received power, so Eq.~\eqref{eq:gamma-high-snr} is background rather than a closed-form prediction of the simulated AF curve, and the 3 dB figure should not be read as explaining it.
 
 \subsubsection{Two-hop DF BER}\label{sec:awgn-two-hop-df-ber}
 For a decode-and-forward relay with equal-SNR hops, an error occurs at the destination if exactly one hop introduces an error:
@@ -321,7 +321,7 @@ Averaging the conditional BER \(P_e(\gamma_h) = Q(\sqrt{2\gamma_h})\) over the e
 }\end{equation}
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad rayleigh-ber}
 
-where \(\bar{\gamma} = \text{SNR}\) is the average SNR. At high SNR (\(\bar{\gamma} \gg 1\)):
+where \(\bar{\gamma} = \gamma_b = \bar{E_b}/N_0\) is the average SNR \emph{per bit}. This distinction is load-bearing, because the canonical experiments plot \(\gamma_s = E_s/N_0\) per \emph{symbol}: for QPSK, \(\gamma_b = \gamma_s / 2\), a \(3.01\)~dB offset. Substituting gives the per-bit Rayleigh expression in terms of the plotted axis, \(P_b = \tfrac{1}{2}\bigl(1 - \sqrt{\gamma_s/(\gamma_s+2)}\bigr)\), which is the form the DF-theory column of Chapter~\ref{sec:experiments} evaluates. At high SNR (\(\bar{\gamma} \gg 1\)):
 
 \begin{equation}\protect\phantomsection\label{eq:rayleigh-ber-approx}{P_e^{\text{Rayleigh}} \approx \frac{1}{4\bar{\gamma}}
 }\end{equation}
