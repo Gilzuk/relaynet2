@@ -1635,3 +1635,31 @@ as a fast-forward, "Thesis at 6b1a0e1 (clean)": 55 files, new abstract, zero
 Until that branch merges, the published thesis is ahead of this repository's
 default branch.
 
+## 2026-09-11 -- clean-thesis removed from handling; main is the only target
+
+At the author's instruction, `clean-thesis` is no longer part of this project's
+workflow. The live rule files -- `CLAUDE.md`, `.clinerules/00-general.md`,
+`.clinerules/90-safety.md`, `.github/skills/code-review/SKILL.md` -- no longer
+name it at all. `main` is the sole branch this project targets.
+
+**Verified before removing it, because the names invite confusion:**
+`clean-thesis` (a branch in `Gilzuk/relaynet2`) and `Gilzuk/relaynet2-thesis`
+(the Overleaf mirror repository) are unrelated. `git merge-base` finds **no
+common ancestor** between `origin/clean-thesis` and `thesis-repo/main`, and
+neither `scripts/overleaf_sync.py` nor `scripts/overleaf_project.py` mentions
+`clean-thesis` anywhere. The publisher targets `overleaf-dist` (local staging)
+-> `thesis-repo/main` and `overleaf/master`. Dropping `clean-thesis` therefore
+cannot affect mirror publishing.
+
+**Historical entries were deliberately NOT rewritten.** `techContext.md` gotcha
+#5, `progress.md`, this file's earlier entries and
+`e6_unknown_channel_results/README.md` still describe work done on
+`clean-thesis` when it was the authoritative branch. That is what happened, and
+the memory bank exists to record it. The code-review skill retains one sentence
+telling reviewers those entries are superseded history, not current guidance, so
+they are not flagged as defects.
+
+The "never merge a pull request this session did not open" rule survives, now
+stated generally rather than in terms of `clean-thesis`. PR #87
+(`main` -> `clean-thesis`, opened from the UI) is the author's to merge or close.
+
