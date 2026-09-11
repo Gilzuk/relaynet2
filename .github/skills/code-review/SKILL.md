@@ -158,15 +158,12 @@ review rounds without improving the thesis.
 - **The cGAN is implemented but excluded from every reported comparison**, on
   cost grounds. It is described in the methods chapter; it has no results
   column anywhere.
-- **`main` is the authoritative branch.** `clean-thesis` has been stalled
-  since 2026-07-18 and `main` contains everything it has plus a month of
-  further work. `CLAUDE.md`, `.clinerules/90-safety.md`, and
-  `.clinerules/00-general.md` were all corrected on 2026-08-25 to say so —
-  none of them name `clean-thesis` as authoritative any more. Older entries in
-  `memory-bank/activeContext.md` still call `clean-thesis` "the actual
-  authoritative thesis branch"; those are historical journal entries about a
-  past incident, explicitly marked superseded in place, not current guidance
-  — do not flag them as a defect.
+- **`main` is the authoritative branch, and the only one this project
+  targets.** The Overleaf mirror at `Gilzuk/relaynet2-thesis` is a generated
+  publish target, not a source. Older entries in `memory-bank/` name a
+  `clean-thesis` branch as authoritative; those are historical journal entries
+  about a past incident, superseded and retained as history, not current
+  guidance — do not flag them as a defect.
 
 ## Low value here
 
