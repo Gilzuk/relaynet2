@@ -18,6 +18,11 @@ This repo is an M.Sc. thesis ("Deep Learning Architectures for Two-Hop Relay Com
   forward across unrelated fixes -- start a new one each time. Rebase onto `main` before opening the PR if
   `main` has moved, so the PR contains only the new work.
 - Never push directly to `main`.
+- **Every pull request's base is `main`, without exception.** Pull requests opened from the Claude Code UI have
+  three times defaulted to a base of `clean-thesis`, where they arrive conflicted and cannot deliver the work.
+  On being told a PR exists for the current branch, check its base before relying on it; if the base is anything
+  other than `main`, retarget it and rewrite the body, which in those cases described unrelated already-merged
+  work. `clean-thesis` was retired on 2026-09-13 and its history preserved on the `archive/clean-thesis` branch.
 - **Never merge a pull request this session did not open, unless the author explicitly says to merge it.** Otherwise leave such PRs for their author. This has come up three times with UI-opened PRs; two targeted branches other than `main` and had to be retargeted before they could deliver anything.
 - Follow the SNR convention documented in `memory-bank/techContext.md` exactly (γ = 10^(SNR_dB/10)) — this is load-bearing across every chapter's results, not just E6.
 - New relays/channels for `relaynet` should follow the interface patterns in `memory-bank/systemPatterns.md` (`.process()` for relays, callable `channel(signal, snr_db)` for channels) rather than inventing new conventions.
