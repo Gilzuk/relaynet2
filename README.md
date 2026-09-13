@@ -1,4 +1,4 @@
-# RelayNet2 — Generative AI for Two-Hop Relay Communication
+# RelayNet2 — Learned and Classical Relay Strategies for Two-Hop Communication
 
 [![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://python.org)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.6+-red.svg)](https://pytorch.org)
@@ -10,6 +10,51 @@
 A framework for comparing **classical and AI-based relay strategies** in two-hop relay communication, over **AWGN and Rayleigh fading** SISO channels, with **BPSK, QPSK and 16-QAM** modulation.
 
 > **Thesis vs. framework scope.** This repository contains both the `relaynet` simulation **framework** (whose full capabilities are described below) and the M.Sc. **thesis** it supports, under [`thesis/`](thesis/). The thesis deliberately fixes a **single canonical setup** — SISO on both hops, i.i.d. Rayleigh fast fading, complex baseband, Gray-coded QPSK, uncoded BER — and varies only the relay function. Its **principal contribution** is **learned relaying under unknown/mismatched channels** (carried on BPSK); the higher-order-modulation extension is not part of the current build. MIMO, Rician relay comparison, and 16-PSK were removed from both the thesis and the framework, and are recorded as *future work* (Rician is retained only to draw the fading-distribution figure). See the [Thesis](#thesis-msc) section.
+
+---
+
+## What the thesis found
+
+The M.Sc. thesis this framework supports is *Deep Learning Architectures for Two-Hop
+Relay Communication* (Tel Aviv University, Gil Zukerman, 2026). Its result in one
+sentence: **on a matched, memoryless two-hop relay channel no learned relay evaluated
+here improves on classical decode-and-forward, while on channels whose memory or
+impairments fall outside that model a compact learned relay restores reliable relaying —
+without ever overtaking a correctly informed classical sequence detector.**
+<sub>Source: `thesis/chapters/ch09_summary.tex`, closing paragraph.</sub>
+
+**Research question.** Under what channel-information and channel-memory conditions can a
+learned relay improve upon or complement classical AF/DF processing in two-hop wireless
+communication?
+<sub>Source: `thesis/chapters/ch03_objectives.tex`, §Two Research Questions.</sub>
+
+The argument is a four-layer ladder of progressively relaxed channel assumptions
+<sub>(source: `thesis/chapters/ch07_unknown_and_mismatch_channels.tex`, Table `tbl:layers`)</sub>:
+
+| Layer | Conditions | Classical comparator | Result |
+|---|---|---|---|
+| 1 | Memoryless, known channel, perfect CSI | Symbol-wise DF, zero parameters | **Classical wins.** DF `0.1218` vs the MLP's `0.1229` at 8 dB — the learned relay matches DF, at 169 parameters against none |
+| 2 | + 3-tap ISI, CSI still perfect | Viterbi MLSE with exact taps | **Split.** DF rises from `0.1802` at 8 dB to `0.2457` at 20 dB; the MLP restores the link (`0.0065`) but genie-CSI Viterbi leads by 1–1.5 dB |
+| 3 | + finite pilot budget | Pilot-aided LS estimate, then MLSE | **Crossover.** At 10 dB LS+MLSE holds `0.0283` on 200 pilots and `0.0335` on 20; by 10 pilots it degrades to `0.0545` and the pilot-free MLP leads |
+| 4 | + unseen realization from the trained family, per block | CMA blind equalization | **Learned relay wins.** MLP `0.00262` vs CMA `0.00329` at 20 dB; decision-directed blind MLSE is unstable |
+
+**The boundary of the claim.** The learned relay is trained and tested within the same
+parametric impairment family, so the supported property is *realization-agnostic, not
+family-agnostic*; generalization to a structurally different family is untested.
+<sub>Source: `thesis/chapters/ch07_unknown_and_mismatch_channels.tex`, §Layer-2 baselines.</sub>
+
+**What the thesis does not claim.** Not a verdict on classical receiver design — reduced-state
+sequence estimation, decision feedback and hybrid model-based detectors were not evaluated.
+No MIMO, no multiple relays, no full duplex. No hardware, quantization or energy validation.
+Comparisons were not prespecified and carry no multiplicity correction. Viterbi is not a BER
+bound: MLSE minimizes *sequence* error, and the BER-optimal comparator is bit-MAP/BCJR,
+measured at QPSK only.
+<sub>Sources: `thesis/chapters/ch01_introduction.tex`, Table `tbl:assumptions-claims`;
+`thesis/chapters/ch04_methods.tex`, §Statistical Significance Testing;
+`thesis/chapters/ch07_unknown_and_mismatch_channels.tex`, §A BER-Optimal Benchmark.</sub>
+
+The compiled thesis is `thesis/main.pdf` (136 pages). The sections below document the
+`relaynet` simulation framework itself.
 
 ---
 
