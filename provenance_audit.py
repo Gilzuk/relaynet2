@@ -30,6 +30,10 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 
 # experiment -> (script, [output files], [published tables/figures])
 REGISTRY = {
+    "Matched-protocol unknown-ISI comparison": (
+        "e6_matched_protocol.py", ["results/e6_matched_protocol.json"],
+        ["tbl:tableE6 (pending)", "tbl:layers layer 2 (pending)",
+         "fig:figE6 (pending)"]),
     "Fixed-budget 16 dB remeasurement": (
         "rare_event_fixed_budget.py",
         ["results/rare_event_fixed_budget_16db.json",
