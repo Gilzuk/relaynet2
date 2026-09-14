@@ -199,7 +199,7 @@ STOCHASTIC_TABLES = {"tbl:tableE6": 0.002, "tbl:tableE6flat": 0.002,
 # Raise a floor when a check legitimately gains cells; never lower one to make
 # a failure go away -- a drop means the check lost sight of something.
 MIN_CELLS = {
-    "tbl:table2": 54, "tbl:layers": 14, "tbl:table8": 48,
+    "tbl:table2": 54, "tbl:layers": 15, "tbl:table8": 48,
     "tbl:tableE6": 20, "tbl:tableE6flat": 24, "tbl:tableE6qpsk": 20,
     "prose:E6blind": 9, "prose:E6partial": 13, "prose:E6composite": 6,
     "tbl:table34": 30, "tbl:table37": 6, "tbl:table38": 10,
@@ -408,13 +408,21 @@ def check_layers_table(tex, rep):
     if m:
         rep.cell(T, "L2/DF@8dB", m.group(1), float(m.group(1)), S1["DF"][0][i8])
         rep.cell(T, "L2/DF@20dB", m.group(2), float(m.group(2)), S1["DF"][0][i20])
-    m = re.search(r"restores the link \(\$([\d.]+)\$ at 8~dB\)", body)
+    m = re.search(r"restores the link \(\$([\d.]+)\$ at 8~dB", body)
     if m:
         rep.cell(T, "L2/MLP@8dB", m.group(1), float(m.group(1)), S1["MLP"][0][i8])
-    m = re.search(r"ahead by 1--1\.5~dB \(\$([\d.]+)\$\)", body)
+    # The row used to cite this cell as evidence that Viterbi was "ahead by
+    # 1--1.5 dB" at 8 dB, which the two numbers it printed side by side
+    # contradicted: 0.0065 for the MLP against 0.0072 for the trellis. The
+    # lead is horizontal, so the anchor now follows the corrected wording.
+    m = re.search(r"genie-CSI Viterbi's \$([\d.]+)\$ at the same point", body)
     if m:
         rep.cell(T, "L2/VITgenie@8dB", m.group(1), float(m.group(1)),
                  np.array(vit["VIT-genie"])[i8])
+    m = re.search(r"the MLP reads \$([\d.]+)\\times10\^\{-5\}\$", body)
+    if m:
+        rep.cell(T, "L2/MLP@12dB", m.group(1), float(m.group(1)) * 1e-5,
+                 S1["MLP"][0][snrs.index(12)])
 
     # Layer 3: the pilot-budget crossover at the 10 dB operating point.
     pa = partial["panel_a"]
