@@ -1,0 +1,56 @@
+{
+  "description": "Fixed predeclared-budget remeasurement of the 16 dB MLP cell of tbl:tableE6. No data-dependent stopping.",
+  "snr_db": 16,
+  "fixed_bits_per_seed": 1000000000,
+  "declared_before_run": true,
+  "note_18_20_db": "Not remeasured: those cells saw no error, so the run reached the predeclared 1e10-bit cap and the budget was never retargeted. They are already fixed-budget rule-of-three bounds.",
+  "previous_adaptive_estimate": 4.79e-08,
+  "per_seed": [
+    {
+      "seed": 0,
+      "n_params": 170,
+      "errors": 92,
+      "bits": 1000000000,
+      "ber": 9.2e-08,
+      "ci95": [
+        7.416498476626241e-08,
+        1.128298330016761e-07
+      ],
+      "seconds": 348.6
+    },
+    {
+      "seed": 1,
+      "n_params": 170,
+      "errors": 92,
+      "bits": 1000000000,
+      "ber": 9.2e-08,
+      "ci95": [
+        7.416498476626241e-08,
+        1.128298330016761e-07
+      ],
+      "seconds": 309.8
+    },
+    {
+      "seed": 2,
+      "n_params": 170,
+      "errors": 259,
+      "bits": 1000000000,
+      "ber": 2.59e-07,
+      "ci95": [
+        2.2841493136968572e-07,
+        2.925397039066242e-07
+      ],
+      "seconds": 313.1
+    }
+  ],
+  "pooled": {
+    "errors": 443,
+    "bits": 3000000000,
+    "ber": 1.4766666666666668e-07,
+    "ci95_garwood": [
+      1.3423423194486411e-07,
+      1.6207928199791153e-07
+    ]
+  },
+  "total_seconds": 976.0
+}
