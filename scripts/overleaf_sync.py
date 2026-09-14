@@ -87,8 +87,8 @@ def ensure_branch(branch, remotes=(REPO_REMOTE, DEFAULT_REMOTE)):
         git("branch", branch, head)
         print(f"  adopted published {remote}/{remote_branch} ({head[:9]}) as "
               f"{branch}; regenerating on top of it")
-                return True
-sha = git("-c", "user.name=relaynet2 automation",
+        return True
+    sha = git("-c", "user.name=relaynet2 automation",
                   "-c", "user.email=relaynet2-ci@localhost",
               "commit-tree", EMPTY_TREE, "-m",
               f"Initialise {branch}: generated Overleaf project root")
