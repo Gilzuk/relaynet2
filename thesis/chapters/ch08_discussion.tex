@@ -144,7 +144,7 @@ Rationale
 \textbf{Medium SNR (4-8 dB)} & Hybrid (MLP + DF) & Automatic switching at empirically chosen crossover\\
 \textbf{High SNR (\textgreater8 dB)} & DF & Zero parameters; lowest BER among the evaluated per-symbol relays \\
 \textbf{Resource-constrained} & MLP Minimal (169 params) & 0.7 KB memory, \textless5 s training \\
-\textbf{Best overall (BPSK/QPSK)} & Hybrid & Combines AI advantage with DF reliability \\
+\textbf{Best on the canonical QPSK benchmark} & Hybrid & Lowest BER at 0~dB and tracks DF above the crossover; measured only on the canonical memoryless QPSK/Rayleigh setup, with an empirically selected threshold. Not evaluated at BPSK, on channels with memory, blind, or under hardware constraints, and not a recommendation beyond that setup \\
 \end{longtable}
 
 Within the simulated canonical benchmark, the Hybrid relay is a candidate when operating SNR can be estimated reliably, because it switches between MLP processing and DF. This is not a general deployment recommendation: threshold robustness, quantization, energy, synchronization, and hardware behavior were not evaluated.
