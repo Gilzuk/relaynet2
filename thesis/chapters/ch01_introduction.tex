@@ -111,7 +111,7 @@ Dimension & As implemented & Does not support \\
 \bottomrule\noalign{}
 \endlastfoot
 Channel & Two-hop SISO, half-duplex, i.i.d.\ Rayleigh fast fading, complex baseband, Gray-coded QPSK,
-uncoded, with the relay function as the only varied axis. Chapters~\ref{sec:experiments}
+uncoded, with the relay function as the only varied axis. That comparison is buffered rather than streaming: the learned relays read a symmetric window that extends past the current symbol, and both they and AF normalize power over the whole simulated block, so neither is a strict causal relay (Sections~\ref{sec:evaluated-configurations} and~\ref{sec:relay-processing-methods}). Chapters~\ref{sec:experiments}
 and~\ref{sec:unknown-channels} depart from this deliberately and say so. &
 Multi-relay, full-duplex, MIMO, or constellations denser than 16-QAM. No direct source--destination
 path is modeled, so nothing here bears on cooperative diversity. \\
