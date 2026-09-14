@@ -1,0 +1,170 @@
+{
+  "status": "complete",
+  "per_seed": {
+    "100": {
+      "16.0": {
+        "af": {
+          "errors": 20752099,
+          "bits": 100000000,
+          "blocks": 1000,
+          "ber": 0.20752099,
+          "block_t_ci95_approx": [
+            0.2074666471767822,
+            0.20757533282321777
+          ],
+          "zero_error_block_upper95": null,
+          "uncertainty_unit": "independent equal-size block",
+          "scope": "conditional on this trained checkpoint; t interval is approximate"
+        },
+        "df": {
+          "errors": 22801054,
+          "bits": 100000000,
+          "blocks": 1000,
+          "ber": 0.22801054,
+          "block_t_ci95_approx": [
+            0.22795866156191189,
+            0.22806241843808808
+          ],
+          "zero_error_block_upper95": null,
+          "uncertainty_unit": "independent equal-size block",
+          "scope": "conditional on this trained checkpoint; t interval is approximate"
+        },
+        "mlp": {
+          "errors": 22,
+          "bits": 100000000,
+          "blocks": 1000,
+          "ber": 2.2e-07,
+          "block_t_ci95_approx": [
+            1.2479197383435377e-07,
+            3.152080261656463e-07
+          ],
+          "zero_error_block_upper95": null,
+          "uncertainty_unit": "independent equal-size block",
+          "scope": "conditional on this trained checkpoint; t interval is approximate"
+        }
+      }
+    },
+    "101": {
+      "16.0": {
+        "af": {
+          "errors": 20745292,
+          "bits": 100000000,
+          "blocks": 1000,
+          "ber": 0.20745292,
+          "block_t_ci95_approx": [
+            0.2073975734485385,
+            0.2075082665514615
+          ],
+          "zero_error_block_upper95": null,
+          "uncertainty_unit": "independent equal-size block",
+          "scope": "conditional on this trained checkpoint; t interval is approximate"
+        },
+        "df": {
+          "errors": 22795064,
+          "bits": 100000000,
+          "blocks": 1000,
+          "ber": 0.22795064,
+          "block_t_ci95_approx": [
+            0.22789701552523606,
+            0.22800426447476396
+          ],
+          "zero_error_block_upper95": null,
+          "uncertainty_unit": "independent equal-size block",
+          "scope": "conditional on this trained checkpoint; t interval is approximate"
+        },
+        "mlp": {
+          "errors": 11,
+          "bits": 100000000,
+          "blocks": 1000,
+          "ber": 1.1e-07,
+          "block_t_ci95_approx": [
+            4.524305916771825e-08,
+            1.747569408322818e-07
+          ],
+          "zero_error_block_upper95": null,
+          "uncertainty_unit": "independent equal-size block",
+          "scope": "conditional on this trained checkpoint; t interval is approximate"
+        }
+      }
+    },
+    "102": {
+      "16.0": {
+        "af": {
+          "errors": 20747675,
+          "bits": 100000000,
+          "blocks": 1000,
+          "ber": 0.20747675,
+          "block_t_ci95_approx": [
+            0.20742117857208278,
+            0.2075323214279172
+          ],
+          "zero_error_block_upper95": null,
+          "uncertainty_unit": "independent equal-size block",
+          "scope": "conditional on this trained checkpoint; t interval is approximate"
+        },
+        "df": {
+          "errors": 22799805,
+          "bits": 100000000,
+          "blocks": 1000,
+          "ber": 0.22799805,
+          "block_t_ci95_approx": [
+            0.22794475400060082,
+            0.2280513459993992
+          ],
+          "zero_error_block_upper95": null,
+          "uncertainty_unit": "independent equal-size block",
+          "scope": "conditional on this trained checkpoint; t interval is approximate"
+        },
+        "mlp": {
+          "errors": 3,
+          "bits": 100000000,
+          "blocks": 1000,
+          "ber": 3e-08,
+          "block_t_ci95_approx": [
+            0.0,
+            6.395471130543991e-08
+          ],
+          "zero_error_block_upper95": null,
+          "uncertainty_unit": "independent equal-size block",
+          "scope": "conditional on this trained checkpoint; t interval is approximate"
+        }
+      }
+    }
+  },
+  "across_seeds": {
+    "16.0": {
+      "af": {
+        "seed_means": [
+          0.20752099,
+          0.20745292,
+          0.20747675
+        ],
+        "mean": 0.20748355333333332,
+        "seed_t_halfwidth95_approx": 8.580512399433444e-05,
+        "training_seeds": 3
+      },
+      "df": {
+        "seed_means": [
+          0.22801054,
+          0.22795064,
+          0.22799805
+        ],
+        "mean": 0.22798641,
+        "seed_t_halfwidth95_approx": 7.850109822598537e-05,
+        "training_seeds": 3
+      },
+      "mlp": {
+        "seed_means": [
+          2.2e-07,
+          1.1e-07,
+          3e-08
+        ],
+        "mean": 1.2e-07,
+        "seed_t_halfwidth95_approx": 2.3697163450459482e-07,
+        "training_seeds": 3
+      }
+    }
+  },
+  "historical_results_replaced": false,
+  "warning": "Low/zero counts cannot resolve a precise rare-event BER; no iid-bit CI is claimed."
+}

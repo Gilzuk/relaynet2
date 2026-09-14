@@ -1,0 +1,36 @@
+{
+  "output": "results\\codex_isi_fixed_20260914",
+  "snrs": [
+    12.0,
+    14.0,
+    16.0
+  ],
+  "seeds": [
+    0,
+    1,
+    2
+  ],
+  "bits_per_seed": 10000000,
+  "block_bits": 100000,
+  "train_samples": 120000,
+  "epochs": 25,
+  "git_commit": "426dafcbf1e45164990a3f57dd1363b22486c915",
+  "python": "3.11.5",
+  "numpy": "1.26.3",
+  "created_utc": "2026-09-14T10:44:10.756695+00:00",
+  "taps": [
+    1.0,
+    0.7,
+    0.5
+  ],
+  "train_snrs": [
+    5,
+    10,
+    15
+  ],
+  "window": 11,
+  "hidden": 13,
+  "normalization": "per independent block; ISI and window padding reset each block",
+  "stopping_rule": "fixed bits per seed per SNR; no early stopping",
+  "status": "planned; inspect summary.json for completion"
+}
