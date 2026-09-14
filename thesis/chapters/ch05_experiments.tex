@@ -50,7 +50,7 @@ Supplementary: coded block-DF against symbol-wise DF and coded-aware learned rel
 
 E8 & SISO & BPSK, QPSK &
 All nine families above, plus the coded scenario &
-Minimum relay size and the overfitting hypothesis H3, with three initializations per configuration (Section~\ref{sec:minimum-relay-size}) \\
+Minimum relay size and the capacity hypothesis H3, with three initializations per configuration (Section~\ref{sec:minimum-relay-size}) \\
 
 \hline
 \end{longtable}
@@ -438,5 +438,3 @@ SNR (dB) & Best MCS (block-DF) & $G$ (block-DF) & Best MCS (denoise) & $G$ (deno
 \textbf{Tighten the budget further and the reversal spreads to SNRs where block-DF led unconstrained.} At $L_{\max}=100$ symbols, block-DF has \emph{no} coded option left at any of these four SNRs -- every one of its coded MCS choices exceeds the budget -- so it is pinned to uncoded transmission throughout, while the denoise-only relay still reaches 16-QAM~2/3 or~3/4 at 20, 24 and 28~dB. At 24 and 28~dB, this is a direct reversal: Table~\ref{tbl:table42}'s unconstrained envelope has block-DF \emph{ahead} at both points, but under the 100-symbol budget denoise-only leads by $1.46\times$ and $1.54\times$ respectively, because the MCS that gave block-DF its unconstrained edge is no longer reachable in time.
 
 The mechanism finding of Section~\ref{sec:coded-soft-decision} concerned decoding location; Section~\ref{sec:coded-rate-adaptation} showed that rate selection dominates it in the unconstrained grid. The present calculation indicates that relay buffering can alter that result, but a deployment recommendation under a hard deadline requires a slot-level latency model including both half-duplex transmissions, processing time, and the reliability target. That analysis is not performed here.
-
-
