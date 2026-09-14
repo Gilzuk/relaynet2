@@ -174,7 +174,7 @@ def local_styles(sources):
 
 def manifest():
     """What the project consists of, resolved from main.tex. No files written."""
-    main_src = open(os.path.join(THESIS, "main.tex")).read()
+    main_src = open(os.path.join(THESIS, "main.tex"), encoding="utf-8").read()
     inc = re.findall(r'\\(?:include|input)\{chapters/([^}]+)\}', no_comments(main_src))
 
     chapters, chapter_srcs, figs = [], [], set()
@@ -182,7 +182,7 @@ def manifest():
         p = os.path.join(THESIS, "chapters", c + ".tex")
         if not os.path.exists(p):
             continue                      # commented-out or renamed include
-        src = open(p).read()
+        src = open(p, encoding="utf-8").read()
         chapters.append(c)
         chapter_srcs.append(src)
         figs |= {m.group(1) for m in re.finditer(
@@ -208,12 +208,12 @@ def stage(dest, mode, man=None):
     conv = (lambda s: s) if mode == "annotated" else strip_rev
 
     os.makedirs(os.path.join(dest, "chapters"), exist_ok=True)
-    with open(os.path.join(dest, "main.tex"), "w") as fh:
+    with open(os.path.join(dest, "main.tex"), "w", encoding="utf-8") as fh:
         fh.write(conv(man["main_src"]))
     for name, src in zip(man["chapters"], man["chapter_srcs"]):
         dst = os.path.join(dest, "chapters", name + ".tex")
         os.makedirs(os.path.dirname(dst), exist_ok=True)
-        with open(dst, "w") as fh:
+        with open(dst, "w", encoding="utf-8") as fh:
             fh.write(conv(src))
     shutil.copy(os.path.join(THESIS, "chapters", "references.bib"),
                 os.path.join(dest, "chapters", "references.bib"))
@@ -232,7 +232,7 @@ def stage(dest, mode, man=None):
         shutil.rmtree(fonts_dst)
     shutil.copytree(os.path.join(THESIS, "fonts"), fonts_dst)
 
-    with open(os.path.join(dest, "README.md"), "w") as fh:
+    with open(os.path.join(dest, "README.md"), "w", encoding="utf-8") as fh:
         fh.write(README)
 
     for extra in man["styles"] + ["OVERLEAF.md"]:
