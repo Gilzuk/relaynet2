@@ -47,6 +47,7 @@ VITERBI_PATH = os.path.join(NPY_DIR, "e6_viterbi_awgn.npy")
 FIXED_BUDGET_PATH = os.path.join(NPY_DIR, "codex_isi_fixed_budget_validation.json")
 OUT_DIRS = [os.path.join(ROOT, "results"), os.path.join(ROOT, "thesis", "results")]
 SETUP = "S1: unknown ISI -> AWGN"
+VITERBI_CENSORING_BOUND = 5e-5  # table's reported resolution for zero-error cells
 
 STYLE = {
     "AF":  dict(color="tab:orange", marker="s", ls="--", label="AF"),
@@ -90,7 +91,24 @@ def main():
                         color=st["color"], alpha=0.18, lw=0)
     for key, st in VITERBI_STYLE.items():
         mu = np.asarray(vg[key], dtype=float)
-        ax.semilogy(snrs, np.maximum(mu, 1e-8), markersize=6, **st)
+        observed = mu > 0
+        # A zero in the committed Viterbi array means that no error was
+        # observed, not that BER is zero: the available data are insufficient
+        # to resolve the BER there. Plot its documented upper bound as an
+        # open, downward-censored marker instead of fabricating a floor-level
+        # point and connecting it to the measured curve.
+        ax.semilogy(snrs[observed], mu[observed], markersize=6, **st)
+        censored_snrs = snrs[~observed]
+        if censored_snrs.size:
+            ax.scatter(censored_snrs,
+                       np.full(censored_snrs.size, VITERBI_CENSORING_BOUND),
+                       marker=st["marker"], s=42, facecolors="none",
+                       edgecolors=st["color"], linewidths=1.5, zorder=4)
+            for snr in censored_snrs:
+                ax.annotate("", xy=(snr, VITERBI_CENSORING_BOUND / 2.2),
+                            xytext=(snr, VITERBI_CENSORING_BOUND),
+                            arrowprops={"arrowstyle": "-|>",
+                                        "color": st["color"], "lw": 1.0})
 
     ax.axhline(0.25, color="0.4", ls=":", lw=1.2)
     ax.text(0.3, 0.25 * 1.06, "memoryless floor = 0.25", color="0.4", fontsize=9)
