@@ -75,7 +75,7 @@ def test_excluded_appendices_do_not_travel(staged):
 def test_clean_mode_carries_no_annotations(staged):
     for p in _relpaths(staged):
         if p.endswith(".tex"):
-            body = open(os.path.join(staged, p)).read()
+            body = open(os.path.join(staged, p), encoding="utf-8").read()
             assert "\\REV{" not in body, f"{p} still carries fix records"
 
 
@@ -158,8 +158,8 @@ def test_the_two_modes_differ_only_in_whitespace_now(tmp_path, man):
             if not f.endswith(".tex"):
                 continue
             rel = os.path.relpath(os.path.join(base, f), a)
-            A = open(os.path.join(a, rel)).read()
-            C = open(os.path.join(c, rel)).read()
+            A = open(os.path.join(a, rel), encoding="utf-8").read()
+            C = open(os.path.join(c, rel), encoding="utf-8").read()
             assert "\\REV{" not in A, rel
             assert "\\REV{" not in C, rel
             assert norm(A) == norm(C), rel

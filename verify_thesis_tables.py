@@ -382,6 +382,8 @@ def check_layers_table(tex, rep):
     snrs = list(sim["snrs"])
     i8, i20 = snrs.index(8), snrs.index(20)
     S1 = sim["results"]["S1: unknown ISI -> AWGN"]
+    fixed = json.load(open(os.path.join(
+        ROOT, "e6_unknown_channel_results/codex_isi_fixed_budget_validation.json")))
 
     # Layer 1 is "the canonical setup of Chapter 5, unmodified" -- it must
     # therefore be checked against Chapter 5's actual canonical result
@@ -419,10 +421,10 @@ def check_layers_table(tex, rep):
     if m:
         rep.cell(T, "L2/VITgenie@8dB", m.group(1), float(m.group(1)),
                  np.array(vit["VIT-genie"])[i8])
-    m = re.search(r"the MLP reads \$([\d.]+)\\times10\^\{-5\}\$", body)
+    m = re.search(r"fixed-budget MLP estimate is \$([\d.]+)\\times10\^\{-4\}\$", body)
     if m:
-        rep.cell(T, "L2/MLP@12dB", m.group(1), float(m.group(1)) * 1e-5,
-                 S1["MLP"][0][snrs.index(12)])
+        rep.cell(T, "L2/MLP@12dB", m.group(1), float(m.group(1)) * 1e-4,
+                 fixed["points"]["12"]["MLP"]["mean"])
 
     # Layer 3: the pilot-budget crossover at the 10 dB operating point.
     pa = partial["panel_a"]
@@ -957,7 +959,7 @@ def _e6_grouped(tex, label, npy_map, rep, snr_cols):
 
 
 def check_tableE6(tex, rep):
-    """Unknown-channel BER (tbl:tableE6). Sources: e6_sim + e6_viterbi npy."""
+    """Unknown-channel BER (tbl:tableE6). Sources: historical npy + fixed JSON."""
     T = "tbl:tableE6"; before = rep.checked
     body = table_body(tex, T)
     if body is None:
@@ -968,6 +970,8 @@ def check_tableE6(tex, rep):
                       allow_pickle=True).item()
     vg_ray = np.load(os.path.join(ROOT, "e6_unknown_channel_results/e6_viterbi_rayleigh.npy"),
                      allow_pickle=True).item()
+    fixed = json.load(open(os.path.join(
+        ROOT, "e6_unknown_channel_results/codex_isi_fixed_budget_validation.json")))
     snrs = list(sim["snrs"])
     col_snr = [(2, 8), (3, 12), (4, 16), (5, 20)]   # row: Setup & Relay & 8 & 12 & 16 & 20
 
@@ -1003,6 +1007,16 @@ def check_tableE6(tex, rep):
         # map tex relay name -> source
         def src_at(si):
             r = relay.upper()
+            snr = str(int(snrs[si]))
+            replacement = (
+                cur_setup == "Unknown ISI $\\to$ AWGN"
+                and snr in fixed["points"]
+                and ("AF" if r.startswith("AF") else
+                     "DF" if r.startswith("DF") else
+                     "MLP" if "MLP" in r else None)
+            )
+            if replacement:
+                return fixed["points"][snr][replacement]["mean"]
             if r.startswith("AF"):
                 return res["AF"][0][si]
             if r.startswith("DF"):
