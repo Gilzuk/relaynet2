@@ -115,7 +115,7 @@ uncoded, with the relay function as the only varied axis. Chapters~\ref{sec:expe
 and~\ref{sec:unknown-channels} depart from this deliberately and say so. &
 Multi-relay, full-duplex, MIMO, or constellations denser than 16-QAM. No direct source--destination
 path is modeled, so nothing here bears on cooperative diversity. \\
-Relay channel knowledge & No per-block channel estimate and no online adaptation. The relay is trained
+Relay channel knowledge & The learned relay function itself receives no channel coefficient, no per-block estimate and no online adaptation. This is a statement about the relay function, not about the chain: in the canonical setup both receivers have perfect CSI and apply one-tap zero-forcing before the relay function sees the signal, so the comparison isolates what the relay \emph{computes} on an already-equalized observation. The relay is trained
 on the impairment family it is later tested on; layers~3 and~4 redraw realizations from that family. &
 Family-agnostic or model-agnostic operation. The supported property is
 \emph{realization-agnostic} inference amortized over a trained family; a structurally different family
