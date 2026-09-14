@@ -1,0 +1,545 @@
+{
+  "status": "complete",
+  "per_seed": {
+    "0": {
+      "16": {
+        "ber": {
+          "legacy_df/legacy": {
+            "mean": 0.004849999999999999,
+            "t_halfwidth95_approx": 0.0019666894796520618,
+            "replicates": 10
+          },
+          "legacy_df/weighted": {
+            "mean": 0.0026,
+            "t_halfwidth95_approx": 0.0013985588336075294,
+            "replicates": 10
+          },
+          "weighted_df/legacy": {
+            "mean": 0.00225,
+            "t_halfwidth95_approx": 0.001538433196757312,
+            "replicates": 10
+          },
+          "weighted_df/weighted": {
+            "mean": 0.0,
+            "t_halfwidth95_approx": null,
+            "replicates": 10
+          },
+          "legacy_soft/legacy": {
+            "mean": 0.004849999999999999,
+            "t_halfwidth95_approx": 0.0019666894796520618,
+            "replicates": 10
+          },
+          "legacy_soft/weighted": {
+            "mean": 0.0026,
+            "t_halfwidth95_approx": 0.0013985588336075294,
+            "replicates": 10
+          },
+          "weighted_soft/legacy": {
+            "mean": 0.00225,
+            "t_halfwidth95_approx": 0.001538433196757312,
+            "replicates": 10
+          },
+          "weighted_soft/weighted": {
+            "mean": 0.0,
+            "t_halfwidth95_approx": null,
+            "replicates": 10
+          },
+          "mlp/legacy": {
+            "mean": 0.00475,
+            "t_halfwidth95_approx": 0.002575119264228727,
+            "replicates": 10
+          },
+          "mlp/weighted": {
+            "mean": 0.008400000000000001,
+            "t_halfwidth95_approx": 0.002000727073500482,
+            "replicates": 10
+          }
+        },
+        "paired_differences": {
+          "weighted_df/weighted minus legacy_df/legacy": {
+            "mean": -0.004849999999999999,
+            "t_halfwidth95_approx": 0.0019666894796520618,
+            "replicates": 10
+          },
+          "mlp/weighted minus weighted_df/weighted": {
+            "mean": 0.008400000000000001,
+            "t_halfwidth95_approx": 0.002000727073500482,
+            "replicates": 10
+          },
+          "weighted_soft/weighted minus weighted_df/weighted": {
+            "mean": 0.0,
+            "t_halfwidth95_approx": null,
+            "replicates": 10
+          }
+        }
+      },
+      "20": {
+        "ber": {
+          "legacy_df/legacy": {
+            "mean": 0.0010000000000000002,
+            "t_halfwidth95_approx": 0.0006079364704392541,
+            "replicates": 10
+          },
+          "legacy_df/weighted": {
+            "mean": 0.0006000000000000001,
+            "t_halfwidth95_approx": 0.0005001817683751205,
+            "replicates": 10
+          },
+          "weighted_df/legacy": {
+            "mean": 0.0004,
+            "t_halfwidth95_approx": 0.00036940871777983703,
+            "replicates": 10
+          },
+          "weighted_df/weighted": {
+            "mean": 0.0,
+            "t_halfwidth95_approx": null,
+            "replicates": 10
+          },
+          "legacy_soft/legacy": {
+            "mean": 0.0024999999999999996,
+            "t_halfwidth95_approx": 0.0009235217944495924,
+            "replicates": 10
+          },
+          "legacy_soft/weighted": {
+            "mean": 0.0020000000000000005,
+            "t_halfwidth95_approx": 0.0009235217944495924,
+            "replicates": 10
+          },
+          "weighted_soft/legacy": {
+            "mean": 0.0004,
+            "t_halfwidth95_approx": 0.00036940871777983703,
+            "replicates": 10
+          },
+          "weighted_soft/weighted": {
+            "mean": 0.0,
+            "t_halfwidth95_approx": null,
+            "replicates": 10
+          },
+          "mlp/legacy": {
+            "mean": 0.0009000000000000001,
+            "t_halfwidth95_approx": 0.0006702164221654984,
+            "replicates": 10
+          },
+          "mlp/weighted": {
+            "mean": 0.00245,
+            "t_halfwidth95_approx": 0.0013324555893314796,
+            "replicates": 10
+          }
+        },
+        "paired_differences": {
+          "weighted_df/weighted minus legacy_df/legacy": {
+            "mean": -0.0010000000000000002,
+            "t_halfwidth95_approx": 0.0006079364704392541,
+            "replicates": 10
+          },
+          "mlp/weighted minus weighted_df/weighted": {
+            "mean": 0.00245,
+            "t_halfwidth95_approx": 0.0013324555893314796,
+            "replicates": 10
+          },
+          "weighted_soft/weighted minus weighted_df/weighted": {
+            "mean": 0.0,
+            "t_halfwidth95_approx": null,
+            "replicates": 10
+          }
+        }
+      }
+    },
+    "1": {
+      "16": {
+        "ber": {
+          "legacy_df/legacy": {
+            "mean": 0.0046,
+            "t_halfwidth95_approx": 0.0014287253275363995,
+            "replicates": 10
+          },
+          "legacy_df/weighted": {
+            "mean": 0.0027,
+            "t_halfwidth95_approx": 0.0007944434867058275,
+            "replicates": 10
+          },
+          "weighted_df/legacy": {
+            "mean": 0.0021000000000000003,
+            "t_halfwidth95_approx": 0.0010637217946432413,
+            "replicates": 10
+          },
+          "weighted_df/weighted": {
+            "mean": 5e-05,
+            "t_halfwidth95_approx": 0.00011310785813704958,
+            "replicates": 10
+          },
+          "legacy_soft/legacy": {
+            "mean": 0.0046,
+            "t_halfwidth95_approx": 0.0014287253275363995,
+            "replicates": 10
+          },
+          "legacy_soft/weighted": {
+            "mean": 0.0026,
+            "t_halfwidth95_approx": 0.0008728787454789467,
+            "replicates": 10
+          },
+          "weighted_soft/legacy": {
+            "mean": 0.0021000000000000003,
+            "t_halfwidth95_approx": 0.0010637217946432413,
+            "replicates": 10
+          },
+          "weighted_soft/weighted": {
+            "mean": 5e-05,
+            "t_halfwidth95_approx": 0.00011310785813704958,
+            "replicates": 10
+          },
+          "mlp/legacy": {
+            "mean": 0.0034000000000000002,
+            "t_halfwidth95_approx": 0.0012135324710646996,
+            "replicates": 10
+          },
+          "mlp/weighted": {
+            "mean": 0.00515,
+            "t_halfwidth95_approx": 0.0017848118963956347,
+            "replicates": 10
+          }
+        },
+        "paired_differences": {
+          "weighted_df/weighted minus legacy_df/legacy": {
+            "mean": -0.00455,
+            "t_halfwidth95_approx": 0.0014351778284061177,
+            "replicates": 10
+          },
+          "mlp/weighted minus weighted_df/weighted": {
+            "mean": 0.0050999999999999995,
+            "t_halfwidth95_approx": 0.0017986955185068836,
+            "replicates": 10
+          },
+          "weighted_soft/weighted minus weighted_df/weighted": {
+            "mean": 0.0,
+            "t_halfwidth95_approx": null,
+            "replicates": 10
+          }
+        }
+      },
+      "20": {
+        "ber": {
+          "legacy_df/legacy": {
+            "mean": 0.0018000000000000002,
+            "t_halfwidth95_approx": 0.0013404328443309967,
+            "replicates": 10
+          },
+          "legacy_df/weighted": {
+            "mean": 0.00105,
+            "t_halfwidth95_approx": 0.0009455768834719503,
+            "replicates": 10
+          },
+          "weighted_df/legacy": {
+            "mean": 0.00075,
+            "t_halfwidth95_approx": 0.0005128110655857707,
+            "replicates": 10
+          },
+          "weighted_df/weighted": {
+            "mean": 0.0,
+            "t_halfwidth95_approx": null,
+            "replicates": 10
+          },
+          "legacy_soft/legacy": {
+            "mean": 0.0030000000000000005,
+            "t_halfwidth95_approx": 0.001626027910262467,
+            "replicates": 10
+          },
+          "legacy_soft/weighted": {
+            "mean": 0.0023,
+            "t_halfwidth95_approx": 0.0014026185194577908,
+            "replicates": 10
+          },
+          "weighted_soft/legacy": {
+            "mean": 0.00075,
+            "t_halfwidth95_approx": 0.0005128110655857707,
+            "replicates": 10
+          },
+          "weighted_soft/weighted": {
+            "mean": 0.0,
+            "t_halfwidth95_approx": null,
+            "replicates": 10
+          },
+          "mlp/legacy": {
+            "mean": 0.0010000000000000002,
+            "t_halfwidth95_approx": 0.0006744449588902549,
+            "replicates": 10
+          },
+          "mlp/weighted": {
+            "mean": 0.00315,
+            "t_halfwidth95_approx": 0.0016000309378190866,
+            "replicates": 10
+          }
+        },
+        "paired_differences": {
+          "weighted_df/weighted minus legacy_df/legacy": {
+            "mean": -0.0018000000000000002,
+            "t_halfwidth95_approx": 0.0013404328443309967,
+            "replicates": 10
+          },
+          "mlp/weighted minus weighted_df/weighted": {
+            "mean": 0.00315,
+            "t_halfwidth95_approx": 0.0016000309378190866,
+            "replicates": 10
+          },
+          "weighted_soft/weighted minus weighted_df/weighted": {
+            "mean": 0.0,
+            "t_halfwidth95_approx": null,
+            "replicates": 10
+          }
+        }
+      }
+    },
+    "2": {
+      "16": {
+        "ber": {
+          "legacy_df/legacy": {
+            "mean": 0.0048000000000000004,
+            "t_halfwidth95_approx": 0.0021407652197094644,
+            "replicates": 10
+          },
+          "legacy_df/weighted": {
+            "mean": 0.0025,
+            "t_halfwidth95_approx": 0.0016945219875347632,
+            "replicates": 10
+          },
+          "weighted_df/legacy": {
+            "mean": 0.0023000000000000004,
+            "t_halfwidth95_approx": 0.0009715285406707777,
+            "replicates": 10
+          },
+          "weighted_df/weighted": {
+            "mean": 0.0,
+            "t_halfwidth95_approx": null,
+            "replicates": 10
+          },
+          "legacy_soft/legacy": {
+            "mean": 0.0048000000000000004,
+            "t_halfwidth95_approx": 0.0021407652197094644,
+            "replicates": 10
+          },
+          "legacy_soft/weighted": {
+            "mean": 0.0025,
+            "t_halfwidth95_approx": 0.0016945219875347632,
+            "replicates": 10
+          },
+          "weighted_soft/legacy": {
+            "mean": 0.0023000000000000004,
+            "t_halfwidth95_approx": 0.0009715285406707777,
+            "replicates": 10
+          },
+          "weighted_soft/weighted": {
+            "mean": 0.0,
+            "t_halfwidth95_approx": null,
+            "replicates": 10
+          },
+          "mlp/legacy": {
+            "mean": 0.005,
+            "t_halfwidth95_approx": 0.0016172621972926175,
+            "replicates": 10
+          },
+          "mlp/weighted": {
+            "mean": 0.0113,
+            "t_halfwidth95_approx": 0.0025246682922805607,
+            "replicates": 10
+          }
+        },
+        "paired_differences": {
+          "weighted_df/weighted minus legacy_df/legacy": {
+            "mean": -0.0048000000000000004,
+            "t_halfwidth95_approx": 0.0021407652197094644,
+            "replicates": 10
+          },
+          "mlp/weighted minus weighted_df/weighted": {
+            "mean": 0.0113,
+            "t_halfwidth95_approx": 0.0025246682922805607,
+            "replicates": 10
+          },
+          "weighted_soft/weighted minus weighted_df/weighted": {
+            "mean": 0.0,
+            "t_halfwidth95_approx": null,
+            "replicates": 10
+          }
+        }
+      },
+      "20": {
+        "ber": {
+          "legacy_df/legacy": {
+            "mean": 0.00135,
+            "t_halfwidth95_approx": 0.0006320110677503655,
+            "replicates": 10
+          },
+          "legacy_df/weighted": {
+            "mean": 0.00055,
+            "t_halfwidth95_approx": 0.0005450604454371546,
+            "replicates": 10
+          },
+          "weighted_df/legacy": {
+            "mean": 0.0008,
+            "t_halfwidth95_approx": 0.0004524314325481983,
+            "replicates": 10
+          },
+          "weighted_df/weighted": {
+            "mean": 0.0,
+            "t_halfwidth95_approx": null,
+            "replicates": 10
+          },
+          "legacy_soft/legacy": {
+            "mean": 0.0024000000000000002,
+            "t_halfwidth95_approx": 0.0010901208908743092,
+            "replicates": 10
+          },
+          "legacy_soft/weighted": {
+            "mean": 0.0016,
+            "t_halfwidth95_approx": 0.0009946634132183302,
+            "replicates": 10
+          },
+          "weighted_soft/legacy": {
+            "mean": 0.0008,
+            "t_halfwidth95_approx": 0.0004524314325481983,
+            "replicates": 10
+          },
+          "weighted_soft/weighted": {
+            "mean": 0.0,
+            "t_halfwidth95_approx": null,
+            "replicates": 10
+          },
+          "mlp/legacy": {
+            "mean": 0.0013,
+            "t_halfwidth95_approx": 0.0005385011157276783,
+            "replicates": 10
+          },
+          "mlp/weighted": {
+            "mean": 0.0036999999999999997,
+            "t_halfwidth95_approx": 0.0012182089141000029,
+            "replicates": 10
+          }
+        },
+        "paired_differences": {
+          "weighted_df/weighted minus legacy_df/legacy": {
+            "mean": -0.00135,
+            "t_halfwidth95_approx": 0.0006320110677503655,
+            "replicates": 10
+          },
+          "mlp/weighted minus weighted_df/weighted": {
+            "mean": 0.0036999999999999997,
+            "t_halfwidth95_approx": 0.0012182089141000029,
+            "replicates": 10
+          },
+          "weighted_soft/weighted minus weighted_df/weighted": {
+            "mean": 0.0,
+            "t_halfwidth95_approx": null,
+            "replicates": 10
+          }
+        }
+      }
+    }
+  },
+  "across_training_seeds": {
+    "16": {
+      "legacy_df/legacy": {
+        "mean": 0.00475,
+        "t_halfwidth95_approx": 0.0003286205303987797,
+        "replicates": 3
+      },
+      "legacy_df/weighted": {
+        "mean": 0.0026,
+        "t_halfwidth95_approx": 0.0002484137711843754,
+        "replicates": 3
+      },
+      "weighted_df/legacy": {
+        "mean": 0.0022166666666666667,
+        "t_halfwidth95_approx": 0.0002585572506368368,
+        "replicates": 3
+      },
+      "weighted_df/weighted": {
+        "mean": 1.6666666666666667e-05,
+        "t_halfwidth95_approx": 7.17108788318546e-05,
+        "replicates": 3
+      },
+      "legacy_soft/legacy": {
+        "mean": 0.00475,
+        "t_halfwidth95_approx": 0.0003286205303987797,
+        "replicates": 3
+      },
+      "legacy_soft/weighted": {
+        "mean": 0.0025666666666666667,
+        "t_halfwidth95_approx": 0.00014342175766370892,
+        "replicates": 3
+      },
+      "weighted_soft/legacy": {
+        "mean": 0.0022166666666666667,
+        "t_halfwidth95_approx": 0.0002585572506368368,
+        "replicates": 3
+      },
+      "weighted_soft/weighted": {
+        "mean": 1.6666666666666667e-05,
+        "t_halfwidth95_approx": 7.17108788318546e-05,
+        "replicates": 3
+      },
+      "mlp/legacy": {
+        "mean": 0.004383333333333334,
+        "t_halfwidth95_approx": 0.0021381389517479985,
+        "replicates": 3
+      },
+      "mlp/weighted": {
+        "mean": 0.008283333333333334,
+        "t_halfwidth95_approx": 0.007642845750928423,
+        "replicates": 3
+      }
+    },
+    "20": {
+      "legacy_df/legacy": {
+        "mean": 0.0013833333333333336,
+        "t_halfwidth95_approx": 0.0009962393676057613,
+        "replicates": 3
+      },
+      "legacy_df/weighted": {
+        "mean": 0.0007333333333333333,
+        "t_halfwidth95_approx": 0.0006840781848576669,
+        "replicates": 3
+      },
+      "weighted_df/legacy": {
+        "mean": 0.00065,
+        "t_halfwidth95_approx": 0.000541405262388264,
+        "replicates": 3
+      },
+      "weighted_df/weighted": {
+        "mean": 0.0,
+        "t_halfwidth95_approx": null,
+        "replicates": 3
+      },
+      "legacy_soft/legacy": {
+        "mean": 0.0026333333333333334,
+        "t_halfwidth95_approx": 0.0007985385511744441,
+        "replicates": 3
+      },
+      "legacy_soft/weighted": {
+        "mean": 0.0019666666666666665,
+        "t_halfwidth95_approx": 0.0008724004935463215,
+        "replicates": 3
+      },
+      "weighted_soft/legacy": {
+        "mean": 0.00065,
+        "t_halfwidth95_approx": 0.000541405262388264,
+        "replicates": 3
+      },
+      "weighted_soft/weighted": {
+        "mean": 0.0,
+        "t_halfwidth95_approx": null,
+        "replicates": 3
+      },
+      "mlp/legacy": {
+        "mean": 0.0010666666666666667,
+        "t_halfwidth95_approx": 0.0005171145012736734,
+        "replicates": 3
+      },
+      "mlp/weighted": {
+        "mean": 0.0031,
+        "t_halfwidth95_approx": 0.0015563078157216177,
+        "replicates": 3
+      }
+    }
+  },
+  "historical_results_replaced": false,
+  "comparisons": "exploratory; no equivalence claim"
+}

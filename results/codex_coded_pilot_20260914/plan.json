@@ -1,0 +1,33 @@
+{
+  "output": "results\\codex_coded_pilot_20260914",
+  "snrs": [
+    16,
+    20
+  ],
+  "seeds": [
+    0,
+    1,
+    2
+  ],
+  "trials": 10,
+  "frames": 10,
+  "train_frames": 2000,
+  "epochs": 25,
+  "git_commit": "426dafcbf1e45164990a3f57dd1363b22486c915",
+  "python": "3.11.5",
+  "numpy": "1.26.3",
+  "created_utc": "2026-09-14T10:44:22.900693+00:00",
+  "frame_info_bits": 200,
+  "constraint_length": 3,
+  "train_snrs": [
+    5,
+    10,
+    15
+  ],
+  "window": 21,
+  "hidden": 16,
+  "snr_convention": "Es/N0 per hop, unit-power QPSK, actual transmitted power used",
+  "paired": "same information bits and both-hop fading/noise for every method within a trial",
+  "uncertainty_unit": "trial at fixed checkpoint; then independent training seeds",
+  "scope": "weighted destination metrics model a QPSK hop, not the entire relay-induced channel"
+}
