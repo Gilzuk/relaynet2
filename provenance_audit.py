@@ -30,6 +30,11 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 
 # experiment -> (script, [output files], [published tables/figures])
 REGISTRY = {
+    "Fixed-budget 16 dB remeasurement": (
+        "rare_event_fixed_budget.py",
+        ["results/rare_event_fixed_budget_16db.json",
+         "results/rare_event_fixed_budget_16db_replicate.json"],
+        ["tbl:tableE6 MLP cell at 16 dB"]),
     "QPSK error decomposition": (
         "qpsk_error_decomposition.py", ["results/qpsk_error_decomposition.json"],
         ["prose: QPSK SER/BER and bits-per-symbol-error"]),
