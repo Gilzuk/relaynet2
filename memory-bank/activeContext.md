@@ -1680,3 +1680,75 @@ retarget. Branching fresh off `origin/main` per fix avoids both.
 Also nuanced the "never merge a PR this session did not open" rule: an explicit
 instruction from the author to merge overrides it. That happened with PR #89.
 
+
+## 2026-09-14 -- second examiner review: twelve findings triaged, five PRs
+
+The author supplied a chapter-by-chapter examiner review and asked for a triage
+before any fixing. Twelve findings were verified against source; five branches
+off `origin/main`, five PRs into `main`, one finding per theme.
+
+**Substantive (changed what the thesis claims):**
+
+- **PR #97** -- `tbl:layers`' layer-2 row cited `$0.0072$` as evidence that
+  genie-CSI Viterbi is "ahead by 1--1.5 dB" while printing the MLP's `$0.0065$`
+  in the same sentence. At 8 dB the means have crossed, so that cell is the one
+  point in the sweep that cannot support the claim. The lead is horizontal; the
+  row now says so and cites the 12 dB comparison instead. The section
+  conclusion's "roughly 2--10 dB" range spanned the crossing and was corrected
+  too. Separately, "near-optimal reliability" was still the residual QPSK claim
+  against a 500x BER deficit ($0.0508$ vs $0.0001$ at 20 dB); both occurrences
+  now state the deficit and keep only the cost-side claim.
+- **PR #98** -- Methods said "BER values below this threshold are reported as
+  0." Zero errors is not a BER of zero; the rule of three licenses only
+  $3/n = 3\times10^{-5}$ on the canonical budget. Replaced, cited to Hanley and
+  Lippman-Hand (1983). The policy was also never followed -- no table in the
+  compiled thesis reports a literal zero BER, and Chapter 7 already used $3/N$
+  bounds -- so Methods was describing a convention the thesis does not use.
+- **PR #99** -- the rare-event stopping rule at 16--20 dB is biased, as the
+  review said; extending to $10N_1$ cuts variance but $N_1$ stays random.
+  `rare_event_estimator_bias.py` (new, registered in `provenance_audit.py`,
+  writes to `results/`) measures it: **median 1.055x truth**, mean heavy-tailed
+  and non-convergent at 2.0--2.5x, `P(estimate < truth) = 0.44`, 90% range
+  **0.55 to 3.22x**. Inverted at the 16 dB cell that is
+  $[1.5\times10^{-8}, 8.7\times10^{-8}]$ around the reported $4.79\times10^{-8}$.
+  The point for a reader is the dispersion, not the small pessimistic median
+  bias: three significant figures in the table are the arithmetic of 16 errors
+  over 334,002,040 bits, not three figures of resolution. Table entry left
+  unchanged -- re-rounding a published cell is the author's call.
+- **PR #100** -- Chapter 2 claimed combating the Rayleigh diversity limitation
+  is "the primary motivation for the relay architectures studied in this
+  thesis". The canonical setup has no direct path, so nothing combines;
+  Chapter 1 says exactly that, and the DF expression two lines below,
+  $2P_e(1-P_e)$, is first order and so diversity order one. Rewritten to the
+  real benefit: a shorter hop and higher per-hop SNR, bought with a second
+  error opportunity.
+
+**Copy-level (PR #102, findings B1--B7):** "Xavier" mislabelling LeCun's
+$1/n_{\text{in}}$ (both now cited); a duplicated Introduction paragraph; the
+composite section's $1.96$ against Methods' $t_{0.975,9}=2.262$ (the bands were
+genuinely computed with $1.96$, so the text now records that they are ~13%
+narrow rather than restating a convention that was not applied); "best of three
+initializations" now named as selection bias; "no channel posterior exists" ->
+"no channel estimate is available"; "matched-receiver bound" -> "reference",
+Viterbi being sequence-ML not a BER bound; and "chosen in advance" separated
+from Methods' "not prespecified", which concern the setup and the analysis
+respectively and were never in conflict.
+
+**Not defects.** Two review items did not survive checking. The `0.0000` cells
+in `tbl:table43` are goodput, not BER, and are genuine zeros. And the
+"chosen in advance" contradiction is a reading problem, not an inconsistency.
+
+**Open after this round.**
+
+- **Page budget regressed.** PRs #98 and #102 each add a page; merged, the
+  thesis goes 136 -> 138 against a 120 target. The added material is a methods
+  correction and two bibliography entries, none of it removable without undoing
+  the fix. Reaching 120 still needs a structural cut, not prose compression.
+- **H4 title inconsistency** (`ch03_objectives.tex` "Architecture convergence at
+  an equal parameter budget" vs `ch09_summary.tex` "Equal parameter count
+  eliminates architecture-dependent differences") -- not in this round; one line,
+  own PR.
+- **~23 further review findings** were not in working context when the triage
+  was produced and remain unverified.
+- `clean-thesis` deletion still needs one click in the GitHub UI (proxy 403s).
+- 17 bibliography entries without DOI; needs a session with Crossref reachable.
