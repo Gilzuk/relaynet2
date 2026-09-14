@@ -1,0 +1,56 @@
+{
+  "description": "Bias of the first-error stopping rule of Section 7 (transmit to first error at N1, continue to 10*N1, divide accumulated errors by total exposure).",
+  "model": "i.i.d. Bernoulli(p); N1 ~ Geometric(p); errors in remaining 9*N1 bits ~ Poisson(9*N1*p)",
+  "replications": 200000,
+  "seed": 20260914,
+  "rows": [
+    {
+      "true_ber": 5e-06,
+      "mean_estimate": 1.0949081786534196e-05,
+      "mean_ratio": 2.189816357306839,
+      "median_estimate": 5.2706190252739125e-06,
+      "median_ratio": 1.0541238050547823,
+      "p_estimate_below_truth": 0.44129,
+      "q05_ratio": 0.5481695795766169,
+      "q95_ratio": 3.21853878339234
+    },
+    {
+      "true_ber": 5e-07,
+      "mean_estimate": 1.1140296364733413e-06,
+      "mean_ratio": 2.2280592729466826,
+      "median_estimate": 5.276173903392829e-07,
+      "median_ratio": 1.0552347806785658,
+      "p_estimate_below_truth": 0.439365,
+      "q05_ratio": 0.5515879147364174,
+      "q95_ratio": 3.1985397602579146
+    },
+    {
+      "true_ber": 5e-08,
+      "mean_estimate": 1.0127215950392072e-07,
+      "mean_ratio": 2.0254431900784144,
+      "median_estimate": 5.2754704262645915e-08,
+      "median_ratio": 1.0550940852529183,
+      "p_estimate_below_truth": 0.43993,
+      "q05_ratio": 0.5475605330062407,
+      "q95_ratio": 3.2226152828183228
+    },
+    {
+      "true_ber": 5e-09,
+      "mean_estimate": 1.2667121209840944e-08,
+      "mean_ratio": 2.5334242419681887,
+      "median_estimate": 5.273443005393196e-09,
+      "median_ratio": 1.0546886010786392,
+      "p_estimate_below_truth": 0.43973,
+      "q05_ratio": 0.5498960899212624,
+      "q95_ratio": 3.1803085098223325
+    }
+  ],
+  "tbl_tableE6_16dB": {
+    "reported_ber": 4.79e-08,
+    "implied_90pct_interval": [
+      1.4863704102498168e-08,
+      8.747891258162331e-08
+    ],
+    "note": "The reported value is 16 errors over 334,002,040 bits. The interval is the estimator's own sampling spread inverted, not a Poisson interval at fixed exposure."
+  }
+}
