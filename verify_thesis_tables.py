@@ -67,11 +67,40 @@ TEX_DIR = os.path.join(ROOT, "thesis", "chapters")
 # within half a unit in the last displayed digit (pure rounding), plus a small
 # Monte-Carlo slack for values re-simulated from a fresh RNG run (--rerun).
 MC_SLACK = 0.0            # 0 for stored-data comparison; raised under --rerun
+
+# Matches the exponent of a cell written in scientific notation, in either the
+# LaTeX form (3.20\times10^-5, braces already stripped by clean_cell) or the
+# plain form (5e-5). Group 1 is the mantissa, group 2 the exponent.
+_SCI_PARTS = re.compile(
+    r"([+-]?\d+(?:\.\d+)?)\s*(?:\\times\s*10\^\s*[{(]?\s*(-?\d+)\s*[})]?|[eE]([+-]?\d+))"
+)
+
+
 def tol_for(text):
-    """Rounding tolerance implied by the number of decimals shown."""
-    m = re.search(r"\.(\d+)", text)
-    dec = len(m.group(1)) if m else 0
-    return 0.5 * 10 ** (-dec) + 1e-12 + MC_SLACK
+    """Rounding tolerance implied by the last significant digit displayed.
+
+    Half a unit in the last displayed digit -- but for a cell in scientific
+    notation that unit is scaled by the exponent, and counting decimals in the
+    mantissa alone is not merely imprecise, it is unbounded. "1.20\times10^-7"
+    has one decimal in its mantissa, so a mantissa-only rule allowed an
+    absolute error of 0.05 against a published value of 1.2e-7: seven orders of
+    magnitude of slack, enough for any wrong number to pass. An audit on
+    2026-09-14 found 18 such cells, with the worst ("<3.0\times10^-10")
+    inflated by a factor of 1e10. None of them was actually wrong, but the
+    check had stopped being evidence that they were right.
+    """
+    m = _SCI_PARTS.search(text)
+    if m:
+        mantissa = m.group(1)
+        exp = int(m.group(2) if m.group(2) is not None else m.group(3))
+    else:
+        mantissa, exp = text, 0
+    d = re.search(r"\.(\d+)", mantissa)
+    dec = len(d.group(1)) if d else 0
+    unit = 0.5 * 10.0 ** (-dec) * (10.0 ** exp)
+    # The additive epsilon guards float ties at the rounding boundary; it has
+    # to stay well below the unit it is protecting or it becomes the tolerance.
+    return unit + min(1e-12, abs(unit) * 1e-6) + MC_SLACK
 
 
 # ----------------------------------------------------------------------------
@@ -124,7 +153,10 @@ def clean_cell(c):
     lt = "<" in c
     # Scientific notation is written a\times10^{b}; braces are already gone, so
     # a bare _NUM search would stop at the mantissa and read 3.20 for 3.2e-5.
-    sci = re.match(r"^([+-]?\d+(?:\.\d+)?)\s*\\times\s*10\^\s*\(?(-?\d+)\)?", c)
+    # re.search, not re.match: a cell may carry a leading word ("exploratory
+    # <3.0\times10^-10"), and an anchored pattern then fell through to _NUM,
+    # which reads the mantissa alone and returned the bound 3 for 3e-10.
+    sci = re.search(r"([+-]?\d+(?:\.\d+)?)\s*\\times\s*10\^\s*[{(]?\s*(-?\d+)\s*[})]?", c)
     if sci:
         val = float(sci.group(1)) * 10.0 ** int(sci.group(2))
         return c, ("<%g" % val if lt else val)
