@@ -1,0 +1,28 @@
+{
+  "description": "Predeclared fixed-budget replacement measurements for Figure fig:E6 and Table tbl:tableE6.",
+  "protocol": {
+    "channel": "BPSK, three-tap ISI h=[1.0,0.7,0.5]/||h||, AWGN second hop",
+    "training_seeds": 3,
+    "evaluation": "100,000-bit blocks; means and t half-widths are across independently trained checkpoints",
+    "12_and_14_dB_bits_per_seed": 10000000,
+    "16_dB_bits_per_seed": 100000000
+  },
+  "points": {
+    "12": {
+      "AF": {"mean": 0.18346573333333335, "ci95_halfwidth": 0.00018305858963456545},
+      "DF": {"mean": 0.2009151, "ci95_halfwidth": 0.00016945406609159713},
+      "MLP": {"mean": 0.0001456, "ci95_halfwidth": 0.00020300922972497372}
+    },
+    "14": {
+      "AF": {"mean": 0.19412816666666668, "ci95_halfwidth": 0.00022675324604238804},
+      "DF": {"mean": 0.2147103, "ci95_halfwidth": 0.00019595989299091342},
+      "MLP": {"mean": 9.2e-06, "ci95_halfwidth": 1.9947486614913424e-05}
+    },
+    "16": {
+      "AF": {"mean": 0.20748355333333332, "ci95_halfwidth": 8.580512399433444e-05},
+      "DF": {"mean": 0.22798641, "ci95_halfwidth": 7.850109822598537e-05},
+      "MLP": {"mean": 1.2e-07, "ci95_halfwidth": 2.3697163450459482e-07}
+    }
+  },
+  "caveat": "The 16 dB MLP total is 36 errors in 300 million bits. The across-checkpoint interval is descriptive; no iid-bit confidence interval is claimed. The 18 and 20 dB MLP historical rare-event values are intentionally not plotted."
+}
