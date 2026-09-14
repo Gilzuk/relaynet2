@@ -1,5 +1,4 @@
 """Relay implementations for relaynet."""
-
 from .base import Relay
 from .af import AmplifyAndForwardRelay
 from .df import DecodeAndForwardRelay
@@ -8,12 +7,12 @@ from .rl import RLRelay
 from .vae import VAERelay
 from .cgan import CGANRelay
 from .hybrid import HybridRelay
+from .codex_hybrid import CodexNominalSNRHybridRelay
 from .e2e import E2ERelay
 from .mlp import MLPRelay, MLPQPSKClassifierRelay
 from .viterbi import ViterbiMLSERelay, ViterbiMLSEQPSKRelay, TruncatedViterbiQPSKRelay
 from .coded_df import CodedDecodeAndForwardRelay
 from .soft_coded_df import SoftCodedDecodeAndForwardRelay, SoftLearnedRelay
-
 __all__ = [
     "Relay",
     "AmplifyAndForwardRelay",
@@ -23,6 +22,7 @@ __all__ = [
     "VAERelay",
     "CGANRelay",
     "HybridRelay",
+    "CodexNominalSNRHybridRelay",
     "E2ERelay",
     "MLPRelay",
     "MLPQPSKClassifierRelay",
