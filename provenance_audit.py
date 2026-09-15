@@ -30,6 +30,9 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 
 # experiment -> (script, [output files], [published tables/figures])
 REGISTRY = {
+    "Matched-protocol high-SNR Viterbi": (
+        "e6_matched_highsnr.py", ["results/e6_matched_highsnr.json"],
+        ["tbl:tableE6 Viterbi rows at 16 and 20 dB"]),
     "Matched-protocol unknown-ISI comparison": (
         "e6_matched_protocol.py", ["results/e6_matched_protocol.json"],
         ["tbl:tableE6 (pending)", "tbl:layers layer 2 (pending)",
