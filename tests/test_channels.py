@@ -4,6 +4,7 @@ import numpy as np
 import pytest
 
 from relaynet.channels.awgn import awgn_channel, calculate_snr
+from relaynet.channels.e6_channels import ComplexAWGNChannel
 from relaynet.channels.fading import rayleigh_fading_channel, rician_fading_channel
 
 class TestAWGNChannel:
@@ -66,6 +67,20 @@ class TestAWGNChannel:
         assert np.iscomplexobj(noisy)
         measured = calculate_snr(signal, noisy)
         assert abs(measured - 10) < 0.7
+
+    def test_e6_complex_awgn_uses_total_noise_power(self):
+        """The E6 complex channel must put total I+Q noise power at Es/gamma."""
+        rng = np.random.default_rng(11)
+        signal = ((2 * rng.integers(0, 2, 200_000) - 1.0)
+                  + 1j * (2 * rng.integers(0, 2, 200_000) - 1.0)) / np.sqrt(2)
+        noisy = ComplexAWGNChannel(seed=12)(signal, snr_db=10)
+        measured = calculate_snr(signal, noisy)
+        assert abs(measured - 10) < 0.15
+
+        real_signal = 2 * rng.integers(0, 2, 200_000) - 1.0
+        real_noisy = ComplexAWGNChannel(seed=13)(real_signal, snr_db=10)
+        real_measured = calculate_snr(real_signal, real_noisy)
+        assert abs(real_measured - 13.01) < 0.15
 
     def test_high_snr_low_noise(self):
         np.random.seed(1)

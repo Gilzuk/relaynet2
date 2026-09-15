@@ -68,10 +68,19 @@ TEX_DIR = os.path.join(ROOT, "thesis", "chapters")
 # Monte-Carlo slack for values re-simulated from a fresh RNG run (--rerun).
 MC_SLACK = 0.0            # 0 for stored-data comparison; raised under --rerun
 def tol_for(text):
-    """Rounding tolerance implied by the number of decimals shown."""
-    m = re.search(r"\.(\d+)", text)
-    dec = len(m.group(1)) if m else 0
-    return 0.5 * 10 ** (-dec) + 1e-12 + MC_SLACK
+    """Half a displayed unit, including a scientific-notation exponent.
+
+    A fixed absolute epsilon would swamp rare-event BERs. Use relative
+    floating-point slack instead. Bounds are tested strictly by Report.cell.
+    """
+    plain = text.replace("{", "").replace("}", "")
+    number = re.search(r"([+-]?\d+(?:\.\d*)?)(?:[eE]([+-]?\d+)|\s*\\times\s*10\^\s*([+-]?\d+))?", plain)
+    if number is None:
+        raise ValueError(f"No displayed number in {text!r}")
+    mantissa = number.group(1)
+    decimals = len(mantissa.split(".")[1]) if "." in mantissa else 0
+    exponent = int(number.group(2) or number.group(3) or 0)
+    return 0.5 * 10.0 ** (exponent - decimals) * (1.0 + 1e-12) + MC_SLACK
 
 
 # ----------------------------------------------------------------------------
@@ -242,7 +251,8 @@ class Report:
         tol = tol_for(pub_text) + STOCHASTIC_TABLES.get(table, 0.0)
         if isinstance(pub_val, str) and pub_val.startswith("<"):
             bound = float(pub_val[1:])
-            ok = src_val <= bound + tol
+            # A published strict upper bound is not a rounded point estimate.
+            ok = src_val < bound
             diff = max(0.0, src_val - bound)
         else:
             diff = abs(float(pub_val) - float(src_val))
@@ -375,7 +385,11 @@ def check_layers_table(tex, rep):
     sim = _load_e6_npy("e6_sim_ported_results.npy")
     blind = _load_e6_npy("e6_blind_ported_results.npy")
     partial = _load_e6_npy("e6_partial_ported_results.npy")
-    vit = _load_e6_npy("e6_viterbi_awgn.npy")
+    awgn_viterbi_name = ("codex_viterbi_consistency_awgn.npy"
+                         if os.path.exists(os.path.join(
+                             ROOT, "e6_unknown_channel_results/codex_viterbi_consistency_awgn.npy"))
+                         else "e6_viterbi_awgn.npy")
+    vit = _load_e6_npy(awgn_viterbi_name)
     if sim is None or blind is None or partial is None or vit is None:
         return rep.skip(T, "one or more e6 npy files missing")
 
@@ -417,7 +431,7 @@ def check_layers_table(tex, rep):
     # 1--1.5 dB" at 8 dB, which the two numbers it printed side by side
     # contradicted: 0.0065 for the MLP against 0.0072 for the trellis. The
     # lead is horizontal, so the anchor now follows the corrected wording.
-    m = re.search(r"genie-CSI Viterbi's \$([\d.]+)\$ at the same point", body)
+    m = re.search(r"(?:genie-CSI Viterbi's|corrected genie-CSI Viterbi reference is) \$([\d.]+)\$ at (?:the )?same point", body)
     if m:
         rep.cell(T, "L2/VITgenie@8dB", m.group(1), float(m.group(1)),
                  np.array(vit["VIT-genie"])[i8])
@@ -966,7 +980,15 @@ def check_tableE6(tex, rep):
         return rep.skip(T, "label not found in tex")
     sim = np.load(os.path.join(ROOT, "e6_unknown_channel_results/e6_sim_ported_results.npy"),
                   allow_pickle=True).item()
-    vg_awgn = np.load(os.path.join(ROOT, "e6_unknown_channel_results/e6_viterbi_awgn.npy"),
+    # Prefer the explicitly prefixed rerun when it exists.  The historical
+    # array is retained as an audit artifact, but was generated with the old
+    # real-AWGN convention and must not continue to drive the published AWGN
+    # reference rows after the channel implementation was corrected.
+    awgn_viterbi_name = ("codex_viterbi_consistency_awgn.npy"
+                         if os.path.exists(os.path.join(
+                             ROOT, "e6_unknown_channel_results/codex_viterbi_consistency_awgn.npy"))
+                         else "e6_viterbi_awgn.npy")
+    vg_awgn = np.load(os.path.join(ROOT, "e6_unknown_channel_results", awgn_viterbi_name),
                       allow_pickle=True).item()
     vg_ray = np.load(os.path.join(ROOT, "e6_unknown_channel_results/e6_viterbi_rayleigh.npy"),
                      allow_pickle=True).item()

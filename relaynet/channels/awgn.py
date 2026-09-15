@@ -28,12 +28,11 @@ def awgn_channel(signal, snr_db):
     snr_linear = 10 ** (snr_db / 10)
     noise_power = signal_power / snr_linear
 
-    # Noise variance is N0/2 per real dimension, so ``snr_db`` is Eb/N0 and
-    # BPSK obeys the textbook Pb = Q(sqrt(2*Eb/N0)). The real-valued branch
-    # previously used the whole of N0 in its single dimension, which is a
-    # 3 dB pessimistic axis (Pb = Q(sqrt(Eb/N0))) and put this channel on a
-    # different footing from the Rayleigh channel in fading.py, even though
-    # the two are compared against each other in the calibration table.
+    # ``snr_db`` is the Es/N0 axis: N0/2 is the variance of each real
+    # dimension. For real BPSK, Es=Eb and Pb=Q(sqrt(2*Eb/N0)); for QPSK,
+    # Eb=Es/2 and the corresponding bit-energy label is 3.01 dB below
+    # ``snr_db``. The real branch has one dimension, while the complex branch
+    # splits the same total N0 across I and Q.
     if np.iscomplexobj(signal):
         noise_std = np.sqrt(noise_power / 2)
         noise = noise_std * (

@@ -384,3 +384,24 @@ reported three-seed numbers backed by single-seed data.
 **Current audit status** (regenerate; do not hand-edit): clean -- all declared outputs are committed and no data predates its script.
 
 Regenerate with `python provenance_audit.py --markdown`.
+
+## 2026-09-15: final consistency rerun
+
+On branch `codex_final_consistency`, applied the final theory/reference/code
+review.  The current real/complex AWGN implementations and thesis equations
+now agree on (N_0/2) per real dimension.  `ComplexAWGNChannel` was fixed to
+use total I+Q noise power (E_s/N_0); `tests/test_channels.py` adds real and
+complex power checks.  `e6_viterbi_codex_consistency.py` reran the AWGN
+Viterbi genie and 200-pilot baselines at 10 trials x 100,000 bits, writing
+the prefixed `.npy` and JSON manifest while retaining the historical array.
+
+The E6 table/verifier now read the prefixed rerun (genie 0.00137 and LS 0.00148
+at 8 dB; zero-error cells are shown with rule-of-three display bounds).  The
+original E6 figure was regenerated to 300-dpi PNG plus vector PDF with open
+censored markers/arrows and an “insufficient data” legend entry.  Mamba-2,
+QPSK, coded-relay, abstract, and summary claims were scoped to measured
+conditions; Divsalar--Simon now has DOI `10.1109/26.48887`.
+
+Validation: 263 tests pass; verifier 527/0; provenance registry includes the
+new rerun and is clean.  `latexmk -xelatex` remains unavailable on this host,
+so `thesis/main.pdf` was not regenerated; compile on Overleaf/CI before merge.
