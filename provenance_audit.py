@@ -30,6 +30,9 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 
 # experiment -> (script, [output files], [published tables/figures])
 REGISTRY = {
+    "Matched-protocol high-SNR Viterbi": (
+        "e6_matched_highsnr.py", ["results/e6_matched_highsnr.json"],
+        ["tbl:tableE6 Viterbi rows at 16 and 20 dB"]),
     "Matched-protocol unknown-ISI comparison": (
         "e6_matched_protocol.py", ["results/e6_matched_protocol.json"],
         ["tbl:tableE6 (pending)", "tbl:layers layer 2 (pending)",
@@ -64,6 +67,11 @@ REGISTRY = {
     "E6 unknown ISI (S1-S4)": (
         "e6_sim_ported.py", ["e6_unknown_channel_results/e6_sim_ported_results.npy"],
         ["tbl:tableE6"]),
+    "E6 Viterbi AWGN consistency rerun": (
+        "e6_viterbi_codex_consistency.py",
+        ["e6_unknown_channel_results/codex_viterbi_consistency_awgn.npy",
+         "e6_unknown_channel_results/codex_viterbi_consistency_awgn.json"],
+        ["tbl:tableE6 Viterbi rows", "fig:figE6"]),
     "E6 flat control": (
         "e6_flat_ported.py", ["e6_unknown_channel_results/e6_flat_ported_results.npy"],
         ["tbl:tableE6flat"]),

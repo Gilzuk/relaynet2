@@ -1,6 +1,29 @@
 # Active Context (update this file first, every session)
 
-_Last updated: 2026-09-03_
+_Last updated: 2026-09-15_
+
+### Latest (2026-09-15): final consistency rerun and manuscript fixes
+
+Applied the final theory/provenance review on branch `codex_final_consistency`.
+The AWGN text and channel comments now use the implemented standard (N_0/2)
+per-real-dimension convention; `ComplexAWGNChannel` was corrected so its total
+I+Q noise power is (E_s/N_0), with real/complex regression tests.  The
+historical E6 Viterbi array remains unchanged.  A current-protocol AWGN rerun
+is stored as `codex_viterbi_consistency_awgn.npy` with a JSON manifest; the
+corrected 8 dB means are 0.00137 (genie CSI) and 0.00148 (200-pilot LS), and
+zero-error high-SNR points are reported as censored rather than as zero BER.
+
+The original E6 figure was regenerated from the corrected artifact with open
+markers/arrows labelled “insufficient data”; PNG output is 300 dpi and a vector
+PDF is emitted alongside it.  The E6 table and verifier now use the prefixed
+rerun, while the old result remains auditable.  Mamba-2, QPSK, and coded-relay
+claims were narrowed to the conditions actually measured, and the Divsalar--
+Simon DOI was corrected to `10.1109/26.48887`.
+
+Checks: `pytest tests/` 263 passed; `verify_thesis_tables.py` 527 cells / 0
+inconsistencies; provenance audit clean after registry update.  `latexmk`
+could not run because no TeX toolchain is installed on this host, so the
+committed manuscript PDF was not regenerated here; Overleaf/CI must rebuild it.
 
 ### Latest (2026-09-05): reviewer-panel fixes; Future Work item 4 closed at QPSK
 
@@ -1752,3 +1775,10 @@ in `tbl:table43` are goodput, not BER, and are genuine zeros. And the
   was produced and remain unverified.
 - `clean-thesis` deletion still needs one click in the GitHub UI (proxy 403s).
 - 17 bibliography entries without DOI; needs a session with Crossref reachable.
+
+## 2026-09-15 merge-resolution update
+
+Resolved PR merge conflicts against `origin/main` on `codex_final_consistency`.
+The newer matched-protocol Viterbi rows and deep-exposure high-SNR bounds are
+now authoritative in the table and verifier; the prefixed consistency rerun is
+retained as provenance.  Precision and strict-censoring checks remain active.

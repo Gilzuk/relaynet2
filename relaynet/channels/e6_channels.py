@@ -32,7 +32,7 @@ class ISIChannel:
         signal : numpy.ndarray
             Input signal.
         snr_db : float
-            SNR in dB (using thesis convention: gamma = 1/sigma^2).
+            SNR in dB on the normalized Es/N0 axis, with gamma=10**(SNR/10).
 
         Returns
         -------
@@ -43,8 +43,7 @@ class ISIChannel:
         isi_output = np.convolve(signal, self.taps)[:signal.size]
 
         # Add AWGN
-        # sigma^2 = N0/2 per real dimension (N0 = Es/gamma), so snr_db is
-        # Eb/N0 on the same axis as fading.py and the textbook expressions.
+        # sigma^2 = N0/2 per real dimension, with N0 = Es/gamma.
         sigma = 1.0 / np.sqrt(2.0 * 10 ** (snr_db / 10.0))
         noise = sigma * self.rng.standard_normal(signal.size)
 
@@ -85,7 +84,7 @@ class ComplexISIChannel:
         signal : numpy.ndarray
             Input signal (complex).
         snr_db : float
-            SNR in dB (using thesis convention: gamma = 1/sigma^2).
+            SNR in dB on the normalized Es/N0 axis, with gamma=10**(SNR/10).
 
         Returns
         -------
@@ -128,22 +127,23 @@ class ComplexAWGNChannel:
         signal : numpy.ndarray
             Input signal (complex or real).
         snr_db : float
-            SNR in dB (using thesis convention: gamma = 1/sigma^2).
+            SNR in dB on the normalized Es/N0 axis, with gamma=10**(SNR/10).
 
         Returns
         -------
         output : numpy.ndarray
             Noisy channel output.
         """
-        # sigma^2 = N0/2 per real dimension (N0 = Es/gamma), so snr_db is
-        # Eb/N0 on the same axis as fading.py and the textbook expressions.
-        sigma = 1.0 / np.sqrt(2.0 * 10 ** (snr_db / 10.0))
         if np.iscomplexobj(signal):
+            # Each complex component has variance N0/2, with N0 = Es/gamma.
+            sigma = 1.0 / np.sqrt(10 ** (snr_db / 10.0))
             noise = sigma * (
                 self.rng.standard_normal(signal.size) +
                 1j * self.rng.standard_normal(signal.size)
             ) / np.sqrt(2)
         else:
+            # The real branch has one dimension, so sigma^2=N0/2.
+            sigma = 1.0 / np.sqrt(2.0 * 10 ** (snr_db / 10.0))
             noise = sigma * self.rng.standard_normal(signal.size)
         return signal + noise
 
@@ -181,9 +181,7 @@ class ISIRayleighChannel:
         # this channel -- see FadingAwareViterbiQPSKRelay.
         self.last_gains = h
         faded = h * isi_output
-        # sigma^2 = N0/2 with N0 = Es/gamma, so snr_db is Eb/N0 and this
-        # channel is on the same axis as relaynet/channels/fading.py and the
-        # textbook Rayleigh expression. See the note in RayleighChannel.
+        # sigma^2 = N0/2 per real dimension, with N0 = Es/gamma.
         sigma = 1.0 / np.sqrt(2.0 * 10 ** (snr_db / 10.0))
         noise = sigma * self.rng.standard_normal(signal.size)
         return faded + noise
@@ -256,8 +254,7 @@ class NonlinearBiasChannel:
         output : numpy.ndarray
         """
         nonlinear = np.tanh(self.saturation * signal) + self.dc_bias
-        # sigma^2 = N0/2 per real dimension (N0 = Es/gamma), so snr_db is
-        # Eb/N0 on the same axis as fading.py and the textbook expressions.
+        # sigma^2 = N0/2 per real dimension, with N0 = Es/gamma.
         sigma = 1.0 / np.sqrt(2.0 * 10 ** (snr_db / 10.0))
         noise = sigma * self.rng.standard_normal(signal.size)
         return nonlinear + noise
@@ -356,8 +353,7 @@ class AdaptiveRayleighChannel:
         )
         faded = h * signal
 
-        # sigma^2 = N0/2 per real dimension (N0 = Es/gamma), so snr_db is
-        # Eb/N0 on the same axis as fading.py and the textbook expressions.
+        # sigma^2 = N0/2 per real dimension, with N0 = Es/gamma.
         sigma = 1.0 / np.sqrt(2.0 * 10 ** (snr_db / 10.0))
         if np.iscomplexobj(signal):
             noise = sigma * (
@@ -454,8 +450,7 @@ class FlatGainChannel:
         gained = g * signal
 
         # Add AWGN
-        # sigma^2 = N0/2 per real dimension (N0 = Es/gamma), so snr_db is
-        # Eb/N0 on the same axis as fading.py and the textbook expressions.
+        # sigma^2 = N0/2 per real dimension, with N0 = Es/gamma.
         sigma = 1.0 / np.sqrt(2.0 * 10 ** (snr_db / 10.0))
         noise = sigma * self.rng.standard_normal(signal.size)
 
@@ -500,8 +495,7 @@ class BranchAsymmetryChannel:
         asym = np.where(signal > 0, a_plus, -a_minus)
 
         # Add AWGN
-        # sigma^2 = N0/2 per real dimension (N0 = Es/gamma), so snr_db is
-        # Eb/N0 on the same axis as fading.py and the textbook expressions.
+        # sigma^2 = N0/2 per real dimension, with N0 = Es/gamma.
         sigma = 1.0 / np.sqrt(2.0 * 10 ** (snr_db / 10.0))
         noise = sigma * self.rng.standard_normal(signal.size)
 

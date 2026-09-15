@@ -35,7 +35,7 @@ The end-to-end BER for DF is: (Equation~\ref{eq:df-ber-hops})
 }\end{equation}
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad df-ber-hops}
 
-where \(P_{e,1}\) and \(P_{e,2}\) are the BER of the first and second hops, respectively: an end-to-end bit error occurs exactly when \emph{one} of the two hops flips the bit (two flips cancel), so this expands to \(P_{e,1} + P_{e,2} - 2P_{e,1}P_{e,2}\), the same expression used in the AWGN analysis (Equation~\ref{eq:df-ber-awgn}). For BPSK modulation over AWGN (real-valued noise with variance \(1/\text{SNR}\)), each hop's BER is \(P_e = Q\left(\sqrt{\text{SNR}}\right)\). DF provides clean regeneration at high SNR but suffers from error propagation when the first-hop BER is non-negligible. As discussed in Remark~\ref{rem:df-terminology}, the ``DF'' baseline used here is the uncoded symbol-wise slicer, not practical finite-length coded block-DF; its optimality claims are therefore confined to the uncoded setting.
+where \(P_{e,1}\) and \(P_{e,2}\) are the BER of the first and second hops, respectively: an end-to-end bit error occurs exactly when \emph{one} of the two hops flips the bit (two flips cancel), so this expands to \(P_{e,1} + P_{e,2} - 2P_{e,1}P_{e,2}\), the same expression used in the AWGN analysis (Equation~\ref{eq:df-ber-awgn}). For BPSK modulation over AWGN (real-valued noise with variance \(1/(2\gamma)\)), each hop's BER is \(P_e = Q\left(\sqrt{2\gamma}\right)\) on the simulator's \(\gamma=E_b/N_0\) axis. DF provides clean regeneration at high SNR but suffers from error propagation when the first-hop BER is non-negligible. As discussed in Remark~\ref{rem:df-terminology}, the ``DF'' baseline used here is the uncoded symbol-wise slicer, not practical finite-length coded block-DF; its optimality claims are therefore confined to the uncoded setting.
 
 \subsection{Other Classical Relay Techniques}
 
@@ -166,8 +166,9 @@ model as a discretised linear dynamical system --- a learned recursive filter, l
 with the HiPPO initialisation supplying a principled memory of the past. \textbf{Mamba} \cite{gu2023mamba}
 makes that system time-varying by conditioning its parameters on the input, so the state-transition term acts
 as a learned gate that can reset or retain the state per symbol; \textbf{Mamba-2} \cite{DaoGu2024TransformersSSM}
-reformulates the same recurrence through its duality with a structured attention matrix, which buys a faster
-implementation rather than a different function class. The classical analogue is adaptive filtering, and that
+recasts a structured selective SSM through its duality with a structured attention matrix. SSD uses a more
+restrictive scalar-identity transition structure than a general diagonal SSM; that restriction enables the
+faster implementation, so Mamba-2 is not simply the same function class with a faster kernel. The classical analogue is adaptive filtering, and that
 connection becomes relevant only in the unknown-channel study of Chapter~\ref{sec:unknown-channels}; on the
 canonical memoryless channel there is no temporal structure for a recurrence to exploit.
 
@@ -188,25 +189,25 @@ This section presents the theoretical BER analysis for each channel model used i
 
 The AWGN channel adds zero-mean Gaussian noise to the transmitted signal: (Equation~\ref{eq:awgn-channel})
 
-\begin{equation}\protect\phantomsection\label{eq:awgn-channel}{y = x + n, \quad n \sim \mathcal{N}(0, \sigma^2), \quad \sigma^2 = \frac{P_s}{\text{SNR}_{\text{linear}}}
+\begin{equation}\protect\phantomsection\label{eq:awgn-channel}{y = x + n, \quad n \sim \mathcal{N}(0, \sigma^2), \quad \sigma^2 = \frac{P_s}{2\,\gamma}
 }\end{equation}
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad awgn-channel}
 
-where \(P_s = \mathbb{E}[|x|^2] = 1\) for unit-power BPSK symbols. The noise variance is inversely proportional to the linear SNR.
+where \(P_s = \mathbb{E}[|x|^2] = 1\) for unit-power BPSK symbols and \(\gamma=10^{\mathrm{SNR}_{\mathrm{dB}}/10}=E_s/N_0\). The factor of two is the standard \(N_0/2\) variance per real dimension.
 
 \subsubsection{Single-hop BER}\label{sec:awgn-single-hop-ber}
- For BPSK \(\pm 1\) symbols and real-valued AWGN with variance \(\sigma^2 = 1/\text{SNR}\), an error occurs when the noise pushes the received sample past the decision boundary at the origin. The theoretical BER is: (Equation~\ref{eq:awgn-ber})
+ For BPSK \(\pm 1\) symbols and real-valued AWGN with variance \(\sigma^2 = 1/(2\gamma)\), an error occurs when the noise pushes the received sample past the decision boundary at the origin. The theoretical BER is: (Equation~\ref{eq:awgn-ber})
 
-\begin{equation}\protect\phantomsection\label{eq:awgn-ber}{P_e^{\text{AWGN}} = Q\!\left(\frac{1}{\sigma}\right) = Q\left(\sqrt{\text{SNR}}\right) = \frac{1}{2}\,\text{erfc}\!\left(\sqrt{\frac{\text{SNR}}{2}}\right)
+\begin{equation}\protect\phantomsection\label{eq:awgn-ber}{P_e^{\text{AWGN}} = Q\!\left(\frac{1}{\sigma}\right) = Q\left(\sqrt{2\gamma}\right) = \frac{1}{2}\,\text{erfc}\!\left(\sqrt{\gamma}\right)
 }\end{equation}
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad awgn-ber}
 
-where \(Q(x) = \frac{1}{2}\text{erfc}(x/\sqrt{2})\) is the Gaussian Q-function and \(\text{SNR} = P_s / \sigma^2\) is the ratio of signal power to noise variance.
+where \(Q(x) = \frac{1}{2}\text{erfc}(x/\sqrt{2})\) is the Gaussian Q-function. The simulator's SNR label is the normalized \(E_s/N_0\) axis, not the raw ratio \(P_s/\sigma^2\) in a single real dimension.
 
 \begin{remark}[Noise convention]\label{noise-convension}
-The standard textbook result \(P_e = Q(\sqrt{2 E_b/N_0})\) assumes that the one-sided noise PSD is \(N_0\), giving a baseband noise variance of \(N_0/2\) per real dimension. In our AWGN implementation the noise is purely real with variance \(\sigma^2 = P_s/\text{SNR}\), so \(N_0 = 2\sigma^2 = 2P_s/\text{SNR}\) and \(E_b/N_0 = \text{SNR}/2\). Substituting yields \(Q(\sqrt{2 \cdot \text{SNR}/2}) = Q(\sqrt{\text{SNR}})\), which is the expression used throughout this work.
+The standard textbook result \(P_e = Q(\sqrt{2 E_b/N_0})\) assumes a one-sided noise PSD \(N_0\), hence variance \(N_0/2\) per real dimension. The implementation uses \(\sigma^2=P_s/(2\gamma)\), so for BPSK (\(E_s=E_b=P_s\)) its BER is \(Q(\sqrt{2\gamma})\), exactly the textbook expression with \(\gamma=E_b/N_0\). For QPSK, \(E_b=E_s/2\), so the same simulator label corresponds to an \(E_b/N_0\) value 3.01~dB lower.
 
-By contrast, the fading channels add \textbf{complex} Gaussian noise with total power \(1/\text{SNR}\) (i.e.~\(\sigma_I^2 = \sigma_Q^2 = 1/(2\,\text{SNR})\)) and extract the real part after ZF equalization, halving the effective noise variance per decision dimension. This naturally introduces a factor of 2 inside the Q-function argument for all fading-channel BER expressions (the fading-channel analysis above), making them consistent with the standard textbook forms.
+For complex baseband signals the same convention gives total noise power \(N_0=P_s/\gamma\), split equally between I and Q; after coherent equalization each real decision dimension therefore has variance \(P_s/(2\gamma|h|^2)\). The Rayleigh expressions use that per-dimension variance and consequently retain the standard factor of two in the Q-function argument.
 \end{remark}
 
 \subsubsection{Two-hop AF BER}\label{sec:awgn-two-hop-af-ber}

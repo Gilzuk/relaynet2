@@ -77,30 +77,22 @@ _SCI_PARTS = re.compile(
 
 
 def tol_for(text):
-    """Rounding tolerance implied by the last significant digit displayed.
+    """Half a displayed unit, including a scientific-notation exponent.
 
-    Half a unit in the last displayed digit -- but for a cell in scientific
-    notation that unit is scaled by the exponent, and counting decimals in the
-    mantissa alone is not merely imprecise, it is unbounded. "1.20\times10^-7"
-    has one decimal in its mantissa, so a mantissa-only rule allowed an
-    absolute error of 0.05 against a published value of 1.2e-7: seven orders of
-    magnitude of slack, enough for any wrong number to pass. An audit on
-    2026-09-14 found 18 such cells, with the worst ("<3.0\times10^-10")
-    inflated by a factor of 1e10. None of them was actually wrong, but the
-    check had stopped being evidence that they were right.
+    A fixed absolute epsilon would swamp rare-event BERs. Use relative
+    floating-point slack instead. Bounds are tested strictly by Report.cell.
     """
-    m = _SCI_PARTS.search(text)
-    if m:
-        mantissa = m.group(1)
-        exp = int(m.group(2) if m.group(2) is not None else m.group(3))
-    else:
-        mantissa, exp = text, 0
-    d = re.search(r"\.(\d+)", mantissa)
-    dec = len(d.group(1)) if d else 0
-    unit = 0.5 * 10.0 ** (-dec) * (10.0 ** exp)
-    # The additive epsilon guards float ties at the rounding boundary; it has
-    # to stay well below the unit it is protecting or it becomes the tolerance.
-    return unit + min(1e-12, abs(unit) * 1e-6) + MC_SLACK
+    plain = text.replace("{", "").replace("}", "")
+    number = re.search(
+        r"([+-]?\d+(?:\.\d*)?)(?:[eE]([+-]?\d+)|\s*\\times\s*10\^\s*([+-]?\d+))?",
+        plain,
+    )
+    if number is None:
+        raise ValueError(f"No displayed number in {text!r}")
+    mantissa = number.group(1)
+    decimals = len(mantissa.split(".")[1]) if "." in mantissa else 0
+    exponent = int(number.group(2) or number.group(3) or 0)
+    return 0.5 * 10.0 ** (exponent - decimals) + MC_SLACK
 
 
 # ----------------------------------------------------------------------------
@@ -274,11 +266,15 @@ class Report:
         tol = tol_for(pub_text) + STOCHASTIC_TABLES.get(table, 0.0)
         if isinstance(pub_val, str) and pub_val.startswith("<"):
             bound = float(pub_val[1:])
-            ok = src_val <= bound + tol
+            # A published strict upper bound is not a rounded point estimate.
+            ok = src_val < bound
             diff = max(0.0, src_val - bound)
         else:
             diff = abs(float(pub_val) - float(src_val))
-            ok = diff <= tol
+            # Allow one ulp-scale relative cushion for decimal ties produced
+            # by binary floating-point arithmetic; this does not change the
+            # displayed-unit tolerance or the strict upper-bound rule above.
+            ok = diff <= tol * (1.0 + 1e-12)
         if not ok:
             self.flags.append((table, where, pub_text, f"{src_val:.5g}", f"{diff:.2g}"))
 
@@ -389,6 +385,35 @@ def check_table2(tex, rep):
     rep.finish_table(T, before)
 
 
+def matched_viterbi(name, snr):
+    """genie / pilot-LS Viterbi on the current Hop-2 noise convention.
+
+    e6_viterbi_awgn.npy is NOT the source for these any more. Those vectors
+    were generated when the real AWGN branch put the whole of N0 in its single
+    dimension, which is 3.01 dB pessimistic, so they were not comparable with
+    the relay rows printed beside them -- the stored 0.0072 at 8 dB is 0.001354
+    on the current convention. e6_matched_protocol.py re-measured them, and
+    e6_matched_highsnr.py gives 16 and 20 dB a predeclared 1e8 bits so those
+    cells resolve to 3e-8 bounds rather than the 3e-6 a 1e6-bit budget allows.
+
+    Returns a point estimate where errors were observed and zero when no errors
+    were observed.  The manuscript prints the corresponding rule-of-three
+    upper bound, so the strict ``<`` check can validate the bound against the
+    observed count without treating the bound itself as an observed BER.
+    """
+    if snr in (16, 20):
+        r = _MATCHED_HI["results"][name][str(snr)]
+        return r["ber"] if r["errors"] else 0.0
+    i = _MATCHED["snrs"].index(snr)
+    e = _MATCHED["results"][name]["errors"][i]
+    b = _MATCHED["results"][name]["bits"][i]
+    return (e / b) if e else 0.0
+
+
+_MATCHED = json.load(open(os.path.join(ROOT, "results/e6_matched_protocol.json")))
+_MATCHED_HI = json.load(open(os.path.join(ROOT, "results/e6_matched_highsnr.json")))
+
+
 def check_layers_table(tex, rep):
     """The four-layer summary (tbl:layers) vs the data each layer cites.
 
@@ -407,7 +432,11 @@ def check_layers_table(tex, rep):
     sim = _load_e6_npy("e6_sim_ported_results.npy")
     blind = _load_e6_npy("e6_blind_ported_results.npy")
     partial = _load_e6_npy("e6_partial_ported_results.npy")
-    vit = _load_e6_npy("e6_viterbi_awgn.npy")
+    awgn_viterbi_name = ("codex_viterbi_consistency_awgn.npy"
+                         if os.path.exists(os.path.join(
+                             ROOT, "e6_unknown_channel_results/codex_viterbi_consistency_awgn.npy"))
+                         else "e6_viterbi_awgn.npy")
+    vit = _load_e6_npy(awgn_viterbi_name)
     if sim is None or blind is None or partial is None or vit is None:
         return rep.skip(T, "one or more e6 npy files missing")
 
@@ -445,18 +474,18 @@ def check_layers_table(tex, rep):
     m = re.search(r"restores the link \(\$([\d.]+)\$ at 8~dB", body)
     if m:
         rep.cell(T, "L2/MLP@8dB", m.group(1), float(m.group(1)), S1["MLP"][0][i8])
-    # The row used to cite this cell as evidence that Viterbi was "ahead by
-    # 1--1.5 dB" at 8 dB, which the two numbers it printed side by side
-    # contradicted: 0.0065 for the MLP against 0.0072 for the trellis. The
-    # lead is horizontal, so the anchor now follows the corrected wording.
-    m = re.search(r"genie-CSI Viterbi's \$([\d.]+)\$ at the same point", body)
+    # This cell was previously read off e6_viterbi_awgn.npy and printed as
+    # 0.0072, which made it look as though the MLP led at 8 dB. On the current
+    # noise convention it is 0.001354 and the ordering is the other way round.
+    m = re.search(r"\$([\d.]+)\$ against that \$[\d.]+\$ at 8~dB", body)
     if m:
         rep.cell(T, "L2/VITgenie@8dB", m.group(1), float(m.group(1)),
-                 np.array(vit["VIT-genie"])[i8])
-    m = re.search(r"fixed-budget MLP estimate is \$([\d.]+)\\times10\^\{-4\}\$", body)
+                 matched_viterbi("VIT-genie", 8))
+    m = re.search(r"below \$3\.0\\times10\^\{-8\}\$ at 16~dB against the MLP's "
+                  r"\$([\d.]+)\\times10\^\{-7\}\$", body)
     if m:
-        rep.cell(T, "L2/MLP@12dB", m.group(1), float(m.group(1)) * 1e-4,
-                 fixed["points"]["12"]["MLP"]["mean"])
+        rep.cell(T, "L2/MLP@16dB", m.group(1), float(m.group(1)) * 1e-7,
+                 fixed["points"]["16"]["MLP"]["mean"])
 
     # Layer 3: the pilot-budget crossover at the 10 dB operating point.
     pa = partial["panel_a"]
@@ -998,7 +1027,15 @@ def check_tableE6(tex, rep):
         return rep.skip(T, "label not found in tex")
     sim = np.load(os.path.join(ROOT, "e6_unknown_channel_results/e6_sim_ported_results.npy"),
                   allow_pickle=True).item()
-    vg_awgn = np.load(os.path.join(ROOT, "e6_unknown_channel_results/e6_viterbi_awgn.npy"),
+    # Prefer the explicitly prefixed rerun when it exists.  The historical
+    # array is retained as an audit artifact, but was generated with the old
+    # real-AWGN convention and must not continue to drive the published AWGN
+    # reference rows after the channel implementation was corrected.
+    awgn_viterbi_name = ("codex_viterbi_consistency_awgn.npy"
+                         if os.path.exists(os.path.join(
+                             ROOT, "e6_unknown_channel_results/codex_viterbi_consistency_awgn.npy"))
+                         else "e6_viterbi_awgn.npy")
+    vg_awgn = np.load(os.path.join(ROOT, "e6_unknown_channel_results", awgn_viterbi_name),
                       allow_pickle=True).item()
     vg_ray = np.load(os.path.join(ROOT, "e6_unknown_channel_results/e6_viterbi_rayleigh.npy"),
                      allow_pickle=True).item()
@@ -1055,10 +1092,18 @@ def check_tableE6(tex, rep):
                 return res["DF"][0][si]
             if "MLP" in r:
                 return res["MLP"][0][si]
-            if "GENIE" in r and vg is not None:
-                return float(vg["VIT-genie"][si])
-            if ("PILOT" in r or "EST" in r or "200" in r) and vg is not None:
-                return float(vg["VIT-est"][si])
+            # AWGN setup: the Viterbi rows come from the matched-protocol
+            # rerun, not from the superseded-convention npy (see
+            # matched_viterbi). The Rayleigh setup still uses its own npy.
+            awgn = cur_setup == "Unknown ISI $\\to$ AWGN"
+            if "GENIE" in r:
+                if awgn:
+                    return matched_viterbi("VIT-genie", int(snr))
+                return float(vg["VIT-genie"][si]) if vg is not None else None
+            if "PILOT" in r or "EST" in r or "200" in r:
+                if awgn:
+                    return matched_viterbi("VIT-est", int(snr))
+                return float(vg["VIT-est"][si]) if vg is not None else None
             return None
         for c, snr in col_snr:
             if c >= len(row):

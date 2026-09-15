@@ -118,7 +118,7 @@ BPSK (real) & Unknown 3-tap ISI & Extension & Used only in Chapter~\ref{sec:unkn
 
 Beyond its role as the noise term of every channel model and its use in the closed-form expressions quoted as analytical background (Chapter~\ref{sec:literature-review}), AWGN also appears as the Hop-2 channel of one unknown-channel relay comparison (Chapter~\ref{sec:unknown-channels}); no standalone AWGN-only relay study is run.
 
-\textbf{A consequence worth stating plainly.} The SNR argument sets the noise power from the average \emph{symbol} energy, so it denotes \(E_s/N_0\) in every configuration. Since \(E_b = E_s/k\), \(E_b/N_0\) is \(3.01\)~dB below the stated value for QPSK. Where a BER figure is read against a BPSK closed form, this conversion is stated explicitly at the point of use.
+\textbf{A consequence worth stating plainly.} The channel functions set \(N_0\) from the average \emph{symbol} energy, so the reported SNR axis is \(E_s/N_0\). For real BPSK, \(E_s=E_b\); for QPSK, \(E_b=E_s/2\), so its bit-energy label is \(3.01\)~dB below the plotted value. The real branches use variance \(N_0/2\) and the complex branches split the same \(N_0\) equally across I and Q. Where a BER figure is read against a BPSK closed form, this conversion is stated explicitly at the point of use.
 
 \textbf{Power Normalization.} All relay strategies normalize their output power to ensure a common empirical transmit-power constraint:
 
