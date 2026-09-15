@@ -1,0 +1,29 @@
+{
+  "artifact": "codex_viterbi_consistency_awgn.npy",
+  "source_script": "e6_viterbi_ported.py",
+  "source_commit": "bba54a671e4eec12d8665964b42886d2b5e4f198",
+  "hop2": "awgn",
+  "snrs_db": [
+    0,
+    2,
+    4,
+    6,
+    8,
+    10,
+    12,
+    14,
+    16,
+    18,
+    20
+  ],
+  "n_trials": 10,
+  "n_bits_per_trial": 100000,
+  "pilot_symbols": 200,
+  "channel_taps": [
+    0.7580980435789034,
+    0.5306686305052324,
+    0.3790490217894517
+  ],
+  "noise_convention": "current relaynet channel implementation",
+  "historical_artifact_retained": "e6_viterbi_awgn.npy"
+}

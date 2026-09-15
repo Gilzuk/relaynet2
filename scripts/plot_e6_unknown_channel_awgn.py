@@ -39,11 +39,13 @@ import numpy as np
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 NPY_DIR = os.path.join(ROOT, "e6_unknown_channel_results")
 SIM_PATH = os.path.join(NPY_DIR, "e6_sim_ported_results.npy")
 VITERBI_PATH = os.path.join(NPY_DIR, "e6_viterbi_awgn.npy")
+CORRECTED_VITERBI_PATH = os.path.join(NPY_DIR, "codex_viterbi_consistency_awgn.npy")
 FIXED_BUDGET_PATH = os.path.join(NPY_DIR, "codex_isi_fixed_budget_validation.json")
 OUT_DIRS = [os.path.join(ROOT, "results"), os.path.join(ROOT, "thesis", "results")]
 SETUP = "S1: unknown ISI -> AWGN"
@@ -58,12 +60,18 @@ VITERBI_STYLE = {
     "VIT-est":   dict(color="tab:purple", marker="D", ls=":", label="Viterbi (200-pilot LS)"),
 }
 
+# These floors are display coordinates only.  A zero-error estimate is not a
+# measured BER equal to the floor and must not be presented as an upper bound.
+PLOT_FLOOR = 1e-8
+CENSORED_DISPLAY_Y = 5e-5
+
 
 def main():
     d = np.load(SIM_PATH, allow_pickle=True).item()
     snrs = np.asarray(d["snrs"], dtype=float)
     r = d["results"][SETUP]
-    vg = np.load(VITERBI_PATH, allow_pickle=True).item()
+    viterbi_path = CORRECTED_VITERBI_PATH if os.path.exists(CORRECTED_VITERBI_PATH) else VITERBI_PATH
+    vg = np.load(viterbi_path, allow_pickle=True).item()
 
     # The original sweep used an adaptive, post-error extension at high SNR.
     # Replace 12--16 dB by predeclared fixed-budget results.  The 16-dB
@@ -85,22 +93,45 @@ def main():
     fig, ax = plt.subplots(figsize=(7, 5.5))
     for key, st in STYLE.items():
         mu, ci = display[key]
-        ax.semilogy(snrs, np.maximum(mu, 1e-8), markersize=6, **st)
-        ax.fill_between(snrs, np.maximum(mu - ci, 1e-8), np.maximum(mu + ci, 1e-8),
+        ax.semilogy(snrs, np.maximum(mu, PLOT_FLOOR), markersize=6, **st)
+        ax.fill_between(snrs, np.maximum(mu - ci, PLOT_FLOOR), np.maximum(mu + ci, PLOT_FLOOR),
                         color=st["color"], alpha=0.18, lw=0)
     for key, st in VITERBI_STYLE.items():
         mu = np.asarray(vg[key], dtype=float)
-        ax.semilogy(snrs, np.maximum(mu, 1e-8), markersize=6, **st)
+        observed = mu > 0
+        if np.any(observed):
+            ax.semilogy(snrs[observed], mu[observed], markersize=6, **st)
+        censored = ~observed
+        if np.any(censored):
+            ax.scatter(snrs[censored], np.full(np.count_nonzero(censored), CENSORED_DISPLAY_Y),
+                       marker=st["marker"], s=42, facecolors="white", edgecolors=st["color"],
+                       linewidths=1.2, zorder=4)
+            for x in snrs[censored]:
+                ax.annotate("", xy=(x, PLOT_FLOOR), xytext=(x, CENSORED_DISPLAY_Y),
+                            arrowprops={"arrowstyle": "-|>", "color": st["color"],
+                                        "lw": 0.9, "alpha": 0.8})
+
+    # Add one compact legend entry for the open-marker convention without
+    # duplicating it for the two Viterbi variants.
+    if any(np.any(np.asarray(vg[key], dtype=float) <= 0) for key in VITERBI_STYLE):
+        handles, labels = ax.get_legend_handles_labels()
+        handles.append(Line2D([0], [0], marker="o", color="0.25", markerfacecolor="white",
+                              linestyle="None", markersize=6,
+                              label="Viterbi zero errors (insufficient data)"))
+        labels.append("Viterbi zero errors (insufficient data)")
+        ax.legend(handles, labels, loc="lower left", fontsize=9)
 
     ax.axhline(0.25, color="0.4", ls=":", lw=1.2)
     ax.text(0.3, 0.25 * 1.06, "memoryless floor = 0.25", color="0.4", fontsize=9)
 
     ax.set_xlabel("SNR (dB)")
     ax.set_ylabel("BER")
-    ax.set_title("Unknown ISI channel: fixed-budget validation through 16 dB")
-    ax.set_ylim(1e-8, 1e0)
+    title_suffix = " (current-protocol Viterbi)" if viterbi_path == CORRECTED_VITERBI_PATH else ""
+    ax.set_title("Unknown ISI channel: fixed-budget validation through 16 dB" + title_suffix)
+    ax.set_ylim(PLOT_FLOOR, 1e0)
     ax.grid(True, which="both", alpha=0.3)
-    ax.legend(loc="lower left", fontsize=9)
+    if not any(np.any(np.asarray(vg[key], dtype=float) <= 0) for key in VITERBI_STYLE):
+        ax.legend(loc="lower left", fontsize=9)
     ax.annotate("MLP 18--20 dB\nnot re-estimated", xy=(16, 1.2e-7),
                 xytext=(16.8, 2e-6), fontsize=8, color=STYLE["MLP"]["color"],
                 arrowprops={"arrowstyle": "->", "color": STYLE["MLP"]["color"]})
@@ -108,7 +139,8 @@ def main():
     for out_dir in OUT_DIRS:
         os.makedirs(out_dir, exist_ok=True)
         path = os.path.join(out_dir, "e6_unknown_channel.png")
-        fig.savefig(path, dpi=150, bbox_inches="tight")
+        fig.savefig(path, dpi=300, bbox_inches="tight")
+        fig.savefig(path.replace(".png", ".pdf"), bbox_inches="tight")
         print(f"  wrote {path}")
     plt.close(fig)
 

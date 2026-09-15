@@ -118,7 +118,7 @@ BPSK (real) & Unknown 3-tap ISI & Extension & Used only in Chapter~\ref{sec:unkn
 
 Beyond its role as the noise term of every channel model and its use in the closed-form expressions quoted as analytical background (Chapter~\ref{sec:literature-review}), AWGN also appears as the Hop-2 channel of one unknown-channel relay comparison (Chapter~\ref{sec:unknown-channels}); no standalone AWGN-only relay study is run.
 
-\textbf{A consequence worth stating plainly.} The SNR argument sets the noise power from the average \emph{symbol} energy, so it denotes \(E_s/N_0\) in every configuration. Since \(E_b = E_s/k\), \(E_b/N_0\) is \(3.01\)~dB below the stated value for QPSK. Where a BER figure is read against a BPSK closed form, this conversion is stated explicitly at the point of use.
+\textbf{A consequence worth stating plainly.} The channel functions set \(N_0\) from the average \emph{symbol} energy, so the reported SNR axis is \(E_s/N_0\). For real BPSK, \(E_s=E_b\); for QPSK, \(E_b=E_s/2\), so its bit-energy label is \(3.01\)~dB below the plotted value. The real branches use variance \(N_0/2\) and the complex branches split the same \(N_0\) equally across I and Q. Where a BER figure is read against a BPSK closed form, this conversion is stated explicitly at the point of use.
 
 \textbf{Power Normalization.} All relay strategies normalize their output power to ensure a common empirical transmit-power constraint:
 
@@ -196,7 +196,7 @@ Training uses MSE loss with multi-SNR training data (i.e., 5, 10, and 15 dB), 25
   Training points at the relay node: SNR = \textbf{5, 10, 15 dB}.
 
   \emph{Design rationale:} The low \(\beta = 0.1\) prioritizes reconstruction quality over latent space regularization, appropriate for a task where accurate signal recovery is paramount. The 8-dimensional latent space provides sufficient representational capacity for the BPSK signal manifold while maintaining a tractable KL divergence. The encoder window of 7 symbols provides local context.
-\item  \textbf{Generative cGAN (WGAN-GP)} \cite{MirzaOsindero2014cGAN,Gulrajani2017WGANGP}\textbf{:} Adversarial relay with a generator conditioned on the noisy signal and a critic providing the training signal. Generator: \((7+8 \to 32 \to 32 \to 16 \to 1)\), Critic: \((1+7 \to 32 \to 16 \to 1)\). Total: 2,946 parameters. Trained with Wasserstein loss, gradient penalty (\(\lambda=10\)), and L1 reconstruction loss (\(\lambda_{\text{L1}}=100\)) for 200 epochs.
+\item  \textbf{Generative cGAN (WGAN-GP)} \cite{MirzaOsindero2014cGAN,Gulrajani2017WGANgp}\textbf{:} Adversarial relay with a generator conditioned on the noisy signal and a critic providing the training signal. Generator: \((7+8 \to 32 \to 32 \to 16 \to 1)\), Critic: \((1+7 \to 32 \to 16 \to 1)\). Total: 2,946 parameters. Trained with Wasserstein loss, gradient penalty (\(\lambda=10\)), and L1 reconstruction loss (\(\lambda_{\text{L1}}=100\)) for 200 epochs.
 
   Training points at the relay node: SNR = \textbf{5, 10, 15 dB}.
 
