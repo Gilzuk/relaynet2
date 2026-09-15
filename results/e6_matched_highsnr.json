@@ -1,0 +1,44 @@
+{
+  "description": "Deep-exposure genie and pilot-LS Viterbi at 16 and 20 dB, matched to e6_matched_protocol.py.",
+  "taps_effective": [
+    0.7580980435789034,
+    0.5306686305052324,
+    0.3790490217894517
+  ],
+  "hop2": "awgn, sigma^2 = N0/2 per real dimension (current convention)",
+  "bits_per_detector_per_snr": 100000000,
+  "declared_before_run": true,
+  "n_pilot": 200,
+  "git_rev": "597105e37b4f07996872604fef863c9bb6aa501d",
+  "seconds": 4777.6,
+  "results": {
+    "VIT-genie": {
+      "16": {
+        "errors": 0,
+        "bits": 100000000,
+        "ber": null,
+        "rule_of_three_upper_95": 3e-08
+      },
+      "20": {
+        "errors": 0,
+        "bits": 100000000,
+        "ber": null,
+        "rule_of_three_upper_95": 3e-08
+      }
+    },
+    "VIT-est": {
+      "16": {
+        "errors": 0,
+        "bits": 100000000,
+        "ber": null,
+        "rule_of_three_upper_95": 3e-08
+      },
+      "20": {
+        "errors": 0,
+        "bits": 100000000,
+        "ber": null,
+        "rule_of_three_upper_95": 3e-08
+      }
+    }
+  }
+}
