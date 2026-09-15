@@ -405,3 +405,13 @@ conditions; Divsalar--Simon now has DOI `10.1109/26.48887`.
 Validation: 263 tests pass; verifier 527/0; provenance registry includes the
 new rerun and is clean.  `latexmk -xelatex` remains unavailable on this host,
 so `thesis/main.pdf` was not regenerated; compile on Overleaf/CI before merge.
+
+## 2026-09-15: merge conflict resolution
+
+Merged `origin/main` matched-protocol Viterbi updates into
+`codex_final_consistency`.  The manuscript now uses the newer matched-protocol
+values (0.001354/0.001460 at 8 dB and 3e-8 high-SNR bounds), while retaining
+the prefixed rerun as an auditable cross-check.  Resolved the verifier's
+scientific-notation tolerance and strict upper-bound logic without weakening
+coverage.  Full tests and the 527-cell verifier are green; local TeX tooling
+remains unavailable.

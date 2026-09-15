@@ -1775,3 +1775,10 @@ in `tbl:table43` are goodput, not BER, and are genuine zeros. And the
   was produced and remain unverified.
 - `clean-thesis` deletion still needs one click in the GitHub UI (proxy 403s).
 - 17 bibliography entries without DOI; needs a session with Crossref reachable.
+
+## 2026-09-15 merge-resolution update
+
+Resolved PR merge conflicts against `origin/main` on `codex_final_consistency`.
+The newer matched-protocol Viterbi rows and deep-exposure high-SNR bounds are
+now authoritative in the table and verifier; the prefixed consistency rerun is
+retained as provenance.  Precision and strict-censoring checks remain active.

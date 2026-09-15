@@ -67,6 +67,15 @@ TEX_DIR = os.path.join(ROOT, "thesis", "chapters")
 # within half a unit in the last displayed digit (pure rounding), plus a small
 # Monte-Carlo slack for values re-simulated from a fresh RNG run (--rerun).
 MC_SLACK = 0.0            # 0 for stored-data comparison; raised under --rerun
+
+# Matches the exponent of a cell written in scientific notation, in either the
+# LaTeX form (3.20\times10^-5, braces already stripped by clean_cell) or the
+# plain form (5e-5). Group 1 is the mantissa, group 2 the exponent.
+_SCI_PARTS = re.compile(
+    r"([+-]?\d+(?:\.\d+)?)\s*(?:\\times\s*10\^\s*[{(]?\s*(-?\d+)\s*[})]?|[eE]([+-]?\d+))"
+)
+
+
 def tol_for(text):
     """Half a displayed unit, including a scientific-notation exponent.
 
@@ -74,13 +83,16 @@ def tol_for(text):
     floating-point slack instead. Bounds are tested strictly by Report.cell.
     """
     plain = text.replace("{", "").replace("}", "")
-    number = re.search(r"([+-]?\d+(?:\.\d*)?)(?:[eE]([+-]?\d+)|\s*\\times\s*10\^\s*([+-]?\d+))?", plain)
+    number = re.search(
+        r"([+-]?\d+(?:\.\d*)?)(?:[eE]([+-]?\d+)|\s*\\times\s*10\^\s*([+-]?\d+))?",
+        plain,
+    )
     if number is None:
         raise ValueError(f"No displayed number in {text!r}")
     mantissa = number.group(1)
     decimals = len(mantissa.split(".")[1]) if "." in mantissa else 0
     exponent = int(number.group(2) or number.group(3) or 0)
-    return 0.5 * 10.0 ** (exponent - decimals) * (1.0 + 1e-12) + MC_SLACK
+    return 0.5 * 10.0 ** (exponent - decimals) + MC_SLACK
 
 
 # ----------------------------------------------------------------------------
@@ -133,7 +145,10 @@ def clean_cell(c):
     lt = "<" in c
     # Scientific notation is written a\times10^{b}; braces are already gone, so
     # a bare _NUM search would stop at the mantissa and read 3.20 for 3.2e-5.
-    sci = re.match(r"^([+-]?\d+(?:\.\d+)?)\s*\\times\s*10\^\s*\(?(-?\d+)\)?", c)
+    # re.search, not re.match: a cell may carry a leading word ("exploratory
+    # <3.0\times10^-10"), and an anchored pattern then fell through to _NUM,
+    # which reads the mantissa alone and returned the bound 3 for 3e-10.
+    sci = re.search(r"([+-]?\d+(?:\.\d+)?)\s*\\times\s*10\^\s*[{(]?\s*(-?\d+)\s*[})]?", c)
     if sci:
         val = float(sci.group(1)) * 10.0 ** int(sci.group(2))
         return c, ("<%g" % val if lt else val)
@@ -256,7 +271,10 @@ class Report:
             diff = max(0.0, src_val - bound)
         else:
             diff = abs(float(pub_val) - float(src_val))
-            ok = diff <= tol
+            # Allow one ulp-scale relative cushion for decimal ties produced
+            # by binary floating-point arithmetic; this does not change the
+            # displayed-unit tolerance or the strict upper-bound rule above.
+            ok = diff <= tol * (1.0 + 1e-12)
         if not ok:
             self.flags.append((table, where, pub_text, f"{src_val:.5g}", f"{diff:.2g}"))
 
@@ -367,6 +385,35 @@ def check_table2(tex, rep):
     rep.finish_table(T, before)
 
 
+def matched_viterbi(name, snr):
+    """genie / pilot-LS Viterbi on the current Hop-2 noise convention.
+
+    e6_viterbi_awgn.npy is NOT the source for these any more. Those vectors
+    were generated when the real AWGN branch put the whole of N0 in its single
+    dimension, which is 3.01 dB pessimistic, so they were not comparable with
+    the relay rows printed beside them -- the stored 0.0072 at 8 dB is 0.001354
+    on the current convention. e6_matched_protocol.py re-measured them, and
+    e6_matched_highsnr.py gives 16 and 20 dB a predeclared 1e8 bits so those
+    cells resolve to 3e-8 bounds rather than the 3e-6 a 1e6-bit budget allows.
+
+    Returns a point estimate where errors were observed and zero when no errors
+    were observed.  The manuscript prints the corresponding rule-of-three
+    upper bound, so the strict ``<`` check can validate the bound against the
+    observed count without treating the bound itself as an observed BER.
+    """
+    if snr in (16, 20):
+        r = _MATCHED_HI["results"][name][str(snr)]
+        return r["ber"] if r["errors"] else 0.0
+    i = _MATCHED["snrs"].index(snr)
+    e = _MATCHED["results"][name]["errors"][i]
+    b = _MATCHED["results"][name]["bits"][i]
+    return (e / b) if e else 0.0
+
+
+_MATCHED = json.load(open(os.path.join(ROOT, "results/e6_matched_protocol.json")))
+_MATCHED_HI = json.load(open(os.path.join(ROOT, "results/e6_matched_highsnr.json")))
+
+
 def check_layers_table(tex, rep):
     """The four-layer summary (tbl:layers) vs the data each layer cites.
 
@@ -427,18 +474,18 @@ def check_layers_table(tex, rep):
     m = re.search(r"restores the link \(\$([\d.]+)\$ at 8~dB", body)
     if m:
         rep.cell(T, "L2/MLP@8dB", m.group(1), float(m.group(1)), S1["MLP"][0][i8])
-    # The row used to cite this cell as evidence that Viterbi was "ahead by
-    # 1--1.5 dB" at 8 dB, which the two numbers it printed side by side
-    # contradicted: 0.0065 for the MLP against 0.0072 for the trellis. The
-    # lead is horizontal, so the anchor now follows the corrected wording.
-    m = re.search(r"(?:genie-CSI Viterbi's|corrected genie-CSI Viterbi reference is) \$([\d.]+)\$ at (?:the )?same point", body)
+    # This cell was previously read off e6_viterbi_awgn.npy and printed as
+    # 0.0072, which made it look as though the MLP led at 8 dB. On the current
+    # noise convention it is 0.001354 and the ordering is the other way round.
+    m = re.search(r"\$([\d.]+)\$ against that \$[\d.]+\$ at 8~dB", body)
     if m:
         rep.cell(T, "L2/VITgenie@8dB", m.group(1), float(m.group(1)),
-                 np.array(vit["VIT-genie"])[i8])
-    m = re.search(r"fixed-budget MLP estimate is \$([\d.]+)\\times10\^\{-4\}\$", body)
+                 matched_viterbi("VIT-genie", 8))
+    m = re.search(r"below \$3\.0\\times10\^\{-8\}\$ at 16~dB against the MLP's "
+                  r"\$([\d.]+)\\times10\^\{-7\}\$", body)
     if m:
-        rep.cell(T, "L2/MLP@12dB", m.group(1), float(m.group(1)) * 1e-4,
-                 fixed["points"]["12"]["MLP"]["mean"])
+        rep.cell(T, "L2/MLP@16dB", m.group(1), float(m.group(1)) * 1e-7,
+                 fixed["points"]["16"]["MLP"]["mean"])
 
     # Layer 3: the pilot-budget crossover at the 10 dB operating point.
     pa = partial["panel_a"]
@@ -1045,10 +1092,18 @@ def check_tableE6(tex, rep):
                 return res["DF"][0][si]
             if "MLP" in r:
                 return res["MLP"][0][si]
-            if "GENIE" in r and vg is not None:
-                return float(vg["VIT-genie"][si])
-            if ("PILOT" in r or "EST" in r or "200" in r) and vg is not None:
-                return float(vg["VIT-est"][si])
+            # AWGN setup: the Viterbi rows come from the matched-protocol
+            # rerun, not from the superseded-convention npy (see
+            # matched_viterbi). The Rayleigh setup still uses its own npy.
+            awgn = cur_setup == "Unknown ISI $\\to$ AWGN"
+            if "GENIE" in r:
+                if awgn:
+                    return matched_viterbi("VIT-genie", int(snr))
+                return float(vg["VIT-genie"][si]) if vg is not None else None
+            if "PILOT" in r or "EST" in r or "200" in r:
+                if awgn:
+                    return matched_viterbi("VIT-est", int(snr))
+                return float(vg["VIT-est"][si]) if vg is not None else None
             return None
         for c, snr in col_snr:
             if c >= len(row):
