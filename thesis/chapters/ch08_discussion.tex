@@ -1,242 +1,86 @@
 \chapter{Discussion and Conclusions}\label{sec:discussion-and-conclusions}
 
-This chapter draws on all three studies; which claim belongs to which is governed by the reading rule of Section~\ref{sec:introduction-scope}.
-
-The canonical core (Chapter~\ref{sec:experiments}) settles hypotheses H1--H4 and establishes the baseline finding that, on a matched known channel, a minimal learned relay does not improve on classical decode-and-forward. The thesis's principal contribution (Chapter~\ref{sec:unknown-channels}) settles H5 and is where the substantive new claim lies: a systematic delineation of when a learned relay adds value under unknown and mismatched channels. The interpretation below treats these two as the thesis's two principal contributions, with the unknown-channel results carrying the main argument; the supplementary coded study is the smaller, third part, discussed separately below where it bears on the relay-decoding and rate-adaptation questions it was designed to measure.
+The canonical, coded, and unknown-channel studies answer related but distinct questions. Their channel models, architectures, endpoints and uncertainty units must not be combined into a single causal experiment. This chapter interprets their findings; Chapter~\ref{sec:summary} records the hypothesis outcomes.
 
 \section{Interpretation of Results}\label{sec:interpretation-of-results}
 
-The experimental results reveal several consistent patterns across the canonical setup, its supplementary coded-link study, and the unknown-channel contribution. This section interprets these patterns through the lens of the theoretical framework established in Section \ref{sec:theoretical-foundations-channel-models}  and evaluates each research hypothesis.
+\subsection{Low-SNR Advantage over AF (H1)}\label{sec:low-snr-advantage-of-neural-relays-h1-confirmed}
 
-\subsection{Low-SNR Advantage of Neural Relays over AF (H1: Confirmed)}\label{sec:low-snr-advantage-of-neural-relays-h1-confirmed}
+The evaluated feedforward relays have lower canonical BER than AF at 0--4~dB, supporting H1. At 0~dB the Hybrid, MLP and VAE means are $0.3329$, $0.3349$, and $0.3359$, compared with DF's $0.3337$ and AF's $0.4076$ (Table~\ref{tbl:table2}). The sequence models are closer to AF at that point. These are configuration-specific comparisons; model size alone does not explain them.
 
-\textbf{Low SNR (0-4 dB): AI advantage over AF.} At low SNR, the feedforward learned relays outperform AF on the canonical channel, confirming H1 for the tested configurations. The scalar BPSK-AWGN posterior mean below is qualitative motivation, not the exact canonical estimator. The canonical link uses Gray-QPSK and complex Rayleigh fading; after zero forcing, the conditional real-axis noise variance is $\sigma^{2}/(2|h|^{2})$. If \(|h|\) is not supplied to the relay, the relevant estimator marginalizes over that reliability and is not a single fixed-variance \(\tanh\).
+A nonlinear soft mapping is a plausible interpretation, not an isolated mechanism. For unit-energy BPSK in real AWGN, the posterior mean is $\tanh(y/\sigma^2)$, or $\tanh(2y)$ at $E_b/N_0=0$~dB. It minimizes local mean-squared error, not necessarily destination BER after relay normalization and Hop~2. The canonical QPSK/Rayleigh estimator also depends on fading reliability: after equalization, each real-axis variance is $N_0/(2|h|^2)$. If the relay function is not supplied $|h|$, it must implicitly average over that uncertainty.
 
-At low SNR (e.g., 0 dB, \(\sigma^2 = 1\)), the fixed-variance form is a gentle sigmoid, \(f^*(y) = \tanh(y)\); the fading case rescales its slope per symbol and, unconditioned, softens it into a mixture, but the qualitative point is unchanged: the optimal relay map is a smooth saturating non-linearity rather than a linear gain. The neural network can approximate such a mapping accurately, producing a \textbf{soft estimate} that preserves information about the confidence of the decision. By contrast:
+The analytical CSI-assisted variable-gain AF expression $\gamma_1\gamma_2/(\gamma_1+\gamma_2+1)$ does not predict the block-normalized AF curve implemented here. Only the qualitative fact that linear amplification preserves noise alongside signal carries over.
 
-\begin{itemize}
-\item
-  \textbf{DF} applies the hard-decision function \(f_{\text{DF}}(y) = \text{sign}(y)\), which discards all soft information. At low SNR, many received samples lie near the decision boundary (\(|y| \approx 0\)), and DF assigns them full confidence (\(\pm 1\)) regardless of the actual uncertainty. This information loss leads to excess errors on the second hop.
-\item
-  \textbf{AF} applies \(f_{\text{AF}}(y) = Gy\), which is linear and preserves the noisy signal structure but amplifies the noise by the same factor as the signal. For the \emph{analytical} CSI-assisted variable-gain relay, in which the gain is recomputed from the instantaneous first-hop state, this costs \(\text{SNR}_{\text{eff}} = \gamma^2 / (2\gamma + 1) \approx \gamma/2\) at high SNR: the familiar 3~dB penalty. That expression is background, not an account of the curve measured here. The AF relay implemented in this thesis normalizes by a single block-adaptive scalar estimated from the empirical received power (Section~\ref{sec:classical-relay-strategies-af}), so its simulated BER is not predicted by the formula above and the $3$~dB figure should not be read as explaining it. What carries over is only the qualitative point that a linear relay amplifies noise and signal alike.
-\end{itemize}
+\subsection{Medium-to-High-SNR Ordering (H2)}\label{sec:classical-dominance-at-high-snr-h2-confirmed}
 
-The AI relay implements a \textbf{non-linear soft mapping} that is intermediate between these extremes: it suppresses noise (like DF's regeneration) while preserving soft information near the decision boundary (unlike DF's hard decision). This explains why learned non-linear relay processing can outperform AF and, under selected channel conditions, also outperform DF at low SNR.
+DF matches or exceeds the evaluated learned relays from 6~dB upward. Coherent componentwise slicing is a local MAP symbol decision for the canonical channel, but that does not prove optimality among all power-constrained relay mappings for destination BER. Nor does tanh saturation isolate the cause of the learned models' finite-SNR penalties.
 
-Among the AI methods, the low-SNR advantage over AF is realized by the \emph{minimal} feedforward relays, not by the larger sequence models. On the canonical Rayleigh channel (Table~\ref{tbl:table2}, 0~dB) the Hybrid, MLP and VAE relays reach $0.3329$, $0.3349$ and $0.3359$ respectively, essentially matching symbol-wise DF's $0.3337$ and improving substantially on AF's $0.4076$, while the higher-capacity Transformer, Mamba-S6 and Mamba-2 (SSD) relays sit at $0.4014$, $0.4071$ and $0.4032$ -- that is, at essentially AF's level, capturing almost none of the available advantage. The advantage over AF is therefore \emph{not} driven by parameter count: the smallest network already captures it, consistent with the complexity ordering discussed under H3 and with the convergence observed in the equal-parameter-budget comparison (H4, Section~\ref{sec:normalized-parameter-comparison}).
+\subsection{Robustness Across the Sampled Ensemble}\label{sec:channel-robustness}
 
-\subsection{The Best Evaluated Symbol-Wise Classical Relay at High SNR (H2: Confirmed)}\label{sec:classical-dominance-at-high-snr-h2-confirmed}
+Training and testing use the specified Rayleigh distribution at sampled SNRs without online adaptation. This establishes performance over those draws, not every possible fade or an untested fading law. The equalization front end uses CSI even though the learned relay function receives no explicit channel coefficient.
 
-\textbf{Medium-to-high SNR (≥6 dB): the best evaluated symbol-wise classical relay.} At medium and high SNR, DF matches or exceeds all AI methods with exactly zero trainable parameters and zero training time. The theoretical explanation is straightforward: at high SNR, \(\sigma^2 \to 0\) and the posterior-mean estimate on each real decision axis tends to the corresponding hard slice. The symbol-wise DF relay therefore implements the limiting \emph{hard symbol-regenerating} rule in this regime, while any neural network approximation introduces a small but non-zero reconstruction error due to the finite precision of the learned mapping and the tanh output saturation (which approaches but never reaches \(\pm 1\)).
+\section{Capacity, Context and Training Variation}\label{sec:capacity-and-overfitting}
+\label{sec:information-theoretic-perspective}
 
-Under the thesis's \(E_s/N_0\) convention, the AWGN limit at 10 dB gives a two-hop per-bit DF BER of \(2Q(\sqrt{10})[1-Q(\sqrt{10})]\approx1.6\times10^{-3}\). Empirically on the canonical Rayleigh channel, DF attains the lowest or tied-lowest BER at every reported point from 6 dB upward. Componentwise slicing is the MAP local symbol decision after coherent equalization, but this does not prove end-to-end BER optimality among all power-constrained relay mappings. The data show only that the learned models match or trail DF here; they do not isolate optimization, architecture, or run-to-run variation as the cause of the sequence-model gap.
+The original fixed-checkpoint comparison and later replicated sweeps are different experiments. The former finds the 169-parameter MLP competitive with much larger evaluated models; it cannot separate architecture from initialization and training. The replicated size sweep supports small configurations under its declared degradation criteria, but neither study measures the train/test decomposition needed to establish overfitting.
 
-\subsection{Robustness Across the Fading Ensemble}\label{sec:channel-robustness}
+Under the canonical i.i.d.\ model, neighboring observations provide no additional information about the current symbol once the relevant current observation and side information are specified. That motivates a small mapping; it does not prove a minimum parameter count. On selected ISI channels, temporal context matters, but the smallest passing architecture is only the smallest found in the tested grid.
 
-\textbf{Robustness across fades.} The relay ranking on the canonical channel is stable across the evaluated SNR grid, even though each transmitted symbol experiences an independent fading realization. After zero forcing (\(\tilde{x}=y/h=yh^*/|h|^2\)), the relay processes Gaussian noise at a random conditional SNR. The network is trained across multiple nominal SNRs and evaluated without per-realization retraining or explicit CSI input; the measurements establish performance over the sampled Rayleigh ensemble, not adaptation to arbitrary fading laws.
+\subsection{Reading the Replicated Size Sweep}\label{sec:complexity-curve-turn}
 
-\section{Capacity and Overfitting (H3: Not Supported)}\label{sec:capacity-and-overfitting}
+The three-initialization sweep does not demonstrate the capacity-induced BER upturn proposed by H3. Its median across-initialization spread is $0.180$~dB across 152 configurations, but varies from $0.008$~dB on the canonical channel to $1.231$~dB on nonlinear bias. The pooled median is not a universal significance threshold. Two clusters of training outcomes do not by themselves identify optimization attractors or prove a mechanism.
 
-One of the most practically useful findings is that relay BER does not improve with model size over the range evaluated: the Minimal MLP architecture (169 parameters) matches the performance of models with 100--140$\times$ more parameters (3K--24K), and no larger evaluated model improved on it under the training protocol used. The stronger reading of H3, that the curve turns upward because excess capacity causes \emph{overfitting}, is not established by the evidence collected here. Each model was trained once, with no seed replication, no train/test-gap measurement and no held-out validation curve, so a size effect cannot be separated from run-to-run variance or from an optimization difficulty that more capacity happens to introduce. The claim carried forward is therefore the weaker, directly measured one: larger evaluated models did not improve BER. What follows in this section is offered as a candidate explanation for that observation, not as a demonstrated mechanism.
-
-This result has important theoretical and practical implications:
-
-\subsection{Why Capacity Is Not the Binding Constraint}\label{sec:information-theoretic-perspective}
-
-The canonical relay-denoising task maps a window of $2w+1$ noisy observations to one clean estimate per
-axis, but under the canonical i.i.d.\ model the sufficient statistic for the current bit is the current
-observation alone, with Bayes-optimal posterior mean $f^*(y_i)$. The other window taps are incidental inputs
-rather than part of the sufficient statistic, so the effective dimensionality of the target mapping is one.
-Matching model complexity to that dimensionality --- the minimum-description-length heuristic --- already
-suggests that a very small network suffices, and the measurements agree: $3{,}000$ parameters perform
-near-identically to $169$, and Mamba-S6 at $24{,}001$ parameters, $140\times$ larger than the MLP, does not
-improve on it and is worse at low SNR.
-
-What this does \emph{not} establish is the mechanism. The bias--variance decomposition of
-Equation~\ref{eq:bias-variance-decomp} is a framework for interpreting that observation, not a measurement of
-it: bias and variance were never estimated separately, which would require training each configuration
-repeatedly across seeds and comparing training against held-out error. The plateau is measured; its
-decomposition is not.
-
-\subsection{Does the Complexity Curve Turn Upward?}\label{sec:complexity-curve-turn}
-
-The subsections above give bias--variance and MDL readings of H3 but leave the stronger, overfitting reading
-untested. The size sweep of Section~\ref{sec:minimum-relay-size}, replicated over three initializations,
-supplies the missing evidence, and the yardstick it supplies first is the noise floor: across all 152
-configurations the median across-initialization spread is $0.180$~dB (Table~\ref{tbl:seed-spread}), so
-initialization variance is not a small correction and any claimed upturn must clear it.
-
-\textbf{The upward arm is not observed, and the sweep had the resolution to see it.} Holding the window fixed
-so capacity is the only variable, the worst-case penalty against the classical baseline is flat on the
-memoryless channels and monotonically decreasing on the channels with memory: on canonical Rayleigh at
-window~5 it moves from $+0.03$ to $+0.06$~dB as width grows from one hidden unit to twenty-four, and on the
-composite channel at window~7 it improves from $-1.97$ to $-2.23$~dB from four units to forty-eight. Where a
-rising tail appears at all it is at most $0.15$~dB, below the $0.180$~dB spread and so not separable from the
-draw. The one clearly non-monotone case, the nonlinear-bias channel, oscillates between two distinct outcomes
-($-1.63$ and $-2.87$~dB) rather than tracing a curve --- the signature of training landing in one of two
-attractors, not of capacity being harmful. The weaker size claim is therefore confirmed under replication,
-and the overfitting hypothesis is unsupported on evidence rather than merely untested.
-
-\textbf{What binds is window matched to channel memory, not parameter count.} On the memoryless channels the
-smallest configuration examined --- four parameters, one hidden unit, no window --- is within $0.15$~dB of the
-classical baseline on three of five channels and within $0.03$~dB on the canonical one, some $42\times$
-smaller than the 169-parameter relay of Table~\ref{tbl:table2}. On the three-tap channels that same
-configuration is $11$ to $13$~dB adrift, and closing the gap requires widening the window rather than the
-layer: on the real ISI channel the penalty falls from $+12.95$~dB at window~1 to $+1.67$~dB at window~7.
-Capacity is neither good nor bad in itself --- on a memoryless channel the current observation is the
-sufficient statistic, so extra taps have nothing to represent and extra units nothing to fit, and every
-configuration from four parameters to several hundred lands within a fifth of a decibel; introduce three taps
-of ISI and the same capacity becomes load-bearing, worth between $8$ and $11$~dB. The size axis looks flat in
-the first case and decisive in the second because the channel, not the architecture, decides whether the
-parameters have work to do.
-
-The coded scenario is the one case where size is demonstrably not the operative variable at all: against
-block-DF every configuration from 18 to $1{,}076$ parameters lies between $+1.86$ and $+1.92$~dB, so a
-sixty-fold range in model size buys $0.06$~dB. That relay is interface-limited rather than capacity-limited
---- it commits to a hard per-symbol constellation decision at $90$--$94\%$ accuracy before the outer code is
-decoded, so the destination decoder receives no reliability information block-DF would have exploited. That
-identifies a design change rather than a scaling law, and Section~\ref{sec:future-work} takes it up.
+Four-parameter configurations satisfy the zero-degradation criterion on three memoryless cases; selected three-tap cases use 73--145 parameters. These are empirical grid results, not architecture lower bounds. The coded size sweep spans 18--1{,}076 parameters with penalties of $+1.86$--$+1.92$~dB under its hard read-out. This motivates testing interfaces and metrics, but does not prove an interface-limited regime.
 
 \subsection{Practical Implications}\label{sec:practical-implications}
 
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\item
-  \textbf{Occam's Razor for relay AI.} On the canonical memoryless task, adding width or depth beyond an adequate small model bought no resolved accuracy over the evaluated range. Channels with memory are different: they require a wider observation window, so the statement does not extend below the context required by the channel.
-\item
-  \textbf{Deployment footprint.} A 169-parameter model occupies approximately 0.7~KB as float32 and trains in seconds on a CPU. A footprint this small removes storage as an obstacle on constrained relay nodes, and is small enough to sit in the on-chip SRAM of a typical microcontroller, so an embedded deployment is a plausible implication of these results. It is not demonstrated by them. Establishing it would require what this thesis does not measure: fixed-point or quantized accuracy, sustained throughput, memory traffic, energy per symbol, and an actual hardware implementation. Parameter count alone bounds none of these. The footprint is of the same order for the window-11 relay that Chapter~\ref{sec:unknown-channels} holds fixed out to $L=7$ (170 parameters, Table~\ref{tbl:joint-memory}), so the claim does not depend on staying at the canonical channel's window width.
-\item
-  \textbf{Generalization.} The 169-parameter MLP handles the full Rayleigh fading ensemble, every effective SNR the fades produce, with a single set of weights and no per-condition retraining. Whether a larger model would generalize less well across the ensemble is not established here: every learned relay was trained and tested on the same fading distribution, and no out-of-distribution comparison by model size was run.
-\end{enumerate}
+The canonical 169-parameter model occupies 676 bytes of float32 weights. The BPSK fixed-ISI network instead has 170 parameters, and the coded-QPSK memory-sweep network has 220 parameters and 208 MACs per symbol. Their costs and results are not interchangeable. Parameter storage omits activations, input buffers, software and memory traffic; no embedded implementation, energy benefit, or sustained-throughput claim follows from it.
 
-\section{Practical Deployment Recommendations}\label{sec:practical-deployment-recommendations}
+\section{Candidates for Further Deployment Evaluation}\label{sec:practical-deployment-recommendations}
 
-Based on the comprehensive evaluation, we propose the following deployment strategy:
-
-\begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
-\caption[Practical deployment recommendations]{Practical deployment recommendations: recommended relay strategy by operating regime}\label{tbl:table32}\tabularnewline
-\toprule\noalign{}
-\begin{minipage}[b]{\linewidth}\raggedright
-Operating Regime
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Recommended Relay
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Rationale
-\end{minipage} \\
-\midrule\noalign{}
-\endfirsthead
-\toprule\noalign{}
-\begin{minipage}[b]{\linewidth}\raggedright
-Operating Regime
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Recommended Relay
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Rationale
-\end{minipage} \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-\textbf{Low SNR (0-4 dB)} & MLP Minimal / Hybrid / channel-specific selection & Neural relays often help; exact best choice is channel-dependent, with DF remaining strong on some fading scenarios \\
-\textbf{Medium SNR (4-8 dB)} & Hybrid (MLP + DF) & Automatic switching at empirically chosen crossover\\
-\textbf{High SNR (\textgreater8 dB)} & DF & Zero parameters; lowest BER among the evaluated per-symbol relays \\
-\textbf{Resource-constrained} & MLP Minimal (169 params) & 0.7 KB memory, \textless5 s training \\
-\textbf{Best on the canonical QPSK benchmark} & Hybrid & Lowest BER at 0~dB and tracks DF above the crossover; measured only on the canonical memoryless QPSK/Rayleigh setup, with an empirically selected threshold. Not evaluated at BPSK, on channels with memory, blind, or under hardware constraints, and not a recommendation beyond that setup \\
+\begin{longtable}{@{}p{0.27\linewidth}p{0.27\linewidth}p{0.39\linewidth}@{}}
+\caption[Simulation-supported candidates]{Candidates suggested by the simulations, not hardware-validated recommendations}\label{tbl:table32}\\
+\toprule
+Tested regime & Candidate & Evidence boundary\\
+\midrule
+Canonical 0--4~dB & MLP/Hybrid and DF & Feedforward relays improve on AF; no general learned advantage over DF.\\
+Canonical $\geq6$~dB & Symbol-wise DF & Lowest or tied-lowest evaluated BER; no training.\\
+Selected ISI or uncertain-channel studies & Windowed MLP or model-based detector & Choice depends on the stated information, error target and cost. Family shift is untested.\\
+\bottomrule
 \end{longtable}
 
-Within the simulated canonical benchmark, the Hybrid relay is a candidate when operating SNR can be estimated reliably, because it switches between MLP processing and DF. This is not a general deployment recommendation: threshold robustness, quantization, energy, synchronization, and hardware behavior were not evaluated.
+Hybrid switching uses the operating SNR and an empirical threshold. Threshold estimation error, quantization, synchronization and deployment robustness remain unmeasured.
 
-\subsection{Latency and Adaptivity Considerations}\label{sec:latency-and-adaptivity-considerations}
+\subsection{Latency and Adaptivity}\label{sec:latency-and-adaptivity-considerations}
 
-Two practical questions bear on whether a learned relay can be deployed with minimal impact: the latency it adds relative to AF/DF, and its ability to adapt to varying channel conditions without retraining.
+Protocol scheduling, readiness and computation are separate costs. A symmetric window needs future samples; block decoding needs a frame; half-duplex forwarding still spends channel uses on both hops. Readiness may overlap the listening phase, but that is not a measured end-to-end latency saving.
 
-\textbf{Latency.} Two distinct latency components must be separated. The first is \emph{buffering} latency, incurred by the sliding window $y_R[i-w:i+w]$. In the half-duplex protocol studied here this component is absorbed by the protocol itself: the relay buffers the entire listening-phase block before the transmission phase begins (Remark~\ref{rem:window-causality}), so the window's $w$-symbol look-ahead adds no delay beyond what store-and-forward operation already imposes. Only in a streaming or ultra-low-latency protocol, outside the scope of this thesis, would the symmetric window cost $w$ symbols of look-ahead that the memoryless AF/DF baselines ($w=0$) do not pay. The second component is \emph{compute} latency: inference cost per relayed symbol. Here the minimal-capacity result (H3) is decisive: since the 169-parameter MLP matches the performance of models $100-140\times$ larger, the deployed network reduces to two small matrix--vector products per symbol, a per-symbol cost of a few hundred multiply-accumulates, small in absolute terms even if it cannot literally match the single comparison of DF's $\operatorname{sign}(y)$. The compute-latency argument therefore holds \emph{because of}, not despite, the less-is-more finding; it would not hold for the 24K-parameter sequence models, whose recurrent or attention-based structure imposes materially higher per-symbol cost for no BER benefit at the relay window length.
+In Section~\ref{sec:joint-latency-memory}, no BER difference is resolved among the tested traceback settings. A three-symbol MLSE setting has less look-ahead than the five-symbol windowed relay. The fixed network's multiplication count crosses the declared full-state MLSE count between three and five taps, while MLSE remains more accurate. This is an arithmetic comparison under the stated implementation convention, not a hardware latency crossover.
 
-The coded study of Section~\ref{sec:coded-latency-throughput} adds a third component that the canonical comparison never had to consider: \emph{buffering}. A block relay cannot emit until it has decoded a whole frame ($202$ symbols there), and the soft BCJR variant cannot even in principle, its backward recursion running from the end of the frame. A windowed learned relay with an 11-sample symmetric window needs five future symbols, and that figure is constant in frame length where the block relays' grows with it.
-
-Section~\ref{sec:joint-latency-memory} measures these components together on a channel with memory, and two of the arguments above do not survive it. Treating buffering as the learned relay's advantage presumes that sequence detection is latency-expensive. In the finite-budget experiment, no BER difference was resolved among the tested MLSE traceback depths, including three symbols, which is fewer than the window-11 relay's five; so a latency budget tight enough to exclude MLSE excludes the learned relay first. Latency separates the block relays from everything else, and nothing else from anything. The appeal to wall-clock measurement fares no better --- that the measured advantage over Viterbi spans a factor of $50$ to $63$ \emph{depending on the machine} (Table~\ref{tbl:table41}) is itself the objection --- and counting multiply-accumulates instead turns the argument into a threshold at $L^{\star}=3.35$ taps (Equation~\ref{eq:mac-crossover}), below which the learned relay is worse on cost, delay and accuracy at once. The measurement and its two tables are given in Section~\ref{sec:joint-latency-memory} and not repeated here; what matters for deployment is that the learned relay's cost advantage is real but conditional, and the condition is a property of the channel rather than of the processor it runs on.
-
-\textbf{Adaptivity.} A single network, trained across the range of simulated SNRs, handles the entire canonical fading ensemble without retraining or explicit CSI input (Section~\ref{sec:channel-robustness}): after zero-forcing equalization, each fading realization presents the relay with an AWGN-like observation whose conditional noise variance is $\sigma^{2}/|h|^{2}$, i.e.\ a random effective SNR, and multi-SNR training already covers this mixture. Two honest qualifications apply. First, this adaptivity is an advantage over AF, whose fixed gain is tuned to an assumed SNR, but not over symbol-wise DF, whose $\operatorname{sign}(y)$ slicer is equally condition-agnostic; adaptivity therefore does not alter the H2 conclusion. Second, adaptation has been demonstrated only within the canonical Rayleigh ensemble; generalization to other channel families (Rician, bursty interference, phase noise, hardware non-linearities) remains untested and is identified as future work.
+Neither the learned relay nor the canonical experiments demonstrate online adaptation. AF's gain is recalculated from block power, and DF requires no training; they must not be described as fixed-SNR baselines.
 
 \section{Limitations}\label{sec:limitations}
 
-Several limitations of this study should be acknowledged, as they define the boundary conditions under which the conclusions hold:
-
 \begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\item
-  \textbf{Modulation scope.} The canonical relay comparisons use QPSK, and the unknown-channel study (Chapter~\ref{sec:unknown-channels}) mainly uses BPSK, with a QPSK re-check of the unknown-ISI result (Section~\ref{sec:qpsk-unknown-channel}); 16-QAM enters only as a modulation-and-coding rung in the link-adaptation study, never as a relay-architecture question. In that sense higher-order constellations are not investigated: 16-QAM and denser grids break the per-axis relay formulation and require a joint $N$-class 2D relay whose output dimension scales with $M$, which is left to future work.
-\item
-  \textbf{Perfect CSI (canonical comparison).} The canonical comparison assumes perfect channel state information at each receiver; the finite-pilot and blind regimes of Chapter~\ref{sec:unknown-channels} relax this deliberately and are not limitations of that study. Within the canonical comparison, estimation error would affect the coherent compensation step and hence relay performance, introducing a model mismatch this thesis does not evaluate there; whether it would help or hurt the AI relays relative to AF/DF is untested.
-\item
-  \textbf{Static offline training.} AI relays are trained once on synthetic data and deployed without adaptation. While multi-SNR training covers the canonical fading ensemble (Section \ref{sec:channel-robustness}), and the unknown-channel study (H5) shows a fixed network can learn a \emph{stationary} unknown impairment, this protocol does not exploit online information; adaptive or continual training would be required if the deployment channel drifts over time.
-\item
-  \textbf{Single relay.} The framework considers a single relay node; multi-relay cooperation introduces relay selection, power allocation and cooperative-diversity dimensions not captured here, where system-level optimization (which relay, how to combine observations) becomes as important as the per-relay function studied in this thesis.
-\item
-  \textbf{Two-hop only.} Extension to 3+-hop networks introduces noise accumulation (AF) and error propagation (DF) that grow with hop count, a regime this thesis does not measure.
-\item
-  \textbf{Limited window and memory sweep.} Window sizes were swept for selected channel families and channel lengths through seven taps. The study does not establish the required window, accuracy, or cost for longer memories or structurally different temporal channels.
-\item
-  \textbf{No coding, in the core comparison.} The core comparison operates without error-correcting codes, so the DF baseline there is its symbol-level variant (Remark~\ref{rem:df-terminology}).   Sections~\ref{sec:coded-block-df}--\ref{sec:coded-latency-capacity} measure a finite-length coded block-DF baseline, its soft-decision counterparts, a rate-adaptive envelope over a modulation-and-coding grid, and that envelope re-derived under an idealized buffer-readiness budget, directly rather than leaving any of this as an assertion, but that study is confined to one code family, one frame length, and one channel model, and the relay and destination each decide once with no iterative exchange between them.
-\item
-  \textbf{Seed replication is complete on both axes; two narrower qualifications remain.} The original cross-architecture canonical comparison used one trained instance per architecture, and the architectures did not all receive identical training budgets (e.g.\ the cGAN trains for 200 epochs against 100 for the other relays, Section~\ref{sec:relay-strategies}), a confound the normalized-parameter study (Section~\ref{sec:normalized-parameter-comparison}) does not remove, since it equalizes parameter count and input window but not epoch count. Where a result rests on a single trained instance, the confidence intervals accompanying it are Monte Carlo intervals over the \emph{evaluation} channel and bit realizations for that fixed model, not over the training procedure. Both axes have since been replicated. The MLP size axis was re-run across three independent initializations per configuration (Section~\ref{sec:minimum-relay-size}), and the resulting across-initialization spread is reported in Table~\ref{tbl:seed-spread}: median $0.180$~dB over 152 configurations, but strongly channel-dependent, from $0.008$~dB on the canonical channel to $1.231$~dB on the nonlinear-bias channel. That spread is itself the reason the single-run caveat mattered, since on four of the nine channels it exceeds the entire effect of varying model size. The \emph{cross-architecture} comparison, which carries the claim that architecture is secondary to capacity (Section~\ref{sec:parameter-normalization-complexity-trade-off}), was replicated separately. Every architecture in the canonical comparison was retrained from three seeded initializations on an \emph{equalized} budget of $100$ epochs at $25{,}000$ samples --- equalized because the published run gives the MLP and Hybrid $25{,}000$ samples and the VAE and sequence models $50{,}000$, confounding architecture with training budget --- and evaluated on identical channel draws and payload bits (\texttt{seed\_spread\_native\_architectures.py}). The across-seed spread in SNR penalty against DF is $0.004$~dB for Mamba-S6, $0.007$ for the Hybrid, $0.013$ for Mamba-2, $0.043$ for the MLP, $0.075$ for the Transformer and $0.091$ for the VAE. All six sit inside the ${\approx}0.18$~dB that the high-SNR architecture spread corresponds to, so initialization variance is not large enough to have produced the reported ordering by chance. Two qualifications survive the measurement. The Transformer instability of Table~\ref{tbl:seed-spread-3k} did not recur, but a failure mode occurring in roughly one initialization in eight will not always appear in three draws, and three draws cannot bound its rate. And the VAE's per-seed range overlaps the MLP's, so between those two a single draw could have reported either ordering; the published confidence intervals for that pair already overlap at every SNR point, so no claim in this thesis rests on separating them.
+\item \textbf{Experimental scope.} One two-hop SISO relay and no direct path are modeled. The canonical comparison uses uncoded QPSK; BPSK, DBPSK, faded-ISI QPSK and coded modulation studies are separate. The QPSK ISI re-check changes both modulation and fading. The 16-QAM coded grid is not a learned-relay architecture study.
+\item \textbf{Model information.} Canonical receivers have perfect CSI. Pilot-limited and blind studies relax this within specified families. Training supplies family knowledge even when no analytic parameters or pilots are given at inference.
+\item \textbf{Finite data and replication.} Fixed checkpoints, three-seed studies, paired trial tests and pooled-bit bounds have different uncertainty units. Nominal independent-bit intervals need not have their stated coverage under correlated decoding errors. Zero errors mean insufficient data for a positive BER estimate, not zero true BER. MLP fixed-budget ISI validation stops at 16~dB.
+\item \textbf{Comparator scope.} Matched Viterbi optimizes sequence error. The QPSK bit-MAP control measures only relay-output BER, not destination BER. Reduced-state MLSE, decision feedback and fully reliability-weighted coded decoding are unmeasured alternatives.
+\item \textbf{Coded metrics.} The implemented Viterbi and BCJR metrics omit symbol-dependent post-equalization reliability. The high-SNR ordering does not isolate quantization, consumed redundancy, or a general disadvantage of relay decoding.
+\item \textbf{Generalization and hardware.} Memory is swept only through seven taps. New impairment families, correlated Doppler fading, other topologies, complete deadline models, quantized execution, energy and actual device timing are outside the evidence.
 \end{enumerate}
 
 \section{Future Work}\label{sec:future-work}
 
-Several directions warrant further investigation:
+The most direct next controls are an end-to-end bit-MAP comparison with consistent information and power normalization, reliability-weighted coded metrics, and prospective training-seed replication. BPSK bit-MAP and plain-QPSK ISI would isolate questions left open by the present endpoint and modulation changes. Larger constellations require an appropriate multilevel output; a joint constellation classifier is one option, not a theoretical necessity for all separable QAM channels.
 
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\item
-  \textbf{Time-selective fading.} This study addresses channels static within a block. Extending to time-selective fading with continuously varying unknown phase (e.g.\ Jakes/Clarke Doppler) is a natural next step, likely requiring phase-aware architectures (complex-valued state, learned phase unwrapping, or a noncoherent-detection training objective) evaluated against prediction-based noncoherent receivers.
-\item
-  \textbf{Higher-order constellations (16-QAM and denser).} Constellations with more than two levels per axis break the per-axis relay formulation and need a joint $N$-class 2D relay whose output dimension grows with $M$; that reformulation, and whether the complexity ordering discussed under H3 shifts with constellation density, are open questions this thesis does not address.
-\item
-  \textbf{Imperfect CSI.} Introduce channel estimation errors to assess robustness of AI relay processing under realistic conditions.
-\item
-  \textbf{A BER-optimal (BCJR/APP) benchmark for the unknown-ISI channel.} Section~\ref{sec:unknown-channel-experiment} benchmarks against genie-CSI Viterbi MLSE, the optimal \emph{sequence} detector. Sequence-ML and bit-BER-optimal detection are distinct criteria on any channel with memory, at both modulation orders studied here, so the benchmark is not BER-optimal in either case; for Gray-coded QPSK there is the additional effect that a wrong trellis path can differ from the truth by one or two bits with unequal probability. That second effect has since been measured (Section~\ref{sec:qpsk-unknown-channel}) and is in fact exactly zero here: the taps are real and the fading gain is a real magnitude, so, conditional on the genie-supplied gains and taps, the channel separates into independent in-phase and quadrature ISI channels and the symbol posterior factorises, and bit-wise MAP and symbol-MAP coincide (the measured $1.073$ against $1.090$ bits per symbol error is the same statement empirically). A BCJR/APP detector, which directly minimizes per-bit error probability rather than sequence error probability, is measured over the same 3-tap trellis (Section~\ref{sec:bcjr-benchmark}). It is never worse than MLSE, as optimality requires, but the advantage shrinks with SNR and is no longer resolvable at 16~dB and above; at 20~dB the benchmark moves from $0.000127$ to $0.000126$ against the learned relay's $0.0508$. The classical margin therefore does not change when the comparator is made BER-optimal, at QPSK. It is unmeasured at BPSK, where the same $I/Q$ factorisation argument is expected to hold but has not been separately measured.
-\item
-  \textbf{Online learning.} Develop relay strategies that adapt their parameters during operation, tracking time-varying channel conditions.
-\item
-  \textbf{Multi-relay networks.} Extend to cooperative relay selection and multi-hop routing with AI-optimized relays at each node.
-\item
-  \textbf{Other channels and MIMO.} Evaluate the canonical conclusions on additional channel families (Rician line-of-sight fading, and AWGN treated as a full operating point rather than the bounded calibration role it has here) and on a multi-antenna second hop, where destination equalization interacts with relay processing and the additivity of the two gains becomes a testable question.
-\item
-  \textbf{End-to-end learning.} Train the entire communication chain (modulation, relay, demodulation) jointly using autoencoder-based approaches, and compare against the modular classical-plus-learned-relay cascade studied here.
-\item
-  \textbf{Coded block-DF baseline (measured; open items remain).} Remark~\ref{rem:df-terminology} scopes the core comparison's DF baseline to the uncoded, symbol-level variant. Section~\ref{sec:coded-block-df} measures the coded, practical finite-length block-DF baseline, together with the soft-information relays (BCJR at the relay, posterior-mean read-out of the learned relay) and an adaptive-rate envelope over a modulation-and-coding grid. The observed reversal is consistent with a mechanism in which decode--re-encode forwarding consumes the opportunity for the destination to use the original code constraints, but this experiment does not isolate that mechanism from metric mismatch, code strength, frame length, or iterative decoding. Rate selection then dominates the relay-decoding question by an order of magnitude, unless a latency deadline is imposed, at which point block-DF's double buffering reopens the gap. What remains open: one code family, one frame length, one channel model; the soft block-DF relay was given the nominal noise variance rather than per-symbol CSI, which caused its 20~dB mis-calibration; iterative (turbo-style) relay--destination exchange was not evaluated; and the latency analysis uses structural buffer counts rather than a $10^{-5}$-class reliability target, so it does not establish ultra-reliable low-latency performance.
-\item
-  \textbf{Longer relay windows with state-space architectures.} Future work should explore whether longer relay windows (e.g., 128--512 symbols) combined with a chunk-parallel state-space architecture can improve both BER performance and processing speed simultaneously; the training-time crossover between sequential and chunk-parallel formulations, removed from this thesis's scope, is the natural companion measurement.
-\end{enumerate}
+Other extensions include correlated time-selective fading, online adaptation, additional pilot SNRs, longer memories, reduced-state classical comparators, other codes and frame lengths, multi-relay/MIMO topologies, joint end-to-end learning, and measured hardware operation. These are proposals, not demonstrated capabilities.
 
 \section{Hypotheses Revisited}\label{sec:conclusions}
 
-Chapter~\ref{sec:summary} states what this thesis found, and Table~\ref{tbl:table33} there records the verdict on each hypothesis. This section addresses the different question of \emph{how} each hypothesis fared under measurement, and why three of the five required qualification.
+H1 and H2 are supported within the canonical comparison. H3's overfitting explanation is not established. H4 does not hold across SNR: the low-SNR architecture gap persists, and the high-SNR convergence is not robust across all measured seeds. In the equal-budget replication, Mamba spreads are $0.019$ and $0.041$~dB, whereas the Transformer's is $0.906$~dB. These are three-seed observations, not universal architecture variances (Table~\ref{tbl:seed-spread-3k}).
 
-\paragraph{Do the other hypotheses survive the size sweep?} The sweep of Section~\ref{sec:minimum-relay-size} re-measures four of the five hypotheses' subject matter with a different relay class, a corrected two-hop model, per-channel classical comparators and three initializations per configuration, so it is worth asking explicitly whether any of them moves. Only H3 does.
+Among eight Transformer initializations, one high-loss run has a much worse BER penalty. The all-run correlation is driven by that outlier. It motivates studying optimization failure, but does not establish a failure probability or validated screening rule; all runs remain in Appendix~\ref{sec:appendix-f-minimum-size}.
 
-H1 is reconfirmed on the canonical channel: the smallest matching relay reaches $0.3294$ at 0~dB and $0.2198$ at 4~dB against AF's $0.4088$ and $0.3140$, so the low-SNR advantage over AF is not an artifact of the particular architectures originally compared. H2 is likewise reconfirmed and, for the first time, quantified in the units that matter: on the canonical channel the learned relay trails symbol-wise DF by $0.05$ to $0.09$~dB, which is a real margin in DF's favour but two orders of magnitude smaller than the ``$+2.06\%$ relative BER'' figure that the same measurements produce at 20~dB. H2's direction stands; its magnitude was previously overstated by the choice of metric.
-
-H5 receives a qualitatively consistent check. Chapter~\ref{sec:unknown-channels} reports the learned relay $1$--$1.5$~dB behind genie-CSI Viterbi on the three-tap ISI channel with a window of 11. A separate sweep, using a different relay class, training procedure, two-hop model, and Monte Carlo budget, reports penalties decreasing as its window widens through seven samples. Because several factors differ, that trend cannot attribute the residual gap to window width alone or support extrapolation beyond the measured windows.
-
-H4 needs qualifying, and the qualification could not be inferred from the size sweep. That sweep measures initialization variance on MLPs, where the canonical channel is the most reproducible case anywhere in this thesis at $0.008$~dB median. That reassures only for MLPs, the sequence models never having been measured; measuring them directly reverses the conclusion for one of the six.
-
-Each equal-budget architecture was retrained from three seeded initializations and evaluated on identical channel draws and payload bits. The resulting spread in SNR penalty against DF is tabulated as Table~\ref{tbl:seed-spread-3k} in Appendix~\ref{sec:appendix-f-minimum-size}.
-
-Four of the five are stable to within $0.16$~dB and the two Mamba variants are the most reproducible architectures measured, at $0.019$ and $0.041$~dB. The Transformer is not: its three initializations span $0.906$~dB, five times the effect H4's high-SNR claim must resolve, with one run at $+2.039$~dB against two at approximately $+1.14$~dB. The instability is therefore specific to that architecture rather than generic to sequence models, which is the opposite of what a capacity or inductive-bias account would predict.
-
-\paragraph{What the Transformer's instability is.} Eight initializations, with the training objective recorded alongside the BER, identify an outright optimization failure rather than a property of the architecture's solution. Seven seeds converge to a final training loss between $0.0018$ and $0.0023$ and land within $0.033$~dB of one another, tighter than the Mamba control's $0.041$~dB; the eighth converges to $0.0256$, eleven times the median, and is the $+2.039$~dB run. Loss and penalty correlate at $+0.998$ across the eight, but that is produced entirely by the outlier's leverage: among the seven converged runs loss varies by roughly $30\%$ with no detectable effect on BER ($r=-0.38$, $p=0.41$). Training loss is thus a reliable detector of catastrophic non-convergence and useless as a fine-grained quality signal. The failure is silent under the diagnostics in use --- validation accuracy reads $0.9971$ for the failed seed against $0.9971$ to $0.9992$ for the healthy ones --- but trivially detectable from training loss, so seed selection would remove it at no evaluation cost. Excluding that run the Transformer is as reproducible as any architecture measured, so the correct statement is not that it is unstable but that it occasionally fails to converge. One failure in eight is too small a sample to estimate a failure rate. The full evidence is in Appendix~\ref{sec:appendix-f-minimum-size}: Tables~\ref{tbl:seed-spread} and~\ref{tbl:seed-spread-3k} and Figures~\ref{fig:transformer-seed-curves} and~\ref{fig:transformer-loss-penalty}.
-
-
-
-Two consequences follow for H4. H4's low-SNR finding stands: the feedforward and sequence groups separate by roughly a decibel here ($+0.15$ against $+1.1$~dB), far outside any measured spread, so the $17.4\%$ split at 0~dB is not a seeding artifact. H4's high-SNR convergence claim does not stand as a seed-robust result, because the $4.1\%$ spread it rests on is smaller than the Transformer's own run-to-run variation; it should be read as an observation from one run of each architecture. Notably, this was not detectable from the published experiments: none of the three sequence checkpoints seeds \texttt{torch} at all, so the reported comparison was drawn from an uncontrolled initialization and its variance was not merely unreported but unmeasurable after the fact.
-
-The unknown-channel contribution (Chapter~\ref{sec:unknown-channels}) settles the complementary question of \emph{when the learned relay is not merely competitive but necessary}. Its flat-channel control isolates the cause: against unknown phase, gain and per-branch asymmetry, all memoryless, the classical relay does not fail and the learned relay only matches it (largest difference $0.0012$ over the tabulated SNRs). Parameter uncertainty alone is therefore not what learning mitigates; failure appears only with unmodeled \emph{memory}. The chapter's remaining findings are established there and enumerated in Chapter~\ref{sec:summary}.
-
-Taken together these results place neural relay processing as a complement to classical methods rather than a replacement for them, and Chapter~\ref{sec:summary} states the resulting deployment recommendation and the two boundaries that bound it. The interpretive point this chapter adds is the one the individual findings do not state on their own: \textbf{model complexity should be matched to task complexity, and both channel memory and modulation cardinality affect task complexity; channel memory was the main observed driver of the required window in the tested small-alphabet cases}. Where the channel is memoryless the relay denoising task is small enough that minimal architectures suffice and the choice between feedforward and sequential paradigms matters less than sizing; where the channel has memory, the same reasoning raises the floor rather than lowering it, and does so through the relay's window rather than through its parameter count.
-
-\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+H5 is supported against the specified AF/DF and mismatched baselines in the evaluated settings. The matched BPSK required-SNR penalties vary from $0.26$ to $2.53$~dB with the target. Similar rounded BERs and overlapping intervals elsewhere do not establish equivalence. The coherent conclusion is bounded: small trained relays can help in particular mismatched pipelines, while model information, temporal context, decoder metrics and computational budgets determine the comparisons actually measured.

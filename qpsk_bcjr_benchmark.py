@@ -1,11 +1,9 @@
 """BER-optimal (BCJR/APP) benchmark against genie-CSI Viterbi MLSE.
 
-Closes Future Work item 4. Chapter 7 benchmarks the learned relay against
-genie-CSI Viterbi MLSE, which is sequence-optimal; the thesis reports BER, and
-sequence-ML is not BER-optimal on a channel with memory. This measures the
-margin against a detector that *is* BER-optimal.
+Local detector control: sequence-ML and bit-MAP optimize different losses.
+This does not close the end-to-end BCJR-versus-learned-relay comparison.
 
-Run under the exact configuration of Table tbl:tableE6qpsk: same taps, same
+Uses the first-hop model of Table tbl:tableE6qpsk: same taps, same
 channel classes, same trial protocol and seeds as qpsk_trellis_controls.py.
 Measured at the relay output, since hop 2 would add its own errors and blur
 the distinction under test.
@@ -14,7 +12,7 @@ Controls run FIRST and gate the comparison, because the withdrawn QPSK result
 in this thesis came from a benchmark that looked plausible and was
 model-mismatched:
 
-  C1  fading removed: BCJR and Viterbi must agree within Monte Carlo error.
+  C1  fading removed: ISI remains, so BCJR and Viterbi need not agree.
   C2  no ISI: the BER-optimal rule must reduce to the per-axis slicer.
 
 SNR convention: gamma = 10^(SNR_dB/10), per memory-bank/techContext.md.
@@ -101,7 +99,7 @@ def _sweep(channel_factory, snrs, label):
 
 
 def main():
-    print("C1 control -- fading removed; the two detectors must agree:")
+    print("C1 control -- fading removed, ISI retained; report the difference:")
     c1 = _sweep(lambda s: NoFadingChannel(H_NORM, seed=s), [8, 20], "C1")
 
     print("\nC2 control -- no ISI; BER-optimal must be the per-axis slicer:")

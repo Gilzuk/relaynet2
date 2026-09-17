@@ -17,6 +17,15 @@
 \DeclareOptionX*{}
 \ProcessOptionsX\relax
 
+%% Newer polyglossia uses the LaTeX3 key API instead of xkeyval.
+\ExplSyntaxOn
+\keys_define:nn { hebrewcal }
+  {
+    marcheshvan .code:n = {},
+    fullyear .code:n = {}
+  }
+\ExplSyntaxOff
+
 %% No-op stubs for the calendar commands polyglossia may reference.
 \providecommand{\hebrewdate}[3]{}
 \providecommand{\hebrewtoday}{}

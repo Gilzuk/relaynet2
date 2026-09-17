@@ -21,6 +21,7 @@ that was silently true for e6_sim_ported_results.npy for ten days.
 """
 
 import io
+import hashlib
 import os
 import re
 import subprocess
@@ -30,13 +31,17 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 
 # experiment -> (script, [output files], [published tables/figures])
 REGISTRY = {
+    "Corrected composite AF, fixed budget": (
+        "scripts/codex_composite_af_validation.py",
+        ["e6_unknown_channel_results/codex_composite_af_validation.json"],
+        ["fig:figE6comp AF curve; complex noise variance corrected"]),
     "Matched-protocol high-SNR Viterbi": (
         "e6_matched_highsnr.py", ["results/e6_matched_highsnr.json"],
         ["tbl:tableE6 Viterbi rows at 16 and 20 dB"]),
     "Matched-protocol unknown-ISI comparison": (
         "e6_matched_protocol.py", ["results/e6_matched_protocol.json"],
-        ["tbl:tableE6 (pending)", "tbl:layers layer 2 (pending)",
-         "fig:figE6 (pending)"]),
+        ["tbl:tableE6 Viterbi rows through 12 dB", "tbl:layers layer 2",
+         "fig:figE6 Viterbi curve with high-SNR companion"]),
     "Fixed-budget 16 dB remeasurement": (
         "rare_event_fixed_budget.py",
         ["results/rare_event_fixed_budget_16db.json",
@@ -57,7 +62,7 @@ REGISTRY = {
         ["tbl:table39 footnote: variance-corrected 20 dB figures"]),
     "QPSK BCJR/APP benchmark": (
         "qpsk_bcjr_benchmark.py", ["results/qpsk_bcjr_benchmark.json"],
-        ["tbl:bcjr-benchmark; closes Future Work item 4 at QPSK"]),
+        ["tbl:bcjr-benchmark; relay-output control only"]),
     "QPSK trellis controls": (
         "qpsk_trellis_controls.py", ["results/qpsk_trellis_controls.json"],
         ["prose: three 20 dB trellis controls"]),
@@ -71,14 +76,14 @@ REGISTRY = {
         "e6_viterbi_codex_consistency.py",
         ["e6_unknown_channel_results/codex_viterbi_consistency_awgn.npy",
          "e6_unknown_channel_results/codex_viterbi_consistency_awgn.json"],
-        ["tbl:tableE6 Viterbi rows", "fig:figE6"]),
+        ["historical consistency rerun; superseded by matched-protocol counts"]),
     "E6 flat control": (
         "e6_flat_ported.py", ["e6_unknown_channel_results/e6_flat_ported_results.npy"],
         ["tbl:tableE6flat"]),
     "E6 composite cascade": (
         "e6_composite_ported.py",
         ["e6_unknown_channel_results/e6_composite_ported_results.npy"],
-        ["fig:figE6composite", "prose:E6composite"]),
+        ["fig:figE6comp non-AF curves", "prose:E6composite"]),
     "E6 pilot-budget sweep": (
         "e6_partial_ported.py",
         ["e6_unknown_channel_results/e6_partial_ported_results.npy"],
@@ -224,6 +229,13 @@ def audit():
                 status = "DATA UNCOMMITTED"
             elif o[4] < s[4]:
                 reason = REVIEWED_STALE.get((script, out))
+                # Bounded exception for this exact comment/logging-only edit.
+                # Any subsequent numerical edit changes the hash and is stale.
+                if (script == "qpsk_bcjr_benchmark.py"
+                        and out == "results/qpsk_bcjr_benchmark.json"
+                        and hashlib.sha256(open(os.path.join(ROOT, script), "rb").read().replace(b"\r\n", b"\n")).hexdigest()
+                        == "1bba975e67b8d82123f49402321695a7864969273a523a86b628202d96679c13"):
+                    reason = "endpoint clarification in docstring/console text only; numerical code unchanged"
                 status = (f"stale, reviewed: {reason}" if reason
                           else "STALE (data older than script)")
             if status != "ok" and not status.startswith("stale, reviewed"):

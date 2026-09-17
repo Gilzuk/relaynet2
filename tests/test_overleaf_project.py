@@ -115,11 +115,11 @@ def test_discovery_reads_options_and_grouped_names():
     assert local_styles([r"\usepackage{amsmath,hebcal}"]) == ["hebcal.sty"]
 
 
-def test_the_unused_duplicate_never_travels():
-    """hebrewcal.sty is a byte-identical leftover; nothing loads it."""
+def test_the_active_calendar_shim_travels():
+    """Polyglossia's local calendar dependency is explicit in main.tex."""
     assert os.path.exists(os.path.join(THESIS, "hebrewcal.sty")), \
-        "precondition: the unused duplicate is still present in thesis/"
-    assert "hebrewcal.sty" not in manifest()["styles"]
+        "precondition: the local calendar shim is present in thesis/"
+    assert "hebrewcal.sty" in manifest()["styles"]
 
 
 def test_every_referenced_figure_travels(staged, man):

@@ -17,7 +17,8 @@
 \textbf{Network Topology} &
 \textbf{Train Loss (LR)} &
 \textbf{Total Params} &
-\textbf{Implementation} \\
+\textbf{Implemen-}\\
+\textbf{tation} \\
 \hline
 MLP (Minimal) &
 Feedforward MLP, 5-symbol sliding window &
@@ -81,17 +82,17 @@ PyTorch (CUDA) \\
 
 \section{Appendix D: Master Experiment Ledger}\label{sec:appendix-e-master-experiment-ledger}
 
-In the source-code repository, each numerical table and figure is associated with a result file and checked by \texttt{verify\_thesis\_tables.py} (Section~\ref{sec:reproducibility-and-weight-management}). This ledger lists the claimed modulation, channel, and result source for each major study, grouped in the order they appear. Result-source filenames matching \texttt{e6\_*.npy} are relative to \texttt{e6\_unknown\_channel\_results/}.
+This ledger links major studies to their experiment artifacts. The table verifier checks a declared subset of numerical cells, not every number or figure. Historical \texttt{e6\_*.npy} paths are relative to \url{e6_unknown_channel_results/}; the central ISI figure and table additionally use the matched-protocol and fixed-budget companion files listed below.
 
 {\footnotesize
-\begin{longtable}[]{@{}p{0.19\linewidth}p{0.11\linewidth}p{0.13\linewidth}p{0.09\linewidth}p{0.40\linewidth}@{}}
+\begin{longtable}[]{@{}p{0.18\linewidth}p{0.10\linewidth}p{0.12\linewidth}p{0.12\linewidth}p{0.36\linewidth}@{}}
 \caption[Master experiment ledger]{Master experiment ledger: modulation, channel, and result-file provenance for every major study}\label{tbl:ledger}\tabularnewline
 \toprule\noalign{}
-Study & Modulation & Channel & Tbl/Fig & Result source \\
+Study & \shortstack[l]{Modu-\\lation} & Channel & Tbl/Fig & Result source \\
 \midrule\noalign{}
 \endfirsthead
 \toprule\noalign{}
-Study & Modulation & Channel & Tbl/Fig & Result source \\
+Study & \shortstack[l]{Modu-\\lation} & Channel & Tbl/Fig & Result source \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
@@ -105,10 +106,10 @@ Coded soft-decision relaying & QPSK & Rayleigh & tbl:39 & \url{results/coded_sof
 Equal-throughput \& latency & QPSK, 16-QAM & Rayleigh & tbl:40, 41 & \url{results/coded_latency_throughput.json} \\
 Adaptive modulation/coding (AMC) & QPSK, 16-QAM & Rayleigh & tbl:42 & \url{results/coded_rate_adaptation.json} \\
 Capacity under a latency budget & QPSK, 16-QAM & Rayleigh & tbl:43 & \url{results/coded_latency_capacity.json} \\
-Unknown ISI (layer 2) & BPSK & AWGN (2nd hop) & tbl:E6 & \url{e6_sim_ported_results.npy} + \url{e6_viterbi_*.npy} \\
+Unknown ISI (layer 2) & BPSK & AWGN (Hop 2) & tbl:E6 & Historical AF/DF/MLP below 12~dB: \url{e6_sim_ported_results.npy}; fixed-budget companion \url{codex_isi_fixed_budget_validation.json}; Viterbi: \url{results/e6_matched_protocol.json} and \url{results/e6_matched_highsnr.json}. \\
 Flat-channel control & BPSK & Rayleigh & tbl:E6flat & \url{e6_flat_ported_results.npy} \\
-Unknown ISI, QPSK generalization & QPSK & AWGN & tbl:E6qpsk & \url{e6_qpsk_unknown_channel_results.npy} \\
-Composite impairment cascade & DBPSK & Rayleigh & E6composite & \url{e6_composite_ported_results.npy} \\
+Unknown ISI, QPSK generalization & QPSK & AWGN & \shortstack[l]{E6\\QPSK} & \url{e6_qpsk_unknown_channel_results.npy} \\
+Composite impairment cascade & DBPSK & Rayleigh & \shortstack[l]{E6\\composite} & \url{e6_composite_ported_results.npy}; AF replaced by \url{codex_composite_af_validation.json}. \\
 Partial posterior (pilot sweep) & BPSK & Rayleigh & E6partial & \url{e6_partial_ported_results.npy} \\
 Blind channel (layer 4) & BPSK & Rayleigh & E6blind & \url{e6_blind_ported_results.npy} \\
 Four-layer summary & mixed (above) & mixed (above) & tbl:layers & combination of the above \\
@@ -203,7 +204,7 @@ Transformer-3K  & 3{,}007 & $+2.039$, $+1.147$, $+1.133$ & \textbf{0.906} \\
 \end{tabular}
 \end{table}
 
-The Transformer row of Table~\ref{tbl:seed-spread-3k} is a single failing initialization rather than a broadly noisy architecture, and the two figures below are the evidence for that reading. Figure~\ref{fig:transformer-seed-curves} shows all eight runs: seven are indistinguishable at this scale and one separates progressively as SNR rises, which is why a three-seed sample had roughly a one-in-three chance of missing it entirely. Figure~\ref{fig:transformer-loss-penalty} shows why the failure is detectable at training time without reference to BER, the failing run's final training loss is eleven times the median, and, equally, why training loss is not a quality signal in the ordinary case.
+Eight Transformer initializations are shown in the following figures: seven cluster and one has both higher final loss and worse high-SNR BER. A sample of three cannot reliably characterize such failures. If three runs were sampled without replacement from these eight, the probability of missing the one outlier would be $\binom{7}{3}/\binom{8}{3}=5/8$; this finite-set calculation is not an estimate of the population failure rate. The association does not validate training loss as a general screening rule.
 
 \begin{figure}[htbp]
 \centering
@@ -224,23 +225,27 @@ Each headline claim of Chapter~\ref{sec:unknown-channels} is restated here with 
 
 \subsection{Matched-receiver bounds and the empirical MLSE comparison}
 
-The bound here is the bit-wise MAP detector, computed from the per-bit posteriors a BCJR/APP recursion delivers, and the distinction from MLSE is not pedantic: bit-wise MAP minimizes \emph{bit} error probability (for BPSK it coincides with symbol-MAP; for Gray-coded QPSK it is the per-bit marginal of the APPs), so no learned function of the same observation can improve on it on this thesis's BER metric, whereas MLSE minimizes \emph{sequence} error probability and is \emph{not} BER-optimal \cite{Forney1972MLSE, BahlCockeJelinekRaviv1974BCJR, ProakisSalehi2008DigitalComm}. Against genie-CSI MLSE the statement that the relay never wins is therefore an \emph{empirical} finding of Chapter~\ref{sec:unknown-channels}, not a theorem -- a learned relay beating Viterbi on BER would not contradict any optimality result. The BER-optimal comparison at QPSK (Section~\ref{sec:bcjr-benchmark}) confirms it holds there too: BCJR/APP is never worse than MLSE, with the advantage unresolvable above 16~dB; it remains unmeasured at BPSK, though the same $I/Q$ factorisation applies there by construction. The learned-receiver literature is consistent with this reading, its reported wins over ``classical'' receivers all being wins over mismatched or suboptimal baselines: the sliding bidirectional RNN passes full-CSI Viterbi only when CSI is imperfect \cite{FarsadGoldsmith2018NNDetection}; ViterbiNet gains only under CSI uncertainty \cite{Shlezinger2020ViterbiNet}; DeepRx outperforms LMMSE chains that are not MAP-optimal under the studied impairments \cite{Honkala2021DeepRx}; Ye et al.'s OFDM detector \cite{YeLiJuang2018OFDMDL} beats MMSE under pilot shortage, cyclic-prefix removal and clipping. End-to-end autoencoders \cite{OSheaHoydis2017PhysicalLayer} beat classical \emph{schemes} by redesigning the transmitter, not as a receiver-only counterexample.
+For a fixed observation and supplied model, bit-MAP minimizes expected bit error; MLSE instead minimizes sequence error \cite{Forney1972MLSE,BahlCockeJelinekRaviv1974BCJR,ProakisSalehi2008DigitalComm}. Thus a lower measured BER than MLSE would not contradict its optimality. The QPSK BCJR control measures relay-output errors only and must not be compared directly with destination BER. It does not close an end-to-end BCJR benchmark. Learned-receiver studies use different information assumptions and objectives \cite{FarsadGoldsmith2018NNDetection,Shlezinger2020ViterbiNet,Honkala2021DeepRx,YeLiJuang2018OFDMDL,OSheaHoydis2017PhysicalLayer}; they should not be summarized as a universal claim that learning wins only under mismatch.
 
 \subsection{The analytic 0.25 floor and the non-monotonicity of symbol-wise DF}
 
 With the normalized taps, the interferer magnitude sum $h_1 + h_2 \approx 0.910$ exceeds the cursor $h_0 \approx 0.758$: the eye is closed. Of the four equiprobable BPSK interferer sign patterns, exactly one (both opposing the cursor) yields a noise-free sample of $0.758 - 0.910 = -0.152 < 0$, a deterministic sign flip, while the remaining three ($0.606$, $0.910$, $1.668$) preserve the sign -- so a memoryless slicer errs on exactly one pattern in four as noise vanishes, giving the analytic floor of exactly $1/4$. The non-monotonicity follows from the same geometry: at moderate SNR, noise occasionally pushes the flipped sample back across the decision boundary, so the conditional error rate on that pattern rises toward one as SNR grows and total BER climbs toward $0.25$ from below -- standard behaviour for a closed-eye channel under symbol-by-symbol detection \cite{LuckySalzWeldon1968, ProakisSalehi2008DigitalComm}.
 
-\subsection{\texorpdfstring{Complexity: the $M^{L}$ trellis against a fixed forward pass} {Complexity: the M^L trellis against a fixed forward pass}}
-MLSE maintains $M^{L-1}$ trellis states and evaluates $M^{L}$ branch metrics per symbol \cite{Forney1972MLSE, ProakisSalehi2008DigitalComm}. The deployed relay, an 11-sample window into 13 hidden units ($11 \to 13 \to 1$, $170$ parameters), costs approximately $2(11 \cdot 13 + 13)$ multiply--accumulates plus activations, about 330 floating-point operations per symbol, constant for the deployed architecture -- though spanning longer memory generally widens the window (Section~\ref{sec:complexity-viterbi-mlp}), after which the cost grows roughly linearly in it. For fairness: reduced-state sequence estimation \cite{EyuboqluQureshi1988RSSE} and related decision-feedback trellis methods also break the $M^{L}$ scaling, so full Viterbi is the steepest classical comparator, not the only one.
+\subsection{\texorpdfstring{Complexity: the $M^{L}$ trellis against a fixed forward pass}{Complexity: the M to the L trellis against a fixed forward pass}}
+MLSE maintains $M^{L-1}$ states and evaluates $M^L$ branch metrics for channel length $L$ \cite{Forney1972MLSE,ProakisSalehi2008DigitalComm}. The real $11\to13\to1$ MLP has $170$ parameters and $11\cdot13+13=156$ MACs, plus 14 bias additions and nonlinear activations. Counting a multiply and add as two FLOPs gives approximately 330 FLOPs excluding activation cost. These are not 312 MACs. Cost is fixed only for that deployed architecture; longer windows increase it. Reduced-state sequence estimation \cite{EyuboqluQureshi1988RSSE} is an unmeasured lower-cost classical alternative.
 
 \subsection{The blind regime: CMA converges where decision-directed MLSE does not}
 
-The constant modulus algorithm performs blind equalization of constant-modulus signals \cite{Godard1980SelfRecovering, TreichlerAgee1983CMA}. The study channel is minimum phase (zeros at $|z| \approx 0.707$), so a short FIR equalizer can approximately invert it; finite equalizer length and noise enhancement leave a residual BER of order $10^{-3}$ at 20~dB, consistent with the measured $3.3\times10^{-3}$ of Section~\ref{sec:blind-channel}, and known ill-convergence of Godard equalizers when too short \cite{Ding1991IllConvergence} matches the observed ``matches but does not excel'' behaviour. Decision-directed blind MLSE, a crude form of per-survivor processing that bootstraps channel estimates from its own decisions \cite{RaheliPolydorosTzou1995PSP}, has documented failure modes -- misconvergence, sign and shift ambiguities, error propagation -- matching the instability observed.
+CMA is a blind equalizer for constant-modulus signals \cite{Godard1980SelfRecovering,TreichlerAgee1983CMA}. The measured random composite family also contains nonlinearity and phase uncertainty, so the zeros of one fixed linear tap vector do not establish invertibility or convergence for the whole cascade. The observed CMA and decision-directed MLSE results are implementation-specific. Documented convergence and decision-feedback issues \cite{Ding1991IllConvergence,RaheliPolydorosTzou1995PSP} motivate possible explanations but do not identify the cause of these measurements.
 
 \subsection{The pilot-budget crossover: reliable at ten pilots, collapse at five}
 
-Least-squares estimation of three unknown taps is identifiable from five pilots, so the collapse of Section~\ref{sec:partial-posterior} is not one of strict non-identifiability: convolution edge effects instead leave a near-square, ill-conditioned system whose least-squares error variance, proportional to $\sigma^{2}\,\mathrm{tr}\!\left((\mathbf{X}^{H}\mathbf{X})^{-1}\right)$, grows without useful bound, and Viterbi run with badly wrong taps propagates errors catastrophically -- consistent with the Cram\'er--Rao bound $\sigma^{2}L/N_{p}$ for this estimation problem \cite{Kay1993Estimation}. The result is specific to the classical LS-plus-Viterbi pipeline: meta-learned demodulators adapt from very few pilots \cite{ParkSimeone2021MetaDemod}, which bounds the claim's scope to the pipeline stated rather than contradicting it.
+A three-tap least-squares fit can be identifiable from five pilots if its design matrix has full column rank. For a correctly specified linear model with white noise, its covariance is $\sigma^2(\mathbf X^H\mathbf X)^{-1}$ \cite{Kay1993Estimation}; the simplification $\sigma^2 L/N_p$ additionally requires suitably normalized orthogonal pilot columns. The nonlinear composite channel need not satisfy that model. The observed small-pilot degradation is therefore not a measured rank threshold or an unbounded-error theorem. Other estimators, including meta-learned demodulation \cite{ParkSimeone2021MetaDemod}, are not benchmarked here.
 
-\subsection{Genie-CSI MLSE leads the minimal relay by only 1--1.5 dB}
+\subsection{The finite-window gap is not causally decomposed}
 
-A finite-window symbol-wise detector cannot do better than the MAP detector over that same window, which in turn cannot do better than the MAP detector given the whole received sequence: the window truncates the observation, and truncation cannot add information. The ordering is $P_e^{\mathrm{MAP,seq}} \le P_e^{\mathrm{MAP,window}} \le P_e^{\mathrm{any\ windowed\ detector}}$. The size of the finite-window penalty is channel-dependent and is not derived analytically here. That ordering is all theory supplies here -- how large the resulting penalty is on this channel is a quantitative question this thesis does not answer analytically, since no windowed-MAP detector was implemented, so the $1$--$1.5$~dB lost to genie-CSI Viterbi is not decomposed into the window's share and the 170-parameter approximation's. Published learned detectors close the gap further: the sliding bidirectional RNN comes within fractions of a dB of Viterbi \cite{FarsadGoldsmith2018NNDetection}, and ViterbiNet closes it essentially to zero given sufficient capacity and data \cite{Shlezinger2020ViterbiNet}. The residual gap in Section~\ref{sec:unknown-channel-experiment} is thus a property of the deliberately minimal parameter budget, not of learned detection as a method.
+For bit-MAP decisions under the same model and side information, giving the detector a full sequence cannot increase its minimum expected bit error relative to a window. This observation-ordering argument is not a bound on a particular Viterbi-versus-MLP BER gap, because Viterbi optimizes sequence error. No windowed bit-MAP ablation separates truncation, approximation, finite training, and optimization effects here. The corrected BPSK required-SNR penalties range from $0.26$ to $2.53$~dB at the stated targets. They cannot be attributed solely to the 170-parameter budget.
+
+\paragraph{Supplementary numerical checks.} The across-seed spread in SNR penalty against DF in the separate native-architecture replication is $0.004$~dB for Mamba-S6, $0.007$ for the Hybrid, $0.013$ for Mamba-2, $0.043$ for the MLP, $0.075$ for the Transformer and $0.091$ for the VAE. These finite three-seed ranges are not confidence bounds on failure probabilities.
+
+For the QPSK linear-MMSE detail run, the attained MSE at 16~dB is $0.0666,\allowbreak\ 0.0374,\allowbreak\ 0.0354,\allowbreak\ 0.0333$ for $N=3,5,7,11$. The required-SNR penalties at targets $10^{-1}$ and $10^{-2}$ are respectively $+3.24, +2.98, +2.79, +2.65$ and $+6.34, +4.27, +4.13, +4.02$~dB. These measurements do not imply monotonic BER at every target.
