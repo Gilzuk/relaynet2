@@ -356,10 +356,12 @@ class AdaptiveRayleighChannel:
         # sigma^2 = N0/2 per real dimension, with N0 = Es/gamma.
         sigma = 1.0 / np.sqrt(2.0 * 10 ** (snr_db / 10.0))
         if np.iscomplexobj(signal):
+            # sigma already is the per-component standard deviation.
+            # Dividing by sqrt(2) again would give total power N0/2.
             noise = sigma * (
                 self.rng.standard_normal(signal.size) +
                 1j * self.rng.standard_normal(signal.size)
-            ) / np.sqrt(2)
+            )
         else:
             noise = sigma * self.rng.standard_normal(signal.size)
 

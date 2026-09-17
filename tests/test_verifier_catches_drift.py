@@ -31,20 +31,20 @@ CHAPTERS = ROOT / "thesis" / "chapters"
 # Each replacement must be a value the source data does NOT support.
 MUTATIONS = [
     ("tbl:tableE6", "ch07_unknown_and_mismatch_channels.tex",
-     r"Unknown ISI $\to$ AWGN & AF & 0.1813",
-     r"Unknown ISI $\to$ AWGN & AF & 0.9999"),
+     r"AF & 0.1813",
+     r"AF & 0.9999"),
     # The ch07 copy of this claim lived in a \REV{} annotation, which renders as
     # nothing; it was removed with the rest of the revision history. The appendix
     # copy is the one a reader actually sees, so mutate that.
     ("arch:relay-param-counts", "appendices.tex",
-     r"($11 \to 13 \to 1$, $170$ parameters)",
-     r"($11 \to 13 \to 1$, $169$ parameters)"),
+     r"$11\to13\to1$ MLP has $170$ parameters",
+     r"$11\to13\to1$ MLP has $169$ parameters"),
     ("tbl:slicer-floor-inline", "ch07_unknown_and_mismatch_channels.tex",
      r"DF closed form, Eq.~\eqref{eq:slicer-floor} & $0.1786$",
      r"DF closed form, Eq.~\eqref{eq:slicer-floor} & $0.9999$"),
-    ("prose:mmse-monotonicity", "ch07_unknown_and_mismatch_channels.tex",
-     r"($0.0666, 0.0374, 0.0354, 0.0333$ at $16$~dB",
-     r"($0.9999, 0.0374, 0.0354, 0.0333$ at $16$~dB"),
+    ("prose:mmse-monotonicity", "appendices.tex",
+     r"at 16~dB is $0.0666,\allowbreak\ 0.0374,\allowbreak\ 0.0354,\allowbreak\ 0.0333$",
+     r"at 16~dB is $0.9999,\allowbreak\ 0.0374,\allowbreak\ 0.0354,\allowbreak\ 0.0333$"),
     ("tbl:mmse-baseline", "ch07_unknown_and_mismatch_channels.tex",
      r"ISI (BPSK)      & $+6.58$",
      r"ISI (BPSK)      & $+9.99$"),
@@ -74,6 +74,15 @@ def test_clean_tree_passes(scratch_tex):
     code, out = _run(scratch_tex)
     assert code == 0, f"unmutated thesis should verify clean:\n{out[-3000:]}"
     assert "inconsistencies: 0" in out
+
+
+def test_inactive_sources_are_not_verified(scratch_tex):
+    """An old draft must not shadow the active table or supply missing cells."""
+    source = (scratch_tex / "ch07_unknown_and_mismatch_channels.tex").read_text(encoding="utf-8")
+    (scratch_tex / "aaa_unreferenced.tex").write_text(
+        source.replace("AF & 0.1813", "AF & 0.9999"), encoding="utf-8")
+    code, out = _run(scratch_tex)
+    assert code == 0, out[-3000:]
 
 
 @pytest.mark.parametrize("check,fname,old,new", MUTATIONS,

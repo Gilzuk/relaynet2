@@ -1,6 +1,9 @@
 {
-  "topic": "thesis bibliography -- full publisher-record verification",
+  "topic": "Historical title-based bibliography lookup; superseded",
   "checked_at": "2026-09-06T06:14:48.036274+00:00",
+  "status": "SUPERSEDED",
+  "superseded_by": "../codex_professor_handover_review.md",
+  "warning": "This historical run matched some records by title alone and did not establish author, year, or DOI identity. It contains false-positive matches for ElGamalKim2011NetworkIT (a 2001 chapter) and KingmaWelling2014VAE (unrelated 2024 authors). The counts below describe that old lookup only and must not be reported as current verification.",
   "standard": "deep-research IRON RULE #4 -- gray zone is a FAIL",
   "counts": {
     "VERIFIED": 52,

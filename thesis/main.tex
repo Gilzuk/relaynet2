@@ -21,6 +21,10 @@
 \usepackage{tabularx}
 \usepackage{array}
 
+% bidi's table patch references the legacy array tagging hook. TeX Live 2026
+% no longer defines it for an untagged document; keep older releases working.
+\providecommand\UseMathForPositioningText{}
+
 \ifXeTeX
   \usepackage{fontspec}
   %% Fonts bundled in ./fonts/ (Times New Roman, Courier New, David CLM,
@@ -52,6 +56,8 @@
             headheight=25pt]{geometry}
 \usepackage{setspace}
 \onehalfspacing
+% Permit modest extra interword flexibility without altering type or margins.
+\setlength{\emergencystretch}{2em}
 
 %% ── Language & Hebrew ────────────────────────────────────────
 %% NOTE: polyglossia (which pulls in bidi for the Hebrew RTL abstract) is
@@ -136,13 +142,14 @@
 %% ── TOC Formatting ───────────────────────────────────────────
 \usepackage{tocloft}
 \newlistof{listequations}{equ}{List of Equations}
+\newcounter{handoverfrontpage}
 
 \renewcommand{\cftchapfont}{\bfseries\color{tauBlue}}
 \renewcommand{\cftchappagefont}{\bfseries}
 \renewcommand{\cftsecfont}{\small}
 \renewcommand{\cftsubsecfont}{\small}
 \setlength{\cftbeforechapskip}{2pt}
-\setcounter{tocdepth}{1}
+\setcounter{tocdepth}{2}
 \setcounter{secnumdepth}{3}
 
 
@@ -276,6 +283,8 @@
 %% Loaded before the language block: bidi patches packages loaded before it,
 %% and errors on any loaded after it (see the note below).
 \usepackage{ragged2e}
+% Explicit dependency so source bundles include the local calendar shim.
+\usepackage{hebrewcal}
 
 %% bidi (loaded by polyglossia for the Hebrew abstract) must come after every
 %% package it patches -- see the note in the Language section above.
@@ -284,9 +293,9 @@
 \setotherlanguage{hebrew}
 % \newfontfamily\hebrewfont{Ezra SIL}
 \ifXeTeX
-  \newfontfamily\hebrewfont[Script=Hebrew, Path=./fonts/, Extension=.ttf,
-    UprightFont=*-Regular, BoldFont=*-Bold,
-    ItalicFont=*-Italic, BoldItalicFont=*-BoldItalic]{Arial}
+  \newfontfamily\hebrewfont[Script=Hebrew, Path=./fonts/, Extension=.otf,
+    UprightFont=*-Medium, BoldFont=*-Bold,
+    ItalicFont=*-MediumItalic, BoldItalicFont=*-BoldItalic]{DavidCLM}
   \newfontfamily\hebrewfonttt[Script=Hebrew, Path=./fonts/, Extension=.ttf,
     UprightFont=*-Regular, BoldFont=*-Bold,
     ItalicFont=*-Italic, BoldItalicFont=*-BoldItalic]{CourierNew}
@@ -294,13 +303,14 @@
 %% ── Global footnote numbering ───────────────────────────────── 
 \makeatletter \@removefromreset{footnote}{chapter} \makeatother \renewcommand{\thefootnote}{[\arabic{footnote}]}
 \begin{document}
+\hypersetup{pageanchor=false}
 %% ── Title Page ───────────────────────────────────────────────
 \begin{titlepage}
 \begin{center}
 \vspace*{0.5cm}
 {\LARGE\textbf{TEL AVIV UNIVERSITY}}\\[6pt]
 {\large The Iby and Aladar Fleischman Faculty of Engineering}\\[4pt]
-{\large Department of Electrical Engineering}\\[2cm]
+{\large School of Electrical and Computer Engineering}\\[2cm]
 
 % \noindent\rule{\textwidth}{2pt}[0.4cm]\\
 {\LARGE\bfseries
@@ -312,12 +322,12 @@ Neural Network Relay Strategies\\[2cm]
 % \noindent\rule{\textwidth}{2pt}[1.2cm]\\
 
 {\large A thesis submitted toward the degree of}\\
-{\large Master of Science in Electrical and Electronic Engineering \newline In Tel Aviv University}\\[1.5cm]
+{\large Master of Science in Electrical and Electronic Engineering \newline at Tel Aviv University}\\[1.5cm]
 
 {\large by}\\[6pt]
 {\Large\bfseries Gil Zukerman}\\[1.5cm]
 \vfill
-{\large\textbf{March 2026}}\\[1.5cm]
+{\large\textbf{September 2026}}\\[1.5cm]
 
 
 \end{center}
@@ -330,7 +340,7 @@ Neural Network Relay Strategies\\[2cm]
 
 {\LARGE\textbf{TEL AVIV UNIVERSITY}}\\[6pt]
 {\large The Iby and Aladar Fleischman Faculty of Engineering}\\[4pt]
-{\large Department of Electrical Engineering}\\[2cm]
+{\large School of Electrical and Computer Engineering}\\[2cm]
 
 % \noindent\rule{\textwidth}{2pt}\\[0.4cm]
 {\LARGE\bfseries
@@ -342,16 +352,16 @@ Neural Network Relay Strategies\\[2cm]
 % \noindent\rule{\textwidth}{2pt}\\[1.2cm]
 
 {\large A thesis submitted toward the degree of}\\[4pt]
-{\large Master of Science in Electrical and Electronic Engineering \newline In Tel Aviv University}\\[1.5cm]
+{\large Master of Science in Electrical and Electronic Engineering \newline at Tel Aviv University}\\[1.5cm]
 
 {\large by}\\[6pt]
 {\Large\bfseries Gil Zukerman}\\[1.5cm]
 % \begin{flushleft}
 This research work was carried out at Tel-Aviv University\\
-in the School of Electrical and Electronics Engineering\\
+in the School of Electrical and Computer Engineering\\
 under the supervision of Dr. Anatoly Khina and Prof. Raja Giryes\\
 \vfill
-{\large{March 2026}}\\[1.5cm]
+{\large{September 2026}}\\[1.5cm]
 % \end{flushleft}
 \vfill
 \end{center}
@@ -363,6 +373,7 @@ under the supervision of Dr. Anatoly Khina and Prof. Raja Giryes\\
 %% ── Front Matter ─────────────────────────────────────────────
 \frontmatter
 \pagenumbering{roman}
+\hypersetup{pageanchor=true}
 
 %% ── Dedication ───────────────────────────────────────────────
 
@@ -391,6 +402,7 @@ under the supervision of Dr. Anatoly Khina and Prof. Raja Giryes\\
 % \usepackage[left]{lineno} 
 % \linenumbers
 
+\setcounter{handoverfrontpage}{\value{page}}
 \mainmatter
 \include{chapters/ch01_introduction}
 \include{chapters/ch02_literature_review}
@@ -413,6 +425,14 @@ under the supervision of Dr. Anatoly Khina and Prof. Raja Giryes\\
 % \include{chapters/ak_response_appendix}
 % \include{chapters/appendix_f_review}
 
+\backmatter
+\clearpage
+\pagenumbering{roman}
+\setcounter{page}{\value{handoverfrontpage}}
+\input{chapters/hebrew_abstract}
+\clearpage
+\hypersetup{pageanchor=false}
+
 %% ── Title Page ───────────────────────────────────────────────
 \begin{titlepage}
 \begin{center}
@@ -421,7 +441,7 @@ under the supervision of Dr. Anatoly Khina and Prof. Raja Giryes\\
 
 {\LARGE\textbf{אוניברסיטת תל-אביב}}\\[6pt]
 {\large הפקולטה להנדסה ע"ש איבי ואלדר פליישמן}\\[4pt]
-{\large בית הספר להנדסת חשמל}\\[1.5cm]
+{\large בית הספר להנדסת חשמל ומחשבים}\\[1.5cm]
 
 \noindent\rule{\textwidth}{2pt}\\[0.4cm]
 {\LARGE\bfseries
@@ -429,23 +449,49 @@ under the supervision of Dr. Anatoly Khina and Prof. Raja Giryes\\
 \noindent\rule{\textwidth}{2pt}\\[1.2cm]
 
 {\large חיבור זה הוגש כעבודת גמר לקראת התואר "מוסמך אוניברסיטה"}\\[4pt]
-{\large בהנדסת חשמל ואלקטרוניקה באוניבסיטת תל-אביב}\\[1.5cm]
+{\large בהנדסת חשמל ואלקטרוניקה באוניברסיטת תל-אביב}\\[1.5cm]
 
 {\large על-ידי}\\[6pt]
 {\Large\bfseries גיל צוקרמן}\\[1.5cm]
 
-{\small העבודה נעשתה בבית ספר להנדסת חשמל \\
+{\small העבודה נעשתה בבית הספר להנדסת חשמל ומחשבים \\
 בהדרכת ד"ר אנטולי חינה ופרופ' ראג'א ג'יריס}\\
  
 \vfill
 
-{\large\textbf{ניסן תשפ"ו}}\\[1.5cm]
+{\large\textbf{ספטמבר 2026}}\\[1.5cm]
 
 \end{otherlanguage}
 \end{center}
 \end{titlepage}
 
-\backmatter
-\input{chapters/hebrew_abstract}
+%% ── Title Page ───────────────────────────────────────────────
+\begin{titlepage}
+\begin{center}
+\vspace*{0.5cm}
+\begin{otherlanguage}{hebrew}
+
+{\LARGE\textbf{אוניברסיטת תל-אביב}}\\[6pt]
+{\large הפקולטה להנדסה ע"ש איבי ואלדר פליישמן}\\[4pt]
+{\large בית הספר להנדסת חשמל ומחשבים}\\[1.5cm]
+
+\noindent\rule{\textwidth}{2pt}\\[0.4cm]
+{\LARGE\bfseries
+ארכיטקטורות למידה עמוקה לתקשורת ממסר דו-קפיצתית: מחקר השוואתי של אסטרטגיות ממסר קלאסיות ומבוססות רשתות נוירונים}\\[6pt]
+\noindent\rule{\textwidth}{2pt}\\[1.2cm]
+
+{\large חיבור זה הוגש כעבודת גמר לקראת התואר "מוסמך אוניברסיטה"}\\[4pt]
+{\large בהנדסת חשמל ואלקטרוניקה באוניברסיטת תל-אביב}\\[1.5cm]
+
+{\large על-ידי}\\[6pt]
+{\Large\bfseries גיל צוקרמן}\\[1.5cm]
+
+\vfill
+
+{\large\textbf{ספטמבר 2026}}\\[1.5cm]
+
+\end{otherlanguage}
+\end{center}
+\end{titlepage}
 
 \end{document}

@@ -1,36 +1,13 @@
 #!/usr/bin/env python3
-"""Regenerate results/e6_unknown_channel.png as a single AWGN-only panel.
+"""Regenerate the original fixed-ISI/AWGN figure from the published sources.
 
-The original figure (never checked in with a regeneration script -- only its
-data survived) had three panels: (a) unknown ISI -> AWGN, (b) unknown ISI ->
-Rayleigh, (c) control: canonical Rayleigh. Per author instruction, panels
-(b) and (c) -- the unknown-ISI-to-Rayleigh and canonical-Rayleigh-control
-variants specific to this figure and Table tbl:tableE6 -- are being removed,
-which leaves only panel (a). Other Rayleigh hop-2 studies in the same
-chapter (flat unknown channels, composite cascade) are unaffected. This
-script rebuilds panel (a) alone from the same committed data the
-three-panel figure used: AF/DF/MLP from
-e6_unknown_channel_results/e6_sim_ported_results.npy (setup "S1: unknown
-ISI -> AWGN"), plus the two Viterbi MLSE baselines (genie CSI and 200-pilot
-LS) from e6_unknown_channel_results/e6_viterbi_awgn.npy -- the same source
-verify_thesis_tables.py's check_tableE6 checks the table's Viterbi rows
-against. The five curve classes are verified against their declared sources.
-The historical
-0--10 dB values remain unchanged, while the AF/DF/MLP values at 12--16 dB
-are replaced with the predeclared fixed-budget results in
-e6_unknown_channel_results/codex_isi_fixed_budget_validation.json.  The MLP
-18--20 dB adaptive rare-event tail is deliberately omitted.  The Viterbi
-arrays carry no stored confidence interval, so only AF/DF/MLP get a shaded
-CI band.
-
-Figures are written to BOTH results/ and thesis/results/ so the repository
-copy and the copy main.tex compiles against never drift apart, matching the
-convention of scripts/plot_e6_studies.py.
-
-Run after this script exists (once, to replace the checked-in three-panel
-PNG):
-
-    python3 scripts/plot_e6_unknown_channel_awgn.py
+AF/DF/MLP use the historical sweep below 12 dB and the separately preserved
+fixed-budget validation at 12--16 dB. The unvalidated MLP tail is omitted.
+Viterbi uses e6_matched_protocol.json and the 16/20-dB high-budget counts,
+exactly as the central table. Zero errors are drawn as open nominal 3/N
+bounds at the actual exposures, not as measured positive BERs. Such bounds
+assume independent Bernoulli errors; correlated-error coverage is not proved.
+Writes the original PNG and vector PDF in results/ and thesis/results/.
 """
 import json
 import os
@@ -44,34 +21,46 @@ from matplotlib.lines import Line2D
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 NPY_DIR = os.path.join(ROOT, "e6_unknown_channel_results")
 SIM_PATH = os.path.join(NPY_DIR, "e6_sim_ported_results.npy")
-VITERBI_PATH = os.path.join(NPY_DIR, "e6_viterbi_awgn.npy")
-CORRECTED_VITERBI_PATH = os.path.join(NPY_DIR, "codex_viterbi_consistency_awgn.npy")
+MATCHED_PATH = os.path.join(ROOT, "results", "e6_matched_protocol.json")
+HIGH_SNR_PATH = os.path.join(ROOT, "results", "e6_matched_highsnr.json")
 FIXED_BUDGET_PATH = os.path.join(NPY_DIR, "codex_isi_fixed_budget_validation.json")
 OUT_DIRS = [os.path.join(ROOT, "results"), os.path.join(ROOT, "thesis", "results")]
 SETUP = "S1: unknown ISI -> AWGN"
 
 STYLE = {
-    "AF":  dict(color="tab:orange", marker="s", ls="--", label="AF"),
-    "DF":  dict(color="firebrick",  marker="o", ls="-",  label="DF"),
-    "MLP": dict(color="tab:blue",   marker="^", ls="-",  label="MLP (170 params)"),
+    "AF":  dict(color="#E69F00", marker="s", ls="--", label="AF"),
+    "DF":  dict(color="#D55E00", marker="o", ls="-", label="DF"),
+    "MLP": dict(color="#0072B2", marker="^", ls="-", label="MLP (170 parameters)"),
 }
 VITERBI_STYLE = {
-    "VIT-genie": dict(color="tab:green", marker="v", ls="-.", label="Viterbi (genie CSI)"),
-    "VIT-est":   dict(color="tab:purple", marker="D", ls=":", label="Viterbi (200-pilot LS)"),
+    "VIT-genie": dict(color="#009E73", marker="v", ls="-.", label="Viterbi (genie CSI)"),
+    "VIT-est": dict(color="#CC79A7", marker="D", ls=":", label="Viterbi (200-pilot LS)"),
 }
 
-# These floors are display coordinates only.  A zero-error estimate is not a
-# measured BER equal to the floor and must not be presented as an upper bound.
+# Axis/interval clipping only; zero-error markers instead use actual 3/N bounds.
 PLOT_FLOOR = 1e-8
-CENSORED_DISPLAY_Y = 5e-5
+
+def matched_points(name):
+    """Return empirical BER and actual bit budgets, using the table sources."""
+    with open(MATCHED_PATH, encoding="utf-8") as handle:
+        matched = json.load(handle)
+    with open(HIGH_SNR_PATH, encoding="utf-8") as handle:
+        high = json.load(handle)
+    record = matched["results"][name]
+    errors = np.array(record["errors"], dtype=float)
+    bits = np.array(record["bits"], dtype=float)
+    for snr in (16, 20):
+        i = matched["snrs"].index(snr)
+        errors[i] = high["results"][name][str(snr)]["errors"]
+        bits[i] = high["results"][name][str(snr)]["bits"]
+    return np.asarray(matched["snrs"]), errors / bits, bits
 
 
 def main():
     d = np.load(SIM_PATH, allow_pickle=True).item()
     snrs = np.asarray(d["snrs"], dtype=float)
     r = d["results"][SETUP]
-    viterbi_path = CORRECTED_VITERBI_PATH if os.path.exists(CORRECTED_VITERBI_PATH) else VITERBI_PATH
-    vg = np.load(viterbi_path, allow_pickle=True).item()
+    vg = {key: matched_points(key) for key in VITERBI_STYLE}
 
     # The original sweep used an adaptive, post-error extension at high SNR.
     # Replace 12--16 dB by predeclared fixed-budget results.  The 16-dB
@@ -90,50 +79,56 @@ def main():
     display["MLP"][0][snrs > 16] = np.nan
     display["MLP"][1][snrs > 16] = np.nan
 
-    fig, ax = plt.subplots(figsize=(7, 5.5))
+    plt.rcParams.update({"font.family": "serif", "font.size": 11,
+                         "pdf.fonttype": 42, "axes.spines.top": False,
+                         "axes.spines.right": False})
+    fig, ax = plt.subplots(figsize=(7, 5))
     for key, st in STYLE.items():
         mu, ci = display[key]
         ax.semilogy(snrs, np.maximum(mu, PLOT_FLOOR), markersize=6, **st)
         ax.fill_between(snrs, np.maximum(mu - ci, PLOT_FLOOR), np.maximum(mu + ci, PLOT_FLOOR),
                         color=st["color"], alpha=0.18, lw=0)
     for key, st in VITERBI_STYLE.items():
-        mu = np.asarray(vg[key], dtype=float)
+        v_snrs, mu, bits = vg[key]
+        np.testing.assert_array_equal(v_snrs, snrs)
         observed = mu > 0
         if np.any(observed):
             ax.semilogy(snrs[observed], mu[observed], markersize=6, **st)
         censored = ~observed
         if np.any(censored):
-            ax.scatter(snrs[censored], np.full(np.count_nonzero(censored), CENSORED_DISPLAY_Y),
+            bounds = 3.0 / bits[censored]
+            ax.scatter(snrs[censored], bounds,
                        marker=st["marker"], s=42, facecolors="white", edgecolors=st["color"],
                        linewidths=1.2, zorder=4)
-            for x in snrs[censored]:
-                ax.annotate("", xy=(x, PLOT_FLOOR), xytext=(x, CENSORED_DISPLAY_Y),
+            for x, bound in zip(snrs[censored], bounds):
+                ax.annotate("", xy=(x, max(PLOT_FLOOR, bound / 3)), xytext=(x, bound),
                             arrowprops={"arrowstyle": "-|>", "color": st["color"],
                                         "lw": 0.9, "alpha": 0.8})
 
     # Add one compact legend entry for the open-marker convention without
     # duplicating it for the two Viterbi variants.
-    if any(np.any(np.asarray(vg[key], dtype=float) <= 0) for key in VITERBI_STYLE):
+    if any(np.any(vg[key][1] == 0) for key in VITERBI_STYLE):
         handles, labels = ax.get_legend_handles_labels()
         handles.append(Line2D([0], [0], marker="o", color="0.25", markerfacecolor="white",
                               linestyle="None", markersize=6,
-                              label="Viterbi zero errors (insufficient data)"))
-        labels.append("Viterbi zero errors (insufficient data)")
+                              label="Zero errors: nominal 3/N bound"))
+        labels.append("Zero errors: nominal 3/N bound")
         ax.legend(handles, labels, loc="lower left", fontsize=9)
 
     ax.axhline(0.25, color="0.4", ls=":", lw=1.2)
-    ax.text(0.3, 0.25 * 1.06, "memoryless floor = 0.25", color="0.4", fontsize=9)
+    ax.text(0.3, 0.25 * 1.15, "AF / zero-threshold DF limit = 0.25", color="0.4", fontsize=9)
 
-    ax.set_xlabel("SNR (dB)")
+    ax.set_xlabel(r"Per-hop $E_s/N_0$ (dB)")
     ax.set_ylabel("BER")
-    title_suffix = " (current-protocol Viterbi)" if viterbi_path == CORRECTED_VITERBI_PATH else ""
-    ax.set_title("Unknown ISI channel: fixed-budget validation through 16 dB" + title_suffix)
+    ax.set_title("Fixed three-tap ISI followed by AWGN")
     ax.set_ylim(PLOT_FLOOR, 1e0)
-    ax.grid(True, which="both", alpha=0.3)
-    if not any(np.any(np.asarray(vg[key], dtype=float) <= 0) for key in VITERBI_STYLE):
+    ax.set_xticks(np.arange(0, 21, 2))
+    ax.grid(True, which="major", alpha=0.25)
+    ax.grid(True, which="minor", axis="y", alpha=0.08)
+    if not any(np.any(vg[key][1] == 0) for key in VITERBI_STYLE):
         ax.legend(loc="lower left", fontsize=9)
     ax.annotate("MLP 18--20 dB\nnot re-estimated", xy=(16, 1.2e-7),
-                xytext=(16.8, 2e-6), fontsize=8, color=STYLE["MLP"]["color"],
+                xytext=(0.70, 0.48), textcoords="axes fraction", fontsize=8, color=STYLE["MLP"]["color"],
                 arrowprops={"arrowstyle": "->", "color": STYLE["MLP"]["color"]})
 
     for out_dir in OUT_DIRS:

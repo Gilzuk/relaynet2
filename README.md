@@ -4,7 +4,7 @@
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.6+-red.svg)](https://pytorch.org)
 [![CUDA](https://img.shields.io/badge/CUDA-12.4-green.svg)](https://developer.nvidia.com/cuda-toolkit)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Tests](https://img.shields.io/badge/Tests-249%20passed-brightgreen.svg)](#testing)
+[![CI](https://github.com/Gilzuk/relaynet2/actions/workflows/ci.yml/badge.svg)](https://github.com/Gilzuk/relaynet2/actions/workflows/ci.yml)
 [![Experiments](https://img.shields.io/badge/Experiments-18-blue.svg)](#recent-experiments-summary)
 
 A framework for comparing **classical and AI-based relay strategies** in two-hop relay communication, over **AWGN and Rayleigh fading** SISO channels, with **BPSK, QPSK and 16-QAM** modulation.
@@ -20,7 +20,7 @@ Relay Communication* (Tel Aviv University, Gil Zukerman, 2026). Its result in on
 sentence: **on a matched, memoryless two-hop relay channel no learned relay evaluated
 here improves on classical decode-and-forward, while on channels whose memory or
 impairments fall outside that model a compact learned relay restores reliable relaying —
-without ever overtaking a correctly informed classical sequence detector.**
+without a demonstrated advantage over matched MLSE in the resolved comparisons.**
 <sub>Source: `thesis/chapters/ch09_summary.tex`, closing paragraph.</sub>
 
 **Research question.** Under what channel-information and channel-memory conditions can a
@@ -28,13 +28,13 @@ learned relay improve upon or complement classical AF/DF processing in two-hop w
 communication?
 <sub>Source: `thesis/chapters/ch03_objectives.tex`, §Two Research Questions.</sub>
 
-The argument is a four-layer ladder of progressively relaxed channel assumptions
+The following four groups organize separate experiments, not a one-factor-at-a-time ablation
 <sub>(source: `thesis/chapters/ch07_unknown_and_mismatch_channels.tex`, Table `tbl:layers`)</sub>:
 
 | Layer | Conditions | Classical comparator | Result |
 |---|---|---|---|
 | 1 | Memoryless, known channel, perfect CSI | Symbol-wise DF, zero parameters | **Classical wins.** DF `0.1218` vs the MLP's `0.1229` at 8 dB — the learned relay matches DF, at 169 parameters against none |
-| 2 | + 3-tap ISI, CSI still perfect | Viterbi MLSE with exact taps | **Split.** DF rises from `0.1802` at 8 dB to `0.2457` at 20 dB; the MLP restores the link (`0.0065`) but genie-CSI Viterbi leads by 1–1.5 dB |
+| 2 | + 3-tap ISI, CSI still perfect | Viterbi MLSE with exact taps | **Split.** DF rises from `0.1802` at 8 dB to `0.2457` at 20 dB; the MLP restores the link (`0.0065`) but genie MLSE records 0.001354 at 8 dB, with a target-dependent required-SNR gap |
 | 3 | + finite pilot budget | Pilot-aided LS estimate, then MLSE | **Crossover.** At 10 dB LS+MLSE holds `0.0283` on 200 pilots and `0.0335` on 20; by 10 pilots it degrades to `0.0545` and the pilot-free MLP leads |
 | 4 | + unseen realization from the trained family, per block | CMA blind equalization | **Learned relay wins.** MLP `0.00262` vs CMA `0.00329` at 20 dB; decision-directed blind MLSE is unstable |
 
@@ -48,12 +48,12 @@ sequence estimation, decision feedback and hybrid model-based detectors were not
 No MIMO, no multiple relays, no full duplex. No hardware, quantization or energy validation.
 Comparisons were not prespecified and carry no multiplicity correction. Viterbi is not a BER
 bound: MLSE minimizes *sequence* error, and the BER-optimal comparator is bit-MAP/BCJR,
-measured at QPSK only.
+measured at the QPSK relay output only, not as an end-to-end benchmark.
 <sub>Sources: `thesis/chapters/ch01_introduction.tex`, Table `tbl:assumptions-claims`;
 `thesis/chapters/ch04_methods.tex`, §Statistical Significance Testing;
 `thesis/chapters/ch07_unknown_and_mismatch_channels.tex`, §A BER-Optimal Benchmark.</sub>
 
-The compiled thesis is `thesis/main.pdf` (136 pages). The sections below document the
+The compiled thesis is `thesis/main.pdf`; its page count must be checked after rebuilding. The sections below document the
 `relaynet` simulation framework itself.
 
 ---
@@ -201,22 +201,15 @@ Each relay strategy is evaluated on both SISO channels (AWGN and Rayleigh) using
 
 ## Key Findings
 
-### Original Models (varying parameter counts)
+The thesis findings are bounded by the implemented configurations:
 
-1. **The best AI relay is channel-dependent** — CGAN leads on AWGN; DF leads on Rayleigh
-2. **State space models beat attention** for signal processing (O(n) vs O(n²))
-3. **DF dominates at medium/high SNR** (≥6 dB) — no training required
-4. **Hybrid relay** provides the best practical trade-off: AI at low SNR, DF at high SNR
-5. **All AI relays dramatically outperform AF** across all channels
+- In the canonical uncoded QPSK/Rayleigh comparison, feedforward relays improve on AF at low SNR; DF matches or exceeds the evaluated learned relays from 6 dB upward.
+- Small tested networks can be competitive. The experiments do not establish overfitting, universal minimum size, or equal performance across all architectures and training seeds.
+- On the fixed BPSK ISI channel, the 170-parameter MLP improves strongly on AF/zero-threshold DF but trails matched MLSE over the resolved range. Fixed-budget validation stops at 16 dB.
+- The learned relays have training-family knowledge. Pilot and blind results do not demonstrate generalization to new impairment families.
+- Coded comparisons use imperfect reliability metrics; read-out effects do not establish a universal disadvantage of relay decoding. Arithmetic and reference-program timing are not hardware deployment results.
 
-### Normalized 3K Comparison (equal parameter budgets)
-
-When all 6 AI models are constrained to ≈3,000 parameters:
-
-1. **All architectures converge in performance** — the architecture gap narrows at small scale; DF remains the strongest baseline on most channels
-2. **MLP/Hybrid remain competitive** — simple feedforward networks match sequence models at equal param budgets
-3. **VAE consistently underperforms** — probabilistic overhead hurts at all scales
-4. **Architecture matters less than expected** — at 3K params, all models are within ~1 dB of each other
+Historical framework tables below are retained as archival demonstrations, not the current thesis's numerical authority. Use the thesis tables and their declared experiment files. A recorded zero means no errors observed in a finite run—insufficient data to estimate a positive BER—not zero true BER or an infinite improvement.
 
 ---
 
@@ -229,14 +222,14 @@ Three relay architectures appear in these studies, and two of them coincidentall
 | Study | Script | Key result |
 |-------|--------|-----------|
 | Unknown ISI + control | `e6_sim_ported.py` | AF/DF pinned at the **analytic 0.25 ISI floor** (DF *non-monotonic* in SNR); the 170-param MLP restores reliable relaying |
-| Viterbi MLSE benchmark | `e6_viterbi_ported.py` | Genie-CSI Viterbi is ~1–1.5 dB better than the MLP; a 200-pilot LS estimate matches genie |
-| Flat (memoryless) control | `e6_flat_ported.py` | Unknown phase/gain/asymmetry: classical **does not fail**, MLP only matches it (gap ≤ 0.0036) — isolates *memory*, not unknownness, as the cause |
+| Viterbi MLSE benchmark | `e6_matched_protocol.py` | Matched genie MLSE has target-dependent 0.26–2.53 dB penalties; 200-pilot LS is close |
+| Flat (memoryless) control | `e6_flat_ported.py` | Unknown phase/gain/asymmetry: classical **does not fail**, MLP has similar measured BER in these controls; no universal causal isolation |
 | Composite cascade | `e6_composite_ported.py` | ISI × PA-nonlinearity × unknown phase: MLP recovers from raw I/Q, ~2 dB behind pilot-aided Viterbi |
 | Posterior-free (blind) | `e6_blind_ported.py` | MLP matches blind CMA while avoiding decision-directed MLSE's instability |
-| Partial posterior | `e6_partial_ported.py` | Pilot-budget crossover: Viterbi wins with ≥10 pilots, collapses at 5; MLP is pilot-free and flat |
+| Partial posterior | `e6_partial_ported.py` | Pilot-budget crossover: Viterbi leads at 20 pilots and trails by 10 at the measured 10-dB point; MLP is pilot-free and flat |
 | Complexity | `e6_complexity_ported.py` | Viterbi cost grows as $M^L$; the relay's cost is constant **for a fixed architecture** (~330 flops/sym) and 30–90× faster in wall-clock. Holding the window fixed as memory grows is a choice, not a law: spanning longer memory generally widens the window, and the relay's cost then grows roughly linearly in it |
 
-**Bottom line (H5):** the learned relay **never beats a correctly matched classical receiver**, but occupies a well-defined niche — *identification-free, fixed-complexity* mitigation of structural model-class mismatch (memory, nonlinearity, absent pilots), where the memoryless classical relays fail outright.
+**Bottom line (H5):** the tested learned relay improves on specified AF/DF or mismatched baselines. No resolved advantage over matched MLSE is demonstrated. Training-family dependence, measurement endpoint, and architecture-specific cost remain part of the claim.
 
 The scope is narrower than "family-agnostic": the network is trained on the same impairment family it is tested on, so its weights carry prior information about that family. What it does without is **per-block** channel state — no pilots, no explicit identification, no online adaptation, on a realization it has not seen. It is not evaluated on a structurally different family absent from training.
 
@@ -244,7 +237,7 @@ The scope is narrower than "family-agnostic": the network is trained on the same
 
 ## Verifying the Thesis Against Its Data
 
-Every number the thesis publishes is checked against the file that produced it. Two tools do this, and both are expected to exit `0`:
+Selected numerical tables and prose are checked against their declared artifacts. These checks do not cover every claim or certify scientific correctness:
 
 ```bash
 python verify_thesis_tables.py    # published cells vs their data sources
@@ -278,29 +271,29 @@ Run the whole suite with `pytest`.
 
 Each headline claim of the unknown-channel study, verified against theory and primary literature. The channel used throughout is the normalized 3-tap FIR $h = [1, 0.7, 0.5]/\lVert\cdot\rVert \approx [0.758, 0.531, 0.379]$ (`e6_viterbi_ported.py`).
 
-### Claim 1 — The learned relay never beats a correctly matched classical receiver
+### Claim 1 — Local bit-MAP is not an end-to-end relay benchmark
 
-The bound is the **symbol-MAP (BCJR/APP)** detector, and the distinction from MLSE matters. Given the true channel model and the same observation, symbol-MAP minimizes *bit* error probability, so no learned function of that observation can beat it on the BER metric used here — against *that* comparator the claim is a theorem. **MLSE minimizes *sequence* error probability and is not BER-optimal** [1], [2], [16], so against genie-CSI Viterbi the claim is an *empirical* finding, not a theorem: a learned relay with lower BER than Viterbi would contradict no optimality result. No comparison in this thesis is made against a BER-optimal detector at either modulation order; that benchmark remains open. The literature is consistent: learned receivers that "beat classical" beat *mismatched or suboptimal* baselines. SBRNN approaches Viterbi-with-CSI and passes it only under imperfect CSI [3]; ViterbiNet matches the model-based algorithm and wins only under CSI uncertainty [4]; DeepRx beats practical LMMSE receivers, which are not MAP-optimal under the studied impairments [5]; Ye–Li–Juang beat MMSE under pilot shortage, CP removal and clipping — mismatch again [6]; end-to-end autoencoders beat classical *schemes* by redesigning the transmitter, not a receiver-only counterexample [7].
+Bit-MAP minimizes expected bit error under a specified model, observation and side information. Symbol-MAP is not generally bit-MAP, and Viterbi MLSE minimizes sequence error [1, 2, 16]. The QPSK BCJR control measures **relay-output** BER, not destination BER; it does not close an end-to-end BCJR-versus-MLP comparison.
 
-### Claim 2 — The analytic 0.25 BER floor and DF's non-monotonicity
+### Claim 2 — The selected zero-threshold slicer has a 0.25 limit
 
-With the normalized taps, the ISI magnitude sum $h_1 + h_2 \approx 0.910$ exceeds the cursor $h_0 \approx 0.758$: the eye is **closed**. Of the four equiprobable BPSK interferer sign patterns, exactly one (both interferers opposing) yields $0.758 - 0.910 = -0.152 < 0$, a deterministic sign flip; the other three ($0.606$, $0.910$, $1.668$) stay correct. A noise-free memoryless slicer therefore errs on exactly one pattern in four: BER $\to$ exactly $1/4$. Non-monotonicity follows from the same geometry: at moderate SNR, noise occasionally pushes the flipped sample back across zero, so the error rate on the bad pattern is below 1 there and rises toward 1 as SNR $\to \infty$ — total BER climbs toward 0.25 from below. This is standard closed-eye behavior [8], [2, ch. 9].
+For the selected BPSK taps, the cursor is approximately 0.758 and the interferer sum is 0.910. One of four patterns gives -0.152; the others preserve the sign. This gives the zero-threshold rule a 1/4 limit, not a bound for every memoryless detector. Zero-amplitude ties for other taps contribute one half.
 
-### Claim 3 — Complexity: $M^L$ trellis vs. a fixed forward pass
+### Claim 3 — Separate MACs and FLOPs
 
-MLSE maintains $M^{L-1}$ trellis states and evaluates $M^L$ branch metrics per symbol [1], [2, ch. 10]. The $11 \to 13 \to 1$ MLP costs $\approx 2(11 \cdot 13 + 13)$ MACs plus activations $\approx 330$ flops/symbol, constant for the fixed architecture — with the stated caveat that spanning longer memory generally widens the window, after which cost grows roughly linearly in it. One fairness note: reduced-complexity sequence estimation (RSSE [9], DFSE, M-algorithm) also breaks the $M^L$ scaling, so full Viterbi is the steepest classical comparator.
+The real 11-to-13-to-1 relay has 170 parameters, 156 MACs and 14 bias additions, approximately 330 FLOPs excluding activation cost. Full-state MLSE has M^L branches for channel length L; reduced-state alternatives [9] are not benchmarked. The coded-QPSK 208-MAC relay is a different, 220-parameter architecture.
 
-### Claim 4 — Blind regime: CMA converges; decision-directed blind MLSE does not
+### Claim 4 — Blind results are implementation-specific
 
-CMA performs blind equalization of constant-modulus signals [10], [11]. The channel is minimum-phase (zeros at $|z| \approx 0.707$), so a short FIR equalizer can approximately invert it; finite length and noise enhancement leave a residual BER of order $10^{-3}$ at 20 dB, matching the measured $3.3\times10^{-3}$. Known CMA caveats — local minima for under-length equalizers [12] — support "matches but does not excel". Decision-directed blind MLSE, bootstrapping taps from its own decisions, is a crude form of per-survivor processing [13]; misconvergence, sign/shift ambiguities and error propagation are documented failure modes, matching its observed instability.
+The random nonlinear composite cascade cannot be characterized by the zeros of one fixed filter. CMA and decision-directed MLSE results concern the tested algorithms and adaptation budgets, not universal convergence guarantees [10–13].
 
-### Claim 5 — Pilot-budget crossover: reliable at ≥10 pilots, collapse at 5
+### Claim 5 — Pilot count changes measured estimation quality
 
-LS estimation of 3 unknown taps is identifiable from 5 pilots ($5 > 3$), but convolution edge effects leave a near-square, ill-conditioned system whose LS variance $\propto \sigma^2 \operatorname{tr}((X^H X)^{-1})$ explodes; Viterbi with badly wrong taps then error-propagates catastrophically. The collapse is an **estimation-variance plus error-propagation** effect, consistent with CRB scaling $\sigma^2 L / N_p$ [14] — not strict non-identifiability. The result is specific to the classical LS+Viterbi pipeline: meta-learned demodulators adapt from very few pilots [15], which does not contradict the claim but bounds its scope.
+Five observations can identify three taps if the pilot design has full column rank. The measured degradation is not proof of rank deficiency. Standard LS covariance assumes a correctly specified linear model [14]; the composite cascade is nonlinear. Other few-pilot estimators [15] remain outside this comparison.
 
-### Claim 6 — Genie-CSI MLSE leads the minimal MLP by only 1–1.5 dB
+### Claim 6 — The matched gap is target-dependent
 
-A finite-window symbol-wise detector cannot beat the MAP detector over that same window, which cannot beat one given the whole sequence: a window truncates the observation, and truncation cannot add information. That ordering is all theory supplies — it fixes no particular gap. No windowed-MAP detector was implemented here, so the measured 1–1.5 dB is **not** decomposed into the window's share and the 170-parameter approximation's. That published learned detectors close the gap further — SBRNN within fractions of a dB of Viterbi [3], ViterbiNet essentially to zero with enough capacity [4] — is consistent with the residual gap being a property of the deliberately minimal budget, but this thesis does not separate the two causes.
+Corrected BPSK required-SNR penalties are 0.26, 1.18, 1.88 and 2.53 dB at BER targets 1e-1 through 1e-4. No windowed bit-MAP ablation separates window, capacity, training and optimization effects. Historical fixed-offset claims are superseded.
 
 ### References
 
@@ -352,7 +345,7 @@ Per-channel BER comparison plots with 95% confidence intervals are in the `resul
 
 ## Normalized 3K-Parameter Comparison
 
-To enable a fair **apples-to-apples** comparison, all 6 AI models were scaled to ≈3,000 parameters:
+In this historical framework demonstration, six AI models were scaled to approximately 3,000 parameters. Equal counts do not control depth, width, window, state size or training. The current thesis comparison uses its own declared data sources:
 
 | Model | Parameters | Configuration |
 |-------|-----------|---------------|

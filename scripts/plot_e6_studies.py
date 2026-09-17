@@ -19,6 +19,7 @@ experiments could not be reflected in the document. Run it after any rerun:
     python3 scripts/plot_e6_studies.py
 """
 import os
+import json
 
 import numpy as np
 import matplotlib
@@ -32,21 +33,21 @@ OUT_DIRS = [os.path.join(ROOT, "results"), os.path.join(ROOT, "thesis", "results
 # Shared per-method styling, so the composite and blind panels stay legible
 # side by side in the compiled document.
 STYLE = {
-    "AF":                  dict(color="tab:orange", marker="s", ls="--"),
-    "DF-diff":             dict(color="tab:red",    marker="o", ls="-"),
-    "Viterbi-diff":        dict(color="tab:purple", marker="v", ls="-."),
+    "AF":                  dict(color="#E69F00", marker="s", ls="--"),
+    "DF-diff":             dict(color="#D55E00", marker="o", ls="-"),
+    "Viterbi-diff":        dict(color="#CC79A7", marker="v", ls="-."),
     "Viterbi-blind":       dict(color="tab:purple", marker="v", ls="-."),
     "CMA-blind":           dict(color="tab:orange", marker="s", ls="--"),
-    "MLP-169":             dict(color="tab:blue",   marker="^", ls="-"),
-    "MLP-large":           dict(color="tab:green",  marker="D", ls=":"),
+    "MLP-169":             dict(color="#0072B2", marker="^", ls="-"),
+    "MLP-large":           dict(color="#009E73", marker="D", ls=":"),
 }
 LABELS = {
     "AF": "AF",
     "DF-diff": "DF (differential)",
-    "Viterbi-diff": r"Pilot-LS Viterbi + diff. (matched to ISI+phase)",
+    "Viterbi-diff": "Pilot-LS Viterbi + differential decoding",
     "Viterbi-blind": "Decision-directed blind MLSE (no pilots)",
     "CMA-blind": "CMA blind equalizer (no pilots)",
-    "MLP-169": "MLP-169 (no impairment knowledge)",
+    "MLP-169": "MLP-169 (family-trained)",
     "MLP-large": "MLP-1153",
 }
 
@@ -54,7 +55,8 @@ LABELS = {
 def _save(fig, name):
     for d in OUT_DIRS:
         os.makedirs(d, exist_ok=True)
-        fig.savefig(os.path.join(d, name), dpi=150, bbox_inches="tight")
+        fig.savefig(os.path.join(d, name), dpi=300, bbox_inches="tight")
+        fig.savefig(os.path.join(d, name.replace(".png", ".pdf")), bbox_inches="tight")
     plt.close(fig)
     print(f"  wrote {name}")
 
@@ -64,7 +66,7 @@ def _load(name):
 
 
 def plot_ber_panel(d, order, title, name, floor=None, mlp_label=None):
-    """BER-vs-SNR semilog panel with 95% CI bands."""
+    """BER-vs-SNR panel; interval interpretation is experiment-specific."""
     snrs = np.asarray(d["snrs"], dtype=float)
     fig, ax = plt.subplots(figsize=(10, 6))
     for key in order:
@@ -78,15 +80,17 @@ def plot_ber_panel(d, order, title, name, floor=None, mlp_label=None):
                         color=st["color"], alpha=0.18, lw=0)
     if floor is not None:
         ax.axhline(floor, color="0.4", ls=":", lw=1.2)
-        ax.text(0.3, floor * 1.06, "memoryless-relay floor", color="0.4", fontsize=9)
-    ax.set_xlabel("SNR (dB)")
+        ax.text(0.3, floor * 1.06, "BER = 0.25 reference", color="0.4", fontsize=9)
+    ax.set_xlabel(r"Per-hop $E_s/N_0$ (dB)")
     ax.set_ylabel("BER")
     ax.set_title(title)
     ax.grid(True, which="both", alpha=0.3)
     ax.legend(loc="lower left", fontsize=9)
     n = d.get("n_trials", "?")
     b = d.get("n_bits", "?")
-    ax.annotate(f"{n} trials $\\times$ {b:,} bits/SNR point",
+    note = ("10 unique trials; 100,000 source bits each\nAF: corrected noise, t intervals; other bands: descriptive"
+            if name == "e6_composite.png" else f"{n} trials $\\times$ {b:,} bits/SNR point")
+    ax.annotate(note,
                 xy=(0.99, 0.98), xycoords="axes fraction",
                 ha="right", va="top", fontsize=8, color="0.35")
     _save(fig, name)
@@ -94,6 +98,13 @@ def plot_ber_panel(d, order, title, name, floor=None, mlp_label=None):
 
 def plot_composite():
     d = _load("e6_composite_ported_results.npy")
+    with open(os.path.join(NPY_DIR, "codex_composite_af_validation.json"),
+              encoding="utf-8") as handle:
+        corrected = json.load(handle)["points"]
+    d["summary"]["AF"] = (
+        [corrected[str(int(s))]["mean"] for s in d["snrs"]],
+        [corrected[str(int(s))]["ci95_halfwidth"] for s in d["snrs"]],
+    )
     plot_ber_panel(
         d,
         ["AF", "DF-diff", "Viterbi-diff", "MLP-169", "MLP-large"],
@@ -108,7 +119,7 @@ def plot_blind():
     plot_ber_panel(
         d,
         ["DF-diff", "Viterbi-blind", "CMA-blind", "MLP-169"],
-        "Posterior-free (blind) composite channel: no pilots, no channel prior",
+        "Blind inference on the trained composite-channel family",
         "e6_blind.png",
         mlp_label="MLP-169 (family-trained, blind at test)",
     )
@@ -129,14 +140,14 @@ def plot_partial_pilots():
                 capsize=3, label="Pilot-aided Viterbi")
     ax.set_xscale("log")
     ax.invert_xaxis()
-    ax.set_xlabel("Number of pilots (partial posterior)")
+    ax.set_xlabel("Number of pilots for channel estimation")
     ax.set_ylabel(f"Payload BER @ {d['op_snr']:.0f} dB")
-    ax.set_title("(a) Partial posterior: pilot-budget sweep")
+    ax.set_title("(a) Channel uncertainty: pilot-budget sweep")
     ax.grid(True, which="both", alpha=0.3)
     ax.legend(loc="upper left", fontsize=9)
 
     worst = pilots[int(np.argmax(mus))]
-    ax.annotate("estimation variance\ndominates", xy=(worst, mus.max()),
+    ax.annotate("higher BER at the\nsmallest pilot budget", xy=(worst, mus.max()),
                 xytext=(0.62, 0.62), textcoords="axes fraction",
                 fontsize=9, color="0.35",
                 arrowprops=dict(arrowstyle="->", color="0.55", lw=1))

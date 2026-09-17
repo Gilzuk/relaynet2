@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """verify_thesis_tables.py — single-source reproducibility check for the thesis.
 
-Recreates every *numerical* table in the thesis report from its authoritative
+Checks the explicitly listed numerical tables and selected prose against their
 data source (the experiment output files and closed-form formulas) and compares,
 cell by cell, against the numbers currently transcribed in the LaTeX
 (``thesis/chapters/*.tex``). Any mismatch beyond display-rounding tolerance is
@@ -99,11 +99,23 @@ def tol_for(text):
 # LaTeX helpers
 # ----------------------------------------------------------------------------
 def load_tex():
-    text = ""
-    for fn in sorted(os.listdir(TEX_DIR)):
-        if fn.endswith(".tex") and not fn.startswith("_"):
-            text += open(os.path.join(TEX_DIR, fn), encoding="utf-8").read() + "\n"
-    return text
+    """Read only compiled chapters; ignore comments and no-op review macros.
+
+    The --tex scratch override supplies chapter contents, while main.tex is
+    still the authority for which chapters are active in the manuscript.
+    """
+    from scripts.overleaf_project import no_comments
+    from scripts.strip_rev import strip_rev
+    with open(os.path.join(ROOT, "thesis", "main.tex"), encoding="utf-8") as handle:
+        main = no_comments(handle.read())
+    names = re.findall(r'\\(?:include|input)\{chapters/([^}]+)\}', main)
+    parts = []
+    for name in names:
+        with open(os.path.join(TEX_DIR, name + ".tex"), encoding="utf-8") as handle:
+            source = no_comments(handle.read())
+        source = source.replace(r'\AK{', r'\REV{').replace(r'\GZ{', r'\REV{')
+        parts.append(strip_rev(source))
+    return "\n".join(parts)
 
 
 def table_body(tex, label):
@@ -224,7 +236,8 @@ STOCHASTIC_TABLES = {"tbl:tableE6": 0.002, "tbl:tableE6flat": 0.002,
 # a failure go away -- a drop means the check lost sight of something.
 MIN_CELLS = {
     "tbl:table2": 54, "tbl:layers": 15, "tbl:table8": 48,
-    "tbl:tableE6": 20, "tbl:tableE6flat": 24, "tbl:tableE6qpsk": 20,
+    # The unvalidated 20-dB MLP bound is intentionally no longer a numeric cell.
+    "tbl:tableE6": 19, "tbl:tableE6flat": 24, "tbl:tableE6qpsk": 20,
     "prose:E6blind": 9, "prose:E6partial": 13, "prose:E6composite": 6,
     "tbl:table34": 30, "tbl:table37": 6, "tbl:table38": 10,
     "tbl:table39": 30, "tbl:table40": 12, "tbl:table41": 15,
@@ -285,6 +298,24 @@ class Report:
         floor = MIN_CELLS.get(table)
         if floor is not None and n < floor:
             self.coverage.append((table, n, floor))
+
+    def zero_error_bound(self, table, where, pub_text, pub_val, bits):
+        """Validate the printed nominal rule-of-three bound, not 0 < anything.
+
+        This checks transcription and exposure only. It does not establish
+        independent-bit coverage for a correlated-error experiment.
+        """
+        if bits <= 0:
+            raise ValueError("A zero-error bound requires a positive bit budget")
+        self.checked += 1
+        expected = 3.0 / bits
+        is_bound = isinstance(pub_val, str) and pub_val.startswith("<")
+        value = float(pub_val[1:]) if is_bound else float(pub_val or 0)
+        diff = abs(value - expected)
+        # No stochastic absolute tolerance: these are exact exposure records.
+        ok = is_bound and diff <= tol_for(pub_text) * (1 + 1e-12)
+        if not ok:
+            self.flags.append((table, where, pub_text, f"nominal <{expected:g}", f"{diff:g}"))
 
     def skip(self, table, reason):
         self.skipped.append((table, reason))
@@ -396,10 +427,8 @@ def matched_viterbi(name, snr):
     e6_matched_highsnr.py gives 16 and 20 dB a predeclared 1e8 bits so those
     cells resolve to 3e-8 bounds rather than the 3e-6 a 1e6-bit budget allows.
 
-    Returns a point estimate where errors were observed and zero when no errors
-    were observed.  The manuscript prints the corresponding rule-of-three
-    upper bound, so the strict ``<`` check can validate the bound against the
-    observed count without treating the bound itself as an observed BER.
+    Returns the empirical rate. Zero-error transcription checks must also use
+    matched_viterbi_counts and Report.zero_error_bound to validate the exposure.
     """
     if snr in (16, 20):
         r = _MATCHED_HI["results"][name][str(snr)]
@@ -408,6 +437,15 @@ def matched_viterbi(name, snr):
     e = _MATCHED["results"][name]["errors"][i]
     b = _MATCHED["results"][name]["bits"][i]
     return (e / b) if e else 0.0
+
+
+def matched_viterbi_counts(name, snr):
+    if snr in (16, 20):
+        record = _MATCHED_HI["results"][name][str(snr)]
+        return record["errors"], record["bits"]
+    i = _MATCHED["snrs"].index(snr)
+    record = _MATCHED["results"][name]
+    return record["errors"][i], record["bits"][i]
 
 
 _MATCHED = json.load(open(os.path.join(ROOT, "results/e6_matched_protocol.json")))
@@ -484,7 +522,7 @@ def check_layers_table(tex, rep):
     m = re.search(r"below \$3\.0\\times10\^\{-8\}\$ at 16~dB against the MLP's "
                   r"\$([\d.]+)\\times10\^\{-7\}\$", body)
     if m:
-        rep.cell(T, "L2/MLP@16dB", m.group(1), float(m.group(1)) * 1e-7,
+        rep.cell(T, "L2/MLP@16dB", m.group(1) + "e-7", float(m.group(1)) * 1e-7,
                  fixed["points"]["16"]["MLP"]["mean"])
 
     # Layer 3: the pilot-budget crossover at the 10 dB operating point.
@@ -1042,7 +1080,8 @@ def check_tableE6(tex, rep):
     fixed = json.load(open(os.path.join(
         ROOT, "e6_unknown_channel_results/codex_isi_fixed_budget_validation.json")))
     snrs = list(sim["snrs"])
-    col_snr = [(2, 8), (3, 12), (4, 16), (5, 20)]   # row: Setup & Relay & 8 & 12 & 16 & 20
+    compact = "Setup & Relay" not in body
+    col_snr = [(1, 8), (2, 12), (3, 16), (4, 20)] if compact else [(2, 8), (3, 12), (4, 16), (5, 20)]
 
     # setup label in tex -> (sim results key, viterbi dict or None)
     setup_map = {
@@ -1050,12 +1089,12 @@ def check_tableE6(tex, rep):
         "Unknown ISI $\\to$ Rayleigh": ("S2: unknown ISI -> Rayleigh", vg_ray),
         "Control: canonical Rayleigh": ("S4 control: Rayleigh -> Rayleigh (canonical)", None),
     }
-    cur_setup = None
+    cur_setup = "Unknown ISI $\\to$ AWGN" if compact else None
     for row in data_rows(body):
         if not row:
             continue
         first = row[0][0].strip()
-        if first:  # new setup group
+        if first and not compact:  # new setup group
             # match against known setup labels (loose contains)
             cur_setup = None
             for k in setup_map:
@@ -1070,7 +1109,7 @@ def check_tableE6(tex, rep):
                     break
         if cur_setup is None or len(row) < 2:
             continue
-        relay = row[1][0].strip()
+        relay = row[0 if compact else 1][0].strip()
         sim_key, vg = setup_map[cur_setup]
         res = sim["results"].get(sim_key, {})
         # map tex relay name -> source
@@ -1114,6 +1153,12 @@ def check_tableE6(tex, rep):
             si = snrs.index(snr)
             src = src_at(si)
             if src is not None:
+                if cur_setup == "Unknown ISI $\\to$ AWGN" and "VITERBI" in relay.upper():
+                    name = "VIT-genie" if "GENIE" in relay.upper() else "VIT-est"
+                    errors, bits = matched_viterbi_counts(name, snr)
+                    if errors == 0:
+                        rep.zero_error_bound(T, f"{relay}/{snr}dB", pub_text, pub_val, bits)
+                        continue
                 rep.cell(T, f"{cur_setup[:16]}/{relay}/{snr}dB", pub_text, pub_val, src)
     rep.finish_table(T, before)
 
@@ -1305,11 +1350,11 @@ def check_E6partial_prose(tex, rep):
     if m:
         rep.cell(T, "MLP flat ref", m.group(1), float(m.group(1)), d["mlp_ref"][0])
     # panel (b): blind CMA per-block convergence failure
-    m = re.search(r"payload BER is \$([\d.]+)\$ at \$L=40\$ and only improves to \$([\d.]+)\$ at \$L=1000\$", tex)
+    m = re.search(r"CMA records \$([\d.]+)\$ at \$L=40\$ and \$([\d.]+)\$ at \$L=1000\$", tex)
     if m and pbc:
         rep.cell(T, "CMA/L=40", m.group(1), float(m.group(1)), pbc[40][0])
         rep.cell(T, "CMA/L=1000", m.group(2), float(m.group(2)), pbc[1000][0])
-    m = re.search(r"against the \$([\d.]+)\$ it achieves when given a \$20\{,\}000\$-symbol block", tex)
+    m = re.search(r"versus its \$([\d.]+)\$ long-block reference", tex)
     if m:
         rep.cell(T, "CMA/20k-block ref", m.group(1), float(m.group(1)), d["cma_ref"][0])
     rep.finish_table(T, before)
@@ -1328,11 +1373,11 @@ def check_E6composite_prose(tex, rep):
     if m:
         rep.cell(T, "MLP-169/20dB", m.group(1) + "e-3", float(m.group(1)) * 1e-3,
                  sm["MLP-169"][0][s20])
-    m = re.search(r"\(\$([\d.]+)\$ vs\.\\ \$([\d.]+)\$ at 8 dB\) and converges", tex)
+    m = re.search(r"\(\$([\d.]+)\$ vs\.\\ \$([\d.]+)\$ at 8 dB\) and both round", tex)
     if m:
         rep.cell(T, "Viterbi-diff/8dB", m.group(1), float(m.group(1)), sm["Viterbi-diff"][0][s8])
         rep.cell(T, "MLP-169/8dB", m.group(2), float(m.group(2)), sm["MLP-169"][0][s8])
-    m = re.search(r"indistinguishable at \$([\d.]+)\$ each at 20 dB", tex)
+    m = re.search(r"both round to \$([\d.]+)\$ at 20 dB", tex)
     if m:
         rep.cell(T, "MLP-169/20dB (tie)", m.group(1), float(m.group(1)), sm["MLP-169"][0][s20])
         rep.cell(T, "Viterbi-diff/20dB (tie)", m.group(1), float(m.group(1)), sm["Viterbi-diff"][0][s20])
@@ -1344,7 +1389,7 @@ def check_E6composite_prose(tex, rep):
     if m:
         rep.cell(T, "MLP-large/8dB", m.group(1), float(m.group(1)), sm["MLP-large"][0][s8])
         rep.cell(T, "MLP-169/8dB (cmp)", m.group(2), float(m.group(2)), sm["MLP-169"][0][s8])
-    m = re.search(r"ending at the identical \$([\d.]+)\$ at 20 dB", tex)
+    m = re.search(r"ending at a rounded \$([\d.]+)\$ at 20 dB", tex)
     if m:
         rep.cell(T, "MLP-large/20dB", m.group(1), float(m.group(1)), sm["MLP-large"][0][s20])
     rep.finish_table(T, before)
@@ -1668,10 +1713,10 @@ def check_mmse_monotonicity_prose(tex, rep):
     if not det:
         return rep.skip(T, "isi_complex not in the detail JSON")
 
-    i = tex.find("is an artefact of the metric, not the equalizer")
+    i = tex.find("For the QPSK linear-MMSE detail run")
     if i < 0:
         return rep.skip(T, "monotonicity sentence not found in tex")
-    stop = tex.find("The conclusion is unaffected", i)
+    stop = tex.find("These measurements do not imply", i)
     if stop < 0:
         return rep.skip(T, "no closing clause after the monotonicity sentence")
     nums = [float(x) for x in re.findall(r"[-+]?\d+\.\d+", tex[i:stop])]
@@ -1749,7 +1794,8 @@ PROOF_COPIES = {
     "interferer sum": (r"0\.910", 2),
     "flipped amplitude": (r"0\.152", 2),
     "unknown-ISI relay params": (r"\b170\b", 2),
-    "channel zeros": (r"0\.707", 2),
+    # No fixed-channel zero is used to explain the random nonlinear cascade.
+    "local BCJR endpoint": (r"relay-output", 2),
 }
 
 
