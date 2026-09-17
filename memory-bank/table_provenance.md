@@ -86,7 +86,7 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | Corrected composite AF, fixed budget |
 | reproduce | `python scripts/codex_composite_af_validation.py` |
 | data file | `e6_unknown_channel_results/codex_composite_af_validation.json` |
-| data commit | `72c8054` 2026-09-17 (Gilzuk) |
+| data commit | `6e1765d` 2026-09-17 (Gilzuk) |
 | provenance | ok |
 
 ## `fig:figE6comp non-AF curves`

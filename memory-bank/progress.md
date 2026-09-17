@@ -415,3 +415,20 @@ the prefixed rerun as an auditable cross-check.  Resolved the verifier's
 scientific-notation tolerance and strict upper-bound logic without weakening
 coverage.  Full tests and the 527-cell verifier are green; local TeX tooling
 remains unavailable.
+
+## 2026-09-17: professor handover PR #123
+
+Completed the final scoped theory, citation, internal-consistency, and writing
+review on `codex_professor_handover`, then opened
+[PR #123](https://github.com/Gilzuk/relaynet2/pull/123). The thesis and clean
+Overleaf bundle compile to 120 pages; the report and reusable fix-guidelines
+prompt are in `docs/`. Local checks: 299 tests passed, table verifier reported
+526 cells and 0 inconsistencies, and provenance audit was clean.
+
+PR CI first found that the composite-AF provenance test depended on mixed
+working-tree line endings and bit-exact SciPy confidence intervals. Source
+fingerprints now use canonical LF bytes; the interval regression allows a
+tight cross-platform floating-point tolerance. Commit `6e1765d` passed GitHub
+CI run 490. Only the composite-AF comparison was newly run; historical result
+arrays were preserved. The generated table provenance ledger identifies
+`6e1765d` as the source/data commit.

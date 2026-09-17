@@ -1,6 +1,24 @@
 # Active Context (update this file first, every session)
 
-_Last updated: 2026-09-15_
+_Last updated: 2026-09-17_
+
+### Latest (2026-09-17): professor handover PR #123
+
+The final submission-readiness pass and bounded fixes are on
+`codex_professor_handover`, opened as [PR #123](https://github.com/Gilzuk/relaynet2/pull/123).
+The manuscript aligns claims with measured conditions, fixes theory/reference
+issues, regenerates figures and outputs, and includes the review report and
+reusable fix-guidelines prompt. The composite-AF comparison is the only newly
+rerun result; historical arrays remain preserved.
+
+GitHub CI initially caught two portability defects in the new validation
+provenance tests: mixed historical source line endings and overly strict
+cross-SciPy interval equality. Fingerprints now hash LF-canonical source bytes,
+and the confidence-interval check uses a tight numeric tolerance. Code commit
+`6e1765d` passed GitHub CI (run 490); local validation is 299 tests, 526 table
+cells with 0 inconsistencies, and a clean provenance audit. The manuscript and
+clean Overleaf bundle both built to 120 pages. The branch also includes the
+refreshed generated provenance ledger and this status update.
 
 ### Latest (2026-09-15): final consistency rerun and manuscript fixes
 
