@@ -4,10 +4,10 @@
   "protocol": "original composite AF seeds and bit budget; no retraining",
   "interval": "Student-t over 10 independent trial BERs; not repeated seed copies",
   "source_sha256": {
-    "scripts/codex_composite_af_validation.py": "7d0b1c5a158d1cc40ddbbb488aa451fad8f9f223d8738dee455e5dbf72b74735",
-    "e6_composite_ported.py": "cebf425766a4405314d24269ad5e3df28acbd673f4a2fc879f8bdb8041e66f6b",
-    "relaynet/channels/e6_channels.py": "49a4eb157bda5afc3694f3cd2e841267970d7e51cd5f80fba1ceaf9e16b075bb",
-    "relaynet/relays/af.py": "e689daf7c78f0465ed0ae5c0dc79e834ed9eee1a19bb2045d3e911e4edf86fcf"
+    "scripts/codex_composite_af_validation.py": "d2365ebe0222072d30160758f4b88879954d5091f3563415fa0c8fd9321ca37a",
+    "e6_composite_ported.py": "671d551ae8179a2bde6e86646f77057e053036a44e639ed78fe56864cae98b60",
+    "relaynet/channels/e6_channels.py": "d5041bd61b4176aced4f9283b8e71d1d2ebfdfa669d48e787c629502fde4dc88",
+    "relaynet/relays/af.py": "5fe55f4a4abbebb074c9f869617f7463115cb728a94217ece5803d0f4efdc3e5"
   },
   "points": {
     "0": {

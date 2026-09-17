@@ -42,7 +42,9 @@ def main():
         print(snr, points[str(snr)]["mean"], flush=True)
     sources = ["scripts/codex_composite_af_validation.py", "e6_composite_ported.py",
                "relaynet/channels/e6_channels.py", "relaynet/relays/af.py"]
-    hashes = {p: hashlib.sha256((ROOT / p).read_bytes()).hexdigest()
+    # Hash canonical LF bytes so the provenance is stable across Git checkout
+    # line-ending settings (including files with mixed historical endings).
+    hashes = {p: hashlib.sha256((ROOT / p).read_bytes().replace(b"\r\n", b"\n")).hexdigest()
               for p in sources}
     result = {"measured_at": "destination, excluding differential reference bit",
               "noise_convention": "Es=1; real-axis variance=N0/2; complex total=N0",

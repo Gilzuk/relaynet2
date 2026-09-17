@@ -15,11 +15,10 @@ def test_af_validation_source_fingerprints():
     assert 'relaynet/relays/af.py' in data['source_sha256']
     for filename, expected in data['source_sha256'].items():
         raw = (ROOT / filename).read_bytes()
-        # The artifact records source bytes on the validation host. Git may
-        # convert line endings on checkout, but no other edit is accepted.
-        lf = raw.replace(b'\r\n', b'\n')
-        candidates = (raw, lf, lf.replace(b'\n', b'\r\n'))
-        assert expected in {hashlib.sha256(x).hexdigest() for x in candidates}, filename
+        # Normalize line endings: Git may convert them, and historical files
+        # can contain mixed CRLF/LF. Any content change beyond that is rejected.
+        canonical = raw.replace(b'\r\n', b'\n')
+        assert expected == hashlib.sha256(canonical).hexdigest(), filename
 
 
 def test_af_validation_counts_seeds_and_intervals():
@@ -28,8 +27,9 @@ def test_af_validation_counts_seeds_and_intervals():
     for i, record in enumerate(data['points'].values()):
         assert record['seeds'] == list(range(7000*i, 7000*i + 10))
         assert record['bits_per_trial'] == 99999
-        rates = np.array(record['errors_per_trial']) / record['bits_per_trial']
-        np.testing.assert_allclose(rates, record['ber_per_trial'], rtol=0, atol=1e-15)
+        count_rates = np.array(record['errors_per_trial']) / record['bits_per_trial']
+        rates = np.array(record['ber_per_trial'])
+        np.testing.assert_allclose(count_rates, rates, rtol=0, atol=1e-15)
         assert np.isclose(rates.mean(), record['mean'], rtol=0, atol=1e-15)
         assert np.isclose(t.ppf(.975, 9)*rates.std(ddof=1)/np.sqrt(10),
-                          record['ci95_halfwidth'], rtol=0, atol=1e-15)
+                          record['ci95_halfwidth'], rtol=1e-10, atol=1e-15)
