@@ -52,9 +52,12 @@ studies examine selected ISI/composite channels, finite-pilot and blind
 receivers, and finite-length coded forwarding.
 
 The fixed three-tap BPSK MLP has BER 0.0065 at 8 dB versus matched genie MLSE
-0.001354. Required-SNR penalties depend on the target (0.26–2.53 dB at the stated
-targets), not a fixed offset. The 16-dB MLP confirmation records 36 errors in
-300M bits; the 18–20-dB MLP tail is not validated.
+0.001354, and 1.20e-7 at 16 dB versus below 3.0e-8 for the same detector at a
+predeclared 1e8 bits. Matched MLSE therefore leads at every point where both
+are resolved, and the required-SNR penalty grows with the target (0.26–2.53 dB
+at the stated targets) rather than holding at a fixed offset. The 16-dB MLP
+confirmation records 36 errors in 300M bits; the 18–20-dB MLP tail is not
+validated.
 
 The QPSK BCJR study measures relay-output BER only; it is not an end-to-end
 BCJR-versus-MLP comparison. Zero observed errors are insufficient data for a

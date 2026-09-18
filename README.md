@@ -34,9 +34,19 @@ The following four groups organize separate experiments, not a one-factor-at-a-t
 | Layer | Conditions | Classical comparator | Result |
 |---|---|---|---|
 | 1 | Memoryless, known channel, perfect CSI | Symbol-wise DF, zero parameters | **Classical wins.** DF `0.1218` vs the MLP's `0.1229` at 8 dB — the learned relay matches DF, at 169 parameters against none |
-| 2 | + 3-tap ISI, CSI still perfect | Viterbi MLSE with exact taps | **Split.** DF rises from `0.1802` at 8 dB to `0.2457` at 20 dB; the MLP restores the link (`0.0065`) but genie MLSE records 0.001354 at 8 dB, with a target-dependent required-SNR gap |
+| 2 | + 3-tap ISI, CSI still perfect | Viterbi MLSE with exact taps | **Classical wins, by a widening margin.** DF rises from `0.1802` at 8 dB to `0.2457` at 20 dB; the MLP restores the link (`0.0065` at 8 dB) but genie MLSE records `0.001354` there, and `<3.0e-8` at 16 dB against the MLP's `1.20e-7`. The required-SNR penalty grows with the target: `+0.26` dB at BER 10⁻¹, `+1.18` at 10⁻², `+1.88` at 10⁻³, `+2.53` at 10⁻⁴ — not a fixed offset |
 | 3 | + finite pilot budget | Pilot-aided LS estimate, then MLSE | **Crossover.** At 10 dB LS+MLSE holds `0.0283` on 200 pilots and `0.0335` on 20; by 10 pilots it degrades to `0.0545` and the pilot-free MLP leads |
 | 4 | + unseen realization from the trained family, per block | CMA blind equalization | **Learned relay wins.** MLP `0.00262` vs CMA `0.00329` at 20 dB; decision-directed blind MLSE is unstable |
+
+> **Superseded data in the tree.** `e6_unknown_channel_results/e6_viterbi_awgn.npy`
+> holds the *original* genie and pilot-LS Viterbi curves. Those were generated when the
+> real-valued AWGN branch put the whole of N₀ in its single dimension, which is 3.01 dB
+> pessimistic, and they do **not** reproduce under the current code — the stored `0.0072`
+> at 8 dB is `0.001354` on the present convention. The published Viterbi cells now come
+> from `results/e6_matched_protocol.json` and `results/e6_matched_highsnr.json`
+> (`e6_matched_protocol.py`, `e6_matched_highsnr.py`). The old file is retained only as a
+> provenance record; do not compare against it, and note that re-running
+> `e6_viterbi_ported.py` today would overwrite it with correct-convention numbers.
 
 **The boundary of the claim.** The learned relay is trained and tested within the same
 parametric impairment family, so the supported property is *realization-agnostic, not
@@ -53,7 +63,7 @@ measured at the QPSK relay output only, not as an end-to-end benchmark.
 `thesis/chapters/ch04_methods.tex`, §Statistical Significance Testing;
 `thesis/chapters/ch07_unknown_and_mismatch_channels.tex`, §A BER-Optimal Benchmark.</sub>
 
-The compiled thesis is `thesis/main.pdf`; its page count must be checked after rebuilding. The sections below document the
+The compiled thesis is `thesis/main.pdf` (120 pages). The sections below document the
 `relaynet` simulation framework itself.
 
 ---
