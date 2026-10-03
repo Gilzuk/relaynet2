@@ -2,6 +2,28 @@
 
 _Last updated: 2026-10-03_
 
+### Latest (2026-10-03): published to relaynet2-thesis (Overleaf source)
+
+`scripts/overleaf_sync.py --repo` published thesis/ at 49064de (#127 + #128)
+to Gilzuk/relaynet2-thesis. The 2026-09-18 Overleaf-side commit only re-added
+the eight superseded `_ch*.tex` drafts (not included by main.tex); the
+regenerated tree drops them again, so nothing from Overleaf needed porting.
+At the author's request every Claude-authored commit in relaynet2-thesis
+(main and the two overleaf-2026-09-* branches) was rewritten to
+"Gil Zukerman <gil.zukerman@gmail.com>" and force-pushed; content unchanged,
+main now be5ec32. Consequences: (1) a container clone must not keep an old
+local `overleaf-dist` -- delete it so ensure_branch() re-adopts thesis-repo/main;
+(2) Overleaf's GitHub link last synced a pre-rewrite commit, so its next pull
+may need Menu -> Sync -> GitHub -> Unlink, relink, pull (no Overleaf edits
+exist). Set `git config user.name/user.email` to the author before publishing so
+generated commits are not authored by the agent. The `overleaf-dist` mirror on
+origin (8ed4228) predates this and was not updated.
+Check: a clean checkout of relaynet2-thesis main builds with latexmk -xelatex
+to 121 pages, no undefined references, text identical to the shipped thesis.pdf.
+Plan: finish the review in relaynet2, republish after each merge, and pull
+once in Overleaf at the end.
+
+
 ### Latest (2026-10-03): exact I/Q MLSE factorization + scope wording patch
 
 Author-supplied patch applied: new ch02 paragraph `sec:iq-mlse-factorization`
