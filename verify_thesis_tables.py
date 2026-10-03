@@ -238,7 +238,8 @@ MIN_CELLS = {
     "tbl:table2": 54, "tbl:layers": 15, "tbl:table8": 48,
     # The unvalidated 20-dB MLP bound is intentionally no longer a numeric cell.
     "tbl:tableE6": 19, "tbl:tableE6flat": 24, "tbl:tableE6qpsk": 20,
-    "prose:E6blind": 9, "prose:E6partial": 13, "prose:E6composite": 6,
+    # E6partial 13 -> 12 (2026-10-03): the 10-pilot sentence no longer restates the MLP reference.
+    "prose:E6blind": 9, "prose:E6partial": 12, "prose:E6composite": 6,
     "tbl:table34": 30, "tbl:table37": 6, "tbl:table38": 10,
     "tbl:table39": 30, "tbl:table40": 12, "tbl:table41": 15,
     "tbl:table42": 27, "tbl:table43": 18, "tbl:table44": 20,
@@ -1328,7 +1329,7 @@ def check_E6partial_prose(tex, rep):
     m = re.search(r"payload BER \$([\d.]+)\$ at 800 pilots", tex)
     if m:
         rep.cell(T, "Viterbi/800 pilots", m.group(1), float(m.group(1)), pa[800][0])
-    m = re.search(r"down to \$([\d.]+)\$ at 20 pilots", tex)
+    m = re.search(r"(?:down to|and) \$([\d.]+)\$ at 20 pilots", tex)
     if m:
         rep.cell(T, "Viterbi/20 pilots", m.group(1), float(m.group(1)), pa[20][0])
     m = re.search(r"MLP's pilot-free \$([\d.]+)\$", tex)
@@ -1338,6 +1339,9 @@ def check_E6partial_prose(tex, rep):
     if m:
         rep.cell(T, "Viterbi/10 pilots", m.group(1), float(m.group(1)), pa[10][0])
         rep.cell(T, "MLP ref (10-pilot cmp)", m.group(2), float(m.group(2)), d["mlp_ref"][0])
+    m = re.search(r"At 10 pilots its BER is \$([\d.]+)\$", tex)
+    if m:
+        rep.cell(T, "Viterbi/10 pilots", m.group(1), float(m.group(1)), pa[10][0])
     m = re.search(r"at 5 pilots it (?:collapses to|reaches) \$([\d.]+)\$", tex)
     if m:
         rep.cell(T, "Viterbi/5 pilots", m.group(1), float(m.group(1)), pa[5][0])
@@ -1346,7 +1350,7 @@ def check_E6partial_prose(tex, rep):
         rep.cell(T, "Viterbi/5 pilots (CI ctx)", m.group(1), float(m.group(1)), pa[5][0])
         rep.cell(T, "Viterbi CI/5 pilots", m.group(2), float(m.group(2)), pa[5][1])
         rep.cell(T, "Viterbi CI/50 pilots", m.group(3), float(m.group(3)), pa[50][1])
-    m = re.search(r"(?:flat across the entire sweep at|MLP remains at) \$([\d.]+)\$", tex)
+    m = re.search(r"(?:flat across the entire sweep at|MLP (?:reference )?remains at) \$([\d.]+)\$", tex)
     if m:
         rep.cell(T, "MLP flat ref", m.group(1), float(m.group(1)), d["mlp_ref"][0])
     # panel (b): blind CMA per-block convergence failure

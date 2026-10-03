@@ -2,6 +2,25 @@
 
 _Last updated: 2026-10-03_
 
+### Latest (2026-10-03): exact I/Q MLSE factorization + scope wording patch
+
+Author-supplied patch applied: new ch02 paragraph `sec:iq-mlse-factorization`
+(for real taps and circular AWGN, joint QPSK MLSE splits exactly into two binary
+trellises, 2^{L+1} vs 2*4^L multiplications per symbol); ch07 cost convention,
+crossover and tbl:joint-memory caption now say the 2M^L count is the implemented
+joint trellis, not a lower bound (factorized crossover L~5.70, 256 vs 208 at
+L=7); pilot-sweep prose reframed as a measured plug-in LS-MLSE crossover, not
+an estimation-variance cliff; ch03/ch09 no longer claim the two studies measure
+a common boundary or distance; ch04 equal-parameter sentence rewritten;
+frontmatter, Hebrew abstract, ch08 and appendix aligned. "Retrained for each
+tap count" checked against joint_latency_memory.py / joint_memory_precision.py
+(train_mlp per (L, window, seed)). verify_thesis_tables.py: pilot-sweep regexes
+follow the new wording; E6partial floor 13->12 (10-pilot sentence no longer
+restates the MLP reference). Checks: 525 cells, 0 inconsistencies; provenance
+audit clean; thesis/main.pdf rebuilt at 121 pages (was 120); no undefined
+references. No numbers or data changed.
+
+
 ### Latest (2026-10-03): pre-submission theory-review fix patch
 
 A read-only theory review against standard references (Proakis & Salehi,

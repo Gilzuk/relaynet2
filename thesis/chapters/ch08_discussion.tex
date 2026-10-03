@@ -56,7 +56,7 @@ Hybrid switching uses the operating SNR and an empirical threshold. Threshold es
 
 Protocol scheduling, readiness and computation are separate costs. A symmetric window needs future samples; block decoding needs a frame; half-duplex forwarding still spends channel uses on both hops. Readiness may overlap the listening phase, but that is not a measured end-to-end latency saving.
 
-In Section~\ref{sec:joint-latency-memory}, no BER difference is resolved among the tested traceback settings. A three-symbol MLSE setting has less look-ahead than the five-symbol windowed relay. The fixed network's multiplication count crosses the declared full-state MLSE count between three and five taps, while MLSE remains more accurate. This is an arithmetic comparison under the stated implementation convention, not a hardware latency crossover.
+In Section~\ref{sec:joint-latency-memory}, no BER difference is resolved among the tested traceback settings. A three-symbol MLSE setting has less look-ahead than the five-symbol windowed relay. The network's multiplication count crosses the implemented joint-trellis count between three and five taps, while MLSE remains more accurate. Real-tap QPSK permits exact binary-axis factorization, giving a smaller classical count and a later analytical crossover. Neither comparison establishes a hardware latency advantage.
 
 Neither the learned relay nor the canonical experiments demonstrate online adaptation. AF's gain is recalculated from block power, and DF requires no training; they must not be described as fixed-SNR baselines.
 

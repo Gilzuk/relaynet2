@@ -1,5 +1,8 @@
 # Progress — E6 Porting Checklist
 
+Session note (2026-10-03, later): exact I/Q MLSE factorization paragraph and
+scope-wording patch applied (see activeContext); thesis 121 pages.
+
 Session note (2026-10-03): pre-submission theory-review fix patch applied to
 the thesis (7 wording/citation items: Proakis Ch.13 pinpoint, Leshno-1993 UAT
 attribution, AF readiness qualification in tbl:table41, equal-parameter claim

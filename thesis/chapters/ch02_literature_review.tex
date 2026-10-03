@@ -301,6 +301,15 @@ posteriors, so the two optimise different criteria and neither dominates the oth
 shift register has a $2^{K-1}$-state trellis. The principal coded study uses $k=1$, $n=2$, $K=3$ and obtains
 rates $2/3$ and $3/4$ from that mother code by puncturing. A separate code-strength control also evaluates $K=5$ and $K=7$.
 
+\paragraph{Exact I/Q separation for real-tap QPSK ISI.}\label{sec:iq-mlse-factorization}
+For real-valued channel taps and circular white Gaussian noise, the squared-distance MLSE metric \cite{Forney1972MLSE,ProakisSalehi2008DigitalComm} separates:
+\begin{equation}\label{eq:iq-mlse-factorization}
+\sum_n |y_n-(h*x)_n|^2
+=\sum_n \bigl(y_{I,n}-(h*x_I)_n\bigr)^2
++\sum_n \bigl(y_{Q,n}-(h*x_Q)_n\bigr)^2.
+\end{equation}
+For an unrestricted QPSK sequence search, the two binary-axis sequences can therefore be minimized separately. Two binary trellises replace the joint QPSK trellis exactly, not by reduced-state approximation. Each has $2^{L-1}$ states and $2^L$ branches for $L$ real taps. With precomputed expected samples and one multiplication per real squared residual, the combined metric cost is $2^{L+1}$ multiplications per QPSK symbol, versus $2\,4^L$ for the joint implementation. Both counts exclude additions, comparisons and traceback. This separation applies to the channel equalizer preceding code decoding; it does not imply separation of a joint code-constrained search, and does not generally hold for complex taps or coupled noise.
+
 A code's rate $R = k/n$ and the constellation size $M$ together set the spectral efficiency
 
 \begin{equation}\protect\phantomsection\label{eq:spectral-efficiency}{\eta = R \cdot \log_2 M \quad \text{[bits/symbol]}}\end{equation}
