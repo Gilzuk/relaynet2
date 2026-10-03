@@ -1,6 +1,30 @@
 # Active Context (update this file first, every session)
 
-_Last updated: 2026-09-17_
+_Last updated: 2026-10-03_
+
+### Latest (2026-10-03): pre-submission theory-review fix patch
+
+A read-only theory review against standard references (Proakis & Salehi,
+Goldsmith, Forney 1972, BCJR, Laneman 2004, Kay, UAT literature) found no
+critical formula errors; seven wording/citation fixes were applied:
+(1) the Rayleigh BPSK closed-form pinpoint `Eq.~14-4-15` (older solo-Proakis
+numbering) now cites 5th-edition Ch.~13; (2) the universal-approximation
+sentence now attributes sigmoidal/bounded-nonconstant/non-polynomial activations
+to Cybenko/Hornik/Leshno-1993 respectively, with a new `Leshno1993UAT` bib
+entry; (3) tbl:table41's AF/DF zero-buffer row is qualified: it describes the
+ideal symbol-wise rule, while the implemented AF block-empirical gain is not
+symbol-causal; (4) ch04's equal-parameter claim softened to "raw
+learnable-parameter count as a first-order explanation"; (5) the pilot-budget
+appendix heading now says "between twenty and ten pilots, severe degradation at
+five"; (6) ch07's 64-operation Viterbi figure now states its counting
+convention (8 branch metrics x ~8 ops, broader than the 2M^L MAC convention of
+sec:joint-latency-memory); (7) the Mamba "more expressive than Wiener/matched
+filter" claim reworded to "more flexible than a fixed low-order linear filter".
+
+Checks: verify_thesis_tables.py all cells match; provenance audit clean;
+`latexmk -xelatex` rebuilt thesis/main.pdf at 120 pages (unchanged), no
+undefined citations. No simulation data or committed numbers changed.
+
 
 ### Latest (2026-09-17): professor handover PR #123
 

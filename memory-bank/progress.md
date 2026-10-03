@@ -1,5 +1,12 @@
 # Progress — E6 Porting Checklist
 
+Session note (2026-10-03): pre-submission theory-review fix patch applied to
+the thesis (7 wording/citation items: Proakis Ch.13 pinpoint, Leshno-1993 UAT
+attribution, AF readiness qualification in tbl:table41, equal-parameter claim
+softened, pilot-crossover heading corrected, Viterbi 64-op convention stated,
+Mamba expressiveness reworded). verify_thesis_tables.py clean, provenance audit
+clean, main.pdf rebuilt at 120 pages. No data or committed numbers changed.
+
 Branch: `copilot/fix-bug-in-data-processing`. Reference spec: `experiments-standalone/PORTING.md`.
 
 Session note (2026-09-04): replaced the Overleaf sync. `git subtree push
