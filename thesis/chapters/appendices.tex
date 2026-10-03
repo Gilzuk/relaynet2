@@ -238,7 +238,7 @@ MLSE maintains $M^{L-1}$ states and evaluates $M^L$ branch metrics for channel l
 
 CMA is a blind equalizer for constant-modulus signals \cite{Godard1980SelfRecovering,TreichlerAgee1983CMA}. The measured random composite family also contains nonlinearity and phase uncertainty, so the zeros of one fixed linear tap vector do not establish invertibility or convergence for the whole cascade. The observed CMA and decision-directed MLSE results are implementation-specific. Documented convergence and decision-feedback issues \cite{Ding1991IllConvergence,RaheliPolydorosTzou1995PSP} motivate possible explanations but do not identify the cause of these measurements.
 
-\subsection{The pilot-budget crossover: reliable at ten pilots, collapse at five}
+\subsection{The pilot-budget crossover: between twenty and ten pilots, with severe degradation at five}
 
 A three-tap least-squares fit can be identifiable from five pilots if its design matrix has full column rank. For a correctly specified linear model with white noise, its covariance is $\sigma^2(\mathbf X^H\mathbf X)^{-1}$ \cite{Kay1993Estimation}; the simplification $\sigma^2 L/N_p$ additionally requires suitably normalized orthogonal pilot columns. The nonlinear composite channel need not satisfy that model. The observed small-pilot degradation is therefore not a measured rank threshold or an unbounded-error theorem. Other estimators, including meta-learned demodulation \cite{ParkSimeone2021MetaDemod}, are not benchmarked here.
 

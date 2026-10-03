@@ -47,7 +47,7 @@ Applying machine learning to physical-layer wireless communication has gained si
 
 \subsection{Theoretical Basis: Universal Approximation and Denoising}\label{sec:theoretical-basis-universal-approximation-and-denoising}
 
-The theoretical justification for applying neural networks to relay signal processing rests on two pillars. First, \textbf{universal approximation} results \cite{Cybenko1989UAT,Hornik1991UAT,GoodfellowBengioCourville2016DeepLearning} show that feedforward networks with suitable non-polynomial activations can approximate continuous functions on compact domains to arbitrary accuracy, given sufficient width. This existence result does not guarantee finite-sample learning, optimization, or generalization. For relay denoising, the target function maps noisy observations to clean transmitted symbols:
+The theoretical justification for applying neural networks to relay signal processing rests on two pillars. First, \textbf{universal approximation} results show that feedforward networks can approximate continuous functions on compact domains to arbitrary accuracy, given sufficient width: for sigmoidal activations \cite{Cybenko1989UAT}, for bounded nonconstant activations \cite{Hornik1991UAT}, and, in the sharpest form, for exactly the non-polynomial activations \cite{Leshno1993UAT}; see also \cite{GoodfellowBengioCourville2016DeepLearning}. This existence result does not guarantee finite-sample learning, optimization, or generalization. For relay denoising, the target function maps noisy observations to clean transmitted symbols:
 
 \begin{equation}\protect\phantomsection\label{eq:optimal-denoiser}{f^*: \mathbb{R}^{2w+1} \to [-1, 1], \quad f^*(y_{i-w}, \dots, y_{i+w}) = \mathbb{E}[x_i \mid y_{i-w}, \dots, y_{i+w}]
 }\end{equation}
@@ -266,7 +266,7 @@ The fading coefficient \(h\) is a circularly-symmetric complex Gaussian random v
 with \(\mathbb{E}[|h|^2] = 1\) (unit average power). The instantaneous SNR after equalization (\(\hat{x} = y/h\)) becomes \(\gamma_h = |h|^2 \cdot \text{SNR}\), which is exponentially distributed.
 
 \subsubsection{Single-hop BER}\label{sec:rayleigh-single-hop-ber}
-Averaging the conditional BER \(P_e(\gamma_h) = Q(\sqrt{2\gamma_h})\) over the exponential distribution of \(\gamma_h\) yields the closed-form \cite[Eq.~14-4-15]{ProakisSalehi2008DigitalComm} (Equation~\ref{eq:rayleigh-ber}):
+Averaging the conditional BER \(P_e(\gamma_h) = Q(\sqrt{2\gamma_h})\) over the exponential distribution of \(\gamma_h\) yields the closed-form \cite[Ch.~13]{ProakisSalehi2008DigitalComm} (Equation~\ref{eq:rayleigh-ber}):
 
 \begin{equation}\protect\phantomsection\label{eq:rayleigh-ber}{P_e^{\text{Rayleigh}} = \frac{1}{2}\left(1 - \sqrt{\frac{\bar{\gamma}}{1 + \bar{\gamma}}}\right)
 }\end{equation}
