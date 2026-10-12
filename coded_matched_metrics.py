@@ -12,7 +12,8 @@ published unweighted metric, on identical channel draws.
 
 Protocol: identical to coded_soft_decision.py -- canonical QPSK/Rayleigh, both
 hops; rate-1/2 K=3 code; 200 information bits per frame, 500 frames per trial;
-100 paired trials per SNR, seed 800000 + 1000*SNR + t; the same MLP classifier,
+30 paired trials per SNR (the first 30 of the published 100; a 100-trial run
+was stopped once its running means had settled), seed 800000 + 1000*SNR + t; the same MLP classifier,
 trained with the same data and seed. Within a trial every scheme sees the same
 information bits and the same hop-1/hop-2 fading and noise. The unweighted rows
 therefore reproduce results/coded_soft_decision.json trial by trial, which is
@@ -61,7 +62,7 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(ROOT, "results", "coded_matched_metrics.json")
 PUBLISHED = os.path.join(ROOT, "results", "coded_soft_decision.json")
 SNRS = [int(s) for s in os.environ.get("CMM_SNRS", "0,4,8,12,16,20").split(",")]
-N_TRIALS = int(os.environ.get("CMM_TRIALS", "100"))
+N_TRIALS = int(os.environ.get("CMM_TRIALS", "30"))
 N_FRAMES = 500
 RELAYS = ["coded_df", "coded_df_m", "soft_df", "soft_df_m",
           "mlp_hard", "mlp_soft", "oracle", "coded_af"]
