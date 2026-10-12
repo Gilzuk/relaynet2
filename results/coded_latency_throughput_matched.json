@@ -1,0 +1,75 @@
+{
+  "spectral_efficiency": {
+    "uncoded_qpsk": 2.0,
+    "coded_qpsk": 0.9900990099009901,
+    "coded_qam16": 1.9801980198019802
+  },
+  "equal_throughput": [
+    {
+      "snr_db": 0,
+      "uncoded_qpsk": 0.3336836,
+      "coded_qam16": 0.44956100000000004,
+      "ratio_uncoded_over_coded": 0.7422432105987842
+    },
+    {
+      "snr_db": 4,
+      "uncoded_qpsk": 0.22159650000000003,
+      "coded_qam16": 0.33248966666666663,
+      "ratio_uncoded_over_coded": 0.6664763516460163
+    },
+    {
+      "snr_db": 8,
+      "uncoded_qpsk": 0.1204802,
+      "coded_qam16": 0.10718966666666668,
+      "ratio_uncoded_over_coded": 1.1239908075716252
+    },
+    {
+      "snr_db": 12,
+      "uncoded_qpsk": 0.055978200000000006,
+      "coded_qam16": 0.015393333333333335,
+      "ratio_uncoded_over_coded": 3.6365223040277175
+    },
+    {
+      "snr_db": 16,
+      "uncoded_qpsk": 0.0239426,
+      "coded_qam16": 0.0019540000000000004,
+      "ratio_uncoded_over_coded": 12.253121801432956
+    },
+    {
+      "snr_db": 20,
+      "uncoded_qpsk": 0.0098041,
+      "coded_qam16": 0.00025,
+      "ratio_uncoded_over_coded": 39.2164
+    }
+  ],
+  "structural_latency_symbols": {
+    "AF / symbol-wise DF": 0,
+    "MLP / Mamba, window 21": 10,
+    "hard block-DF (Viterbi)": 202,
+    "soft block-DF (BCJR)": 202
+  },
+  "compute": {
+    "hard block-DF (Viterbi)": {
+      "total_s": 0.5751883809998617,
+      "us_per_symbol": 11.528207419727055,
+      "msym_per_s": 0.08674375499948077
+    },
+    "soft block-DF (BCJR)": {
+      "total_s": 1.0981284429999505,
+      "us_per_symbol": 22.009228424258435,
+      "msym_per_s": 0.045435486457026636
+    },
+    "MLP hard (756p)": {
+      "total_s": 0.008778844000516983,
+      "us_per_symbol": 0.17594989378516424,
+      "msym_per_s": 5.683436224298069
+    },
+    "MLP soft (756p)": {
+      "total_s": 0.007852630999877874,
+      "us_per_symbol": 0.15738627890884424,
+      "msym_per_s": 6.3537940342257215
+    }
+  },
+  "n_symbols": 49894,
+  "frame_symbols": 202
+}

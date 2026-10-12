@@ -1,0 +1,38 @@
+==============================================================================
+SPECTRAL EFFICIENCY (information bits per channel symbol)
+==============================================================================
+  uncoded QPSK          2.000
+  rate-1/2 QPSK         0.990   <- half the data rate
+  rate-1/2 16-QAM       1.980   <- matches uncoded QPSK
+
+==============================================================================
+EQUAL-THROUGHPUT COMPARISON (both carry ~2 info bits/symbol)
+==============================================================================
+   SNR   uncoded QPSK   rate-1/2 16-QAM   verdict
+   0 dB        0.33368           0.44956   coding LOSES 1.35x
+   4 dB        0.22160           0.33249   coding LOSES 1.50x
+   8 dB        0.12048           0.10719   coding wins 1.12x
+  12 dB        0.05598           0.01539   coding wins 3.64x
+  16 dB        0.02394           0.00195   coding wins 12.25x
+  20 dB        0.00980           0.00025   coding wins 39.22x
+
+==============================================================================
+STRUCTURAL LATENCY (symbols the relay must buffer before it can emit)
+==============================================================================
+relay                            buffer (symbols)   note
+AF / symbol-wise DF                             0   per-symbol, emits immediately
+MLP / Mamba, window 21                         10   w symbols of look-ahead, constant in frame length
+hard block-DF (Viterbi)                       202   whole frame before decode; grows with frame length
+soft block-DF (BCJR)                          202   whole frame, and the backward pass forbids starting early
+
+==============================================================================
+COMPUTE COST (median of 7 runs over 50,000 symbols)
+==============================================================================
+relay                           total (s)    us/symbol    Msym/s
+hard block-DF (Viterbi)             0.575        11.53     0.087
+soft block-DF (BCJR)                1.098        22.01     0.045
+MLP hard (756p)                     0.009         0.18     5.683
+MLP soft (756p)                     0.008         0.16     6.354
+
+Saved results/coded_latency_throughput.json
+exit 0

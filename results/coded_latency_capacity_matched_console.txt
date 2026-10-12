@@ -1,0 +1,33 @@
+==============================================================================
+ROUND-TRIP LATENCY BY (MODULATION, CODE RATE, RELAY STRATEGY)
+==============================================================================
+  qpsk   uncoded  denoise     0 symbols
+  qam16  uncoded  denoise     0 symbols
+  qam16  3/4      denoise    78 symbols
+  qam16  2/3      denoise    86 symbols
+  qam16  1/2      denoise   111 symbols
+  qam16  3/4      blockdf   136 symbols
+  qpsk   3/4      denoise   145 symbols
+  qam16  2/3      blockdf   152 symbols
+  qpsk   2/3      denoise   162 symbols
+  qam16  1/2      blockdf   202 symbols
+  qpsk   1/2      denoise   212 symbols
+  qpsk   3/4      blockdf   270 symbols
+  qpsk   2/3      blockdf   304 symbols
+  qpsk   1/2      blockdf   404 symbols
+
+==============================================================================
+LINK-ADAPTATION ENVELOPE UNDER A 150-SYMBOL ROUND-TRIP BUDGET
+==============================================================================
+   8 dB  blockdf: qpsk uncoded G=0.0000   denoise: qpsk uncoded G=0.0000
+  12 dB  blockdf: qpsk uncoded G=0.0000   denoise: qpsk 3/4    G=0.0126
+  16 dB  blockdf: qam16 3/4    G=0.2637   denoise: qpsk 3/4    G=0.2398
+  20 dB  blockdf: qam16 3/4    G=1.4538   denoise: qpsk 3/4    G=0.7165
+  24 dB  blockdf: qam16 3/4    G=2.3536   denoise: qam16 1/2    G=1.3505
+  28 dB  blockdf: qam16 3/4    G=2.7254   denoise: qam16 3/4    G=2.0440
+  32 dB  blockdf: qam16 3/4    G=2.8642   denoise: qam16 uncoded G=2.6300
+  36 dB  blockdf: qam16 uncoded G=3.4020   denoise: qam16 uncoded G=3.4020
+  40 dB  blockdf: qam16 uncoded G=3.7327   denoise: qam16 uncoded G=3.7327
+
+Saved results/coded_latency_capacity.json
+exit 0
