@@ -248,7 +248,10 @@ def run_ber_trial_phase(relay_name, relay, y_received, bits, snr_db, hop2_seed):
         relay_out = 1.0 - 2.0 * (bit_out < 0).astype(int)  # {-1, +1}
         # Hop 2
         h = np.abs((rng2.standard_normal(N_BITS) + 1j * rng2.standard_normal(N_BITS)) / np.sqrt(2))
-        sigma = 10 ** (-snr_db / 20.0)
+        # Real forwarded signal: N0/2 = 1/(2 gamma) on its one real dimension, the
+        # convention of every other study (and of AF's complex branch above). This
+        # line used 1/gamma until the C7 correction.
+        sigma = 1.0 / np.sqrt(2.0 * 10 ** (snr_db / 10.0))
         n = sigma * rng2.standard_normal(N_BITS)
         y_dest = h * relay_out + n
         # Bit detection
@@ -264,7 +267,10 @@ def run_ber_trial_phase(relay_name, relay, y_received, bits, snr_db, hop2_seed):
         relay_out_norm = relay_out / (np.sqrt(np.mean(relay_out ** 2)) + 1e-12)
         # Hop 2
         h = np.abs((rng2.standard_normal(N_BITS) + 1j * rng2.standard_normal(N_BITS)) / np.sqrt(2))
-        sigma = 10 ** (-snr_db / 20.0)
+        # Real forwarded signal: N0/2 = 1/(2 gamma) on its one real dimension, the
+        # convention of every other study (and of AF's complex branch above). This
+        # line used 1/gamma until the C7 correction.
+        sigma = 1.0 / np.sqrt(2.0 * 10 ** (snr_db / 10.0))
         n = sigma * rng2.standard_normal(N_BITS)
         y_dest = h * relay_out_norm + n
         # Bit detection
@@ -314,7 +320,10 @@ def run_ber_trial_real(relay_name, relay, y_received, bits, snr_db, hop2_seed):
     # Hop 2 (Rayleigh, coherently compensated)
     rng2 = np.random.default_rng(hop2_seed)
     h = np.abs((rng2.standard_normal(N_BITS) + 1j * rng2.standard_normal(N_BITS)) / np.sqrt(2))
-    sigma = 10 ** (-snr_db / 20.0)
+    # Real forwarded signal: N0/2 = 1/(2 gamma) on its one real dimension, the
+    # convention of every other study (and of AF's complex branch above). This
+    # line used 1/gamma until the C7 correction.
+    sigma = 1.0 / np.sqrt(2.0 * 10 ** (snr_db / 10.0))
     n = sigma * rng2.standard_normal(N_BITS)
     y_dest = h * relay_out + n
 
