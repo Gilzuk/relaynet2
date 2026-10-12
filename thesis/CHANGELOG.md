@@ -13,6 +13,32 @@ produced them; it does not cover every number or figure.
 
 ---
 
+## [Pre-submission audit] — 2026-10-12
+
+Final audit of the combined branch (#173) before submission:
+- **Build from clean** (all auxiliary files removed): 0 errors, 0 undefined or
+  multiply defined references and citations, 0 missing glyphs, 0 overfull
+  boxes; 93 underfull lines, all in narrow table cells. One harmless fontspec
+  note (Courier New has no Hebrew script tag; no glyph is missing). BibTeX: 0
+  warnings.
+- **PDF**: 135 pages, 119 countable (folio 119 on PDF p132); every font
+  embedded; title and author metadata set; no `??`, placeholders, LaTeX
+  residue, old appendix letters or revision language in the text.
+- **Bibliography**: 53 cited entries, each with a year, every arXiv entry with
+  its identifier, no duplicates, no missing keys.
+- **Consistency**: both abstracts carry the same figures, all present in the
+  body; headline numbers agree wherever they recur.
+
+### Fixed
+- Five British spellings left after the American pass: randomized (Sec. 4.1.5),
+  normalized (Fig. 4.2 caption), summarized and favors (Ch. 5), centered
+  (Appendix 9.6).
+
+The title pages still read September 2026 (English) and ספטמבר 2026 (Hebrew):
+the author's decision.
+
+---
+
 ## [Reply cross-checked against the thesis] — 2026-10-12
 
 The reply as the author pasted it was checked claim by claim against this build:

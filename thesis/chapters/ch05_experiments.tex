@@ -3,7 +3,7 @@
 \section{Experiments summary}\label{sec:experiments-summary}
 
 Two experiments constitute the core of this chapter: the canonical relay comparison (E2) and the parameter-normalization and complexity study (E3), which together answer every canonical hypothesis (H1--H4). A supplementary coded study (Section~\ref{sec:coded-block-df}) departs from the canonical setup within this same chapter, adding a rate-1/2 convolutional code, a block-DF relay and an adaptive modulation-and-coding scheme. The principal contribution (Chapter~\ref{sec:unknown-channels}) is the unknown-channel study (E6), which tests H5.
-The core (E2, E3) and unknown-channel (E6) experimental configurations are summarised in the table below; the supplementary coded study's configuration is described separately in Section~\ref{sec:coded-block-df}.
+The core (E2, E3) and unknown-channel (E6) experimental configurations are summarized in the table below; the supplementary coded study's configuration is described separately in Section~\ref{sec:coded-block-df}.
 
 Each experiment subsection reports the key results inline (BER tables and figures); supporting material and model hyperparameters are collected in the appendices (Appendices~\ref{sec:appendix-b-model-architectures-and-hyperparameters}--\ref{sec:appendix-c-software-architecture}).
 
@@ -184,7 +184,7 @@ SNR (dB) & uncoded DF & coded AF & coded DF & MLP-coded & Mamba-coded \\
 \textbf{Paired high-SNR comparisons resolve different orderings.} Table~\ref{tbl:table37} uses 100 paired trials with the same source bits and channel draws for each relay. At 20~dB both learned relays have lower BER than coded-DF in at least 99 trials, with Wilcoxon $p<10^{-4}$. At 16~dB Mamba-coded wins 68 trials, whereas MLP-coded wins 23 and loses 77; both paired comparisons give $p<10^{-4}$. These results concern the implemented configurations, not all possible coded relays, and with matched decoder metrics the ordering reverses at both points (Section~\ref{sec:coded-matched-metrics}).
 
 \begin{longtable}[]{@{}lccccc@{}}
-\caption[Paired re-measurement of the high-SNR points]{Paired re-measurement of the two high-SNR points of Table~\ref{tbl:table34}, 100 paired trials $\times$ 100{,}000 information bits. ``Diff'' is the mean per-trial BER difference against coded-DF (negative favours the learned relay); ``W/L'' counts trials won/lost; $p$ is Wilcoxon signed-rank. Decoder metrics are unweighted; with matched metrics the ordering reverses (Table~\ref{tbl:coded-matched})}\label{tbl:table37}\tabularnewline
+\caption[Paired re-measurement of the high-SNR points]{Paired re-measurement of the two high-SNR points of Table~\ref{tbl:table34}, 100 paired trials $\times$ 100{,}000 information bits. ``Diff'' is the mean per-trial BER difference against coded-DF (negative favors the learned relay); ``W/L'' counts trials won/lost; $p$ is Wilcoxon signed-rank. Decoder metrics are unweighted; with matched metrics the ordering reverses (Table~\ref{tbl:coded-matched})}\label{tbl:table37}\tabularnewline
 \toprule\noalign{}
 SNR & Relay & BER & Diff vs.\ coded-DF & W/L & $p$ \\
 \midrule\noalign{}

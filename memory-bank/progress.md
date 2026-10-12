@@ -2,6 +2,8 @@ Session note (2026-10-12, independent audit): branch `fix/khina-independent-audi
 
 # Progress — E6 Porting Checklist
 
+Session note (2026-10-12, pre-submission audit): #173 audited (clean build, 119 countable pages, fonts embedded, bibliography complete, numbers consistent); five British spellings fixed; not merged pending approval; title-page date open.
+
 Session note (2026-10-12, combined): #171 (independent recheck) and #172 (author's patch) reviewed and combined on fix/combined-171-172; #171's claims verified against data; K-sweep reply wording refined; 119 countable pages; awaiting the author's approval to merge.
 
 Session note (2026-10-12, author corrections): author's patch applied (bit-wise MAP in Sec. 4.1.5, DF/scalar-MAP wording in Sec. 6.4.1, reply comments 1 and 8 with Transformer counts 26,017/25,408/609 verified, README 119 pages). 119 countable pages.

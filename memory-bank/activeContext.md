@@ -2,6 +2,20 @@
 
 _Last updated: 2026-10-12_
 
+### Latest (2026-10-12, pre-submission audit): #173 audited, not merged
+
+The author asked for a last audit before submission, with no merge. Clean rebuild of
+fix/combined-171-172: 0 errors, undefined or multiply defined refs/cites, missing glyphs
+and overfull boxes (93 underfull lines, all narrow table cells; one harmless fontspec note
+on Courier New's Hebrew script tag); BibTeX 0 warnings; 135 PDF / 119 countable pages; all
+fonts embedded; no ??, placeholders, LaTeX residue, old appendix letters or revision
+language; 53 cited bib entries complete; abstracts and headline numbers consistent (apparent
+mismatches were different quantities, e.g. 0.001356 is Table 5.9's 30-trial value). Spell
+check (pyspellchecker on the PDF text) found five British forms, fixed. Still open for the
+author: title-page date "September 2026" / "ספטמבר 2026" (main.tex lines 330, 364, 462,
+491); the pasted reply differs from the committed one in three sentences (committed ones are
+correct); merge approval for #173, then mirror republish and closing #171/#172.
+
 ### Latest (2026-10-12, combined): #171 and #172 reviewed and combined; awaiting approval
 
 The author asked for draft #171 (another session's independent recheck) and #172 (the
