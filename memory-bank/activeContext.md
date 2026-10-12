@@ -24,7 +24,8 @@ Code-vs-text mismatches found and corrected:
   Appendix G's final-epoch rule is scoped to Chapter 6.
 - Appendix B Table 9.1: MLP/Hybrid Adam on PyTorch CPU, VAE CPU; header fixed.
 - Test counts: 347 tests in 24 modules (Sec. 4.3.4, Appendix C, README).
-Thesis 138 pages; verifier 678 cells; 347 tests; provenance clean.
+Thesis 138 pages; verifier 678 cells; 347 tests; provenance clean. Merged as #160
+(main e26361b); mirror republished at 69a3386, thesis.pdf byte-identical.
 
 ### Latest (2026-10-12, later): Khina round complete except republish and reply
 
