@@ -43,7 +43,12 @@ class CodedDecodeAndForwardRelay(Relay):
         self.decoder = ViterbiCodeDecoder(constraint_length=constraint_length)
         self.frame_symbols = frame_info_bits + self.decoder.num_tail
 
-    def process(self, received_signal):
+    def process(self, received_signal, weights=None):
+        """Decode, re-encode and re-modulate each frame.
+
+        weights : optional per-symbol reliability (e.g. |h|^2 after zero
+        forcing) for the Viterbi metric; None is the unweighted metric.
+        """
         received_signal = np.asarray(received_signal)
         n_frames = len(received_signal) // self.frame_symbols
         usable = n_frames * self.frame_symbols
@@ -55,7 +60,9 @@ class CodedDecodeAndForwardRelay(Relay):
             soft[0::2] = seg.real
             soft[1::2] = seg.imag
 
-            info_hat = self.decoder.decode(soft)
+            info_hat = self.decoder.decode(
+                soft, weights=None if weights is None else
+                np.asarray(weights)[f * self.frame_symbols:(f + 1) * self.frame_symbols])
             coded_hat = self.encoder.encode(info_hat)
             # qpsk_modulate is unit-power by construction (Section~sec:modulation),
             # so no post-hoc power normalization is needed here.

@@ -26,6 +26,8 @@ tables.
 
 import json
 
+import coded_metric as CM
+
 import numpy as np
 
 from ber_metrics import penalty_table
@@ -34,7 +36,8 @@ REF_W, REF_H = 21, 16
 THRESHOLDS = [0.0, 0.25, 0.5, 1.0, 2.0]
 
 
-def main(path="results/coded_min_size.json"):
+def main(path=None):
+    path = path or CM.path("results/coded_min_size.json")
     d = json.load(open(path))
     snrs = d["snr_db"]
     df = np.asarray(d["df_ber"], dtype=float)

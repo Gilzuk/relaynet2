@@ -20,6 +20,8 @@ convention already used for the QPSK-vs-BPSK Eb/N0 note in Chapter 5.
 import json
 import numpy as np
 
+import coded_metric as CM
+
 from relaynet.coding.convolutional import ConvolutionalEncoder, ViterbiCodeDecoder
 from relaynet.relays.coded_df import CodedDecodeAndForwardRelay
 from relaynet.relays.af import AmplifyAndForwardRelay
@@ -35,7 +37,7 @@ N_FRAMES = 500  # 500 * 200 = 100,000 info bits/trial, matching the thesis-stand
 MODULATION = "qpsk"
 
 
-def decode_all_frames(rx_symbols, decoder, frame_symbols):
+def decode_all_frames(rx_symbols, decoder, frame_symbols, weights=None):
     n_frames = len(rx_symbols) // frame_symbols
     info_hats = []
     for f in range(n_frames):
@@ -43,7 +45,9 @@ def decode_all_frames(rx_symbols, decoder, frame_symbols):
         soft = np.empty(2 * frame_symbols, dtype=float)
         soft[0::2] = seg.real
         soft[1::2] = seg.imag
-        info_hats.append(decoder.decode(soft))
+        info_hats.append(decoder.decode(
+            soft, weights=None if weights is None else
+            weights[f * frame_symbols:(f + 1) * frame_symbols]))
     return np.concatenate(info_hats)
 
 
@@ -61,11 +65,11 @@ def run_coded_trial(relay, snr_db, seed, encoder, decoder, frame_symbols):
     coded_bits = np.concatenate(coded_list)
     tx_symbols = qpsk_modulate(coded_bits)
 
-    rx_relay = rayleigh_fading_channel(tx_symbols, snr_db)
-    relay_out = relay.process(rx_relay)
-    rx_dest = rayleigh_fading_channel(relay_out, snr_db)
+    rx_relay, w1 = CM.hop(tx_symbols, snr_db)
+    relay_out = CM.relay_process(relay, rx_relay, w1)
+    rx_dest, w2 = CM.hop(relay_out, snr_db)
 
-    info_hat = decode_all_frames(rx_dest, decoder, frame_symbols)
+    info_hat = decode_all_frames(rx_dest, decoder, frame_symbols, w2)
     n = min(len(info_hat), len(info_bits))
     errors = np.sum(info_hat[:n] != info_bits[:n])
     frame_errors = 0
@@ -94,6 +98,9 @@ def run_uncoded_df_trial(snr_db, seed):
 
 
 def main():
+    if CM.MATCHED:
+        raise SystemExit("Table 34 with matched metrics is coded_matched_metrics.py "
+                         "(it also handles the AF end-to-end metric); run this unweighted.")
     encoder = ConvolutionalEncoder()
     decoder = ViterbiCodeDecoder()
     frame_symbols = FRAME_INFO_BITS + decoder.num_tail

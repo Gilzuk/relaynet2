@@ -1,0 +1,66 @@
+{
+  "n_trials": 30,
+  "n_frames": 500,
+  "results": {
+    "16": {
+      "coded_df": {
+        "ber": 1.0333333333333333e-05,
+        "relay_sym_er": 1.5841584158415843e-05,
+        "repaired_frac": 0.3477083333333334,
+        "fer": 0.0020666666666666667,
+        "bit_err_per_failed_frame": 1.0
+      },
+      "mlp_coded": {
+        "ber": 0.004536333333333333,
+        "relay_sym_er": 0.010601650165016501,
+        "repaired_frac": 0.572110637238116,
+        "fer": 0.42133333333333334,
+        "bit_err_per_failed_frame": 2.1533227848101264
+      },
+      "mlp_coded_wdest": {
+        "ber": 0.006767666666666667,
+        "relay_sym_er": 0.010601650165016501,
+        "repaired_frac": 0.3616402577592379,
+        "fer": 0.5230666666666667,
+        "bit_err_per_failed_frame": 2.587687993882233
+      },
+      "oracle": {
+        "ber": 5e-06,
+        "relay_sym_er": 0.0,
+        "repaired_frac": null,
+        "fer": 0.001,
+        "bit_err_per_failed_frame": 1.0
+      }
+    },
+    "20": {
+      "coded_df": {
+        "ber": 6.666666666666667e-07,
+        "relay_sym_er": 9.900990099009902e-07,
+        "repaired_frac": 0.32666666666666666,
+        "fer": 0.00013333333333333334,
+        "bit_err_per_failed_frame": 1.0
+      },
+      "mlp_coded": {
+        "ber": 0.0010003333333333333,
+        "relay_sym_er": 0.0038475247524752476,
+        "repaired_frac": 0.7400060044604564,
+        "fer": 0.13653333333333334,
+        "bit_err_per_failed_frame": 1.46533203125
+      },
+      "mlp_coded_wdest": {
+        "ber": 0.0024216666666666666,
+        "relay_sym_er": 0.0038475247524752476,
+        "repaired_frac": 0.3705910104649168,
+        "fer": 0.2386,
+        "bit_err_per_failed_frame": 2.0298966191673653
+      },
+      "oracle": {
+        "ber": 3.3333333333333335e-07,
+        "relay_sym_er": 0.0,
+        "repaired_frac": null,
+        "fer": 6.666666666666667e-05,
+        "bit_err_per_failed_frame": 1.0
+      }
+    }
+  }
+}

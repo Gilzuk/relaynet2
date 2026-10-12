@@ -50,6 +50,8 @@ from relaynet.coding.convolutional import ConvolutionalEncoder, ViterbiCodeDecod
 from relaynet.relays.coded_df import CodedDecodeAndForwardRelay
 from relaynet.relays.mlp import MLPQPSKClassifierRelay
 from relaynet.channels.fading import rayleigh_fading_channel
+
+import coded_metric as CM
 from relaynet.modulation.qpsk import qpsk_modulate
 
 from coded_df_experiment import decode_all_frames, FRAME_INFO_BITS
@@ -59,7 +61,7 @@ from coded_learned_relay import WINDOW as MLP_WINDOW
 # the code decodes reliably, so the FER-driven mechanism can be read off
 # directly against the BER ordering.
 SNRS = [20, 24, 28, 32]
-N_TRIALS = 100
+N_TRIALS = CM.trials(100)
 N_FRAMES = 1000  # 1000 * 200 = 200,000 info bits per trial
 
 TRAIN_SNRS_THESIS = [5, 10, 15]
@@ -123,21 +125,33 @@ def run_trial(relay, snr_db, seed, encoder, decoder, frame_symbols, is_oracle=Fa
         for f in range(N_FRAMES)
     ])
     tx = qpsk_modulate(coded)
-    rx_relay = rayleigh_fading_channel(tx, snr_db)
+    rx_relay, w1 = CM.hop(tx, snr_db)
 
     if is_oracle:
         relay.truth = tx
-    relay_out = relay.process(rx_relay)
-    rx_dest = rayleigh_fading_channel(relay_out, snr_db)
+    relay_out = CM.relay_process(relay, rx_relay, w1)
+    rx_dest, w2 = CM.hop(relay_out, snr_db)
 
-    info_hat = decode_all_frames(rx_dest, decoder, frame_symbols)
-    n = min(len(info_hat), len(info_bits))
-    ber = float(np.mean(info_hat[:n] != info_bits[:n]))
+    out = {}
+    for suffix, w in dest_variants(relay, w2):
+        info_hat = decode_all_frames(rx_dest, decoder, frame_symbols, w)
+        n = min(len(info_hat), len(info_bits))
+        ber = float(np.mean(info_hat[:n] != info_bits[:n]))
+        a = info_bits[:N_FRAMES * FRAME_INFO_BITS].reshape(N_FRAMES, FRAME_INFO_BITS)
+        b = info_hat[:N_FRAMES * FRAME_INFO_BITS].reshape(N_FRAMES, FRAME_INFO_BITS)
+        out[suffix] = (ber, float(np.mean(np.any(a != b, axis=1))))
+    return out
 
-    a = info_bits[:N_FRAMES * FRAME_INFO_BITS].reshape(N_FRAMES, FRAME_INFO_BITS)
-    b = info_hat[:N_FRAMES * FRAME_INFO_BITS].reshape(N_FRAMES, FRAME_INFO_BITS)
-    fer = float(np.mean(np.any(a != b, axis=1)))
-    return ber, fer
+
+def dest_variants(relay, w2):
+    """Destination metrics to score. Unweighted: the published metric only.
+    Matched: |h2|^2 for block DF and the oracle; both metrics for the learned
+    relays, whose errors the hop-2 weight does not model."""
+    if w2 is None:
+        return [("", None)]
+    if isinstance(relay, (CodedDecodeAndForwardRelay, OracleRelay)):
+        return [("", w2)]
+    return [("", None), ("_wdest", w2)]
 
 
 def main():
@@ -161,7 +175,9 @@ def main():
         "train_snrs_thesis": TRAIN_SNRS_THESIS,
         "train_snrs_extended": TRAIN_SNRS_EXTENDED,
     }
-    for name in relays:
+    names = [n for n in relays] + ([n + "_wdest" for n in relays if n.startswith("mlp")]
+                                   if CM.MATCHED else [])
+    for name in names:
         results[name] = []
         results[f"{name}_fer"] = []
 
@@ -174,16 +190,17 @@ def main():
             trials = [run_trial(relay, snr_db, 90000 + 7000 * offset + 100 * int(snr_db) + t,
                                 encoder, decoder, frame_symbols, is_oracle)
                       for t in range(N_TRIALS)]
-            ber = float(np.mean([x[0] for x in trials]))
-            fer = float(np.mean([x[1] for x in trials]))
-            results[name].append(ber)
-            results[f"{name}_fer"].append(fer)
-            row += f" {ber:>11.6f}/{fer:<10.4f}"
+            for suffix in trials[0]:
+                ber = float(np.mean([x[suffix][0] for x in trials]))
+                fer = float(np.mean([x[suffix][1] for x in trials]))
+                results[name + suffix].append(ber)
+                results[f"{name + suffix}_fer"].append(fer)
+                row += f" {ber:>11.6f}/{fer:<10.4f}"
         print(row, flush=True)
 
-    with open("results/coded_reliable_regime.json", "w") as fh:
+    with open(CM.path("results/coded_reliable_regime.json"), "w") as fh:
         json.dump(results, fh, indent=2)
-    print("\nSaved results/coded_reliable_regime.json")
+    print(f"\nSaved {CM.path('results/coded_reliable_regime.json')}")
 
 
 if __name__ == "__main__":

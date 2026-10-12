@@ -20,6 +20,8 @@ characterization.
 import json
 import numpy as np
 
+import coded_metric as CM
+
 from relaynet.coding.convolutional import ConvolutionalEncoder, ViterbiCodeDecoder
 from relaynet.relays.coded_df import CodedDecodeAndForwardRelay
 from relaynet.channels.fading import rayleigh_fading_channel
@@ -43,11 +45,11 @@ def run_coded_trial(relay, encoder, decoder, snr_db, seed, frame_symbols):
     ])
     tx = qpsk_modulate(coded)
 
-    rx_relay = rayleigh_fading_channel(tx, snr_db)
-    relay_out = relay.process(rx_relay)
-    rx_dest = rayleigh_fading_channel(relay_out, snr_db)
+    rx_relay, w1 = CM.hop(tx, snr_db)
+    relay_out = CM.relay_process(relay, rx_relay, w1)
+    rx_dest, w2 = CM.hop(relay_out, snr_db)
 
-    info_hat = decode_all_frames(rx_dest, decoder, frame_symbols)
+    info_hat = decode_all_frames(rx_dest, decoder, frame_symbols, w2)
     n = min(len(info_hat), len(info_bits))
     ber = np.mean(info_hat[:n] != info_bits[:n])
 
@@ -74,7 +76,7 @@ def main():
         bers, fers = [], []
         for snr_db in SNRS:
             trial_bers, trial_fers = [], []
-            for t in range(N_TRIALS):
+            for t in range(CM.trials(N_TRIALS)):
                 ber, fer = run_coded_trial(relay, encoder, decoder, snr_db,
                                             10000 * K + 1000 * int(snr_db) + t, frame_symbols)
                 trial_bers.append(ber)
@@ -87,12 +89,16 @@ def main():
 
         results["k_sweep"][f"K{K}"] = {"ber": bers, "fer": fers, "num_states": decoder.num_states}
 
-    with open("results/coded_df_experiment.json") as fh:
-        merged = json.load(fh)
+    out_path = CM.path("results/coded_df_experiment.json")
+    try:
+        with open(out_path) as fh:
+            merged = json.load(fh)
+    except FileNotFoundError:
+        merged = {}
     merged.update(results)
-    with open("results/coded_df_experiment.json", "w") as fh:
+    with open(out_path, "w") as fh:
         json.dump(merged, fh, indent=2)
-    print("\nMerged into results/coded_df_experiment.json")
+    print(f"\nMerged into {out_path}")
 
 
 if __name__ == "__main__":

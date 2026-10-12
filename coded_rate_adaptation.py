@@ -46,12 +46,14 @@ from relaynet.coding.puncturing import PuncturedCode
 from relaynet.coding.bicm import modulate_bits, soft_demap, BITS_PER_SYMBOL
 from relaynet.channels.fading import rayleigh_fading_channel
 
+import coded_metric as CM
+
 SNRS = [8, 12, 16, 20, 24, 28, 32, 36, 40]
 RATES = ["uncoded", "1/2", "2/3", "3/4"]
 MODS = ["qpsk", "qam16"]
 FRAME_INFO_BITS = 200
 N_FRAMES = 200
-N_TRIALS = 100
+N_TRIALS = CM.trials(100)
 
 
 def build(mod, rate, info_bits):
@@ -85,10 +87,12 @@ def run_trial(mod, rate, relay, snr_db, seed, dec):
     tx, _ = modulate_bits(coded, mod)
 
     np.random.seed(seed % (2 ** 31))
-    rx1 = rayleigh_fading_channel(tx, snr_db)
+    rx1, w1 = CM.hop(tx, snr_db)
 
     # ---- relay ----
     soft1 = soft_demap(rx1, mod, len(coded))
+    if w1 is not None:   # matched metric: per-bit reliability |h|^2 of its symbol
+        soft1 = soft1 * CM.bit_weights(w1, BITS_PER_SYMBOL[mod], len(soft1))
     if relay == "denoise" or rate == "uncoded":
         fwd_bits = (soft1 < 0).astype(int)
     else:  # block-DF: decode the code, re-encode, forward
@@ -100,10 +104,12 @@ def run_trial(mod, rate, relay, snr_db, seed, dec):
         ])
     relay_out, _ = modulate_bits(fwd_bits, mod)
 
-    rx2 = rayleigh_fading_channel(relay_out, snr_db)
+    rx2, w2 = CM.hop(relay_out, snr_db)
 
     # ---- destination ----
     soft2 = soft_demap(rx2, mod, len(coded))
+    if w2 is not None:
+        soft2 = soft2 * CM.bit_weights(w2, BITS_PER_SYMBOL[mod], len(soft2))
     if rate == "uncoded":
         info_hat = (soft2 < 0).astype(int)
     else:
@@ -173,7 +179,7 @@ def main():
         envelope[relay] = rows
     results["envelope"] = envelope
 
-    with open("results/coded_rate_adaptation.json", "w") as f:
+    with open(CM.path("results/coded_rate_adaptation.json"), "w") as f:
         json.dump(results, f, indent=2)
     print(f"\nSaved results/coded_rate_adaptation.json  ({time.time()-t0:.0f}s)")
 

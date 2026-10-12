@@ -250,7 +250,7 @@ MIN_CELLS = {
     "arch:relay-param-counts": 5,
     "consistency:proof-copies": 7, "tbl:slicer-floor-inline": 24,
     "prose:qpsk-decomposition": 4, "prose:qpsk-controls": 3, "prose:scalar-map": 7,
-    "prose:af-conventional": 8, "prose:isi-penalty": 18, "tbl:coded-matched": 46, "prose:flat-conclusion": 2,
+    "prose:af-conventional": 8, "prose:isi-penalty": 18, "tbl:coded-matched": 46, "prose:flat-conclusion": 2, "coded-matched-secondary": 40,
     "prose:seed-spread-native": 6,
     "tbl:bcjr-benchmark": 12, "prose:soft-df-calibration": 2,
     "prose:mmse-monotonicity": 12,
@@ -976,6 +976,62 @@ def check_flat_conclusion_prose(tex, rep):
     m = re.search(r"by up to \$([\d.]+)\$ at 0~dB", tex)
     if m:
         rep.cell(T, "phase MLP-DF at 0 dB", m.group(1), float(m.group(1)), diff["phase"][snrs.index(0)])
+    rep.finish_table(T, before)
+
+def check_coded_matched_secondary(tex, rep):
+    """Matched-metric values added to Tables 38, 40, 42, 43 and the coded prose (C4b).
+
+    Sources: results/coded_*_matched.json and results/coded_matched_envelopes.json.
+    """
+    T = "coded-matched-secondary"; before = rep.checked
+    R = lambda f: json.load(open(os.path.join(ROOT, "results", f)))
+    try:
+        em = R("coded_error_mechanism_matched.json")["results"]
+        kq = R("coded_df_experiment_matched.json")
+        lt = {r["snr_db"]: r for r in R("coded_latency_throughput_matched.json")["equal_throughput"]}
+        env = R("coded_matched_envelopes.json")["envelopes"]
+        ms = R("coded_min_size_matched.json")
+    except FileNotFoundError as e:
+        return rep.skip(T, f"missing {e.filename}")
+    # Table 38 matched rows
+    body = table_body(tex, "tbl:table38")
+    snr = None
+    names = {"coded-dfmatched": "coded_df", "mlp-codedweighteddest": "mlp_coded_wdest", "oraclematched": "oracle"}
+    for row in data_rows(body or ""):
+        m = re.match(r"(\d+)\s*dB", row[0][0].strip())
+        if m:
+            snr = m.group(1)
+        key = names.get(re.sub(r"[^a-z0-9-]", "", row[1][0].strip().lower())) if len(row) > 4 else None
+        if key is None or snr not in em:
+            continue
+        src = em[snr][key]
+        if row[2][1] is not None:
+            rep.cell(T, f"t38/{snr}/{key}/relay_sym_er", row[2][0], row[2][1], src["relay_sym_er"])
+        if row[4][1] is not None:
+            rep.cell(T, f"t38/{snr}/{key}/ber", row[4][0], row[4][1], src["ber"])
+    # Table 40 matched columns
+    for row in data_rows(table_body(tex, "tbl:table40") or ""):
+        if len(row) >= 6 and row[0][1] is not None and int(row[0][1]) in lt:
+            r = lt[int(row[0][1])]
+            rep.cell(T, f"t40/{int(row[0][1])}/coded_matched", row[4][0], row[4][1], r["coded_qam16"])
+            rep.cell(T, f"t40/{int(row[0][1])}/gain_matched", row[5][0], row[5][1],
+                     r["uncoded_qpsk"] / r["coded_qam16"])
+    # Tables 42/43 matched block-DF column ("MCS, G")
+    for lab, key, col in (("tbl:table42", "unconstrained", 6), ("tbl:table43", "150", 5)):
+        rows = {r["snr_db"]: r["blockdf"] for r in env[key]}
+        for row in data_rows(table_body(tex, lab) or ""):
+            if len(row) > col and row[0][1] is not None and int(row[0][1]) in rows:
+                g = re.search(r",\s*([\d.]+)\s*$", row[col][0])
+                if g:
+                    rep.cell(T, f"{lab}/{int(row[0][1])}/blockdf_matched", g.group(1), float(g.group(1)),
+                             rows[int(row[0][1])]["goodput"])
+    # prose: K sweep at 8 dB and the coded size-sweep penalty range
+    m = re.search(r"at 8~dB the BER is \$([\d.]+)\$, \$([\d.]+)\$ and \$([\d.]+)\\times10\^\{(-\d+)\}\$ for \$K=3,5,7\$", tex)
+    if m:
+        i8 = kq["snr_db"].index(8)
+        vals = [float(m.group(1)), float(m.group(2)), float(m.group(3)) * 10 ** int(m.group(4))]
+        for v, txt, K in zip(vals, [m.group(1), m.group(2), m.group(3)], ("K3", "K5", "K7")):
+            rep.cell(T, f"ksweep/{K}@8dB", txt, v, kq["k_sweep"][K]["ber"][i8])
     rep.finish_table(T, before)
 
 def check_table40(tex, rep):
@@ -2173,7 +2229,7 @@ def main():
               check_relay_param_counts, check_proof_copies_agree,
               check_slicer_floor, check_qpsk_decomposition_prose, check_scalar_map_prose,
               check_af_conventional_prose, check_isi_penalty_prose,
-              check_coded_matched, check_flat_conclusion_prose,
+              check_coded_matched, check_flat_conclusion_prose, check_coded_matched_secondary,
               check_qpsk_controls_prose, check_bcjr_benchmark,
               check_seed_spread_native_prose,
               check_soft_df_calibration_prose,

@@ -38,6 +38,8 @@ from relaynet.coding.convolutional import ConvolutionalEncoder, ViterbiCodeDecod
 from relaynet.relays.coded_df import CodedDecodeAndForwardRelay
 from relaynet.relays.mlp import MLPQPSKClassifierRelay
 from relaynet.channels.fading import rayleigh_fading_channel
+
+import coded_metric as CM
 from relaynet.modulation.qpsk import qpsk_modulate
 
 from coded_df_experiment import FRAME_INFO_BITS, decode_all_frames
@@ -48,7 +50,7 @@ from coded_learned_relay import (
 )
 
 SNRS = [16, 20]
-N_TRIALS = 100
+N_TRIALS = CM.trials(100)
 N_FRAMES = 500
 
 ALPHABET = np.array([1 + 1j, 1 - 1j, -1 + 1j, -1 - 1j]) / np.sqrt(2)
@@ -81,12 +83,19 @@ def main():
     coded_df = CodedDecodeAndForwardRelay(frame_info_bits=FRAME_INFO_BITS)
     oracle = OracleRelay()
     relays = {"coded_df": coded_df, "mlp_coded": mlp, "oracle": oracle}
+    # Matched metric: the learned relay is also scored with the |h2|^2-weighted
+    # destination metric (it does not model relay errors, so both are reported).
+    variants = {"coded_df": [None], "mlp_coded": [None], "oracle": [None]}
+    if CM.MATCHED:
+        variants = {"coded_df": ["w"], "mlp_coded": [None, "w"], "oracle": ["w"]}
+    keys = [k + ("_wdest" if (v == "w" and k == "mlp_coded") else "")
+            for k in relays for v in variants[k]]
 
     out = {}
     for snr_db in SNRS:
         acc = {k: dict(bit_err=0, bits=0, relay_sym_err=0, syms=0,
                        failed_frames=0, frames=0, bit_err_in_failed=0)
-               for k in relays}
+               for k in keys}
 
         for t in range(N_TRIALS):
             rng = np.random.default_rng(700000 + 1000 * snr_db + t)
@@ -98,12 +107,15 @@ def main():
             tx = qpsk_modulate(coded)
             oracle.truth = tx
 
-            for name, relay in relays.items():
-                np.random.seed((700000 + 1000 * snr_db + t) % (2 ** 31))
-                rx_relay = rayleigh_fading_channel(tx, snr_db)
-                relay_out = relay.process(rx_relay)
-                rx_dest = rayleigh_fading_channel(relay_out, snr_db)
-                info_hat = decode_all_frames(rx_dest, decoder, frame_symbols)
+            for rname, relay in relays.items():
+              np.random.seed((700000 + 1000 * snr_db + t) % (2 ** 31))
+              rx_relay, w1 = CM.hop(tx, snr_db)
+              relay_out = CM.relay_process(relay, rx_relay, w1)
+              rx_dest, w2 = CM.hop(relay_out, snr_db)
+              for v in variants[rname]:
+                name = rname + ("_wdest" if (v == "w" and rname == "mlp_coded") else "")
+                info_hat = decode_all_frames(rx_dest, decoder, frame_symbols,
+                                             w2 if v == "w" else None)
 
                 n = min(len(info_hat), len(info_bits))
                 errs = info_hat[:n] != info_bits[:n]
@@ -140,9 +152,9 @@ def main():
                                  fer=fer, bit_err_per_failed_frame=per_failed)
         out[str(snr_db)] = snr_out
 
-    with open("results/coded_error_mechanism.json", "w") as fh:
+    with open(CM.path("results/coded_error_mechanism.json"), "w") as fh:
         json.dump({"n_trials": N_TRIALS, "n_frames": N_FRAMES, "results": out}, fh, indent=2)
-    print("\nSaved results/coded_error_mechanism.json")
+    print(f"\nSaved {CM.path('results/coded_error_mechanism.json')}")
 
 
 if __name__ == "__main__":

@@ -16,6 +16,8 @@ coded_k_sweep_qpsk.py's docstring for the same scoping note).
 import json
 import numpy as np
 
+import coded_metric as CM
+
 from relaynet.coding.convolutional import ConvolutionalEncoder
 from relaynet.coding.convolutional_qam16 import QAM16CodeDecoder
 from relaynet.relays.coded_df_qam16 import CodedDecodeAndForwardRelayQAM16
@@ -30,7 +32,7 @@ K_VALUES = [3, 5, 7]
 FRAME_INFO_BITS = 200  # + tail (2,4,6) is even for K in {3,5,7} -> whole QAM16 symbols
 
 
-def decode_all_frames_qam16(rx_symbols, decoder, frame_symbols):
+def decode_all_frames_qam16(rx_symbols, decoder, frame_symbols, weights=None):
     n_frames = len(rx_symbols) // frame_symbols
     info_hats = []
     for f in range(n_frames):
@@ -38,7 +40,9 @@ def decode_all_frames_qam16(rx_symbols, decoder, frame_symbols):
         axis_vals = np.empty(2 * frame_symbols, dtype=float)
         axis_vals[0::2] = seg.real
         axis_vals[1::2] = seg.imag
-        info_hats.append(decoder.decode(axis_vals))
+        info_hats.append(decoder.decode(
+            axis_vals, weights=None if weights is None else
+            np.repeat(weights[f * frame_symbols:(f + 1) * frame_symbols], 2)))
     return np.concatenate(info_hats)
 
 
@@ -55,11 +59,11 @@ def run_coded_trial(relay, encoder, decoder, snr_db, seed, frame_symbols):
     ])
     tx = qam16_modulate(coded)
 
-    rx_relay = rayleigh_fading_channel(tx, snr_db)
-    relay_out = relay.process(rx_relay)
-    rx_dest = rayleigh_fading_channel(relay_out, snr_db)
+    rx_relay, w1 = CM.hop(tx, snr_db)
+    relay_out = CM.relay_process(relay, rx_relay, w1)
+    rx_dest, w2 = CM.hop(relay_out, snr_db)
 
-    info_hat = decode_all_frames_qam16(rx_dest, decoder, frame_symbols)
+    info_hat = decode_all_frames_qam16(rx_dest, decoder, frame_symbols, w2)
     n = min(len(info_hat), len(info_bits))
     ber = np.mean(info_hat[:n] != info_bits[:n])
 
@@ -93,7 +97,7 @@ def main():
     print("Uncoded 16-QAM DF reference...")
     unc = []
     for snr_db in SNRS:
-        ber = np.mean([run_uncoded_trial(snr_db, 7000 * int(snr_db) + t) for t in range(N_TRIALS)])
+        ber = np.mean([run_uncoded_trial(snr_db, 7000 * int(snr_db) + t) for t in range(CM.trials(N_TRIALS))])
         unc.append(float(ber))
         print(f"  {snr_db:>5} {ber:.5f}")
     results["qam16_uncoded_df"] = unc
@@ -109,7 +113,7 @@ def main():
         bers, fers = [], []
         for snr_db in SNRS:
             trial_bers, trial_fers = [], []
-            for t in range(N_TRIALS):
+            for t in range(CM.trials(N_TRIALS)):
                 ber, fer = run_coded_trial(relay, encoder, decoder, snr_db,
                                             20000 * K + 1000 * int(snr_db) + t, frame_symbols)
                 trial_bers.append(ber)
@@ -122,12 +126,16 @@ def main():
 
         results["qam16_k_sweep"][f"K{K}"] = {"ber": bers, "fer": fers, "num_states": decoder.num_states}
 
-    with open("results/coded_df_experiment.json") as fh:
-        merged = json.load(fh)
+    out_path = CM.path("results/coded_df_experiment.json")
+    try:
+        with open(out_path) as fh:
+            merged = json.load(fh)
+    except FileNotFoundError:
+        merged = {}
     merged.update(results)
-    with open("results/coded_df_experiment.json", "w") as fh:
+    with open(out_path, "w") as fh:
         json.dump(merged, fh, indent=2)
-    print("\nMerged into results/coded_df_experiment.json")
+    print(f"\nMerged into {out_path}")
 
 
 if __name__ == "__main__":

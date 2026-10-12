@@ -1,0 +1,759 @@
+{
+  "snr_db": [
+    8,
+    12,
+    16,
+    20,
+    24,
+    28,
+    32,
+    36,
+    40
+  ],
+  "source": {
+    "blockdf": "results/coded_rate_adaptation_matched.json",
+    "denoise": "results/coded_rate_adaptation.json (unweighted destination)",
+    "denoise_wdest": "results/coded_rate_adaptation_matched.json"
+  },
+  "n_trials": {
+    "blockdf": 30,
+    "denoise": 100
+  },
+  "envelopes": {
+    "unconstrained": [
+      {
+        "snr_db": 8,
+        "blockdf": {
+          "mod": "qpsk",
+          "rate": "1/2",
+          "latency": 404,
+          "rate_info_bits_per_symbol": 0.9900990099009901,
+          "fer": 0.3308333333333333,
+          "goodput": 0.6625412541254125
+        },
+        "denoise": {
+          "mod": "qpsk",
+          "rate": "1/2",
+          "latency": 212,
+          "rate_info_bits_per_symbol": 0.9900990099009901,
+          "fer": 0.9997,
+          "goodput": 0.00029702970297026433
+        },
+        "denoise_wdest": {
+          "mod": "qpsk",
+          "rate": "1/2",
+          "latency": 212,
+          "rate_info_bits_per_symbol": 0.9900990099009901,
+          "fer": 0.9994999999999999,
+          "goodput": 0.0004950495049505505
+        }
+      },
+      {
+        "snr_db": 12,
+        "blockdf": {
+          "mod": "qpsk",
+          "rate": "2/3",
+          "latency": 304,
+          "rate_info_bits_per_symbol": 1.3201320132013201,
+          "fer": 0.24900000000000003,
+          "goodput": 0.9914191419141914
+        },
+        "denoise": {
+          "mod": "qpsk",
+          "rate": "1/2",
+          "latency": 212,
+          "rate_info_bits_per_symbol": 0.9900990099009901,
+          "fer": 0.8645,
+          "goodput": 0.1341584158415841
+        },
+        "denoise_wdest": {
+          "mod": "qpsk",
+          "rate": "1/2",
+          "latency": 212,
+          "rate_info_bits_per_symbol": 0.9900990099009901,
+          "fer": 0.9235000000000002,
+          "goodput": 0.07574257425742553
+        }
+      },
+      {
+        "snr_db": 16,
+        "blockdf": {
+          "mod": "qam16",
+          "rate": "1/2",
+          "latency": 202,
+          "rate_info_bits_per_symbol": 1.9801980198019802,
+          "fer": 0.23450000000000001,
+          "goodput": 1.5158415841584159
+        },
+        "denoise": {
+          "mod": "qpsk",
+          "rate": "1/2",
+          "latency": 212,
+          "rate_info_bits_per_symbol": 0.9900990099009901,
+          "fer": 0.38939999999999997,
+          "goodput": 0.6045544554455445
+        },
+        "denoise_wdest": {
+          "mod": "qpsk",
+          "rate": "1/2",
+          "latency": 212,
+          "rate_info_bits_per_symbol": 0.9900990099009901,
+          "fer": 0.613,
+          "goodput": 0.3831683168316832
+        }
+      },
+      {
+        "snr_db": 20,
+        "blockdf": {
+          "mod": "qam16",
+          "rate": "1/2",
+          "latency": 202,
+          "rate_info_bits_per_symbol": 1.9801980198019802,
+          "fer": 0.04066666666666666,
+          "goodput": 1.8996699669966997
+        },
+        "denoise": {
+          "mod": "qpsk",
+          "rate": "3/4",
+          "latency": 145,
+          "rate_info_bits_per_symbol": 1.4814814814814814,
+          "fer": 0.34965,
+          "goodput": 0.9634814814814814
+        },
+        "denoise_wdest": {
+          "mod": "qpsk",
+          "rate": "2/3",
+          "latency": 162,
+          "rate_info_bits_per_symbol": 1.3201320132013201,
+          "fer": 0.4466666666666666,
+          "goodput": 0.7304730473047306
+        }
+      },
+      {
+        "snr_db": 24,
+        "blockdf": {
+          "mod": "qam16",
+          "rate": "3/4",
+          "latency": 136,
+          "rate_info_bits_per_symbol": 2.962962962962963,
+          "fer": 0.20566666666666666,
+          "goodput": 2.3535802469135803
+        },
+        "denoise": {
+          "mod": "qam16",
+          "rate": "2/3",
+          "latency": 86,
+          "rate_info_bits_per_symbol": 2.6402640264026402,
+          "fer": 0.44175000000000003,
+          "goodput": 1.4739273927392738
+        },
+        "denoise_wdest": {
+          "mod": "qam16",
+          "rate": "1/2",
+          "latency": 111,
+          "rate_info_bits_per_symbol": 1.9801980198019802,
+          "fer": 0.318,
+          "goodput": 1.3504950495049504
+        }
+      },
+      {
+        "snr_db": 28,
+        "blockdf": {
+          "mod": "qam16",
+          "rate": "3/4",
+          "latency": 136,
+          "rate_info_bits_per_symbol": 2.962962962962963,
+          "fer": 0.08016666666666668,
+          "goodput": 2.725432098765432
+        },
+        "denoise": {
+          "mod": "qam16",
+          "rate": "3/4",
+          "latency": 78,
+          "rate_info_bits_per_symbol": 2.962962962962963,
+          "fer": 0.23640000000000005,
+          "goodput": 2.2625185185185184
+        },
+        "denoise_wdest": {
+          "mod": "qam16",
+          "rate": "3/4",
+          "latency": 78,
+          "rate_info_bits_per_symbol": 2.962962962962963,
+          "fer": 0.3101666666666666,
+          "goodput": 2.0439506172839508
+        }
+      },
+      {
+        "snr_db": 32,
+        "blockdf": {
+          "mod": "qam16",
+          "rate": "3/4",
+          "latency": 136,
+          "rate_info_bits_per_symbol": 2.962962962962963,
+          "fer": 0.03333333333333333,
+          "goodput": 2.8641975308641974
+        },
+        "denoise": {
+          "mod": "qam16",
+          "rate": "3/4",
+          "latency": 78,
+          "rate_info_bits_per_symbol": 2.962962962962963,
+          "fer": 0.09799999999999999,
+          "goodput": 2.6725925925925926
+        },
+        "denoise_wdest": {
+          "mod": "qam16",
+          "rate": "uncoded",
+          "latency": 0,
+          "rate_info_bits_per_symbol": 4.0,
+          "fer": 0.34249999999999997,
+          "goodput": 2.63
+        }
+      },
+      {
+        "snr_db": 36,
+        "blockdf": {
+          "mod": "qam16",
+          "rate": "uncoded",
+          "latency": 0,
+          "rate_info_bits_per_symbol": 4.0,
+          "fer": 0.1495,
+          "goodput": 3.402
+        },
+        "denoise": {
+          "mod": "qam16",
+          "rate": "uncoded",
+          "latency": 0,
+          "rate_info_bits_per_symbol": 4.0,
+          "fer": 0.15200000000000002,
+          "goodput": 3.392
+        },
+        "denoise_wdest": {
+          "mod": "qam16",
+          "rate": "uncoded",
+          "latency": 0,
+          "rate_info_bits_per_symbol": 4.0,
+          "fer": 0.1495,
+          "goodput": 3.402
+        }
+      },
+      {
+        "snr_db": 40,
+        "blockdf": {
+          "mod": "qam16",
+          "rate": "uncoded",
+          "latency": 0,
+          "rate_info_bits_per_symbol": 4.0,
+          "fer": 0.06683333333333333,
+          "goodput": 3.732666666666667
+        },
+        "denoise": {
+          "mod": "qam16",
+          "rate": "uncoded",
+          "latency": 0,
+          "rate_info_bits_per_symbol": 4.0,
+          "fer": 0.0666,
+          "goodput": 3.7336
+        },
+        "denoise_wdest": {
+          "mod": "qam16",
+          "rate": "uncoded",
+          "latency": 0,
+          "rate_info_bits_per_symbol": 4.0,
+          "fer": 0.06683333333333333,
+          "goodput": 3.732666666666667
+        }
+      }
+    ],
+    "150": [
+      {
+        "snr_db": 8,
+        "blockdf": {
+          "mod": "qpsk",
+          "rate": "uncoded",
+          "latency": 0,
+          "rate_info_bits_per_symbol": 2.0,
+          "fer": 1.0,
+          "goodput": 0.0
+        },
+        "denoise": {
+          "mod": "qpsk",
+          "rate": "uncoded",
+          "latency": 0,
+          "rate_info_bits_per_symbol": 2.0,
+          "fer": 1.0,
+          "goodput": 0.0
+        },
+        "denoise_wdest": {
+          "mod": "qpsk",
+          "rate": "uncoded",
+          "latency": 0,
+          "rate_info_bits_per_symbol": 2.0,
+          "fer": 1.0,
+          "goodput": 0.0
+        }
+      },
+      {
+        "snr_db": 12,
+        "blockdf": {
+          "mod": "qpsk",
+          "rate": "uncoded",
+          "latency": 0,
+          "rate_info_bits_per_symbol": 2.0,
+          "fer": 1.0,
+          "goodput": 0.0
+        },
+        "denoise": {
+          "mod": "qpsk",
+          "rate": "3/4",
+          "latency": 145,
+          "rate_info_bits_per_symbol": 1.4814814814814814,
+          "fer": 0.9928999999999999,
+          "goodput": 0.010518518518518675
+        },
+        "denoise_wdest": {
+          "mod": "qpsk",
+          "rate": "3/4",
+          "latency": 145,
+          "rate_info_bits_per_symbol": 1.4814814814814814,
+          "fer": 0.9915,
+          "goodput": 0.012592592592592522
+        }
+      },
+      {
+        "snr_db": 16,
+        "blockdf": {
+          "mod": "qam16",
+          "rate": "3/4",
+          "latency": 136,
+          "rate_info_bits_per_symbol": 2.962962962962963,
+          "fer": 0.9109999999999999,
+          "goodput": 0.26370370370370394
+        },
+        "denoise": {
+          "mod": "qpsk",
+          "rate": "3/4",
+          "latency": 145,
+          "rate_info_bits_per_symbol": 1.4814814814814814,
+          "fer": 0.7582,
+          "goodput": 0.3582222222222222
+        },
+        "denoise_wdest": {
+          "mod": "qpsk",
+          "rate": "3/4",
+          "latency": 145,
+          "rate_info_bits_per_symbol": 1.4814814814814814,
+          "fer": 0.8381666666666665,
+          "goodput": 0.23975308641975332
+        }
+      },
+      {
+        "snr_db": 20,
+        "blockdf": {
+          "mod": "qam16",
+          "rate": "3/4",
+          "latency": 136,
+          "rate_info_bits_per_symbol": 2.962962962962963,
+          "fer": 0.5093333333333334,
+          "goodput": 1.4538271604938269
+        },
+        "denoise": {
+          "mod": "qpsk",
+          "rate": "3/4",
+          "latency": 145,
+          "rate_info_bits_per_symbol": 1.4814814814814814,
+          "fer": 0.34965,
+          "goodput": 0.9634814814814814
+        },
+        "denoise_wdest": {
+          "mod": "qpsk",
+          "rate": "3/4",
+          "latency": 145,
+          "rate_info_bits_per_symbol": 1.4814814814814814,
+          "fer": 0.5163333333333333,
+          "goodput": 0.7165432098765432
+        }
+      },
+      {
+        "snr_db": 24,
+        "blockdf": {
+          "mod": "qam16",
+          "rate": "3/4",
+          "latency": 136,
+          "rate_info_bits_per_symbol": 2.962962962962963,
+          "fer": 0.20566666666666666,
+          "goodput": 2.3535802469135803
+        },
+        "denoise": {
+          "mod": "qam16",
+          "rate": "2/3",
+          "latency": 86,
+          "rate_info_bits_per_symbol": 2.6402640264026402,
+          "fer": 0.44175000000000003,
+          "goodput": 1.4739273927392738
+        },
+        "denoise_wdest": {
+          "mod": "qam16",
+          "rate": "1/2",
+          "latency": 111,
+          "rate_info_bits_per_symbol": 1.9801980198019802,
+          "fer": 0.318,
+          "goodput": 1.3504950495049504
+        }
+      },
+      {
+        "snr_db": 28,
+        "blockdf": {
+          "mod": "qam16",
+          "rate": "3/4",
+          "latency": 136,
+          "rate_info_bits_per_symbol": 2.962962962962963,
+          "fer": 0.08016666666666668,
+          "goodput": 2.725432098765432
+        },
+        "denoise": {
+          "mod": "qam16",
+          "rate": "3/4",
+          "latency": 78,
+          "rate_info_bits_per_symbol": 2.962962962962963,
+          "fer": 0.23640000000000005,
+          "goodput": 2.2625185185185184
+        },
+        "denoise_wdest": {
+          "mod": "qam16",
+          "rate": "3/4",
+          "latency": 78,
+          "rate_info_bits_per_symbol": 2.962962962962963,
+          "fer": 0.3101666666666666,
+          "goodput": 2.0439506172839508
+        }
+      },
+      {
+        "snr_db": 32,
+        "blockdf": {
+          "mod": "qam16",
+          "rate": "3/4",
+          "latency": 136,
+          "rate_info_bits_per_symbol": 2.962962962962963,
+          "fer": 0.03333333333333333,
+          "goodput": 2.8641975308641974
+        },
+        "denoise": {
+          "mod": "qam16",
+          "rate": "3/4",
+          "latency": 78,
+          "rate_info_bits_per_symbol": 2.962962962962963,
+          "fer": 0.09799999999999999,
+          "goodput": 2.6725925925925926
+        },
+        "denoise_wdest": {
+          "mod": "qam16",
+          "rate": "uncoded",
+          "latency": 0,
+          "rate_info_bits_per_symbol": 4.0,
+          "fer": 0.34249999999999997,
+          "goodput": 2.63
+        }
+      },
+      {
+        "snr_db": 36,
+        "blockdf": {
+          "mod": "qam16",
+          "rate": "uncoded",
+          "latency": 0,
+          "rate_info_bits_per_symbol": 4.0,
+          "fer": 0.1495,
+          "goodput": 3.402
+        },
+        "denoise": {
+          "mod": "qam16",
+          "rate": "uncoded",
+          "latency": 0,
+          "rate_info_bits_per_symbol": 4.0,
+          "fer": 0.15200000000000002,
+          "goodput": 3.392
+        },
+        "denoise_wdest": {
+          "mod": "qam16",
+          "rate": "uncoded",
+          "latency": 0,
+          "rate_info_bits_per_symbol": 4.0,
+          "fer": 0.1495,
+          "goodput": 3.402
+        }
+      },
+      {
+        "snr_db": 40,
+        "blockdf": {
+          "mod": "qam16",
+          "rate": "uncoded",
+          "latency": 0,
+          "rate_info_bits_per_symbol": 4.0,
+          "fer": 0.06683333333333333,
+          "goodput": 3.732666666666667
+        },
+        "denoise": {
+          "mod": "qam16",
+          "rate": "uncoded",
+          "latency": 0,
+          "rate_info_bits_per_symbol": 4.0,
+          "fer": 0.0666,
+          "goodput": 3.7336
+        },
+        "denoise_wdest": {
+          "mod": "qam16",
+          "rate": "uncoded",
+          "latency": 0,
+          "rate_info_bits_per_symbol": 4.0,
+          "fer": 0.06683333333333333,
+          "goodput": 3.732666666666667
+        }
+      }
+    ],
+    "100": [
+      {
+        "snr_db": 8,
+        "blockdf": {
+          "mod": "qpsk",
+          "rate": "uncoded",
+          "latency": 0,
+          "rate_info_bits_per_symbol": 2.0,
+          "fer": 1.0,
+          "goodput": 0.0
+        },
+        "denoise": {
+          "mod": "qpsk",
+          "rate": "uncoded",
+          "latency": 0,
+          "rate_info_bits_per_symbol": 2.0,
+          "fer": 1.0,
+          "goodput": 0.0
+        },
+        "denoise_wdest": {
+          "mod": "qpsk",
+          "rate": "uncoded",
+          "latency": 0,
+          "rate_info_bits_per_symbol": 2.0,
+          "fer": 1.0,
+          "goodput": 0.0
+        }
+      },
+      {
+        "snr_db": 12,
+        "blockdf": {
+          "mod": "qpsk",
+          "rate": "uncoded",
+          "latency": 0,
+          "rate_info_bits_per_symbol": 2.0,
+          "fer": 1.0,
+          "goodput": 0.0
+        },
+        "denoise": {
+          "mod": "qpsk",
+          "rate": "uncoded",
+          "latency": 0,
+          "rate_info_bits_per_symbol": 2.0,
+          "fer": 1.0,
+          "goodput": 0.0
+        },
+        "denoise_wdest": {
+          "mod": "qpsk",
+          "rate": "uncoded",
+          "latency": 0,
+          "rate_info_bits_per_symbol": 2.0,
+          "fer": 1.0,
+          "goodput": 0.0
+        }
+      },
+      {
+        "snr_db": 16,
+        "blockdf": {
+          "mod": "qpsk",
+          "rate": "uncoded",
+          "latency": 0,
+          "rate_info_bits_per_symbol": 2.0,
+          "fer": 0.9868333333333333,
+          "goodput": 0.02633333333333332
+        },
+        "denoise": {
+          "mod": "qpsk",
+          "rate": "uncoded",
+          "latency": 0,
+          "rate_info_bits_per_symbol": 2.0,
+          "fer": 0.9874499999999996,
+          "goodput": 0.02510000000000079
+        },
+        "denoise_wdest": {
+          "mod": "qpsk",
+          "rate": "uncoded",
+          "latency": 0,
+          "rate_info_bits_per_symbol": 2.0,
+          "fer": 0.9868333333333333,
+          "goodput": 0.02633333333333332
+        }
+      },
+      {
+        "snr_db": 20,
+        "blockdf": {
+          "mod": "qpsk",
+          "rate": "uncoded",
+          "latency": 0,
+          "rate_info_bits_per_symbol": 2.0,
+          "fer": 0.8453333333333333,
+          "goodput": 0.30933333333333346
+        },
+        "denoise": {
+          "mod": "qam16",
+          "rate": "2/3",
+          "latency": 86,
+          "rate_info_bits_per_symbol": 2.6402640264026402,
+          "fer": 0.8339500000000001,
+          "goodput": 0.4384158415841582
+        },
+        "denoise_wdest": {
+          "mod": "qam16",
+          "rate": "2/3",
+          "latency": 86,
+          "rate_info_bits_per_symbol": 2.6402640264026402,
+          "fer": 0.872,
+          "goodput": 0.33795379537953796
+        }
+      },
+      {
+        "snr_db": 24,
+        "blockdf": {
+          "mod": "qpsk",
+          "rate": "uncoded",
+          "latency": 0,
+          "rate_info_bits_per_symbol": 2.0,
+          "fer": 0.4948333333333333,
+          "goodput": 1.0103333333333335
+        },
+        "denoise": {
+          "mod": "qam16",
+          "rate": "2/3",
+          "latency": 86,
+          "rate_info_bits_per_symbol": 2.6402640264026402,
+          "fer": 0.44175000000000003,
+          "goodput": 1.4739273927392738
+        },
+        "denoise_wdest": {
+          "mod": "qam16",
+          "rate": "2/3",
+          "latency": 86,
+          "rate_info_bits_per_symbol": 2.6402640264026402,
+          "fer": 0.5355000000000002,
+          "goodput": 1.2264026402640258
+        }
+      },
+      {
+        "snr_db": 28,
+        "blockdf": {
+          "mod": "qpsk",
+          "rate": "uncoded",
+          "latency": 0,
+          "rate_info_bits_per_symbol": 2.0,
+          "fer": 0.25449999999999995,
+          "goodput": 1.491
+        },
+        "denoise": {
+          "mod": "qam16",
+          "rate": "3/4",
+          "latency": 78,
+          "rate_info_bits_per_symbol": 2.962962962962963,
+          "fer": 0.23640000000000005,
+          "goodput": 2.2625185185185184
+        },
+        "denoise_wdest": {
+          "mod": "qam16",
+          "rate": "3/4",
+          "latency": 78,
+          "rate_info_bits_per_symbol": 2.962962962962963,
+          "fer": 0.3101666666666666,
+          "goodput": 2.0439506172839508
+        }
+      },
+      {
+        "snr_db": 32,
+        "blockdf": {
+          "mod": "qam16",
+          "rate": "uncoded",
+          "latency": 0,
+          "rate_info_bits_per_symbol": 4.0,
+          "fer": 0.34249999999999997,
+          "goodput": 2.63
+        },
+        "denoise": {
+          "mod": "qam16",
+          "rate": "3/4",
+          "latency": 78,
+          "rate_info_bits_per_symbol": 2.962962962962963,
+          "fer": 0.09799999999999999,
+          "goodput": 2.6725925925925926
+        },
+        "denoise_wdest": {
+          "mod": "qam16",
+          "rate": "uncoded",
+          "latency": 0,
+          "rate_info_bits_per_symbol": 4.0,
+          "fer": 0.34249999999999997,
+          "goodput": 2.63
+        }
+      },
+      {
+        "snr_db": 36,
+        "blockdf": {
+          "mod": "qam16",
+          "rate": "uncoded",
+          "latency": 0,
+          "rate_info_bits_per_symbol": 4.0,
+          "fer": 0.1495,
+          "goodput": 3.402
+        },
+        "denoise": {
+          "mod": "qam16",
+          "rate": "uncoded",
+          "latency": 0,
+          "rate_info_bits_per_symbol": 4.0,
+          "fer": 0.15200000000000002,
+          "goodput": 3.392
+        },
+        "denoise_wdest": {
+          "mod": "qam16",
+          "rate": "uncoded",
+          "latency": 0,
+          "rate_info_bits_per_symbol": 4.0,
+          "fer": 0.1495,
+          "goodput": 3.402
+        }
+      },
+      {
+        "snr_db": 40,
+        "blockdf": {
+          "mod": "qam16",
+          "rate": "uncoded",
+          "latency": 0,
+          "rate_info_bits_per_symbol": 4.0,
+          "fer": 0.06683333333333333,
+          "goodput": 3.732666666666667
+        },
+        "denoise": {
+          "mod": "qam16",
+          "rate": "uncoded",
+          "latency": 0,
+          "rate_info_bits_per_symbol": 4.0,
+          "fer": 0.0666,
+          "goodput": 3.7336
+        },
+        "denoise_wdest": {
+          "mod": "qam16",
+          "rate": "uncoded",
+          "latency": 0,
+          "rate_info_bits_per_symbol": 4.0,
+          "fer": 0.06683333333333333,
+          "goodput": 3.732666666666667
+        }
+      }
+    ]
+  }
+}
