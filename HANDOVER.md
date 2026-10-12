@@ -69,7 +69,7 @@ Presentation notes: running headers (#124), ledger labels (#135), verification-c
 | C8 | Training protocol now described from the committed code: all relays train with Adam (MLP/Hybrid lr 0.01 batch 32 — the NumPy SGD path is a no-PyTorch fallback the canonical run excludes; VAE/sequence 1e-3 batch 64; cGAN 1e-4, β=(0,0.9)); samples 25k (MLP, Hybrid) / 50k (VAE, cGAN, sequence), 100 epochs (cGAN 200). Exact reproduction is not possible (unseeded torch init, global-RNG channel draws; data predate repo history) — stated once in Ch. 4. Fixed #133's "canonical SGD" and Ch. 4's "trained by the same protocol" | DONE | #153 |
 | M  | Memory bank updated for the round (`activeContext.md`, `progress.md`) | DONE | (this PR) |
 | P  | Republish mirror: done after Phase B (46ad144) and after C4–C8 (f3eabf6, author Gil Zukerman, `thesis.pdf` byte-identical to main, 133 pages) | DONE | — |
-| R  | Reply to Khina: drafted 2026-10-12, one paragraph per comment with the thesis location of each fix (no PR numbers); C4 reversal stated; ×2 multiplication-count convention; C7/C8 disclosures. Committed at the author's request: `thesis/submission/reply_to_khina_2026-10.md` (not sent) | DRAFTED, COMMITTED (awaiting author) | (this PR) |
+| R  | Reply to Khina: drafted 2026-10-12, one paragraph per comment with the thesis location of each fix (no PR numbers); C4 reversal stated; ×2 multiplication-count convention; C7/C8 disclosures. Committed at the author's request: `thesis/submission/reply_to_khina_2026-10.md` (not sent); updated after the point-by-point audit (#158), section/table numbers re-checked against the 136-page build | DRAFTED, COMMITTED (awaiting author) | (this PR) |
 
 ## Session chain (work these in order)
 
@@ -128,6 +128,14 @@ verifier. **This can reverse coded conclusions — report whatever comes out.**
 
 **C5.** `tbl:tableE6` Rayleigh rows vs the corrected figures; rerun with the current SNR convention
 (γ = 10^(SNR/10)), commit data, update table + verifier.
+
+## Audit (2026-10-12)
+
+Every sub-request of Khina's nine comments and the presentation notes was checked against the
+thesis; eight remaining gaps were fixed in #158 (Sec. 5.3 goal wording; size-sweep configuration in
+Appendix E; penalty-table pointers to Appendix G; conventional-AF qualifier in Sec. 5.2, abstracts and
+Ch. 8; Table 6.8 delay caption; coded figure/table captions name the metric; Appendix C coverage
+sentence; ledger channel column). Thesis 136 pages.
 
 ## Facts discovered this round (keep)
 
