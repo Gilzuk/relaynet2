@@ -7,18 +7,27 @@ E6-prefixed scripts, ported to `relaynet`: `e6_sim_ported.py`, `e6_viterbi_porte
 `e6_composite_ported.py`, `e6_blind_ported.py`, `e6_partial_ported.py`,
 `e6_complexity_ported.py` (verified at their own standalone trial budgets).
 
-Files are named `unkchan_*` rather than `e6_*` deliberately: the thesis's own Chapter 5
-already has an unrelated "E6" experiment (CSI Injection & LayerNorm for 16-QAM/16-PSK).
-The "E6" prefix in `experiments-standalone/` is that suite's own internal addendum
-numbering, not a thesis chapter reference — the filename/title change avoids any
-confusion between the two.
+Figures are named `unkchan_*` for a historical reason: when they were generated, Chapter 5
+had an unrelated "E6" experiment (CSI injection for 16-QAM/16-PSK), since removed. In the
+current thesis, Table 5.1 labels the unknown-channel study itself E6.
 
-**Now integrated into the thesis as supplementary material**: Appendix A.14
-("Supplementary: Unknown-Channel Relay Experiments") on the `clean-thesis` branch,
-covering all 7 experiments below, with a one-sentence pointer from Chapter 6's
-Future Work section (the "Imperfect CSI" item). This is explicitly supplementary —
-not one of Chapter 5's eight numbered experiments (E1-E8), no renumbering, no
-existing conclusions altered.
+**Role in the thesis.** These files back Chapter 6 of the thesis on `main`
+(learned relaying under unknown and mismatched channels, the principal
+contribution). The tables and figures that cite each file are listed in the
+experiment ledger (thesis Appendix 9.3) and checked by `verify_thesis_tables.py`;
+the channel models are specified in thesis Appendix 9.6. Setups S2 and S4 of
+`e6_sim_ported.py` (ISI to Rayleigh, and the Rayleigh control) remain in the
+arrays and figures here but are not reported in the thesis, whose fixed-ISI
+results use S1 (ISI on Hop 1, AWGN on Hop 2); the nonlinear-bias setup S3 is not
+tabulated in Chapter 6.
+
+**October 2026 changes.** `e6_flat_ported_results.npy` was rerun with the
+corrected Hop-2 noise (variance 1/(2γ) per real dimension for real forwarded
+signals; the console log is `e6_flat_ported_console.txt`). The composite AF
+curve is replaced by `codex_composite_af_validation.json` (AF had added half the
+intended complex Hop-2 noise power), and the 12, 14 and 16 dB MLP entries of the
+fixed-ISI table come from the predeclared fixed-budget run in
+`codex_isi_fixed_budget_validation.json` (16 dB: 36 errors in 3×10^8 bits).
 
 ## Files
 
@@ -28,15 +37,19 @@ existing conclusions altered.
 - `unkchan_viterbi_awgn.png`, `unkchan_viterbi_rayleigh.png` — Viterbi-genie vs
   LS-pilot-estimated Viterbi MLSE on the same unknown-ISI channel.
 - `unkchan_flat_phase.png`, `unkchan_flat_gain.png`, `unkchan_flat_iqimb.png` — the
-  three memoryless "control" experiments (unknown phase/gain/I-Q-imbalance), showing
-  classical DF ties the MLP absent any channel memory.
+  three memoryless control experiments (unknown phase, gain and branch asymmetry;
+  `iqimb` is the code name of the asymmetry case). These figures predate the
+  October 2026 Hop-2 noise rerun; the thesis table uses the rerun.
 - `unkchan_composite.png` — ISI x PA-nonlinearity x unknown-phase cascade (DBPSK).
 - `unkchan_blind.png` — random ISI per trial, no pilots (blind regime).
 - `unkchan_partial.png` — pilot-count and block-length sensitivity sweeps.
 - `unkchan_complexity.png` — Viterbi MLSE vs. MLP analytical cost + measured wall-clock.
-- `*_results.npy` — raw mean/CI arrays behind each figure (the `/tmp/e6_*.npy` sources
-  for composite/blind/partial/complexity are ephemeral; only sim/viterbi/flat's are
-  copied into this directory).
+- `*_results.npy` — raw mean/CI arrays behind each figure, including the
+  composite, blind, pilot-budget and QPSK studies; every `e6_*_ported.py` script
+  writes here, not to `/tmp/`.
+- `codex_isi_fixed_budget_validation.json`, `codex_composite_af_validation.json`,
+  `codex_viterbi_consistency_awgn.{json,npy}` — the fixed-budget MLP confirmation,
+  the corrected composite AF curve and a Viterbi consistency check.
 
 ## Verification
 
@@ -72,3 +85,7 @@ For S1 at 16 dB, for example, it records
 
 Any BER cell below roughly 1e-4 should have its error *count* checked in that file
 before a ratio or a claim is built on it.
+
+In the current thesis the 16 dB MLP entry no longer uses this adaptive estimate:
+it is the fixed-budget value 1.20e-7 from `codex_isi_fixed_budget_validation.json`,
+and the adaptive 18–20 dB entries are kept as exploratory records only.

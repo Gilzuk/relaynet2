@@ -5,11 +5,10 @@ project-standard Monte Carlo budget (per `PORTING.md` / `memory-bank/techContext
 10 trials × 100,000 bits per SNR point, vs the 5×50k dev/iteration scale used while these
 were being developed). All qualitative conclusions from the dev-scale runs replicate here.
 
-**Status: computed and saved, NOT yet integrated into the thesis LaTeX.** Per explicit user
-instruction (2026-07-12), do not edit `chapters/*.tex` with this content until directed —
-there is no existing home for it in the current chapter structure (see
-`memory-bank/activeContext.md` for the naming-collision finding: the canonical "E6" in
-`chapters/ch05_experiments.tex` is an unrelated CSI-injection experiment).
+**Status: exploratory; not used by the thesis.** These symmetric-hop runs predate the
+current thesis structure (the July 2026 notes about chapter placement and the "E6" naming
+collision are historical). The thesis's QPSK unknown-channel result is Section 6.2.2, from
+`e6_unknown_channel_results/e6_qpsk_unknown_channel_results.npy`.
 
 ## Files
 

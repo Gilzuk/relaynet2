@@ -47,9 +47,17 @@ the accompanying built artifact.
 ## Scope and main observations
 
 The canonical experiment is uncoded QPSK on a two-hop SISO i.i.d. Rayleigh link.
-DF matches or exceeds the tested learned relays from 6 dB upward. Separate
-studies examine selected ISI/composite channels, finite-pilot and blind
-receivers, and finite-length coded forwarding.
+DF matches or exceeds the tested learned relays from 6 dB upward. The learned
+relays' low-SNR advantage is over the implemented block-normalized AF; against
+a conventional variable-gain AF the 0 dB margin is 0.007. Separate studies
+examine selected ISI/composite channels, finite-pilot and blind receivers, and
+finite-length coded forwarding.
+
+On the coded link, the original comparisons used decoder metrics that ignore
+symbol-dependent reliability. With reliability-weighted (matched) metrics at the
+relay and the destination, block decode-and-forward has lower BER than both
+learned relays at every tested SNR (30 of 30 paired trials), so their published
+high-SNR advantage came from the metric.
 
 The fixed three-tap BPSK MLP has BER 0.0065 at 8 dB versus matched genie MLSE
 0.001354, and 1.20e-7 at 16 dB versus below 3.0e-8 for the same detector at a
@@ -68,7 +76,9 @@ The learned relays are trained on the impairment families tested. Their results
 do not establish new-family generalization, a universal advantage over
 classical receiver design, or hardware latency and energy savings. The separate
 coded-QPSK cost study uses a 220-parameter, 208-MAC relay, not the 170-parameter
-real BPSK model.
+real BPSK model; with real taps the QPSK trellis factorizes exactly into two
+binary trellises (2^(L+1) multiplications per symbol), so its arithmetic
+crossover with the network moves to about 6.7 taps.
 
 For configurations, uncertainty, and limitations, read the compiled thesis
 and its source tables. Do not treat this short overview as a substitute for the
