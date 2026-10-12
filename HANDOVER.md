@@ -1,6 +1,6 @@
 # Handover — Khina revision round (task chain)
 
-_Last updated: 2026-10-12. Thesis PDF: 125 pages after B2._
+_Last updated: 2026-10-12. Thesis PDF: 127 pages after B3; verifier 558 cells._
 
 This file is the resume point if a session ends mid-task (out of credits, container reset,
 interruption). A new session should read it **after** `CLAUDE.md`, `context.md`,
@@ -58,12 +58,13 @@ Presentation notes: running headers (#124), ledger labels (#135), verification-c
 | B0 | Canonical training described as implemented (BPSK/AWGN-trained, no √2 pre-scale) | DONE | #142 |
 | B1 | Relay-design problem + surrogates, new Sec. 4.1.5 (comment 1) | DONE | #143 |
 | B2 | RQ hierarchy + RQ→experiment mapping table (comment 2); O1/O2 answered by name in Ch. 9 | DONE | (this PR) |
-| B3 | Model specifications + SNR-penalty definitions (comment 7) | NEXT | — |
-| B4 | Equal-budget wording pass (comment 8, last bullet) | TODO | — |
+| B3 | Model specifications + SNR-penalty definitions (comment 7): Appendix G; ISI penalties now derived by `e6_isi_penalty.py` and verified | DONE | (this PR) |
+| B4 | Equal-budget wording pass (comment 8, last bullet) | NEXT | — |
 | B5 | Positioning vs estimate-and-forward, Farsad–Goldsmith, ViterbiNet; named-study Table 3.1 (comment 9) | TODO | — |
 | C4 | Reliability-weighted Viterbi/BCJR at relay + destination; rerun coded comparisons (comment 4) | TODO | — |
 | C5 | Rerun Rayleigh rows of `tbl:tableE6` on the current convention (figures vs tables) | TODO | — |
 | C6 | Causal/streaming normalization + latency re-evaluation (comment 6; only if readiness claims are kept) | TODO | — |
+| C7 | E6_FLAT Hop-2 noise: `e6_flat_ported.py` adds real noise of variance 1/γ (not 1/(2γ)) to real forwarded signals; AF in flat-phase gets complex 1/(2γ)/dim. DF-vs-MLP fair, absolute BERs 3 dB pessimistic on Hop 2, AF favoured in flat-phase. Fix the noise, rerun, update `tbl` flat rows + Appendix G paragraph | TODO | — |
 | M  | Memory bank update for this round (`activeContext.md`, `progress.md`) | TODO (with each PR) | — |
 | P  | Republish mirror after Phase B and after C4–C6 | TODO | — |
 | R  | Draft reply to Khina (note the ×2 multiplication-count convention: thesis 16/64/256, crossover 6.70, ratio 1.23 vs his 32/128/512, 5.70, 2.46) | TODO | — |
@@ -106,6 +107,10 @@ verifier. **This can reverse coded conclusions — report whatever comes out.**
   Soft-output: AF, `MinimalGenAIRelay` (169p), `MLPRelay` (E6 170p), VAE, cGAN, Transformer, Mamba;
   the Hybrid is soft below its SNR threshold and DF above it.
 - Against conventional variable-gain AF the 0 dB margin is 0.007, not 0.073 (C3).
+- The ISI required-SNR penalties (0.26/1.18/1.88/2.53 dB) had no committed derivation; `e6_isi_penalty.py`
+  reproduces them exactly from `results/e6_matched_protocol.json` (B3).
+- Script comments in `e6_blind_ported.py` call Hop 2 "always-complex AWGN"; it is compensated Rayleigh
+  (`ComplexISIRayleighChannel(taps=[1])`).
 
 ## Procedure (every task)
 
@@ -128,9 +133,9 @@ verifier. **This can reverse coded conclusions — report whatever comes out.**
   texlive-luatex texlive-publishers poppler-utils`. Python: `python3 -m pip install -r requirements.txt torch`
   (`pip` alone targets the wrong interpreter).
 - Mirror publish: `git remote add thesis-repo https://github.com/Gilzuk/relaynet2-thesis`; delete any
-  stale local `overleaf-dist`; set `git config user.name "Gil Zukerman"` and
-  `git config user.email gil.zukerman@gmail.com` **before** `python3 scripts/overleaf_sync.py --repo`
-  (mirror commits must carry the author's identity). Never `--force` without inspecting what the
+  stale local `overleaf-dist`; publish with the author's identity, e.g.
+  `GIT_AUTHOR_NAME="Gil Zukerman" GIT_AUTHOR_EMAIL=gil.zukerman@gmail.com GIT_COMMITTER_NAME="Gil Zukerman" GIT_COMMITTER_EMAIL=gil.zukerman@gmail.com python3 scripts/overleaf_sync.py --repo`
+  (mirror commits must carry the author's identity; keep the repo's own config as the agent identity). Never `--force` without inspecting what the
   guard reports. Verify the pushed `thesis.pdf` is byte-identical to `thesis/main.pdf`.
   Note: f174a3b (2026-10-12) was pushed authored as Claude; rewriting it needs the author's OK.
 - PDF timestamp-only diffs after a verification rebuild: `git checkout -- thesis/main.pdf`.

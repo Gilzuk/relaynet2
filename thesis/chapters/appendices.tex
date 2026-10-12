@@ -249,3 +249,51 @@ For bit-MAP decisions under the same model and side information, giving the dete
 \paragraph{Supplementary numerical checks.} The across-seed spread in SNR penalty against DF in the separate native-architecture replication is $0.004$~dB for Mamba-S6, $0.007$ for the Hybrid, $0.013$ for Mamba-2, $0.043$ for the MLP, $0.075$ for the Transformer and $0.091$ for the VAE. These finite three-seed ranges are not confidence bounds on failure probabilities.
 
 For the QPSK linear-MMSE detail run, the attained MSE at 16~dB is $0.0666,\allowbreak\ 0.0374,\allowbreak\ 0.0354,\allowbreak\ 0.0333$ for $N=3,5,7,11$. The required-SNR penalties at targets $10^{-1}$ and $10^{-2}$ are respectively $+3.24, +2.98, +2.79, +2.65$ and $+6.34, +4.27, +4.13, +4.02$~dB. These measurements do not imply monotonic BER at every target.
+
+\section{Appendix G: Channel Models and Metrics of Chapter~6}\label{sec:appendix-g-channel-specs}
+
+This appendix specifies the channel models, relay inputs and summary metrics of Chapter~\ref{sec:unknown-channels} as implemented in the scripts that produced the reported data. Unless stated otherwise, every real noise dimension has variance $N_0/2 = 1/(2\gamma)$ with $\gamma = 10^{\mathrm{SNR}/10}$ and unit symbol energy, every tap vector is normalized to unit energy, and the impairments of a hop act in the order listed. Hop-2 fading is coherently compensated: only its magnitude $|h_2| $, with $h_2 \sim \mathcal{CN}(0,1)$ drawn independently per symbol, multiplies the forwarded signal.
+
+\begin{longtable}[]{@{}>{\raggedright\arraybackslash}p{0.17\linewidth}>{\raggedright\arraybackslash}p{0.37\linewidth}>{\raggedright\arraybackslash}p{0.20\linewidth}>{\raggedright\arraybackslash}p{0.18\linewidth}@{}}
+\caption[Channel models of Chapter~6]{Channel models of the Chapter~6 studies, as implemented. ``Per trial'' means that a parameter is drawn once per evaluation trial and held for all of its symbols; training data are generated in four blocks per training SNR, each with its own draw}\label{tbl:ch6-channel-specs}\tabularnewline
+\toprule\noalign{}
+Study (script) & Source and Hop 1 & Redraw & Hop 2 \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+Study (script) & Source and Hop 1 & Redraw & Hop 2 \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Fixed ISI ({\footnotesize\texttt{e6\_\allowbreak{}sim\_\allowbreak{}ported.py}}, {\footnotesize\texttt{e6\_\allowbreak{}matched\_\allowbreak{}protocol.py}}) & BPSK; $y = h \ast x + n$, $h \propto [1, 0.7, 0.5]$ & Fixed & AWGN (S1) or compensated Rayleigh (S2) \\
+Nonlinear bias ({\footnotesize\texttt{e6\_\allowbreak{}sim\_\allowbreak{}ported.py}}) & BPSK; $y = \tanh(1.5x) + 0.5 + n$ & Fixed & AWGN \\
+QPSK ISI ({\footnotesize\texttt{e6\_\allowbreak{}qpsk\_\allowbreak{}unknown\_\allowbreak{}channel.py}}) & QPSK; the fixed-ISI taps, then a compensated Rayleigh magnitude $|h_1|$ per symbol, then complex AWGN & Taps fixed; $|h_1|$ per symbol & AWGN or compensated Rayleigh \\
+Flat gain ({\footnotesize\texttt{e6\_\allowbreak{}flat\_\allowbreak{}ported.py}}) & BPSK; $y = gx + n$, $g \sim \mathcal{U}[0.3, 2.0]$ & Per trial of $10^5$ bits & Compensated Rayleigh, see below \\
+Branch asymmetry ({\footnotesize\texttt{e6\_\allowbreak{}flat\_\allowbreak{}ported.py}}) & BPSK; $y = a_{+} + n$ if $x=+1$, $y = -a_{-} + n$ if $x=-1$, with $a_{+}, a_{-} \sim \mathcal{U}[0.6, 1.4]$ independent & Per trial of $10^5$ bits & As flat gain \\
+Flat phase ({\footnotesize\texttt{e6\_\allowbreak{}flat\_\allowbreak{}ported.py}}) & DBPSK; $y = e^{j\theta}s + n$, $\theta \sim \mathcal{U}[0, 2\pi)$, complex AWGN & Per trial of $10^5$ bits & As flat gain \\
+Fixed composite ({\footnotesize\texttt{e6\_\allowbreak{}composite\_\allowbreak{}ported.py}}) & DBPSK; ISI $h \propto [1, 0.6, 0.4]$, then amplifier $A(\cdot)$, then $e^{j\theta}$, $\theta \sim \mathcal{U}[0, 2\pi)$, then complex AWGN & Taps fixed; $\theta$ per trial of $10^5$ bits & Compensated Rayleigh \\
+Random composite ({\footnotesize\texttt{e6\_\allowbreak{}blind\_\allowbreak{}ported.py}}, {\footnotesize\texttt{e6\_\allowbreak{}partial\_\allowbreak{}ported.py}}) & As the fixed composite, with $h \propto [1, u_1, u_2]$, $u_1 \sim \mathcal{U}[0.3, 0.7]$, $u_2 \sim \mathcal{U}[0.2, 0.5]$ & Taps and $\theta$ per trial of $2\times10^4$ bits, or per block in the block-length sweep & Compensated Rayleigh, complex AWGN \\
+Coded memory ({\footnotesize\texttt{joint\_\allowbreak{}latency\_\allowbreak{}memory.py}}) & Rate-$1/2$, $K=3$ convolutional code, QPSK; $h_k \propto 0.7^{k}$, $k = 0,\dots,L-1$, $L \in \{3,5,7\}$; complex AWGN & Fixed & Complex AWGN \\
+\end{longtable}
+
+\paragraph{Amplifier.} $A$ acts on the amplitude and preserves the phase: $A(r) = r/\sqrt{1 + (r/1.2)^{2}}$, a Rapp soft limiter with smoothness $1$ and saturation $1.2$. Because the ISI taps are real and the DBPSK symbols are $\pm1$, the amplifier input is real, so the rotation $e^{j\theta}$ applied after it is the only source of an imaginary component on Hop~1.
+
+\paragraph{Normalization and noise.} Relay outputs are scaled to unit power over the evaluation trial (Eq.~\eqref{eq:power-normalization}). In the flat study the Hop-2 noise departs from the convention above: real forwarded signals receive real noise of variance $1/\gamma$, twice the per-dimension variance used elsewhere, while AF in the flat-phase case forwards a complex signal and receives $1/(2\gamma)$ per dimension. DF and the MLP see the same Hop-2 noise in every flat case, so their comparison is unaffected, but the flat-study BERs are pessimistic on Hop~2 relative to the other studies, and in the flat-phase case AF's Hop~2 is $3$~dB less noisy than DF's and the MLP's. A rerun under the common convention has not been performed.
+
+\paragraph{Pilots.} Pilot symbols are the first $N_p$ transmitted symbols of a trial or block, which are known to the estimator. The estimator fits three complex taps by least squares to a linear model, so it does not model the amplifier. In the fixed-composite study ($N_p = 200$) the decoded pilot region is scored together with the payload; in the pilot-budget sweep it is excluded, and in its block-length panel every block of $L$ symbols carries $10$ pilots and its own channel draw.
+
+\paragraph{Windows and their boundaries.} The learned relays of the uncoded Chapter~\ref{sec:unknown-channels} studies read a window of $W = 11$ samples centred on the decided symbol (the coded-memory study sweeps $W$ from $1$ to $21$); on complex channels the $I$ and $Q$ windows are concatenated into $2W$ inputs. At both ends of a trial the window is completed with zeros. The canonical MLP of Chapter~\ref{sec:experiments} repeats the edge sample instead.
+
+\paragraph{DBPSK.} The source bits $x_i \in \{\pm1\}$ are differentially encoded as $s_i = s_{i-1}x_i$. The learned relay is trained with the information bit $x_i$ as its target, so it estimates $x_i$ directly rather than the differential symbol; its real output, scaled to unit power, is forwarded as a BPSK signal, and the destination decides on the sign of its real part without differential decoding. The DF relay performs differential detection, $\hat{x}_i = \operatorname{sign}\operatorname{Re}\{y_i y_{i-1}^{*}\}$, and forwards $\hat{x}_i$; AF forwards the complex observation and the destination performs the differential detection. The first bit, the differential reference, is excluded from scoring, except for the learned relay in the fixed-composite study, where it is scored (one bit per $10^{5}$).
+
+\paragraph{Training.} Each learned relay is trained once, at SNR $5$, $10$ and $15$~dB in equal proportions, on data drawn from the Hop-1 model of its own study, with fixed sample counts and epochs (for example $1.2\times10^{5}$ windows and $25$ epochs for the fixed ISI, and $1.6\times10^{5}$ windows and $30$ epochs for the composite studies). The network used for evaluation is the one left after the final epoch; no validation-based checkpoint selection or early stopping is applied.
+
+\paragraph{Single-number SNR penalties.} All required-SNR penalties use one definition, implemented in \texttt{ber\_metrics.py}. For a BER target $t$, the SNR at which a curve reaches $t$ is found by linear interpolation of $\ln \mathrm{BER}$ against SNR in dB between the two measured points that bracket $t$, taking the last such crossing. A zero-error point cannot be interpolated in log scale: if the preceding point lies above $t$, the crossing is placed at the zero-error point's SNR, which can only overstate the SNR the curve needs. The penalty at $t$ is the relay's SNR minus the reference's, positive when the relay needs more. A target that either curve does not bracket is dropped rather than extrapolated. Tables~\ref{tbl:mmse-baseline}, \ref{tbl:seq-on-memory}, \ref{tbl:table-minsize}, \ref{tbl:seed-spread} and~\ref{tbl:seed-spread-3k} report one number per configuration: the largest penalty over the reachable targets among $10^{-1}$, $10^{-2}$ and $10^{-3}$, or a dash when none is reachable. Their aggregation over training seeds differs, as follows.
+\begin{itemize}
+\tightlist
+\item Table~\ref{tbl:seq-on-memory}: the best of three seeds, with the spread in brackets.
+\item Table~\ref{tbl:table-minsize}: the candidate's worst-of-seeds BER at each SNR, against the reference relay's mean-of-seeds curve.
+\item Tables~\ref{tbl:seed-spread} and~\ref{tbl:seed-spread-3k}: the largest minus the smallest per-seed penalty.
+\end{itemize}
+Because the penalty can grow with the target, a single number depends on which targets are reachable. The fixed-ISI comparison with genie MLSE is therefore reported per target ($10^{-1}$ to $10^{-4}$), computed from \texttt{results/e6\_matched\_protocol.json} by \texttt{e6\_isi\_penalty.py}.

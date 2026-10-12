@@ -1,0 +1,34 @@
+{
+  "source": "results/e6_matched_protocol.json",
+  "relay": "MLP",
+  "reference": "VIT-genie",
+  "metric": "ber_metrics.snr_at_ber, ln-BER linear interpolation, last crossing",
+  "targets": [
+    0.1,
+    0.01,
+    0.001,
+    0.0001
+  ],
+  "penalties": {
+    "1e-01": {
+      "snr_relay_db": 2.6769605403622765,
+      "snr_reference_db": 2.4162012559712154,
+      "penalty_db": 0.2607592843910611
+    },
+    "1e-02": {
+      "snr_relay_db": 7.362636354924176,
+      "snr_reference_db": 6.186701340792832,
+      "penalty_db": 1.1759350141313432
+    },
+    "1e-03": {
+      "snr_relay_db": 10.059509394686504,
+      "snr_reference_db": 8.174517815890608,
+      "penalty_db": 1.884991578795896
+    },
+    "1e-04": {
+      "snr_relay_db": 12.02932835313756,
+      "snr_reference_db": 9.500452984383807,
+      "penalty_db": 2.528875368753752
+    }
+  }
+}

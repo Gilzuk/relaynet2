@@ -31,6 +31,9 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 
 # experiment -> (script, [output files], [published tables/figures])
 REGISTRY = {
+    "ISI required-SNR penalties (MLP vs genie Viterbi)": (
+        "e6_isi_penalty.py", ["results/e6_isi_penalty.json"],
+        ["prose:isi-penalty (Ch. 6 Layer table and H5, Ch. 8, Ch. 9, abstracts)"]),
     "Factorized QPSK MLSE equivalence": (
         "factorized_mlse_equivalence.py", ["results/factorized_mlse_equivalence.json"],
         ["prose: exact I/Q factorization checked in implementation (Ch. 2)"]),
