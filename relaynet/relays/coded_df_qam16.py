@@ -43,7 +43,8 @@ class CodedDecodeAndForwardRelayQAM16(Relay):
             )
         self.frame_symbols = n_steps // 2  # 2 trellis steps per 16-QAM symbol
 
-    def process(self, received_signal):
+    def process(self, received_signal, weights=None):
+        """weights: optional per-symbol reliability (|h|^2); None = unweighted."""
         received_signal = np.asarray(received_signal)
         n_frames = len(received_signal) // self.frame_symbols
         usable = n_frames * self.frame_symbols
@@ -55,7 +56,9 @@ class CodedDecodeAndForwardRelayQAM16(Relay):
             axis_vals[0::2] = seg.real
             axis_vals[1::2] = seg.imag
 
-            info_hat = self.decoder.decode(axis_vals)
+            info_hat = self.decoder.decode(
+                axis_vals, weights=None if weights is None else
+                np.repeat(np.asarray(weights)[f * self.frame_symbols:(f + 1) * self.frame_symbols], 2))
             coded_hat = self.encoder.encode(info_hat)
             # qam16_modulate is unit-power by construction, so no post-hoc
             # power normalization is needed here (matches CodedDecodeAndForwardRelay).

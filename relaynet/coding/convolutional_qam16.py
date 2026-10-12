@@ -85,7 +85,7 @@ class QAM16CodeDecoder:
             self.pred_state[ns, 1] = 2 * base + 1
             self.pred_u[ns] = ns >> (self.K - 2) if self.K > 1 else 0
 
-    def decode(self, soft_axis_values):
+    def decode(self, soft_axis_values, weights=None):
         """Decode one frame from a stream of real per-trellis-step observations.
 
         Parameters
@@ -103,6 +103,10 @@ class QAM16CodeDecoder:
         """
         y = np.asarray(soft_axis_values, dtype=float)
         n_steps = len(y)
+        # Optional per-step weights on the squared residual (None = unweighted).
+        # For zero-forced 16-QAM, |h|^2 of the symbol on both of its two steps
+        # is the matched metric.
+        w = None if weights is None else np.asarray(weights, dtype=float)
 
         metric = np.full(self.num_states, np.inf)
         metric[0] = 0.0
@@ -113,6 +117,8 @@ class QAM16CodeDecoder:
         pred_u = self.pred_u
         for i in range(n_steps):
             branch = (y[i] - self.exp_level) ** 2  # shape (num_states, 2)
+            if w is not None:
+                branch = w[i] * branch
 
             cost0 = metric[pred0] + branch[pred0, pred_u]
             cost1 = metric[pred1] + branch[pred1, pred_u]

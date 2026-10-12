@@ -37,6 +37,8 @@ directly analogous to the textbook finite-blocklength rate-vs-n plot.
 """
 
 import json
+
+import coded_metric as CM
 import math
 
 from relaynet.coding.puncturing import PuncturedCode
@@ -78,7 +80,7 @@ def best_at_budget(entries, relay, snr_idx, l_max):
 
 
 def main():
-    with open("results/coded_rate_adaptation.json") as f:
+    with open(CM.path("results/coded_rate_adaptation.json")) as f:
         d = json.load(f)
     snrs = d["snr_db"]
     entries = {}
@@ -128,7 +130,7 @@ def main():
                 pts.append({"l_max": l_max, "goodput": b["goodput"] if b else 0.0})
             curves[relay][str(snr)] = pts
 
-    with open("results/coded_latency_capacity.json", "w") as f:
+    with open(CM.path("results/coded_latency_capacity.json"), "w") as f:
         json.dump({"snr_db": snrs, "table_budget": TABLE_BUDGET,
                    "latency_table": latency_table, "snapshot": snapshot,
                    "curves": curves}, f, indent=2)

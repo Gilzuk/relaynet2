@@ -23,6 +23,8 @@ Both are measured/derived here rather than argued.
 """
 
 import json
+
+import coded_metric as CM
 import time
 
 import numpy as np
@@ -61,8 +63,13 @@ def main():
     frame_symbols = FRAME_INFO_BITS + tail  # QPSK: 1 trellis step == 1 symbol
 
     # ---- 1. throughput / spectral efficiency -------------------------------
-    with open("results/coded_df_experiment.json") as f:
+    with open(CM.path("results/coded_df_experiment.json")) as f:
         d = json.load(f)
+    if "uncoded_df" not in d:
+        # Uncoded symbol-wise DF slices each symbol by sign; a positive per-symbol
+        # weight cannot change that decision, so the published reference applies.
+        with open("results/coded_df_experiment.json") as f:
+            d["uncoded_df"] = json.load(f)["uncoded_df"]
     snrs = d["snr_db"]
     eff_uncoded_qpsk = 2.0
     eff_coded_qpsk = 2.0 * FRAME_INFO_BITS / (2 * frame_symbols)
@@ -134,7 +141,7 @@ def main():
         print(f"{name:30} {t:>10.3f} {us:>12.2f} {n/t/1e6:>9.3f}")
         compute[name] = {"total_s": t, "us_per_symbol": us, "msym_per_s": n / t / 1e6}
 
-    with open("results/coded_latency_throughput.json", "w") as f:
+    with open(CM.path("results/coded_latency_throughput.json"), "w") as f:
         json.dump({"spectral_efficiency": {"uncoded_qpsk": eff_uncoded_qpsk,
                                            "coded_qpsk": eff_coded_qpsk,
                                            "coded_qam16": eff_coded_qam16},
