@@ -51,7 +51,7 @@ Result
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-H1 & Some AI relays outperform AF at low SNR & \textbf{Confirmed}: the best neural relays beat AF at 0--4 dB on the canonical channel \\
+H1 & Some AI relays outperform AF at low SNR & \textbf{Confirmed}: the best neural relays beat AF at 0--4 dB on the canonical channel; against a conventional variable-gain AF the 0~dB margin is $0.007$ rather than $0.073$, and the learned relays track DF, so the advantage is that of regeneration rather than of learning \\
 H2 & DF lowest-BER among per-symbol relays at high SNR & \textbf{Confirmed}: DF matches or beats all AI methods at \(\geq 6\) dB with 0 parameters \\
 H3 & An error minimum at intermediate capacity & \textbf{Not supported in the tested range}. The replicated size sweep finds no robust BER upturn with capacity. No train/test-gap analysis establishes an overfitting mechanism; uncertainty is configuration-dependent \\
 H4 & Equal parameter count makes architecture-dependent differences negligible & \textbf{Not supported across SNR}. Low-SNR differences remain; the apparent high-SNR convergence is not robust to all measured seeds. Width, depth, windows, state dimensions and optimization remain confounded \\
