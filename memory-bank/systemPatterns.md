@@ -10,8 +10,19 @@ relaynet/
 │   ├── mlp.py            MLPRelay (BPSK regression), MLPQPSKClassifierRelay (QPSK,
 │   │                       4-class softmax over the Gray-coded alphabet)
 │   ├── viterbi.py         ViterbiMLSERelay (BPSK), ViterbiMLSEQPSKRelay (QPSK, 4-symbol
-│   │                       Gray-coded trellis) — both MLSE for ISI channels
+│   │                       Gray-coded trellis), TruncatedViterbiQPSKRelay, FadingAwareViterbiQPSKRelay,
+│   │                       FactorizedViterbiQPSKRelay (two binary I/Q trellises, exact for real taps)
+│   ├── scalar_map.py       ScalarMAPISIRelay (non-monotonic symbol-wise MAP on known ISI, no temporal context)
+│   ├── coded_df.py, coded_df_qam16.py   CodedDecodeAndForwardRelay(QAM16): block DF, process(y, weights=None)
+│   ├── soft_coded_df.py    SoftCodedDecodeAndForwardRelay (BCJR soft block DF), SoftLearnedRelay
+│   ├── bcjr.py             BCJRQPSKRelay (channel BCJR control)
 │   ├── e2e.py, vae.py, cgan.py, hybrid.py, rl.py, genai.py   (other thesis chapters' architectures)
+│   └── codex_hybrid.py     nominal-SNR Hybrid variant (tests only; not used by any experiment)
+├── coding/
+│   ├── convolutional.py    ConvolutionalEncoder, ViterbiCodeDecoder.decode(soft_bits, weights=None)
+│   ├── convolutional_qam16.py  QAM16CodeDecoder.decode(soft_axis_values, weights=None)
+│   ├── bcjr.py             BCJRCodeDecoder.decode / coded_bit_posteriors(soft_bits, noise_var=None)
+│   └── bicm.py, puncturing.py
 ├── channels/
 │   ├── awgn.py, fading.py, mimo.py
 │   └── e6_channels.py   (E6 port: ISIChannel, NonlinearBiasChannel, RayleighChannel,
@@ -26,7 +37,8 @@ relaynet/
 ## Conventions to preserve when adding relays/channels
 - **Relay interface**: a relay exposes `.process(received_signal) -> forwarded_signal`. `MLPRelay` also exposes `.fwd(X)` for raw windowed-batch inference (used when windowing is done manually, e.g. complex-signal cases in `e6_flat_ported.py`).
 - **Channel interface**: a channel is callable as `channel(signal, snr_db) -> noisy_signal`, and is a class so it can hold internal RNG/seed state (`ISIChannel(seed=...)`, etc.).
-- **SNR convention**: γ = 1/σ² = 10^(SNR_dB/10); noise_power = signal_power / 10^(SNR_dB/10). Verified identical between standalone E6 scripts and `relaynet` — no rescaling anywhere. Any new channel MUST follow this exact convention.
+- **SNR convention**: γ = 10^(SNR_dB/10); noise_power = signal_power / γ, i.e. σ² = 1/(2γ) per real dimension. Complex noise is `10**(-snr_db/20) * (randn + 1j*randn)/sqrt(2)`; real noise on a real signal is `randn/sqrt(2γ)` (see techContext.md, the C7 trap). Any new channel MUST follow this exact convention.
+- **Reliability weights (coded decoders)**: decoders accept per-symbol weights (`weights=` |h|² for Viterbi, `noise_var=` 1/(2γ|h|²) per symbol for BCJR, rescaled for its ±1 reference points); coded relays pass per-frame slices through `process(y, weights=None)`. Experiment scripts route this through `coded_metric.py` (`hop`, `relay_process`, `bit_weights`) so the unweighted published path is untouched.
 - **Windowed neural relays**: `MLPRelay(input_size, hidden_size, output_size, window_size, seed)`. If `window_size` is set, `.process()` auto-extracts sliding windows via `np.lib.stride_tricks.sliding_window_view` with `pad_size = window_size // 2` zero-padding on both sides. For complex signals, windows are extracted manually (I and Q concatenated) and passed to `.fwd()` directly — see `extract_windows()` in `e6_flat_ported.py`.
 - **Viterbi relay**: `ViterbiMLSERelay(channel_taps=...)` for genie CSI, or LS-estimation variant — set `self.L` (channel length) BEFORE calling `_ls_estimate()` (this was a real bug, see `progress.md` Known Issues Fixed). `ViterbiMLSEQPSKRelay` follows the identical trellis pattern generalized to base-M states (`itertools.product(range(M), repeat=L-1)` instead of binary digit unpacking) and complex branch metrics (`np.abs(y - exp_y)**2`); `process()` returns decoded complex constellation symbols rather than bits, consistent with `.process()` returning a forwarded signal, not decoded bits. If a 16-QAM version is ever needed, follow the same generalization (M=16, 256 states for L=3) — not built, explicitly deferred by user request.
 - **Hard vs soft decision relays** (added for the enhanced multi-architecture comparison): a "hard" DF relay quantizes to the nearest constellation point (`DecodeAndForwardRelay`, BPSK-only, or the modulation-aware `DFHardRelay` in `e6_sim_enhanced_multimod.py` which wraps `get_modulation_functions(modulation)`); a "soft" DF relay does power normalization only, no quantization (`DFSoftRelay`, same signature works for real or complex signals via `np.abs`). Neither hard/soft class is promoted into `relaynet/relays/` yet — kept local to the experiment scripts.
@@ -37,7 +49,7 @@ relaynet/
 When pulling BER numbers from two different scripts to compare relays "fairly," **verify both scripts use the literal same hop-2 (and hop-1) channel objects** before trusting the comparison — even scenario descriptions that sound the same (e.g. both say "unknown ISI") can differ in whether hop 2 has Rayleigh fading or not, and that alone can dwarf any real relay-architecture difference. This actually happened: an MLP-170-vs-Viterbi-QPSK comparison looked dramatic until it turned out one script used `RayleighChannel` and the other `ComplexAWGNChannel` for hop 2. Always rerun the comparison set in one script under one shared channel setup rather than stitching together numbers from separate runs.
 
 ## File naming pattern for ported experiments
-`e6_<name>_ported.py` at repo root — mirrors `experiments-standalone/e6_<name>.py` 1:1 in structure/scenarios but calls into `relaynet` classes instead of hand-rolled NumPy. Results saved to `/tmp/e6_<name>_ported_results.npy` (or similar), figures to `/tmp/*.png` during iteration — NOT yet moved into `results/` (that happens only at final thesis-integration pass, see `progress.md`).
+`e6_<name>_ported.py` at repo root — mirrors `experiments-standalone/e6_<name>.py` 1:1 in structure/scenarios but calls into `relaynet` classes instead of hand-rolled NumPy. Results are committed to `e6_unknown_channel_results/e6_<name>_ported_results.npy`; other experiments write `results/<name>.json` (+ `_console.txt`). Never write results to `/tmp/` (CLAUDE.md).
 
 ## Testing pattern
-`test_e6_core.py` — plain assertion-based checks (no pytest framework requirement observed) covering: ISI channel convolution/normalization, MLP weight init param counts, forward-pass shapes, SNR convention agreement, window extraction correctness, Rayleigh magnitude distribution. Run with `python3 test_e6_core.py`.
+`tests/` — pytest suite (347 tests in 24 modules as of 2026-10-12): channels, modulation, coding (including the matched decoder metrics, `test_matched_decoder_metrics.py`), relays and weight save/load, simulation, statistics, SNR convention, and the verification tooling. Run with `python3 -m pytest -q tests`. The older `test_e6_core.py` (plain asserts) still covers the E6 port basics.

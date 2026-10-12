@@ -213,11 +213,11 @@ Each relay strategy is evaluated on both SISO channels (AWGN and Rayleigh) using
 
 The thesis findings are bounded by the implemented configurations:
 
-- In the canonical uncoded QPSK/Rayleigh comparison, feedforward relays improve on AF at low SNR; DF matches or exceeds the evaluated learned relays from 6 dB upward.
+- In the canonical uncoded QPSK/Rayleigh comparison, feedforward relays improve on the implemented block-normalized AF at low SNR; against a conventional variable-gain AF the 0 dB margin is 0.007 rather than 0.073, and the learned relays track DF. DF matches or exceeds the evaluated learned relays from 6 dB upward.
 - Small tested networks can be competitive. The experiments do not establish overfitting, universal minimum size, or equal performance across all architectures and training seeds.
 - On the fixed BPSK ISI channel, the 170-parameter MLP improves strongly on AF/zero-threshold DF but trails matched MLSE over the resolved range. Fixed-budget validation stops at 16 dB.
 - The learned relays have training-family knowledge. Pilot and blind results do not demonstrate generalization to new impairment families.
-- Coded comparisons use imperfect reliability metrics; read-out effects do not establish a universal disadvantage of relay decoding. Arithmetic and reference-program timing are not hardware deployment results.
+- On the coded link, the original comparisons used decoder metrics that ignore symbol-dependent reliability. With reliability-weighted (matched) metrics at the relay and destination, block DF has lower BER than both learned relays at every tested SNR (30/30 paired trials); the learned relays' published high-SNR advantage came from the metric (`coded_matched_metrics.py`, thesis Sec. 5.5.2). Arithmetic and reference-program timing are not hardware deployment results.
 
 Historical framework tables below are retained as archival demonstrations, not the current thesis's numerical authority. Use the thesis tables and their declared experiment files. A recorded zero means no errors observed in a finite run—insufficient data to estimate a positive BER—not zero true BER or an infinite improvement.
 
@@ -291,7 +291,7 @@ For the selected BPSK taps, the cursor is approximately 0.758 and the interferer
 
 ### Claim 3 — Separate MACs and FLOPs
 
-The real 11-to-13-to-1 relay has 170 parameters, 156 MACs and 14 bias additions, approximately 330 FLOPs excluding activation cost. Full-state MLSE has M^L branches for channel length L; reduced-state alternatives [9] are not benchmarked. The coded-QPSK 208-MAC relay is a different, 220-parameter architecture.
+The real 11-to-13-to-1 relay has 170 parameters, 156 MACs and 14 bias additions, approximately 330 FLOPs excluding activation cost. Full-state joint MLSE has M^L branches for channel length L; with real taps a square M-QAM trellis separates exactly into two √M-ary trellises (2M^(L/2) branch metrics, 2^(L+1) for QPSK; `factorized_mlse_equivalence.py`). Reduced-state alternatives [9] are not benchmarked. The coded-QPSK 208-MAC relay is a different, 220-parameter architecture.
 
 ### Claim 4 — Blind results are implementation-specific
 

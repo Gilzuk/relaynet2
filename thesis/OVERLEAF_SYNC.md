@@ -98,6 +98,23 @@ never merged into `main`; it is a build output that happens to be a branch. Each
 publish is one commit, its message naming the `thesis/` commit it came from, and
 the history is append-only.
 
+**Publish from `main`, under the author's name.** The published commits are the
+author's document, so set the identity for the publish only, through the
+environment, and leave the repository's own `user.name` alone (changing it once
+put the author's name on an ordinary working commit):
+
+```bash
+GIT_AUTHOR_NAME="Gil Zukerman" GIT_AUTHOR_EMAIL=gil.zukerman@gmail.com \
+GIT_COMMITTER_NAME="Gil Zukerman" GIT_COMMITTER_EMAIL=gil.zukerman@gmail.com \
+python3 scripts/overleaf_sync.py --repo
+```
+
+Then check that the published `thesis.pdf` is byte-identical to the source:
+`git fetch thesis-repo main && git show thesis-repo/main:thesis.pdf | sha256sum`
+against `sha256sum thesis/main.pdf`. A stale local `overleaf-dist` from before a
+history rewrite on the remote must be deleted first, so the script re-adopts the
+remote branch.
+
 It is also mirrored to `origin` so the published state is visible from GitHub
 without Overleaf credentials:
 

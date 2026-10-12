@@ -1,5 +1,7 @@
 # Progress — E6 Porting Checklist
 
+Session note (2026-10-12, final): #162 fixed the last stale claim (reliability-weighted decoding listed as unmeasured in Ch. 7/Ch. 8); mirror 162fb85 = main 1eaeb08; all tracking documents updated (HANDOVER, changelogs, README, REPRODUCE, context, memory bank). Round closed; remaining items are the author's (send reply, Overleaf pull, f174a3b).
+
 Session note (2026-10-12, recheck): audit #158, reply #159, then a second recheck (fix/khina-recheck-gaps): factorization caveat everywhere M^L is stated, Table 5.11 look-ahead caption, Sec. 4.1.5/7.1.1/7.6/Ch. 1 wording, Hybrid described as coded (fixed 5 dB threshold on a per-axis power estimate; replay shows the switch at 6-8 dB), sequence-model 15% holdout + best-training-loss restore, Appendix B table, test counts. Thesis 138 pages, verifier 678 cells, 347 tests.
 
 Session note (2026-10-12, later): Khina round merged through #154 (C4 matched coded metrics reverse the coded high-SNR conclusion; C4b secondary studies; C5, C7, C8; C6 closed). Thesis 133 pages, verifier 657 cells, 347 tests. Remaining: republish mirror, draft Khina reply (HANDOVER.md P, R).

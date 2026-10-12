@@ -1,5 +1,17 @@
 # Hebrew abstract: drafted, needs the author's review
 
+**Update 2026-10-12 (Khina revision round).** Two changes to the English
+abstract were mirrored in `chapters/hebrew_abstract.tex`, again in drafted
+Hebrew that the author should read:
+- the qualifier that the learned relays' low-SNR advantage is over the
+  implemented block-normalized AF, with the 0.007 margin at 0 dB against a
+  conventional variable-gain AF;
+- the coded-study sentence: with reliability-weighted (matched) decoder metrics,
+  block DF beats the learned relays at every tested SNR.
+
+The Hebrew abstract renders on page 136 of the 138-page build (printed page
+xii); the rest of this note describes the 2026-09-09 rewrite.
+
 **Status 2026-09-09: drafted, not author-approved.** The Hebrew abstract was
 505 words over a page and a half, translating the superseded 695-word English
 abstract. It has been rewritten to 321 words on one page, mirroring the new
