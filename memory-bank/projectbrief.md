@@ -4,7 +4,7 @@
 M.Sc. thesis project: **"Deep Learning Architectures for Two-Hop Relay Communication"**, Tel Aviv University (2026).
 
 Two codebases live in this one repo:
-1. **The thesis itself** — LaTeX source (`chapters/*.tex`, `thesis_tau.tex`), compiled via XeLaTeX, synced to Overleaf.
+1. **The thesis itself** — LaTeX source in `thesis/` (`thesis/main.tex`, `thesis/chapters/*.tex`), compiled with XeLaTeX (latexmk) to `thesis/main.pdf`, and published to Overleaf through the generated mirror `Gilzuk/relaynet2-thesis`.
 2. **`relaynet`** — a Python simulation framework for two-hop relay networks (channels, relays, modulation, nodes) used to generate the thesis's experimental results (BER curves, tables, figures).
 
 ## Core research question
