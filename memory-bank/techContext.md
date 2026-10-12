@@ -13,10 +13,10 @@
 
 
 ## Stack
-- Python 3, NumPy (hand-rolled MLP forward/backward + Adam — no PyTorch/TF dependency in the E6 port path)
+- Python 3.11, NumPy (hand-rolled MLP forward/backward + Adam in the E6 port path); PyTorch for the canonical learned relays (`relaynet/relays/genai.py`, `vae.py`, `cgan.py`, `checkpoints/checkpoint_18/20/23`)
 - Matplotlib for BER curve plots
 - LaTeX (XeLaTeX) + BibTeX for the thesis document, `sync_overleaf.py` to push to Overleaf
-- No pytest — validation scripts use plain asserts and print-based pass/fail
+- pytest: `python3 -m pytest -q tests` (347 tests in 24 modules as of 2026-10-12, all passing; the four Mamba-2 tests skip if that module cannot be imported). `verify_thesis_tables.py` (678 cells) and `provenance_audit.py` are the thesis-level checks
 
 ## Compiling the thesis (LaTeX toolchain is NOT preinstalled in a fresh container)
 A fresh session/container has no TeX distribution at all. To get a fully faithful compile (real Hebrew RTL rendering + real Times New Roman/Arial/Courier New, not substitutes), install in this order:
@@ -39,15 +39,45 @@ The repo root has ~150+ loose files: LaTeX build artifacts, many one-off `_*.py`
 
 6. **Writing new theory prose: self-audit it against the implementation before review, not after.** Added a channel-coding background section to Ch2 (2026-08-25) and re-read it against `relaynet/coding/*` and `coded_rate_adaptation.py`. Three real errors, all of which read fluently and none of which any automated check would have caught: (a) described Viterbi as avoiding "all $2^{K-1}$ paths" — $2^{K-1}$ is the *state* count; an $L$-bit frame has $2^{L}$ paths, so as written it made the algorithm's whole purpose incoherent; (b) asserted $S=2^{K-1}$ directly after introducing a general rate $k/n$, where it holds only for $k=1$ (general: $2^{k(K-1)}$) — the implementation is $k=1$ throughout, so the fix was to scope the claim, not change it; (c) described the link-adaptation study as maximizing spectral efficiency "subject to a reliability constraint", when `coded_rate_adaptation.py` maximizes goodput $G=R(1-\mathrm{FER})$ unconstrained — i.e. the prose described a different optimization than the one the thesis ran. **Takeaway: prose about an implementation is a claim about that implementation. Open the source and check each quantity, especially the ones that sound too standard to be worth checking.** A fourth issue was stylistic but the same species: the `\par{\small\textit{Source: \cite{}}}` form prescribed by `.clinerules/50-references.md` is used by *no* built chapter (ch02's actual convention is an inline `\cite` in the sentence introducing the equation), so following the written rule produced five orphaned "Source: [24]" lines — another instance of gotcha #5's stale-rules pattern, verified against the built chapters rather than the rule doc.
 
+7. **Provenance dates scripts by their last commit (Khina round, C4b).** `provenance_audit.py` flags data
+   as STALE when its generating script has a later commit. Editing a published script for a new variant
+   (e.g. a matched-metric path) therefore stales its old data even if the default path is unchanged.
+   Put the variant in a new script (`coded_min_size_matched.py`) or rerun; a squash merge keeps script and
+   data in one commit (#154).
+8. **Decoder-metric switch.** `coded_metric.py`: `CODED_METRIC=matched` weights each zero-forced residual
+   by |h|² at the relay and destination decoders and writes `*_matched.json`; unset, every coded script
+   behaves exactly as published (same random draws). The |h₂|²-only destination metric does not model
+   relay errors, so it *hurts* hard-output learned relays at high SNR; report both destination metrics.
+9. **The canonical Hybrid does not switch on the operating SNR.** `HybridRelay.process` compares a fixed
+   5 dB threshold with `estimate_snr`, computed per axis from the received power of the zero-forced block
+   and assuming unit signal power; on QPSK/Rayleigh its switch falls between 6 and 8 dB
+   (`hybrid_branch_selection.py`). `Source(seed)` reseeds NumPy's global RNG, so canonical Hop-1 draws can
+   be replayed exactly.
+10. **Sequence-model wrappers hold out 15% and keep the best training-loss epoch** (`val_split=0.15`,
+   `best_state`, `patience=0`) in `checkpoints/checkpoint_18/20/23`; describe that, not "final epoch".
+11. **Mirror commits carry the author's identity via environment variables only.** Publish with
+   `GIT_AUTHOR_*`/`GIT_COMMITTER_*` set to the author; never change the repo's `user.name`, or ordinary
+   commits get the author's name too (happened once in the Khina round, commit b4e1abc; the repo config was then restored).
+
 ## SNR convention (load-bearing — do not change without updating everywhere)
-- γ = 1/σ² = 10^(SNR_dB/10)
-- Standalone E6 scripts: `sigma = 10**(-snr_db/20.0)`
-- relaynet: `noise_power = signal_power / 10**(snr_db/10)`
-- These are mathematically identical. Verified numerically in `test_e6_core.py`.
+- γ = 10^(SNR_dB/10), unit symbol energy; complex noise power 1/γ, i.e. **σ² = 1/(2γ) per real dimension**.
+- Complex noise: `10**(-snr_db/20) * (randn + 1j*randn) / sqrt(2)`. Real noise on a real signal:
+  `randn / sqrt(2 * 10**(snr_db/10))`.
+- relaynet: `noise_power = signal_power / 10**(snr_db/10)`, per-axis std `sqrt(noise_power/2)`.
+- **Trap (cost a rerun, C7 / #152):** `sigma = 10**(-snr_db/20)` applied to a *real* signal without the
+  `/sqrt(2)` gives variance 1/γ, twice the convention. `e6_flat_ported.py` did this for real forwarded
+  signals on Hop 2; fixed at three sites and rerun. Check every new real-valued noise draw against
+  1/(2γ).
 
 ## Experiment scale conventions
-- **Iteration/dev scale**: 5 trials × 50,000 bits per SNR point, SNR 0–20 dB in 2 dB steps. Used for all E6 porting verification so far.
-- **Project standard / final thesis-integration scale**: 10 trials × 100,000 bits per SNR point — NOT yet run for the E6 port. This is required before replacing any `results/e6_*.png` figures or updating Chapter 7 tables (see `progress.md` → Pending).
+- **Iteration/dev scale**: 5 trials × 50,000 bits per SNR point, SNR 0–20 dB in 2 dB steps.
+- **Project standard**: 10 trials × 100,000 bits per SNR point (used for the E6 thesis results).
+- Coded studies state their own budgets (e.g. 30 paired trials × 100,000 bits for the matched-metric
+  rerun, `CODED_TRIALS` to override). Stop adding trials once a result has plateaued, but never drop
+  completed trials to move a number.
 
-## Where results currently live
-All E6 port outputs so far are in `/tmp/` (ephemeral — this is a remote/cloud session, container is reclaimed after inactivity). Nothing has been copied into the tracked `results/` directory yet. **Anything under `/tmp/` will NOT survive a session restart** — if a run needs to be preserved, it must be committed into the repo (e.g., under `results/` or a new `e6_results/` directory) or re-run.
+## Where results live
+Committed results are in `results/` (thesis data, `*_matched.json` for the reliability-weighted reruns,
+console logs as `*_console.txt`) and `e6_unknown_channel_results/` (E6 arrays). Scripts must write there,
+never to `/tmp/`, which does not survive the container. Each experiment has a row in
+`provenance_audit.py` REGISTRY and, where the thesis quotes it, a check in `verify_thesis_tables.py`.

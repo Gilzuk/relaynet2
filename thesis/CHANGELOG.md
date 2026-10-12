@@ -1,15 +1,83 @@
 # Changelog
 
-Notable changes to the thesis. The in-document record is Appendix E (supervisor
-comments and their resolutions) and Appendix F (independent review findings and
-their resolutions).
+Notable changes to the thesis, newest first. The response to the October 2026
+review is `submission/reply_to_khina_2026-10.md` (one paragraph per comment, with
+the thesis location of each fix) and the task chain behind it is `HANDOVER.md` at
+the repository root. Earlier rounds were recorded in review-response appendices
+that the current build no longer includes.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/). Verification
-claims refer to `verify_thesis_tables.py` at the repository root, which checks
-every table cell and quantitative prose claim against the data files that
-produced it.
+claims refer to `verify_thesis_tables.py` at the repository root, which checks a
+declared subset of table cells and prose numbers against the data files that
+produced them; it does not cover every number or figure.
 
 ---
+
+## [Khina revision round] — 2026-10-12
+
+Response to Dr. Anatoly Khina's nine comments and presentation notes on the
+120-page final-revision PDF: PRs #131–#162, ending at 138 pages. Section and
+table numbers below are those of the 138-page build.
+
+### Changed — conclusions
+- **Coded relaying (comment 4).** With reliability-weighted (matched) decoder
+  metrics, block DF has lower BER than both learned relays at every SNR from 0 to
+  20 dB, in 30 of 30 paired trials, under either destination metric. The
+  published high-SNR advantage of the learned relays came from the unweighted
+  metric. New Sec. 5.5.2 and Table 5.9; matched values beside the published ones
+  in Tables 5.6, 5.10, 5.12 and 5.13; the reversal is stated in Ch. 1, Ch. 7,
+  Ch. 8 and both abstracts.
+- **AF (comment 3).** The learned relays' low-SNR advantage is over the
+  implemented block-normalized AF. Against a conventional variable-gain AF the
+  0 dB margin is 0.007, not 0.073 (Secs. 4.1.3, 5.2, 7.1.1, Ch. 8, abstracts).
+- **Flat controls.** Hop-2 noise corrected and rerun; below 8 dB the
+  unknown-phase MLP trails differential detection by up to 0.0106 at 0 dB
+  (see `RERUN_CHANGELOG.md`).
+
+### Added
+- Sec. 4.1.5, the relay-design problem and its training surrogates (comment 1).
+- Sec. 3.1.1 hierarchy paragraph and Table 3.1 mapping each research question
+  and hypothesis to the experiments that answer it; O1 and O2 answered by name in
+  Ch. 8 (comment 2).
+- Exact I/Q factorization of QPSK MLSE, checked on 264,000 decisions. The cost
+  comparison in Sec. 6.5 gives the factorized count beside the joint one, the
+  Fig. 6.7 caption notes it, and Sec. 2.6 states the square-QAM case (comment 5).
+- Appendix G (Sec. 9.6, Table 9.7): channel models, amplifier, normalization,
+  pilots, windows, DBPSK and the single SNR-penalty definition; Appendix E
+  size-sweep configuration and Table 9.3 (comment 7).
+- Sec. 2.2.4 positioning against estimate-and-forward, Farsad–Goldsmith and
+  ViterbiNet; Table 3.2 compares named studies; a non-monotonic scalar MAP relay
+  is measured on the ISI channel (Sec. 6.2) (comment 9).
+- AF block-length sensitivity and a conventional finite-power AF (comment 3).
+
+### Fixed
+- **Delay accounting (comment 6):** detector look-ahead, normalization
+  buffering, protocol scheduling and end-to-end delay are distinguished
+  (Tables 5.11 and 6.8, Sec. 7.3.1); operational-readiness claims removed.
+- **Architecture comparisons (comment 8):** Transformer count 17,697; tanh/ReLU
+  protocol qualified; initialization spread 0.39 / 0.07 / 0.03 dB; equal-budget
+  conclusions tied to the training protocols, with no claim to isolate
+  architecture.
+- **Methods described as the code runs:** canonical relays trained once on
+  BPSK over AWGN and applied per axis; Adam for every relay; sample counts
+  (Sec. 4.3.3, Eq. 4.16). The Hybrid compares a fixed 5 dB threshold with a
+  per-axis received-power estimate, so its switch falls between 6 and 8 dB
+  (Sec. 4.2). The sequence models hold out 15% and keep the lowest-training-loss
+  epoch. Appendix B (Table 9.1) and the test counts corrected.
+- **Remaining-alternatives statements:** Ch. 7 (comparator scope) and the Ch. 8
+  closing paragraph no longer list reliability-weighted decoding as unmeasured;
+  what remains unmeasured is a destination metric that also models relay
+  decision errors (#162).
+- **Presentation:** Chapter 5 running headers; ledger cites tables and figures,
+  not labels; verification-coverage statements agree (Sec. 4.3.4, Appendices C
+  and D); Table 5.8 shows the corrected value its figure plots; coded captions
+  name the unweighted metric.
+
+### Verification
+`latexmk -xelatex`: 0 errors, 0 undefined references, 138 pages.
+`verify_thesis_tables.py`: 678 cells, 0 inconsistencies. `provenance_audit.py`:
+clean. `pytest`: 347 passed. Mirror `relaynet2-thesis` at 162fb85 (from main
+1eaeb08), `thesis.pdf` byte-identical to `thesis/main.pdf`.
 
 ## [AWGN companion removed from Chapter 5] — 2026-08-17
 

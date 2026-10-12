@@ -1,6 +1,6 @@
 # Handover — Khina revision round (task chain)
 
-_Last updated: 2026-10-12. Khina round complete: all tasks merged, mirror published (f3eabf6), reply drafted. Thesis 133 pages; verifier 657 cells; 347 tests._
+_Last updated: 2026-10-12. Khina round complete: every task merged (#131–#162, plus the documentation PR that records this), mirror published at 162fb85 (= main 1eaeb08), reply drafted and committed but not sent. Thesis 138 pages; verifier 678 cells; 347 tests. Nothing is left to implement; the open items are the author's decisions listed under "Next"._
 
 This file is the resume point if a session ends mid-task (out of credits, container reset,
 interruption). A new session should read it **after** `CLAUDE.md`, `context.md`,
@@ -37,14 +37,13 @@ notes. Summary of each comment (paraphrased; page numbers refer to the 120-page 
    checkpoint selection).
 8. Equal parameter counts do not equalize training or isolate inductive bias; keep conclusions tied
    to the protocols. Transformer parameter count, ReLU/tanh protocol and 0.07 dB claim (done in
-   Phase A). **Remaining: the equal-budget discussion still alternates between acknowledging
-   confounds and claiming to isolate architecture / capacity as dominant cause.**
+   Phase A). The equal-budget discussion was made consistent with the protocols in B4 (#147).
 9. Positioning: explain what the thesis adds beyond estimate-and-forward, Farsad–Goldsmith
    (learned detection without CSI) and ViterbiNet; Table 3.1 (`tbl:table17`) should compare
    **named studies** and properties, not "prior work: ad-hoc / none". Scalar-MAP reference (done, C2).
 
 Presentation notes: running headers (#124), ledger labels (#135), verification-coverage wording
-(#134), figures vs principal tables using different values (→ C5).
+(#134), figures vs principal tables using different values (C5, #151).
 
 ## Task chain
 
@@ -64,13 +63,15 @@ Presentation notes: running headers (#124), ledger labels (#135), verification-c
 | C4 | Reliability-weighted (|h|²) Viterbi/BCJR at relay + destination; coded Tables 34/37/39 rerun (`coded_matched_metrics.py`, 30 paired trials, published seeds, unweighted rows reproduce exactly). **Result: matched block DF beats both learned relays at every SNR 0–20 dB, 30/30 trials, either destination metric; the published high-SNR learned advantage was a metric artifact.** New Sec. 5.5.2 + Table `tbl:coded-matched`; Ch. 5/8/9 and both abstracts updated. Secondary coded studies (Tables 38, 44, throughput/latency/rate adaptation, coded size sweep) NOT rerun | DONE | #150 |
 | C4b | Secondary coded studies rerun with matched metrics (`CODED_METRIC=matched`, 30 trials, published seeds; outputs `results/*_matched.json`, envelopes `coded_matched_envelopes.py`). Matched block DF stronger everywhere: relay symbol errors ~1e-5/1e-6 (Table 38); larger K now helps (8 dB: 0.0033/0.00069/6.7e-5); reliable regime = oracle (0 errors 24–32 dB); equal-throughput coding wins from 8 dB (12.3× at 16 dB); rate-adaptation envelope far above denoise 8–32 dB; 150-symbol budget: block DF leads ≥20 dB; 100-symbol structural lock-out survives; coded size-sweep penalties +7.6–9.9 dB. Matched values added beside published ones (Tables 38/40/42/43, prose), Ch. 8/9 updated; verifier check `coded-matched-secondary` (43 cells) | DONE | #154 |
 | C5 | Corrected-figure vs superseded-table consistency (Khina presentation note). The ISI→Rayleigh (S2) and control (S4) rows had already been removed from `tbl:tableE6` and Fig. E6 (#122/#123), so no rerun was needed. Remaining instance fixed: Table 39's 20 dB soft block-DF cell now shows the doubled-variance run Fig. 5.x plots (0.001376), nominal 0.002348 in the footnote; verifier maps the cell to `coded_soft_df_calibration.json` | DONE | #151 |
-| C6 | Causal/streaming normalization. Not needed: no 5/10-symbol operational-readiness claim remains. #138 separated detector look-ahead from normalization buffering (Ch. 5 Table 41 text), Ch. 8 separates protocol scheduling, readiness and computation, and the streaming rule is stated as not evaluated; the joint-latency hard MLP and MLSE relays forward exact points with no normalization, so their delays are readiness delays | CLOSED (no code) | (this PR) |
+| C6 | Causal/streaming normalization. Not needed: no 5/10-symbol operational-readiness claim remains. #138 separated detector look-ahead from normalization buffering (Ch. 5 Table 41 text), Ch. 8 separates protocol scheduling, readiness and computation, and the streaming rule is stated as not evaluated; the joint-latency hard MLP and MLSE relays forward exact points with no normalization, so their delays are readiness delays | CLOSED (no code) | #155 |
 | C7 | E6_FLAT Hop-2 noise fixed (1/γ → 1/(2γ) for real forwarded signals, three sites in `e6_flat_ported.py`) and rerun on the original seeds. DF/MLP BERs roughly halve; DF-vs-MLP similarity holds from 8 dB; below 8 dB the unknown-phase MLP trails differential detection by up to 0.0106 at 0 dB (exceeds the 0.0036 control target in CLAUDE.md; reported, not tuned). Table `tbl:tableE6flat`, Ch. 6 conclusion and Appendix G updated; new verifier check `prose:flat-conclusion` | DONE | #152 |
 | C8 | Training protocol now described from the committed code: all relays train with Adam (MLP/Hybrid lr 0.01 batch 32 — the NumPy SGD path is a no-PyTorch fallback the canonical run excludes; VAE/sequence 1e-3 batch 64; cGAN 1e-4, β=(0,0.9)); samples 25k (MLP, Hybrid) / 50k (VAE, cGAN, sequence), 100 epochs (cGAN 200). Exact reproduction is not possible (unseeded torch init, global-RNG channel draws; data predate repo history) — stated once in Ch. 4. Fixed #133's "canonical SGD" and Ch. 4's "trained by the same protocol" | DONE | #153 |
-| M  | Memory bank updated for the round (`activeContext.md`, `progress.md`) | DONE | (this PR) |
-| P  | Republish mirror: done after Phase B (46ad144), after C4–C8 (f3eabf6, 133 pages), after the audit (4d3e992, 136 pages) and after the second recheck (69a3386 = main e26361b, 138 pages); author Gil Zukerman, `thesis.pdf` byte-identical to main each time | DONE | — |
-| R  | Reply to Khina: drafted 2026-10-12, one paragraph per comment with the thesis location of each fix (no PR numbers); C4 reversal stated; ×2 multiplication-count convention; C7/C8 disclosures. Committed at the author's request: `thesis/submission/reply_to_khina_2026-10.md` (not sent); updated after the point-by-point audit (#158) and the second recheck (RC), section/table numbers re-checked against the 138-page build | DRAFTED, COMMITTED (awaiting author) | #159, (this PR) |
-| RC | Second recheck of the rendered PDF against every sub-request: factorization caveat wherever M^L is stated (Fig. 6.7, Sec. 6.5, 2.6, O2, H5, Appendix); Table 5.11 "Look-ahead" caption; Sec. 4.1.5 matched destination metric; Ch. 1 contribution 3; Sec. 7.1.1, 7.6 wording; Hybrid described as coded (`hybrid_branch_selection.py`, verifier `prose:hybrid-branch`); sequence-model holdout; Appendix B Table 9.1; test counts | DONE | (this PR) |
+| M  | Memory bank updated for the round (`activeContext.md`, `progress.md`); kept current through the audit and recheck | DONE | #155, #160, #161 |
+| P  | Republish mirror: done after Phase B (46ad144), after C4–C8 (f3eabf6, 133 pages), after the audit (4d3e992, 136 pages), after the second recheck (69a3386 = main e26361b, 138 pages) and after #162 (162fb85 = main 1eaeb08, 138 pages); author Gil Zukerman, `thesis.pdf` byte-identical to main each time | DONE | — |
+| R  | Reply to Khina: drafted 2026-10-12, one paragraph per comment with the thesis location of each fix (no PR numbers); C4 reversal stated; ×2 multiplication-count convention; C7/C8 disclosures. Committed at the author's request: `thesis/submission/reply_to_khina_2026-10.md` (not sent); updated after the point-by-point audit (#158) and the second recheck (RC), section/table numbers re-checked against the 138-page build | DRAFTED, COMMITTED (awaiting author) | #156, #157, #159, #160 |
+| RC | Second recheck of the rendered PDF against every sub-request: factorization caveat wherever M^L is stated (Fig. 6.7, Sec. 6.5, 2.6, O2, H5, Appendix); Table 5.11 "Look-ahead" caption; Sec. 4.1.5 matched destination metric; Ch. 1 contribution 3; Sec. 7.1.1, 7.6 wording; Hybrid described as coded (`hybrid_branch_selection.py`, verifier `prose:hybrid-branch`); sequence-model holdout; Appendix B Table 9.1; test counts | DONE | #160 |
+| RC2 | Found while updating the documents: Ch. 7 (comparator scope) and the Ch. 8 closing paragraph still listed "fully reliability-weighted decoding" as unmeasured, contradicting Sec. 5.5.2; both now say a destination metric that also models relay decision errors is what remains unmeasured | DONE | #162 |
+| D  | Tracking documents brought up to date: thesis, rerun and framework changelogs, README findings, REPRODUCE, context, Overleaf-sync guide (publish identity), Hebrew-abstract note, superseded cover letter marked, memory bank (techContext SNR trap, systemPatterns), table provenance regenerated; reply final pass | DONE | (this PR) |
 
 ## Session chain (work these in order)
 
@@ -101,6 +102,17 @@ tells you where the work is; rerun any experiment script from scratch rather tha
 8. ~~**R**~~ drafted. Was: **R: reply to Khina** — draft only (do not send): one paragraph per comment with the PR that answers
    it, the C4 reversal stated plainly, the ×2 multiplication-count convention, and C7/C8 disclosures.
 
+### Next (author decisions; nothing to implement)
+
+1. **Send the reply** in `thesis/submission/reply_to_khina_2026-10.md` (drafted, not sent), with the
+   revised PDF (`thesis/main.pdf`, 138 pages) or the Overleaf project. Read the Hebrew-abstract
+   changes first (`thesis/HEBREW_ABSTRACT_SYNC.md`): that Hebrew is drafted, not the author's own.
+2. **Overleaf:** pull once from GitHub (Menu → Sync → GitHub). If Overleaf still points at a pre-rewrite
+   commit, unlink and relink first (no Overleaf-side edits exist).
+3. **Mirror commit f174a3b** was authored "Claude"; rewriting it to the author's identity needs the
+   author's OK (force-push to `relaynet2-thesis`).
+4. If Khina replies with further comments, start a new task chain here, one branch and PR per fix.
+
 ### Task notes
 
 **B2 (done).** Files: `thesis/chapters/ch03_objectives.tex` (O1/O2 at `sec:two-objectives`, H1–H5 at
@@ -111,23 +123,23 @@ framework, not the principal contribution. Add a compact table: RQ / hypothesis 
 experiment script(s) → verdict location (Ch. 9 table). Use `\ref` only, never raw labels. Do not
 claim the studies are cumulative relaxations or measure a common boundary.
 
-**B3.** Mostly `ch07_unknown_and_mismatch_channels.tex` (renders as Ch. 6) and the appendix. Read
+**B3 (done).** Mostly `ch07_unknown_and_mismatch_channels.tex` (renders as Ch. 6) and the appendix. Read
 the generating scripts (`e6_*_ported.py`, `e6_sim_enhanced_multimod.py`, `relaynet/channels/e6_channels.py`)
 and transcribe the actual laws — never invent a distribution. The SNR-penalty definitions must
 match the code that computes them (find it via `provenance_audit.py` REGISTRY / `verify_thesis_tables.py`).
 
-**B5.** Needs bib entries checked: Farsad–Goldsmith and ViterbiNet (Shlezinger et al.) are already
+**B5 (done).** Needs bib entries checked: Farsad–Goldsmith and ViterbiNet (Shlezinger et al.) are already
 cited in the appendix and Ch. 6 — reuse `FarsadGoldsmith2018NNDetection` and `Shlezinger2020ViterbiNet`; estimate-and-forward is not cited yet (Khojastepour/
 Sabharwal/Aazhang "estimate-and-forward" / Cover–El Gamal compress-forward lineage). Verify any new
 reference's identity before adding it. (Abou-Faycal & Médard, "Optimal uncoded regeneration for binary
 antipodal signaling", ICC 2004, could NOT be verified and is not cited.) Watch the page budget.
 
-**C4.** Coded pipelines: `relaynet/relays/coded_df.py`, `soft_coded_df.py`, `relaynet/coding/`.
+**C4 (done).** Coded pipelines: `relaynet/relays/coded_df.py`, `soft_coded_df.py`, `relaynet/coding/`.
 Matched metric: weight each zero-forced squared residual by |h|² (i.e., use the un-equalized metric
 |y − h x|²). Rerun the principal coded comparisons into `results/`, add REGISTRY rows, update the
 verifier. **This can reverse coded conclusions — report whatever comes out.**
 
-**C5.** `tbl:tableE6` Rayleigh rows vs the corrected figures; rerun with the current SNR convention
+**C5 (done).** `tbl:tableE6` Rayleigh rows vs the corrected figures; rerun with the current SNR convention
 (γ = 10^(SNR/10)), commit data, update table + verifier.
 
 ## Audit (2026-10-12)
@@ -169,8 +181,8 @@ A second recheck of the rendered PDF (RC) found nine more gaps and two code-vs-t
    `provenance_audit.py` + a check in `verify_thesis_tables.py`.
 3. Build: `cd thesis && latexmk -xelatex -g -interaction=nonstopmode main.tex` three times; check exit
    code, `grep -c '^!' main.log` = 0, `grep -c undefined main.log` = 0, `pdfinfo main.pdf` pages.
-4. `python3 verify_thesis_tables.py` (540 cells now, 0 inconsistencies), `python3 provenance_audit.py`,
-   `python3 -m pytest -q tests` (343 pass).
+4. `python3 verify_thesis_tables.py` (678 cells now, 0 inconsistencies), `python3 provenance_audit.py`,
+   `python3 -m pytest -q tests` (347 pass).
 5. Commit chapters **and** `thesis/main.pdf` together; push the branch; open a PR into `main`;
    report the page count. Merge only PRs this session opened, with the full 40-char head SHA.
 6. When rebasing onto a moved main: resolve `thesis/main.pdf` with `--theirs`, then **rebuild** and amend.

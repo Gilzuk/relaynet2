@@ -2,6 +2,22 @@
 
 _Last updated: 2026-10-12_
 
+### Latest (2026-10-12, final): Khina round closed; documents current; awaiting the author
+
+State: main 1eaeb08 (thesis 138 pages, verifier 678 cells, 347 tests, provenance clean);
+mirror relaynet2-thesis 162fb85, thesis.pdf byte-identical. #162 removed the last stale
+claim found (Ch. 7 and Ch. 8 listed reliability-weighted decoding as unmeasured). The
+tracking documents were brought up to date in one docs PR: HANDOVER (PR numbers, "Next"),
+thesis/CHANGELOG.md and RERUN_CHANGELOG.md (October entries), root CHANGELOG.md (framework),
+README findings (AF qualifier, coded reversal, factorization), REPRODUCE.md (new runs,
+counts, chapter numbers), context.md (points at HANDOVER), OVERLEAF_SYNC.md (publish
+identity), HEBREW_ABSTRACT_SYNC.md, cover_letter.md marked historical, techContext (SNR trap
+for real noise, provenance dating, metric switch, Hybrid, wrappers, mirror identity),
+systemPatterns (new relays, decoder weights), table_provenance.md regenerated.
+Next (author): send the reply (thesis/submission/reply_to_khina_2026-10.md, not sent) after
+reading the drafted Hebrew-abstract changes; pull once in Overleaf; decide on rewriting
+mirror commit f174a3b (authored "Claude"). Nothing remains to implement.
+
 ### Latest (2026-10-12, recheck): second point-by-point recheck against Khina's comments
 
 The audit (#158) and reply update (#159) were followed by a second recheck of the

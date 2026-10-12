@@ -1,5 +1,12 @@
 # Thesis revision — changelog
 
+> **Historical.** This is the cover letter of the earlier major revision
+> (summer 2026), and it describes that version: a BPSK canonical setup, a
+> QPSK/16-QAM chapter and the unknown-channel study as Ch. 7. It is superseded.
+> The reply to Dr. Khina's October 2026 review is
+> [`reply_to_khina_2026-10.md`](reply_to_khina_2026-10.md); the thesis-side record
+> of that round is `../CHANGELOG.md`.
+
 **To:** Dr. Anatoly Khina
 **Subject:** M.Sc. thesis — major revision (changelog attached)
 

@@ -5,6 +5,53 @@ figure, the experiment behind it, the exact command that reproduces it,
 the parameters that run used, and the commit that produced the data it
 rests on. Do not hand-edit; re-run the script.
 
+## `Ch. 5 Table 44 paragraph`
+
+| field | value |
+|---|---|
+| experiment | Coded reliable regime, matched metrics |
+| reproduce | `python coded_reliable_regime.py` |
+| data file | `results/coded_reliable_regime_matched.json` |
+| data commit | `3c271cb` 2026-10-12 (Gilzuk) |
+| provenance | ok |
+| N_FRAMES | `1000` |
+| N_TRIALS | `CM.trials(100)` |
+| SNRS | `[20, 24, 28, 32]` |
+
+## `Ch. 5/8/9 and abstract coded conclusions`
+
+| field | value |
+|---|---|
+| experiment | Coded relaying with matched (|h|^2-weighted) metrics |
+| reproduce | `python coded_matched_metrics.py` |
+| data file | `results/coded_matched_metrics.json` |
+| data commit | `73cd2f2` 2026-10-12 (Claude) |
+| provenance | ok |
+| N_FRAMES | `500` |
+| N_TRIALS | `int(os.environ.get("CMM_TRIALS", "30"))` |
+| SNRS | `[int(s) for s in os.environ.get("CMM_SNRS", "0,4,8,12,16,20").split(",")]` |
+
+## `Ch. 8 coded size-sweep penalties`
+
+| field | value |
+|---|---|
+| experiment | Coded min size, matched block-DF baseline |
+| reproduce | `python coded_min_size_matched.py` |
+| data file | `results/coded_min_size_matched.json` |
+| data commit | `3c271cb` 2026-10-12 (Gilzuk) |
+| provenance | ok |
+
+## `Ch. 9 H1 verdict row`
+
+| field | value |
+|---|---|
+| experiment | Canonical AF: block length and conventional AF |
+| reproduce | `python af_block_and_conventional.py` |
+| data file | `results/af_block_and_conventional.json` |
+| data commit | `52e1126` 2026-10-12 (Claude) |
+| provenance | ok |
+| SNRS | `list(range(0, 21, 2))` |
+
 ## `Limitations item 8: six across-seed spreads; prose:seed-spread-native`
 
 | field | value |
@@ -12,10 +59,21 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | Cross-architecture seed spread (native) |
 | reproduce | `python seed_spread_native_architectures.py` |
 | data file | `results/seed_spread_native_architectures.json` |
-| data commit | `d8b069a` 2026-09-13 (Gilzuk) |
+| data commit | `eea1e18` 2026-09-05 (Claude) |
 | provenance | ok |
 | SNRS | `[0, 4, 8, 12, 16, 20]` |
 | TRAIN_SNRS | `[5, 10, 15]` |
+
+## `constraint-length paragraph`
+
+| field | value |
+|---|---|
+| experiment | Coded K sweeps (QPSK, 16-QAM), matched metrics |
+| reproduce | `python coded_k_sweep_qam16.py` |
+| data file | `results/coded_df_experiment_matched.json` |
+| data commit | `3c271cb` 2026-10-12 (Gilzuk) |
+| provenance | ok |
+| FRAME_INFO_BITS | `200` |
 
 ## `eq:mac-crossover`
 
@@ -24,7 +82,7 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | MAC accounting |
 | reproduce | `python unified_latency_axis.py` |
 | data file | `results/unified_latency_axis.json` |
-| data commit | `d8b069a` 2026-09-13 (Gilzuk) |
+| data commit | `e35d9b7` 2026-09-04 (Gilzuk) |
 | provenance | ok |
 | MLP_HIDDEN | `8` |
 
@@ -35,7 +93,7 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | ISI slicer floor, closed form |
 | reproduce | `python isi_slicer_floor.py` |
 | data file | `results/isi_slicer_floor.json` |
-| data commit | `d8b069a` 2026-09-13 (Gilzuk) |
+| data commit | `e35d9b7` 2026-09-04 (Gilzuk) |
 | provenance | ok |
 | SNRS | `list(range(0, 21, 2))` |
 
@@ -46,7 +104,7 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | E6 pilot-budget sweep |
 | reproduce | `python e6_partial_ported.py` |
 | data file | `e6_unknown_channel_results/e6_partial_ported_results.npy` |
-| data commit | `d8b069a` 2026-09-13 (Gilzuk) |
+| data commit | `e35d9b7` 2026-09-04 (Gilzuk) |
 | provenance | ok |
 | N_TRAIN | `3` |
 | TRAIN_SNRS | `[5, 10, 15]` |
@@ -72,7 +130,7 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | E6 blind / posterior-free |
 | reproduce | `python e6_blind_ported.py` |
 | data file | `e6_unknown_channel_results/e6_blind_ported_results.npy` |
-| data commit | `d8b069a` 2026-09-13 (Gilzuk) |
+| data commit | `e35d9b7` 2026-09-04 (Gilzuk) |
 | provenance | ok |
 | N_TRAIN | `3` |
 | SNRS | `np.arange(0, 21, 2)` |
@@ -86,7 +144,7 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | Corrected composite AF, fixed budget |
 | reproduce | `python scripts/codex_composite_af_validation.py` |
 | data file | `e6_unknown_channel_results/codex_composite_af_validation.json` |
-| data commit | `6e1765d` 2026-09-17 (Gilzuk) |
+| data commit | `b7ca2e6` 2026-09-17 (Gilzuk) |
 | provenance | ok |
 
 ## `fig:figE6comp non-AF curves`
@@ -96,7 +154,7 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | E6 composite cascade |
 | reproduce | `python e6_composite_ported.py` |
 | data file | `e6_unknown_channel_results/e6_composite_ported_results.npy` |
-| data commit | `d8b069a` 2026-09-13 (Gilzuk) |
+| data commit | `e35d9b7` 2026-09-04 (Gilzuk) |
 | provenance | ok |
 | H_ISI | `np.array([1.0, 0.6, 0.4])` |
 | N_TRAIN | `3` |
@@ -111,7 +169,7 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | Minimum relay size, 9 channels |
 | reproduce | `python mlp_min_size_all_channels.py` |
 | data file | `results/mlp_min_size_all_channels.json` |
-| data commit | `d8b069a` 2026-09-13 (Gilzuk) |
+| data commit | `e35d9b7` 2026-09-04 (Gilzuk) |
 | provenance | ok |
 | EPOCHS | `25` |
 | H_ISI | `np.array([1.0, 0.7, 0.5])` |
@@ -127,7 +185,7 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | Minimum relay size, 9 channels |
 | reproduce | `python mlp_min_size_all_channels.py` |
 | data file | `results/mlp_min_size_all_channels.json` |
-| data commit | `d8b069a` 2026-09-13 (Gilzuk) |
+| data commit | `e35d9b7` 2026-09-04 (Gilzuk) |
 | provenance | ok |
 | EPOCHS | `25` |
 | H_ISI | `np.array([1.0, 0.7, 0.5])` |
@@ -143,7 +201,7 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | Transformer instability |
 | reproduce | `python transformer_instability.py` |
 | data file | `results/transformer_instability.json` |
-| data commit | `d8b069a` 2026-09-13 (Gilzuk) |
+| data commit | `e35d9b7` 2026-09-04 (Gilzuk) |
 | provenance | ok |
 | SEEDS | `list(range(8))` |
 | SNRS | `[0, 4, 8, 12, 16, 20]` |
@@ -155,7 +213,7 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | Transformer instability |
 | reproduce | `python transformer_instability.py` |
 | data file | `results/transformer_instability.json` |
-| data commit | `d8b069a` 2026-09-13 (Gilzuk) |
+| data commit | `e35d9b7` 2026-09-04 (Gilzuk) |
 | provenance | ok |
 | SEEDS | `list(range(8))` |
 | SNRS | `[0, 4, 8, 12, 16, 20]` |
@@ -177,7 +235,7 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | MMSE complexity-matched baseline |
 | reproduce | `python mmse_equalizer.py` |
 | data file | `results/mmse_equalizer_detail.json` |
-| data commit | `d8b069a` 2026-09-13 (Gilzuk) |
+| data commit | `e35d9b7` 2026-09-04 (Gilzuk) |
 | provenance | ok |
 
 ## `prose: QPSK SER/BER and bits-per-symbol-error`
@@ -187,7 +245,7 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | QPSK error decomposition |
 | reproduce | `python qpsk_error_decomposition.py` |
 | data file | `results/qpsk_error_decomposition.json` |
-| data commit | `d8b069a` 2026-09-13 (Gilzuk) |
+| data commit | `e35d9b7` 2026-09-04 (Gilzuk) |
 | provenance | ok |
 
 ## `prose: closed-form slicer BER table`
@@ -197,7 +255,7 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | ISI slicer floor, closed form |
 | reproduce | `python isi_slicer_floor.py` |
 | data file | `results/isi_slicer_floor.json` |
-| data commit | `d8b069a` 2026-09-13 (Gilzuk) |
+| data commit | `e35d9b7` 2026-09-04 (Gilzuk) |
 | provenance | ok |
 | SNRS | `list(range(0, 21, 2))` |
 
@@ -208,7 +266,7 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | Coded minimum size |
 | reproduce | `python coded_min_size.py` |
 | data file | `results/coded_min_size.json` |
-| data commit | `d8b069a` 2026-09-13 (Gilzuk) |
+| data commit | `e35d9b7` 2026-09-04 (Gilzuk) |
 | provenance | ok |
 | EPOCHS | `25` |
 | N_FRAMES | `100` |
@@ -222,8 +280,19 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | Minimum size, window x depth |
 | reproduce | `python mlp_min_size_bisect.py` |
 | data file | `results/mlp_min_size_bisect.json` |
-| data commit | `d8b069a` 2026-09-13 (Gilzuk) |
+| data commit | `e35d9b7` 2026-09-04 (Gilzuk) |
 | provenance | ok |
+
+## `prose: exact I/Q factorization checked in implementation (Ch. 2)`
+
+| field | value |
+|---|---|
+| experiment | Factorized QPSK MLSE equivalence |
+| reproduce | `python factorized_mlse_equivalence.py` |
+| data file | `results/factorized_mlse_equivalence.json` |
+| data commit | `f8a2f2f` 2026-10-12 (Claude) |
+| provenance | ok |
+| SNRS | `(0, 4, 8, 12, 16, 20)` |
 
 ## `prose: stopping-rule bias and the 16 dB interval (Chapter 7)`
 
@@ -243,7 +312,7 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | QPSK trellis controls |
 | reproduce | `python qpsk_trellis_controls.py` |
 | data file | `results/qpsk_trellis_controls.json` |
-| data commit | `d8b069a` 2026-09-13 (Gilzuk) |
+| data commit | `e35d9b7` 2026-09-04 (Gilzuk) |
 | provenance | ok |
 
 ## `prose:E6blind`
@@ -253,7 +322,7 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | E6 blind / posterior-free |
 | reproduce | `python e6_blind_ported.py` |
 | data file | `e6_unknown_channel_results/e6_blind_ported_results.npy` |
-| data commit | `d8b069a` 2026-09-13 (Gilzuk) |
+| data commit | `e35d9b7` 2026-09-04 (Gilzuk) |
 | provenance | ok |
 | N_TRAIN | `3` |
 | SNRS | `np.arange(0, 21, 2)` |
@@ -267,7 +336,7 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | E6 composite cascade |
 | reproduce | `python e6_composite_ported.py` |
 | data file | `e6_unknown_channel_results/e6_composite_ported_results.npy` |
-| data commit | `d8b069a` 2026-09-13 (Gilzuk) |
+| data commit | `e35d9b7` 2026-09-04 (Gilzuk) |
 | provenance | ok |
 | H_ISI | `np.array([1.0, 0.6, 0.4])` |
 | N_TRAIN | `3` |
@@ -282,11 +351,56 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | E6 pilot-budget sweep |
 | reproduce | `python e6_partial_ported.py` |
 | data file | `e6_unknown_channel_results/e6_partial_ported_results.npy` |
-| data commit | `d8b069a` 2026-09-13 (Gilzuk) |
+| data commit | `e35d9b7` 2026-09-04 (Gilzuk) |
 | provenance | ok |
 | N_TRAIN | `3` |
 | TRAIN_SNRS | `[5, 10, 15]` |
 | W | `11` |
+
+## `prose:af-conventional (Ch. 8, H1)`
+
+| field | value |
+|---|---|
+| experiment | Canonical AF: block length and conventional AF |
+| reproduce | `python af_block_and_conventional.py` |
+| data file | `results/af_block_and_conventional.json` |
+| data commit | `52e1126` 2026-10-12 (Claude) |
+| provenance | ok |
+| SNRS | `list(range(0, 21, 2))` |
+
+## `prose:hybrid-branch (Sec. 4.2 Hybrid rationale, Ch. 7 limitation, Ch. 8 finding)`
+
+| field | value |
+|---|---|
+| experiment | Canonical Hybrid branch selection (replay) |
+| reproduce | `python hybrid_branch_selection.py` |
+| data file | `results/hybrid_branch_selection.json` |
+| data commit | `ef7deaf` 2026-10-12 (Claude) |
+| provenance | ok |
+| N_TRIALS | `10` |
+
+## `prose:isi-penalty (Ch. 6 Layer table and H5, Ch. 8, Ch. 9, abstracts)`
+
+| field | value |
+|---|---|
+| experiment | ISI required-SNR penalties (MLP vs genie Viterbi) |
+| reproduce | `python e6_isi_penalty.py` |
+| data file | `results/e6_isi_penalty.json` |
+| data commit | `2885723` 2026-10-12 (Claude) |
+| provenance | ok |
+
+## `prose:scalar-map (Ch. 6, slicer-floor paragraph)`
+
+| field | value |
+|---|---|
+| experiment | Scalar MAP relay on unknown ISI |
+| reproduce | `python e6_scalar_map.py` |
+| data file | `results/e6_scalar_map.json` |
+| data commit | `0a22e41` 2026-10-12 (Claude) |
+| provenance | ok |
+| H_ISI | `H_CHANNEL / np.linalg.norm(H_CHANNEL)` |
+| SEEDS | `(0, 1, 2)` |
+| SNRS | `list(range(0, 21, 2))` |
 
 ## `tbl:bcjr-benchmark; relay-output control only`
 
@@ -295,9 +409,22 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | QPSK BCJR/APP benchmark |
 | reproduce | `python qpsk_bcjr_benchmark.py` |
 | data file | `results/qpsk_bcjr_benchmark.json` |
-| data commit | `d8b069a` 2026-09-13 (Gilzuk) |
+| data commit | `97d33c2` 2026-09-05 (Claude) |
 | provenance | **stale, reviewed: endpoint clarification in docstring/console text only; numerical code unchanged** |
 | SNRS | `[0, 4, 8, 12, 16, 20]` |
+
+## `tbl:coded-matched`
+
+| field | value |
+|---|---|
+| experiment | Coded relaying with matched (|h|^2-weighted) metrics |
+| reproduce | `python coded_matched_metrics.py` |
+| data file | `results/coded_matched_metrics.json` |
+| data commit | `73cd2f2` 2026-10-12 (Claude) |
+| provenance | ok |
+| N_FRAMES | `500` |
+| N_TRIALS | `int(os.environ.get("CMM_TRIALS", "30"))` |
+| SNRS | `[int(s) for s in os.environ.get("CMM_SNRS", "0,4,8,12,16,20").split(",")]` |
 
 ## `tbl:joint-latency`
 
@@ -306,7 +433,7 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | Joint latency/memory |
 | reproduce | `python joint_latency_memory.py` |
 | data file | `results/joint_latency_memory.json` |
-| data commit | `d8b069a` 2026-09-13 (Gilzuk) |
+| data commit | `e35d9b7` 2026-09-04 (Gilzuk) |
 | provenance | ok |
 | FRAME_INFO_BITS | `200` |
 | MLP_HIDDEN | `8` |
@@ -322,7 +449,7 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | Memory sweep, precision re-run |
 | reproduce | `python joint_memory_precision.py` |
 | data file | `results/joint_memory_precision.json` |
-| data commit | `d8b069a` 2026-09-13 (Gilzuk) |
+| data commit | `e35d9b7` 2026-09-04 (Gilzuk) |
 | provenance | ok |
 | N_FRAMES | `1500` |
 | SEEDS | `(0, 1, 2, 3, 4)` |
@@ -347,7 +474,7 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | MMSE complexity-matched baseline |
 | reproduce | `python mmse_equalizer.py` |
 | data file | `results/mmse_equalizer.json` |
-| data commit | `d8b069a` 2026-09-13 (Gilzuk) |
+| data commit | `e35d9b7` 2026-09-04 (Gilzuk) |
 | provenance | ok |
 
 ## `tbl:seed-spread`
@@ -357,7 +484,7 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | Seed spread, equal budget |
 | reproduce | `python seed_spread_architectures.py` |
 | data file | `results/seed_spread_architectures.json` |
-| data commit | `d8b069a` 2026-09-13 (Gilzuk) |
+| data commit | `e35d9b7` 2026-09-04 (Gilzuk) |
 | provenance | ok |
 | EPOCHS | `100` |
 | N_TRIALS | `20` |
@@ -372,7 +499,7 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | Seed spread, equal budget |
 | reproduce | `python seed_spread_architectures.py` |
 | data file | `results/seed_spread_architectures.json` |
-| data commit | `d8b069a` 2026-09-13 (Gilzuk) |
+| data commit | `e35d9b7` 2026-09-04 (Gilzuk) |
 | provenance | ok |
 | EPOCHS | `100` |
 | N_TRIALS | `20` |
@@ -387,7 +514,7 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | Sequence models on memory |
 | reproduce | `python seq_models_on_memory.py` |
 | data file | `results/seq_models_on_memory.json` |
-| data commit | `d8b069a` 2026-09-13 (Gilzuk) |
+| data commit | `e35d9b7` 2026-09-04 (Gilzuk) |
 | provenance | ok |
 | TRAIN_SNRS | `[5, 10, 15]` |
 
@@ -398,7 +525,7 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | Minimum relay size, 9 channels |
 | reproduce | `python mlp_min_size_all_channels.py` |
 | data file | `results/mlp_min_size_all_channels.json` |
-| data commit | `d8b069a` 2026-09-13 (Gilzuk) |
+| data commit | `e35d9b7` 2026-09-04 (Gilzuk) |
 | provenance | ok |
 | EPOCHS | `25` |
 | H_ISI | `np.array([1.0, 0.7, 0.5])` |
@@ -407,6 +534,19 @@ rests on. Do not hand-edit; re-run the script.
 | SNRS | `[0, 4, 8, 12, 16, 20]` |
 | TRAIN_SNRS | `[5, 10, 15]` |
 
+## `tbl:table38 matched rows`
+
+| field | value |
+|---|---|
+| experiment | Coded error location, matched metrics |
+| reproduce | `python coded_error_mechanism.py` |
+| data file | `results/coded_error_mechanism_matched.json` |
+| data commit | `3c271cb` 2026-10-12 (Gilzuk) |
+| provenance | ok |
+| N_FRAMES | `500` |
+| N_TRIALS | `CM.trials(100)` |
+| SNRS | `[16, 20]` |
+
 ## `tbl:table39 footnote: variance-corrected 20 dB figures`
 
 | field | value |
@@ -414,11 +554,56 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | Soft block-DF variance calibration |
 | reproduce | `python coded_soft_df_calibration.py` |
 | data file | `results/coded_soft_df_calibration.json` |
-| data commit | `d8b069a` 2026-09-13 (Gilzuk) |
+| data commit | `e35d9b7` 2026-09-04 (Gilzuk) |
 | provenance | ok |
 | N_FRAMES | `500` |
 | N_TRIALS | `100` |
 | SNRS | `[16, 20]` |
+
+## `tbl:table40 matched columns`
+
+| field | value |
+|---|---|
+| experiment | Coded K sweeps (QPSK, 16-QAM), matched metrics |
+| reproduce | `python coded_k_sweep_qam16.py` |
+| data file | `results/coded_df_experiment_matched.json` |
+| data commit | `3c271cb` 2026-10-12 (Gilzuk) |
+| provenance | ok |
+| FRAME_INFO_BITS | `200` |
+
+## `tbl:table42`
+
+| field | value |
+|---|---|
+| experiment | Coded link-adaptation envelopes, matched block DF |
+| reproduce | `python coded_matched_envelopes.py` |
+| data file | `results/coded_matched_envelopes.json` |
+| data commit | `3c271cb` 2026-10-12 (Gilzuk) |
+| provenance | ok |
+
+## `tbl:table42/43 matched column`
+
+| field | value |
+|---|---|
+| experiment | Coded rate adaptation, matched metrics |
+| reproduce | `python coded_rate_adaptation.py` |
+| data file | `results/coded_rate_adaptation_matched.json` |
+| data commit | `3c271cb` 2026-10-12 (Gilzuk) |
+| provenance | ok |
+| FRAME_INFO_BITS | `200` |
+| N_FRAMES | `200` |
+| N_TRIALS | `CM.trials(100)` |
+| SNRS | `[8, 12, 16, 20, 24, 28, 32, 36, 40]` |
+
+## `tbl:table43`
+
+| field | value |
+|---|---|
+| experiment | Coded link-adaptation envelopes, matched block DF |
+| reproduce | `python coded_matched_envelopes.py` |
+| data file | `results/coded_matched_envelopes.json` |
+| data commit | `3c271cb` 2026-10-12 (Gilzuk) |
+| provenance | ok |
 
 ## `tbl:tableE6`
 
@@ -427,7 +612,7 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | E6 unknown ISI (S1-S4) |
 | reproduce | `python e6_sim_ported.py` |
 | data file | `e6_unknown_channel_results/e6_sim_ported_results.npy` |
-| data commit | `d8b069a` 2026-09-13 (Gilzuk) |
+| data commit | `e35d9b7` 2026-09-04 (Gilzuk) |
 | provenance | ok |
 | N_TRAIN | `3` |
 | SNRS | `np.arange(0, 21, 2)` |
@@ -477,7 +662,7 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | E6 flat control |
 | reproduce | `python e6_flat_ported.py` |
 | data file | `e6_unknown_channel_results/e6_flat_ported_results.npy` |
-| data commit | `d8b069a` 2026-09-13 (Gilzuk) |
+| data commit | `3af82e2` 2026-10-12 (Claude) |
 | provenance | ok |
 | N_TRAIN | `3` |
 | SNRS | `np.arange(0, 21, 2)` |
@@ -491,8 +676,9 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | E6 QPSK unknown channel |
 | reproduce | `python e6_qpsk_unknown_channel.py` |
 | data file | `e6_unknown_channel_results/e6_qpsk_unknown_channel_results.npy` |
-| data commit | `d8b069a` 2026-09-13 (Gilzuk) |
+| data commit | `e35d9b7` 2026-09-04 (Gilzuk) |
 | provenance | ok |
 | H_ISI | `np.array([1.0, 0.7, 0.5])` |
 | SNRS | `np.arange(0, 21, 2)` |
 | TRAIN_SNRS | `[5, 10, 15]` |
+

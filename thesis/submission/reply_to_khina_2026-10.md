@@ -2,7 +2,7 @@ Subject: Re: Thesis — response to your nine comments
 
 Dear Anatoly,
 
-Thank you for the detailed comments. I have addressed all nine and the presentation notes. Two of them led to new experiments whose results change conclusions in the thesis, and I state those plainly below. The revised PDF is 138 pages. The table verifier now checks 678 cells with no inconsistencies, and all 347 tests pass.
+Thank you for the detailed comments. I have addressed all nine and the presentation notes. Three of them (comments 3, 4 and 7) led to new measurements that change conclusions in the thesis, and I state those plainly below. The revised PDF is 138 pages. The table verifier now checks 678 cells with no inconsistencies, and all 347 tests pass.
 
 **1. The relay-design problem.** A new Section 4.1.5 states the problem explicitly:
 - the relay's observations and the channel information it has;
@@ -39,6 +39,8 @@ The published high-SNR advantage of the learned relays was therefore produced by
 - Decoding at the relay gives the higher goodput under rate adaptation, except under tight idealized buffering budgets, where block DF's frame does not fit.
 
 The matched values appear beside the published ones in Tables 5.6, 5.10, 5.12 and 5.13. Chapter 7 (coded-metrics limitation) and the Chapter 8 summary state the reversal. You were right that the original results showed only an advantage over a mismatched pipeline.
+
+One limit of the rerun: for relays that make decisions, the matched destination metric weights by the second hop only, so it does not model the relay's decision errors. That is why it lowers the learned relays' error rate at low SNR but raises it at high SNR, where a wrong relay symbol received over a strong second hop is trusted. A destination metric that also models relay errors was not evaluated; Section 5.5.2 says so, and Chapters 7 and 8 list it as a remaining alternative.
 
 **5. QPSK MLSE factorization.** I implemented the two binary trellises and verified them against the joint QPSK trellis: 264,000 decisions across L ∈ {3, 5, 7} and several traceback depths, with no disagreements. The factorization paragraph in Section 2.6 records the check, and the cost comparisons in Section 6.5 are updated. Section 2.6 also states the general case: with real taps, a square M-QAM trellis separates into two √M-ary trellises with 2M^(L/2) branch metrics, which for 16-QAM at five taps is 2,048 rather than about 10⁶. The caption of Figure 6.7 and the scaling paragraph of Section 6.5 now say that the plotted M^L count is that of the joint trellis.
 

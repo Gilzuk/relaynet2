@@ -1119,3 +1119,85 @@ that table.
 Verified: cold rebuild 0 errors / 0 undefined refs / 0 undefined citations /
 0 bidi errors, 120 pages, 389 cells / 0 inconsistencies, 159 tests. No
 annotation leakage into the PDF (REV/AK/GZ/TODO all absent).
+
+## October 2026 — Khina revision round: corrections, reruns and new measurements
+
+Every item below has a script and committed data registered in
+`provenance_audit.py`, and the numbers the thesis quotes are checked by
+`verify_thesis_tables.py` (678 cells, 0 inconsistencies after the round).
+
+### A published number that moved
+
+**Flat unknown-channel controls (`e6_flat_ported.py`, #152).** The Hop-2 noise of
+real forwarded signals had variance 1/γ, twice the convention σ² = 1/(2γ) per
+real dimension (the complex branch, used by AF, was right). Fixed at three
+sites and rerun on the original seeds into
+`e6_unknown_channel_results/e6_flat_ported_results.npy`. DF and MLP error rates
+roughly halve. DF and the MLP stay within 0.0013 from 8 dB up; below 8 dB the
+unknown-phase MLP trails differential detection by up to 0.0106 at 0 dB, outside
+its training range. That exceeds the 0.0036 control target and is reported as
+measured, not tuned.
+
+**Table 5.8, 20 dB soft block-DF cell (#151).** The table now shows the
+doubled-variance run that its figure plots (0.001376); the nominal-variance
+value (0.002348) is kept in the footnote.
+
+### New measurements that reverse a conclusion
+
+**Reliability-weighted coded metrics (`coded_matched_metrics.py`, #150).** The
+coded comparisons decoded the zero-forced observation with an unweighted
+metric. With |h|² weights in the relay and destination Viterbi decoders and the
+per-symbol variance in the BCJR, on the first 30 published seeds (each 100,000
+information bits), the unweighted rows reproduce the published per-trial values
+exactly, so every difference is due to the metric. Matched block DF beats both
+learned relays at every SNR from 0 to 20 dB in 30 of 30 paired trials, under
+either destination metric: 0.003235 against 0.0619 at 8 dB, and 3 against 2,667
+errors in 3×10⁶ bits at 20 dB. The published high-SNR advantage of the learned
+relays was produced by the unweighted metric.
+
+**Secondary coded studies with matched metrics (`CODED_METRIC=matched`, #154).**
+Rerun on their published seeds, 30 trials, into `results/*_matched.json`:
+relay symbol errors of matched block DF fall to 1.6×10⁻⁵ and 1.0×10⁻⁶ at 16 and
+20 dB (Table 5.6); larger constraint lengths now help (0.0033, 0.00069 and
+6.7×10⁻⁵ for K = 3, 5, 7 at 8 dB); at 24–32 dB matched block DF reaches the
+oracle; at equal throughput the code pays from 8 dB (1.12×, 3.6× and 12.3× at 8,
+12 and 16 dB, Table 5.10); the link-adaptation envelopes favour decoding at the
+relay except under tight idealized buffering budgets (Tables 5.12 and 5.13);
+coded size-sweep penalties against matched block DF are +7.6 to +9.9 dB.
+
+### New measurements that qualify a conclusion
+
+**AF block length and a conventional AF (`af_block_and_conventional.py`, #141).**
+The implemented AF normalizes by the empirical block power, and E[1/|h|²] is
+infinite, so its error rate depends on block length: at 0 dB 0.387, 0.402, 0.407
+and 0.413 for 50, 500, 5,000 and 50,000 symbols. A conventional variable-gain AF
+with coherent destination processing reaches 0.342, 0.245 and 0.144 at 0, 4 and
+8 dB, within 0.001 of its closed form. The learned relays' 0 dB margin falls
+from 0.073 to 0.007.
+
+### New measurements that leave published numbers unchanged
+
+- **Factorized QPSK MLSE (`factorized_mlse_equivalence.py`, #139):** two binary
+  trellises return the joint trellis's decisions on all 264,000 symbols checked.
+- **Scalar MAP relay on the ISI channel (`e6_scalar_map.py`, #140):** 0.170,
+  0.099, 0.033 and 0.0043 at 8, 12, 16 and 20 dB, against the windowed MLP's
+  1.09×10⁻⁴ at 12 dB.
+- **ISI required-SNR penalties (`e6_isi_penalty.py`, #146):** the published
+  0.26 / 1.18 / 1.88 / 2.53 dB had no committed derivation; the script reproduces
+  them exactly from `results/e6_matched_protocol.json`.
+- **Hybrid branch replay (`hybrid_branch_selection.py`, #160):** replays the
+  canonical Hop-1 draws (exact: the 64 trials on which both axes chose DF
+  reproduce the published per-trial BER). The MLP branch is taken on 20 of 20
+  axis-blocks at 0–6 dB, 6 at 8 dB, 2 at 10 dB, 1 at 12 dB and none from 14 dB,
+  so the switch falls between 6 and 8 dB, not at the nominal 5 dB.
+
+### Written conclusions that changed
+
+- The coded study no longer reports a high-SNR advantage for the learned relays;
+  with matched metrics, decoding at the relay is better at every tested SNR.
+- The learned relays' low-SNR advantage over AF is stated as an advantage over the
+  implemented block-normalized AF; against a conventional AF it is 0.007 at 0 dB.
+- The flat controls agree from 8 dB up but not below.
+
+Verified: 0 errors / 0 undefined references, 138 pages, 678 cells /
+0 inconsistencies, 347 tests, provenance clean.

@@ -914,3 +914,43 @@ If needed in the next step, a more granular thesis-specific changelog can be cre
 - precise issue classification,
 - and proposed replacement text for each inconsistency.
 
+
+---
+
+## [Khina revision round: framework changes] - 2026-10-12
+
+### Summary
+Library and tooling changes made while answering Dr. Khina's review (PRs #131–#161). The
+thesis-side record is `thesis/CHANGELOG.md` and `thesis/RERUN_CHANGELOG.md`; the task chain is
+`HANDOVER.md`.
+
+### Added Files
+- `coded_metric.py` — `CODED_METRIC=matched` / `CODED_TRIALS` switch shared by the coded scripts.
+- `coded_matched_metrics.py`, `coded_matched_envelopes.py`, `coded_min_size_matched.py` — reliability-weighted coded reruns.
+- `af_block_and_conventional.py`, `e6_scalar_map.py`, `factorized_mlse_equivalence.py`, `e6_isi_penalty.py`, `hybrid_branch_selection.py`.
+- `relaynet/relays/scalar_map.py` (`ScalarMAPISIRelay`); `FactorizedViterbiQPSKRelay` in `relaynet/relays/viterbi.py`.
+- `tests/test_matched_decoder_metrics.py` and tests for the new relays.
+
+### Changed Files
+- `relaynet/coding/convolutional.py`: `ViterbiCodeDecoder.decode(soft_bits, weights=None)` weights each branch metric.
+- `relaynet/coding/bcjr.py`: `decode` / `coded_bit_posteriors(soft_bits, noise_var=None)` accept a per-symbol noise variance.
+- `relaynet/coding/convolutional_qam16.py`: `decode(soft_axis_values, weights=None)`.
+- `relaynet/relays/coded_df.py`, `coded_df_qam16.py`: `process(received_signal, weights=None)` passes per-frame weights to the decoder.
+- Coded experiment scripts route channel draws and relay calls through `coded_metric.py`.
+- `e6_flat_ported.py`: Hop-2 noise of real forwarded signals corrected to σ² = 1/(2γ).
+- `verify_thesis_tables.py` (new checks; 678 cells) and `provenance_audit.py` (new REGISTRY rows).
+
+### Reason
+Khina's comment 4 asked for matched (reliability-weighted) metrics at the relay and destination
+decoders; comments 3, 5 and 9 asked for a conventional AF, a verified QPSK MLSE factorization and a
+scalar-detector reference. The recheck required evidence for how the Hybrid relay switches.
+
+### Impact
+With `CODED_METRIC` unset, every coded script draws the same random numbers and produces the
+published results unchanged (checked: the unweighted rows of the matched rerun reproduce the
+published per-trial values exactly). Matched results go to `results/*_matched.json`.
+
+### Testing / Validation
+- ✅ `pytest`: 347 passed.
+- ✅ `verify_thesis_tables.py`: 678 cells, 0 inconsistencies.
+- ✅ `provenance_audit.py`: all declared outputs committed, none older than its script.
