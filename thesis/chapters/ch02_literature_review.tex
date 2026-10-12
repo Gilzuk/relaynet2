@@ -53,7 +53,7 @@ The theoretical justification for applying neural networks to relay signal proce
 }\end{equation}
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad optimal-denoiser}
 
-This conditional expectation \(f^*\) is the Bayes-optimal denoiser: it minimizes the mean squared error (MSE) over all possible estimators. For BPSK symbols corrupted by AWGN, \(f^*\) reduces to the posterior mean:
+This conditional expectation \(f^*\) is the Bayes-optimal denoiser: it minimizes the mean squared error (MSE) over all possible estimators. It is optimal for the local estimation problem at the relay, but it is not in general the relay mapping that minimizes the destination bit error rate, which is what the experiments evaluate; Section~\ref{sec:relay-design-problem} states that problem and the sense in which MSE and cross-entropy training stand in for it. For BPSK symbols corrupted by AWGN, \(f^*\) reduces to the posterior mean:
 
 \begin{equation}\protect\phantomsection\label{eq:optimal-denoiser-awgn}{f^*(y) = \tanh\left(\frac{y}{\sigma^2}\right)
 }\end{equation}
