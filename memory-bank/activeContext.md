@@ -21,7 +21,8 @@ scripts/plot_e6_complexity_cost.py for 6.7(a) (MLP-170
 reference line), caption/text say what 6.7(b) timed (ms), Fig. 5.5 axis says
 buffer-readiness budget, Fig. 5.1 title drops "(§7.10)". Reply corrected. 119 countable
 pages; verifier 678/0; 347 tests; provenance clean. techContext gotcha 12 records that
-figures are outside both checks.
+figures are outside both checks. Merged as #169 (main 6809399); mirror republished at 4b0e1e1,
+thesis.pdf byte-identical.
 
 ### Latest (2026-10-12, READMEs): every README and Overleaf guide current; mirror republished
 
