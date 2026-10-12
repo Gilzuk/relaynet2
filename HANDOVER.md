@@ -1,6 +1,6 @@
 # Handover — Khina revision round (task chain)
 
-_Last updated: 2026-10-12. A, B0–B5, C1–C8, C4b done; C6 closed. Main 3c271cb. Thesis 133 pages; verifier 657 cells; 347 tests. Next: P (republish), R (draft reply)._
+_Last updated: 2026-10-12. Khina round complete: all tasks merged, mirror published (f3eabf6), reply drafted. Thesis 133 pages; verifier 657 cells; 347 tests._
 
 This file is the resume point if a session ends mid-task (out of credits, container reset,
 interruption). A new session should read it **after** `CLAUDE.md`, `context.md`,
@@ -68,8 +68,8 @@ Presentation notes: running headers (#124), ledger labels (#135), verification-c
 | C7 | E6_FLAT Hop-2 noise fixed (1/γ → 1/(2γ) for real forwarded signals, three sites in `e6_flat_ported.py`) and rerun on the original seeds. DF/MLP BERs roughly halve; DF-vs-MLP similarity holds from 8 dB; below 8 dB the unknown-phase MLP trails differential detection by up to 0.0106 at 0 dB (exceeds the 0.0036 control target in CLAUDE.md; reported, not tuned). Table `tbl:tableE6flat`, Ch. 6 conclusion and Appendix G updated; new verifier check `prose:flat-conclusion` | DONE | #152 |
 | C8 | Training protocol now described from the committed code: all relays train with Adam (MLP/Hybrid lr 0.01 batch 32 — the NumPy SGD path is a no-PyTorch fallback the canonical run excludes; VAE/sequence 1e-3 batch 64; cGAN 1e-4, β=(0,0.9)); samples 25k (MLP, Hybrid) / 50k (VAE, cGAN, sequence), 100 epochs (cGAN 200). Exact reproduction is not possible (unseeded torch init, global-RNG channel draws; data predate repo history) — stated once in Ch. 4. Fixed #133's "canonical SGD" and Ch. 4's "trained by the same protocol" | DONE | #153 |
 | M  | Memory bank updated for the round (`activeContext.md`, `progress.md`) | DONE | (this PR) |
-| P  | Republish mirror after Phase B (DONE: 46ad144, author Gil Zukerman, PDF identical to main) and again after C4–C8 | PARTIAL | — |
-| R  | Draft reply to Khina (note the ×2 multiplication-count convention: thesis 16/64/256, crossover 6.70, ratio 1.23 vs his 32/128/512, 5.70, 2.46) | TODO | — |
+| P  | Republish mirror: done after Phase B (46ad144) and after C4–C8 (f3eabf6, author Gil Zukerman, `thesis.pdf` byte-identical to main, 133 pages) | DONE | — |
+| R  | Reply to Khina: drafted 2026-10-12 and delivered to the author in chat (one paragraph per comment; C4 reversal stated; ×2 multiplication-count convention; C7/C8 disclosures). Not committed, per the author's instruction for advisor letters (#126). If the draft is lost, regenerate it from this file's task table | DRAFTED (awaiting author) | — |
 
 ## Session chain (work these in order)
 
@@ -95,9 +95,9 @@ tells you where the work is; rerun any experiment script from scratch rather tha
 5. ~~**C6**~~ closed (see row). Was: **C6: causal normalization** (comment 6) — only if the 5/10-symbol readiness claims are kept;
    otherwise remove those claims and close C6.
 6. ~~**M**~~ done. Was: **M: memory bank** — `memory-bank/activeContext.md` and `progress.md` entry for the whole round.
-7. **P: republish the mirror** with the author identity (see Environment gotchas); verify fast-forward
+7. ~~**P**~~ done. Was: **P: republish the mirror** with the author identity (see Environment gotchas); verify fast-forward
    and that `thesis.pdf` is byte-identical to `thesis/main.pdf`.
-8. **R: reply to Khina** — draft only (do not send): one paragraph per comment with the PR that answers
+8. ~~**R**~~ drafted. Was: **R: reply to Khina** — draft only (do not send): one paragraph per comment with the PR that answers
    it, the C4 reversal stated plainly, the ×2 multiplication-count convention, and C7/C8 disclosures.
 
 ### Task notes
