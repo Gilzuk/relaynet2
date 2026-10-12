@@ -6,7 +6,7 @@ _Last updated: 2026-10-12_
 
 Asked "has every chart been regenerated?": no figure had been touched since September.
 Regenerating the 16 with scripts into a scratch worktree and comparing showed 12 matching
-and four out of step: Figs. 5.3-5.5 drawn from earlier 10/20-trial runs while Tables
+and four out of step: Figs. 5.3-5.5 drawn from earlier runs (5.3, 5.4 printed 20, 10 trials) while Tables
 5.8/5.12/5.13 report the committed 100-trial runs; Fig. 6.3 still showing the removed
 Rayleigh-hop-2 panel. Worse, Table 5.8's 20 dB soft block-DF cell (C5, #151) showed the
 doubled-variance run (0.001376) with a footnote saying Fig. 5.3 plots it; the figure plots

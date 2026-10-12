@@ -20,8 +20,8 @@ have a generating script from the committed files and comparing them with the
 included images. Twelve matched. Fixed:
 
 ### Fixed
-- **Figures 5.3–5.5 (coded link)** had been drawn from earlier, smaller runs
-  (Figures 5.3 and 5.4 printed 20 and 10 trials) while Tables 5.8, 5.12 and 5.13
+- **Figures 5.3–5.5 (coded link)** had been drawn from earlier runs (Figures
+  5.3 and 5.4 printed 20 and 10 trials; Figure 5.5 printed no count) while Tables 5.8, 5.12 and 5.13
   report the committed 100-trial runs. Redrawn from those runs with
   `scripts/plot_coded_df.py`; figures and tables now show the same values.
   Figure 5.5's title and axis now name the idealized buffer-readiness budget,
