@@ -59,12 +59,13 @@ Presentation notes: running headers (#124), ledger labels (#135), verification-c
 | B1 | Relay-design problem + surrogates, new Sec. 4.1.5 (comment 1) | DONE | #143 |
 | B2 | RQ hierarchy + RQ→experiment mapping table (comment 2); O1/O2 answered by name in Ch. 9 | DONE | (this PR) |
 | B3 | Model specifications + SNR-penalty definitions (comment 7): Appendix G; ISI penalties now derived by `e6_isi_penalty.py` and verified | DONE | (this PR) |
-| B4 | Equal-budget wording pass (comment 8, last bullet) | NEXT | — |
-| B5 | Positioning vs estimate-and-forward, Farsad–Goldsmith, ViterbiNet; named-study Table 3.1 (comment 9) | TODO | — |
+| B4 | Equal-budget wording pass (comment 8, last bullet) | DONE | (this PR) |
+| B5 | Positioning vs estimate-and-forward, Farsad–Goldsmith, ViterbiNet; named-study Table 3.1 (comment 9) | NEXT | — |
 | C4 | Reliability-weighted Viterbi/BCJR at relay + destination; rerun coded comparisons (comment 4) | TODO | — |
 | C5 | Rerun Rayleigh rows of `tbl:tableE6` on the current convention (figures vs tables) | TODO | — |
 | C6 | Causal/streaming normalization + latency re-evaluation (comment 6; only if readiness claims are kept) | TODO | — |
 | C7 | E6_FLAT Hop-2 noise: `e6_flat_ported.py` adds real noise of variance 1/γ (not 1/(2γ)) to real forwarded signals; AF in flat-phase gets complex 1/(2γ)/dim. DF-vs-MLP fair, absolute BERs 3 dB pessimistic on Hop 2, AF favoured in flat-phase. Fix the noise, rerun, update `tbl` flat rows + Appendix G paragraph | TODO | — |
+| C8 | Training-protocol description vs code: Ch. 4 says 25k/20k/10k samples (supervised/generative/sequence) and NumPy SGD for MLP/Hybrid; `run_experiments.py::train_base_relays` uses 25k/50k/50k (5k/5k/3k with `--quick`) and `MinimalGenAIRelay` uses PyTorch Adam lr 0.01 whenever torch is installed. No log records which settings produced the canonical weights. Establish it (retrain from the committed seed and compare with `results/modulation/qpsk_rayleigh.json`, or locate the weights' provenance) before correcting the text; also re-check Phase A #133's "canonical ReLU/SGD" | TODO | — |
 | M  | Memory bank update for this round (`activeContext.md`, `progress.md`) | TODO (with each PR) | — |
 | P  | Republish mirror after Phase B and after C4–C6 | TODO | — |
 | R  | Draft reply to Khina (note the ×2 multiplication-count convention: thesis 16/64/256, crossover 6.70, ratio 1.23 vs his 32/128/512, 5.70, 2.46) | TODO | — |
