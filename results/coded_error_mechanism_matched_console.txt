@@ -1,0 +1,18 @@
+Training MLP-coded ...
+
+=== 16 dB, 30 trials x 500 frames ===
+relay            final BER  relay sym ER   repaired       FER  bit err/failed frame
+coded_df          0.000010      0.000016     34.8%    0.0021                   1.0
+mlp_coded         0.004536      0.010602     57.2%    0.4213                   2.2
+mlp_coded_wdest    0.006768      0.010602     36.2%    0.5231                   2.6
+oracle            0.000005      0.000000       n/a    0.0010                   1.0
+
+=== 20 dB, 30 trials x 500 frames ===
+relay            final BER  relay sym ER   repaired       FER  bit err/failed frame
+coded_df          0.000001      0.000001     32.7%    0.0001                   1.0
+mlp_coded         0.001000      0.003848     74.0%    0.1365                   1.5
+mlp_coded_wdest    0.002422      0.003848     37.1%    0.2386                   2.0
+oracle            0.000000      0.000000       n/a    0.0001                   1.0
+
+Saved results/coded_error_mechanism_matched.json
+exit 0

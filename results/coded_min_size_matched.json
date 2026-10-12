@@ -1,0 +1,1565 @@
+{
+  "snr_db": [
+    0,
+    4,
+    8,
+    12,
+    16,
+    20
+  ],
+  "n_trials": 10,
+  "n_frames": 100,
+  "frame_info_bits": 200,
+  "train_seeds": [
+    0,
+    1,
+    2
+  ],
+  "operational_fer": 0.99,
+  "operational_snrs": [
+    4,
+    8,
+    12,
+    16,
+    20
+  ],
+  "df_ber": [
+    0.27064999999999995,
+    0.046475,
+    0.0032349999999999996,
+    0.00020499999999999997,
+    5e-06,
+    0.0
+  ],
+  "df_fer": [
+    1.0,
+    0.984,
+    0.348,
+    0.034,
+    0.001,
+    0.0
+  ],
+  "sweep": [
+    {
+      "window": 1,
+      "hidden": 2,
+      "params": 18,
+      "worst_rel_operational": Infinity,
+      "best_rel_operational": Infinity,
+      "worst_rel_all": Infinity,
+      "seed_runs": [
+        {
+          "train_seed": 0,
+          "ber": [
+            0.452465,
+            0.32097,
+            0.11797499999999998,
+            0.023285,
+            0.003995,
+            0.0008
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.874,
+            0.367,
+            0.11199999999999999
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        },
+        {
+          "train_seed": 1,
+          "ber": [
+            0.45293,
+            0.321185,
+            0.11759,
+            0.023265,
+            0.004005,
+            0.0008049999999999999
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.876,
+            0.365,
+            0.11200000000000002
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        },
+        {
+          "train_seed": 2,
+          "ber": [
+            0.453005,
+            0.32104,
+            0.117635,
+            0.023299999999999998,
+            0.004019999999999999,
+            0.000795
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.876,
+            0.367,
+            0.11099999999999999
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        }
+      ]
+    },
+    {
+      "window": 1,
+      "hidden": 8,
+      "params": 60,
+      "worst_rel_operational": Infinity,
+      "best_rel_operational": Infinity,
+      "worst_rel_all": Infinity,
+      "seed_runs": [
+        {
+          "train_seed": 0,
+          "ber": [
+            0.452085,
+            0.321725,
+            0.11829999999999999,
+            0.02337,
+            0.004059999999999999,
+            0.00081
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.873,
+            0.37,
+            0.11299999999999999
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        },
+        {
+          "train_seed": 1,
+          "ber": [
+            0.45255,
+            0.322445,
+            0.11896500000000002,
+            0.023635,
+            0.0040550000000000004,
+            0.00081
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.8780000000000001,
+            0.36700000000000005,
+            0.11299999999999999
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        },
+        {
+          "train_seed": 2,
+          "ber": [
+            0.45356499999999994,
+            0.321905,
+            0.11897000000000002,
+            0.02343,
+            0.004085,
+            0.0008
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.873,
+            0.37,
+            0.11200000000000002
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        }
+      ]
+    },
+    {
+      "window": 1,
+      "hidden": 16,
+      "params": 116,
+      "worst_rel_operational": Infinity,
+      "best_rel_operational": Infinity,
+      "worst_rel_all": Infinity,
+      "seed_runs": [
+        {
+          "train_seed": 0,
+          "ber": [
+            0.45234500000000005,
+            0.3224349999999999,
+            0.118505,
+            0.02354,
+            0.00412,
+            0.000815
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.874,
+            0.371,
+            0.11400000000000002
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        },
+        {
+          "train_seed": 1,
+          "ber": [
+            0.45201,
+            0.32292,
+            0.11978,
+            0.02357,
+            0.004025,
+            0.000795
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.874,
+            0.365,
+            0.11099999999999999
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        },
+        {
+          "train_seed": 2,
+          "ber": [
+            0.45275499999999996,
+            0.32249,
+            0.11814000000000002,
+            0.023395000000000003,
+            0.004025,
+            0.00081
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.8780000000000001,
+            0.37099999999999994,
+            0.11299999999999999
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        }
+      ]
+    },
+    {
+      "window": 3,
+      "hidden": 2,
+      "params": 26,
+      "worst_rel_operational": Infinity,
+      "best_rel_operational": Infinity,
+      "worst_rel_all": Infinity,
+      "seed_runs": [
+        {
+          "train_seed": 0,
+          "ber": [
+            0.4527750000000001,
+            0.321165,
+            0.11787999999999998,
+            0.023385,
+            0.0040100000000000005,
+            0.0008
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.8720000000000001,
+            0.367,
+            0.11199999999999999
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        },
+        {
+          "train_seed": 1,
+          "ber": [
+            0.452695,
+            0.32206,
+            0.11857000000000002,
+            0.02338,
+            0.004025000000000001,
+            0.0008
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.8720000000000001,
+            0.37100000000000005,
+            0.11199999999999999
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        },
+        {
+          "train_seed": 2,
+          "ber": [
+            0.45321999999999996,
+            0.32168,
+            0.11779000000000002,
+            0.02332,
+            0.00402,
+            0.000795
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.8719999999999999,
+            0.368,
+            0.11099999999999999
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        }
+      ]
+    },
+    {
+      "window": 3,
+      "hidden": 8,
+      "params": 92,
+      "worst_rel_operational": Infinity,
+      "best_rel_operational": Infinity,
+      "worst_rel_all": Infinity,
+      "seed_runs": [
+        {
+          "train_seed": 0,
+          "ber": [
+            0.452135,
+            0.32482999999999995,
+            0.12056000000000003,
+            0.023425,
+            0.004104999999999999,
+            0.000825
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.873,
+            0.371,
+            0.11600000000000002
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        },
+        {
+          "train_seed": 1,
+          "ber": [
+            0.45252,
+            0.322,
+            0.11974,
+            0.023530000000000002,
+            0.004020000000000001,
+            0.000795
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.8680000000000001,
+            0.367,
+            0.11099999999999999
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        },
+        {
+          "train_seed": 2,
+          "ber": [
+            0.453505,
+            0.32418,
+            0.12001500000000001,
+            0.02357,
+            0.0041849999999999995,
+            0.0008200000000000001
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.875,
+            0.37499999999999994,
+            0.11500000000000002
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        }
+      ]
+    },
+    {
+      "window": 3,
+      "hidden": 16,
+      "params": 180,
+      "worst_rel_operational": Infinity,
+      "best_rel_operational": Infinity,
+      "worst_rel_all": Infinity,
+      "seed_runs": [
+        {
+          "train_seed": 0,
+          "ber": [
+            0.45169,
+            0.31628,
+            0.11069,
+            0.020675,
+            0.003725,
+            0.00076
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.8360000000000001,
+            0.353,
+            0.10900000000000001
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        },
+        {
+          "train_seed": 1,
+          "ber": [
+            0.45242000000000004,
+            0.32462499999999994,
+            0.12023000000000002,
+            0.023185,
+            0.00407,
+            0.000815
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.8720000000000001,
+            0.368,
+            0.11400000000000002
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        },
+        {
+          "train_seed": 2,
+          "ber": [
+            0.45420999999999995,
+            0.3209000000000001,
+            0.11573,
+            0.021365000000000002,
+            0.00369,
+            0.000795
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.8560000000000001,
+            0.352,
+            0.11400000000000002
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        }
+      ]
+    },
+    {
+      "window": 5,
+      "hidden": 2,
+      "params": 34,
+      "worst_rel_operational": Infinity,
+      "best_rel_operational": Infinity,
+      "worst_rel_all": Infinity,
+      "seed_runs": [
+        {
+          "train_seed": 0,
+          "ber": [
+            0.45250499999999994,
+            0.32131,
+            0.11736500000000001,
+            0.02342,
+            0.003995,
+            0.0008
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.874,
+            0.368,
+            0.11199999999999999
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        },
+        {
+          "train_seed": 1,
+          "ber": [
+            0.45333500000000004,
+            0.32162999999999997,
+            0.118845,
+            0.023399999999999997,
+            0.004025,
+            0.0008
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.873,
+            0.369,
+            0.11199999999999999
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        },
+        {
+          "train_seed": 2,
+          "ber": [
+            0.4531949999999999,
+            0.321195,
+            0.11848999999999998,
+            0.02307,
+            0.004045000000000001,
+            0.000795
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.8710000000000001,
+            0.37,
+            0.11099999999999999
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        }
+      ]
+    },
+    {
+      "window": 5,
+      "hidden": 8,
+      "params": 124,
+      "worst_rel_operational": Infinity,
+      "best_rel_operational": Infinity,
+      "worst_rel_all": Infinity,
+      "seed_runs": [
+        {
+          "train_seed": 0,
+          "ber": [
+            0.452675,
+            0.32152000000000003,
+            0.11938499999999999,
+            0.02328,
+            0.00408,
+            0.0008049999999999999
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.867,
+            0.366,
+            0.11199999999999999
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        },
+        {
+          "train_seed": 1,
+          "ber": [
+            0.45390499999999995,
+            0.323805,
+            0.119285,
+            0.023795,
+            0.0040550000000000004,
+            0.00081
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.8780000000000001,
+            0.368,
+            0.11299999999999999
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        },
+        {
+          "train_seed": 2,
+          "ber": [
+            0.453285,
+            0.32100999999999996,
+            0.11857,
+            0.023305,
+            0.00401,
+            0.000795
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.8789999999999999,
+            0.368,
+            0.11099999999999999
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        }
+      ]
+    },
+    {
+      "window": 5,
+      "hidden": 16,
+      "params": 244,
+      "worst_rel_operational": Infinity,
+      "best_rel_operational": Infinity,
+      "worst_rel_all": Infinity,
+      "seed_runs": [
+        {
+          "train_seed": 0,
+          "ber": [
+            0.43571,
+            0.277905,
+            0.09061,
+            0.020645000000000004,
+            0.004535,
+            0.0010949999999999998
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.876,
+            0.413,
+            0.138
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        },
+        {
+          "train_seed": 1,
+          "ber": [
+            0.43878500000000004,
+            0.27792999999999995,
+            0.09117499999999999,
+            0.02042,
+            0.004485,
+            0.00104
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.8809999999999999,
+            0.41200000000000003,
+            0.134
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        },
+        {
+          "train_seed": 2,
+          "ber": [
+            0.442955,
+            0.285405,
+            0.094095,
+            0.020994999999999996,
+            0.004385,
+            0.00104
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            0.999,
+            0.8859999999999999,
+            0.403,
+            0.13
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        }
+      ]
+    },
+    {
+      "window": 9,
+      "hidden": 2,
+      "params": 50,
+      "worst_rel_operational": Infinity,
+      "best_rel_operational": Infinity,
+      "worst_rel_all": Infinity,
+      "seed_runs": [
+        {
+          "train_seed": 0,
+          "ber": [
+            0.45363,
+            0.322935,
+            0.118595,
+            0.023289999999999998,
+            0.004,
+            0.0007899999999999999
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.874,
+            0.371,
+            0.11099999999999999
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        },
+        {
+          "train_seed": 1,
+          "ber": [
+            0.453775,
+            0.321795,
+            0.11903000000000001,
+            0.02338,
+            0.004025,
+            0.00081
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.874,
+            0.36900000000000005,
+            0.11299999999999999
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        },
+        {
+          "train_seed": 2,
+          "ber": [
+            0.452515,
+            0.32150500000000004,
+            0.118415,
+            0.02328,
+            0.00404,
+            0.000795
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.873,
+            0.368,
+            0.11099999999999999
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        }
+      ]
+    },
+    {
+      "window": 9,
+      "hidden": 8,
+      "params": 188,
+      "worst_rel_operational": Infinity,
+      "best_rel_operational": Infinity,
+      "worst_rel_all": Infinity,
+      "seed_runs": [
+        {
+          "train_seed": 0,
+          "ber": [
+            0.453165,
+            0.32220499999999996,
+            0.11844999999999999,
+            0.023295,
+            0.0040999999999999995,
+            0.0008049999999999999
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.868,
+            0.368,
+            0.11199999999999999
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        },
+        {
+          "train_seed": 1,
+          "ber": [
+            0.45302500000000007,
+            0.32461,
+            0.11957999999999999,
+            0.023285000000000004,
+            0.004045,
+            0.0008049999999999999
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.874,
+            0.371,
+            0.11200000000000002
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        },
+        {
+          "train_seed": 2,
+          "ber": [
+            0.4531550000000001,
+            0.3236899999999999,
+            0.11979,
+            0.023499999999999997,
+            0.003945,
+            0.00081
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.877,
+            0.364,
+            0.11299999999999999
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        }
+      ]
+    },
+    {
+      "window": 9,
+      "hidden": 16,
+      "params": 372,
+      "worst_rel_operational": Infinity,
+      "best_rel_operational": Infinity,
+      "worst_rel_all": Infinity,
+      "seed_runs": [
+        {
+          "train_seed": 0,
+          "ber": [
+            0.44010000000000005,
+            0.28220500000000004,
+            0.093875,
+            0.020865,
+            0.00439,
+            0.001035
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.8800000000000001,
+            0.40700000000000003,
+            0.132
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        },
+        {
+          "train_seed": 1,
+          "ber": [
+            0.44518500000000005,
+            0.29663000000000006,
+            0.101465,
+            0.02123,
+            0.004435,
+            0.0010000000000000002
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.877,
+            0.409,
+            0.13200000000000003
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        },
+        {
+          "train_seed": 2,
+          "ber": [
+            0.437,
+            0.278605,
+            0.090425,
+            0.020734999999999996,
+            0.0044150000000000005,
+            0.00101
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.885,
+            0.40800000000000003,
+            0.129
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        }
+      ]
+    },
+    {
+      "window": 15,
+      "hidden": 2,
+      "params": 74,
+      "worst_rel_operational": Infinity,
+      "best_rel_operational": Infinity,
+      "worst_rel_all": Infinity,
+      "seed_runs": [
+        {
+          "train_seed": 0,
+          "ber": [
+            0.453235,
+            0.3219,
+            0.11717,
+            0.02345,
+            0.004,
+            0.000795
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.874,
+            0.371,
+            0.11099999999999999
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        },
+        {
+          "train_seed": 1,
+          "ber": [
+            0.4537,
+            0.322515,
+            0.11801500000000001,
+            0.02322,
+            0.004045000000000001,
+            0.0008049999999999999
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.8729999999999999,
+            0.36900000000000005,
+            0.11200000000000002
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        },
+        {
+          "train_seed": 2,
+          "ber": [
+            0.451925,
+            0.32134999999999997,
+            0.11901999999999999,
+            0.023535,
+            0.004095,
+            0.00081
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.873,
+            0.367,
+            0.11299999999999999
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        }
+      ]
+    },
+    {
+      "window": 15,
+      "hidden": 8,
+      "params": 284,
+      "worst_rel_operational": Infinity,
+      "best_rel_operational": Infinity,
+      "worst_rel_all": Infinity,
+      "seed_runs": [
+        {
+          "train_seed": 0,
+          "ber": [
+            0.45356499999999994,
+            0.322765,
+            0.11854499999999998,
+            0.02356,
+            0.004115000000000001,
+            0.0008
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            0.999,
+            0.8729999999999999,
+            0.373,
+            0.11099999999999999
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        },
+        {
+          "train_seed": 1,
+          "ber": [
+            0.453345,
+            0.32302,
+            0.11939999999999999,
+            0.02321,
+            0.00403,
+            0.0008049999999999999
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.8790000000000001,
+            0.37,
+            0.11200000000000002
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        },
+        {
+          "train_seed": 2,
+          "ber": [
+            0.45291,
+            0.32096,
+            0.119075,
+            0.023445,
+            0.004070000000000001,
+            0.000815
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.8770000000000001,
+            0.366,
+            0.11299999999999999
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        }
+      ]
+    },
+    {
+      "window": 15,
+      "hidden": 16,
+      "params": 564,
+      "worst_rel_operational": Infinity,
+      "best_rel_operational": Infinity,
+      "worst_rel_all": Infinity,
+      "seed_runs": [
+        {
+          "train_seed": 0,
+          "ber": [
+            0.4455450000000001,
+            0.297285,
+            0.10059,
+            0.021594999999999996,
+            0.004540000000000001,
+            0.0010099999999999998
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            0.999,
+            0.884,
+            0.4109999999999999,
+            0.13399999999999998
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        },
+        {
+          "train_seed": 1,
+          "ber": [
+            0.43716,
+            0.27725,
+            0.09137,
+            0.020575,
+            0.004474999999999999,
+            0.0010400000000000001
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.883,
+            0.413,
+            0.13
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        },
+        {
+          "train_seed": 2,
+          "ber": [
+            0.45221,
+            0.323385,
+            0.11998499999999998,
+            0.02358,
+            0.0040750000000000005,
+            0.0008249999999999999
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.877,
+            0.368,
+            0.11499999999999999
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        }
+      ]
+    },
+    {
+      "window": 21,
+      "hidden": 2,
+      "params": 98,
+      "worst_rel_operational": Infinity,
+      "best_rel_operational": Infinity,
+      "worst_rel_all": Infinity,
+      "seed_runs": [
+        {
+          "train_seed": 0,
+          "ber": [
+            0.45336499999999996,
+            0.32151,
+            0.11813,
+            0.023289999999999998,
+            0.003985000000000001,
+            0.000795
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.8720000000000001,
+            0.36700000000000005,
+            0.11099999999999999
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        },
+        {
+          "train_seed": 1,
+          "ber": [
+            0.45422,
+            0.322425,
+            0.11836499999999998,
+            0.023365,
+            0.004050000000000001,
+            0.00081
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.876,
+            0.37,
+            0.11200000000000002
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        },
+        {
+          "train_seed": 2,
+          "ber": [
+            0.45332000000000006,
+            0.32279,
+            0.119055,
+            0.023625,
+            0.004165,
+            0.00081
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.876,
+            0.372,
+            0.11299999999999999
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        }
+      ]
+    },
+    {
+      "window": 21,
+      "hidden": 8,
+      "params": 380,
+      "worst_rel_operational": Infinity,
+      "best_rel_operational": Infinity,
+      "worst_rel_all": Infinity,
+      "seed_runs": [
+        {
+          "train_seed": 0,
+          "ber": [
+            0.452785,
+            0.32484,
+            0.119735,
+            0.023515,
+            0.00401,
+            0.00081
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.873,
+            0.368,
+            0.11300000000000002
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        },
+        {
+          "train_seed": 1,
+          "ber": [
+            0.45421000000000006,
+            0.32193499999999997,
+            0.1189,
+            0.02376,
+            0.00407,
+            0.000815
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.877,
+            0.37499999999999994,
+            0.11299999999999999
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        },
+        {
+          "train_seed": 2,
+          "ber": [
+            0.45253000000000004,
+            0.32325499999999996,
+            0.11911000000000001,
+            0.023435,
+            0.00404,
+            0.00081
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.876,
+            0.367,
+            0.11299999999999999
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        }
+      ]
+    },
+    {
+      "window": 21,
+      "hidden": 16,
+      "params": 756,
+      "worst_rel_operational": Infinity,
+      "best_rel_operational": Infinity,
+      "worst_rel_all": Infinity,
+      "seed_runs": [
+        {
+          "train_seed": 0,
+          "ber": [
+            0.43910499999999997,
+            0.279045,
+            0.09122000000000001,
+            0.020935,
+            0.004395,
+            0.0010149999999999998
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.8779999999999999,
+            0.40700000000000003,
+            0.128
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        },
+        {
+          "train_seed": 1,
+          "ber": [
+            0.44501999999999997,
+            0.299085,
+            0.10161499999999998,
+            0.021705,
+            0.004495000000000001,
+            0.00099
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.8869999999999999,
+            0.406,
+            0.12600000000000003
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        },
+        {
+          "train_seed": 2,
+          "ber": [
+            0.45248999999999995,
+            0.3221,
+            0.11956,
+            0.02333,
+            0.004055,
+            0.00081
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.8800000000000001,
+            0.37,
+            0.11400000000000002
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        }
+      ]
+    },
+    {
+      "window": 31,
+      "hidden": 8,
+      "params": 540,
+      "worst_rel_operational": Infinity,
+      "best_rel_operational": Infinity,
+      "worst_rel_all": Infinity,
+      "seed_runs": [
+        {
+          "train_seed": 0,
+          "ber": [
+            0.45237,
+            0.32278,
+            0.11935,
+            0.02339,
+            0.00414,
+            0.0008200000000000001
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.874,
+            0.371,
+            0.11300000000000002
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        },
+        {
+          "train_seed": 1,
+          "ber": [
+            0.45438,
+            0.32602,
+            0.12050000000000001,
+            0.023545,
+            0.004125,
+            0.0008200000000000001
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.8699999999999999,
+            0.367,
+            0.11400000000000002
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        },
+        {
+          "train_seed": 2,
+          "ber": [
+            0.45339,
+            0.32203499999999996,
+            0.11964999999999999,
+            0.023525,
+            0.00398,
+            0.00081
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.877,
+            0.364,
+            0.11299999999999999
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        }
+      ]
+    },
+    {
+      "window": 31,
+      "hidden": 16,
+      "params": 1076,
+      "worst_rel_operational": Infinity,
+      "best_rel_operational": Infinity,
+      "worst_rel_all": Infinity,
+      "seed_runs": [
+        {
+          "train_seed": 0,
+          "ber": [
+            0.45234499999999994,
+            0.324155,
+            0.12027999999999998,
+            0.023695,
+            0.00419,
+            0.00083
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.873,
+            0.374,
+            0.11600000000000002
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        },
+        {
+          "train_seed": 1,
+          "ber": [
+            0.45373,
+            0.32598499999999997,
+            0.12076000000000002,
+            0.02385,
+            0.004135,
+            0.0008049999999999999
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.8720000000000001,
+            0.372,
+            0.11300000000000002
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        },
+        {
+          "train_seed": 2,
+          "ber": [
+            0.45309,
+            0.32304,
+            0.12010499999999999,
+            0.02367,
+            0.00409,
+            0.0008399999999999999
+          ],
+          "fer": [
+            1.0,
+            1.0,
+            1.0,
+            0.877,
+            0.371,
+            0.11600000000000002
+          ],
+          "worst_rel_all": Infinity,
+          "worst_rel_operational": Infinity,
+          "beats_df_fer_at": []
+        }
+      ]
+    }
+  ],
+  "metric": "matched (block DF only; learned relays unweighted destination)"
+}

@@ -1,0 +1,20 @@
+    block DF, matched (0 params) BER 0.27065  0.04648  0.00323  0.00020  0.00001  0.00000
+                               FER 1.00000  0.98400  0.34800  0.03400  0.00100  0.00000
+  saved results/coded_min_size_matched.json
+  penalty vs block DF (operational region), grouped by hidden width
+    hidden  2  (18p-98p):    +inf% ..   +inf%
+    hidden  8  (60p-540p):    +inf% ..   +inf%
+    hidden 16  (116p-1076p):    +inf% ..   +inf%
+
+  most consistent configuration: 18p (w=1 h=2)  +inf% .. +inf% vs block DF
+  published MLP-756 at this budget: +inf% .. +inf%  (42.0x larger, and less consistent)
+
+  No size closes the gap. MLPQPSKClassifierRelay.process() takes an
+  argmax and forwards exact constellation points, so the relay hard-
+  decides every symbol at ~90-94% accuracy and the destination's
+  Viterbi decoder receives no reliability information. Block DF
+  decodes the frame with soft values, corrects using the code, and
+  re-encodes clean. The binding constraint is that interface, not
+  network capacity, which is why width 2 and width 8 sit at +50%
+  from 18 to 540 parameters.
+exit 0
