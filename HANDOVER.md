@@ -66,7 +66,7 @@ Presentation notes: running headers (#124), ledger labels (#135), verification-c
 | C5 | Corrected-figure vs superseded-table consistency (Khina presentation note). The ISI→Rayleigh (S2) and control (S4) rows had already been removed from `tbl:tableE6` and Fig. E6 (#122/#123), so no rerun was needed. Remaining instance fixed: Table 39's 20 dB soft block-DF cell now shows the doubled-variance run Fig. 5.x plots (0.001376), nominal 0.002348 in the footnote; verifier maps the cell to `coded_soft_df_calibration.json` | DONE | (this PR) |
 | C6 | Causal/streaming normalization + latency re-evaluation (comment 6; only if readiness claims are kept) | TODO | — |
 | C7 | E6_FLAT Hop-2 noise fixed (1/γ → 1/(2γ) for real forwarded signals, three sites in `e6_flat_ported.py`) and rerun on the original seeds. DF/MLP BERs roughly halve; DF-vs-MLP similarity holds from 8 dB; below 8 dB the unknown-phase MLP trails differential detection by up to 0.0106 at 0 dB (exceeds the 0.0036 control target in CLAUDE.md; reported, not tuned). Table `tbl:tableE6flat`, Ch. 6 conclusion and Appendix G updated; new verifier check `prose:flat-conclusion` | DONE | (this PR) |
-| C8 | Training-protocol description vs code: Ch. 4 says 25k/20k/10k samples (supervised/generative/sequence) and NumPy SGD for MLP/Hybrid; `run_experiments.py::train_base_relays` uses 25k/50k/50k (5k/5k/3k with `--quick`) and `MinimalGenAIRelay` uses PyTorch Adam lr 0.01 whenever torch is installed. No log records which settings produced the canonical weights. Establish it (retrain from the committed seed and compare with `results/modulation/qpsk_rayleigh.json`, or locate the weights' provenance) before correcting the text; also re-check Phase A #133's "canonical ReLU/SGD" | TODO | — |
+| C8 | Training protocol now described from the committed code: all relays train with Adam (MLP/Hybrid lr 0.01 batch 32 — the NumPy SGD path is a no-PyTorch fallback the canonical run excludes; VAE/sequence 1e-3 batch 64; cGAN 1e-4, β=(0,0.9)); samples 25k (MLP, Hybrid) / 50k (VAE, cGAN, sequence), 100 epochs (cGAN 200). Exact reproduction is not possible (unseeded torch init, global-RNG channel draws; data predate repo history) — stated once in Ch. 4. Fixed #133's "canonical SGD" and Ch. 4's "trained by the same protocol" | DONE | (this PR) |
 | M  | Memory bank update for this round (`activeContext.md`, `progress.md`) | TODO (with each PR) | — |
 | P  | Republish mirror after Phase B (DONE: 46ad144, author Gil Zukerman, PDF identical to main) and again after C4–C8 | PARTIAL | — |
 | R  | Draft reply to Khina (note the ×2 multiplication-count convention: thesis 16/64/256, crossover 6.70, ratio 1.23 vs his 32/128/512, 5.70, 2.46) | TODO | — |
@@ -86,7 +86,7 @@ tells you where the work is; rerun any experiment script from scratch rather tha
    (match the AF branch), rerun, commit `e6_flat_ported_results.npy`, update `tbl` flat rows (Ch. 6,
    `sec:flat-unknown-channels`), and replace the disclosure paragraph in Appendix G with the corrected
    statement.
-3. **C8: training-protocol provenance.** Retrain the canonical relays with `train_base_relays` defaults
+3. ~~**C8**~~ done (see row). Was: **C8: training-protocol provenance.** Retrain the canonical relays with `train_base_relays` defaults
    (seed from `run_experiments.py`) and compare with `results/modulation/qpsk_rayleigh.json`; if they
    reproduce, rewrite the Ch. 4 sample counts/optimizer to the code; if not, say what is unknown.
    Re-check Phase A #133's "canonical ReLU/SGD" wording.
