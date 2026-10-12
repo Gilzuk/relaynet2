@@ -1,6 +1,6 @@
 # Handover — Khina revision round (task chain)
 
-_Last updated: 2026-10-12. Khina round complete: every task merged (#131–#162, plus the documentation PR that records this), mirror published at 162fb85 (= main 1eaeb08), reply drafted and committed but not sent. Thesis 138 pages; verifier 678 cells; 347 tests. Nothing is left to implement; the open items are the author's decisions listed under "Next"._
+_Last updated: 2026-10-12. Khina round complete: every task merged, including a final page-by-page review (FR), mirror republished after it, reply drafted and committed but not sent. Thesis 119 countable pages (Chapter 1 through the appendices; the faculty limit is 120; 135 PDF pages); verifier 678 cells; 347 tests. Nothing is left to implement; the open items are the author's decisions listed under "Next"._
 
 This file is the resume point if a session ends mid-task (out of credits, container reset,
 interruption). A new session should read it **after** `CLAUDE.md`, `context.md`,
@@ -71,6 +71,7 @@ Presentation notes: running headers (#124), ledger labels (#135), verification-c
 | R  | Reply to Khina: drafted 2026-10-12, one paragraph per comment with the thesis location of each fix (no PR numbers); C4 reversal stated; ×2 multiplication-count convention; C7/C8 disclosures. Committed at the author's request: `thesis/submission/reply_to_khina_2026-10.md` (not sent); updated after the point-by-point audit (#158) and the second recheck (RC), section/table numbers re-checked against the 138-page build | DRAFTED, COMMITTED (awaiting author) | #156, #157, #159, #160 |
 | RC | Second recheck of the rendered PDF against every sub-request: factorization caveat wherever M^L is stated (Fig. 6.7, Sec. 6.5, 2.6, O2, H5, Appendix); Table 5.11 "Look-ahead" caption; Sec. 4.1.5 matched destination metric; Ch. 1 contribution 3; Sec. 7.1.1, 7.6 wording; Hybrid described as coded (`hybrid_branch_selection.py`, verifier `prose:hybrid-branch`); sequence-model holdout; Appendix B Table 9.1; test counts | DONE | #160 |
 | RC2 | Found while updating the documents: Ch. 7 (comparator scope) and the Ch. 8 closing paragraph still listed "fully reliability-weighted decoding" as unmeasured, contradicting Sec. 5.5.2; both now say a destination metric that also models relay decision errors is what remains unmeasured | DONE | #162 |
+| FR | Final page-by-page review of the rendered PDF: body was 122 countable pages against the 120 limit (#160 added two) - now 119 by cutting redundancy where chapters ended with 2-3 lines; Table 5.13 ran off the page and five tables overflowed - 0 overfull boxes now; Sec. 4.2 still described a sqrt(2) axis rescaling (contradicting Eq. 4.16 and the code); Transformer rationale said d_ff 128 (code 64); cGAN lambda_L1 100 (code 20); Eq. 2.9 notation; DF closed-form percentages; Table 5.12 caption; boundary wording vs Sec. 3.1.1; appendix letters (no Appendix A) dropped; revision language removed; bibliography arXiv IDs and casing | DONE | (this PR) |
 | D  | Tracking documents brought up to date: thesis, rerun and framework changelogs, README findings, REPRODUCE, context, Overleaf-sync guide (publish identity), Hebrew-abstract note, superseded cover letter marked, memory bank (techContext SNR trap, systemPatterns), table provenance regenerated; reply final pass | DONE | (this PR) |
 
 ## Session chain (work these in order)
@@ -105,13 +106,15 @@ tells you where the work is; rerun any experiment script from scratch rather tha
 ### Next (author decisions; nothing to implement)
 
 1. **Send the reply** in `thesis/submission/reply_to_khina_2026-10.md` (drafted, not sent), with the
-   revised PDF (`thesis/main.pdf`, 138 pages) or the Overleaf project. Read the Hebrew-abstract
+   revised PDF (`thesis/main.pdf`, 119 countable pages) or the Overleaf project. Read the Hebrew-abstract
    changes first (`thesis/HEBREW_ABSTRACT_SYNC.md`): that Hebrew is drafted, not the author's own.
 2. **Overleaf:** pull once from GitHub (Menu → Sync → GitHub). If Overleaf still points at a pre-rewrite
    commit, unlink and relink first (no Overleaf-side edits exist).
 3. **Mirror commit f174a3b** was authored "Claude"; rewriting it to the author's identity needs the
    author's OK (force-push to `relaynet2-thesis`).
-4. If Khina replies with further comments, start a new task chain here, one branch and PR per fix.
+4. **Title-page date** reads September 2026 (`thesis/chapters/frontmatter.tex`); change it to the submission
+   month if the faculty requires that.
+5. If Khina replies with further comments, start a new task chain here, one branch and PR per fix.
 
 ### Task notes
 
@@ -150,7 +153,7 @@ Appendix E; penalty-table pointers to Appendix G; conventional-AF qualifier in S
 Ch. 8; Table 6.8 delay caption; coded figure/table captions name the metric; Appendix C coverage
 sentence; ledger channel column). Thesis 136 pages.
 
-A second recheck of the rendered PDF (RC) found nine more gaps and two code-vs-text mismatches, all fixed: see the RC row above and the facts below. Thesis 138 pages, verifier 678 cells.
+A second recheck of the rendered PDF (RC) found nine more gaps and two code-vs-text mismatches, all fixed: see the RC row above and the facts below. A final page-by-page review (FR row) fixed the page count (122 -> 119 countable), the overflowing tables and further contradictions.
 
 ## Facts discovered this round (keep)
 
@@ -180,7 +183,9 @@ A second recheck of the rendered PDF (RC) found nine more gaps and two code-vs-t
 2. Edit. Results go into the repo (`results/`), never `/tmp/`. New experiment → REGISTRY row in
    `provenance_audit.py` + a check in `verify_thesis_tables.py`.
 3. Build: `cd thesis && latexmk -xelatex -g -interaction=nonstopmode main.tex` three times; check exit
-   code, `grep -c '^!' main.log` = 0, `grep -c undefined main.log` = 0, `pdfinfo main.pdf` pages.
+   code, `grep -c '^!' main.log` = 0, `grep -c undefined main.log` = 0, `grep -c 'Overfull \\hbox' main.log`
+   = 0. Report the countable page count (the folio of the last appendix page; the faculty limit is 120),
+   never the `pdfinfo` total, which adds 13 front-matter and 3 Hebrew pages (`.clinerules/90-safety.md`).
 4. `python3 verify_thesis_tables.py` (678 cells now, 0 inconsistencies), `python3 provenance_audit.py`,
    `python3 -m pytest -q tests` (347 pass).
 5. Commit chapters **and** `thesis/main.pdf` together; push the branch; open a PR into `main`;

@@ -1512,7 +1512,7 @@ def check_E6composite_prose(tex, rep):
     if m:
         rep.cell(T, "MLP-169/20dB", m.group(1) + "e-3", float(m.group(1)) * 1e-3,
                  sm["MLP-169"][0][s20])
-    m = re.search(r"\(\$([\d.]+)\$ vs\.\\ \$([\d.]+)\$ at 8 dB\) and both round", tex)
+    m = re.search(r"\(\$([\d.]+)\$ vs\.\\ \$([\d.]+)\$(?: at 8 dB)?\) and both round", tex)
     if m:
         rep.cell(T, "Viterbi-diff/8dB", m.group(1), float(m.group(1)), sm["Viterbi-diff"][0][s8])
         rep.cell(T, "MLP-169/8dB", m.group(2), float(m.group(2)), sm["MLP-169"][0][s8])
