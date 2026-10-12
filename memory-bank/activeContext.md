@@ -14,7 +14,8 @@ leftover sqrt(2) axis rescaling; Transformer d_ff 128 vs 64; cGAN lambda_L1 100 
 Eq. 2.9 notation; DF closed-form percentages; Table 5.12 caption; "locate the boundary"
 wording; appendix letters (no Appendix A) dropped, so the reply cites Appendix 9.x;
 revision language ("earlier drafts", "during this review"); markdown-dash lists; bibliography
-arXiv IDs and casing. The reply now states the countable page count. Remaining for the
+arXiv IDs and casing. The reply now states the countable page count. Merged as #164 (main
+eee7895); mirror republished at 3d45423, thesis.pdf byte-identical. Remaining for the
 author: send the reply, Overleaf pull, f174a3b, and the title-page date (September 2026).
 
 ### Latest (2026-10-12, final): Khina round closed; documents current; awaiting the author
