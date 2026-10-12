@@ -25,9 +25,13 @@ compile host:
 | Role | Font | Files |
 |------|------|-------|
 | Main (serif) | Times New Roman | `fonts/TimesNewRoman-*.ttf` |
+| Sans | David CLM | `fonts/DavidCLM-*.otf` |
 | Mono | Courier New | `fonts/CourierNew-*.ttf` |
-| Hebrew | Arial | `fonts/Arial-*.ttf` |
-| Sans / Hebrew sans | David CLM | `fonts/DavidCLM-*.otf` |
+| Hebrew | David CLM | `fonts/DavidCLM-*.otf` |
+| Hebrew mono | Courier New | `fonts/CourierNew-*.ttf` |
+
+`fonts/` also carries Arial (`fonts/Arial-*.ttf`), which `main.tex` does not
+load at present.
 
 ## Package order (do not rearrange)
 `polyglossia` is loaded at the very **end** of the preamble, right before
@@ -38,12 +42,15 @@ leaving every cross-reference and citation as `??`. If you add a package, put it
 *before* the Language & Hebrew block at the bottom.
 
 ## Notes
-- `hebcal.sty` is **no longer loaded**: `\usepackage{hebcal}` is commented out
-  in `main.tex`. The stub existed to disable polyglossia's Hebrew-calendar font
-  so the build would not depend on the `othello` MetaFont font; with the package
-  out, nothing requests that font in the first place. The file is still in
-  `thesis/` should it be needed again, but it no longer travels with the project
-  — the bundle carries whichever local `.sty` files `main.tex` actually loads,
-  and right now that is none.
+- `hebrewcal.sty` in the project root is a local stub, and `main.tex` loads it
+  explicitly so that it travels with the project. Polyglossia's Hebrew support
+  requires a package of that name; the stub takes its place, accepts the options
+  polyglossia passes and defines the calendar commands as no-ops, since the
+  thesis uses no Hebrew dates. Its header records why: on some installations the
+  real package pulled in the `othello` METAFONT Hebrew-calendar font, which
+  failed to build. Keep it next to `main.tex`.
+- The older `hebcal.sty` stub is not used: `\usepackage{hebcal}` is commented
+  out in `main.tex`, and the file stays in `thesis/` without travelling with the
+  project.
 - Figures live in `results/` and are found via `\graphicspath`.
 - Bibliography: `chapters/references.bib`, IEEEtran style, via bibtex.
