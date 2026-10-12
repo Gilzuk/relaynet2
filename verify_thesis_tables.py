@@ -250,7 +250,7 @@ MIN_CELLS = {
     "arch:relay-param-counts": 5,
     "consistency:proof-copies": 7, "tbl:slicer-floor-inline": 24,
     "prose:qpsk-decomposition": 4, "prose:qpsk-controls": 3, "prose:scalar-map": 7,
-    "prose:af-conventional": 8, "prose:isi-penalty": 18, "tbl:coded-matched": 46, "prose:flat-conclusion": 2, "coded-matched-secondary": 40,
+    "prose:af-conventional": 8, "prose:isi-penalty": 18, "prose:hybrid-branch": 21, "tbl:coded-matched": 46, "prose:flat-conclusion": 2, "coded-matched-secondary": 40,
     "prose:seed-spread-native": 6,
     "tbl:bcjr-benchmark": 12, "prose:soft-df-calibration": 2,
     "prose:mmse-monotonicity": 12,
@@ -1762,6 +1762,51 @@ def check_isi_penalty_prose(tex, rep):
                 rep.cell(T, f"MLP-vs-genie@{lab[i]}", g, float(g), v[i])
     rep.finish_table(T, before)
 
+def check_hybrid_branch_prose(tex, rep):
+    """Which branch the canonical Hybrid took (Sec. 4.2 rationale, Ch. 7, Ch. 8).
+
+    The Hybrid switches on a received-power SNR estimate, not on the operating
+    SNR. Source: results/hybrid_branch_selection.json, written by
+    hybrid_branch_selection.py, which replays the canonical run's Hop-1 draws and
+    checks the replay against the published per-trial BERs.
+    """
+    T = "prose:hybrid-branch"; before = rep.checked
+    p = os.path.join(ROOT, "results", "hybrid_branch_selection.json")
+    if not os.path.exists(p):
+        return rep.skip(T, "results/hybrid_branch_selection.json not found")
+    d = json.load(open(p))
+    by = {int(round(r["snr_db"])): r["mlp_axis_blocks"] for r in d["rows"]}
+    n = d["rows"][0]["axis_blocks"]
+    # The prose says the replay reproduces every all-DF block's published BER.
+    rep.cell(T, "replay BER mismatches", "0", 0.0, d["replay_check"]["ber_mismatches"])
+    m = re.search(r"The threshold is a fixed \$(\d+)\$~dB", tex)
+    if m:
+        rep.cell(T, "threshold", m.group(1), float(m.group(1)), d["threshold_db"])
+    m = re.search(r"MLP branch on all (\d+) axis-blocks at each SNR from 0 to 6~dB, on (\d+) of (\d+) "
+                  r"at 8~dB, (\d+) at 10~dB and (\d+) at 12~dB, and on none from 14~dB upward", tex)
+    if m:
+        rep.cell(T, "axis-blocks", m.group(1), float(m.group(1)), n)
+        for snr in (0, 2, 4, 6):
+            rep.cell(T, f"MLP@{snr}dB", m.group(1), float(m.group(1)), by[snr])
+        rep.cell(T, "MLP@8dB", m.group(2), float(m.group(2)), by[8])
+        rep.cell(T, "axis-blocks@8dB", m.group(3), float(m.group(3)), n)
+        rep.cell(T, "MLP@10dB", m.group(4), float(m.group(4)), by[10])
+        rep.cell(T, "MLP@12dB", m.group(5), float(m.group(5)), by[12])
+        for snr in (14, 16, 18, 20):
+            rep.cell(T, f"MLP@{snr}dB", "0", 0.0, by[snr])  # "none"
+    # "between 6 and 8 dB": the last SNR with the MLP branch on every block, and
+    # the first with it on fewer than half.
+    snrs = sorted(by)
+    lower = max(s_ for s_ in snrs if all(by[t] == n for t in snrs if t <= s_))
+    upper = min(s_ for s_ in snrs if by[s_] < n / 2)
+    for k, m in enumerate(re.finditer(r"between (\d+) and (\d+)~dB", tex)):
+        ctx = tex[max(0, m.start() - 400):m.start()]
+        if "switch" not in ctx:
+            continue
+        rep.cell(T, f"switch lower #{k}", m.group(1), float(m.group(1)), lower)
+        rep.cell(T, f"switch upper #{k}", m.group(2), float(m.group(2)), upper)
+    rep.finish_table(T, before)
+
 def check_qpsk_decomposition_prose(tex, rep):
     """The QPSK SER / bits-per-symbol-error figures quoted in Chapter 7 prose.
 
@@ -2228,7 +2273,7 @@ def main():
               check_mmse_baseline, check_seq_on_memory,
               check_relay_param_counts, check_proof_copies_agree,
               check_slicer_floor, check_qpsk_decomposition_prose, check_scalar_map_prose,
-              check_af_conventional_prose, check_isi_penalty_prose,
+              check_af_conventional_prose, check_isi_penalty_prose, check_hybrid_branch_prose,
               check_coded_matched, check_flat_conclusion_prose, check_coded_matched_secondary,
               check_qpsk_controls_prose, check_bcjr_benchmark,
               check_seed_spread_native_prose,

@@ -181,7 +181,7 @@ Equalization: x̂ = y / h   (perfect CSI)
 ### AI-Based Relays
 
 - **MLP (Minimal):** A compact 2-layer feedforward neural network (window_size=5, hidden=24). Uses a sliding window to process each bit with its neighbors. Only 169 parameters.
-- **Hybrid:** SNR-adaptive relay that switches between MLP (low SNR) and DF (high SNR) based on a learned threshold. Combines the best of both worlds.
+- **Hybrid:** SNR-adaptive relay that switches between its own MLP sub-network (low SNR) and DF (high SNR) by comparing a received-power SNR estimate with a fixed 5 dB threshold. On the zero-forced Rayleigh observation the estimate is not the operating SNR, so the canonical switch falls between 6 and 8 dB (`hybrid_branch_selection.py`).
 - **VAE (Variational Autoencoder):** Probabilistic generative model that learns a latent representation of the clean signal. Encoder maps to a latent space; decoder reconstructs the signal.
 - **CGAN (Conditional GAN):** Wasserstein GAN with gradient penalty. The generator learns to denoise conditioned on the noisy input; the critic provides adversarial training signal.
 - **Transformer:** Multi-head self-attention over a sliding window of symbols. Captures global dependencies with O(n²) complexity. Architecture: d_model=32, heads=4, layers=2.
@@ -519,7 +519,7 @@ relaynet2/
 │   ├── run_full_comparison.py            # Full pipeline: train + evaluate all
 │   └── plot_normalized_3k.py             # Standalone 3K comparison plots
 │
-├── tests/                            # 249 tests (pytest)
+├── tests/                            # 347 tests (pytest)
 │   ├── test_channels.py                  # AWGN and Rayleigh channel tests
 │   ├── test_modulation.py                # BPSK modulation tests
 │   ├── test_relays.py                    # All relay strategy tests
@@ -656,11 +656,11 @@ for snr, ber, ci_lo, ci_hi in results:
 
 ## Testing
 
-All 249 tests pass:
+All 347 tests pass:
 
 ```bash
 python -m pytest tests/ -q
-# 187 passed
+# 347 passed
 ```
 
 Tests cover:
