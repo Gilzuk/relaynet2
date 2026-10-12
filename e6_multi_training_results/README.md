@@ -1,5 +1,11 @@
 # E6 Multi-Training Results (N_TRAIN=3)
 
+> **Historical snapshot (2026-08-27); do not cite.** The thesis reads
+> `e6_unknown_channel_results/`, where every `e6_*_ported.py` script now writes
+> its output. The flat-channel figures below predate the October 2026 Hop-2
+> noise correction (`thesis/RERUN_CHANGELOG.md`), which roughly halved the DF and
+> MLP error rates. Kept for provenance.
+
 Generated 2026-08-27. Each experiment was run with `N_TRAIN=3` independent
 MLP training seeds, addressing the reviewer gap: "training done only once /
 results are Monte Carlo based on single training seed."
@@ -37,4 +43,4 @@ python e6_blind_ported.py
 python e6_partial_ported.py
 ```
 
-Results are saved to `/tmp/e6_*_ported_results.npy` by each script.
+The scripts now save to `e6_unknown_channel_results/`; this directory is not updated.

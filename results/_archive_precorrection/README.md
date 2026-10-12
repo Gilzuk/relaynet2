@@ -36,7 +36,7 @@ system model). These files are outside that set:
   canonical slot instead.
 - `3k_mimo_{zf,mmse,sic}.*`, `3k_rician_k3.*` — the MIMO second hop and the
   Rician robustness study, both removed from the thesis and redesignated
-  future work (Appendix E, response to comment 4).
+  future work.
 
 ## If you need any of these again
 
