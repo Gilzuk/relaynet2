@@ -13,6 +13,28 @@ produced them; it does not cover every number or figure.
 
 ---
 
+## [Author corrections: bit-wise MAP, DF baseline, Transformer count] — 2026-10-12
+
+### Changed
+- **Sec. 4.1.5 (hard-relay objective).** The BER-optimal relay target is bit-wise
+  MAP. It coincides with symbol-wise MAP for BPSK, or for QPSK with a posterior
+  that factorizes across its bit axes; a joint four-class QPSK arg-max minimizes
+  symbol error, not generally BER. Cross-entropy learns the class probabilities
+  but does not make the joint arg-max BER-optimal.
+- **Sec. 6.4.1 (MMSE baseline).** Outperforming the zero-threshold DF does not by
+  itself show a benefit from temporal context: the scalar MAP control removes its
+  high-SNR floor without a window, while the windowed MLP reaches far lower BER
+  (Sec. 6.2).
+- **Reply, comments 1 and 8.** Same bit-wise MAP statement. A feedforward width of
+  128 gives 26,017 parameters for the full model; the 25,408 in the review covers
+  the two encoder blocks only, excluding the 609 input and output projection
+  parameters (both checked on the instantiated model).
+- **README.** Page count stated as 119 numbered pages (135 PDF pages).
+
+The body still ends at 119 countable pages.
+
+---
+
 ## [Figures checked against their data] — 2026-10-12
 
 Every figure was checked against the data it plots by regenerating the 16 that

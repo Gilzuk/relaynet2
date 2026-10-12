@@ -2,6 +2,20 @@
 
 _Last updated: 2026-10-12_
 
+### Latest (2026-10-12, author corrections): bit-wise MAP, DF baseline, Transformer count
+
+The author supplied a patch, applied as given: Sec. 4.1.5 now says the BER-optimal
+hard-relay target is bit-wise MAP (symbol-wise MAP only for BPSK or a factorized QPSK
+posterior; a joint four-class QPSK arg-max minimizes symbol error); Sec. 6.4.1's MMSE
+paragraph no longer says beating symbol-wise DF shows the relay uses its window (the
+scalar MAP control removes the zero-threshold floor without one); the reply's comment 1
+matches, and comment 8 says d_ff 128 gives 26,017 (full model) while Khina's 25,408 is
+the two encoder blocks only (609 projection parameters). Counts verified by
+instantiating checkpoints/checkpoint_18_transformer_relay.TransformerRelay: d_ff 64 ->
+17,697 (blocks 17,088), d_ff 128 -> 26,017 (blocks 25,408), input+output projections
+64+545 = 609. README page count now 119 (135 PDF). 119 countable pages; verifier
+678/0; 347 tests.
+
 ### Latest (2026-10-12, figures): every thesis figure checked against its data
 
 Asked "has every chart been regenerated?": no figure had been touched since September.
