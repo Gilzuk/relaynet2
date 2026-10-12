@@ -1,6 +1,6 @@
 # Handover — Khina revision round (task chain)
 
-_Last updated: 2026-10-12. Main at `be6c050` (after PR #143). Thesis PDF: 124 pages._
+_Last updated: 2026-10-12. Thesis PDF: 125 pages after B2._
 
 This file is the resume point if a session ends mid-task (out of credits, container reset,
 interruption). A new session should read it **after** `CLAUDE.md`, `context.md`,
@@ -57,8 +57,8 @@ Presentation notes: running headers (#124), ledger labels (#135), verification-c
 | —  | Publish mirror after C1–C3 | DONE (f174a3b) | — |
 | B0 | Canonical training described as implemented (BPSK/AWGN-trained, no √2 pre-scale) | DONE | #142 |
 | B1 | Relay-design problem + surrogates, new Sec. 4.1.5 (comment 1) | DONE | #143 |
-| B2 | RQ hierarchy + RQ→experiment mapping table (comment 2) | NEXT | — |
-| B3 | Model specifications + SNR-penalty definitions (comment 7) | TODO | — |
+| B2 | RQ hierarchy + RQ→experiment mapping table (comment 2); O1/O2 answered by name in Ch. 9 | DONE | (this PR) |
+| B3 | Model specifications + SNR-penalty definitions (comment 7) | NEXT | — |
 | B4 | Equal-budget wording pass (comment 8, last bullet) | TODO | — |
 | B5 | Positioning vs estimate-and-forward, Farsad–Goldsmith, ViterbiNet; named-study Table 3.1 (comment 9) | TODO | — |
 | C4 | Reliability-weighted Viterbi/BCJR at relay + destination; rerun coded comparisons (comment 4) | TODO | — |
@@ -70,7 +70,7 @@ Presentation notes: running headers (#124), ledger labels (#135), verification-c
 
 ### Task notes
 
-**B2 (next).** Files: `thesis/chapters/ch03_objectives.tex` (O1/O2 at `sec:two-objectives`, H1–H5 at
+**B2 (done).** Files: `thesis/chapters/ch03_objectives.tex` (O1/O2 at `sec:two-objectives`, H1–H5 at
 `sec:research-hypotheses`, Specific Objectives). Add a short "hierarchy" paragraph: main objective →
 O1/O2 → H5 + Ch. 6 studies answer O1; joint latency–memory study (`sec:joint-latency-memory`) and
 pilot sweep (`sec:partial-posterior`) answer O2; H1–H4 are the canonical control that calibrates the
