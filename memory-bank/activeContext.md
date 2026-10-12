@@ -2,6 +2,31 @@
 
 _Last updated: 2026-10-12_
 
+### Latest (2026-10-12, READMEs): every README and Overleaf guide current; mirror republished
+
+The author asked whether all READMEs in relaynet2 and relaynet2-thesis were updated; they were
+not. Fixed in #166 (main c8f7710): root README (Ch. 6 table had stale composite/blind/pilot
+wording - now the thesis's numbers, the scalar MAP row and the factorized trellis count; the
+Hybrid snippet showed switching on a given SNR - now the fixed 5 dB threshold on the per-axis
+power estimate, switch at 6-8 dB; Transformer d_ff 64; cGAN lambda_L1 = 20; Overleaf mirror
+row); e6_unknown_channel_results/README.md (described a clean-thesis appendix; now backs
+Ch. 6 on main, S2/S4 not reported, October reruns); e6_multi_training_results and
+e6_qpsk_rescaled_results marked historical/exploratory; the archive README's stale appendix
+reference removed. The relaynet2-thesis README is generated from the template in
+scripts/overleaf_project.py: it now carries the AF qualifier, the matched-metric coded
+reversal and the factorized trellis, and the mirror was republished at 5b1da55 (only
+README.md changed; thesis.pdf byte-identical). thesis_overleaf*.zip and thesis_preview.pdf
+were September builds; rebuilt from the current thesis. The mirror's other doc,
+thesis/OVERLEAF.md, was also stale (Hebrew font given as Arial; main.tex sets David CLM;
+it said no local .sty travels, but main.tex loads the hebrewcal.sty stub since #123), as
+was thesis/OVERLEAF_SYNC.md (54 files/22 figures/hebcal.sty; tooling "on
+claude/overleaf-sync"; origin/overleaf-dist, last pushed 2026-09-04, presented as the
+published state). Fixed in #168 (main c4b6a0c), zips rebuilt, mirror republished at
+2a3fd16 (only OVERLEAF.md changed; thesis.pdf byte-identical). techContext and
+projectbrief now give the current build (thesis/main.tex via latexmk; the root
+thesis_tau.tex is an old variant). Thesis sources unchanged (119 countable pages).
+Remaining for the author: as listed in HANDOVER "Next".
+
 ### Latest (2026-10-12, final review): page limit restored; review fixes merged
 
 A page-by-page review of the rendered PDF (fix/final-review-pass, #164) found the body at
