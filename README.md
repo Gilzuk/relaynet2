@@ -63,7 +63,7 @@ measured at the QPSK relay output only, not as an end-to-end benchmark.
 `thesis/chapters/ch04_methods.tex`, §Statistical Significance Testing;
 `thesis/chapters/ch07_unknown_and_mismatch_channels.tex`, §A BER-Optimal Benchmark.</sub>
 
-The compiled thesis is `thesis/main.pdf` (120 pages). The sections below document the
+The compiled thesis is `thesis/main.pdf` (119 Arabic-numbered pages from Chapter 1 through the appendices; 135 PDF pages including front and back matter). The sections below document the
 `relaynet` simulation framework itself.
 
 ---

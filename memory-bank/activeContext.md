@@ -2,6 +2,29 @@
 
 _Last updated: 2026-10-12_
 
+### Latest (2026-10-12, independent audit): review branch prepared
+
+Independent recheck based on main abed374: verifier 678/0; provenance passes;
+local tests 343 passed / 4 skipped (Mamba-2 wrapper unavailable), one existing
+complex-cast warning. Saved coded trials independently confirm 30/30 wins at
+all six SNRs under both destination metrics; unweighted replay differences 0.
+Found figure-caption trial-count ambiguity, undisclosed outcome-dependent
+30-trial budget, overly strong oracle equality and code-length wording in
+the reply, stale README page count and unmarked historical review drafts.
+Corrections and the nine-item evidence mapping are on
+`fix/khina-independent-audit-20261012`; see
+`docs/independent_khina_audit_2026-10-12.md`.
+The original October email is not committed; exact original-comment closure
+cannot be certified from the paraphrase. No experimental data changed.
+Reply remains unsent; canonical exact-training reproduction remains unavailable.
+PDF rebuilt: 119 countable / 135 physical pages, 0 errors/undefined/hbox overflows;
+Ch. 4 folio 43 has a 6.28pt vbox warning without visible clipping. Changed folios
+58–59 visually checked; preview and both bundles regenerated.
+The initial publication block was resolved by the author's explicit approval on
+2026-10-13 to publish this payload to Gilzuk/relaynet2 as a branch and draft PR.
+The review remains a draft and the advisor reply has not been sent.
+After this PR merges, republish the generated mirror and pull it in Overleaf.
+
 ### Latest (2026-10-12, figures): every thesis figure checked against its data
 
 Asked "has every chart been regenerated?": no figure had been touched since September.
