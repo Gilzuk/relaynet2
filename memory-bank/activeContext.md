@@ -1,6 +1,16 @@
 # Active Context (update this file first, every session)
 
-_Last updated: 2026-10-03_
+_Last updated: 2026-10-12_
+
+### Latest (2026-10-12): Khina revision round in progress -- see HANDOVER.md
+
+Task chain and resume procedure live in `HANDOVER.md` (repo root). Done: Phase A
+(#131-#138), C1 factorized MLSE (#139), C2 scalar MAP relay (#140), C3 AF block
+length + conventional AF (#141), mirror published (f174a3b), B0 canonical training
+described as implemented (#142), B1 relay-design problem Sec. 4.1.5 (#143).
+Thesis 124 pages; verifier 540 cells; 343 tests. Next: B2 (RQ hierarchy + mapping
+table). Finding: canonical 7.10 relays are BPSK/AWGN-trained and applied per axis
+with no sqrt(2) rescale; the thesis previously claimed fading-marginalized training.
 
 ### Latest (2026-10-03): published to relaynet2-thesis (Overleaf source)
 

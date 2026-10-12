@@ -1,5 +1,8 @@
 # Progress — E6 Porting Checklist
 
+Session note (2026-10-12): Khina round -- A, C1-C3, B0, B1 merged (#131-#143);
+thesis 124 pages. Remaining chain (B2-B5, C4-C6, republish, reply) in HANDOVER.md.
+
 Session note (2026-10-03, later): exact I/Q MLSE factorization paragraph and
 scope-wording patch applied (see activeContext); thesis 121 pages.
 
