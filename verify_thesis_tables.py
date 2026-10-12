@@ -249,7 +249,7 @@ MIN_CELLS = {
     # the rest of the revision history; the rendered appendix claim remains.
     "arch:relay-param-counts": 5,
     "consistency:proof-copies": 7, "tbl:slicer-floor-inline": 24,
-    "prose:qpsk-decomposition": 4, "prose:qpsk-controls": 3,
+    "prose:qpsk-decomposition": 4, "prose:qpsk-controls": 3, "prose:scalar-map": 7,
     "prose:seed-spread-native": 6,
     "tbl:bcjr-benchmark": 12, "prose:soft-df-calibration": 2,
     "prose:mmse-monotonicity": 12,
@@ -1530,6 +1530,41 @@ def check_mmse_baseline(tex, rep):
     rep.finish_table(T, before)
 
 
+
+def check_scalar_map_prose(tex, rep):
+    """Scalar MAP relay figures quoted in Ch. 6 prose (results/e6_scalar_map.json).
+
+    The paragraph answers the reviewer's question whether the MLP's gain over
+    zero-threshold DF on the ISI channel is a decision-rule effect or a
+    temporal-context effect, so its seven numbers are pinned to the run.
+    """
+    T = "prose:scalar-map"; before = rep.checked
+    src_path = os.path.join(ROOT, "results", "e6_scalar_map.json")
+    if not os.path.exists(src_path):
+        return rep.skip(T, "results/e6_scalar_map.json not found")
+    d = json.load(open(src_path))
+    R, snrs = d["results"], d["snrs"]
+    ber = lambda k, snr: R[k]["ber"][snrs.index(snr)]
+    i = tex.find("it was measured under the matched protocol (\\texttt{e6\\_scalar\\_map.py})")
+    if i < 0:
+        return rep.skip(T, "scalar-MAP sentence not found in tex")
+    stop = tex.find("temporal context its window spans", i)
+    if stop < 0:
+        return rep.skip(T, "scalar-MAP paragraph does not reach its closing clause")
+    seg = tex[i:stop]
+    nums = re.findall(r"\$(\d+\.\d+)(?:\\times10\^\{(-?\d+)\})?\$", seg)
+    if len(nums) != 7:
+        return rep.skip(T, f"expected 7 numbers in the paragraph, found {len(nums)}")
+    want = [("smap@8dB", ber("scalar-MAP", 8)), ("smap@12dB", ber("scalar-MAP", 12)),
+            ("smap@16dB", ber("scalar-MAP", 16)), ("smap@20dB", ber("scalar-MAP", 20)),
+            ("DF@20dB", ber("DF", 20)), ("smap@12dB(again)", ber("scalar-MAP", 12)),
+            ("MLP@12dB", ber("MLP", 12))]
+    for (mant, exp), (what, src) in zip(nums, want):
+        text = mant + (f"\\times10^{{{exp}}}" if exp else "")
+        val = float(mant) * (10.0 ** int(exp) if exp else 1.0)
+        rep.cell(T, what, text, val, src)
+    rep.finish_table(T, before)
+
 def check_qpsk_decomposition_prose(tex, rep):
     """The QPSK SER / bits-per-symbol-error figures quoted in Chapter 7 prose.
 
@@ -1995,7 +2030,7 @@ def main():
               check_table44,
               check_mmse_baseline, check_seq_on_memory,
               check_relay_param_counts, check_proof_copies_agree,
-              check_slicer_floor, check_qpsk_decomposition_prose,
+              check_slicer_floor, check_qpsk_decomposition_prose, check_scalar_map_prose,
               check_qpsk_controls_prose, check_bcjr_benchmark,
               check_seed_spread_native_prose,
               check_soft_df_calibration_prose,

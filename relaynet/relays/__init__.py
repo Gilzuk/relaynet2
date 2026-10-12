@@ -12,6 +12,7 @@ from .e2e import E2ERelay
 from .mlp import MLPRelay, MLPQPSKClassifierRelay
 from .viterbi import (ViterbiMLSERelay, ViterbiMLSEQPSKRelay, TruncatedViterbiQPSKRelay,
                       FactorizedViterbiQPSKRelay)
+from .scalar_map import ScalarMAPISIRelay
 from .coded_df import CodedDecodeAndForwardRelay
 from .soft_coded_df import SoftCodedDecodeAndForwardRelay, SoftLearnedRelay
 __all__ = [
@@ -31,6 +32,7 @@ __all__ = [
     "ViterbiMLSEQPSKRelay",
     "TruncatedViterbiQPSKRelay",
     "FactorizedViterbiQPSKRelay",
+    "ScalarMAPISIRelay",
     "CodedDecodeAndForwardRelay",
     "SoftCodedDecodeAndForwardRelay",
     "SoftLearnedRelay",
