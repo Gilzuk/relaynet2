@@ -183,7 +183,7 @@ class ViterbiCodeDecoder:
             self.pred_state[ns, 1] = 2 * base + 1
             self.pred_u[ns] = ns >> (self.K - 2) if self.K > 1 else 0
 
-    def decode(self, soft_bits):
+    def decode(self, soft_bits, weights=None):
         """Decode one frame of soft coded-bit observations.
 
         Parameters
@@ -201,6 +201,10 @@ class ViterbiCodeDecoder:
         """
         soft_bits = np.asarray(soft_bits, dtype=float)
         n_steps = len(soft_bits) // 2
+        # Optional per-step weights on the squared residual. None (default) is
+        # the unweighted Euclidean metric; |h_i|^2 per QPSK symbol is the
+        # matched metric for a zero-forced observation y/h = x + n/h.
+        w = None if weights is None else np.asarray(weights, dtype=float)
         y1 = soft_bits[0::2]
         y2 = soft_bits[1::2]
 
@@ -213,6 +217,8 @@ class ViterbiCodeDecoder:
         pred_u = self.pred_u
         for i in range(n_steps):
             branch = (y1[i] - self.exp_symbol[:, :, 0]) ** 2 + (y2[i] - self.exp_symbol[:, :, 1]) ** 2
+            if w is not None:
+                branch = w[i] * branch
 
             # Fully vectorized ACS (add-compare-select): every next state has
             # exactly 2 predecessors sharing one input bit (see _build_trellis).

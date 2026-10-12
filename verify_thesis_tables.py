@@ -250,7 +250,7 @@ MIN_CELLS = {
     "arch:relay-param-counts": 5,
     "consistency:proof-copies": 7, "tbl:slicer-floor-inline": 24,
     "prose:qpsk-decomposition": 4, "prose:qpsk-controls": 3, "prose:scalar-map": 7,
-    "prose:af-conventional": 8, "prose:isi-penalty": 18,
+    "prose:af-conventional": 8, "prose:isi-penalty": 18, "tbl:coded-matched": 46,
     "prose:seed-spread-native": 6,
     "tbl:bcjr-benchmark": 12, "prose:soft-df-calibration": 2,
     "prose:mmse-monotonicity": 12,
@@ -899,6 +899,52 @@ def check_table39(tex, rep):
             rep.cell(T, f"{snr}dB/{key}", pub_text, pub_val, d[snr][key]["mean"])
     rep.finish_table(T, before)
 
+
+def check_coded_matched(tex, rep):
+    """Matched-metric coded comparison (tbl:coded-matched) and its prose.
+
+    Source: results/coded_matched_metrics.json (coded_matched_metrics.py). The
+    learned-relay cells hold two values, "plain / weighted" destination metric.
+    """
+    T = "tbl:coded-matched"; before = rep.checked
+    p = os.path.join(ROOT, "results", "coded_matched_metrics.json")
+    if not os.path.exists(p):
+        return rep.skip(T, "results/coded_matched_metrics.json not found")
+    body = table_body(tex, T)
+    if body is None:
+        return rep.skip(T, "label not found in tex")
+    d = json.load(open(p)); S = d["summary"]
+    cols = {1: ["coded_df|plain"], 2: ["coded_df_m|matched"], 3: ["soft_df_m|matched"],
+            4: ["mlp_hard|plain", "mlp_hard|matched"],
+            5: ["mlp_soft|plain", "mlp_soft|matched"], 6: ["oracle|matched"]}
+    for row in data_rows(body):
+        if not row or row[0][1] is None:
+            continue
+        snr = str(int(row[0][1]))
+        if snr not in S:
+            continue
+        for c, keys in cols.items():
+            if c >= len(row):
+                break
+            parts = row[c][0].split("/") if len(keys) > 1 else [row[c][0]]
+            for part, key in zip(parts, keys):
+                txt, val = clean_cell(part)
+                rep.cell(T, f"{snr}dB/{key}", txt, val, S[snr][key]["mean"])
+    # error counts quoted in the caption and prose
+    bits = d["n_frames"] * d["frame_info_bits"]
+    count = lambda snr, k: round(sum(d["per_trial"][snr][k]) * bits)
+    for pat, src in [
+        (r"matched block DF makes (\d+) and (\d+) errors", [count("16", "coded_df_m|matched"), count("20", "coded_df_m|matched")]),
+        (r"and the oracle (\d+) and (\d+)\}", [count("16", "oracle|matched"), count("20", "oracle|matched")]),
+        (r"it makes (\d+) errors in \$3\\times10\^\{6\}\$ bits \(\$1\.0\\times10\^\{-6\}\$\), against \$([\d{},]+)\$",
+         [count("20", "coded_df_m|matched"), min(count("20", k) for k in ("mlp_hard|plain", "mlp_hard|matched", "mlp_soft|plain", "mlp_soft|matched"))]),
+    ]:
+        m = re.search(pat, tex)
+        if m:
+            for g, v in zip(m.groups(), src):
+                txt, val = clean_cell(g)
+                rep.cell(T, "error count", txt, val, v)
+    rep.finish_table(T, before)
 
 def check_table40(tex, rep):
     """Equal-throughput comparison (tbl:table40) vs coded_latency_throughput.json."""
@@ -2095,6 +2141,7 @@ def main():
               check_relay_param_counts, check_proof_copies_agree,
               check_slicer_floor, check_qpsk_decomposition_prose, check_scalar_map_prose,
               check_af_conventional_prose, check_isi_penalty_prose,
+              check_coded_matched,
               check_qpsk_controls_prose, check_bcjr_benchmark,
               check_seed_spread_native_prose,
               check_soft_df_calibration_prose,
