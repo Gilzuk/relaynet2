@@ -5,7 +5,7 @@ _Last updated: 2026-10-12_
 ### Latest (2026-10-12, combined): #171 and #172 reviewed and combined; awaiting approval
 
 The author asked for draft #171 (another session's independent recheck) and #172 (the
-author's patch) to be reviewed and combined in one new PR (branch fix/combined-171-172).
+author's patch) to be reviewed and combined in one new PR (#173, branch fix/combined-171-172).
 Review of #171 against the data: the 30-trial retention is recorded in the
 coded_matched_metrics.py docstring ("stopped once its running means had settled",
 matching the author's earlier "cut the trials, the results plateau"); the matched K sweep
