@@ -1,3 +1,5 @@
+> **Historical, unattributed review draft.** This file retains a placeholder professor signature and is not evidence of an external academic endorsement. Its older scope and performance claims are superseded by the current thesis under `thesis/` and the October 2026 reply in `thesis/submission/reply_to_khina_2026-10.md`.
+
 **To:** Gil Zukerman (M.Sc. Candidate) & University Senate
 **Date:** April 2026
 **Subject:** Review of M.Sc. Thesis: "Deep Learning for Two-Hop Relay Communication: A Comparative Study of Classical and Neural Network-Based Strategies"

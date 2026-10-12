@@ -27,14 +27,14 @@ A new Table 3.1 maps each question to the experiments and sections that answer i
 
 **3. AF implementation.** The methods (Section 4.1.3) now state that the implemented AF zero-forces y/h and normalizes by the empirical block power, with no clipping or regularization, and that E[1/|h|²] is infinite. I measured block-length sensitivity: at 0 dB the AF error rate rises from 0.387 (50 symbols) to 0.413 (50,000 symbols). I also added a conventional finite-power variable-gain AF with coherent destination processing, which matches its closed form to within 0.001 at every SNR. Against it, the learned relays' 0 dB margin shrinks from 0.073 to 0.007 (Section 7.1.1, and the H1 row of the hypothesis table in Chapter 8). H1 remains supported as stated, but the learned relays track DF, so the advantage is one of regeneration rather than of learning. The canonical results (Section 5.2), the Chapter 8 findings and both abstracts now say that the learned advantage is over the block-normalized AF, and give the 0.007 margin against the conventional AF.
 
-**4. Coded metrics: this reverses the coded conclusion.** I implemented the matched metric: |h|² weights in the Viterbi decoder and per-symbol noise variance in the BCJR, at both the relay and the destination. I then reran the principal coded comparisons on the published seeds. The unweighted rows reproduce the published per-trial results exactly, so every change comes from the metric alone.
-- With matched metrics, block DF has lower BER than both learned relays at every SNR from 0 to 20 dB, in 30 of 30 paired trials at each point, under either destination metric for the learned relays.
+**4. Coded metrics: this reverses the coded conclusion.** I implemented the matched metric: |h|² weights in the Viterbi decoder and per-symbol noise variance in the BCJR, at both the relay and the destination. I then reran the principal coded comparisons on the published seeds. The rerun uses the first 30 of the published 100 paired trials, each with 100,000 information bits. The unweighted rows reproduce those published per-trial results exactly. The 30-trial budget was retained after inspecting running means, so the paired tests are exploratory; the within-trial comparison isolates the metric change.
+- With matched metrics, block DF has lower BER than both learned relays at all six tested SNR points (0, 4, 8, 12, 16 and 20 dB), in 30 of 30 paired trials at each point, under either destination metric for the learned relays.
 - At 20 dB block DF makes 3 errors in 3×10⁶ bits, against 2,667 for the best learned relay.
 
 The published high-SNR advantage of the learned relays was therefore produced by the mismatched metric (new Section 5.5.2, Table 5.9). I also reran every secondary coded study with matched metrics:
 - With matched decoding, block DF's relay makes almost no symbol errors.
-- Longer constraint lengths now help, as theory predicts.
-- At 24–32 dB, block DF reaches the oracle.
+- In the tested K = 3, 5 and 7 sweep, larger K lowers measured BER from 4 dB upward; it remains worse at 0 dB. This is a result for these codes and this protocol, not a general monotonicity theorem.
+- At the tested 24, 28 and 32 dB points, block DF and the clean-codeword oracle both record zero bit errors in 6,000,000 information bits per point. Equal observed counts at this budget do not establish equal underlying BER.
 - At equal throughput, coding pays from 8 dB.
 - Decoding at the relay gives the higher goodput under rate adaptation, except under tight idealized buffering budgets, where block DF's frame does not fit.
 

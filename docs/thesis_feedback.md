@@ -1,3 +1,5 @@
+> **Historical manuscript snapshot, superseded.** This is an earlier thesis draft with a different scope, results and test counts. It is not the current thesis or an independent review. The authoritative manuscript is `thesis/main.tex` and its included chapters, with the compiled deliverable at `thesis/main.pdf`.
+
 # Deep Learning for Two-Hop Relay Communication: A Comparative Study of Classical and Neural Network-Based Strategies
 
 ---

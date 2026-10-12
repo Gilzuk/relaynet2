@@ -1,3 +1,5 @@
+Session note (2026-10-12, independent audit): branch `fix/khina-independent-audit-20261012` corrects caption/trial-budget disclosure, reply oracle and code-length wording, README page count and historical-document authority. Evidence table: `docs/independent_khina_audit_2026-10-12.md`. Verifier 678/0, provenance passes, local tests 343 pass/4 skip; saved headline evidence independently recomputed. Original October nine-comment email absent; canonical training reproducibility limitation remains. Reply not sent; mirror publication waits for PR merge.
+
 # Progress — E6 Porting Checklist
 
 Session note (2026-10-12, author corrections): author's patch applied (bit-wise MAP in Sec. 4.1.5, DF/scalar-MAP wording in Sec. 6.4.1, reply comments 1 and 8 with Transformer counts 26,017/25,408/609 verified, README 119 pages). 119 countable pages.
