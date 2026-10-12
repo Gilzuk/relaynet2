@@ -7,7 +7,7 @@ suite — and `thesis/` carries more than the document:
 | In `thesis/` | Belongs on Overleaf? |
 |---|---|
 | `main.tex`, the chapters `main.tex` includes, `chapters/references.bib` | yes |
-| the figures those chapters include, `fonts/`, `hebcal.sty` | yes |
+| the figures those chapters include, `fonts/`, `hebrewcal.sty` | yes |
 | `chapters/_ch0*.tex` — superseded drafts | no |
 | `chapters/ak_response_appendix.tex`, `chapters/appendix_f_review.tex` — review-response appendices `main.tex` no longer includes | no |
 | `*.aux`, `*.log`, `*.bbl`, `*.toc`, `*.xdv`, `main.pdf` — build artefacts | no |
@@ -25,9 +25,11 @@ entire working trail into the authoring surface. The sync below publishes the
 `scripts/overleaf_project.py` resolves the project from `main.tex`'s include
 graph — the chapters it actually `\include{}`s, the figures those chapters
 actually `\includegraphics{}`, the bibliography, the bundled fonts, and any
-`.sty` that lives in `thesis/` rather than on CTAN. Today that is **54 files**:
-`main.tex`, 12 chapters, `references.bib`, 22 figures, 16 fonts, `hebcal.sty`
-and `OVERLEAF.md`. Nothing else.
+`.sty` that lives in `thesis/` rather than on CTAN. Today that is **50 files**:
+`main.tex`, 12 chapters, `references.bib`, 18 figures, 16 fonts, `hebrewcal.sty`
+and `OVERLEAF.md`. Two generated files are added to it, a short `README.md`
+(written from the template in `scripts/overleaf_project.py`) and the built PDF
+as `thesis.pdf`, so the published tree and both zips hold 52 files.
 
 The `\REV{...}` fix records are stripped on the way out. They render as nothing
 either way — `main.tex` defines `\REV` to discard its argument — so the published
@@ -58,6 +60,8 @@ sits between git and Overleaf.
 | Publish | `make overleaf-push` | `make overleaf-repo`, then **Pull** in Overleaf |
 | Needs | an Overleaf plan with git access | an Overleaf plan with GitHub sync |
 | Overleaf edits come back | only into Overleaf's own git | pushed into the GitHub repo by Overleaf |
+
+This project uses route B: `thesis-repo` is `Gilzuk/relaynet2-thesis`.
 
 Overleaf projects have no branches — their git remote has only `master`, and the
 GitHub integration syncs one branch. That is not a constraint on *this*
@@ -115,17 +119,20 @@ against `sha256sum thesis/main.pdf`. A stale local `overleaf-dist` from before a
 history rewrite on the remote must be deleted first, so the script re-adopts the
 remote branch.
 
-It is also mirrored to `origin` so the published state is visible from GitHub
-without Overleaf credentials:
+It can also be mirrored to `origin`, as a copy visible without Overleaf or
+mirror access. That copy is optional and is not kept current: `origin/overleaf-dist`
+was last pushed on 2026-09-04, before the revision, and the published state is
+`thesis-repo` (route B above).
 
 ```bash
 make overleaf-mirror                       # rebuild and push it to origin
 python3 scripts/overleaf_sync.py --origin --push   # origin and Overleaf at once
 ```
 
-A fresh clone gets it with `git fetch origin overleaf-dist`; `make overleaf-sync`
-rebuilds it locally either way. The tooling that generates it lives on
-`claude/overleaf-sync`, not on the thesis branch.
+A fresh clone rebuilds the branch with `make overleaf-sync`, or, once the
+`thesis-repo` remote is added (Route B setup), fetches the published state with
+`git fetch thesis-repo main`. The tooling that generates it,
+`scripts/overleaf_sync.py` and `scripts/overleaf_project.py`, is on `main`.
 
 ## The sync is one-way
 
