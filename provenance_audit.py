@@ -55,6 +55,9 @@ REGISTRY = {
     "Scalar MAP relay on unknown ISI": (
         "e6_scalar_map.py", ["results/e6_scalar_map.json"],
         ["prose:scalar-map (Ch. 6, slicer-floor paragraph)"]),
+    "Canonical Hybrid branch selection (replay)": (
+        "hybrid_branch_selection.py", ["results/hybrid_branch_selection.json"],
+        ["prose:hybrid-branch (Sec. 4.2 Hybrid rationale, Ch. 7 limitation, Ch. 8 finding)"]),
     "Canonical AF: block length and conventional AF": (
         "af_block_and_conventional.py", ["results/af_block_and_conventional.json"],
         ["prose:af-conventional (Ch. 8, H1)", "Ch. 9 H1 verdict row"]),

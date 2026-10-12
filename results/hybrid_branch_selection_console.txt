@@ -1,0 +1,14 @@
+   0 dB  MLP branch on 20/20 axis-blocks   median estimate   -6.0 dB
+   2 dB  MLP branch on 20/20 axis-blocks   median estimate   -3.6 dB
+   4 dB  MLP branch on 20/20 axis-blocks   median estimate   -1.1 dB
+   6 dB  MLP branch on 20/20 axis-blocks   median estimate    2.1 dB
+   8 dB  MLP branch on  6/20 axis-blocks   median estimate    6.7 dB
+  10 dB  MLP branch on  2/20 axis-blocks   median estimate  100.0 dB
+  12 dB  MLP branch on  1/20 axis-blocks   median estimate  100.0 dB
+  14 dB  MLP branch on  0/20 axis-blocks   median estimate  100.0 dB
+  16 dB  MLP branch on  0/20 axis-blocks   median estimate  100.0 dB
+  18 dB  MLP branch on  0/20 axis-blocks   median estimate  100.0 dB
+  20 dB  MLP branch on  0/20 axis-blocks   median estimate  100.0 dB
+
+replay check: 64 all-DF trials, 0 BER mismatches
+wrote results/hybrid_branch_selection.json

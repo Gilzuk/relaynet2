@@ -17,26 +17,25 @@
 \textbf{Network Topology} &
 \textbf{Train Loss (LR)} &
 \textbf{Total Params} &
-\textbf{Implemen-}\\
-\textbf{tation} \\
+\textbf{Implemen\-tation} \\
 \hline
 MLP (Minimal) &
 Feedforward MLP, 5-symbol sliding window &
-MSE, lr=0.01, 100 epochs &
+MSE, Adam lr=0.01, 100 epochs, trained at 5/10/15~dB &
 169 &
-NumPy (CPU) \\
+PyTorch (CPU) \\
 \hline
 Hybrid &
-MLP + DF switching via learned SNR threshold ($\sim$5 dB) &
-MSE (MLP only), lr=0.01 &
+Own MLP sub-network + DF, switched per block and axis at a fixed 5~dB threshold on a received-power SNR estimate &
+MSE (MLP only), Adam lr=0.01, trained at 2/4/6~dB &
 169 &
-NumPy (CPU) \\
+PyTorch (CPU) \\
 \hline
 VAE &
 Encoder--decoder latent model (7$\to$8$\to$1) &
 $\beta$-VAE ($\beta=0.1$), Adam lr=$10^{-3}$ &
 1{,}777 &
-PyTorch (CUDA) \\
+PyTorch (CPU) \\
 \hline
 cGAN (WGAN-GP) &
 Conditional GAN (generator + critic) &
@@ -46,31 +45,31 @@ PyTorch (CUDA) \\
 \hline
 Transformer &
 2-layer encoder, 4 heads, $d_{\text{model}}=32$ &
-MSE, Adam lr=$10^{-3}$ &
+MSE, Adam lr=$10^{-3}$; 15\% held out, lowest-training-loss epoch kept &
 17{,}697 &
 PyTorch (CUDA/CPU) \\
 \hline
 Mamba-S6 &
 Selective SSM, 2 S6 layers &
-MSE, Adam lr=$10^{-3}$ &
+MSE, Adam lr=$10^{-3}$; 15\% held out, lowest-training-loss epoch kept &
 24{,}001 &
 PyTorch (CUDA/CPU) \\
 \hline
 Mamba-2 SSD &
 Selective SSM with SSD kernel (2 layers) &
-MSE, Adam lr=$10^{-3}$, clip=1.0 &
+MSE, Adam lr=$10^{-3}$, clip=1.0; 15\% held out, lowest-training-loss epoch kept &
 26{,}179 &
 PyTorch (CUDA) \\
 \hline
 \end{tabularx}
 
-\caption[Relay models, objectives and parameter counts]{Comparison of relay models, training objectives, parameter counts, and implementations}
+\caption[Relay models, objectives and parameter counts]{Comparison of relay models, training objectives, parameter counts, and implementations, as configured for the canonical comparison (\texttt{run\_experiments.py}; Section~\ref{sec:training-protocol})}
 \label{tab:relay_comparison}
 \end{table}
 
 \section{Appendix C: Reproducibility}\label{sec:appendix-c-software-architecture}
 
-\subsection{Testing} The simulation framework carries 187 automated pytest tests covering channels, modulation, relay strategies, simulation, and statistics. In the recorded environment, the full suite passed; with PyTorch unavailable, 183 passed and four checkpoint-dependent tests were skipped.
+\subsection{Testing} The simulation framework carries 347 automated pytest tests in 24 test modules, covering channels, modulation, coding, relay strategies, weight save and load, simulation, statistics and the verification tooling. In the revision environment (Python 3.11.17, PyTorch 2.14) the full suite passed. The four tests that need the Mamba-2 module are skipped when it cannot be imported.
 
 \subsection{Reproducibility} Evaluation seeds are controlled for source-bit and noise generation. Training initialization was not consistently seeded for every original sequence-model checkpoint, so exact retraining of those models is not guaranteed; the later replicated sweeps report training-seed variation explicitly.
 
@@ -263,7 +262,7 @@ For a fixed observation and supplied model, bit-MAP minimizes expected bit error
 With the normalized taps, the interferer magnitude sum $h_1 + h_2 \approx 0.910$ exceeds the cursor $h_0 \approx 0.758$: the eye is closed. Of the four equiprobable BPSK interferer sign patterns, exactly one (both opposing the cursor) yields a noise-free sample of $0.758 - 0.910 = -0.152 < 0$, a deterministic sign flip, while the remaining three ($0.606$, $0.910$, $1.668$) preserve the sign -- so a memoryless slicer errs on exactly one pattern in four as noise vanishes, giving the analytic floor of exactly $1/4$. The non-monotonicity follows from the same geometry: at moderate SNR, noise occasionally pushes the flipped sample back across the decision boundary, so the conditional error rate on that pattern rises toward one as SNR grows and total BER climbs toward $0.25$ from below -- standard behaviour for a closed-eye channel under symbol-by-symbol detection \cite{LuckySalzWeldon1968, ProakisSalehi2008DigitalComm}.
 
 \subsection{\texorpdfstring{Complexity: the $M^{L}$ trellis against a fixed forward pass}{Complexity: the M to the L trellis against a fixed forward pass}}
-An unrestricted joint-symbol MLSE implementation maintains $M^{L-1}$ states and evaluates $M^L$ branch metrics for channel length $L$ \cite{Forney1972MLSE,ProakisSalehi2008DigitalComm}. For the real-tap QPSK channel, exact I/Q factorization reduces that search to two binary trellises (Section~\ref{sec:iq-mlse-factorization}); the joint count is not a necessary cost of matched detection. The separate real $11\to13\to1$ MLP has $170$ parameters and $11\cdot13+13=156$ MACs, plus 14 bias additions and nonlinear activations. Counting a multiply and add as two FLOPs gives approximately 330 FLOPs excluding activation cost. These are not 312 MACs. Cost is fixed only for that deployed architecture; longer windows increase it. Reduced-state sequence estimation \cite{EyuboqluQureshi1988RSSE} is another unmeasured lower-cost classical alternative.
+An unrestricted joint-symbol MLSE implementation maintains $M^{L-1}$ states and evaluates $M^L$ branch metrics for channel length $L$ \cite{Forney1972MLSE,ProakisSalehi2008DigitalComm}. For the real-tap QPSK channel, exact I/Q factorization reduces that search to two binary trellises, and for square $M$-QAM to two $\sqrt{M}$-ary trellises with $2M^{L/2}$ branch metrics (Section~\ref{sec:iq-mlse-factorization}); the joint count is not a necessary cost of matched detection. The separate real $11\to13\to1$ MLP has $170$ parameters and $11\cdot13+13=156$ MACs, plus 14 bias additions and nonlinear activations. Counting a multiply and add as two FLOPs gives approximately 330 FLOPs excluding activation cost. These are not 312 MACs. Cost is fixed only for that deployed architecture; longer windows increase it. Reduced-state sequence estimation \cite{EyuboqluQureshi1988RSSE} is another unmeasured lower-cost classical alternative.
 
 \subsection{The blind regime: CMA converges where decision-directed MLSE does not}
 
@@ -318,7 +317,7 @@ Coded memory ({\footnotesize\texttt{joint\_\allowbreak{}latency\_\allowbreak{}me
 
 \paragraph{DBPSK.} The source bits $x_i \in \{\pm1\}$ are differentially encoded as $s_i = s_{i-1}x_i$. The learned relay is trained with the information bit $x_i$ as its target, so it estimates $x_i$ directly rather than the differential symbol; its real output, scaled to unit power, is forwarded as a BPSK signal, and the destination decides on the sign of its real part without differential decoding. The DF relay performs differential detection, $\hat{x}_i = \operatorname{sign}\operatorname{Re}\{y_i y_{i-1}^{*}\}$, and forwards $\hat{x}_i$; AF forwards the complex observation and the destination performs the differential detection. The first bit, the differential reference, is excluded from scoring, except for the learned relay in the fixed-composite study, where it is scored (one bit per $10^{5}$).
 
-\paragraph{Training.} Each learned relay is trained once, at SNR $5$, $10$ and $15$~dB in equal proportions, on data drawn from the Hop-1 model of its own study, with fixed sample counts and epochs (for example $1.2\times10^{5}$ windows and $25$ epochs for the fixed ISI, and $1.6\times10^{5}$ windows and $30$ epochs for the composite studies). The network used for evaluation is the one left after the final epoch; no validation-based checkpoint selection or early stopping is applied.
+\paragraph{Training.} Each learned relay is trained once, at SNR $5$, $10$ and $15$~dB in equal proportions, on data drawn from the Hop-1 model of its own study, with fixed sample counts and epochs (for example $1.2\times10^{5}$ windows and $25$ epochs for the fixed ISI, and $1.6\times10^{5}$ windows and $30$ epochs for the composite studies). The network used for evaluation is the one left after the final epoch; no validation-based checkpoint selection or early stopping is applied. The sequence-model wrappers of the canonical comparison differ: they restore the epoch with the lowest training loss (Section~\ref{sec:training-protocol}).
 
 \paragraph{Single-number SNR penalties.} All required-SNR penalties use one definition, implemented in \texttt{ber\_metrics.py}. For a BER target $t$, the SNR at which a curve reaches $t$ is found by linear interpolation of $\ln \mathrm{BER}$ against SNR in dB between the two measured points that bracket $t$, taking the last such crossing. A zero-error point cannot be interpolated in log scale: if the preceding point lies above $t$, the crossing is placed at the zero-error point's SNR, which can only overstate the SNR the curve needs. The penalty at $t$ is the relay's SNR minus the reference's, positive when the relay needs more. A target that either curve does not bracket is dropped rather than extrapolated. Tables~\ref{tbl:mmse-baseline}, \ref{tbl:seq-on-memory}, \ref{tbl:table-minsize}, \ref{tbl:seed-spread} and~\ref{tbl:seed-spread-3k} report one number per configuration: the largest penalty over the reachable targets among $10^{-1}$, $10^{-2}$ and $10^{-3}$, or a dash when none is reachable. Their aggregation over training seeds differs, as follows.
 \begin{itemize}
