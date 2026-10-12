@@ -61,7 +61,7 @@ Presentation notes: running headers (#124), ledger labels (#135), verification-c
 | B3 | Model specifications + SNR-penalty definitions (comment 7): Appendix G; ISI penalties now derived by `e6_isi_penalty.py` and verified | DONE | #146 |
 | B4 | Equal-budget wording pass (comment 8, last bullet) | DONE | #147 |
 | B5 | Positioning vs estimate-and-forward (Gomadam–Jafar 2007, verified via DBLP/arXiv), Farsad–Goldsmith, ViterbiNet; named-study table (now Table 3.2) (comment 9) | DONE | #148 |
-| C4 | Reliability-weighted Viterbi/BCJR at relay + destination; rerun coded comparisons (comment 4) | NEXT | — |
+| C4 | Reliability-weighted Viterbi/BCJR at relay + destination; rerun coded comparisons (comment 4). Branch `c4/matched-coded-metrics`: decoders take per-step `weights` (Viterbi) / `noise_var` (BCJR); `coded_matched_metrics.py` reruns Tables 34/37/39 on the published seeds (unweighted rows reproduce `coded_soft_decision.json` exactly) with matched relay and destination metrics; output `results/coded_matched_metrics.json` + console log. If interrupted: rerun the script (~1.5 h on 4 cores), then write the Ch. 5 subsection and update Ch. 8/9 claims | IN PROGRESS | — |
 | C5 | Rerun Rayleigh rows of `tbl:tableE6` on the current convention (figures vs tables) | TODO | — |
 | C6 | Causal/streaming normalization + latency re-evaluation (comment 6; only if readiness claims are kept) | TODO | — |
 | C7 | E6_FLAT Hop-2 noise: `e6_flat_ported.py` adds real noise of variance 1/γ (not 1/(2γ)) to real forwarded signals; AF in flat-phase gets complex 1/(2γ)/dim. DF-vs-MLP fair, absolute BERs 3 dB pessimistic on Hop 2, AF favoured in flat-phase. Fix the noise, rerun, update `tbl` flat rows + Appendix G paragraph | TODO | — |

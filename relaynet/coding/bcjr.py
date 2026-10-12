@@ -81,7 +81,7 @@ class BCJRCodeDecoder:
         self.out_bits = out_bits
         self.exp_symbol = 1.0 - 2.0 * out_bits.astype(float)
 
-    def coded_bit_posteriors(self, soft_bits):
+    def coded_bit_posteriors(self, soft_bits, noise_var=None):
         """Posterior P(coded bit = 1) for every coded bit in one frame.
 
         Parameters
@@ -98,6 +98,11 @@ class BCJRCodeDecoder:
         """
         y = np.asarray(soft_bits, dtype=float)
         n_steps = len(y) // 2
+        # Per-step noise variance: the nominal scalar (default) or one value
+        # per trellis step, e.g. sigma^2/|h_i|^2 after zero forcing, which is
+        # the matched metric when the fading reliability is known.
+        nv = np.broadcast_to(np.asarray(self.noise_var if noise_var is None
+                                        else noise_var, dtype=float), (n_steps,))
         y1, y2 = y[0::2], y[1::2]
         S, tiny = self.num_states, 1e-300
 
@@ -106,7 +111,7 @@ class BCJRCodeDecoder:
         for i in range(n_steps):
             d = ((y1[i] - self.exp_symbol[:, :, 0]) ** 2
                  + (y2[i] - self.exp_symbol[:, :, 1]) ** 2)
-            g = np.exp(-d / (2.0 * self.noise_var) + d.min() / (2.0 * self.noise_var))
+            g = np.exp(-(d - d.min()) / (2.0 * nv[i]))
             gamma[i] = g
 
         # Forward recursion (trellis starts in the all-zero state).
@@ -143,7 +148,7 @@ class BCJRCodeDecoder:
                 p1[i, bit] = w[self.out_bits[:, :, bit] == 1].sum()
         return np.clip(p1, 0.0, 1.0)
 
-    def decode(self, soft_bits):
+    def decode(self, soft_bits, noise_var=None):
         """Hard MAP information-bit decisions (for reference/testing).
 
         Note this is bit-wise MAP, not the sequence-MAP that Viterbi gives;
@@ -152,6 +157,11 @@ class BCJRCodeDecoder:
         """
         y = np.asarray(soft_bits, dtype=float)
         n_steps = len(y) // 2
+        # Per-step noise variance: the nominal scalar (default) or one value
+        # per trellis step, e.g. sigma^2/|h_i|^2 after zero forcing, which is
+        # the matched metric when the fading reliability is known.
+        nv = np.broadcast_to(np.asarray(self.noise_var if noise_var is None
+                                        else noise_var, dtype=float), (n_steps,))
         S, tiny = self.num_states, 1e-300
         y1, y2 = y[0::2], y[1::2]
 
@@ -159,7 +169,7 @@ class BCJRCodeDecoder:
         for i in range(n_steps):
             d = ((y1[i] - self.exp_symbol[:, :, 0]) ** 2
                  + (y2[i] - self.exp_symbol[:, :, 1]) ** 2)
-            gamma[i] = np.exp(-d / (2.0 * self.noise_var) + d.min() / (2.0 * self.noise_var))
+            gamma[i] = np.exp(-(d - d.min()) / (2.0 * nv[i]))
 
         alpha = np.zeros((n_steps + 1, S))
         alpha[0, 0] = 1.0
