@@ -250,7 +250,7 @@ MIN_CELLS = {
     "arch:relay-param-counts": 5,
     "consistency:proof-copies": 7, "tbl:slicer-floor-inline": 24,
     "prose:qpsk-decomposition": 4, "prose:qpsk-controls": 3, "prose:scalar-map": 7,
-    "prose:af-conventional": 8, "prose:isi-penalty": 18, "tbl:coded-matched": 46,
+    "prose:af-conventional": 8, "prose:isi-penalty": 18, "tbl:coded-matched": 46, "prose:flat-conclusion": 2,
     "prose:seed-spread-native": 6,
     "tbl:bcjr-benchmark": 12, "prose:soft-df-calibration": 2,
     "prose:mmse-monotonicity": 12,
@@ -950,6 +950,32 @@ def check_coded_matched(tex, rep):
             for g, v in zip(m.groups(), src):
                 txt, val = clean_cell(g)
                 rep.cell(T, "error count", txt, val, v)
+    rep.finish_table(T, before)
+
+def check_flat_conclusion_prose(tex, rep):
+    """MLP-vs-DF differences quoted in the flat-channel conclusion (Ch. 6).
+
+    Source: e6_unknown_channel_results/e6_flat_ported_results.npy (C7 rerun).
+    """
+    T = "prose:flat-conclusion"; before = rep.checked
+    p = os.path.join(ROOT, "e6_unknown_channel_results/e6_flat_ported_results.npy")
+    if not os.path.exists(p):
+        return rep.skip(T, "e6_flat_ported_results.npy not found")
+    d = np.load(p, allow_pickle=True).item()
+    snrs = list(d["snrs"])
+
+    def mean(x):
+        x = np.asarray(x[0] if isinstance(x, (tuple, list)) else x)
+        return x.mean(1) if x.ndim > 1 else x
+
+    diff = {k: mean(v["MLP"]) - mean(v["DF"]) for k, v in d["results"].items()}
+    tab = max(np.abs(v[[snrs.index(x) for x in (8, 12, 16, 20)]]).max() for v in diff.values())
+    m = re.search(r"the largest difference is \$([\d.]+)\$ across the tabulated points", tex)
+    if m:
+        rep.cell(T, "max |MLP-DF| at 8/12/16/20 dB", m.group(1), float(m.group(1)), tab)
+    m = re.search(r"by up to \$([\d.]+)\$ at 0~dB", tex)
+    if m:
+        rep.cell(T, "phase MLP-DF at 0 dB", m.group(1), float(m.group(1)), diff["phase"][snrs.index(0)])
     rep.finish_table(T, before)
 
 def check_table40(tex, rep):
@@ -2147,7 +2173,7 @@ def main():
               check_relay_param_counts, check_proof_copies_agree,
               check_slicer_floor, check_qpsk_decomposition_prose, check_scalar_map_prose,
               check_af_conventional_prose, check_isi_penalty_prose,
-              check_coded_matched,
+              check_coded_matched, check_flat_conclusion_prose,
               check_qpsk_controls_prose, check_bcjr_benchmark,
               check_seed_spread_native_prose,
               check_soft_df_calibration_prose,
