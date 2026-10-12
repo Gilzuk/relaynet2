@@ -42,7 +42,7 @@ Dimension & Evidence boundary\\
 \midrule
 Processing & Symmetric learned windows use future samples; power normalization uses blocks. Neither this nor operation counts establishes causal streaming or measured end-to-end latency.\\
 Channel knowledge & Canonical receiver CSI and training-family knowledge are available. Realizations vary within specified families; arbitrary family shift is untested.\\
-Comparators & Viterbi MLSE optimizes sequence error, not necessarily bit error. QPSK BCJR is a relay-output control. Classical pipelines, including their metric mismatch, must be named explicitly.\\
+Comparators & Viterbi MLSE optimizes sequence error, not necessarily bit error. QPSK BCJR is a relay-output control. Coded results are reported with both the unweighted and the matched decoder metric.\\
 Uncertainty & Fixed-checkpoint trials, replicated training, paired tests and nominal bit-level bounds have different units. Replication budgets are stated per study; null results do not prove equivalence and multiple comparisons are not jointly corrected.\\
 Resources & Arithmetic and reference-program timing are implementation-specific. Parameter storage excludes runtime buffers and software. Energy, quantized hardware execution and deployment robustness are unmeasured.\\
 \bottomrule

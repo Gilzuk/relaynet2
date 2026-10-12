@@ -2,7 +2,7 @@
 
 \section{Main Objective}\label{sec:main-objective}
 
-To determine \emph{under which conditions} a learned relay surpasses classical relay processing in two-hop communication, and where it does not. A single canonical setup (SISO on both hops, i.i.d.\ Rayleigh fast fading, complex baseband, QPSK, uncoded BER) is the controlled baseline on which classical and AI-based strategies are compared as a function of SNR regime and computational constraints. Two deliberate departures from that baseline then locate the boundary the canonical comparison cannot reach: a coded chain, which tests whether the conclusion survives when the classical relay is allowed to decode a channel code (Section~\ref{sec:coded-block-df}), and channels whose structure lies outside the model class the classical relays assume, which is where the learned relay's value is actually established (Chapter~\ref{sec:unknown-channels}). The canonical setup is therefore the control, not the scope.
+To determine \emph{under which conditions} a learned relay surpasses classical relay processing in two-hop communication, and where it does not. A single canonical setup (SISO on both hops, i.i.d.\ Rayleigh fast fading, complex baseband, QPSK, uncoded BER) is the controlled baseline on which classical and AI-based strategies are compared as a function of SNR regime and computational constraints. Two deliberate departures from that baseline then test what the canonical comparison cannot: a coded chain, which tests whether the conclusion survives when the classical relay is allowed to decode a channel code (Section~\ref{sec:coded-block-df}), and channels whose structure lies outside the model class the classical relays assume, which is where the learned relay's measured benefit lies (Chapter~\ref{sec:unknown-channels}). The canonical setup is therefore the control, not the scope.
 
 \subsection{Two Research Questions}\label{sec:two-objectives}
 
@@ -51,7 +51,7 @@ Despite growing interest in AI for wireless communication, the literature review
 
 \end{enumerate}
 
-This thesis addresses both gaps through a unified framework that implements nine relay strategies and compares eight of them on the canonical setup, with both original and normalized parameter counts, full statistical analysis, and a dedicated complexity study; Gap 1's adversarial paradigm (cGAN) is implemented but, being excluded from the canonical comparison on cost grounds, is addressed qualitatively rather than quantitatively. The following table summarizes the positioning of this work relative to the literature:
+This thesis addresses both gaps through a unified framework that implements nine relay strategies and compares eight of them on the canonical setup, with both original and normalized parameter counts, paired statistical tests, and a dedicated complexity study; Gap 1's adversarial paradigm (cGAN) is implemented but, being excluded from the canonical comparison on cost grounds, is addressed qualitatively rather than quantitatively. The following table summarizes the positioning of this work relative to the literature:
 
 \begin{longtable}[]{@{}>{\raggedright\arraybackslash}p{0.17\linewidth}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.25\linewidth}>{\raggedright\arraybackslash}p{0.31\linewidth}@{}}
 \caption[Research positioning]{Research positioning: named studies closest to this thesis, the node and task each addresses, what is learned, and what it is compared against (Section~\ref{sec:positioning-closest-work})}\label{tbl:table17}\tabularnewline
@@ -118,7 +118,7 @@ Unlike H1--H4, which assume the canonical memoryless channel throughout, H5 deli
 \item
   \textbf{Test whether the canonical conclusion survives a coded chain} by replacing the uncoded symbol-wise DF baseline with a genuine block-DF relay, a convolutional code decoded and re-encoded at the relay, and comparing it against coded-aware learned relays at equal $E_s/N_0$ and again at equal throughput, since a code that halves the information rate changes what ``better'' means (Section~\ref{sec:coded-block-df}).
 \item
-  \textbf{Delineate the conditions under which a learned relay surpasses classical processing} on channels whose structure the classical relays do not model --- unknown memory, nonlinear asymmetry, and composite cascades of both --- by locating the boundary rather than demonstrating a capability: a memoryless control where learning is expected to buy nothing, a matched genie-CSI MLSE comparator, a pilot-budget sweep to find the crossover, and a blind regime without an explicit per-block channel estimate, where Bayesian inference would require marginalizing latent channel parameters (Chapter~\ref{sec:unknown-channels}).
+  \textbf{Delineate the conditions under which a learned relay surpasses classical processing} on channels whose structure the classical relays do not model --- unknown memory, nonlinear asymmetry, and composite cascades of both --- through separate bounded comparisons rather than a demonstration of capability: a memoryless control where learning is expected to buy nothing, a matched genie-CSI MLSE comparator, a pilot-budget sweep to find the crossover, and a blind regime without an explicit per-block channel estimate, where Bayesian inference would require marginalizing latent channel parameters (Chapter~\ref{sec:unknown-channels}).
 \item
   \textbf{Measure accuracy and resources within a coded-memory system}, with every relay placed inside the same coded chain and cost reported as decision delay in symbols and declared arithmetic per symbol (Section~\ref{sec:joint-latency-memory}). Distinguish the implemented joint trellis from an exactly factorized channel detector. These comparisons do not put the separate pilot study on a common resource axis.
 \item
@@ -144,4 +144,4 @@ These delimitations isolate the relay processing function from protocol and syst
 
 The scope that bounds every result in this thesis, and the generalizations it does not
 license, is set out once in Section~\ref{sec:introduction-scope} and not restated per chapter.
-The delimitations below are the ones specific to the objectives above.
+The delimitations listed above are the ones specific to the objectives of this chapter.
