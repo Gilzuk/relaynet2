@@ -53,39 +53,24 @@ Despite growing interest in AI for wireless communication, the literature review
 
 This thesis addresses both gaps through a unified framework that implements nine relay strategies and compares eight of them on the canonical setup, with both original and normalized parameter counts, full statistical analysis, and a dedicated complexity study; Gap 1's adversarial paradigm (cGAN) is implemented but, being excluded from the canonical comparison on cost grounds, is addressed qualitatively rather than quantitatively. The following table summarizes the positioning of this work relative to the literature:
 
-\begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
-\caption[Research positioning]{Research positioning: comparison of this thesis against prior work in deep-learning-based relay communication}\label{tbl:table17}\tabularnewline
+\begin{longtable}[]{@{}>{\raggedright\arraybackslash}p{0.17\linewidth}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.25\linewidth}>{\raggedright\arraybackslash}p{0.31\linewidth}@{}}
+\caption[Research positioning]{Research positioning: named studies closest to this thesis, the node and task each addresses, what is learned, and what it is compared against (Section~\ref{sec:positioning-closest-work})}\label{tbl:table17}\tabularnewline
 \toprule\noalign{}
-\begin{minipage}[b]{\linewidth}\raggedright
-Aspect
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Prior Work
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-This Thesis
-\end{minipage} \\
+Study & Node and task & Learned component & Comparators and measures \\
 \midrule\noalign{}
 \endfirsthead
 \toprule\noalign{}
-\begin{minipage}[b]{\linewidth}\raggedright
-Aspect
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Prior Work
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-This Thesis
-\end{minipage} \\
+Study & Node and task & Learned component & Comparators and measures \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-Relay strategies compared & 1--2 (typically AF vs.~DF, or one AI method) & 8 compared (2 classical + 6 AI); a ninth, cGAN, is implemented but excluded on cost grounds \\
-AI paradigms & Single (e.g., supervised only) & 4 learned paradigms implemented (supervised, generative, adversarial, sequential); 3 of them reach the canonical comparison, adversarial (cGAN) being excluded on cost grounds. The ``four paradigms'' of Objective~1 is a different count of a different set: it spans the eight \emph{compared} strategies and includes no-learning (AF, DF) in place of adversarial \\
-Evaluation discipline & Single ad-hoc configuration & One canonical setup (SISO, Rayleigh, QPSK) for the eight-relay comparison, never varied within that comparison --- which is a statement about the \emph{setup}, not about the analysis, and not a claim of preregistration: which relay pairs and SNR points are reported was decided after inspecting the curves, so those comparisons are exploratory (Section~\ref{sec:statistical-significance-testing}) --- calibrated against closed-form theory on that channel; a supplementary coded study deliberately varies the code, rate, and modulation against this baseline \\
-Complexity analysis & None & Normalized $\sim$3K-parameter comparison + complexity study (does BER rise again with model size?) \\
-State space models & Applied to receiver-side tasks; none as a relay processor & Mamba-S6, Mamba-2 SSD evaluated as relay processors \\
-Statistical reporting & Varies among the cited studies & Paired Wilcoxon tests reported per comparison without multiplicity correction; 95\% intervals and at least 10 trials per point \\
+Gomadam and Jafar~\cite{GomadamJafar2007EF} & Relay; memoryless forwarding & None: an analytic estimate from known statistics & AF and demodulate-and-forward; destination SNR \\
+Farsad and Goldsmith~\cite{FarsadGoldsmith2018NNDetection} & Receiver; sequence detection & Sliding bidirectional RNN detector, no CSI after training & Viterbi with perfect and imperfect CSI; BER on Poisson channels \\
+Shlezinger et al.~\cite{Shlezinger2020ViterbiNet} & Receiver; sequence detection & Likelihoods inside a Viterbi recursion & Viterbi with perfect and uncertain CSI; BER \\
+Akdemir et al.~\cite{Akdemir2024DLRelaySelection} & DF relay system; relay selection & Channel-coefficient forecasts & SNR-based, threshold-based and all-relay participation protocols \\
+Bergel et al.~\cite{Bergel2023RelaysAsNeurons} & AF relay network; gain setting & Relay gains, with relays treated as neurons & Analog gain optimization exploiting hardware nonlinearity; no symbol-level detection \\
+This thesis & Two-hop relay; symbol-level forwarding & Eight compared relay maps, six learned, under declared parameter budgets & AF, symbol-wise DF, genie and pilot-aided MLSE, BCJR, scalar MAP, block DF; destination BER, decision delay and multiplications per symbol \\
 \end{longtable}
 
 \paragraph{Relationship between the canonical study and the extension study.} Hypotheses H1--H4 concern the canonical relay scenario introduced in Chapter~\ref{sec:introduction}: a memoryless two-hop channel with white noise and uncoded transmission. Hypothesis H5 studies a deliberately different regime in which the canonical model no longer represents the true channel. It is therefore a robustness extension rather than a direct continuation of the canonical experiments.
