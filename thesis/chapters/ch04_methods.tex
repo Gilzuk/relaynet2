@@ -202,7 +202,7 @@ Training uses MSE loss with multi-SNR training data (i.e., 5, 10, and 15 dB), 25
 
   \emph{Design rationale:} The high \(\lambda_{\text{L1}} = 100\) ensures that the generator is primarily supervised by the reconstruction loss, with the adversarial term acting as a regularizer that encourages outputs to lie on the clean signal manifold. The noise vector \(\mathbf{z} \in \mathbb{R}^8\) provides the stochastic input needed by the GAN framework. The 5:1 critic-to-generator update ratio follows the WGAN-GP recommendation for stable critic training. The doubled epoch count (200 vs.~100) compensates for the slower per-step convergence of adversarial training.
 
-\item  \textbf{Sequential models: Transformer:} Multi-head self-attention over a window of 11 symbols. Architecture: \(d_{\text{model}}=32\), 4 attention heads, 2 encoder layers, feedforward dimension 128. Total: 17,697 parameters. Trained for 100 epochs with Adam optimizer (\(\text{lr}=10^{-3}\)).
+\item  \textbf{Sequential models: Transformer:} Multi-head self-attention over a window of 11 symbols. Architecture: \(d_{\text{model}}=32\), 4 attention heads, 2 encoder layers, feedforward dimension 64 (twice \(d_{\text{model}}\)). Total: 17,697 parameters, counted from the instantiated model. Trained for 100 epochs with Adam optimizer (\(\text{lr}=10^{-3}\)).
 
   Training points at the relay node: SNR = \textbf{5, 10, 15 dB}.
 
