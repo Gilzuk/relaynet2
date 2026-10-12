@@ -1,6 +1,6 @@
 # Handover — Khina revision round (task chain)
 
-_Last updated: 2026-10-12. Phase B complete and published (main aec5c01, mirror 46ad144). Thesis PDF: 127 pages; verifier 558 cells; 343 tests._
+_Last updated: 2026-10-12. C4 done. Thesis PDF: 130 pages; verifier 612 cells; 347 tests._
 
 This file is the resume point if a session ends mid-task (out of credits, container reset,
 interruption). A new session should read it **after** `CLAUDE.md`, `context.md`,
@@ -61,8 +61,8 @@ Presentation notes: running headers (#124), ledger labels (#135), verification-c
 | B3 | Model specifications + SNR-penalty definitions (comment 7): Appendix G; ISI penalties now derived by `e6_isi_penalty.py` and verified | DONE | #146 |
 | B4 | Equal-budget wording pass (comment 8, last bullet) | DONE | #147 |
 | B5 | Positioning vs estimate-and-forward (Gomadam–Jafar 2007, verified via DBLP/arXiv), Farsad–Goldsmith, ViterbiNet; named-study table (now Table 3.2) (comment 9) | DONE | #148 |
-| C4 | Reliability-weighted Viterbi/BCJR at relay + destination; rerun coded comparisons (comment 4). Branch `c4/matched-coded-metrics`: decoders take per-step `weights` (Viterbi) / `noise_var` (BCJR); `coded_matched_metrics.py` reruns Tables 34/37/39 on the published seeds (unweighted rows reproduce `coded_soft_decision.json` exactly) with matched relay and destination metrics; output `results/coded_matched_metrics.json` + console log. If interrupted: rerun the script (~1.5 h on 4 cores), then write the Ch. 5 subsection and update Ch. 8/9 claims | IN PROGRESS | — |
-| C5 | Rerun Rayleigh rows of `tbl:tableE6` on the current convention (figures vs tables) | TODO | — |
+| C4 | Reliability-weighted (|h|²) Viterbi/BCJR at relay + destination; coded Tables 34/37/39 rerun (`coded_matched_metrics.py`, 30 paired trials, published seeds, unweighted rows reproduce exactly). **Result: matched block DF beats both learned relays at every SNR 0–20 dB, 30/30 trials, either destination metric; the published high-SNR learned advantage was a metric artifact.** New Sec. 5.5.2 + Table `tbl:coded-matched`; Ch. 5/8/9 and both abstracts updated. Secondary coded studies (Tables 38, 44, throughput/latency/rate adaptation, coded size sweep) NOT rerun | DONE | (this PR) |
+| C5 | Rerun Rayleigh rows of `tbl:tableE6` on the current convention (figures vs tables) | NEXT | — |
 | C6 | Causal/streaming normalization + latency re-evaluation (comment 6; only if readiness claims are kept) | TODO | — |
 | C7 | E6_FLAT Hop-2 noise: `e6_flat_ported.py` adds real noise of variance 1/γ (not 1/(2γ)) to real forwarded signals; AF in flat-phase gets complex 1/(2γ)/dim. DF-vs-MLP fair, absolute BERs 3 dB pessimistic on Hop 2, AF favoured in flat-phase. Fix the noise, rerun, update `tbl` flat rows + Appendix G paragraph | TODO | — |
 | C8 | Training-protocol description vs code: Ch. 4 says 25k/20k/10k samples (supervised/generative/sequence) and NumPy SGD for MLP/Hybrid; `run_experiments.py::train_base_relays` uses 25k/50k/50k (5k/5k/3k with `--quick`) and `MinimalGenAIRelay` uses PyTorch Adam lr 0.01 whenever torch is installed. No log records which settings produced the canonical weights. Establish it (retrain from the committed seed and compare with `results/modulation/qpsk_rayleigh.json`, or locate the weights' provenance) before correcting the text; also re-check Phase A #133's "canonical ReLU/SGD" | TODO | — |

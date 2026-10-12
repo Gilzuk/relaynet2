@@ -31,6 +31,9 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 
 # experiment -> (script, [output files], [published tables/figures])
 REGISTRY = {
+    "Coded relaying with matched (|h|^2-weighted) metrics": (
+        "coded_matched_metrics.py", ["results/coded_matched_metrics.json"],
+        ["tbl:coded-matched", "Ch. 5/8/9 and abstract coded conclusions"]),
     "ISI required-SNR penalties (MLP vs genie Viterbi)": (
         "e6_isi_penalty.py", ["results/e6_isi_penalty.json"],
         ["prose:isi-penalty (Ch. 6 Layer table and H5, Ch. 8, Ch. 9, abstracts)"]),
