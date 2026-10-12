@@ -1,3 +1,5 @@
+> **Historical planning record, superseded.** This concerns an earlier thesis configuration, not the current SISO/QPSK thesis or the October nine-comment review. Its proposed restriction of Cover–El Gamal results to LOS/Gaussian channels must not be reused: their general relay-channel formulation is discrete memoryless. For the current response see `thesis/submission/reply_to_khina_2026-10.md` and `HANDOVER.md`.
+
 # Instructor Feedback — Analysis, Plan, and Draft Reply
 
 > Status: **PLANNING ONLY — no thesis files changed at this stage.**

@@ -2,6 +2,80 @@
 
 _Last updated: 2026-10-12_
 
+### Latest (2026-10-12, pre-submission audit): #173 audited, not merged
+
+The author asked for a last audit before submission, with no merge. Clean rebuild of
+fix/combined-171-172: 0 errors, undefined or multiply defined refs/cites, missing glyphs
+and overfull boxes (93 underfull lines, all narrow table cells; one harmless fontspec note
+on Courier New's Hebrew script tag); BibTeX 0 warnings; 135 PDF / 119 countable pages; all
+fonts embedded; no ??, placeholders, LaTeX residue, old appendix letters or revision
+language; 53 cited bib entries complete; abstracts and headline numbers consistent (apparent
+mismatches were different quantities, e.g. 0.001356 is Table 5.9's 30-trial value). Spell
+check (pyspellchecker on the PDF text) found five British forms, fixed. Still open for the
+author: title-page date "September 2026" / "ספטמבר 2026" (main.tex lines 330, 364, 462,
+491); the pasted reply differs from the committed one in three sentences (committed ones are
+correct); merge approval for #173, then mirror republish and closing #171/#172.
+
+### Latest (2026-10-12, combined): #171 and #172 reviewed and combined; awaiting approval
+
+The author asked for draft #171 (another session's independent recheck) and #172 (the
+author's patch) to be reviewed and combined in one new PR (#173, branch fix/combined-171-172).
+Review of #171 against the data: the 30-trial retention is recorded in the
+coded_matched_metrics.py docstring ("stopped once its running means had settled",
+matching the author's earlier "cut the trials, the results plateau"); the matched K sweep
+is worse with larger K at 0 dB and better from 4 dB up, with K=5 and K=7 both at zero
+errors at 16/20 dB (reply wording now says so); block DF and the oracle both record zero
+errors in 6,000,000 bits at 24/28/32 dB; professor_feedback.md does end with a
+"[Professor's Name]" placeholder. Conflicts: README page-count line (kept the author's
+wording), this file (kept both entries), PDF/preview/zips (rebuilt from merged sources).
+347 tests pass here (Mamba-2 importable); #171's environment had 343 + 4 skips. Merged
+build: 119 countable pages, 0 errors/undefined/overfull hbox or vbox; verifier 678/0.
+The author then pasted the reply text to check against the thesis: it equals the committed reply except
+for three sentences predating #172 (comment 1 "relay-side MAP", comment 8 "would give your 25,408") and the
+K-sweep refinement; the committed versions are the correct ones. Every cited number/label checks out; two
+thesis edits added: Sec. 4.3.3 now states the canonical training never seeds PyTorch's initialization
+(verified: no torch.manual_seed on that path), and Sec. 5.5.2 says "at all six SNRs" (the longer wording
+cost a page). Still 119 countable pages.
+The author said to wait for approval: do not merge the combined PR into main, republish
+the mirror, or close #171/#172 until the author approves.
+
+### Latest (2026-10-12, author corrections): bit-wise MAP, DF baseline, Transformer count
+
+The author supplied a patch, applied as given: Sec. 4.1.5 now says the BER-optimal
+hard-relay target is bit-wise MAP (symbol-wise MAP only for BPSK or a factorized QPSK
+posterior; a joint four-class QPSK arg-max minimizes symbol error); Sec. 6.4.1's MMSE
+paragraph no longer says beating symbol-wise DF shows the relay uses its window (the
+scalar MAP control removes the zero-threshold floor without one); the reply's comment 1
+matches, and comment 8 says d_ff 128 gives 26,017 (full model) while Khina's 25,408 is
+the two encoder blocks only (609 projection parameters). Counts verified by
+instantiating checkpoints/checkpoint_18_transformer_relay.TransformerRelay: d_ff 64 ->
+17,697 (blocks 17,088), d_ff 128 -> 26,017 (blocks 25,408), input+output projections
+64+545 = 609. README page count now 119 (135 PDF). 119 countable pages; verifier
+678/0; 347 tests.
+
+### Latest (2026-10-12, independent audit): review branch prepared
+
+Independent recheck based on main abed374: verifier 678/0; provenance passes;
+local tests 343 passed / 4 skipped (Mamba-2 wrapper unavailable), one existing
+complex-cast warning. Saved coded trials independently confirm 30/30 wins at
+all six SNRs under both destination metrics; unweighted replay differences 0.
+Found figure-caption trial-count ambiguity, undisclosed outcome-dependent
+30-trial budget, overly strong oracle equality and code-length wording in
+the reply, stale README page count and unmarked historical review drafts.
+Corrections and the nine-item evidence mapping are on
+`fix/khina-independent-audit-20261012`; see
+`docs/independent_khina_audit_2026-10-12.md`.
+The original October email is not committed; exact original-comment closure
+cannot be certified from the paraphrase. No experimental data changed.
+Reply remains unsent; canonical exact-training reproduction remains unavailable.
+PDF rebuilt: 119 countable / 135 physical pages, 0 errors/undefined/hbox overflows;
+Ch. 4 folio 43 has a 6.28pt vbox warning without visible clipping. Changed folios
+58–59 visually checked; preview and both bundles regenerated.
+The initial publication block was resolved by the author's explicit approval on
+2026-10-13 to publish this payload to Gilzuk/relaynet2 as a branch and draft PR.
+The review remains a draft and the advisor reply has not been sent.
+After this PR merges, republish the generated mirror and pull it in Overleaf.
+
 ### Latest (2026-10-12, figures): every thesis figure checked against its data
 
 Asked "has every chart been regenerated?": no figure had been touched since September.

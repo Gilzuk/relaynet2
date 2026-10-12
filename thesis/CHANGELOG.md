@@ -13,6 +13,101 @@ produced them; it does not cover every number or figure.
 
 ---
 
+## [Pre-submission audit] — 2026-10-12
+
+Final audit of the combined branch (#173) before submission:
+- **Build from clean** (all auxiliary files removed): 0 errors, 0 undefined or
+  multiply defined references and citations, 0 missing glyphs, 0 overfull
+  boxes; 93 underfull lines, all in narrow table cells. One harmless fontspec
+  note (Courier New has no Hebrew script tag; no glyph is missing). BibTeX: 0
+  warnings.
+- **PDF**: 135 pages, 119 countable (folio 119 on PDF p132); every font
+  embedded; title and author metadata set; no `??`, placeholders, LaTeX
+  residue, old appendix letters or revision language in the text.
+- **Bibliography**: 53 cited entries, each with a year, every arXiv entry with
+  its identifier, no duplicates, no missing keys.
+- **Consistency**: both abstracts carry the same figures, all present in the
+  body; headline numbers agree wherever they recur.
+
+### Fixed
+- Five British spellings left after the American pass: randomized (Sec. 4.1.5),
+  normalized (Fig. 4.2 caption), summarized and favors (Ch. 5), centered
+  (Appendix 9.6).
+
+The title pages still read September 2026 (English) and ספטמבר 2026 (Hebrew):
+the author's decision.
+
+---
+
+## [Reply cross-checked against the thesis] — 2026-10-12
+
+The reply as the author pasted it was checked claim by claim against this build:
+every section, table, figure and equation number it cites maps to the intended
+content, and every number it quotes is in the thesis. Two thesis edits make the
+thesis carry what the reply says it does:
+
+### Changed
+- **Sec. 4.3.3.** States that the canonical result files cannot be regenerated
+  exactly because the canonical training never seeds PyTorch's weight
+  initialization (no `torch.manual_seed` on that path); the reply says the
+  thesis states this, and before only Appendix 9.2 did, for the sequence models.
+- **Sec. 5.5.2.** "at every SNR from 0 to 20 dB" becomes "at all six SNRs from
+  0 to 20 dB", as the reply says (the longer "each of the six tested SNRs"
+  pushed Chapter 5 over a page).
+
+The body still ends at 119 countable pages.
+
+---
+
+## [Independent recheck, combined with the author corrections] — 2026-10-12
+
+From draft #171 (another session's independent recheck), reviewed and combined
+with #172:
+
+### Changed
+- **Figure 5.3 caption.** It could be read as giving the matched comparison 100
+  trials; it now says the figure has 100 paired trials and Table 5.9 is the
+  separate 30-trial matched comparison.
+- **Sec. 5.5.2.** Discloses that the 30-trial budget was retained after the
+  running means were inspected (as `coded_matched_metrics.py` records), so the
+  paired tests are exploratory.
+- **Reply, comment 4.** States the 30-of-100 trial subset and the disclosure;
+  "every SNR from 0 to 20 dB" becomes the six tested points; "longer constraint
+  lengths help" becomes the measured K = 3/5/7 ordering from 4 dB up with the
+  0 dB exception (K = 5 and 7 tie at zero errors at 16 and 20 dB); "block DF
+  reaches the oracle" becomes equal zero-error counts in 6,000,000 bits at 24,
+  28 and 32 dB, which do not establish equal BER.
+- **Repository.** `docs/independent_khina_audit_2026-10-12.md` maps the nine
+  comments to evidence; `docs/thesis_feedback.md`, `instructor_response_plan.md`
+  and `professor_feedback.md` are marked historical (the last ends with a
+  "[Professor's Name]" placeholder and is no endorsement).
+
+The body still ends at 119 countable pages.
+
+---
+
+## [Author corrections: bit-wise MAP, DF baseline, Transformer count] — 2026-10-12
+
+### Changed
+- **Sec. 4.1.5 (hard-relay objective).** The BER-optimal relay target is bit-wise
+  MAP. It coincides with symbol-wise MAP for BPSK, or for QPSK with a posterior
+  that factorizes across its bit axes; a joint four-class QPSK arg-max minimizes
+  symbol error, not generally BER. Cross-entropy learns the class probabilities
+  but does not make the joint arg-max BER-optimal.
+- **Sec. 6.4.1 (MMSE baseline).** Outperforming the zero-threshold DF does not by
+  itself show a benefit from temporal context: the scalar MAP control removes its
+  high-SNR floor without a window, while the windowed MLP reaches far lower BER
+  (Sec. 6.2).
+- **Reply, comments 1 and 8.** Same bit-wise MAP statement. A feedforward width of
+  128 gives 26,017 parameters for the full model; the 25,408 in the review covers
+  the two encoder blocks only, excluding the 609 input and output projection
+  parameters (both checked on the instantiated model).
+- **README.** Page count stated as 119 numbered pages (135 PDF pages).
+
+The body still ends at 119 countable pages.
+
+---
+
 ## [Figures checked against their data] — 2026-10-12
 
 Every figure was checked against the data it plots by regenerating the 16 that
