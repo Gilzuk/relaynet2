@@ -2,7 +2,7 @@ Subject: Re: Thesis — response to your nine comments
 
 Dear Anatoly,
 
-Thank you for the detailed comments. I have addressed all nine and the presentation notes. Two of them led to new experiments whose results change conclusions in the thesis, and I state those plainly below. The revised PDF is 133 pages. The table verifier now checks 657 cells with no inconsistencies, and all 347 tests pass.
+Thank you for the detailed comments. I have addressed all nine and the presentation notes. Two of them led to new experiments whose results change conclusions in the thesis, and I state those plainly below. The revised PDF is 136 pages. The table verifier now checks 657 cells with no inconsistencies, and all 347 tests pass.
 
 **1. The relay-design problem.** A new Section 4.1.5 states the problem explicitly:
 - the relay's observations and the channel information it has;
@@ -21,7 +21,7 @@ While writing this section I found that the methods text described the canonical
 
 A new Table 3.1 maps each question to the experiments and sections that answer it, and Chapter 8 answers O1 and O2 by name. The "cumulative relaxations" wording and the "distance between boundaries" claim had already been removed.
 
-**3. AF implementation.** The methods (Section 4.1.3) now state that the implemented AF zero-forces y/h and normalizes by the empirical block power, with no clipping or regularization, and that E[1/|h|²] is infinite. I measured block-length sensitivity: at 0 dB the AF error rate rises from 0.388 (50 symbols) to 0.413 (50,000 symbols). I also added a conventional finite-power variable-gain AF with coherent destination processing, which matches its closed form to within 0.0006. Against it, the learned relays' 0 dB margin shrinks from 0.073 to 0.007 (Section 7.1.1, and the H1 row of the hypothesis table in Chapter 8). H1 remains supported as stated, but the learned relays track DF, so the advantage is one of regeneration rather than of learning.
+**3. AF implementation.** The methods (Section 4.1.3) now state that the implemented AF zero-forces y/h and normalizes by the empirical block power, with no clipping or regularization, and that E[1/|h|²] is infinite. I measured block-length sensitivity: at 0 dB the AF error rate rises from 0.388 (50 symbols) to 0.413 (50,000 symbols). I also added a conventional finite-power variable-gain AF with coherent destination processing, which matches its closed form to within 0.0006. Against it, the learned relays' 0 dB margin shrinks from 0.073 to 0.007 (Section 7.1.1, and the H1 row of the hypothesis table in Chapter 8). H1 remains supported as stated, but the learned relays track DF, so the advantage is one of regeneration rather than of learning. The canonical results (Section 5.2), the Chapter 8 findings and both abstracts now say that the learned advantage is over the block-normalized AF, and give the 0.007 margin against the conventional AF.
 
 **4. Coded metrics: this reverses the coded conclusion.** I implemented the matched metric: |h|² weights in the Viterbi decoder and per-symbol noise variance in the BCJR, at both the relay and the destination. I then reran the principal coded comparisons on the published seeds. The unweighted rows reproduce the published per-trial results exactly, so every change comes from the metric alone.
 - With matched metrics, block DF has lower BER than both learned relays at every SNR from 0 to 20 dB, in 30 of 30 paired trials at each point, under either destination metric for the learned relays.
@@ -46,22 +46,24 @@ One note on the numbers. The thesis counts one real multiplication per real squa
 - protocol scheduling;
 - end-to-end delay.
 
-The hard relays in the latency study forward exact constellation points with no normalization, so their stated delays are true readiness delays. The 202-symbol figure is attributed to the implemented full-frame decoder, with finite traceback noted as possible. I removed the operational-readiness claims rather than evaluate a streaming normalization rule, which is stated as not evaluated.
+The hard relays in the latency study forward exact constellation points with no normalization, so their stated delays are true readiness delays; the caption of Table 6.8 now says its delay column is detector look-ahead only. The 202-symbol figure is attributed to the implemented full-frame decoder, with finite traceback noted as possible. I removed the operational-readiness claims rather than evaluate a streaming normalization rule, which is stated as not evaluated.
 
-**7. Model specifications.** A new Appendix G (Section 9.6, Table 9.6) is transcribed from the scripts that produced the data. It covers:
+**7. Model specifications.** A new Appendix G (Section 9.6, Table 9.7) is transcribed from the scripts that produced the data. It covers:
 - both hop models and their parameter laws;
 - impairment ordering and redraw intervals;
 - the amplifier map, a Rapp limiter with saturation 1.2;
 - normalization, pilot construction and window-boundary handling;
 - checkpoint selection.
 
-It also covers DBPSK: the learned relay estimates information bits and forwards a real signal, with no differential decoding at the destination. It defines the single-number SNR penalty as well: interpolation of ln BER, last crossing, zero-error handling, unbracketed targets dropped, and the worst case over 10⁻¹ to 10⁻³, with each table's seed aggregation stated.
+The size-sweep configurations are now specified in Appendix E (Section 9.4, Table 9.3): per-channel modulation, both hops and the comparator, the training and evaluation budgets, seeds and padding.
+
+Appendix G also covers DBPSK: the learned relay estimates information bits and forwards a real signal, with no differential decoding at the destination. It defines the single-number SNR penalty as well: interpolation of ln BER, last crossing, zero-error handling, unbracketed targets dropped, and the worst case over 10⁻¹ to 10⁻³, with each table's seed aggregation stated. The captions of the penalty tables (Tables 6.6 and 6.7, and Tables 9.4–9.6, which were 9.3–9.5 in your copy) point to that definition.
 
 Two findings from this work:
 - The ISI penalties against genie MLSE (0.26 / 1.18 / 1.88 / 2.53 dB) had no committed derivation. They are now reproduced by a script and checked by the verifier.
 - The flat-channel study added twice the intended Hop-2 noise to real forwarded signals. I fixed this and reran it. The error rates roughly halve, and DF and the MLP stay within 0.0013 from 8 dB up. Below 8 dB, however, the unknown-phase MLP trails differential detection by up to 0.0106 at 0 dB, below its training range. This is reported as measured.
 
-**8. Architecture comparisons.** The Transformer parameter count is corrected to 17,697, counted from the instantiated model (Section 4.2). The tanh/ReLU protocol statement is qualified (Section 6.2). The initialization spread now reads 0.39 dB at BPSK, 0.07 dB at QPSK and 0.03 dB on the composite channel, so it is not the most stable at BPSK (Section 6.4.2). The equal-budget discussion (Section 4.4, Section 5.2 and Section 6.4.2) is now tied to the training protocols throughout: each family trains with its own protocol, nothing was tuned per architecture, and no claim isolates architecture or capacity.
+**8. Architecture comparisons.** The Transformer parameter count is corrected to 17,697, counted from the instantiated model (Section 4.2). The tanh/ReLU protocol statement is qualified (Section 6.2). The initialization spread now reads 0.39 dB at BPSK, 0.07 dB at QPSK and 0.03 dB on the composite channel, so it is not the most stable at BPSK (Section 6.4.2). The equal-budget discussion (Sections 4.4, 5.2, 5.3 and 6.4.2) is now tied to the training protocols throughout: each family trains with its own protocol, nothing was tuned per architecture, and no claim isolates architecture or capacity. Section 5.3 no longer describes its goal as isolating inductive bias.
 
 I also found that the training-protocol description did not match the code. All relays train with Adam; the thesis said the MLP used SGD. The sample counts were also wrong. These are now described from the committed code (Section 4.3.3). Exact reproduction of the canonical data is not possible, because PyTorch initialization was unseeded, and the thesis says so.
 
@@ -71,7 +73,7 @@ I also found that the training-protocol description did not match the code. All 
 
 It states four things the thesis adds, beginning with the statement that the contribution is a measured comparison, not a new relay principle. A non-monotonic scalar MAP relay is now measured on the ISI channel (Section 6.2). It removes part of the gap over zero-threshold DF but remains far from the windowed MLP (0.099 against 1.1×10⁻⁴ at 12 dB). So the large gains over zero-threshold detection are not by themselves evidence for learning. Table 3.2 now compares named studies and their properties.
 
-**Presentation notes.** Chapter 5 now carries its own running headers. The experiment ledger (Appendix D, Section 9.3) uses table and figure references instead of internal labels. The verification-coverage statements in Section 4.3.4 and Appendix D now agree: the verifier checks a declared subset of numerical cells, not every number or figure. Table 5.8 now shows the corrected value that its figure plots.
+**Presentation notes.** Chapter 5 now carries its own running headers. The experiment ledger (Appendix D, Section 9.3) uses table and figure references instead of internal labels. The verification-coverage statements in Section 4.3.4 and Appendices C and D (Sections 9.2 and 9.3) now agree: the verifier checks a declared subset of numerical cells, not every number or figure. The ledger's channel descriptions are corrected, and it lists the new experiments. Table 5.8 now shows the corrected value that its figure plots. The coded figures and Tables 5.5 and 5.8 state that they use the unweighted metric and point to the matched results.
 
 The reversed coded conclusion is stated wherever the coded results are discussed, including the English and Hebrew abstracts.
 
