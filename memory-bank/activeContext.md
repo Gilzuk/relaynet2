@@ -2,6 +2,30 @@
 
 _Last updated: 2026-10-12_
 
+### Latest (2026-10-12, later): Khina round complete except republish and reply
+
+Merged since the B-phase entry: B2 RQ map (#145), B3 Appendix G + ISI penalty
+provenance (#146), B4 equal-budget wording (#147), B5 positioning (#148),
+C4 matched coded metrics (#150), C5 Table 39 vs figure (#151), C7 flat Hop-2
+noise rerun (#152), C8 training protocol from code (#153), C4b secondary coded
+studies with matched metrics (#154, squash-merged so coded_min_size.py keeps its
+date). C6 closed without code (no readiness claim remains).
+
+Scientific changes to remember:
+- With |h|^2-weighted (matched) decoder metrics, block DF beats the learned relays
+  at every SNR on the coded link (30/30 paired trials); the published high-SNR
+  learned advantage was a metric artifact. Matched block DF = oracle at 24-32 dB;
+  larger K helps; equal-throughput coding wins from 8 dB; rate-adaptation envelope
+  favours relay decoding except under tight buffering budgets (100-symbol lock-out
+  is structural). Switch: coded_metric.py (CODED_METRIC=matched, CODED_TRIALS).
+- Flat controls rerun with 1/(2 gamma) Hop-2 noise: DF/MLP BERs ~halve; below 8 dB
+  the unknown-phase MLP trails differential detection by up to 0.0106 at 0 dB
+  (exceeds the 0.0036 control target; reported, not tuned).
+- Canonical relays are BPSK/AWGN-trained, Adam everywhere; exact reproduction of the
+  canonical data is impossible (unseeded torch init, global-RNG channel draws).
+Thesis 133 pages; verifier 657 cells; 347 tests. Remaining: republish the mirror,
+draft the reply to Khina (HANDOVER.md, steps P and R).
+
 ### Latest (2026-10-12): Khina revision round in progress -- see HANDOVER.md
 
 Task chain and resume procedure live in `HANDOVER.md` (repo root). Done: Phase A
