@@ -1,5 +1,7 @@
 # Progress — E6 Porting Checklist
 
+Session note (2026-10-12, later): Khina round merged through #154 (C4 matched coded metrics reverse the coded high-SNR conclusion; C4b secondary studies; C5, C7, C8; C6 closed). Thesis 133 pages, verifier 657 cells, 347 tests. Remaining: republish mirror, draft Khina reply (HANDOVER.md P, R).
+
 Session note (2026-10-12): Khina round -- A, C1-C3, B0, B1 merged (#131-#143);
 thesis 124 pages. Remaining chain (B2-B5, C4-C6, republish, reply) in HANDOVER.md.
 
