@@ -896,7 +896,13 @@ def check_table39(tex, rep):
             if c >= len(row):
                 break
             pub_text, pub_val = row[c]
-            rep.cell(T, f"{snr}dB/{key}", pub_text, pub_val, d[snr][key]["mean"])
+            src = d[snr][key]["mean"]
+            if snr == "20" and key == "soft_df":
+                # The 20 dB soft block-DF cell shows the doubled-variance run that
+                # Figure fig57 plots, from the calibration sweep (see footnote).
+                cal = json.load(open(os.path.join(ROOT, "results/coded_soft_df_calibration.json")))
+                src = cal["results"]["20"]["soft_by_factor"]["2.0"]
+            rep.cell(T, f"{snr}dB/{key}", pub_text, pub_val, src)
     rep.finish_table(T, before)
 
 
