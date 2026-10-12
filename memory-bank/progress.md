@@ -1,5 +1,7 @@
 # Progress — E6 Porting Checklist
 
+Session note (2026-10-12, final review): page-by-page review (#164): body 122 -> 119 countable pages (limit 120), table overflows fixed, Sec. 4.2 sqrt(2) leftover, Transformer d_ff, cGAN lambda_L1, Eq. 2.9, appendix letters, revision language, bibliography; reply updated.
+
 Session note (2026-10-12, final): #162 fixed the last stale claim (reliability-weighted decoding listed as unmeasured in Ch. 7/Ch. 8); mirror 162fb85 = main 1eaeb08; all tracking documents updated (HANDOVER, changelogs, README, REPRODUCE, context, memory bank). Round closed; remaining items are the author's (send reply, Overleaf pull, f174a3b).
 
 Session note (2026-10-12, recheck): audit #158, reply #159, then a second recheck (fix/khina-recheck-gaps): factorization caveat everywhere M^L is stated, Table 5.11 look-ahead caption, Sec. 4.1.5/7.1.1/7.6/Ch. 1 wording, Hybrid described as coded (fixed 5 dB threshold on a per-axis power estimate; replay shows the switch at 6-8 dB), sequence-model 15% holdout + best-training-loss restore, Appendix B table, test counts. Thesis 138 pages, verifier 678 cells, 347 tests.

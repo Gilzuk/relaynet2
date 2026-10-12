@@ -2,6 +2,21 @@
 
 _Last updated: 2026-10-12_
 
+### Latest (2026-10-12, final review): page limit restored; review fixes merged
+
+A page-by-page review of the rendered PDF (fix/final-review-pass, #164) found the body at
+122 countable pages against the faculty's 120 (#160 had added two; earlier reports quoted the
+pdfinfo total, which .clinerules/90-safety.md forbids). Fixed by trimming redundancy where
+Chapters 2, 7 and 8 ended with 2-3 lines and deleting the duplicate Table 5.2 commentary:
+now 119 countable (folio 1 = PDF p14, folio 119 = PDF p132; 135 PDF pages). Also fixed:
+Table 5.13 ran off the page and five tables overflowed (0 overfull boxes now); Sec. 4.2's
+leftover sqrt(2) axis rescaling; Transformer d_ff 128 vs 64; cGAN lambda_L1 100 vs 20 (code);
+Eq. 2.9 notation; DF closed-form percentages; Table 5.12 caption; "locate the boundary"
+wording; appendix letters (no Appendix A) dropped, so the reply cites Appendix 9.x;
+revision language ("earlier drafts", "during this review"); markdown-dash lists; bibliography
+arXiv IDs and casing. The reply now states the countable page count. Remaining for the
+author: send the reply, Overleaf pull, f174a3b, and the title-page date (September 2026).
+
 ### Latest (2026-10-12, final): Khina round closed; documents current; awaiting the author
 
 State: main 1eaeb08 (thesis 138 pages, verifier 678 cells, 347 tests, provenance clean);

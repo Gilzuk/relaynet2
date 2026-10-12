@@ -16,8 +16,11 @@ produced them; it does not cover every number or figure.
 ## [Khina revision round] — 2026-10-12
 
 Response to Dr. Anatoly Khina's nine comments and presentation notes on the
-120-page final-revision PDF: PRs #131–#162, ending at 138 pages. Section and
-table numbers below are those of the 138-page build.
+120-page final-revision PDF: PRs #131–#164. The body (Chapter 1 through the
+appendices) ends at 119 pages, within the faculty's 120-page limit (135 PDF pages
+with the front and Hebrew back matter). Section and table numbers below are
+those of that build; the appendices are numbered 9.1–9.6 (their letter names,
+which began at B, were dropped).
 
 ### Changed — conclusions
 - **Coded relaying (comment 4).** With reliability-weighted (matched) decoder
@@ -73,8 +76,23 @@ table numbers below are those of the 138-page build.
   and D); Table 5.8 shows the corrected value its figure plots; coded captions
   name the unweighted metric.
 
+### Fixed — final page-by-page review (#164)
+- The body had grown to 122 pages against the 120 limit; redundant passages were
+  cut where Chapters 2, 7 and 8 ended with two or three lines on their last page,
+  and the duplicate commentary on Table 5.2 was removed (119 pages).
+- Table 5.13 ran off the page; Tables 5.3, 5.9, 5.10, 5.11 and 9.3 overflowed.
+- Sec. 4.2 still described a sqrt(2) rescaling of each axis before the MLP,
+  contradicting Eq. 4.16 and the code; the Transformer rationale gave a
+  feedforward width of 128 against 64; the cGAN's lambda_L1 is 20, not 100;
+  Eq. 2.9 used the window half-width w for the input vector.
+- DF closed-form agreement: 1.0% / 2.5% / 3.6% from the printed values; Table
+  5.12's caption sentence order; boundary wording that contradicted Sec. 3.1.1;
+  "earlier drafts" and similar revision language; preprint identifiers in the
+  bibliography.
+
 ### Verification
-`latexmk -xelatex`: 0 errors, 0 undefined references, 138 pages.
+`latexmk -xelatex`: 0 errors, 0 undefined references, 0 overfull boxes, 119
+countable pages.
 `verify_thesis_tables.py`: 678 cells, 0 inconsistencies. `provenance_audit.py`:
 clean. `pytest`: 347 passed. Mirror `relaynet2-thesis` at 162fb85 (from main
 1eaeb08), `thesis.pdf` byte-identical to `thesis/main.pdf`.

@@ -1199,5 +1199,5 @@ from 0.073 to 0.007.
   implemented block-normalized AF; against a conventional AF it is 0.007 at 0 dB.
 - The flat controls agree from 8 dB up but not below.
 
-Verified: 0 errors / 0 undefined references, 138 pages, 678 cells /
+Verified: 0 errors / 0 undefined references, 119 countable pages, 678 cells /
 0 inconsistencies, 347 tests, provenance clean.
