@@ -126,7 +126,7 @@ Beyond its role as the noise term of every channel model and its use in the clos
 }\end{equation}
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad power-normalization}
 
-Here \(P_{\text{current}}\) is estimated over the complete simulated relay-output block. The normalization is therefore block-adaptive and noncausal at the symbol level; it is appropriate to the block-buffered simulation but should not be read as an online gain known before the block has been observed.
+Here \(P_{\text{current}}\) is estimated over the complete simulated relay-output block. The normalization is therefore block-adaptive and noncausal at the symbol level; it is appropriate to the block-buffered simulation but should not be read as an online gain known before the block has been observed. For AF on the canonical Rayleigh channel this matters more than for the other relays. AF forwards the zero-forced observation $y/h = x + n/h$, and the implementation applies Eq.~\eqref{eq:power-normalization} to it directly, with no clipping or regularization of deep fades. Since $|h|^{2}$ is exponentially distributed, $\mathbb{E}\bigl[1/|h|^{2}\bigr]$ is infinite, so the forwarded power has no finite mean: the empirical block power does not converge as the block grows, and the few most deeply faded symbols in a block set the gain applied to all the others. The AF results in this thesis therefore describe this block-normalized implementation, not a conventional finite-power AF relay, and the learned relays' advantage over AF is an advantage over this implementation.
 
 \subsection{Relay Processing}\label{sec:relay-processing-methods}
 
