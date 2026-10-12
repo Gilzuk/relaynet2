@@ -1,5 +1,7 @@
 # Progress — E6 Porting Checklist
 
+Session note (2026-10-12, READMEs): #166 brought every README current (root, three e6_* result READMEs, archive README) and the generated mirror README template; zips and thesis_preview.pdf rebuilt; mirror 5b1da55 = main c8f7710 (README only, thesis.pdf byte-identical). Thesis unchanged, 119 countable pages.
+
 Session note (2026-10-12, final review): page-by-page review (#164): body 122 -> 119 countable pages (limit 120), table overflows fixed, Sec. 4.2 sqrt(2) leftover, Transformer d_ff, cGAN lambda_L1, Eq. 2.9, appendix letters, revision language, bibliography; reply updated.
 
 Session note (2026-10-12, final): #162 fixed the last stale claim (reliability-weighted decoding listed as unmeasured in Ch. 7/Ch. 8); mirror 162fb85 = main 1eaeb08; all tracking documents updated (HANDOVER, changelogs, README, REPRODUCE, context, memory bank). Round closed; remaining items are the author's (send reply, Overleaf pull, f174a3b).
