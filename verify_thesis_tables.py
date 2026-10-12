@@ -250,7 +250,7 @@ MIN_CELLS = {
     "arch:relay-param-counts": 5,
     "consistency:proof-copies": 7, "tbl:slicer-floor-inline": 24,
     "prose:qpsk-decomposition": 4, "prose:qpsk-controls": 3, "prose:scalar-map": 7,
-    "prose:af-conventional": 8,
+    "prose:af-conventional": 8, "prose:isi-penalty": 18,
     "prose:seed-spread-native": 6,
     "tbl:bcjr-benchmark": 12, "prose:soft-df-calibration": 2,
     "prose:mmse-monotonicity": 12,
@@ -1599,6 +1599,35 @@ def check_af_conventional_prose(tex, rep):
             rep.cell(T, lab, g, float(g), src)
     rep.finish_table(T, before)
 
+def check_isi_penalty_prose(tex, rep):
+    """MLP-vs-genie-Viterbi required-SNR penalties on the fixed 3-tap ISI chain.
+
+    Quoted in Ch. 6 (Layer table and H5 conclusion), Ch. 8, Ch. 9, the abstract
+    and the Hebrew abstract. Source: results/e6_isi_penalty.json, written by
+    e6_isi_penalty.py from results/e6_matched_protocol.json.
+    """
+    T = "prose:isi-penalty"; before = rep.checked
+    p = os.path.join(ROOT, "results", "e6_isi_penalty.json")
+    if not os.path.exists(p):
+        return rep.skip(T, "results/e6_isi_penalty.json not found")
+    pen = json.load(open(p))["penalties"]
+    v = [pen[k]["penalty_db"] for k in ("1e-01", "1e-02", "1e-03", "1e-04")]
+    lab = ["1e-1", "1e-2", "1e-3", "1e-4"]
+    patterns = [
+        (r"\$\+([\d.]+)\$~dB at a \$10\^\{-1\}\$ target, \$\+([\d.]+)\$ at \$10\^\{-2\}\$, "
+         r"\$\+([\d.]+)\$ at \$10\^\{-3\}\$ and \$\+([\d.]+)\$ at \$10\^\{-4\}\$", [0, 1, 2, 3]),
+        (r"\$([\d.]+)\$, \$([\d.]+)\$, \$([\d.]+)\$, and \$([\d.]+)\$~dB at BER "
+         r"\$10\^\{-1\}\$ through \$10\^\{-4\}\$", [0, 1, 2, 3]),
+        (r"vary from \$([\d.]+)\$ to \$([\d.]+)\$~dB with the target", [0, 3]),
+        (r"penalties of \$([\d.]+)\$--\$([\d.]+)\$~dB", [0, 3]),
+        (r"\\textenglish\{([\d.]+)--([\d.]+) dB\}", [0, 3]),
+    ]
+    for pat, idx in patterns:
+        for m in re.finditer(pat, tex):
+            for g, i in zip(m.groups(), idx):
+                rep.cell(T, f"MLP-vs-genie@{lab[i]}", g, float(g), v[i])
+    rep.finish_table(T, before)
+
 def check_qpsk_decomposition_prose(tex, rep):
     """The QPSK SER / bits-per-symbol-error figures quoted in Chapter 7 prose.
 
@@ -2065,7 +2094,7 @@ def main():
               check_mmse_baseline, check_seq_on_memory,
               check_relay_param_counts, check_proof_copies_agree,
               check_slicer_floor, check_qpsk_decomposition_prose, check_scalar_map_prose,
-              check_af_conventional_prose,
+              check_af_conventional_prose, check_isi_penalty_prose,
               check_qpsk_controls_prose, check_bcjr_benchmark,
               check_seed_spread_native_prose,
               check_soft_df_calibration_prose,

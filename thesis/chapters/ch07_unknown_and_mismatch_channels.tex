@@ -6,7 +6,7 @@ On the fixed three-tap BPSK channel, a 170-parameter windowed MLP substantially 
 
 No statistically resolved advantage over matched Viterbi MLSE is demonstrated in the BPSK comparison. Exact taps at inference and finite training samples are different information resources. MLSE minimizes sequence error, not BER; the QPSK BCJR control in Section~\ref{sec:bcjr-benchmark} measures bit errors at the relay output only. End-to-end BCJR performance is not measured. Cost comparisons are architecture- and implementation-specific: the small BPSK trellis is cheaper in nominal arithmetic than the MLP.
 
-The following studies locate useful operating regimes for the tested learned relays, without claiming an exhaustive deployment map.
+The following studies locate useful operating regimes for the tested learned relays, without claiming an exhaustive deployment map. The channel models, redraw intervals, pilots, window boundaries, DBPSK forwarding and the definition of the single-number SNR penalties are specified in Appendix~\ref{sec:appendix-g-channel-specs}.
 
 \paragraph{A conceptual ladder of assumptions.} Table~\ref{tbl:layers} organizes separate experiments by channel memory and available channel information. Modulation, fading, training, and evaluation budgets also differ between studies. The ladder is therefore an explanatory organization, not a controlled ablation that changes only one assumption at a time.
 
@@ -36,7 +36,7 @@ The tested baselines are not exhaustive. Pilot-based and blind alternatives trad
 
 \begin{figure}[htbp] \noindent \makebox[\textwidth][l]{%
 \begin{tikzpicture}[ >=latex, node distance=2.3cm, block/.style={rectangle, draw, thick, minimum width=2.0cm, minimum height=1.0cm, align=center}, imp/.style={rectangle, draw, very thick, fill=black!6, minimum width=2.4cm, minimum height=1.1cm, align=center}, relayblock/.style={rectangle, draw, very thick, dashed, minimum width=2.0cm, minimum height=1.1cm, align=center} ]
-\node[block] (S) {Source\\BPSK};
+\node[block] (S) {Source\\DBPSK};
 \node[imp, right=2.0cm of S] (C) {Unknown Hop-1\\ISI $\times$ PA $\times$ phase};
 \node[relayblock, right=2.0cm of C] (R) {Relay\\$f_\theta(\cdot)$}; \node[block, right=2.0cm of R] (D) {Destination\\Decision};
 \draw[->,thick] (S) -- (C);
