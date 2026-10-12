@@ -519,3 +519,105 @@ class FadingAwareViterbiQPSKRelay(ViterbiMLSEQPSKRelay):
             decoded[i] = self.ALPHABET[u_idx]
             s = bp_state[i, s]
         return decoded
+
+
+def _truncated_viterbi_real(y, taps, alphabet, traceback):
+    """Sliding-traceback Viterbi over a real alphabet; returns symbol indices.
+
+    Mirrors :meth:`TruncatedViterbiQPSKRelay.process` exactly -- zero initial
+    metric on every state, newest symbol last in the state tuple, a decision
+    for symbol ``i - D`` taken from the argmin state at time ``i``, and the
+    final ``D`` symbols flushed from the surviving path -- but on a real
+    alphabet with real squared residuals.
+    """
+    y = np.asarray(y, dtype=float)
+    h = np.asarray(taps, dtype=float)
+    a = np.asarray(alphabet, dtype=float)
+    M, L, n = len(a), len(h), len(y)
+    states = list(itertools.product(range(M), repeat=L - 1))
+    index = {st: k for k, st in enumerate(states)}
+    S = len(states)
+    nxt = np.zeros((S, M), dtype=np.int64)
+    exp_y = np.zeros((S, M))
+    for s, st in enumerate(states):
+        for u in range(M):
+            e = h[0] * a[u]
+            for j in range(L - 1):
+                e += h[j + 1] * a[st[L - 2 - j]]
+            exp_y[s, u] = e
+            nxt[s, u] = index[(st[1:] + (u,)) if L > 1 else ()]
+    # every state has exactly M predecessors; tabulate them
+    pred_s = [[] for _ in range(S)]
+    pred_u = [[] for _ in range(S)]
+    for s in range(S):
+        for u in range(M):
+            pred_s[nxt[s, u]].append(s)
+            pred_u[nxt[s, u]].append(u)
+    pred_s, pred_u = np.array(pred_s), np.array(pred_u)
+
+    D = int(traceback)
+    depth = D + 1
+    bp_s = np.zeros((depth, S), dtype=np.int64)
+    bp_u = np.zeros((depth, S), dtype=np.int64)
+    metric = np.zeros(S)
+    rows = np.arange(S)
+    out = np.zeros(n, dtype=np.int64)
+    for i in range(n):
+        cand = metric[:, None] + (y[i] - exp_y) ** 2
+        arriving = cand[pred_s, pred_u]
+        k = np.argmin(arriving, axis=1)
+        metric = arriving[rows, k]
+        metric -= metric.min()
+        slot = i % depth
+        bp_s[slot] = pred_s[rows, k]
+        bp_u[slot] = pred_u[rows, k]
+        if i >= D:
+            s = int(np.argmin(metric))
+            for j in range(i, i - D, -1):
+                s = bp_s[j % depth, s]
+            out[i - D] = bp_u[(i - D) % depth, s]
+    if n:
+        s = int(np.argmin(metric))
+        for j in range(n - 1, max(n - D, 0) - 1, -1):
+            out[j] = bp_u[j % depth, s]
+            s = bp_s[j % depth, s]
+    return out
+
+
+class FactorizedViterbiQPSKRelay(Relay):
+    """QPSK MLSE as two independent binary trellises, one per quadrature axis.
+
+    With real channel taps and circular white Gaussian noise the squared
+    residual of a QPSK sequence separates exactly,
+
+        |y - h*x|^2 = (Re y - h*x_I)^2 + (Im y - h*x_Q)^2,
+
+    and the joint state is an (I state, Q state) pair, so the best joint
+    survivor is the pair of the best per-axis survivors. Two binary trellises of
+    2^(L-1) states therefore return the same decisions as the joint trellis of
+    4^(L-1) states -- for full-sequence MLSE and, by the same argument, for the
+    sliding traceback of :class:`TruncatedViterbiQPSKRelay`. This is exact
+    separation, not reduced-state approximation. It does not hold for complex
+    taps or for noise coupled across the axes.
+
+    ``traceback=None`` decodes the whole block before deciding (full-sequence
+    MLSE, as :class:`ViterbiMLSEQPSKRelay`); an integer gives the bounded
+    decision delay of :class:`TruncatedViterbiQPSKRelay`.
+    """
+
+    ALPHABET = ViterbiMLSEQPSKRelay.ALPHABET
+    _AXIS = np.array([1.0, -1.0]) / np.sqrt(2)   # index 0 = +, 1 = -
+
+    def __init__(self, channel_taps, traceback=None):
+        self.h = np.asarray(channel_taps, dtype=float)
+        if np.iscomplexobj(channel_taps) or self.h.ndim != 1:
+            raise ValueError("factorization requires a real 1-D tap vector")
+        self.traceback = traceback
+
+    def process(self, received_signal):
+        y = np.asarray(received_signal)
+        D = len(y) if self.traceback is None else int(self.traceback)
+        i_idx = _truncated_viterbi_real(y.real, self.h, self._AXIS, D)
+        q_idx = _truncated_viterbi_real(y.imag, self.h, self._AXIS, D)
+        # ALPHABET order: [+I+Q, +I-Q, -I+Q, -I-Q]
+        return self.ALPHABET[2 * i_idx + q_idx]
