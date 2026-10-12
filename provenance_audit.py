@@ -37,6 +37,9 @@ REGISTRY = {
     "Scalar MAP relay on unknown ISI": (
         "e6_scalar_map.py", ["results/e6_scalar_map.json"],
         ["prose:scalar-map (Ch. 6, slicer-floor paragraph)"]),
+    "Canonical AF: block length and conventional AF": (
+        "af_block_and_conventional.py", ["results/af_block_and_conventional.json"],
+        ["prose:af-conventional (Ch. 8, H1)", "Ch. 9 H1 verdict row"]),
     "Corrected composite AF, fixed budget": (
         "scripts/codex_composite_af_validation.py",
         ["e6_unknown_channel_results/codex_composite_af_validation.json"],
