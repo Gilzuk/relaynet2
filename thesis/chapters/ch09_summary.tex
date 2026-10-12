@@ -4,7 +4,7 @@ This work examined classical and neural network–based relay strategies for \te
 The core comparison is carried out on one canonical setup, never departed from within it: a two-hop SISO link over i.i.d.\ Rayleigh fast fading, complex baseband, QPSK, uncoded BER, with the relay function as the only varied axis. The coded study and the unknown-channel contribution depart from it deliberately. The study showed the following:
 
 \begin{enumerate}
-    \item The best tested learned relays outperform AF at the evaluated low-SNR points (H1); the experiments do not isolate a unique mechanism for that advantage.
+    \item The best tested learned relays outperform the implemented block-normalized AF at the evaluated low-SNR points (H1). Against a conventional finite-power AF the 0~dB margin is only $0.007$, and the learned relays track DF, so the advantage is that of regeneration rather than of learning.
     \item Classical \textit{decode-and-forward (DF)} matched or outperformed all neural approaches at \textbf{medium-to-high SNR} while requiring no trainable parameters, confirming that DF is the best-performing evaluated symbol-wise classical relay in this regime (H2).
     \item Increasing model size did not produce a \textbf{systematic BER improvement}, and the replicated size sweep found no statistically meaningful upward BER trend attributable to model capacity (H3).
     \item The 169-parameter MLP is competitive with larger models in the original canonical comparison. This is not a universal minimum-size result, and no train/test-gap study establishes overfitting as the explanation.
