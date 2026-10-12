@@ -16,6 +16,12 @@ errors in 6,000,000 bits at 24/28/32 dB; professor_feedback.md does end with a
 wording), this file (kept both entries), PDF/preview/zips (rebuilt from merged sources).
 347 tests pass here (Mamba-2 importable); #171's environment had 343 + 4 skips. Merged
 build: 119 countable pages, 0 errors/undefined/overfull hbox or vbox; verifier 678/0.
+The author then pasted the reply text to check against the thesis: it equals the committed reply except
+for three sentences predating #172 (comment 1 "relay-side MAP", comment 8 "would give your 25,408") and the
+K-sweep refinement; the committed versions are the correct ones. Every cited number/label checks out; two
+thesis edits added: Sec. 4.3.3 now states the canonical training never seeds PyTorch's initialization
+(verified: no torch.manual_seed on that path), and Sec. 5.5.2 says "at all six SNRs" (the longer wording
+cost a page). Still 119 countable pages.
 The author said to wait for approval: do not merge the combined PR into main, republish
 the mirror, or close #171/#172 until the author approves.
 

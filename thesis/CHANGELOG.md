@@ -13,6 +13,26 @@ produced them; it does not cover every number or figure.
 
 ---
 
+## [Reply cross-checked against the thesis] — 2026-10-12
+
+The reply as the author pasted it was checked claim by claim against this build:
+every section, table, figure and equation number it cites maps to the intended
+content, and every number it quotes is in the thesis. Two thesis edits make the
+thesis carry what the reply says it does:
+
+### Changed
+- **Sec. 4.3.3.** States that the canonical result files cannot be regenerated
+  exactly because the canonical training never seeds PyTorch's weight
+  initialization (no `torch.manual_seed` on that path); the reply says the
+  thesis states this, and before only Appendix 9.2 did, for the sequence models.
+- **Sec. 5.5.2.** "at every SNR from 0 to 20 dB" becomes "at all six SNRs from
+  0 to 20 dB", as the reply says (the longer "each of the six tested SNRs"
+  pushed Chapter 5 over a page).
+
+The body still ends at 119 countable pages.
+
+---
+
 ## [Independent recheck, combined with the author corrections] — 2026-10-12
 
 From draft #171 (another session's independent recheck), reviewed and combined
