@@ -199,8 +199,9 @@ def plot_rate_adaptation():
                         ha="center", color="tab:red")
 
     ax.axhline(4.0, color="0.4", ls=":", lw=1.0)
-    ax.text(snrs[0] + 0.3, 4.05, "16-QAM raw rate (4 bits/symbol)",
-            fontsize=8.5, color="0.4")
+    # centred, so the label clears the upper-left legend
+    ax.text(snrs[len(snrs) // 2], 4.05, "16-QAM raw rate (4 bits/symbol)",
+            fontsize=8.5, color="0.4", ha="center")
     ax.set_xlabel("SNR (dB)", fontsize=13)
     ax.set_ylabel("Goodput  $R\\,(1-\\mathrm{FER})$  [info bits/symbol]", fontsize=13)
     ax.set_title("Link-adaptation envelope: best MCS chosen per SNR point", fontsize=14)
@@ -216,7 +217,12 @@ def plot_rate_adaptation():
 
 
 def plot_latency_capacity():
-    """Goodput vs. round-trip latency budget (results/coded_latency_capacity.json)."""
+    """Goodput vs. idealized buffer-readiness budget (results/coded_latency_capacity.json).
+
+    The thesis calls L_max a buffer-readiness budget, not a latency: the two-hop
+    transmission time is omitted (see the figure's caption), so the labels avoid
+    "latency".
+    """
     import os as _os
     path = _os.path.join(ROOT, "results/coded_latency_capacity.json")
     if not _os.path.exists(path):
@@ -239,11 +245,12 @@ def plot_latency_capacity():
                     lw=1.5, drawstyle="steps-post", label=label)
 
     ax.axvline(d["table_budget"], color="0.4", ls=":", lw=1.0)
-    ax.text(d["table_budget"] + 4, ax.get_ylim()[1] * 0.03 if ax.get_ylim()[1] else 0.05,
-            f"Table~budget = {d['table_budget']} sym", fontsize=8.5, color="0.4")
-    ax.set_xlabel("Round-trip latency budget $L_{\\max}$ (symbols)", fontsize=13)
+    # mid-height, in the gap between the 20 dB and 24 dB curves, clear of the 16 dB steps
+    ax.text(d["table_budget"] + 4, ax.get_ylim()[1] * 0.5,
+            f"table budget = {d['table_budget']} sym", fontsize=8.5, color="0.4")
+    ax.set_xlabel("Idealized buffer-readiness budget $L_{\\max}$ (symbols)", fontsize=13)
     ax.set_ylabel("Best achievable goodput within $L_{\\max}$ [info bits/symbol]", fontsize=13)
-    ax.set_title("Capacity under a latency constraint: goodput vs. deadline", fontsize=14)
+    ax.set_title("Goodput vs. idealized buffer-readiness budget", fontsize=14)
     ax.grid(True, alpha=0.3)
     ax.set_xlim(0, 420)
     ax.legend(loc="upper left", fontsize=8.5, framealpha=0.9, ncol=2)

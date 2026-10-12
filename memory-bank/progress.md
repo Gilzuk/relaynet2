@@ -1,5 +1,7 @@
 # Progress — E6 Porting Checklist
 
+Session note (2026-10-12, figures): all 18 figures checked against their data; Figs. 5.3-5.5 redrawn from the 100-trial runs their tables report, Table 5.8 20 dB soft block-DF cell back to the nominal run Fig. 5.3 plots, Fig. 6.3 single AWGN panel, Fig. 6.7(a) given a script (MLP-170), Fig. 5.5/5.1 labels fixed; reply corrected. 119 countable pages, verifier 678/0.
+
 Session note (2026-10-12, READMEs): #166 brought every README current (root, three e6_* result READMEs, archive README) and the generated mirror README template; zips and thesis_preview.pdf rebuilt; mirror 5b1da55 = main c8f7710 (README only). #168 corrected thesis/OVERLEAF.md (Hebrew font, hebrewcal.sty stub) and OVERLEAF_SYNC.md (file counts, route, tooling location); mirror 2a3fd16 = main c4b6a0c (OVERLEAF.md only, thesis.pdf byte-identical). Memory-bank build recipe updated to thesis/main.tex. Thesis unchanged, 119 countable pages.
 
 Session note (2026-10-12, final review): page-by-page review (#164): body 122 -> 119 countable pages (limit 120), table overflows fixed, Sec. 4.2 sqrt(2) leftover, Transformer d_ff, cGAN lambda_L1, Eq. 2.9, appendix letters, revision language, bibliography; reply updated.

@@ -64,7 +64,7 @@ def main():
     for d_ in OUT_DIRS:
         plot_ber_chart(
             snrs, ber_dict, ci_dict,
-            title="QPSK — RAYLEIGH (§7.10), with theoretical bounds",
+            title="QPSK — RAYLEIGH, with theoretical bounds",
             save_path=os.path.join(d_, "canonical_qpsk_rayleigh_ci.png"),
             extra_styles=extra_styles,
             show_inset=True,
