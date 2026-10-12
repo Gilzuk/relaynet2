@@ -61,7 +61,8 @@ Presentation notes: running headers (#124), ledger labels (#135), verification-c
 | B3 | Model specifications + SNR-penalty definitions (comment 7): Appendix G; ISI penalties now derived by `e6_isi_penalty.py` and verified | DONE | #146 |
 | B4 | Equal-budget wording pass (comment 8, last bullet) | DONE | #147 |
 | B5 | Positioning vs estimate-and-forward (Gomadam–Jafar 2007, verified via DBLP/arXiv), Farsad–Goldsmith, ViterbiNet; named-study table (now Table 3.2) (comment 9) | DONE | #148 |
-| C4 | Reliability-weighted (|h|²) Viterbi/BCJR at relay + destination; coded Tables 34/37/39 rerun (`coded_matched_metrics.py`, 30 paired trials, published seeds, unweighted rows reproduce exactly). **Result: matched block DF beats both learned relays at every SNR 0–20 dB, 30/30 trials, either destination metric; the published high-SNR learned advantage was a metric artifact.** New Sec. 5.5.2 + Table `tbl:coded-matched`; Ch. 5/8/9 and both abstracts updated. Secondary coded studies (Tables 38, 44, throughput/latency/rate adaptation, coded size sweep) NOT rerun | DONE | (this PR) |
+| C4 | Reliability-weighted (|h|²) Viterbi/BCJR at relay + destination; coded Tables 34/37/39 rerun (`coded_matched_metrics.py`, 30 paired trials, published seeds, unweighted rows reproduce exactly). **Result: matched block DF beats both learned relays at every SNR 0–20 dB, 30/30 trials, either destination metric; the published high-SNR learned advantage was a metric artifact.** New Sec. 5.5.2 + Table `tbl:coded-matched`; Ch. 5/8/9 and both abstracts updated. Secondary coded studies (Tables 38, 44, throughput/latency/rate adaptation, coded size sweep) NOT rerun | DONE | #150 |
+| C4b | Rerun the secondary coded studies with matched metrics: error-location diagnostic (Table 38, `coded_error_mechanism.json`), reliable-decoding regime (Table 44, `coded_reliable_regime.json`), throughput/latency (`coded_latency_throughput.py`), rate adaptation (`coded_rate_adaptation.py`), goodput (`coded_latency_capacity`), coded size sweep (`coded_min_size.py`). Use the `weights=`/`noise_var=` decoder arguments from #150 | TODO | — |
 | C5 | Rerun Rayleigh rows of `tbl:tableE6` on the current convention (figures vs tables) | NEXT | — |
 | C6 | Causal/streaming normalization + latency re-evaluation (comment 6; only if readiness claims are kept) | TODO | — |
 | C7 | E6_FLAT Hop-2 noise: `e6_flat_ported.py` adds real noise of variance 1/γ (not 1/(2γ)) to real forwarded signals; AF in flat-phase gets complex 1/(2γ)/dim. DF-vs-MLP fair, absolute BERs 3 dB pessimistic on Hop 2, AF favoured in flat-phase. Fix the noise, rerun, update `tbl` flat rows + Appendix G paragraph | TODO | — |
@@ -69,6 +70,35 @@ Presentation notes: running headers (#124), ledger labels (#135), verification-c
 | M  | Memory bank update for this round (`activeContext.md`, `progress.md`) | TODO (with each PR) | — |
 | P  | Republish mirror after Phase B (DONE: 46ad144, author Gil Zukerman, PDF identical to main) and again after C4–C8 | PARTIAL | — |
 | R  | Draft reply to Khina (note the ×2 multiplication-count convention: thesis 16/64/256, crossover 6.70, ratio 1.23 vs his 32/128/512, 5.70, 2.46) | TODO | — |
+
+## Session chain (work these in order)
+
+Each step is one branch off `origin/main` and one PR. A step is finished when its PR is merged
+and its row above says DONE with the PR number. If a session stops mid-step, the branch name in the row
+tells you where the work is; rerun any experiment script from scratch rather than trusting partial logs.
+
+1. **C5: `tbl:tableE6` Rayleigh rows.** Find which rows of `tbl:tableE6` (Ch. 6, ISI → Rayleigh, S2) come
+   from data produced under the old SNR convention and which figures already use the corrected data
+   (`provenance_audit.py`, `e6_sim_ported.py` setup S2, `results/e6_matched_*`). Rerun S2 under the
+   current convention (γ = 10^(SNR/10), σ² = 1/(2γ) per real dimension), commit the data into the repo,
+   update the table and the verifier. Report any number that moves.
+2. **C7: E6_FLAT Hop-2 noise.** Fix `e6_flat_ported.py` so real forwarded signals get σ² = 1/(2γ)
+   (match the AF branch), rerun, commit `e6_flat_ported_results.npy`, update `tbl` flat rows (Ch. 6,
+   `sec:flat-unknown-channels`), and replace the disclosure paragraph in Appendix G with the corrected
+   statement.
+3. **C8: training-protocol provenance.** Retrain the canonical relays with `train_base_relays` defaults
+   (seed from `run_experiments.py`) and compare with `results/modulation/qpsk_rayleigh.json`; if they
+   reproduce, rewrite the Ch. 4 sample counts/optimizer to the code; if not, say what is unknown.
+   Re-check Phase A #133's "canonical ReLU/SGD" wording.
+4. **C4b: secondary coded studies with matched metrics** (row above). Expect orderings involving block DF
+   to change; update Tables 38/44 and the throughput/latency/rate-adaptation text accordingly.
+5. **C6: causal normalization** (comment 6) — only if the 5/10-symbol readiness claims are kept;
+   otherwise remove those claims and close C6.
+6. **M: memory bank** — `memory-bank/activeContext.md` and `progress.md` entry for the whole round.
+7. **P: republish the mirror** with the author identity (see Environment gotchas); verify fast-forward
+   and that `thesis.pdf` is byte-identical to `thesis/main.pdf`.
+8. **R: reply to Khina** — draft only (do not send): one paragraph per comment with the PR that answers
+   it, the C4 reversal stated plainly, the ×2 multiplication-count convention, and C7/C8 disclosures.
 
 ### Task notes
 
