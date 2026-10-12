@@ -2,6 +2,30 @@
 
 _Last updated: 2026-10-12_
 
+### Latest (2026-10-12, recheck): second point-by-point recheck against Khina's comments
+
+The audit (#158) and reply update (#159) were followed by a second recheck of the
+rendered PDF against every sub-request; the remaining gaps are fixed on
+`fix/khina-recheck-gaps`: matched destination metric named in Sec. 4.1.5; Ch. 1
+contribution 3 states the matched-metric reversal; Sec. 7.1.1 no longer says the
+canonical relays average over fading; Sec. 7.6 "BER gap between the model
+families"; factorization caveat (square QAM -> two sqrt(M)-ary trellises,
+2M^(L/2)) in Fig. 6.7, Sec. 6.5, Sec. 2.6, O2, H5, Appendix; Table 5.11 column is
+"Look-ahead" with normalization buffering separated.
+Code-vs-text mismatches found and corrected:
+- Hybrid: fixed 5 dB threshold (never learned/fitted) against `estimate_snr`, a
+  per-axis received-power estimate assuming unit signal power; MLP sub-network
+  trained separately at 2/4/6 dB. `hybrid_branch_selection.py` replays the
+  canonical Hop-1 draws exactly (64/64 all-DF trials reproduce the published BER)
+  -> MLP branch 20/20 axis-blocks at 0-6 dB, 6/20 at 8, 2 at 10, 1 at 12, 0 from
+  14: the switch falls between 6 and 8 dB. Verifier `prose:hybrid-branch` (21).
+- Sequence-model wrappers hold out 15% (42,473 of 49,968 windows used) and restore
+  the lowest-training-loss epoch, no early stopping (Sec. 4.3.3, Table 9.1);
+  Appendix G's final-epoch rule is scoped to Chapter 6.
+- Appendix B Table 9.1: MLP/Hybrid Adam on PyTorch CPU, VAE CPU; header fixed.
+- Test counts: 347 tests in 24 modules (Sec. 4.3.4, Appendix C, README).
+Thesis 138 pages; verifier 678 cells; 347 tests; provenance clean.
+
 ### Latest (2026-10-12, later): Khina round complete except republish and reply
 
 Merged since the B-phase entry: B2 RQ map (#145), B3 Appendix G + ISI penalty
