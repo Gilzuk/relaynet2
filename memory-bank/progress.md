@@ -2,6 +2,8 @@ Session note (2026-10-12, independent audit): branch `fix/khina-independent-audi
 
 # Progress — E6 Porting Checklist
 
+Session note (2026-10-12, combined): #171 (independent recheck) and #172 (author's patch) reviewed and combined on fix/combined-171-172; #171's claims verified against data; K-sweep reply wording refined; 119 countable pages; awaiting the author's approval to merge.
+
 Session note (2026-10-12, author corrections): author's patch applied (bit-wise MAP in Sec. 4.1.5, DF/scalar-MAP wording in Sec. 6.4.1, reply comments 1 and 8 with Transformer counts 26,017/25,408/609 verified, README 119 pages). 119 countable pages.
 
 Session note (2026-10-12, figures): all 18 figures checked against their data; Figs. 5.3-5.5 redrawn from the 100-trial runs their tables report, Table 5.8 20 dB soft block-DF cell back to the nominal run Fig. 5.3 plots, Fig. 6.3 single AWGN panel, Fig. 6.7(a) given a script (MLP-170), Fig. 5.5/5.1 labels fixed; reply corrected. 119 countable pages, verifier 678/0. #169 (main 6809399); mirror 4b0e1e1.

@@ -33,7 +33,7 @@ A new Table 3.1 maps each question to the experiments and sections that answer i
 
 The published high-SNR advantage of the learned relays was therefore produced by the mismatched metric (new Section 5.5.2, Table 5.9). I also reran every secondary coded study with matched metrics:
 - With matched decoding, block DF's relay makes almost no symbol errors.
-- In the tested K = 3, 5 and 7 sweep, larger K lowers measured BER from 4 dB upward; it remains worse at 0 dB. This is a result for these codes and this protocol, not a general monotonicity theorem.
+- In the tested K = 3, 5 and 7 sweep, larger K lowers measured BER from 4 dB upward (K = 5 and 7 both record zero errors at 16 and 20 dB); it remains worse at 0 dB. This is a result for these codes and this protocol, not a general monotonicity theorem.
 - At the tested 24, 28 and 32 dB points, block DF and the clean-codeword oracle both record zero bit errors in 6,000,000 information bits per point. Equal observed counts at this budget do not establish equal underlying BER.
 - At equal throughput, coding pays from 8 dB.
 - Decoding at the relay gives the higher goodput under rate adaptation, except under tight idealized buffering budgets, where block DF's frame does not fit.

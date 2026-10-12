@@ -2,6 +2,23 @@
 
 _Last updated: 2026-10-12_
 
+### Latest (2026-10-12, combined): #171 and #172 reviewed and combined; awaiting approval
+
+The author asked for draft #171 (another session's independent recheck) and #172 (the
+author's patch) to be reviewed and combined in one new PR (branch fix/combined-171-172).
+Review of #171 against the data: the 30-trial retention is recorded in the
+coded_matched_metrics.py docstring ("stopped once its running means had settled",
+matching the author's earlier "cut the trials, the results plateau"); the matched K sweep
+is worse with larger K at 0 dB and better from 4 dB up, with K=5 and K=7 both at zero
+errors at 16/20 dB (reply wording now says so); block DF and the oracle both record zero
+errors in 6,000,000 bits at 24/28/32 dB; professor_feedback.md does end with a
+"[Professor's Name]" placeholder. Conflicts: README page-count line (kept the author's
+wording), this file (kept both entries), PDF/preview/zips (rebuilt from merged sources).
+347 tests pass here (Mamba-2 importable); #171's environment had 343 + 4 skips. Merged
+build: 119 countable pages, 0 errors/undefined/overfull hbox or vbox; verifier 678/0.
+The author said to wait for approval: do not merge the combined PR into main, republish
+the mirror, or close #171/#172 until the author approves.
+
 ### Latest (2026-10-12, author corrections): bit-wise MAP, DF baseline, Transformer count
 
 The author supplied a patch, applied as given: Sec. 4.1.5 now says the BER-optimal

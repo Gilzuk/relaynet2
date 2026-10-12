@@ -13,6 +13,33 @@ produced them; it does not cover every number or figure.
 
 ---
 
+## [Independent recheck, combined with the author corrections] — 2026-10-12
+
+From draft #171 (another session's independent recheck), reviewed and combined
+with #172:
+
+### Changed
+- **Figure 5.3 caption.** It could be read as giving the matched comparison 100
+  trials; it now says the figure has 100 paired trials and Table 5.9 is the
+  separate 30-trial matched comparison.
+- **Sec. 5.5.2.** Discloses that the 30-trial budget was retained after the
+  running means were inspected (as `coded_matched_metrics.py` records), so the
+  paired tests are exploratory.
+- **Reply, comment 4.** States the 30-of-100 trial subset and the disclosure;
+  "every SNR from 0 to 20 dB" becomes the six tested points; "longer constraint
+  lengths help" becomes the measured K = 3/5/7 ordering from 4 dB up with the
+  0 dB exception (K = 5 and 7 tie at zero errors at 16 and 20 dB); "block DF
+  reaches the oracle" becomes equal zero-error counts in 6,000,000 bits at 24,
+  28 and 32 dB, which do not establish equal BER.
+- **Repository.** `docs/independent_khina_audit_2026-10-12.md` maps the nine
+  comments to evidence; `docs/thesis_feedback.md`, `instructor_response_plan.md`
+  and `professor_feedback.md` are marked historical (the last ends with a
+  "[Professor's Name]" placeholder and is no endorsement).
+
+The body still ends at 119 countable pages.
+
+---
+
 ## [Author corrections: bit-wise MAP, DF baseline, Transformer count] — 2026-10-12
 
 ### Changed
