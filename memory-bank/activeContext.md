@@ -15,7 +15,9 @@ panel (a) read MLP-169 while the caption says 170, and panel (b) had in fact tim
 169-parameter I/Q relay. Fixed on fix/stale-figures at the author's instruction: figures
 redrawn from committed data (no table number changes), Table 5.8 cell back to nominal with
 the doubled-variance value footnoted, Fig. 5.3 caption and the 16/20 dB sentence corrected,
-Fig. 6.3 single AWGN panel, new scripts/plot_e6_complexity_cost.py for 6.7(a) (MLP-170
+Fig. 6.3 single AWGN panel (restyled after the author said it looked wrong: full width, Fig. 6.2's
+style, title names the per-symbol fading, caption's 'separates from 2 dB' corrected), new
+scripts/plot_e6_complexity_cost.py for 6.7(a) (MLP-170
 reference line), caption/text say what 6.7(b) timed (ms), Fig. 5.5 axis says
 buffer-readiness budget, Fig. 5.1 title drops "(§7.10)". Reply corrected. 119 countable
 pages; verifier 678/0; 347 tests; provenance clean. techContext gotcha 12 records that

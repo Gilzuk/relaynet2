@@ -34,7 +34,12 @@ included images. Twelve matched. Fixed:
   part of the C5 fix (#151) that changed the cell.
 - **Figure 6.3 (QPSK unknown channel)** still carried the ISI → Rayleigh hop-2
   panel removed with its table row; it now shows the AWGN case only
-  (`scripts/plot_e6_qpsk_unknown_channel_awgn.py`).
+  (`scripts/plot_e6_qpsk_unknown_channel_awgn.py`), at full width in the style
+  of Figure 6.2. Its title had called the first hop "unknown ISI"; it names
+  the per-symbol fading of Eq. (6.2), and the axis is per-hop Es/N0. The
+  caption no longer says the MLP "separates" from the taps-only trellis
+  from 2 dB: it lies just below it there (by at most 0.0046 up to 12 dB) and
+  the gap opens above 12 dB.
 - **Figure 6.7(a)** had no generating script; `scripts/plot_e6_complexity_cost.py`
   now draws it from the counting rule of Section 6.5. The network is labelled as
   the deployed 170-parameter relay (it read "MLP-169") and drawn as a reference
