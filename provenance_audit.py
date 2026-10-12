@@ -42,7 +42,7 @@ REGISTRY = {
     "Coded link-adaptation envelopes, matched block DF": (
         "coded_matched_envelopes.py", ["results/coded_matched_envelopes.json"], ["tbl:table42", "tbl:table43"]),
     "Coded min size, matched block-DF baseline": (
-        "coded_min_size.py", ["results/coded_min_size_matched.json"], ["Ch. 8 coded size-sweep penalties"]),
+        "coded_min_size_matched.py", ["results/coded_min_size_matched.json"], ["Ch. 8 coded size-sweep penalties"]),
     "Coded relaying with matched (|h|^2-weighted) metrics": (
         "coded_matched_metrics.py", ["results/coded_matched_metrics.json"],
         ["tbl:coded-matched", "Ch. 5/8/9 and abstract coded conclusions"]),
