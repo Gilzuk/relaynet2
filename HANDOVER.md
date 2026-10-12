@@ -1,6 +1,6 @@
 # Handover — Khina revision round (task chain)
 
-_Last updated: 2026-10-12. Phase B complete. Thesis PDF: 127 pages; verifier 558 cells._
+_Last updated: 2026-10-12. Phase B complete and published (main aec5c01, mirror 46ad144). Thesis PDF: 127 pages; verifier 558 cells; 343 tests._
 
 This file is the resume point if a session ends mid-task (out of credits, container reset,
 interruption). A new session should read it **after** `CLAUDE.md`, `context.md`,
@@ -57,17 +57,17 @@ Presentation notes: running headers (#124), ledger labels (#135), verification-c
 | —  | Publish mirror after C1–C3 | DONE (f174a3b) | — |
 | B0 | Canonical training described as implemented (BPSK/AWGN-trained, no √2 pre-scale) | DONE | #142 |
 | B1 | Relay-design problem + surrogates, new Sec. 4.1.5 (comment 1) | DONE | #143 |
-| B2 | RQ hierarchy + RQ→experiment mapping table (comment 2); O1/O2 answered by name in Ch. 9 | DONE | (this PR) |
-| B3 | Model specifications + SNR-penalty definitions (comment 7): Appendix G; ISI penalties now derived by `e6_isi_penalty.py` and verified | DONE | (this PR) |
-| B4 | Equal-budget wording pass (comment 8, last bullet) | DONE | (this PR) |
-| B5 | Positioning vs estimate-and-forward (Gomadam–Jafar 2007, verified via DBLP/arXiv), Farsad–Goldsmith, ViterbiNet; named-study table (now Table 3.2) (comment 9) | DONE | (this PR) |
-| C4 | Reliability-weighted Viterbi/BCJR at relay + destination; rerun coded comparisons (comment 4) | TODO | — |
+| B2 | RQ hierarchy + RQ→experiment mapping table (comment 2); O1/O2 answered by name in Ch. 9 | DONE | #145 |
+| B3 | Model specifications + SNR-penalty definitions (comment 7): Appendix G; ISI penalties now derived by `e6_isi_penalty.py` and verified | DONE | #146 |
+| B4 | Equal-budget wording pass (comment 8, last bullet) | DONE | #147 |
+| B5 | Positioning vs estimate-and-forward (Gomadam–Jafar 2007, verified via DBLP/arXiv), Farsad–Goldsmith, ViterbiNet; named-study table (now Table 3.2) (comment 9) | DONE | #148 |
+| C4 | Reliability-weighted Viterbi/BCJR at relay + destination; rerun coded comparisons (comment 4) | NEXT | — |
 | C5 | Rerun Rayleigh rows of `tbl:tableE6` on the current convention (figures vs tables) | TODO | — |
 | C6 | Causal/streaming normalization + latency re-evaluation (comment 6; only if readiness claims are kept) | TODO | — |
 | C7 | E6_FLAT Hop-2 noise: `e6_flat_ported.py` adds real noise of variance 1/γ (not 1/(2γ)) to real forwarded signals; AF in flat-phase gets complex 1/(2γ)/dim. DF-vs-MLP fair, absolute BERs 3 dB pessimistic on Hop 2, AF favoured in flat-phase. Fix the noise, rerun, update `tbl` flat rows + Appendix G paragraph | TODO | — |
 | C8 | Training-protocol description vs code: Ch. 4 says 25k/20k/10k samples (supervised/generative/sequence) and NumPy SGD for MLP/Hybrid; `run_experiments.py::train_base_relays` uses 25k/50k/50k (5k/5k/3k with `--quick`) and `MinimalGenAIRelay` uses PyTorch Adam lr 0.01 whenever torch is installed. No log records which settings produced the canonical weights. Establish it (retrain from the committed seed and compare with `results/modulation/qpsk_rayleigh.json`, or locate the weights' provenance) before correcting the text; also re-check Phase A #133's "canonical ReLU/SGD" | TODO | — |
 | M  | Memory bank update for this round (`activeContext.md`, `progress.md`) | TODO (with each PR) | — |
-| P  | Republish mirror after Phase B and after C4–C6 | NEXT (Phase B complete) | — |
+| P  | Republish mirror after Phase B (DONE: 46ad144, author Gil Zukerman, PDF identical to main) and again after C4–C8 | PARTIAL | — |
 | R  | Draft reply to Khina (note the ×2 multiplication-count convention: thesis 16/64/256, crossover 6.70, ratio 1.23 vs his 32/128/512, 5.70, 2.46) | TODO | — |
 
 ### Task notes
