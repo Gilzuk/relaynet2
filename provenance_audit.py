@@ -31,6 +31,9 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 
 # experiment -> (script, [output files], [published tables/figures])
 REGISTRY = {
+    "Factorized QPSK MLSE equivalence": (
+        "factorized_mlse_equivalence.py", ["results/factorized_mlse_equivalence.json"],
+        ["prose: exact I/Q factorization checked in implementation (Ch. 2)"]),
     "Corrected composite AF, fixed budget": (
         "scripts/codex_composite_af_validation.py",
         ["e6_unknown_channel_results/codex_composite_af_validation.json"],
