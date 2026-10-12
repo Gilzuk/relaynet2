@@ -1,0 +1,153 @@
+======================================================================
+E6_FLAT: Memoryless Unknown Channels (Ported to relaynet)
+======================================================================
+
+Training 3x MLP for phase...
+  Seed 2: 169 params
+  Seed 3: 169 params
+  Seed 4: 169 params
+
+F1 unknown phase (DBPSK)
+  SNR (dB):      0      2      4      6      8     10     12     14     16     18     20
+  [Training instance 1/3]
+    SNR  0 dB: AF=0.4004, DF=0.2779, MLP=0.3002
+    SNR  2 dB: AF=0.3401, DF=0.1891, MLP=0.2063
+    SNR  4 dB: AF=0.2597, DF=0.1151, MLP=0.1103
+    SNR  6 dB: AF=0.1790, DF=0.0612, MLP=0.0722
+    SNR  8 dB: AF=0.1120, DF=0.0370, MLP=0.0394
+    SNR 10 dB: AF=0.0659, DF=0.0233, MLP=0.0236
+    SNR 12 dB: AF=0.0380, DF=0.0144, MLP=0.0144
+    SNR 14 dB: AF=0.0231, DF=0.0103, MLP=0.0103
+    SNR 16 dB: AF=0.0144, DF=0.0062, MLP=0.0062
+    SNR 18 dB: AF=0.0081, DF=0.0041, MLP=0.0041
+    SNR 20 dB: AF=0.0055, DF=0.0025, MLP=0.0025
+  [Training instance 2/3]
+    SNR  0 dB: AF=0.4014, DF=0.2756, MLP=0.2969
+    SNR  2 dB: AF=0.3378, DF=0.1905, MLP=0.2068
+    SNR  4 dB: AF=0.2591, DF=0.1142, MLP=0.1192
+    SNR  6 dB: AF=0.1771, DF=0.0610, MLP=0.0616
+    SNR  8 dB: AF=0.1092, DF=0.0369, MLP=0.0369
+    SNR 10 dB: AF=0.0664, DF=0.0233, MLP=0.0234
+    SNR 12 dB: AF=0.0376, DF=0.0144, MLP=0.0144
+    SNR 14 dB: AF=0.0226, DF=0.0103, MLP=0.0103
+    SNR 16 dB: AF=0.0137, DF=0.0062, MLP=0.0062
+    SNR 18 dB: AF=0.0084, DF=0.0041, MLP=0.0041
+    SNR 20 dB: AF=0.0052, DF=0.0025, MLP=0.0025
+  [Training instance 3/3]
+    SNR  0 dB: AF=0.3994, DF=0.2759, MLP=0.2919
+    SNR  2 dB: AF=0.3360, DF=0.1904, MLP=0.1906
+    SNR  4 dB: AF=0.2589, DF=0.1140, MLP=0.1243
+    SNR  6 dB: AF=0.1811, DF=0.0622, MLP=0.0639
+    SNR  8 dB: AF=0.1133, DF=0.0370, MLP=0.0385
+    SNR 10 dB: AF=0.0667, DF=0.0233, MLP=0.0237
+    SNR 12 dB: AF=0.0369, DF=0.0144, MLP=0.0144
+    SNR 14 dB: AF=0.0234, DF=0.0103, MLP=0.0103
+    SNR 16 dB: AF=0.0141, DF=0.0062, MLP=0.0062
+    SNR 18 dB: AF=0.0089, DF=0.0041, MLP=0.0041
+    SNR 20 dB: AF=0.0056, DF=0.0025, MLP=0.0025
+    AF: 0.3980 0.3353 0.2583 0.1787 0.1122 0.0668 0.0385 0.0229 0.0140 0.0085 0.0052
+    DF: 0.2763 0.1891 0.1119 0.0612 0.0363 0.0235 0.0148 0.0097 0.0061 0.0039 0.0025
+   MLP: 0.2870 0.1992 0.1196 0.0650 0.0376 0.0237 0.0148 0.0097 0.0061 0.0039 0.0025
+  → Max MLP-DF gap: 0.010616 (should be ≤ 0.0036 for control)
+
+Training 3x MLP for gain...
+  Seed 2: 170 params
+  Seed 3: 170 params
+  Seed 4: 170 params
+
+F2 unknown gain (control)
+  SNR (dB):      0      2      4      6      8     10     12     14     16     18     20
+  [Training instance 1/3]
+    SNR  0 dB: AF=0.2692, DF=0.2498, MLP=0.2464
+    SNR  2 dB: AF=0.2277, DF=0.2023, MLP=0.1989
+    SNR  4 dB: AF=0.1092, DF=0.0832, MLP=0.0839
+    SNR  6 dB: AF=0.0680, DF=0.0532, MLP=0.0534
+    SNR  8 dB: AF=0.0388, DF=0.0361, MLP=0.0360
+    SNR 10 dB: AF=0.0628, DF=0.0402, MLP=0.0418
+    SNR 12 dB: AF=0.0156, DF=0.0144, MLP=0.0144
+    SNR 14 dB: AF=0.0117, DF=0.0103, MLP=0.0103
+    SNR 16 dB: AF=0.0063, DF=0.0062, MLP=0.0062
+    SNR 18 dB: AF=0.0043, DF=0.0041, MLP=0.0041
+    SNR 20 dB: AF=0.0025, DF=0.0025, MLP=0.0025
+  [Training instance 2/3]
+    SNR  0 dB: AF=0.3360, DF=0.3265, MLP=0.3231
+    SNR  2 dB: AF=0.1464, DF=0.1161, MLP=0.1167
+    SNR  4 dB: AF=0.0930, DF=0.0797, MLP=0.0798
+    SNR  6 dB: AF=0.1127, DF=0.0789, MLP=0.0800
+    SNR  8 dB: AF=0.0390, DF=0.0361, MLP=0.0361
+    SNR 10 dB: AF=0.0247, DF=0.0233, MLP=0.0233
+    SNR 12 dB: AF=0.0152, DF=0.0144, MLP=0.0144
+    SNR 14 dB: AF=0.0105, DF=0.0103, MLP=0.0103
+    SNR 16 dB: AF=0.0063, DF=0.0062, MLP=0.0062
+    SNR 18 dB: AF=0.0047, DF=0.0041, MLP=0.0041
+    SNR 20 dB: AF=0.0026, DF=0.0025, MLP=0.0025
+  [Training instance 3/3]
+    SNR  0 dB: AF=0.1793, DF=0.1504, MLP=0.1506
+    SNR  2 dB: AF=0.3409, DF=0.3331, MLP=0.3299
+    SNR  4 dB: AF=0.2204, DF=0.1964, MLP=0.1938
+    SNR  6 dB: AF=0.0932, DF=0.0631, MLP=0.0640
+    SNR  8 dB: AF=0.0393, DF=0.0361, MLP=0.0360
+    SNR 10 dB: AF=0.0348, DF=0.0240, MLP=0.0242
+    SNR 12 dB: AF=0.0248, DF=0.0153, MLP=0.0157
+    SNR 14 dB: AF=0.0109, DF=0.0103, MLP=0.0103
+    SNR 16 dB: AF=0.0064, DF=0.0062, MLP=0.0062
+    SNR 18 dB: AF=0.0042, DF=0.0041, MLP=0.0041
+    SNR 20 dB: AF=0.0026, DF=0.0025, MLP=0.0025
+    AF: 0.2449 0.1901 0.1360 0.0920 0.0553 0.0386 0.0199 0.0123 0.0066 0.0041 0.0026
+    DF: 0.2215 0.1632 0.1116 0.0718 0.0453 0.0304 0.0160 0.0102 0.0061 0.0039 0.0025
+   MLP: 0.2195 0.1624 0.1114 0.0721 0.0456 0.0308 0.0162 0.0103 0.0061 0.0039 0.0025
+  → Max MLP-DF gap: 0.002018 (should be ≤ 0.0036 for control)
+
+Training 3x MLP for iqimb...
+  Seed 2: 170 params
+  Seed 3: 170 params
+  Seed 4: 170 params
+
+F3 per-branch gain asymmetry
+  SNR (dB):      0      2      4      6      8     10     12     14     16     18     20
+  [Training instance 1/3]
+    SNR  0 dB: AF=0.2570, DF=0.2321, MLP=0.2290
+    SNR  2 dB: AF=0.1669, DF=0.1328, MLP=0.1320
+    SNR  4 dB: AF=0.1238, DF=0.0918, MLP=0.0912
+    SNR  6 dB: AF=0.0669, DF=0.0530, MLP=0.0532
+    SNR  8 dB: AF=0.0442, DF=0.0361, MLP=0.0361
+    SNR 10 dB: AF=0.0338, DF=0.0236, MLP=0.0239
+    SNR 12 dB: AF=0.0162, DF=0.0144, MLP=0.0144
+    SNR 14 dB: AF=0.0114, DF=0.0103, MLP=0.0103
+    SNR 16 dB: AF=0.0070, DF=0.0062, MLP=0.0062
+    SNR 18 dB: AF=0.0044, DF=0.0041, MLP=0.0041
+    SNR 20 dB: AF=0.0027, DF=0.0025, MLP=0.0025
+  [Training instance 2/3]
+    SNR  0 dB: AF=0.2147, DF=0.1824, MLP=0.1811
+    SNR  2 dB: AF=0.2335, DF=0.2083, MLP=0.2056
+    SNR  4 dB: AF=0.1383, DF=0.1050, MLP=0.1019
+    SNR  6 dB: AF=0.1059, DF=0.0734, MLP=0.0758
+    SNR  8 dB: AF=0.0624, DF=0.0408, MLP=0.0398
+    SNR 10 dB: AF=0.0283, DF=0.0233, MLP=0.0234
+    SNR 12 dB: AF=0.0197, DF=0.0144, MLP=0.0144
+    SNR 14 dB: AF=0.0107, DF=0.0103, MLP=0.0103
+    SNR 16 dB: AF=0.0069, DF=0.0062, MLP=0.0062
+    SNR 18 dB: AF=0.0046, DF=0.0041, MLP=0.0041
+    SNR 20 dB: AF=0.0024, DF=0.0025, MLP=0.0025
+  [Training instance 3/3]
+    SNR  0 dB: AF=0.2818, DF=0.2624, MLP=0.2583
+    SNR  2 dB: AF=0.1973, DF=0.1633, MLP=0.1611
+    SNR  4 dB: AF=0.1146, DF=0.0851, MLP=0.0857
+    SNR  6 dB: AF=0.0651, DF=0.0530, MLP=0.0530
+    SNR  8 dB: AF=0.0679, DF=0.0441, MLP=0.0448
+    SNR 10 dB: AF=0.0378, DF=0.0237, MLP=0.0239
+    SNR 12 dB: AF=0.0193, DF=0.0144, MLP=0.0143
+    SNR 14 dB: AF=0.0138, DF=0.0103, MLP=0.0103
+    SNR 16 dB: AF=0.0066, DF=0.0062, MLP=0.0062
+    SNR 18 dB: AF=0.0042, DF=0.0041, MLP=0.0041
+    SNR 20 dB: AF=0.0039, DF=0.0025, MLP=0.0025
+    AF: 0.2443 0.1770 0.1284 0.0822 0.0566 0.0342 0.0198 0.0125 0.0074 0.0046 0.0028
+    DF: 0.2187 0.1428 0.0958 0.0583 0.0379 0.0239 0.0149 0.0097 0.0061 0.0039 0.0025
+   MLP: 0.2157 0.1418 0.0956 0.0583 0.0381 0.0240 0.0149 0.0097 0.0061 0.0039 0.0025
+  → Max MLP-DF gap: 0.002948 (should be ≤ 0.0036 for control)
+
+Results saved to /home/user/relaynet2/e6_unknown_channel_results/e6_flat_ported_results.npy
+
+======================================================================
+E6_FLAT: Complete
+======================================================================

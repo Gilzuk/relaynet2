@@ -119,10 +119,10 @@ Before attributing any classical failure to ``unknownness,'' it must be separate
 
 These flat-channel controls preserve sample-wise channel mappings, although the differential receiver uses adjacent samples. They test three specified forms of parameter uncertainty; they do not cover all unknown memoryless channels.
 
-\textbf{Conclusion.} In these three controls, the MLP and classical relay have similar measured BER: the largest difference is $0.0012$ across the tabulated points and $0.0064$ across the full sweep. Differential detection accommodates the block phase, and a positive gain preserves the noiseless BPSK sign. These observations show that the tested uncertainty alone need not defeat the chosen classical receiver; they do not prove equivalence or exclude benefits on other flat-channel families.
+\textbf{Conclusion.} In these three controls, the MLP and classical relay have similar measured BER from 8~dB upward: the largest difference is $0.0013$ across the tabulated points. Below 8~dB the unknown-phase MLP trails differential detection, by up to $0.0106$ at 0~dB, which lies below its lowest training SNR; in the gain and asymmetry cases the MLP is level with DF or slightly ahead throughout. Differential detection accommodates the block phase, and a positive gain preserves the noiseless BPSK sign. These observations show that the tested uncertainty alone need not defeat the chosen classical receiver; they do not prove equivalence or exclude benefits on other flat-channel families.
 
 \begin{longtable}[]{@{}lllll@{}}
-\caption[Flat unknown channels]{Flat-channel controls at 8/12/16/20~dB. Learned-relay means use three training seeds and ten inference trials per seed. Similar measured BER is not a statistical equivalence claim. MLP-169 uses complex I/Q input; MLP-170 uses real input}\label{tbl:tableE6flat}\tabularnewline
+\caption[Flat unknown channels]{Flat-channel controls at 8/12/16/20~dB. Learned-relay means use three training seeds and ten inference trials per seed. Similar measured BER is not a statistical equivalence claim. MLP-169 uses complex I/Q input; MLP-170 uses real input. Hop-2 noise follows the common convention (Appendix~\ref{sec:appendix-g-channel-specs})}\label{tbl:tableE6flat}\tabularnewline
 \toprule\noalign{}
 Flat channel & Relay & 8 dB & 12 dB & 16/20 dB \\
 \midrule\noalign{}
@@ -133,12 +133,12 @@ Flat channel & Relay & 8 dB & 12 dB & 16/20 dB \\
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-Unknown phase (DBPSK) & DF (diff.) & 0.0654 & 0.0286 & 0.0121 / 0.0050 \\
- & MLP-169 & 0.0666 & 0.0286 & 0.0121 / 0.0050 \\
-Unknown gain & DF & 0.0739 & 0.0298 & 0.0122 / 0.0050 \\
- & MLP-170 & 0.0739 & 0.0300 & 0.0122 / 0.0050 \\
-Branch asymmetry & DF & 0.0669 & 0.0286 & 0.0121 / 0.0050 \\
- & MLP-170 & 0.0671 & 0.0287 & 0.0121 / 0.0050 \\
+Unknown phase (DBPSK) & DF (diff.) & 0.0363 & 0.0148 & 0.0061 / 0.0025 \\
+ & MLP-169 & 0.0376 & 0.0148 & 0.0061 / 0.0025 \\
+Unknown gain & DF & 0.0453 & 0.0160 & 0.0061 / 0.0025 \\
+ & MLP-170 & 0.0456 & 0.0162 & 0.0061 / 0.0025 \\
+Branch asymmetry & DF & 0.0379 & 0.0149 & 0.0061 / 0.0025 \\
+ & MLP-170 & 0.0381 & 0.0149 & 0.0061 / 0.0025 \\
 \end{longtable}
 
 \textbf{Conclusion (H5, within the tested scope).} The fixed-filter BPSK study shows a large MLP improvement over AF and zero-threshold DF. Matched Viterbi gives lower measured BER over the resolved comparison range: at 8~dB the genie and 200-pilot LS values are $0.001354$ and $0.001460$, respectively, versus $0.0065$ for the MLP. There is no 8-dB crossover in the corrected data. At 0~dB the MLP and genie means are close and the study does not resolve their ordering. Interpolated required-SNR penalties relative to genie MLSE vary with the target: $0.26$, $1.18$, $1.88$, and $2.53$~dB at BER $10^{-1}$ through $10^{-4}$. They are not a universal $1$--$1.5$~dB offset. The fixed-budget checkpoint results support the separation through 16~dB, not an extrapolation beyond that range.
