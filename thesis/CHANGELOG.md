@@ -13,6 +13,42 @@ produced them; it does not cover every number or figure.
 
 ---
 
+## [Figures checked against their data] — 2026-10-12
+
+Every figure was checked against the data it plots by regenerating the 16 that
+have a generating script from the committed files and comparing them with the
+included images. Twelve matched. Fixed:
+
+### Fixed
+- **Figures 5.3–5.5 (coded link)** had been drawn from earlier, smaller runs
+  (Figures 5.3 and 5.4 printed 20 and 10 trials) while Tables 5.8, 5.12 and 5.13
+  report the committed 100-trial runs. Redrawn from those runs with
+  `scripts/plot_coded_df.py`; figures and tables now show the same values.
+  Figure 5.5's title and axis now name the idealized buffer-readiness budget,
+  as its caption does, instead of a latency budget.
+- **Table 5.8, 20 dB soft block-DF.** The cell showed the doubled-variance
+  sensitivity run (0.001376) and its footnote called it the run Figure 5.3
+  plots; the figure plots the nominal run. The cell is the nominal run again
+  (0.002348), the doubled-variance value is a footnoted sensitivity check, and
+  the Figure 5.3 caption and the following paragraph say so. This reverses the
+  part of the C5 fix (#151) that changed the cell.
+- **Figure 6.3 (QPSK unknown channel)** still carried the ISI → Rayleigh hop-2
+  panel removed with its table row; it now shows the AWGN case only
+  (`scripts/plot_e6_qpsk_unknown_channel_awgn.py`).
+- **Figure 6.7(a)** had no generating script; `scripts/plot_e6_complexity_cost.py`
+  now draws it from the counting rule of Section 6.5. The network is labelled as
+  the deployed 170-parameter relay (it read "MLP-169") and drawn as a reference
+  line rather than an identical bar at every (M, L), which Section 6.5 says it is
+  not; the y-axis label is no longer clipped. Panel (b) is unchanged, since its
+  timings were never committed; its caption and Section 6.5 now say that it
+  timed the 169-parameter I/Q relay, and give the unit.
+- **Figure 5.1's title** no longer carries "(§7.10)", a section number internal
+  to `run_experiments.py`.
+
+The body still ends at 119 countable pages.
+
+---
+
 ## [Khina revision round] — 2026-10-12
 
 Response to Dr. Anatoly Khina's nine comments and presentation notes on the

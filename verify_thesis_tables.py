@@ -897,11 +897,6 @@ def check_table39(tex, rep):
                 break
             pub_text, pub_val = row[c]
             src = d[snr][key]["mean"]
-            if snr == "20" and key == "soft_df":
-                # The 20 dB soft block-DF cell shows the doubled-variance run that
-                # Figure fig57 plots, from the calibration sweep (see footnote).
-                cal = json.load(open(os.path.join(ROOT, "results/coded_soft_df_calibration.json")))
-                src = cal["results"]["20"]["soft_by_factor"]["2.0"]
             rep.cell(T, f"{snr}dB/{key}", pub_text, pub_val, src)
     rep.finish_table(T, before)
 
@@ -1921,29 +1916,31 @@ def check_bcjr_benchmark(tex, rep):
 
 
 def check_soft_df_calibration_prose(tex, rep):
-    """The two variance-corrected figures in tbl:table39's footnote.
+    """The two variance-doubled figures in tbl:table39's footnote.
 
     They came from coded_soft_df_calibration.py, a different run from the table
     they annotate, and until now neither the verifier nor the provenance audit
     knew they existed -- two published numbers with nothing binding them to
-    their source.
+    their source. The table's own 20 dB cell is the nominal run, the one
+    Figure fig57 plots; an earlier revision showed this sweep's value there and
+    mislabelled it as the plotted run.
     """
     T = "prose:soft-df-calibration"; before = rep.checked
     src_path = os.path.join(ROOT, "results", "coded_soft_df_calibration.json")
     if not os.path.exists(src_path):
         return rep.skip(T, "results/coded_soft_df_calibration.json not found")
     src = json.load(open(src_path))["results"]["20"]
-    i = tex.find("The variance-corrected figure is")
+    i = tex.find("With the assumed variance doubled, a separate sensitivity sweep gives")
     if i < 0:
         return rep.skip(T, "footnote sentence not found in tex")
     sent = tex[i:i + 260]
     nums = [float(m) for m in re.findall(r"\$(\d+\.\d+)\$", sent)]
     if len(nums) != 2:
         return rep.skip(T, f"expected 2 numbers in the footnote, found {len(nums)}")
-    # the corrected soft figure is the calibration sweep's variance-scaled run;
-    # every factor from 2 upward lands on the same value to the published digits
-    corrected = src["soft_by_factor"]["2.0"]
-    rep.cell(T, "soft_df_variance_corrected", f"{nums[0]}", nums[0], corrected)
+    # the footnote quotes the sweep's doubled-variance run; every factor from 2
+    # upward lands on the same value to the published digits
+    doubled = src["soft_by_factor"]["2.0"]
+    rep.cell(T, "soft_df_variance_doubled", f"{nums[0]}", nums[0], doubled)
     rep.cell(T, "hard_block_df_20dB", f"{nums[1]}", nums[1], src["hard"])
     rep.finish_table(T, before)
 

@@ -2,6 +2,25 @@
 
 _Last updated: 2026-10-12_
 
+### Latest (2026-10-12, figures): every thesis figure checked against its data
+
+Asked "has every chart been regenerated?": no figure had been touched since September.
+Regenerating the 16 with scripts into a scratch worktree and comparing showed 12 matching
+and four out of step: Figs. 5.3-5.5 drawn from earlier 10/20-trial runs while Tables
+5.8/5.12/5.13 report the committed 100-trial runs; Fig. 6.3 still showing the removed
+Rayleigh-hop-2 panel. Worse, Table 5.8's 20 dB soft block-DF cell (C5, #151) showed the
+doubled-variance run (0.001376) with a footnote saying Fig. 5.3 plots it; the figure plots
+the nominal run (0.002348), and the reply repeated the false claim. Fig. 6.7 had no script;
+panel (a) read MLP-169 while the caption says 170, and panel (b) had in fact timed the
+169-parameter I/Q relay. Fixed on fix/stale-figures at the author's instruction: figures
+redrawn from committed data (no table number changes), Table 5.8 cell back to nominal with
+the doubled-variance value footnoted, Fig. 5.3 caption and the 16/20 dB sentence corrected,
+Fig. 6.3 single AWGN panel, new scripts/plot_e6_complexity_cost.py for 6.7(a) (MLP-170
+reference line), caption/text say what 6.7(b) timed (ms), Fig. 5.5 axis says
+buffer-readiness budget, Fig. 5.1 title drops "(§7.10)". Reply corrected. 119 countable
+pages; verifier 678/0; 347 tests; provenance clean. techContext gotcha 12 records that
+figures are outside both checks.
+
 ### Latest (2026-10-12, READMEs): every README and Overleaf guide current; mirror republished
 
 The author asked whether all READMEs in relaynet2 and relaynet2-thesis were updated; they were

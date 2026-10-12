@@ -58,6 +58,7 @@ The repo root has ~150+ loose files: LaTeX build artifacts, many one-off `_*.py`
 11. **Mirror commits carry the author's identity via environment variables only.** Publish with
    `GIT_AUTHOR_*`/`GIT_COMMITTER_*` set to the author; never change the repo's `user.name`, or ordinary
    commits get the author's name too (happened once in the Khina round, commit b4e1abc; the repo config was then restored).
+12. **Figures are outside both checks.** `verify_thesis_tables.py` checks table cells and prose numbers, and `provenance_audit.py` checks data against scripts; neither looks at a figure. Three coded figures (5.3-5.5) had been drawn from 10- and 20-trial runs while their tables reported the committed 100-trial runs, and Fig. 6.3 kept a panel whose table row had been removed, all unnoticed for weeks. After any rerun, regenerate every figure that plots the changed file. To audit, regenerate into a scratch `git worktree` and compare images, never in place: the plot scripts write to both `results/` and `thesis/results/` and overwrite committed figures. Three scripts write only to `results/` (`plot_min_size_charts.py`, `plot_seed_stability.py`, `gen_missing_figures.py`), so their thesis copies must be copied by hand.
 
 ## SNR convention (load-bearing — do not change without updating everywhere)
 - γ = 10^(SNR_dB/10), unit symbol energy; complex noise power 1/γ, i.e. **σ² = 1/(2γ) per real dimension**.

@@ -35,7 +35,9 @@ def main():
     snrs = np.asarray(d["snrs"], dtype=float)
     summary = d["results"]["awgn"]
 
-    fig, ax = plt.subplots(figsize=(7, 5.5))
+    # main.tex caps this figure at 0.24\textheight; a wide, short panel keeps that
+    # height while rendering the text about 60% larger than a 7x5.5 in figure would
+    fig, ax = plt.subplots(figsize=(6.4, 3.4))
     for name, (mu, ci) in summary.items():
         mu, ci = np.asarray(mu, dtype=float), np.asarray(ci, dtype=float)
         line, = ax.semilogy(snrs, np.maximum(mu, 1e-5), marker="o", label=name)

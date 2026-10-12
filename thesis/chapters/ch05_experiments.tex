@@ -280,21 +280,21 @@ SNR (dB) & hard block-DF & soft block-DF & MLP hard & MLP soft & oracle \\
 8 & \textbf{0.0636} & \textbf{0.0636} & 0.1008 & 0.0878 & 0.0327 \\
 12 & \textbf{0.01537} & 0.01537 & 0.02142 & 0.01768 & 0.00768 \\
 16 & 0.004222 & 0.004222 & 0.004403 & \textbf{0.003633} & 0.002105 \\
-20 & 0.001354 & 0.001376$^{\dagger}$ & 0.001056 & \textbf{0.000912} & 0.000682 \\
-\multicolumn{6}{p{0.94\linewidth}}{\footnotesize $^{\dagger}$Run with the assumed noise variance doubled, the run plotted in Figure~\ref{fig:fig57}; the nominal-variance run of the same table gives $0.002348$, miscalibrated at high SNR (see text below). The variance-corrected figure is $0.001376$, not resolved from hard block-DF's $0.001375$ in the same sweep. Neither variant is the matched metric of Section~\ref{sec:coded-matched-metrics}.} \\
+20 & 0.001354 & 0.002348$^{\dagger}$ & 0.001056 & \textbf{0.000912} & 0.000682 \\
+\multicolumn{6}{p{0.94\linewidth}}{\footnotesize $^{\dagger}$Nominal assumed noise variance, the same run as the rest of the table and as Figure~\ref{fig:fig57}; it is miscalibrated at this SNR (see text below). With the assumed variance doubled, a separate sensitivity sweep gives $0.001376$, not resolved from hard block-DF's $0.001375$ in that sweep. Neither variant is the matched metric of Section~\ref{sec:coded-matched-metrics}.} \\
 \end{longtable}
 
 \begin{figure}[htbp]
 \centering
 \pandocbounded{\includegraphics[width=\linewidth]{results/coded_soft_decision.png}}
-\caption[Soft- versus hard-decision relaying: BER curves]{Soft- and hard-decision coded relaying under the implemented (unweighted) metrics; Table~\ref{tbl:coded-matched} gives the matched-metric comparison, with 100 paired trials. The MLP soft constellation average has lower measured BER than its hard read-out at every sampled SNR. The block-DF curves use the variance-sensitivity correction discussed in the text. Neither the curves nor the repair counts isolate a causal explanation for the high-SNR ordering. The oracle forwards the clean codeword}\label{fig:fig57}
+\caption[Soft- versus hard-decision relaying: BER curves]{Soft- and hard-decision coded relaying under the implemented (unweighted) metrics; Table~\ref{tbl:coded-matched} gives the matched-metric comparison, with 100 paired trials. The MLP soft constellation average has lower measured BER than its hard read-out at every sampled SNR. The soft block-DF curve uses the nominal noise variance, so its 20~dB point is the miscalibrated value discussed in the text. Neither the curves nor the repair counts isolate a causal explanation for the high-SNR ordering. The oracle forwards the clean codeword}\label{fig:fig57}
 \end{figure}
 
 \textbf{Soft MLP read-out improves the sampled points} (Figure~\ref{fig:fig57}). Its BER is lower than the hard read-out at every measured SNR on identical weights. Here the term posterior mean denotes the softmax-weighted constellation average; calibration was not tested. At 16~dB the hard MLP loses to block-DF in 80 paired trials, wins 19 and ties one, whereas the soft MLP wins all 100. At 20~dB the soft MLP's measured BER is within $0.00023$ of the clean-codeword oracle. The comparison does not identify the physical mechanism or establish optimality of this read-out for destination BER.
 
 \textbf{Soft block-DF does not rescue the implemented block-DF baseline.} The relay is given a nominal noise variance, although post-equalization Rayleigh noise has variance $1/(2\gamma|h|^2)$ per real axis. Its BCJR metrics are therefore mismatched and overconfident on deep-fade symbols. Uniformly inflating the assumed variance removes the 20-dB gap, but this sensitivity sweep does not supply the required per-symbol reliability weights and should not be described as matched calibration. The same limitation applies to unweighted Viterbi distances: multiplying every branch metric by one constant leaves its decisions unchanged, whereas omitted symbol-dependent weights can change the selected path.
 
-Soft and hard block-DF have similar reported BER at 16 and 20~dB under these decoder metrics. This does not isolate hard quantization as the cause of the gap, nor prove a general disadvantage of decoding at a relay.
+Soft and hard block-DF have similar reported BER at 16~dB under these decoder metrics. At 20~dB the nominal-variance soft block-DF is worse, and with the assumed variance doubled the two are not resolved (footnote to Table~\ref{tbl:table39}). This does not isolate hard quantization as the cause of the gap, nor prove a general disadvantage of decoding at a relay.
 
 Under the implemented metrics, the coded study therefore shows a configuration-specific high-SNR benefit for the learned relays and a benefit from soft MLP read-out. The next subsection shows that the first does not survive matched decoding.
 
