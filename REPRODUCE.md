@@ -23,8 +23,8 @@ Two distinct claims, checkable independently:
 
 1. **The thesis matches its data.** A declared subset of numerical table cells
    and prose numbers is compared against the file that produced it; it does not
-   cover every number or figure. This is `make verify`: **678 values,
-   0 discrepancies** (2026-10-12), exit code 1 on any mismatch.
+   cover every number or figure. This is `make verify`: **708 values,
+   0 discrepancies** (2026-10-13), exit code 1 on any mismatch.
 2. **The data can be regenerated.** The experiments are re-runnable from
    scratch. The unknown-channel pipeline is fully seeded and reproduces its
    committed `.npy` files **bit-for-bit**; `run_experiments.py` is seeded via
@@ -116,6 +116,18 @@ With `CODED_METRIC` unset the coded scripts reproduce the published unweighted
 results exactly; with `CODED_METRIC=matched` they write `*_matched.json`
 alongside them.
 
+The committee audit (October 2026) added a rerun of the sequence-on-memory study
+behind Table 6.7 and Sec. 6.4.2. It needs torch. The rerun summary is
+`docs/mamba_lookahead_rerun_2026-10-13.md`.
+
+```bash
+python seq_models_on_memory_readout.py        # Mamba centre (control) and full-window readouts
+python seq_models_on_memory_bidirectional.py  # Mamba bidirectional readout
+python seq_models_on_memory_rerun_controls.py # MLP-3K and Transformer-3K, same protocol
+python seq_models_on_memory_repeat.py         # one fresh retrain of three configurations
+python seq_models_on_memory_repeat_probe.py Mamba-S6-3K isi 1   # weights hash + machine, appended
+```
+
 ---
 
 ## Requirements
@@ -180,10 +192,20 @@ scripts/check_env.py          Environment doctor
 - **Timing numbers will differ.** Table 5.11 and Figure 6.7(b) report
   wall-clock, which depends on your hardware. The verifier checks Table 5.11
   only against the readouts committed beside it, not against your machine.
-- **A GPU changes speed, not results.** The BER numbers are hardware
-  independent; only the timing tables move.
+- **A GPU changes speed, not results, for the simulations.** For fixed data
+  and fixed weights the BER numbers are hardware independent; only the timing
+  tables move. Training a neural relay is the exception (next item but one).
 - **Floating-point across platforms.** Different BLAS builds can perturb the
-  last displayed digit. The verifier's rounding tolerance absorbs this.
+  last displayed digit of an evaluation, and the verifier's rounding tolerance
+  absorbs this.
+- **Seeded training is exact only on one machine.** Retraining the
+  sequence-on-memory relays with the same seed gave identical weights in every
+  fresh process on one machine. On another machine with the same installed
+  software it gave a different relay: Mamba-S6 moved by 0.21 dB and the
+  Transformer by 0.89 dB, while the MLP was identical. Per-seed penalties and
+  three-seed spreads of trained sequence models therefore change from machine to
+  machine (Sec. 6.4.2). Rerun them on your machine and compare
+  best-of-three values, not individual seeds.
 - **What is *not* reproduced.** One experiment is deliberately not run and is
   flagged as open in the thesis: the VAE with deterministic decoding. Blind CMA
   at short block lengths, previously also open, is now measured in the

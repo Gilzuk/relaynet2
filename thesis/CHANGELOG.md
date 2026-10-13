@@ -13,6 +13,73 @@ produced them; it does not cover every number or figure.
 
 ---
 
+## [Committee-audit fixes] — 2026-10-13
+
+Every finding of `docs/committee_audit_2026-10-13.md` is fixed. Its Outcome
+section lists each fix and how it relates to earlier changes. The main ones:
+
+- **Pilot sweep.** The 10-pilot difference is inside the stored 95% interval.
+  Both abstracts, Table 6.1, Sec. 6.3, Ch. 8 and App. 9.5 now say the MLP trails
+  pilot-aided detection at twenty pilots, is not resolved from it at ten, and
+  leads at five.
+- **Mamba relays.** Both are causal scans read at the window centre, so they
+  have zero look-ahead. This is disclosed, and the Sec. 6.4.2 conclusion now
+  rests on the Transformer.
+- **Mamba look-ahead rerun (Sec. 6.4.2, Table 6.7).** Two readouts that give the
+  Mamba relays the whole window, at the same parameter count, both made them
+  worse, so the conclusion stands. The rerun also showed two things:
+  - The published spreads do not reproduce across machines. Seeded training is
+    bit-exact on one machine, but the same Transformer seed moved by 0.89 dB on
+    another. The "reproducibility inverts" paragraph is replaced by this result.
+  - The best seed of the Mamba-2 QPSK cell never reaches 10⁻³. The cell is now
+    footnoted, and the margin notes 3.14 dB without it.
+
+  Data and scripts: `docs/mamba_lookahead_rerun_2026-10-13.md`.
+- **Methods text matches the code:**
+  - Sec. 7.1.3 training (BPSK over AWGN);
+  - Xavier initialization, correcting the LeCun relabel of 2026-09-14;
+  - the Mamba blocks as implemented;
+  - the cGAN's exclusion and its training-only critic.
+- **Table 6.6 learned-relay column.** Its source is the size sweep, and it is
+  now defined and verified.
+- **H5 evidence.** The nonlinear-bias study (S3, committed data) is now reported.
+- **Wording:** H2 and its verdict; the MLP's 0.007 margin; three sequence
+  models; goodput η(1−FER) (Fig. 5.4 relabelled); Table 5.5's tie; the
+  size-sweep reference; channel definitions for Tables 6.6–6.7; plain-QPSK ISI
+  acknowledged.
+- **Numbers sourced.** Two unsourced frame-error rates (20.23%, 10.58%) are
+  replaced by the committed 19.98% and 10.64%, and one ratio is rounded (1.14).
+- **Bibliography.** Venues added for two entries.
+- **Author decisions (2026-10-13).**
+  - The Hebrew abstract is approved.
+  - H2's Table 8.1 verdict reads "Supported as matching: … none is detectably
+    better", which makes the matching sense explicit.
+  - The title-page date is October 2026 (אוקטובר 2026) on all four title pages.
+
+Build: 136 PDF pages, 120 countable (the limit); 0 errors and 0 overfull
+boxes. The verifier checks 708 cells (30 new), with 0 inconsistencies; 347
+tests pass.
+
+---
+
+## [Committee-level audit] — 2026-10-13
+
+Report only; the thesis is unchanged (main 82875bc, 119 countable pages). The
+audit read every chapter, both abstracts and the appendices as an examining
+committee would, and checked them against the committed code and data. Findings,
+locations and suggested fixes are in `docs/committee_audit_2026-10-13.md`:
+
+- seven substantive items: the ten-pilot "lead" in both abstracts is not
+  resolved; the Mamba relays have zero look-ahead; Sec. 7.1.3 still says
+  training uses Rayleigh fading; the initialization and Mamba-block descriptions
+  do not match the code; Table 6.6's learned-relay column has no committed
+  source; H5 names an unreported channel;
+- seventeen cross-reference inconsistencies and twenty-three minor items.
+
+None of these fixes was applied in the audit itself; they followed in the entry above.
+
+---
+
 ## [Pre-submission audit] — 2026-10-12
 
 Final audit of the combined branch (#173) before submission:

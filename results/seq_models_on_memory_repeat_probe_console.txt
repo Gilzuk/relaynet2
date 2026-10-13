@@ -1,0 +1,5 @@
+Mamba-S6-3K isi seed 1: 4.10348024514597 dB, weights 7a70544c59e4549d  (solo run 1)
+Mamba-S6-3K isi seed 1: 4.10348024514597 dB, weights 7a70544c59e4549d  (solo run 2)
+Transformer-3K isi_complex seed 2: 5.134650427856291 dB, weights 6dfcd1eeae310a53  (solo run 1)
+Transformer-3K isi_complex seed 2: 5.134650427856291 dB, weights 6dfcd1eeae310a53  (solo run 2)
+exit 0

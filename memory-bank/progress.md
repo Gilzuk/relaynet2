@@ -2,6 +2,10 @@ Session note (2026-10-12, independent audit): branch `fix/khina-independent-audi
 
 # Progress — E6 Porting Checklist
 
+Session note (2026-10-13, audit fixes): all committee-audit findings fixed on fix/committee-audit-findings (supersedes #174): ten-pilot wording, Mamba look-ahead disclosure, Sec. 7.1.3, Xavier init, Mamba blocks, Table 6.6 column sourced and verified, S3 reported, H2, FER numbers sourced, bib venues; 120 countable pages, verifier 689/0, 347 tests; awaiting approval.
+
+Session note (2026-10-13, committee audit): #173 merged (main 82875bc), mirror 748962e; committee-level audit written to docs/committee_audit_2026-10-13.md (7 substantive: ten-pilot lead unresolved in both abstracts, Mamba zero look-ahead, Sec. 7.1.3 Rayleigh training, Xavier init, Mamba block descriptions, Table 6.6 learned-relay column unsourced, H5 nonlinear bias unreported; plus 17 B and 23 C items). Report only; fixes await the author.
+
 Session note (2026-10-12, pre-submission audit): #173 audited (clean build, 119 countable pages, fonts embedded, bibliography complete, numbers consistent); five British spellings fixed; not merged pending approval; title-page date open.
 
 Session note (2026-10-12, combined): #171 (independent recheck) and #172 (author's patch) reviewed and combined on fix/combined-171-172; #171's claims verified against data; K-sweep reply wording refined; 119 countable pages; awaiting the author's approval to merge.
@@ -465,3 +469,36 @@ tight cross-platform floating-point tolerance. Commit `6e1765d` passed GitHub
 CI run 490. Only the composite-AF comparison was newly run; historical result
 arrays were preserved. The generated table provenance ledger identifies
 `6e1765d` as the source/data commit.
+
+## 2026-10-13: Mamba look-ahead rerun (committee-audit A2), not in the thesis
+
+Branch `exp/mamba-full-window-readout`. Mamba-S6 and Mamba-2 were rerun on the three Table 6.7 channels
+with the centre readout (control), the full-window ("last") readout and a bidirectional readout. MLP
+and Transformer were rerun in the same environment.
+
+- **Look-ahead.** Look-ahead does not rescue Mamba. The MLP leads every architecture and readout on
+  every channel, so the Table 6.7 conclusion stands.
+- **Reproducibility.** The published per-seed values and spreads on ISI do not reproduce. Seeded
+  retraining is bit-exact on one machine and differs across machines.
+- **Mamba-2 at QPSK.** The published cell selects a seed that misses 1e-3.
+
+Thesis integration awaits the author: `docs/mamba_lookahead_rerun_2026-10-13.md`. The tests pass at
+347, and the provenance audit is clean with the five new experiments registered.
+
+## 2026-10-13 (later): Mamba rerun folded into PR #175
+
+At the author's direction the rerun is now in the thesis, in Sec. 6.4.2 and Table 6.7:
+- the dagger on the Mamba-2 QPSK cell, plus the 3.14 dB margin note;
+- the reproducibility paragraph, replaced;
+- the look-ahead sentence in the limitation paragraph.
+
+The new verifier check `prose:seq-rerun` brings the verifier to 708 cells, 0 inconsistencies. The
+build is 120 countable pages. Provenance labels and the ledger are updated, as are the companion
+documents. #175 still awaits the author's approval.
+
+## 2026-10-13 (last): author decisions applied to #175
+
+The Hebrew abstract is approved. The H2 verdict reads "Supported as matching … none is detectably
+better". The title pages read October 2026. The build is still 120 countable pages, and #175 awaits
+the merge approval.
+

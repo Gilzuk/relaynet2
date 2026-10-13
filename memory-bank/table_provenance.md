@@ -389,6 +389,36 @@ rests on. Do not hand-edit; re-run the script.
 | data commit | `2885723` 2026-10-12 (Claude) |
 | provenance | ok |
 
+## `prose:mamba-lookahead (tap energies)`
+
+| field | value |
+|---|---|
+| experiment | Minimum relay size, 9 channels |
+| reproduce | `python mlp_min_size_all_channels.py` |
+| data file | `results/mlp_min_size_all_channels.json` |
+| data commit | `e35d9b7` 2026-09-04 (Gilzuk) |
+| provenance | ok |
+| EPOCHS | `25` |
+| H_ISI | `np.array([1.0, 0.7, 0.5])` |
+| N_TRIALS | `20` |
+| SEED | `0` |
+| SNRS | `[0, 4, 8, 12, 16, 20]` |
+| TRAIN_SNRS | `[5, 10, 15]` |
+
+## `prose:nlbias (Sec. 6.2, nonlinear-bias setup S3)`
+
+| field | value |
+|---|---|
+| experiment | E6 unknown ISI (S1-S4) |
+| reproduce | `python e6_sim_ported.py` |
+| data file | `e6_unknown_channel_results/e6_sim_ported_results.npy` |
+| data commit | `e35d9b7` 2026-09-04 (Gilzuk) |
+| provenance | ok |
+| N_TRAIN | `3` |
+| SNRS | `np.arange(0, 21, 2)` |
+| TRAIN_SNRS | `[5, 10, 15]` |
+| W | `11` |
+
 ## `prose:scalar-map (Ch. 6, slicer-floor paragraph)`
 
 | field | value |
@@ -401,6 +431,67 @@ rests on. Do not hand-edit; re-run the script.
 | H_ISI | `H_CHANNEL / np.linalg.norm(H_CHANNEL)` |
 | SEEDS | `(0, 1, 2)` |
 | SNRS | `list(range(0, 21, 2))` |
+
+## `prose:seq-rerun (Sec. 6.4.2 bidirectional readout)`
+
+| field | value |
+|---|---|
+| experiment | Mamba readout on memory: bidirectional |
+| reproduce | `python seq_models_on_memory_bidirectional.py` |
+| data file | `results/seq_models_on_memory_bidirectional.json` |
+| data commit | `5dd8e41` 2026-10-13 (Claude) |
+| provenance | ok |
+
+## `prose:seq-rerun (Sec. 6.4.2 bit-for-bit repeats on one machine)`
+
+| field | value |
+|---|---|
+| experiment | Sequence models on memory: retraining fingerprints |
+| reproduce | `python seq_models_on_memory_repeat_probe.py` |
+| data file | `results/seq_models_on_memory_repeat_probe.jsonl` |
+| data commit | `c981c87` 2026-10-13 (Claude) |
+| provenance | ok |
+
+## `prose:seq-rerun (Sec. 6.4.2 cross-machine shift)`
+
+| field | value |
+|---|---|
+| experiment | Sequence models on memory: seeded-retraining repeat |
+| reproduce | `python seq_models_on_memory_repeat.py` |
+| data file | `results/seq_models_on_memory_repeat.json` |
+| data commit | `0f2794b` 2026-10-13 (Claude) |
+| provenance | ok |
+
+## `prose:seq-rerun (Sec. 6.4.2 full-window readout; Mamba rows of the rerun)`
+
+| field | value |
+|---|---|
+| experiment | Mamba readout on memory: centre control and full window |
+| reproduce | `python seq_models_on_memory_readout.py` |
+| data file | `results/seq_models_on_memory_readout.json` |
+| data commit | `5dd8e41` 2026-10-13 (Claude) |
+| provenance | ok |
+
+## `prose:seq-rerun (Sec. 6.4.2 rerun spreads, MLP and Transformer rows)`
+
+| field | value |
+|---|---|
+| experiment | Sequence models on memory: MLP/Transformer rerun |
+| reproduce | `python seq_models_on_memory_rerun_controls.py` |
+| data file | `results/seq_models_on_memory_rerun_controls.json` |
+| data commit | `5dd8e41` 2026-10-13 (Claude) |
+| provenance | ok |
+
+## `prose:seq-rerun (Table 6.7 dagger note and QPSK margin)`
+
+| field | value |
+|---|---|
+| experiment | Sequence models on memory |
+| reproduce | `python seq_models_on_memory.py` |
+| data file | `results/seq_models_on_memory.json` |
+| data commit | `e35d9b7` 2026-09-04 (Gilzuk) |
+| provenance | ok |
+| TRAIN_SNRS | `[5, 10, 15]` |
 
 ## `tbl:bcjr-benchmark; relay-output control only`
 
@@ -476,6 +567,22 @@ rests on. Do not hand-edit; re-run the script.
 | data file | `results/mmse_equalizer.json` |
 | data commit | `e35d9b7` 2026-09-04 (Gilzuk) |
 | provenance | ok |
+
+## `tbl:mmse-baseline learned-relay column`
+
+| field | value |
+|---|---|
+| experiment | Minimum relay size, 9 channels |
+| reproduce | `python mlp_min_size_all_channels.py` |
+| data file | `results/mlp_min_size_all_channels.json` |
+| data commit | `e35d9b7` 2026-09-04 (Gilzuk) |
+| provenance | ok |
+| EPOCHS | `25` |
+| H_ISI | `np.array([1.0, 0.7, 0.5])` |
+| N_TRIALS | `20` |
+| SEED | `0` |
+| SNRS | `[0, 4, 8, 12, 16, 20]` |
+| TRAIN_SNRS | `[5, 10, 15]` |
 
 ## `tbl:seed-spread`
 

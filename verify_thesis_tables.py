@@ -31,9 +31,15 @@ Data sources, by table:
   tbl:table43           envelope under a latency budget     <- results/coded_latency_capacity.json
   tbl:table44           reliable-decoding regime            <- results/coded_reliable_regime.json
   tbl:mmse-baseline     MMSE linear equalizer vs MLSE       <- results/mmse_equalizer.json
+                        (learned-relay column               <- results/mlp_min_size_all_channels.json)
   tbl:seq-on-memory     sequence architectures on ISI       <- results/seq_models_on_memory.json
   tbl:joint-latency     memory+latency relay comparison     <- results/joint_latency_memory.json
   tbl:joint-memory      memory-sweep cost/BER table         <- results/joint_latency_memory.json
+  prose:nlbias          nonlinear-bias (S3) numbers, Ch. 6  <- e6_unknown_channel_results/e6_sim_ported_results.npy
+  prose:coded-fer       20-dB frame-error rates, Ch. 5      <- results/coded_reliable_regime.json
+  prose:mamba-lookahead causal-readout energy shares       <- tap vectors (size-sweep JSON and script)
+  prose:seq-rerun       Sec. 6.4.2 rerun statements         <- results/seq_models_on_memory_{readout,bidirectional,
+                                                               rerun_controls,repeat}.json, _repeat_probe.jsonl
 
 Timing tables (tbl:table13, tbl:table25) report machine-dependent wall-clock and
 are checked only for their deterministic content (parameter counts); the timing
@@ -239,11 +245,13 @@ MIN_CELLS = {
     # The unvalidated 20-dB MLP bound is intentionally no longer a numeric cell.
     "tbl:tableE6": 19, "tbl:tableE6flat": 24, "tbl:tableE6qpsk": 20,
     # E6partial 13 -> 12 (2026-10-03): the 10-pilot sentence no longer restates the MLP reference.
-    "prose:E6blind": 9, "prose:E6partial": 12, "prose:E6composite": 6,
+    # E6partial 12 -> 13 (2026-10-13): the 10-pilot 95% interval is now stated and checked.
+    "prose:E6blind": 9, "prose:E6partial": 13, "prose:E6composite": 6,
     "tbl:table34": 30, "tbl:table37": 6, "tbl:table38": 10,
     "tbl:table39": 30, "tbl:table40": 12, "tbl:table41": 15,
     "tbl:table42": 27, "tbl:table43": 18, "tbl:table44": 20,
-    "tbl:mmse-baseline": 12, "tbl:seq-on-memory": 12,
+    # mmse-baseline 12 -> 15 (2026-10-13): the learned-relay column is recomputed from the size sweep.
+    "tbl:mmse-baseline": 15, "tbl:seq-on-memory": 12,
     # arch:relay-param-counts was 7. Two of those cells came from a shape claim
     # inside a \REV{} annotation, which renders as nothing and was removed with
     # the rest of the revision history; the rendered appendix claim remains.
@@ -255,6 +263,9 @@ MIN_CELLS = {
     "tbl:bcjr-benchmark": 12, "prose:soft-df-calibration": 2,
     "prose:mmse-monotonicity": 12,
     "tbl:joint-latency": 30, "tbl:joint-memory": 21,
+    "prose:nlbias": 3, "prose:coded-fer": 2, "prose:mamba-lookahead": 2,
+    # seq-rerun (2026-10-13): Sec. 6.4.2 statements resting on the sequence-on-memory rerun.
+    "prose:seq-rerun": 19,
 }
 
 # Checks allowed to skip, with the reason. A skip means the check could not run
@@ -1472,6 +1483,9 @@ def check_E6partial_prose(tex, rep):
     m = re.search(r"At 10 pilots its BER is \$([\d.]+)\$", tex)
     if m:
         rep.cell(T, "Viterbi/10 pilots", m.group(1), float(m.group(1)), pa[10][0])
+    m = re.search(r"with a 95\\% interval of \$\\pm ([\d.]+)\$ that contains the MLP's value", tex)
+    if m:
+        rep.cell(T, "Viterbi CI/10 pilots", m.group(1), float(m.group(1)), pa[10][1])
     m = re.search(r"at 5 pilots it (?:collapses to|reaches) \$([\d.]+)\$", tex)
     if m:
         rep.cell(T, "Viterbi/5 pilots", m.group(1), float(m.group(1)), pa[5][0])
@@ -1622,8 +1636,10 @@ def check_mmse_baseline(tex, rep):
     Columns: Channel & 3 taps & 5 taps & 7 taps & 11 taps & Learned relay
     Rows: ISI (BPSK) / ISI (QPSK) / Composite
     Source keys: mmse["isi"][N], mmse["isi_complex"][N], mmse["composite"][N].
-    The learned-relay column is not in the JSON (it is copied from E6 results)
-    and is skipped here; only the MMSE columns are machine-derived.
+    The learned-relay column is recomputed from results/mlp_min_size_all_channels.json:
+    the lowest best-of-three-seeds penalty against the sweep's MLSE baseline over
+    every size-sweep configuration on the channel (worst penalty over the reachable
+    targets, the Appendix 9.6 definition), as the table caption states.
     """
     T = "tbl:mmse-baseline"; before = rep.checked
     body = tabular_body(tex, T)
@@ -1657,7 +1673,32 @@ def check_mmse_baseline(tex, rep):
             src = mmse.get(src_key, {}).get(n)
             if src is not None:
                 rep.cell(T, f"{src_key}/{n}tap", pub_text, pub_val, src)
+        if len(row) > 5 and row[5][1] is not None:
+            best = _best_sweep_penalty(src_key)
+            if best is not None:
+                rep.cell(T, f"{src_key}/learned relay", row[5][0], row[5][1], best)
     rep.finish_table(T, before)
+
+
+def _best_sweep_penalty(channel):
+    """Lowest best-of-seeds required-SNR penalty over the size sweep (Table 6.6)."""
+    from ber_metrics import penalty_table
+    path = os.path.join(ROOT, "results", "mlp_min_size_all_channels.json")
+    if not os.path.exists(path):
+        return None
+    ms = json.load(open(path))
+    c = ms["channels"].get(channel)
+    if c is None:
+        return None
+    snr, base = ms["snr_db"], np.array(c["baseline_ber"])
+    vals = []
+    for cfg in c["sweep"]:
+        per_seed = [penalty_table(snr, np.array(r["ber"]), base)["worst_db_penalty"]
+                    for r in cfg["seed_runs"]]
+        per_seed = [v for v in per_seed if v == v]
+        if per_seed:
+            vals.append(min(per_seed))
+    return min(vals) if vals else None
 
 
 
@@ -2224,6 +2265,172 @@ def check_seq_on_memory(tex, rep):
     rep.finish_table(T, before)
 
 
+def check_nlbias_prose(tex, rep):
+    """Nonlinear-bias channel (setup S3) numbers in Sec. 6.2 vs e6_sim_ported_results.npy."""
+    T = "prose:nlbias"; before = rep.checked
+    d = _load_e6_npy("e6_sim_ported_results.npy")
+    if d is None:
+        return rep.skip(T, "e6_sim_ported_results.npy not found")
+    m = re.search(r"at 8~dB AF, zero-threshold DF and the 170-parameter MLP reach "
+                  r"\$([\d.]+)\$, \$([\d.]+)\$ and \$([\d.]+)\$", tex)
+    if not m:
+        return rep.skip(T, "nonlinear-bias sentence not found in tex")
+    r = d["results"]["S3: nonlinear+bias -> AWGN"]
+    i = list(d["snrs"]).index(8)
+    for k, g in zip(("AF", "DF", "MLP"), m.groups()):
+        rep.cell(T, f"{k}@8dB", g, float(g), float(np.array(r[k][0])[i]))
+    rep.finish_table(T, before)
+
+
+def check_coded_fer_prose(tex, rep):
+    """20-dB frame-error rates quoted in Sec. 5.5 vs results/coded_reliable_regime.json."""
+    T = "prose:coded-fer"; before = rep.checked
+    p = os.path.join(ROOT, "results", "coded_reliable_regime.json")
+    if not os.path.exists(p):
+        return rep.skip(T, "results/coded_reliable_regime.json not found")
+    d = json.load(open(p))
+    m = re.search(r"frame errors occur in \$([\d.]+)\\%\$ of coded-DF frames and "
+                  r"\$([\d.]+)\\%\$ even with an oracle relay", tex)
+    if not m:
+        return rep.skip(T, "frame-error sentence not found in tex")
+    i = d["snr_db"].index(20)
+    rep.cell(T, "coded-DF FER@20dB (%)", m.group(1), float(m.group(1)), 100 * d["coded_df_fer"][i])
+    rep.cell(T, "oracle FER@20dB (%)", m.group(2), float(m.group(2)), 100 * d["oracle_fer"][i])
+    rep.finish_table(T, before)
+
+
+def check_mamba_lookahead_prose(tex, rep):
+    """Share of x[n]'s energy after the causal Mamba readout point (Sec. 6.4.2), from the taps."""
+    T = "prose:mamba-lookahead"; before = rep.checked
+    m = re.search(r"which carry \$([\d.]+)\\%\$ of the energy of \$x\[n\]\$ on the ISI taps "
+                  r"and \$([\d.]+)\\%\$ on the composite", tex)
+    if not m:
+        return rep.skip(T, "Mamba look-ahead sentence not found in tex")
+    ms = json.load(open(os.path.join(ROOT, "results", "mlp_min_size_all_channels.json")))
+    src = open(os.path.join(ROOT, "mlp_min_size_all_channels.py"), encoding="utf-8").read()
+    comp = re.search(r"H_COMPOSITE = np\.array\(\[([^\]]+)\]\)", src)
+    for g, taps in ((m.group(1), ms["isi_taps"]),
+                    (m.group(2), [float(x) for x in comp.group(1).split(",")] if comp else None)):
+        if taps is None:
+            continue
+        e = np.array(taps, dtype=float) ** 2
+        rep.cell(T, "future-tap energy share (%)", g, float(g), 100 * e[1:].sum() / e.sum())
+    rep.finish_table(T, before)
+
+
+def check_seq_rerun_prose(tex, rep):
+    """Sec. 6.4.2 statements that rest on the sequence-on-memory rerun.
+
+    Table 6.7's dagger note and margin come from the published run; the
+    reproducibility paragraph and the look-ahead sentence come from the rerun
+    (readout, bidirectional, controls) and the repeat/probe runs. Every number
+    is recomputed from the committed result files, and the three claims made in
+    words (ten best values within the stated margin, the bidirectional readout
+    trailing the centre readout everywhere, bit-for-bit repeats on one machine)
+    are checked as counts.
+    """
+    from ber_metrics import penalty_table
+    T = "prose:seq-rerun"; before = rep.checked
+    R = os.path.join(ROOT, "results")
+    names = ("seq_models_on_memory.json", "seq_models_on_memory_readout.json",
+             "seq_models_on_memory_bidirectional.json",
+             "seq_models_on_memory_rerun_controls.json",
+             "seq_models_on_memory_repeat.json", "seq_models_on_memory_repeat_probe.jsonl")
+    if not all(os.path.exists(os.path.join(R, n)) for n in names):
+        return rep.skip(T, "a sequence-on-memory rerun result file is missing")
+    pub, ro, bi, ctl, rpt = (json.load(open(os.path.join(R, n))) for n in names[:5])
+    probes = [json.loads(l) for l in open(os.path.join(R, names[5])) if l.strip()]
+    snr = pub["snr_db"]
+
+    def per_target(rec, run):
+        pt = penalty_table(snr, run["ber"], rec["baseline_ber"])["per_target"]
+        return {t: v["db_penalty"] for t, v in pt.items() if v["snr_base"] == v["snr_base"]}
+
+    # Table 6.7 dagger note: the two Mamba-2 QPSK seeds that do reach 1e-3.
+    m = re.search(r"the other two, which reach it, give \$\+([\d.]+)\$ and \$\+([\d.]+)\$", tex)
+    q = pub["channels"]["isi_complex"]
+    if m:
+        full = [per_target(q, r)[1e-3] for r in q["archs"]["Mamba2-3K"]["runs"]
+                if per_target(q, r)[1e-3] == per_target(q, r)[1e-3]]
+        for g, v in zip(m.groups(), sorted(full)):
+            rep.cell(T, "Mamba-2 QPSK penalty at 1e-3", g, float(g), v)
+    # Margin at QPSK when seeds that miss a target MLSE reaches are set aside.
+    m = re.search(r"\(\$([\d.]+)\$~dB at QPSK without the marked initialization\)", tex)
+    if m:
+        def best_full(a):
+            ok = [r["db"] for r in q["archs"][a]["runs"]
+                  if all(v == v for v in per_target(q, r).values())]
+            return min(ok) if ok else float("inf")
+        runner = min(best_full(a) for a in ("Transformer-3K", "Mamba-S6-3K", "Mamba2-3K"))
+        rep.cell(T, "QPSK margin, full-target seeds", m.group(1), float(m.group(1)),
+                 runner - q["archs"]["MLP-3K"]["best_db"])
+    # Reproducibility paragraph.
+    rerun = {"MLP-3K": (ctl, "MLP-3K"), "Transformer-3K": (ctl, "Transformer-3K"),
+             "Mamba-S6-3K": (ro, "Mamba-S6-3K|center"), "Mamba2-3K": (ro, "Mamba2-3K|center")}
+    m = re.search(r"reproduced ten of the twelve best values within \$([\d.]+)\$~dB "
+                  r"\(not the Transformer's or Mamba-2's at QPSK\)", tex)
+    if m:
+        lim = float(m.group(1))
+        diffs = {(c, a): abs(pub["channels"][c]["archs"][a]["best_db"]
+                             - src["channels"][c]["archs"][key]["best_db"])
+                 for c in ("isi", "isi_complex", "composite")
+                 for a, (src, key) in rerun.items()}
+        named = {("isi_complex", "Transformer-3K"), ("isi_complex", "Mamba2-3K")}
+        rep.cell(T, "largest best-value difference, other ten cells", m.group(1), lim,
+                 max(v for k, v in diffs.items() if k not in named))
+        within = sum(1 for k, v in diffs.items() if v <= lim + tol_for(m.group(1)))
+        rep.cell(T, "best values within the margin (count)", "10", 10, within)
+    m = re.search(r"Mamba-S6 spread \$([\d.]+)\$ and \$([\d.]+)\$~dB instead of \$([\d.]+)\$ "
+                  r"and \$([\d.]+)\$, and the Transformer \$([\d.]+)\$ and \$([\d.]+)\$ instead "
+                  r"of \$([\d.]+)\$ and \$([\d.]+)\$", tex)
+    if m:
+        g = m.groups()
+        src = [ro["channels"][c]["archs"]["Mamba-S6-3K|center"]["spread"] for c in ("isi", "isi_complex")]
+        src += [pub["channels"][c]["archs"]["Mamba-S6-3K"]["spread"] for c in ("isi", "isi_complex")]
+        src += [ctl["channels"][c]["archs"]["Transformer-3K"]["spread"] for c in ("isi", "isi_complex")]
+        src += [pub["channels"][c]["archs"]["Transformer-3K"]["spread"] for c in ("isi", "isi_complex")]
+        for k, (t, v) in enumerate(zip(g, src)):
+            rep.cell(T, f"ISI spread {k}", t, float(t), v)
+    m = re.search(r"the same Transformer seed moved by \$([\d.]+)\$~dB", tex)
+    if m:
+        c = next(c for c in rpt["cases"] if c["arch"] == "Transformer-3K")
+        rep.cell(T, "Transformer cross-machine shift", m.group(1), float(m.group(1)),
+                 abs(c["db"] - c["committed_rerun_db"]))
+    if "Seeded training repeats bit for bit on one machine" in tex:
+        # every repeated configuration must give one weight hash and the repeat's BER curve
+        bad = 0
+        for c in rpt["cases"]:
+            same = [p for p in probes if (p["arch"], p["channel"], p["seed"])
+                    == (c["arch"], c["channel"], c["seed"])]
+            bad += (len({p["weights_sha256"] for p in same}) > 1
+                    or any(p["ber"] != c["ber"] for p in same))
+        rep.cell(T, "configurations not repeating bit for bit", "0", 0, bad)
+    if "only the feedforward relay retrained identically on both machines" in tex:
+        same = [c["arch"] for c in rpt["cases"] if c["identical_to_committed_rerun"]]
+        rep.cell(T, "architectures identical across machines (count)", "1", 1,
+                 len(same) if same == ["MLP-3K"] else len(same) + 10)
+    # Look-ahead sentence in the limitation paragraph.
+    m = re.search(r"the first failed to train \(BER about \$([\d.]+)\$ at 20~dB\)", tex)
+    if m:
+        b20 = [r["ber"][-1] for ch in ro["channels"].values()
+               for k, e in ch["archs"].items() if k.endswith("|last") for r in e["runs"]]
+        rep.cell(T, "full-window readout BER at 20 dB (min)", m.group(1), float(m.group(1)), min(b20))
+        rep.cell(T, "full-window readout BER at 20 dB (max)", m.group(1), float(m.group(1)), max(b20))
+    if "the second trailed the centre readout at every target on every channel" in tex:
+        worse = 0
+        for c, rec in ro["channels"].items():
+            brec = bi["channels"][c]
+            for a in ("Mamba-S6-3K", "Mamba2-3K"):
+                cen = [per_target(rec, r) for r in rec["archs"][f"{a}|center"]["runs"]]
+                bid = [per_target(brec, r) for r in brec["archs"][f"{a}|bidirectional"]["runs"]]
+                for t in cen[0]:
+                    cmax = max(d[t] for d in cen)
+                    bmin = min((d[t] if d[t] == d[t] else float("inf")) for d in bid)
+                    worse += not (bmin > cmax)
+        rep.cell(T, "targets where bidirectional does not trail centre", "0", 0, worse)
+    rep.finish_table(T, before)
+
+
 def main():
     global TEX_DIR, MC_SLACK
     ap = argparse.ArgumentParser()
@@ -2276,7 +2483,9 @@ def main():
               check_seed_spread_native_prose,
               check_soft_df_calibration_prose,
               check_mmse_monotonicity_prose,
-              check_joint_latency, check_joint_memory]
+              check_joint_latency, check_joint_memory,
+              check_nlbias_prose, check_coded_fer_prose, check_mamba_lookahead_prose,
+              check_seq_rerun_prose]
     for chk in checks:
         try:
             chk(tex, rep)

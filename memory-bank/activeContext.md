@@ -1,6 +1,128 @@
 # Active Context (update this file first, every session)
 
-_Last updated: 2026-10-12_
+_Last updated: 2026-10-13_
+
+### Latest (2026-10-13, last): author decisions applied to #175; only the merge approval remains
+
+The author ruled on the three reads with "Hebrew ok, H2 explicit, October 2026":
+- **Hebrew abstract:** approved, no text change. `thesis/HEBREW_ABSTRACT_SYNC.md` now says so.
+- **H2 verdict in Table 8.1:** now "\textbf{Supported as matching}: DF matches or beats all AI methods at
+  ≥ 6 dB with 0 parameters; none is detectably better".
+- **Title pages:** all four (`main.tex` lines 330, 364, 462, 491) read October 2026 / אוקטובר 2026.
+
+Rebuild: 136 PDF pages, 120 countable; 0 errors and 0 overfull boxes. HANDOVER's "Next" items 0, 1 and
+4, the audit report and the changelog are updated. The merge of #175 still waits for the author's
+explicit approval; after it, republish the mirror.
+
+### Earlier (2026-10-13, later): Mamba rerun folded into #175
+
+The author chose "Fold into #175" and "Footnote it". exp/mamba-full-window-readout was merged into
+fix/committee-audit-findings (9f1415f).
+
+**Sec. 6.4.2 edits:**
+- Table 6.7: the Mamba-2 QPSK cell has a dagger. The caption explains it: the initialization misses
+  1e-3 by 20 dB, and the other two seeds give +5.83 and +6.80. The caption's "Mamba spread the most"
+  claim is replaced by "spreads did not reproduce in a rerun".
+- The margin sentence adds "(3.14 dB at QPSK without the marked initialization)".
+- The "reproducibility inverts" paragraph is replaced by the rerun result: ten of twelve best values
+  within 0.25 dB, but not the spreads; bit-exact on one machine, but the Transformer seed moved by
+  0.89 dB across machines; only the MLP was identical.
+- The limitation paragraph adds one sentence: both look-ahead readouts made Mamba worse.
+
+**Checks and companions:**
+- New verifier check `prose:seq-rerun` (19 cells, MIN_CELLS 19). It was negative-tested: altered
+  numbers are flagged. The verifier is at 708 cells, 0 inconsistencies.
+- The provenance labels now name the Sec. 6.4.2 statements, and table_provenance.md is regenerated.
+- Build: 136 PDF pages, 120 countable; 0 errors and 0 overfull boxes. The preview and both zips are
+  rebuilt.
+- Companions updated: rerun summary (0.22/0.88 corrected to 0.21/0.89), audit Outcome A2 row, reply
+  (708 cells, Mamba bullet), REPRODUCE (rerun commands and the caveat that seeded training is exact
+  only on one machine), thesis/CHANGELOG, HANDOVER (MR row).
+
+**Still the author's:**
+- the Hebrew abstract drafts;
+- the H2 verdict wording;
+- the title-page date ("September 2026", main.tex lines 330, 364, 462, 491);
+- approval of #175, then the mirror republish.
+
+### Earlier (2026-10-13): Mamba look-ahead rerun (audit A2), branch exp/mamba-full-window-readout
+
+The author chose "rerun, show results first": no thesis text changes until they decide. Summary
+and decisions: `docs/mamba_lookahead_rerun_2026-10-13.md`.
+
+- **Code.** Both Mamba relays take `readout=` ("center" default and bit-identical to before; "last";
+  "bidirectional", odd windows only). The parameter count is unchanged (3,027 / 3,004).
+- **Runs.** Five experiments are registered in `provenance_audit.py`, all labelled not in the thesis:
+  - `seq_models_on_memory_readout.py`, `_bidirectional.py`, `_rerun_controls.py` (MLP and Transformer
+    in the same run);
+  - `_repeat.py` and `_repeat_probe.py` (determinism).
+- **Look-ahead result.** Look-ahead does not help Mamba. The "last" readout fails to train (BER about
+  0.1 at 20 dB). The bidirectional readout is worse than the centre readout at every target on every
+  channel. The MLP still leads everywhere.
+- **Reproducibility result.** The published ISI spreads do not reproduce. Seeded training is bit-exact
+  on one machine but not across machines with the same software:
+  - Mamba-S6 seed 1 gave +4.32 on the earlier machine and +4.10 on the current one;
+  - the Transformer seed 2 at QPSK gave +4.25 and +5.13;
+  - the MLP was identical on both.
+- **New finding.** The published Table 6.7 cell Mamba-2 at QPSK, +4.69 (2.12), has as its best seed
+  one that never reaches 1e-3 (BER 1.8e-3 at 20 dB). Its penalty is scored over fewer targets. The
+  cell feeds the "2.11 dB" margin and the "Mamba-2 by 2.12 dB" spread claim in Sec. 6.4.2.
+- **Correction.** The first chat reading said the bidirectional readout "helps at QPSK". That is the
+  same artefact, and it is corrected in the summary.
+- **Waiting on the author.** Integrate or not; footnote or definition change for the Mamba-2 cell;
+  fold into #175 or a follow-up. #175 is still unmerged and awaiting approval.
+
+### Latest (2026-10-13, audit fixes): every committee-audit finding fixed; awaiting approval
+
+The author asked "Can you fix thesis? Does it contradict previous changes?". Branch
+fix/committee-audit-findings (off main, with the audit commit cherry-picked, so it supersedes
+the report-only #174) applies all findings; the report's new "Outcome" section lists each.
+Key facts established while fixing:
+- Table 6.6's learned-relay column is the best-of-three-seeds penalty of the best size-sweep
+  configuration (window 7; 433/433/289 parameters) from mlp_min_size_all_channels.json; the
+  verifier now recomputes it (_best_sweep_penalty).
+- H5's nonlinear-bias channel had been run (S3 of e6_sim_ported.py) but never reported; Sec. 6.2
+  now reports 8 dB AF 0.0820 / DF 0.0377 / MLP 0.00108 (prose:nlbias). H5 itself kept.
+- The 20 dB FER figures 20.23%/10.58% in Sec. 5.5 were in no committed file (initial import);
+  replaced with coded_reliable_regime.json's 19.98%/10.64% (prose:coded-fer).
+- Pilot sweep: 10-pilot Viterbi 0.0545 +/- 0.0108 contains the MLP's 0.0486; abstracts now say
+  "not resolved at ten, leads at five" (prose:E6partial checks the interval).
+- Mamba-S6/Mamba-2: causal scan + centre readout = zero look-ahead (energy shares 42.5%/34%
+  checked as prose:mamba-lookahead); no rerun.
+Contradictions with earlier changes: A4 reverses 7e3f933 (which had relabelled the init "LeCun,
+not Xavier"; the code is Xavier); B5 adjusts 9dde972's H2 title scope (kept "no dominance").
+Build: 136 PDF / 120 countable pages (limit 120), 0 errors/overfull, BibTeX 0 warnings (52
+entries; LeCun no longer cited); verifier 689/0; 347 tests; provenance clean. Page budget was
+met by tightening the new wording and pointing Ch. 8's closing list of untested items to Sec.
+7.4. Reply (comments 1-3, opening counts), README, REPRODUCE, mirror template, Hebrew note and
+e6 results README updated. Do not merge until the author approves; then republish the mirror.
+
+### Latest (2026-10-13, committee audit): #173 merged; audit report only
+
+The author approved and #173 merged (main 82875bc); mirror republished at 748962e = main
+82875bc (author Gil Zukerman, thesis.pdf byte-identical); #171/#172 closed. The author then
+asked for a last committee-level audit "marking every potential inconsistency with the subject
+matter". Report: `docs/committee_audit_2026-10-13.md` (docs PR off main; nothing in the thesis
+changed). Seven substantive findings, all checked against code or committed data:
+A1 both abstracts say the MLP "leads at ten" pilots, but panel (a) gives Viterbi-est
+0.0545 +/- 0.0108 vs MLP 0.0486 +/- 0.0017 (overlap) and panel (b) finds no difference at 10
+pilots per block; A2 Mamba-S6 (causal loop) and Mamba-2 (tril SSD kernel) are read at the
+window centre, so they never see the 5 future samples -- 42.5% of x[n]'s energy on the
+[1,0.7,0.5] ISI channel -- confounding their Table 6.7 rows (the Transformer has no mask);
+A3 Sec. 7.1.3 still says training uses the Rayleigh distribution; A4 Sec. 4.3.3 says He/LeCun
+"not Xavier", but every PyTorch relay uses xavier_uniform_/xavier_normal_ (VAE: torch default);
+A5 the Mamba blocks have no Conv1D or gate branch (S6 input is the channel mean; its C is
+overwritten), and Mamba-2's gate is sigmoid; A6 Table 6.6's "Learned relay" column (+1.67,
++3.03, -2.26) is in no committed file and the verifier skips it, and +3.03 is worse than
+Table 6.7's MLP-3K +2.58 on the same channel; A7 H5 names a nonlinear-bias channel with no
+Chapter 6 result. Also B1 (plain-QPSK ISI said "not performed" but isi_complex was run in
+Tables 6.6/6.7/9.3-9.5), B2 (Tables 6.6/6.7 "Composite" = size-sweep channel: BPSK, noise
+1/gamma, linear MLSE -- not Sec. 6.2.4's), B3 ("two sequence models" -- three), B4-B17 and
+C1-C23. Verified: Gomadam-Jafar (Gaussian inputs: AF = DF = EF) and Tsai et al. arXiv
+2006.01125 attributions; every recomputed number and parameter count listed in section D.
+Nothing applied: the author decides which fixes go in (HANDOVER "Next", item 0). Rule
+reminder for the fixes: one branch and PR each; rebuild the PDF; 119 countable pages now,
+limit 120, and A2/A4/A5/B2/B17 add text.
 
 ### Latest (2026-10-12, pre-submission audit): #173 audited, not merged
 

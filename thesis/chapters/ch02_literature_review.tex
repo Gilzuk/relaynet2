@@ -20,7 +20,7 @@ For CSI-assisted variable-gain AF, the standard dual-hop end-to-end SNR is \cite
 
 This form assumes \emph{CSI-assisted variable-gain} AF (Laneman et al.), in which the relay computes a fresh gain from its instantaneous first-hop channel state. That is different from the implementation in this thesis: its gain is a single block-adaptive scalar estimated from the empirical received power over the simulated block. It is therefore data- and noise-dependent and requires the block to be available before the gain is fixed; it is neither conventional statistical fixed-gain AF nor per-symbol CSI-assisted variable-gain AF. Equations~\ref{eq:af-snr}--\ref{eq:af-p-eff} are included only as standard background and are not closed forms for the simulated AF results, which come entirely from Monte Carlo evaluation.
 
-This reveals AF's fundamental limitation: the effective SNR is bottlenecked by the weaker hop even when the other has high SNR, because the relay amplifies the first hop's noise along with its signal, accumulating both at the destination.
+This reveals AF's fundamental limitation: the effective SNR lies below that of the weaker hop even when the other has high SNR, because the relay amplifies the first hop's noise along with its signal, accumulating both at the destination.
 
 \subsection{Decode-and-Forward (DF)}\label{sec:classical-relay-strategies-df}
 The DF relay demodulates the received signal, recovers the transmitted bits, and re-modulates clean symbols:
@@ -35,7 +35,7 @@ The end-to-end BER for DF is: (Equation~\ref{eq:df-ber-hops})
 }\end{equation}
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad df-ber-hops}
 
-where \(P_{e,1}\) and \(P_{e,2}\) are the BER of the first and second hops, respectively: an end-to-end bit error occurs exactly when \emph{one} of the two hops flips the bit (two flips cancel), so this expands to \(P_{e,1} + P_{e,2} - 2P_{e,1}P_{e,2}\), the same expression used in the AWGN analysis (Equation~\ref{eq:df-ber-awgn}). For BPSK modulation over AWGN (real-valued noise with variance \(1/(2\gamma)\)), each hop's BER is \(P_e = Q\left(\sqrt{2\gamma}\right)\) on the simulator's \(\gamma=E_b/N_0\) axis. DF provides clean regeneration at high SNR but suffers from error propagation when the first-hop BER is non-negligible. As discussed in Remark~\ref{rem:df-terminology}, the ``DF'' baseline used here is the uncoded symbol-wise slicer, not practical finite-length coded block-DF; its optimality claims are therefore confined to the uncoded setting.
+where \(P_{e,1}\) and \(P_{e,2}\) are the BER of the first and second hops, respectively: an end-to-end bit error occurs exactly when \emph{one} of the two hops flips the bit (two flips cancel), so this expands to \(P_{e,1} + P_{e,2} - 2P_{e,1}P_{e,2}\), the same expression used in the AWGN analysis (Equation~\ref{eq:df-ber-awgn}). For BPSK modulation over AWGN (real-valued noise with variance \(1/(2\gamma)\)), each hop's BER is \(P_e = Q\left(\sqrt{2\gamma}\right)\), where the simulator's \(\gamma = E_s/N_0\) equals \(E_b/N_0\) for BPSK. DF provides clean regeneration at high SNR but suffers from error propagation when the first-hop BER is non-negligible. As discussed in Remark~\ref{rem:df-terminology}, the ``DF'' baseline used here is the uncoded symbol-wise slicer, not practical finite-length coded block-DF; its optimality claims are therefore confined to the uncoded setting.
 
 \subsection{Other Classical Relay Techniques}
 
@@ -164,11 +164,11 @@ The application of generative models to relay processing has, to the best of our
 Two sequence-modeling paradigms are evaluated as relay functions in this thesis, and what matters here is
 their inductive bias and their cost rather than their internal machinery, which is standard and is not
 reproduced. \textbf{Transformers} \cite{Vaswani2017Attention} use multi-head self-attention. In the bidirectional encoder configuration used here, every position
-attends to every other through learned query, key and value projections, giving a global receptive field over the buffered window; a causal (decoder) Transformer instead attends only to the past, and would not see the right-hand half of the symmetric window this thesis feeds its relays. The cost is
+attends to every other through learned query, key and value projections, giving a global receptive field over the buffered window; a causal (decoder) Transformer instead attends only to the past, and would not see the right-hand half of the symmetric window this thesis feeds its relays; the two Mamba relays evaluated here are causal in this sense (Remark~\ref{rem:window-causality}). The cost is
 $O(n^2)$ time and memory in the window length $n$. Because attention is permutation-equivariant, sinusoidal
 positional encodings supply the ordering the relay needs to distinguish symbols within its window. For the
 11-symbol window used throughout, the quadratic term is negligible; what the architecture costs is
-parameters, four projection matrices per head.
+parameters: query, key and value projections for every head and a shared output projection, \(4d_{\text{model}}^{2}\) weights per layer.
 
 \textbf{Structured state space models} \cite{GuGoelRe2022SSM} take the opposite view, treating the sequence
 model as a discretized linear dynamical system --- a learned recursive filter, linear in the sequence length,

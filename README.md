@@ -35,8 +35,8 @@ The following four groups organize separate experiments, not a one-factor-at-a-t
 |---|---|---|---|
 | 1 | Memoryless, known channel, perfect CSI | Symbol-wise DF, zero parameters | **Classical wins.** DF `0.1218` vs the MLP's `0.1229` at 8 dB — the learned relay matches DF, at 169 parameters against none |
 | 2 | + 3-tap ISI, CSI still perfect | Viterbi MLSE with exact taps | **Classical wins, by a widening margin.** DF rises from `0.1802` at 8 dB to `0.2457` at 20 dB; the MLP restores the link (`0.0065` at 8 dB) but genie MLSE records `0.001354` there, and `<3.0e-8` at 16 dB against the MLP's `1.20e-7`. The required-SNR penalty grows with the target: `+0.26` dB at BER 10⁻¹, `+1.18` at 10⁻², `+1.88` at 10⁻³, `+2.53` at 10⁻⁴ — not a fixed offset |
-| 3 | + finite pilot budget | Pilot-aided LS estimate, then MLSE | **Crossover.** At 10 dB LS+MLSE holds `0.0283` on 200 pilots and `0.0335` on 20; by 10 pilots it degrades to `0.0545` and the pilot-free MLP leads |
-| 4 | + unseen realization from the trained family, per block | CMA blind equalization | **Learned relay wins.** MLP `0.00262` vs CMA `0.00329` at 20 dB; decision-directed blind MLSE is unstable |
+| 3 | + finite pilot budget | Pilot-aided LS estimate, then MLSE | **Crossover.** At 10 dB LS+MLSE holds `0.0283` on 200 pilots and `0.0335` on 20; by 10 pilots it degrades to `0.0545`, not resolved from the pilot-free MLP (`0.0486`), which leads at 5 pilots |
+| 4 | + unseen realization from the trained family, per block | CMA blind equalization | **Learned relay narrowly leads.** MLP `0.00262` vs CMA `0.00329` at 20 dB; decision-directed blind MLSE is unstable |
 
 > **Superseded data in the tree.** `e6_unknown_channel_results/e6_viterbi_awgn.npy`
 > holds the *original* genie and pilot-LS Viterbi curves. Those were generated when the
@@ -63,7 +63,7 @@ measured at the QPSK relay output only, not as an end-to-end benchmark.
 `thesis/chapters/ch04_methods.tex`, §Statistical Significance Testing;
 `thesis/chapters/ch07_unknown_and_mismatch_channels.tex`, §A BER-Optimal Benchmark.</sub>
 
-The compiled thesis is `thesis/main.pdf` (119 numbered pages from Chapter 1 through the appendices; 135 PDF pages including front matter and the Hebrew abstract). The sections below document the
+The compiled thesis is `thesis/main.pdf` (120 numbered pages from Chapter 1 through the appendices; 136 PDF pages including front matter and the Hebrew abstract). The sections below document the
 `relaynet` simulation framework itself.
 
 ---
@@ -214,7 +214,7 @@ Each relay strategy is evaluated on both SISO channels (AWGN and Rayleigh) using
 
 The thesis findings are bounded by the implemented configurations:
 
-- In the canonical uncoded QPSK/Rayleigh comparison, feedforward relays improve on the implemented block-normalized AF at low SNR; against a conventional variable-gain AF the 0 dB margin is 0.007 rather than 0.073, and the learned relays track DF. DF matches or exceeds the evaluated learned relays from 6 dB upward.
+- In the canonical uncoded QPSK/Rayleigh comparison, feedforward relays improve on the implemented block-normalized AF at low SNR; against a conventional variable-gain AF the MLP's 0 dB margin is 0.007 rather than 0.073, the sequence relays fall behind it at 0-4 dB, and the feedforward relays track DF. DF matches or exceeds the evaluated learned relays from 6 dB upward.
 - Small tested networks can be competitive. The experiments do not establish overfitting, universal minimum size, or equal performance across all architectures and training seeds.
 - On the fixed BPSK ISI channel, the 170-parameter MLP improves strongly on AF/zero-threshold DF but trails matched MLSE over the resolved range. Fixed-budget validation stops at 16 dB.
 - The learned relays have training-family knowledge. Pilot and blind results do not demonstrate generalization to new impairment families.
@@ -238,7 +238,7 @@ Three relay architectures appear in these studies, and two of them coincidentall
 | Scalar MAP relay | `e6_scalar_map.py` | A non-monotonic symbol-wise MAP rule removes the 0.25 floor but stays far above the windowed MLP (0.099 vs 1.09e-4 at 12 dB): the large gain needs temporal context |
 | Composite cascade | `e6_composite_ported.py` | ISI × PA-nonlinearity × unknown phase: the family-trained MLP recovers from raw I/Q; pilot-aided LS Viterbi is lower at 8 dB (0.0674 vs 0.1073) and both reach 0.0025 at 20 dB |
 | Posterior-free (blind) | `e6_blind_ported.py` | MLP narrowly leads the evaluated CMA (2.6e-3 vs 3.3e-3 at 20 dB) without per-block adaptation, and avoids decision-directed MLSE's instability |
-| Partial posterior | `e6_partial_ported.py` | Pilot-budget crossover: Viterbi leads at 20 pilots and trails at 10 at the measured 10-dB point; MLP is pilot-free and flat |
+| Partial posterior | `e6_partial_ported.py` | Pilot-budget crossover at 10 dB: Viterbi leads at 20 pilots, is not resolved from the MLP at 10 and trails at 5; MLP is pilot-free and flat |
 | Complexity | `e6_complexity_ported.py` | Joint-trellis Viterbi cost grows as $M^L$ (with real taps a square QAM trellis factorizes exactly into two $\sqrt{M}$-ary trellises, $2M^{L/2}$ branch metrics); the relay's cost is constant **for a fixed architecture** (~330 flops/sym) and 30–90× faster in wall-clock. Holding the window fixed as memory grows is a choice, not a law: spanning longer memory generally widens the window, and the relay's cost then grows roughly linearly in it |
 
 **Bottom line (H5):** the tested learned relay improves on specified AF/DF or mismatched baselines. No resolved advantage over matched MLSE is demonstrated. Training-family dependence, measurement endpoint, and architecture-specific cost remain part of the claim.
@@ -281,7 +281,7 @@ Run the whole suite with `pytest`.
 
 ## Appendix — Proof of Claims
 
-Each headline claim of the unknown-channel study, verified against theory and primary literature. The channel used throughout is the normalized 3-tap FIR $h = [1, 0.7, 0.5]/\lVert\cdot\rVert \approx [0.758, 0.531, 0.379]$ (`e6_viterbi_ported.py`).
+Each headline claim of the unknown-channel study, verified against theory and primary literature. The fixed-ISI channel is the normalized 3-tap FIR $h = [1, 0.7, 0.5]/\lVert\cdot\rVert \approx [0.758, 0.531, 0.379]$ (`e6_viterbi_ported.py`).
 
 ### Claim 1 — Local bit-MAP is not an end-to-end relay benchmark
 

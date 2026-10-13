@@ -101,7 +101,7 @@ REGISTRY = {
         ["eq:slicer-floor", "prose: closed-form slicer BER table"]),
     "E6 unknown ISI (S1-S4)": (
         "e6_sim_ported.py", ["e6_unknown_channel_results/e6_sim_ported_results.npy"],
-        ["tbl:tableE6"]),
+        ["tbl:tableE6", "prose:nlbias (Sec. 6.2, nonlinear-bias setup S3)"]),
     "E6 Viterbi AWGN consistency rerun": (
         "e6_viterbi_codex_consistency.py",
         ["e6_unknown_channel_results/codex_viterbi_consistency_awgn.npy",
@@ -127,7 +127,8 @@ REGISTRY = {
         ["tbl:tableE6qpsk"]),
     "Minimum relay size, 9 channels": (
         "mlp_min_size_all_channels.py", ["results/mlp_min_size_all_channels.json"],
-        ["tbl:table-minsize", "fig:minsize-crossover", "fig:minsize-budget"]),
+        ["tbl:table-minsize", "fig:minsize-crossover", "fig:minsize-budget",
+         "tbl:mmse-baseline learned-relay column", "prose:mamba-lookahead (tap energies)"]),
     "Minimum size, window x depth": (
         "mlp_min_size_bisect.py", ["results/mlp_min_size_bisect.json"],
         ["prose: depth 1-3, window 1-7"]),
@@ -145,7 +146,25 @@ REGISTRY = {
         ["tbl:mmse-baseline", "prose: MMSE monotonicity by tap count"]),
     "Sequence models on memory": (
         "seq_models_on_memory.py", ["results/seq_models_on_memory.json"],
-        ["tbl:seq-on-memory"]),
+        ["tbl:seq-on-memory", "prose:seq-rerun (Table 6.7 dagger note and QPSK margin)"]),
+    "Mamba readout on memory: centre control and full window": (
+        "seq_models_on_memory_readout.py", ["results/seq_models_on_memory_readout.json"],
+        ["prose:seq-rerun (Sec. 6.4.2 full-window readout; Mamba rows of the rerun)"]),
+    "Mamba readout on memory: bidirectional": (
+        "seq_models_on_memory_bidirectional.py",
+        ["results/seq_models_on_memory_bidirectional.json"],
+        ["prose:seq-rerun (Sec. 6.4.2 bidirectional readout)"]),
+    "Sequence models on memory: MLP/Transformer rerun": (
+        "seq_models_on_memory_rerun_controls.py",
+        ["results/seq_models_on_memory_rerun_controls.json"],
+        ["prose:seq-rerun (Sec. 6.4.2 rerun spreads, MLP and Transformer rows)"]),
+    "Sequence models on memory: seeded-retraining repeat": (
+        "seq_models_on_memory_repeat.py", ["results/seq_models_on_memory_repeat.json"],
+        ["prose:seq-rerun (Sec. 6.4.2 cross-machine shift)"]),
+    "Sequence models on memory: retraining fingerprints": (
+        "seq_models_on_memory_repeat_probe.py",
+        ["results/seq_models_on_memory_repeat_probe.jsonl"],
+        ["prose:seq-rerun (Sec. 6.4.2 bit-for-bit repeats on one machine)"]),
     "Joint latency/memory": (
         "joint_latency_memory.py", ["results/joint_latency_memory.json"],
         ["tbl:joint-latency"]),
