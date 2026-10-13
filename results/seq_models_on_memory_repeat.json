@@ -1,0 +1,76 @@
+{
+  "description": "Is sequence-on-memory training deterministic within one environment?",
+  "snr_db": [
+    0,
+    4,
+    8,
+    12,
+    16,
+    20
+  ],
+  "git_rev": "1f574015e1979f986b59fa881823466ef23f9438",
+  "torch": "2.14.1+cu130",
+  "torch_threads": 4,
+  "cases": [
+    {
+      "arch": "MLP-3K",
+      "channel": "isi",
+      "seed": 0,
+      "ber": [
+        0.20127,
+        0.0678425,
+        0.008257500000000001,
+        0.0002225,
+        0.0,
+        0.0
+      ],
+      "db": 1.9235777454876644,
+      "committed_rerun_file": "results/seq_models_on_memory_rerun_controls.json",
+      "committed_rerun_db": 1.9235777454876644,
+      "identical_to_committed_rerun": true,
+      "published_db": 2.364968486574748,
+      "identical_to_published": false,
+      "seconds": 10
+    },
+    {
+      "arch": "Mamba-S6-3K",
+      "channel": "isi",
+      "seed": 1,
+      "ber": [
+        0.22965249999999998,
+        0.09965500000000001,
+        0.02647,
+        0.0031025,
+        6.749999999999999e-05,
+        0.0
+      ],
+      "db": 4.10348024514597,
+      "committed_rerun_file": "results/seq_models_on_memory_readout.json",
+      "committed_rerun_db": 4.316045819252492,
+      "identical_to_committed_rerun": false,
+      "published_db": 5.4467576828513415,
+      "identical_to_published": false,
+      "seconds": 49
+    },
+    {
+      "arch": "Transformer-3K",
+      "channel": "isi_complex",
+      "seed": 2,
+      "ber": [
+        0.31206,
+        0.17472,
+        0.061035000000000006,
+        0.011327499999999999,
+        0.00102,
+        2.5e-05
+      ],
+      "db": 5.134650427856291,
+      "committed_rerun_file": "results/seq_models_on_memory_rerun_controls.json",
+      "committed_rerun_db": 4.245754382939291,
+      "identical_to_committed_rerun": false,
+      "published_db": 5.980361638523528,
+      "identical_to_published": false,
+      "seconds": 114
+    }
+  ]
+}

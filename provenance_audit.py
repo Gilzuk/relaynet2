@@ -157,6 +157,9 @@ REGISTRY = {
         "seq_models_on_memory_rerun_controls.py",
         ["results/seq_models_on_memory_rerun_controls.json"],
         ["not in the thesis: same-environment controls for the A2 check"]),
+    "Sequence models on memory: seeded-retraining repeat": (
+        "seq_models_on_memory_repeat.py", ["results/seq_models_on_memory_repeat.json"],
+        ["not in the thesis: determinism check for the A2 rerun"]),
     "Joint latency/memory": (
         "joint_latency_memory.py", ["results/joint_latency_memory.json"],
         ["tbl:joint-latency"]),

@@ -1,0 +1,6 @@
+MLP-3K          isi          seed 0: repeat +1.92 dB, committed rerun +1.92 (identical BER: True), published +2.36 (identical BER: False)   [10s]
+Mamba-S6-3K     isi          seed 1: repeat +4.10 dB, committed rerun +4.32 (identical BER: False), published +5.45 (identical BER: False)   [49s]
+Transformer-3K  isi_complex  seed 2: repeat +5.13 dB, committed rerun +4.25 (identical BER: False), published +5.98 (identical BER: False)   [114s]
+
+saved results/seq_models_on_memory_repeat.json
+exit 0
