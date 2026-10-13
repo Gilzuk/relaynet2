@@ -4,3 +4,8 @@ causality self-check (max output change when the 5 samples after the centre move
 
 === composite (bpsk, baseline MLSE; max |baseline - published| = 0.0) ===
   Mamba-S6-3K  readout=center dB vs MLSE:  -1.54   -1.49   -1.55   best -1.55  spread 0.06   (published centre best -1.56)   [139s]
+  Mamba-S6-3K  readout=last   dB vs MLSE:  +8.20   best +8.20  spread 0.00   [134s]
+  Mamba2-3K    readout=center dB vs MLSE:  -1.46   -1.48   -1.46   best -1.48  spread 0.03   (published centre best -1.60)   [204s]
+  Mamba2-3K    readout=last   dB vs MLSE:    [212s]
+
+saved results/seq_models_on_memory_readout.json

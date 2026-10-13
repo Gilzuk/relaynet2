@@ -146,6 +146,17 @@ REGISTRY = {
     "Sequence models on memory": (
         "seq_models_on_memory.py", ["results/seq_models_on_memory.json"],
         ["tbl:seq-on-memory"]),
+    "Mamba readout on memory: centre control and full window": (
+        "seq_models_on_memory_readout.py", ["results/seq_models_on_memory_readout.json"],
+        ["not in the thesis: audit A2 look-ahead check, decision pending"]),
+    "Mamba readout on memory: bidirectional": (
+        "seq_models_on_memory_bidirectional.py",
+        ["results/seq_models_on_memory_bidirectional.json"],
+        ["not in the thesis: audit A2 look-ahead check, decision pending"]),
+    "Sequence models on memory: MLP/Transformer rerun": (
+        "seq_models_on_memory_rerun_controls.py",
+        ["results/seq_models_on_memory_rerun_controls.json"],
+        ["not in the thesis: same-environment controls for the A2 check"]),
     "Joint latency/memory": (
         "joint_latency_memory.py", ["results/joint_latency_memory.json"],
         ["tbl:joint-latency"]),
