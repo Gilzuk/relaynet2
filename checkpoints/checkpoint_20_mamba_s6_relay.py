@@ -172,9 +172,20 @@ class MambaRelay(nn.Module):
     
     def __init__(self, window_size=11, d_model=32, d_state=16, num_layers=2,
                  output_activation="tanh", use_input_norm=False, clip_range=None, in_channels=1,
-                 num_classes=1):
+                 num_classes=1, readout="center"):
         super(MambaRelay, self).__init__()
-        
+
+        # Where the causal scan is read. "center" (the published configuration)
+        # reads it at the window centre, so the decision on the centre symbol
+        # sees only the samples up to it. "last" reads it after the scan has
+        # consumed the whole window. "bidirectional" also scans the reversed
+        # window and averages the two centre states (shared weights, so the
+        # parameter count is unchanged), so both sides of the centre count.
+        if readout not in ("center", "last", "bidirectional"):
+            raise ValueError(f"readout must be 'center', 'last' or 'bidirectional', got {readout!r}")
+        if readout == "bidirectional" and window_size % 2 == 0:
+            raise ValueError("readout='bidirectional' needs an odd window")
+        self.readout = readout
         self.window_size = window_size
         self.d_model = d_model
         self.use_input_norm = use_input_norm
@@ -235,21 +246,17 @@ class MambaRelay(nn.Module):
         torch.Tensor
             Output of shape (batch_size, 1)
         """
-        # Project input to d_model dimensions
         x_raw = x
-        x = self.input_proj(x)  # (batch, window_size, d_model)
-        
-        # Optional input normalisation
-        if self.use_input_norm:
-            x = self.input_norm(x)
-        
-        # Pass through Mamba blocks
-        for block in self.blocks:
-            x = block(x)
-        
-        # Take the middle token (center of window)
         center_idx = self.window_size // 2
-        x = x[:, center_idx, :]  # (batch, d_model)
+        if self.readout == "bidirectional":
+            # A scan over the window and one over the reversed window, both read
+            # at the centre and averaged; the residual uses the centre sample.
+            x = 0.5 * (self._scan(x)[:, center_idx, :]
+                       + self._scan(torch.flip(x, dims=[1]))[:, center_idx, :])
+        else:
+            # Read the scan at the window centre, or after the whole window
+            # (readout="last"); the residual below always uses the centre sample.
+            x = self._scan(x)[:, center_idx if self.readout == "center" else -1, :]
         
         # Project to output
         output = self.output_proj(x)  # (batch, num_classes) or (batch, 1)
@@ -259,13 +266,23 @@ class MambaRelay(nn.Module):
             return output + x_raw[:, center_idx, 0:1]
         return output
 
+    def _scan(self, x):
+        """Input projection, optional input normalisation and the Mamba blocks."""
+        x = self.input_proj(x)  # (batch, window_size, d_model)
+        if self.use_input_norm:
+            x = self.input_norm(x)
+        for block in self.blocks:
+            x = block(x)
+        return x
+
 class MambaRelayWrapper(Relay):
     """Wrapper for Mamba relay."""
 
     def __init__(self, target_power=1.0, window_size=11, d_model=32, d_state=16, num_layers=2, prefer_gpu=False,
                  output_activation="tanh", use_input_norm=False, clip_range=None, in_channels=1,
-                 classify=False, training_modulation="bpsk", classify_2d=False):
+                 classify=False, training_modulation="bpsk", classify_2d=False, readout="center"):
         self.target_power = target_power
+        self.readout = readout
         self.window_size = window_size
         self.output_activation = output_activation
         self.use_input_norm = use_input_norm
@@ -313,6 +330,7 @@ class MambaRelayWrapper(Relay):
             clip_range=clip_range,
             in_channels=in_channels,
             num_classes=self.num_classes,
+            readout=readout,
         ).to(self.device)
         
         self.is_trained = False

@@ -469,3 +469,19 @@ tight cross-platform floating-point tolerance. Commit `6e1765d` passed GitHub
 CI run 490. Only the composite-AF comparison was newly run; historical result
 arrays were preserved. The generated table provenance ledger identifies
 `6e1765d` as the source/data commit.
+
+## 2026-10-13: Mamba look-ahead rerun (committee-audit A2), not in the thesis
+
+Branch `exp/mamba-full-window-readout`. Mamba-S6 and Mamba-2 were rerun on the three Table 6.7 channels
+with the centre readout (control), the full-window ("last") readout and a bidirectional readout. MLP
+and Transformer were rerun in the same environment.
+
+- **Look-ahead.** Look-ahead does not rescue Mamba. The MLP leads every architecture and readout on
+  every channel, so the Table 6.7 conclusion stands.
+- **Reproducibility.** The published per-seed values and spreads on ISI do not reproduce. Seeded
+  retraining is bit-exact on one machine and differs across machines.
+- **Mamba-2 at QPSK.** The published cell selects a seed that misses 1e-3.
+
+Thesis integration awaits the author: `docs/mamba_lookahead_rerun_2026-10-13.md`. The tests pass at
+347, and the provenance audit is clean with the five new experiments registered.
+

@@ -1,0 +1,14 @@
+
+=== isi (bpsk, baseline MLSE; max |baseline - published| = 0.0) ===
+  MLP-3K          dB vs MLSE:  +1.92   +2.31   +2.05   best +1.92  spread 0.38   (published best +1.97)   [23s]
+  Transformer-3K  dB vs MLSE:  +4.60   +3.84   +3.70   best +3.70  spread 0.90   (published best +3.52)   [136s]
+
+=== isi_complex (qpsk, baseline MLSE; max |baseline - published| = 0.0) ===
+  MLP-3K          dB vs MLSE:  +2.54   +2.62   +2.44   best +2.44  spread 0.18   (published best +2.58)   [34s]
+  Transformer-3K  dB vs MLSE:  +5.19   +5.56   +4.25   best +4.25  spread 1.31   (published best +5.96)   [227s]
+
+=== composite (bpsk, baseline MLSE; max |baseline - published| = 0.0) ===
+  MLP-3K          dB vs MLSE:  -2.01   -2.07   -2.08   best -2.08  spread 0.06   (published best -2.08)   [20s]
+  Transformer-3K  dB vs MLSE:  -1.76   -1.85   -1.82   best -1.85  spread 0.09   (published best -1.76)   [131s]
+
+saved results/seq_models_on_memory_rerun_controls.json
