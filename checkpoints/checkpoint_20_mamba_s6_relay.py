@@ -178,9 +178,13 @@ class MambaRelay(nn.Module):
         # Where the causal scan is read. "center" (the published configuration)
         # reads it at the window centre, so the decision on the centre symbol
         # sees only the samples up to it. "last" reads it after the scan has
-        # consumed the whole window, so the samples after the centre count too.
-        if readout not in ("center", "last"):
-            raise ValueError(f"readout must be 'center' or 'last', got {readout!r}")
+        # consumed the whole window. "bidirectional" also scans the reversed
+        # window and averages the two centre states (shared weights, so the
+        # parameter count is unchanged), so both sides of the centre count.
+        if readout not in ("center", "last", "bidirectional"):
+            raise ValueError(f"readout must be 'center', 'last' or 'bidirectional', got {readout!r}")
+        if readout == "bidirectional" and window_size % 2 == 0:
+            raise ValueError("readout='bidirectional' needs an odd window")
         self.readout = readout
         self.window_size = window_size
         self.d_model = d_model
@@ -242,22 +246,17 @@ class MambaRelay(nn.Module):
         torch.Tensor
             Output of shape (batch_size, 1)
         """
-        # Project input to d_model dimensions
         x_raw = x
-        x = self.input_proj(x)  # (batch, window_size, d_model)
-        
-        # Optional input normalisation
-        if self.use_input_norm:
-            x = self.input_norm(x)
-        
-        # Pass through Mamba blocks
-        for block in self.blocks:
-            x = block(x)
-        
-        # Read the scan at the window centre, or after the whole window
-        # (readout="last"); the residual below always uses the centre sample.
         center_idx = self.window_size // 2
-        x = x[:, center_idx if self.readout == "center" else -1, :]  # (batch, d_model)
+        if self.readout == "bidirectional":
+            # A scan over the window and one over the reversed window, both read
+            # at the centre and averaged; the residual uses the centre sample.
+            x = 0.5 * (self._scan(x)[:, center_idx, :]
+                       + self._scan(torch.flip(x, dims=[1]))[:, center_idx, :])
+        else:
+            # Read the scan at the window centre, or after the whole window
+            # (readout="last"); the residual below always uses the centre sample.
+            x = self._scan(x)[:, center_idx if self.readout == "center" else -1, :]
         
         # Project to output
         output = self.output_proj(x)  # (batch, num_classes) or (batch, 1)
@@ -266,6 +265,15 @@ class MambaRelay(nn.Module):
         if self.num_classes <= 1:
             return output + x_raw[:, center_idx, 0:1]
         return output
+
+    def _scan(self, x):
+        """Input projection, optional input normalisation and the Mamba blocks."""
+        x = self.input_proj(x)  # (batch, window_size, d_model)
+        if self.use_input_norm:
+            x = self.input_norm(x)
+        for block in self.blocks:
+            x = block(x)
+        return x
 
 class MambaRelayWrapper(Relay):
     """Wrapper for Mamba relay."""

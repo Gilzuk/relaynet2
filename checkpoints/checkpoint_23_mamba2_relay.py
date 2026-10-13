@@ -294,9 +294,13 @@ class Mamba2Relay(nn.Module):
                  num_classes=1, readout="center"):
         super().__init__()
         # Where the causal SSD output is read: "center" (the published
-        # configuration) or "last", after the whole window has been consumed.
-        if readout not in ("center", "last"):
-            raise ValueError(f"readout must be 'center' or 'last', got {readout!r}")
+        # configuration), "last" (after the whole window), or "bidirectional"
+        # (the window and its reverse, both read at the centre and averaged,
+        # with shared weights).
+        if readout not in ("center", "last", "bidirectional"):
+            raise ValueError(f"readout must be 'center', 'last' or 'bidirectional', got {readout!r}")
+        if readout == "bidirectional" and window_size % 2 == 0:
+            raise ValueError("readout='bidirectional' needs an odd window")
         self.readout = readout
         self.window_size = window_size
         self.d_model = d_model
@@ -352,17 +356,25 @@ class Mamba2Relay(nn.Module):
         (batch, 1)
         """
         x_raw = x
+        center = self.window_size // 2
+        if self.readout == "bidirectional":
+            x = 0.5 * (self._scan(x)[:, center, :]
+                       + self._scan(torch.flip(x, dims=[1]))[:, center, :])
+        else:
+            x = self._scan(x)[:, center if self.readout == "center" else -1, :]   # -> (B, d_model)
+        out = self.output_proj(x)
+        if self.num_classes <= 1:
+            return out + x_raw[:, center, 0:1]
+        return out
+
+    def _scan(self, x):
+        """Input projection, optional input normalisation and the SSD blocks."""
         x = self.input_proj(x)           # -> (B, W, d_model)
         if self.use_input_norm:
             x = self.input_norm(x)
         for block in self.blocks:
             x = block(x)
-        center = self.window_size // 2
-        x = x[:, center if self.readout == "center" else -1, :]   # -> (B, d_model)
-        out = self.output_proj(x)
-        if self.num_classes <= 1:
-            return out + x_raw[:, center, 0:1]
-        return out
+        return x
 
 
 # ======================================================================

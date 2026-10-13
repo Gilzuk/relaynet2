@@ -6,3 +6,6 @@ causality self-check (max output change when the 5 samples after the centre move
   Mamba-S6-3K  readout=center dB vs MLSE:  +4.44   +4.32   +4.42   best +4.32  spread 0.12   (published centre best +4.30)   [144s]
   Mamba-S6-3K  readout=last   dB vs MLSE:    [142s]
   Mamba2-3K    readout=center dB vs MLSE:  +4.80   +4.85   +5.03   best +4.80  spread 0.23   (published centre best +4.55)   [213s]
+  Mamba2-3K    readout=last   dB vs MLSE:    [215s]
+
+saved results/seq_models_on_memory_readout.json
