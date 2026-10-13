@@ -1,6 +1,34 @@
 # Active Context (update this file first, every session)
 
-_Last updated: 2026-10-12_
+_Last updated: 2026-10-13_
+
+### Latest (2026-10-13): Mamba look-ahead rerun (audit A2), branch exp/mamba-full-window-readout
+
+The author chose "rerun, show results first": no thesis text changes until they decide. Summary
+and decisions: `docs/mamba_lookahead_rerun_2026-10-13.md`.
+
+- **Code.** Both Mamba relays take `readout=` ("center" default and bit-identical to before; "last";
+  "bidirectional", odd windows only). The parameter count is unchanged (3,027 / 3,004).
+- **Runs.** Five experiments are registered in `provenance_audit.py`, all labelled not in the thesis:
+  - `seq_models_on_memory_readout.py`, `_bidirectional.py`, `_rerun_controls.py` (MLP and Transformer
+    in the same run);
+  - `_repeat.py` and `_repeat_probe.py` (determinism).
+- **Look-ahead result.** Look-ahead does not help Mamba. The "last" readout fails to train (BER about
+  0.1 at 20 dB). The bidirectional readout is worse than the centre readout at every target on every
+  channel. The MLP still leads everywhere.
+- **Reproducibility result.** The published ISI spreads do not reproduce. Seeded training is bit-exact
+  on one machine but not across machines with the same software:
+  - Mamba-S6 seed 1 gave +4.32 on the earlier machine and +4.10 on the current one;
+  - the Transformer seed 2 at QPSK gave +4.25 and +5.13;
+  - the MLP was identical on both.
+- **New finding.** The published Table 6.7 cell Mamba-2 at QPSK, +4.69 (2.12), has as its best seed
+  one that never reaches 1e-3 (BER 1.8e-3 at 20 dB). Its penalty is scored over fewer targets. The
+  cell feeds the "2.11 dB" margin and the "Mamba-2 by 2.12 dB" spread claim in Sec. 6.4.2.
+- **Correction.** The first chat reading said the bidirectional readout "helps at QPSK". That is the
+  same artefact, and it is corrected in the summary.
+- **Waiting on the author.** Integrate or not; footnote or definition change for the Mamba-2 cell;
+  fold into #175 or a follow-up. #175 is still unmerged and awaiting approval.
+
 
 ### Latest (2026-10-12, pre-submission audit): #173 audited, not merged
 

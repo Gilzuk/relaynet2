@@ -160,6 +160,10 @@ REGISTRY = {
     "Sequence models on memory: seeded-retraining repeat": (
         "seq_models_on_memory_repeat.py", ["results/seq_models_on_memory_repeat.json"],
         ["not in the thesis: determinism check for the A2 rerun"]),
+    "Sequence models on memory: retraining fingerprints": (
+        "seq_models_on_memory_repeat_probe.py",
+        ["results/seq_models_on_memory_repeat_probe.jsonl"],
+        ["not in the thesis: same-machine repeats for the A2 determinism check"]),
     "Joint latency/memory": (
         "joint_latency_memory.py", ["results/joint_latency_memory.json"],
         ["tbl:joint-latency"]),
