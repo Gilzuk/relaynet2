@@ -47,9 +47,9 @@ the accompanying built artifact.
 ## Scope and main observations
 
 The canonical experiment is uncoded QPSK on a two-hop SISO i.i.d. Rayleigh link.
-DF matches or exceeds the tested learned relays from 6 dB upward. The learned
+DF matches or exceeds the tested learned relays from 6 dB upward. The feedforward
 relays' low-SNR advantage is over the implemented block-normalized AF; against
-a conventional variable-gain AF the 0 dB margin is 0.007. Separate studies
+a conventional variable-gain AF the MLP's 0 dB margin is 0.007. Separate studies
 examine selected ISI/composite channels, finite-pilot and blind receivers, and
 finite-length coded forwarding.
 

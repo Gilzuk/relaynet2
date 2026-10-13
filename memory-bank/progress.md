@@ -2,6 +2,8 @@ Session note (2026-10-12, independent audit): branch `fix/khina-independent-audi
 
 # Progress — E6 Porting Checklist
 
+Session note (2026-10-13, audit fixes): all committee-audit findings fixed on fix/committee-audit-findings (supersedes #174): ten-pilot wording, Mamba look-ahead disclosure, Sec. 7.1.3, Xavier init, Mamba blocks, Table 6.6 column sourced and verified, S3 reported, H2, FER numbers sourced, bib venues; 120 countable pages, verifier 689/0, 347 tests; awaiting approval.
+
 Session note (2026-10-13, committee audit): #173 merged (main 82875bc), mirror 748962e; committee-level audit written to docs/committee_audit_2026-10-13.md (7 substantive: ten-pilot lead unresolved in both abstracts, Mamba zero look-ahead, Sec. 7.1.3 Rayleigh training, Xavier init, Mamba block descriptions, Table 6.6 learned-relay column unsourced, H5 nonlinear bias unreported; plus 17 B and 23 C items). Report only; fixes await the author.
 
 Session note (2026-10-12, pre-submission audit): #173 audited (clean build, 119 countable pages, fonts embedded, bibliography complete, numbers consistent); five British spellings fixed; not merged pending approval; title-page date open.

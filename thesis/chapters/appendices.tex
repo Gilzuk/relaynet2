@@ -63,7 +63,7 @@ PyTorch (CUDA) \\
 \hline
 \end{tabularx}
 
-\caption[Relay models, objectives and parameter counts]{Comparison of relay models, training objectives, parameter counts, and implementations, as configured for the canonical comparison (\texttt{run\_experiments.py}; Section~\ref{sec:training-protocol})}
+\caption[Relay models, objectives and parameter counts]{Comparison of relay models, training objectives, parameter counts, and implementations, as configured for the canonical comparison (\texttt{run\_experiments.py}; Section~\ref{sec:training-protocol}), from which the cGAN was excluded on cost grounds}
 \label{tab:relay_comparison}
 \end{table}
 
@@ -71,7 +71,7 @@ PyTorch (CUDA) \\
 
 \subsection{Testing} The simulation framework carries 347 automated pytest tests in 24 test modules, covering channels, modulation, coding, relay strategies, weight save and load, simulation, statistics and the verification tooling. In the revision environment (Python 3.11.17, PyTorch 2.14) the full suite passed. The four tests that need the Mamba-2 module are skipped when it cannot be imported.
 
-\subsection{Reproducibility} Evaluation seeds are controlled for source-bit and noise generation. Training initialization was not consistently seeded for every original sequence-model checkpoint, so exact retraining of those models is not guaranteed; the later replicated sweeps report training-seed variation explicitly.
+\subsection{Reproducibility} Evaluation seeds are controlled for source-bit and noise generation. The canonical training never seeds PyTorch's weight initialization (Section~\ref{sec:training-protocol}), so the original checkpoints cannot be retrained exactly; the later replicated sweeps report training-seed variation explicitly.
 
 \paragraph{Provenance of the reported results.} Each reported result is associated with an experiment artifact in the source-code repository, using the experiment-specific budgets documented in the relevant section and ledger. Registered experiments are linked to their generating scripts and committed result files by \texttt{provenance\_audit.py}, and \texttt{verify\_thesis\_tables.py} checks a declared subset of numerical table cells against those files; neither covers every number, figure or prose statement (Appendix~\ref{sec:appendix-e-master-experiment-ledger}). Independent audit requires that repository at the archived revision identifier; the ledger below documents the claimed provenance but cannot by itself reproduce every table cell.
 
@@ -107,7 +107,7 @@ Adaptive modulation/coding (AMC) & QPSK, 16-QAM & Rayleigh & Tab.~\ref{tbl:table
 Capacity under a latency budget & QPSK, 16-QAM & Rayleigh & Tab.~\ref{tbl:table43} & \url{results/coded_latency_capacity.json} \\
 Unknown ISI (layer 2) & BPSK & AWGN (Hop 2) & Tab.~\ref{tbl:tableE6} & Historical AF/DF/MLP below 12~dB: \url{e6_sim_ported_results.npy}; fixed-budget companion \url{codex_isi_fixed_budget_validation.json}; Viterbi: \url{results/e6_matched_protocol.json} and \url{results/e6_matched_highsnr.json}. \\
 Flat-channel control & BPSK; DBPSK (phase) & Flat unknown Hop 1; comp.\ Rayleigh Hop 2 & Tab.~\ref{tbl:tableE6flat} & \url{e6_flat_ported_results.npy} \\
-Unknown ISI, QPSK generalization & QPSK & ISI + Rayleigh Hop 1; AWGN or Rayleigh Hop 2 & Tab.~\ref{tbl:tableE6qpsk}, Fig.~\ref{fig:figE6qpsk} & \url{e6_qpsk_unknown_channel_results.npy} \\
+Unknown ISI, QPSK generalization & QPSK & ISI + Rayleigh Hop 1; AWGN Hop 2 & Tab.~\ref{tbl:tableE6qpsk}, Fig.~\ref{fig:figE6qpsk} & \url{e6_qpsk_unknown_channel_results.npy} \\
 Composite impairment cascade & DBPSK & Fixed composite Hop 1; comp.\ Rayleigh Hop 2 & Fig.~\ref{fig:figE6comp} & \url{e6_composite_ported_results.npy}; AF replaced by \url{codex_composite_af_validation.json}. \\
 Partial posterior (pilot sweep) & DBPSK & Random composite Hop 1; comp.\ Rayleigh Hop 2 & Fig.~\ref{fig:e6_partial_pilot_budget} & \url{e6_partial_ported_results.npy} \\
 Blind channel (layer 4) & DBPSK & Random composite Hop 1; comp.\ Rayleigh Hop 2 & Fig.~\ref{fig:figE6blind} & \url{e6_blind_ported_results.npy} \\
@@ -158,7 +158,7 @@ coded & QPSK & The coded link of Section~\ref{sec:coded-block-df} & Zero-forced 
 \end{longtable}}
 
 \begin{longtable}[]{@{}llllllll@{}}
-\caption[Smallest relay per degradation budget]{Smallest relay meeting a given degradation budget against each scenario's own published relay (MLP-169, or MLP-756 for the coded row), written as parameters and window. Most memoryless rows settle at window~1, but flat gain and nonlinear bias require wider windows at the strictest budget; every evaluated three-tap row requires window~5 or~7 until a full decibel is conceded. A dash indicates that no smaller configuration meets that budget. Penalties follow the definition in Appendix~\ref{sec:appendix-g-channel-specs}}\label{tbl:table-minsize}\tabularnewline
+\caption[Smallest relay per degradation budget]{Smallest relay meeting a given degradation budget against the window-5, 169-parameter MLP retrained on each channel (the published MLP-756 for the coded row), written as parameters and window. Most memoryless rows settle at window~1, but flat gain and nonlinear bias require wider windows at the strictest budget; every three-tap row except the composite requires window~5 or~7 until a full decibel is conceded. A dash indicates that no smaller configuration meets that budget. Penalties follow the definition in Appendix~\ref{sec:appendix-g-channel-specs}}\label{tbl:table-minsize}\tabularnewline
 \toprule\noalign{}
 Channel & Taps & $\le$0~dB & $\le$0.1~dB & $\le$0.25~dB & $\le$0.5~dB & $\le$1~dB & $\le$2~dB \\
 \midrule\noalign{}
@@ -192,7 +192,7 @@ coded & code & 372p w9 & 244p w5 & 244p w5 & 18p w1 & 18p w1 & 18p w1 \\
 \begin{figure}[htbp]
 \centering
 \pandocbounded{\includegraphics[width=\linewidth,height=0.8\textheight,keepaspectratio]{results/minsize_vs_degradation_budget.png}}
-\caption[Smallest relay per degradation budget]{Smallest relay meeting a given degradation budget against MLP-169, drawn as a step function because the horizontal axis is a budget the designer chooses rather than a measured quantity. Most memoryless cases reach four parameters once a small degradation is allowed, while strict zero-degradation budgets require larger models for flat gain and nonlinear bias; the three-tap channels need between 21 and 145 depending on the permitted degradation}\label{fig:minsize-budget}
+\caption[Smallest relay per degradation budget]{Smallest relay meeting a given degradation budget against MLP-169, drawn as a step function because the horizontal axis is a budget the designer chooses rather than a measured quantity. Most memoryless cases reach four parameters once a small degradation is allowed, while strict zero-degradation budgets require larger models for flat gain and nonlinear bias; the three-tap channels need between 6 and 145 depending on the permitted degradation}\label{fig:minsize-budget}
 \end{figure}
 
 
@@ -251,7 +251,7 @@ Eight Transformer initializations are shown in the following figures: seven clus
 
 \section{Verification of Headline Claims}\label{sec:appendix-claim-verification}
 
-Each headline claim of Chapter~\ref{sec:unknown-channels} is restated here with the argument or derivation that supports it and the primary reference against which it was checked. The channel used throughout is the normalized 3-tap FIR $\mathbf{h} = [1, 0.7, 0.5]/\lVert\cdot\rVert \approx [0.758, 0.531, 0.379]$.
+Each headline claim of Chapter~\ref{sec:unknown-channels} is restated here with the argument or derivation that supports it and the primary reference against which it was checked. The fixed-ISI channel is the normalized 3-tap FIR $\mathbf{h} = [1, 0.7, 0.5]/\lVert\cdot\rVert \approx [0.758, 0.531, 0.379]$.
 
 \subsection{Matched-receiver bounds and the empirical MLSE comparison}
 
@@ -268,7 +268,7 @@ An unrestricted joint-symbol MLSE implementation maintains $M^{L-1}$ states and 
 
 CMA is a blind equalizer for constant-modulus signals \cite{Godard1980SelfRecovering,TreichlerAgee1983CMA}. The measured random composite family also contains nonlinearity and phase uncertainty, so the zeros of one fixed linear tap vector do not establish invertibility or convergence for the whole cascade. The observed CMA and decision-directed MLSE results are implementation-specific. Documented convergence and decision-feedback issues \cite{Ding1991IllConvergence,RaheliPolydorosTzou1995PSP} motivate possible explanations but do not identify the cause of these measurements.
 
-\subsection{The pilot-budget crossover: between twenty and ten pilots, with severe degradation at five}
+\subsection{The pilot-budget crossover: resolved between twenty and five pilots, with severe degradation at five}
 
 A three-tap least-squares fit can be identifiable from five pilots if its design matrix has full column rank. For a correctly specified linear model with white noise, its covariance is $\sigma^2(\mathbf X^H\mathbf X)^{-1}$ \cite{Kay1993Estimation}; the simplification $\sigma^2 L/N_p$ additionally requires suitably normalized orthogonal pilot columns. The nonlinear composite channel need not satisfy that model. The observed small-pilot degradation is therefore not a measured rank threshold or an unbounded-error theorem. Other estimators, including meta-learned demodulation \cite{ParkSimeone2021MetaDemod}, are not benchmarked here.
 
@@ -298,7 +298,7 @@ Study (script) & Source and Hop 1 & Redraw & Hop 2 \\
 \endlastfoot
 Fixed ISI ({\footnotesize\texttt{e6\_\allowbreak{}sim\_\allowbreak{}ported.py}}, {\footnotesize\texttt{e6\_\allowbreak{}matched\_\allowbreak{}protocol.py}}) & BPSK; $y = h \ast x + n$, $h \propto [1, 0.7, 0.5]$ & Fixed & AWGN \\
 Nonlinear bias ({\footnotesize\texttt{e6\_\allowbreak{}sim\_\allowbreak{}ported.py}}) & BPSK; $y = \tanh(1.5x) + 0.5 + n$ & Fixed & AWGN \\
-QPSK ISI ({\footnotesize\texttt{e6\_\allowbreak{}qpsk\_\allowbreak{}unknown\_\allowbreak{}channel.py}}) & QPSK; the fixed-ISI taps, then a compensated Rayleigh magnitude $|h_1|$ per symbol, then complex AWGN & Taps fixed; $|h_1|$ per symbol & AWGN or compensated Rayleigh \\
+QPSK ISI ({\footnotesize\texttt{e6\_\allowbreak{}qpsk\_\allowbreak{}unknown\_\allowbreak{}channel.py}}) & QPSK; the fixed-ISI taps, then a compensated Rayleigh magnitude $|h_1|$ per symbol, then complex AWGN & Taps fixed; $|h_1|$ per symbol & AWGN (a compensated-Rayleigh run is stored, not reported) \\
 Flat gain ({\footnotesize\texttt{e6\_\allowbreak{}flat\_\allowbreak{}ported.py}}) & BPSK; $y = gx + n$, $g \sim \mathcal{U}[0.3, 2.0]$ & Per trial of $10^5$ bits & Compensated Rayleigh, see below \\
 Branch asymmetry ({\footnotesize\texttt{e6\_\allowbreak{}flat\_\allowbreak{}ported.py}}) & BPSK; $y = a_{+} + n$ if $x=+1$, $y = -a_{-} + n$ if $x=-1$, with $a_{+}, a_{-} \sim \mathcal{U}[0.6, 1.4]$ independent & Per trial of $10^5$ bits & As flat gain \\
 Flat phase ({\footnotesize\texttt{e6\_\allowbreak{}flat\_\allowbreak{}ported.py}}) & DBPSK; $y = e^{j\theta}s + n$, $\theta \sim \mathcal{U}[0, 2\pi)$, complex AWGN & Per trial of $10^5$ bits & As flat gain \\
@@ -313,7 +313,7 @@ Coded memory ({\footnotesize\texttt{joint\_\allowbreak{}latency\_\allowbreak{}me
 
 \paragraph{Pilots.} Pilot symbols are the first $N_p$ transmitted symbols of a trial or block, which are known to the estimator. The estimator fits three complex taps by least squares to a linear model, so it does not model the amplifier. In the fixed-composite study ($N_p = 200$) the decoded pilot region is scored together with the payload; in the pilot-budget sweep it is excluded, and in its block-length panel every block of $L$ symbols carries $10$ pilots and its own channel draw.
 
-\paragraph{Windows and their boundaries.} The learned relays of the uncoded Chapter~\ref{sec:unknown-channels} studies read a window of $W = 11$ samples centered on the decided symbol (the coded-memory study sweeps $W$ from $1$ to $21$); on complex channels the $I$ and $Q$ windows are concatenated into $2W$ inputs. At both ends of a trial the window is completed with zeros. The canonical MLP of Chapter~\ref{sec:experiments} repeats the edge sample instead.
+\paragraph{Windows and their boundaries.} The learned relays of the uncoded Chapter~\ref{sec:unknown-channels} studies read a window of $W = 11$ samples centered on the decided symbol (the coded-memory study sweeps $W$ from $1$ to $21$, the size sweep from $1$ to $7$, and the two Mamba relays of Section~\ref{sec:sequence-on-memory} use only the causal half of theirs); on complex channels the $I$ and $Q$ windows are concatenated into $2W$ inputs. At both ends of a trial the window is completed with zeros. The canonical MLP of Chapter~\ref{sec:experiments} repeats the edge sample instead.
 
 \paragraph{DBPSK.} The source bits $x_i \in \{\pm1\}$ are differentially encoded as $s_i = s_{i-1}x_i$. The learned relay is trained with the information bit $x_i$ as its target, so it estimates $x_i$ directly rather than the differential symbol; its real output, scaled to unit power, is forwarded as a BPSK signal, and the destination decides on the sign of its real part without differential decoding. The DF relay performs differential detection, $\hat{x}_i = \operatorname{sign}\operatorname{Re}\{y_i y_{i-1}^{*}\}$, and forwards $\hat{x}_i$; AF forwards the complex observation and the destination performs the differential detection. The first bit, the differential reference, is excluded from scoring, except for the learned relay in the fixed-composite study, where it is scored (one bit per $10^{5}$).
 
@@ -322,6 +322,7 @@ Coded memory ({\footnotesize\texttt{joint\_\allowbreak{}latency\_\allowbreak{}me
 \paragraph{Single-number SNR penalties.} All required-SNR penalties use one definition, implemented in \texttt{ber\_metrics.py}. For a BER target $t$, the SNR at which a curve reaches $t$ is found by linear interpolation of $\ln \mathrm{BER}$ against SNR in dB between the two measured points that bracket $t$, taking the last such crossing. A zero-error point cannot be interpolated in log scale: if the preceding point lies above $t$, the crossing is placed at the zero-error point's SNR, which can only overstate the SNR the curve needs. The penalty at $t$ is the relay's SNR minus the reference's, positive when the relay needs more. A target that either curve does not bracket is dropped rather than extrapolated. Tables~\ref{tbl:mmse-baseline}, \ref{tbl:seq-on-memory}, \ref{tbl:table-minsize}, \ref{tbl:seed-spread} and~\ref{tbl:seed-spread-3k} report one number per configuration: the largest penalty over the reachable targets among $10^{-1}$, $10^{-2}$ and $10^{-3}$, or a dash when none is reachable. Their aggregation over training seeds differs, as follows.
 \begin{itemize}
 \tightlist
+\item Table~\ref{tbl:mmse-baseline}: the equalizer has no training seed; the learned-relay column is the best of three seeds of the best size-sweep configuration.
 \item Table~\ref{tbl:seq-on-memory}: the best of three seeds, with the spread in brackets.
 \item Table~\ref{tbl:table-minsize}: the candidate's worst-of-seeds BER at each SNR, against the reference relay's mean-of-seeds curve.
 \item Tables~\ref{tbl:seed-spread} and~\ref{tbl:seed-spread-3k}: the largest minus the smallest per-seed penalty.

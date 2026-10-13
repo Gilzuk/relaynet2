@@ -203,7 +203,7 @@ def plot_rate_adaptation():
     ax.text(snrs[len(snrs) // 2], 4.05, "16-QAM raw rate (4 bits/symbol)",
             fontsize=8.5, color="0.4", ha="center")
     ax.set_xlabel("SNR (dB)", fontsize=13)
-    ax.set_ylabel("Goodput  $R\\,(1-\\mathrm{FER})$  [info bits/symbol]", fontsize=13)
+    ax.set_ylabel("Goodput  $\\eta\\,(1-\\mathrm{FER})$  [info bits/symbol]", fontsize=13)
     ax.set_title("Link-adaptation envelope: best MCS chosen per SNR point", fontsize=14)
     ax.grid(True, alpha=0.3)
     ax.set_ylim(0, 4.35)

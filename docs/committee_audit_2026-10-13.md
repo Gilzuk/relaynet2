@@ -37,6 +37,48 @@ approval. Any fix that changes what the thesis renders must rebuild `thesis/main
 
 Locations give `file:line` on main 82875bc and the rendered number (folio page).
 
+## Outcome: fixes applied (branch `fix/committee-audit-findings`)
+
+All findings were acted on in one PR, on the author's instruction "fix thesis".
+
+**Build after the fixes:**
+
+- 136 PDF pages, **120 countable** (the limit is 120; it was 119).
+- 0 errors, undefined or multiply defined references, overfull boxes or missing glyphs.
+- BibTeX: 0 warnings, 52 entries. The LeCun entry is no longer cited.
+- Verifier: **689 cells** (11 new checks), 0 inconsistencies.
+- 347 tests pass, and `provenance_audit.py` is clean.
+
+| ID | Outcome |
+|---|---|
+| A1 | Fixed in both abstracts, Table 6.1, Sec. 6.3, Ch. 8 finding 9, the App. 9.5 heading and the README. The 10-pilot 95% interval (±0.0108) is now stated and checked. |
+| A2 | Disclosed in Remark 4.1, the look-ahead item, the Transformer rationale, Ch. 2, Sec. 6.4.2 and App. 9.6. The Sec. 6.4.2 headline is qualified, the energy shares (42.5% and 34%) are checked from the taps, and nothing was rerun. |
+| A3 | Fixed: training is BPSK over AWGN; testing is over Rayleigh. |
+| A4 | Fixed: Xavier for the PyTorch relays, PyTorch's default for the VAE, √(2/n_in) for the NumPy Chapter 6 MLPs. |
+| A5 | Fixed: the Mamba-S6 and Mamba-2 blocks are described as implemented. |
+| A6 | Source found: each value is the best-seed penalty of the best size-sweep configuration (window 7: 433, 433 and 289 parameters). The caption now defines the column, App. 9.6 lists its aggregation, and the verifier recomputes it (3 cells). The numbers are unchanged. |
+| A7 | The nonlinear-bias result (S3, already committed) is now reported in Sec. 6.2: AF 0.0820, DF 0.0377, MLP 0.00108 at 8 dB, checked. H5 is kept; only "170-parameter" became "169–193 parameters". |
+| B1–B17 | Fixed as suggested. For B5, H2's title is now neutral ("DF leads at medium-to-high SNR") and its Table 8.1 verdict reads "Supported". |
+| C1–C22 | Fixed. C14 was more serious than first logged: 20.23% and 10.58% are in no committed file, so they now read 19.98% and 10.64%, the committed run of Table 5.7 (checked as `prose:coded-fer`). C18: 1.15 became 1.14 (the data give 1.1446). |
+| C23 | Tsai et al. now cite IEEE SiPS 2020 and Chen et al. IEEE WCNC 2024. The co-author name order ("Wu Yan" in one paper, "Yan Wu" in the other) follows each arXiv listing and is left for the author. |
+
+**Page budget.** To stay at 120, the new wording was kept short. Ch. 8's closing sentence listing untested items now points to Sec. 7.4, which lists the same items.
+
+**Consistency with earlier changes:**
+
+- **A4 reverses 7e3f933** (2026-09-14, terminology sweep B1). That commit changed "Xavier" to "the LeCun rule, not Xavier", stating that "the label was wrong, not the code". The code uses `xavier_uniform_`/`xavier_normal_`, so the original word was right and its formula wrong.
+- **B5 adjusts 9dde972** (2026-09-11, examiner review). That review renamed H2 from "DF dominance" to "DF leads the evaluated symbol-wise classical relays". The new title keeps the softening (no "dominance") but drops a scope that contradicted H2's own statement.
+- **No other fix contradicts an earlier change.** The rest complete earlier corrections:
+  - A3 finishes the training-description fix of the Khina round;
+  - B3 and B4 follow c5f9451's "feedforward learned relays" logic;
+  - B15 finishes #169's single-AWGN Fig. 6.3;
+  - B16 matches the seeding sentence #173 added.
+- **Reply** (drafted, not sent), updated:
+  - comment 1 lists the two new code mismatches;
+  - comment 2 notes the S3 result;
+  - comment 3 gives the margin as the MLP's;
+  - the opening gives 120 pages and 689 cells.
+
 ## Summary
 
 | ID | Sev. | Where | Finding | Fix |

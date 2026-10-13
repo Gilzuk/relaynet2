@@ -13,6 +13,40 @@ produced them; it does not cover every number or figure.
 
 ---
 
+## [Committee-audit fixes] — 2026-10-13
+
+Every finding of `docs/committee_audit_2026-10-13.md` is fixed. Its Outcome
+section lists each fix and how it relates to earlier changes. The main ones:
+
+- **Pilot sweep.** The 10-pilot difference is inside the stored 95% interval.
+  Both abstracts, Table 6.1, Sec. 6.3, Ch. 8 and App. 9.5 now say the MLP trails
+  pilot-aided detection at twenty pilots, is not resolved from it at ten, and
+  leads at five.
+- **Mamba relays.** Both are causal scans read at the window centre, so they
+  have zero look-ahead. This is disclosed, and the Sec. 6.4.2 conclusion now
+  rests on the Transformer.
+- **Methods text matches the code:**
+  - Sec. 7.1.3 training (BPSK over AWGN);
+  - Xavier initialization, correcting the LeCun relabel of 2026-09-14;
+  - the Mamba blocks as implemented;
+  - the cGAN's exclusion and its training-only critic.
+- **Table 6.6 learned-relay column.** Its source is the size sweep, and it is
+  now defined and verified.
+- **H5 evidence.** The nonlinear-bias study (S3, committed data) is now reported.
+- **Wording:** H2 and its verdict; the MLP's 0.007 margin; three sequence
+  models; goodput η(1−FER) (Fig. 5.4 relabelled); Table 5.5's tie; the
+  size-sweep reference; channel definitions for Tables 6.6–6.7; plain-QPSK ISI
+  acknowledged.
+- **Numbers sourced.** Two unsourced frame-error rates (20.23%, 10.58%) are
+  replaced by the committed 19.98% and 10.64%, and one ratio is rounded (1.14).
+- **Bibliography.** Venues added for two entries.
+
+Build: 136 PDF pages, 120 countable (the limit); 0 errors and 0 overfull
+boxes. The verifier checks 689 cells (11 new), with 0 inconsistencies; 347
+tests pass.
+
+---
+
 ## [Committee-level audit] — 2026-10-13
 
 Report only; the thesis is unchanged (main 82875bc, 119 countable pages). The
@@ -27,7 +61,7 @@ locations and suggested fixes are in `docs/committee_audit_2026-10-13.md`:
   source; H5 names an unreported channel;
 - seventeen cross-reference inconsistencies and twenty-three minor items.
 
-None of these fixes has been applied. Each awaits the author's decision.
+None of these fixes was applied in the audit itself; they followed in the entry above.
 
 ---
 

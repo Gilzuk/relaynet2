@@ -2,6 +2,31 @@
 
 _Last updated: 2026-10-13_
 
+### Latest (2026-10-13, audit fixes): every committee-audit finding fixed; awaiting approval
+
+The author asked "Can you fix thesis? Does it contradict previous changes?". Branch
+fix/committee-audit-findings (off main, with the audit commit cherry-picked, so it supersedes
+the report-only #174) applies all findings; the report's new "Outcome" section lists each.
+Key facts established while fixing:
+- Table 6.6's learned-relay column is the best-of-three-seeds penalty of the best size-sweep
+  configuration (window 7; 433/433/289 parameters) from mlp_min_size_all_channels.json; the
+  verifier now recomputes it (_best_sweep_penalty).
+- H5's nonlinear-bias channel had been run (S3 of e6_sim_ported.py) but never reported; Sec. 6.2
+  now reports 8 dB AF 0.0820 / DF 0.0377 / MLP 0.00108 (prose:nlbias). H5 itself kept.
+- The 20 dB FER figures 20.23%/10.58% in Sec. 5.5 were in no committed file (initial import);
+  replaced with coded_reliable_regime.json's 19.98%/10.64% (prose:coded-fer).
+- Pilot sweep: 10-pilot Viterbi 0.0545 +/- 0.0108 contains the MLP's 0.0486; abstracts now say
+  "not resolved at ten, leads at five" (prose:E6partial checks the interval).
+- Mamba-S6/Mamba-2: causal scan + centre readout = zero look-ahead (energy shares 42.5%/34%
+  checked as prose:mamba-lookahead); no rerun.
+Contradictions with earlier changes: A4 reverses 7e3f933 (which had relabelled the init "LeCun,
+not Xavier"; the code is Xavier); B5 adjusts 9dde972's H2 title scope (kept "no dominance").
+Build: 136 PDF / 120 countable pages (limit 120), 0 errors/overfull, BibTeX 0 warnings (52
+entries; LeCun no longer cited); verifier 689/0; 347 tests; provenance clean. Page budget was
+met by tightening the new wording and pointing Ch. 8's closing list of untested items to Sec.
+7.4. Reply (comments 1-3, opening counts), README, REPRODUCE, mirror template, Hebrew note and
+e6 results README updated. Do not merge until the author approves; then republish the mirror.
+
 ### Latest (2026-10-13, committee audit): #173 merged; audit report only
 
 The author approved and #173 merged (main 82875bc); mirror republished at 748962e = main

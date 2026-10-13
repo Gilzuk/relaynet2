@@ -1,5 +1,14 @@
 # Hebrew abstract: drafted, needs the author's review
 
+**Update 2026-10-13 (committee audit).** Two more changes to the English
+abstract were mirrored, in drafted Hebrew for the author to read:
+- the pilot sentence now says the learned relay trails pilot-aided detection at
+  twenty pilots, is not resolved from it at ten and leads at five
+  ("אינו נבדל ממנו באופן מובהק בעשרה ומוביל בחמישה"); the ten-pilot difference is
+  inside the stored 95% interval;
+- the low-SNR sentence now names the feedforward relays ("בהזנה קדמית") and
+  attributes the 0.007 margin to the MLP ("הפער של ממסר ה־MLP").
+
 **Update 2026-10-12 (Khina revision round).** Two changes to the English
 abstract were mirrored in `chapters/hebrew_abstract.tex`, again in drafted
 Hebrew that the author should read:
@@ -9,7 +18,7 @@ Hebrew that the author should read:
 - the coded-study sentence: with reliability-weighted (matched) decoder metrics,
   block DF beats the learned relays at every tested SNR.
 
-The Hebrew abstract renders on page 136 of the 138-page build (printed page
+The Hebrew abstract renders on page 134 of the 136-page build (printed page
 xii); the rest of this note describes the 2026-09-09 rewrite.
 
 **Status 2026-09-09: drafted, not author-approved.** The Hebrew abstract was

@@ -101,7 +101,7 @@ REGISTRY = {
         ["eq:slicer-floor", "prose: closed-form slicer BER table"]),
     "E6 unknown ISI (S1-S4)": (
         "e6_sim_ported.py", ["e6_unknown_channel_results/e6_sim_ported_results.npy"],
-        ["tbl:tableE6"]),
+        ["tbl:tableE6", "prose:nlbias (Sec. 6.2, nonlinear-bias setup S3)"]),
     "E6 Viterbi AWGN consistency rerun": (
         "e6_viterbi_codex_consistency.py",
         ["e6_unknown_channel_results/codex_viterbi_consistency_awgn.npy",
@@ -127,7 +127,8 @@ REGISTRY = {
         ["tbl:tableE6qpsk"]),
     "Minimum relay size, 9 channels": (
         "mlp_min_size_all_channels.py", ["results/mlp_min_size_all_channels.json"],
-        ["tbl:table-minsize", "fig:minsize-crossover", "fig:minsize-budget"]),
+        ["tbl:table-minsize", "fig:minsize-crossover", "fig:minsize-budget",
+         "tbl:mmse-baseline learned-relay column", "prose:mamba-lookahead (tap energies)"]),
     "Minimum size, window x depth": (
         "mlp_min_size_bisect.py", ["results/mlp_min_size_bisect.json"],
         ["prose: depth 1-3, window 1-7"]),

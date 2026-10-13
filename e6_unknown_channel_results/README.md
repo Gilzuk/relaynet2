@@ -19,7 +19,8 @@ the channel models are specified in thesis Appendix 9.6. Setups S2 and S4 of
 `e6_sim_ported.py` (ISI to Rayleigh, and the Rayleigh control) remain in the
 arrays and figures here but are not reported in the thesis, whose fixed-ISI
 results use S1 (ISI on Hop 1, AWGN on Hop 2); the nonlinear-bias setup S3 is not
-tabulated in Chapter 6.
+tabulated, but its 8 dB values are reported in Section 6.2 (checked by the
+verifier as `prose:nlbias`).
 
 **October 2026 changes.** `e6_flat_ported_results.npy` was rerun with the
 corrected Hop-2 noise (variance 1/(2γ) per real dimension for real forwarded
