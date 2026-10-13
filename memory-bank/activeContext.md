@@ -1,6 +1,33 @@
 # Active Context (update this file first, every session)
 
-_Last updated: 2026-10-12_
+_Last updated: 2026-10-13_
+
+### Latest (2026-10-13, committee audit): #173 merged; audit report only
+
+The author approved and #173 merged (main 82875bc); mirror republished at 748962e = main
+82875bc (author Gil Zukerman, thesis.pdf byte-identical); #171/#172 closed. The author then
+asked for a last committee-level audit "marking every potential inconsistency with the subject
+matter". Report: `docs/committee_audit_2026-10-13.md` (docs PR off main; nothing in the thesis
+changed). Seven substantive findings, all checked against code or committed data:
+A1 both abstracts say the MLP "leads at ten" pilots, but panel (a) gives Viterbi-est
+0.0545 +/- 0.0108 vs MLP 0.0486 +/- 0.0017 (overlap) and panel (b) finds no difference at 10
+pilots per block; A2 Mamba-S6 (causal loop) and Mamba-2 (tril SSD kernel) are read at the
+window centre, so they never see the 5 future samples -- 42.5% of x[n]'s energy on the
+[1,0.7,0.5] ISI channel -- confounding their Table 6.7 rows (the Transformer has no mask);
+A3 Sec. 7.1.3 still says training uses the Rayleigh distribution; A4 Sec. 4.3.3 says He/LeCun
+"not Xavier", but every PyTorch relay uses xavier_uniform_/xavier_normal_ (VAE: torch default);
+A5 the Mamba blocks have no Conv1D or gate branch (S6 input is the channel mean; its C is
+overwritten), and Mamba-2's gate is sigmoid; A6 Table 6.6's "Learned relay" column (+1.67,
++3.03, -2.26) is in no committed file and the verifier skips it, and +3.03 is worse than
+Table 6.7's MLP-3K +2.58 on the same channel; A7 H5 names a nonlinear-bias channel with no
+Chapter 6 result. Also B1 (plain-QPSK ISI said "not performed" but isi_complex was run in
+Tables 6.6/6.7/9.3-9.5), B2 (Tables 6.6/6.7 "Composite" = size-sweep channel: BPSK, noise
+1/gamma, linear MLSE -- not Sec. 6.2.4's), B3 ("two sequence models" -- three), B4-B17 and
+C1-C23. Verified: Gomadam-Jafar (Gaussian inputs: AF = DF = EF) and Tsai et al. arXiv
+2006.01125 attributions; every recomputed number and parameter count listed in section D.
+Nothing applied: the author decides which fixes go in (HANDOVER "Next", item 0). Rule
+reminder for the fixes: one branch and PR each; rebuild the PDF; 119 countable pages now,
+limit 120, and A2/A4/A5/B2/B17 add text.
 
 ### Latest (2026-10-12, pre-submission audit): #173 audited, not merged
 
