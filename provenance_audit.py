@@ -121,6 +121,9 @@ REGISTRY = {
     "E6 blind / posterior-free": (
         "e6_blind_ported.py", ["e6_unknown_channel_results/e6_blind_ported_results.npy"],
         ["fig:figE6blind", "prose:E6blind"]),
+    "E6 blind regime, corrected intervals (red-team check)": (
+        "e6_blind_intervals.py", ["results/e6_blind_intervals.json"],
+        ["not in the thesis: red-team check of the Sec. 6.4 / Table 6.1 layer-4 intervals"]),
     "E6 QPSK unknown channel": (
         "e6_qpsk_unknown_channel.py",
         ["e6_unknown_channel_results/e6_qpsk_unknown_channel_results.npy"],
