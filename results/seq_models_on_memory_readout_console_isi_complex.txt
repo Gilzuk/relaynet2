@@ -3,3 +3,4 @@ causality self-check (max output change when the 5 samples after the centre move
   Mamba2-3K    center 0   last 1.88
 
 === isi_complex (qpsk, baseline MLSE; max |baseline - published| = 0.0) ===
+  Mamba-S6-3K  readout=center dB vs MLSE:  +5.84   +5.66   +5.65   best +5.65  spread 0.19   (published centre best +5.72)   [262s]
