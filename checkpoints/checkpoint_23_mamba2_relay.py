@@ -291,8 +291,13 @@ class Mamba2Relay(nn.Module):
     def __init__(self, window_size=11, d_model=32, d_state=16,
                  num_layers=2, chunk_size=8, output_activation="tanh",
                  use_input_norm=False, clip_range=None, in_channels=1,
-                 num_classes=1):
+                 num_classes=1, readout="center"):
         super().__init__()
+        # Where the causal SSD output is read: "center" (the published
+        # configuration) or "last", after the whole window has been consumed.
+        if readout not in ("center", "last"):
+            raise ValueError(f"readout must be 'center' or 'last', got {readout!r}")
+        self.readout = readout
         self.window_size = window_size
         self.d_model = d_model
         self.use_input_norm = use_input_norm
@@ -353,7 +358,7 @@ class Mamba2Relay(nn.Module):
         for block in self.blocks:
             x = block(x)
         center = self.window_size // 2
-        x = x[:, center, :]              # -> (B, d_model)
+        x = x[:, center if self.readout == "center" else -1, :]   # -> (B, d_model)
         out = self.output_proj(x)
         if self.num_classes <= 1:
             return out + x_raw[:, center, 0:1]
@@ -372,8 +377,9 @@ class Mamba2RelayWrapper(Relay):
                  d_state=16, num_layers=2, chunk_size=8, prefer_gpu=False,
                  output_activation="tanh", use_input_norm=False, clip_range=None,
                  in_channels=1, classify=False, training_modulation="bpsk",
-                 classify_2d=False):
+                 classify_2d=False, readout="center"):
         self.target_power = target_power
+        self.readout = readout
         self.window_size = window_size
         self.output_activation = output_activation
         self.use_input_norm = use_input_norm
@@ -420,6 +426,7 @@ class Mamba2RelayWrapper(Relay):
             clip_range=clip_range,
             in_channels=in_channels,
             num_classes=self.num_classes,
+            readout=readout,
         ).to(self.device)
 
         self.is_trained = False
