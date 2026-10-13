@@ -2,7 +2,19 @@
 
 _Last updated: 2026-10-13_
 
-### Latest (2026-10-13, later): Mamba rerun folded into #175; awaiting approval
+### Latest (2026-10-13, last): author decisions applied to #175; only the merge approval remains
+
+The author ruled on the three reads with "Hebrew ok, H2 explicit, October 2026":
+- **Hebrew abstract:** approved, no text change. `thesis/HEBREW_ABSTRACT_SYNC.md` now says so.
+- **H2 verdict in Table 8.1:** now "\textbf{Supported as matching}: DF matches or beats all AI methods at
+  ≥ 6 dB with 0 parameters; none is detectably better".
+- **Title pages:** all four (`main.tex` lines 330, 364, 462, 491) read October 2026 / אוקטובר 2026.
+
+Rebuild: 136 PDF pages, 120 countable; 0 errors and 0 overfull boxes. HANDOVER's "Next" items 0, 1 and
+4, the audit report and the changelog are updated. The merge of #175 still waits for the author's
+explicit approval; after it, republish the mirror.
+
+### Earlier (2026-10-13, later): Mamba rerun folded into #175
 
 The author chose "Fold into #175" and "Footnote it". exp/mamba-full-window-readout was merged into
 fix/committee-audit-findings (9f1415f).

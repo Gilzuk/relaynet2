@@ -58,7 +58,7 @@ All findings were acted on in one PR, on the author's instruction "fix thesis".
 | A5 | Fixed: the Mamba-S6 and Mamba-2 blocks are described as implemented. |
 | A6 | Source found: each value is the best-seed penalty of the best size-sweep configuration (window 7: 433, 433 and 289 parameters). The caption now defines the column, App. 9.6 lists its aggregation, and the verifier recomputes it (3 cells). The numbers are unchanged. |
 | A7 | The nonlinear-bias result (S3, already committed) is now reported in Sec. 6.2: AF 0.0820, DF 0.0377, MLP 0.00108 at 8 dB, checked. H5 is kept; only "170-parameter" became "169–193 parameters". |
-| B1–B17 | Fixed as suggested. For B5, H2's title is now neutral ("DF leads at medium-to-high SNR") and its Table 8.1 verdict reads "Supported". |
+| B1–B17 | Fixed as suggested. For B5, H2's title is now neutral ("DF leads at medium-to-high SNR"). Its Table 8.1 verdict, at the author's choice, reads "Supported as matching: … none is detectably better". |
 | C1–C22 | Fixed. C14 was more serious than first logged: 20.23% and 10.58% are in no committed file, so they now read 19.98% and 10.64%, the committed run of Table 5.7 (checked as `prose:coded-fer`). C18: 1.15 became 1.14 (the data give 1.1446). |
 | C23 | Tsai et al. now cite IEEE SiPS 2020 and Chen et al. IEEE WCNC 2024. The co-author name order ("Wu Yan" in one paper, "Yan Wu" in the other) follows each arXiv listing and is left for the author. |
 
@@ -642,7 +642,7 @@ text. Rebuild after each step and report the countable page count.
 
 **Still open from earlier rounds** (author decisions):
 
-- the title-page date ("September 2026", in four places in `main.tex`);
+- the title-page date ("September 2026", in four places in `main.tex`); **set to October 2026 by the author on 2026-10-13**;
 - sending the reply, using the committed text rather than the pasted one;
-- reviewing the Hebrew abstract;
+- reviewing the Hebrew abstract (**approved by the author on 2026-10-13**);
 - pulling the mirror into Overleaf.

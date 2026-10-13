@@ -496,3 +496,9 @@ The new verifier check `prose:seq-rerun` brings the verifier to 708 cells, 0 inc
 build is 120 countable pages. Provenance labels and the ledger are updated, as are the companion
 documents. #175 still awaits the author's approval.
 
+## 2026-10-13 (last): author decisions applied to #175
+
+The Hebrew abstract is approved. The H2 verdict reads "Supported as matching … none is detectably
+better". The title pages read October 2026. The build is still 120 countable pages, and #175 awaits
+the merge approval.
+

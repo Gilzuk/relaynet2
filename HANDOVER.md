@@ -114,16 +114,16 @@ tells you where the work is; rerun any experiment script from scratch rather tha
 
 ### Next (author decisions)
 
-0. **Committee audit fixes:** review and approve the CF PR (branch `fix/committee-audit-findings`; it carries the audit report with an Outcome section and supersedes #174). After it merges, republish the mirror (P). Read the two Hebrew-abstract changes (thesis/HEBREW_ABSTRACT_SYNC.md) and the H2 verdict wording (Table 8.1).
+0. **Committee audit fixes:** review and approve the CF PR (branch `fix/committee-audit-findings`; it carries the audit report with an Outcome section and supersedes #174). After it merges, republish the mirror (P). The three reads are done (2026-10-13): the Hebrew abstract is approved, the H2 verdict reads "Supported as matching", and the date is October 2026. Only the merge approval remains.
 1. **Send the reply** in `thesis/submission/reply_to_khina_2026-10.md` (drafted, not sent), with the
-   revised PDF (`thesis/main.pdf`, 120 countable pages) or the Overleaf project. Read the Hebrew-abstract
-   changes first (`thesis/HEBREW_ABSTRACT_SYNC.md`): that Hebrew is drafted, not the author's own.
+   revised PDF (`thesis/main.pdf`, 120 countable pages) or the Overleaf project. The Hebrew abstract is
+   approved by the author (2026-10-13; `thesis/HEBREW_ABSTRACT_SYNC.md`).
 2. **Overleaf:** pull once from GitHub (Menu → Sync → GitHub). If Overleaf still points at a pre-rewrite
    commit, unlink and relink first (no Overleaf-side edits exist).
 3. **Mirror commit f174a3b** was authored "Claude"; rewriting it to the author's identity needs the
    author's OK (force-push to `relaynet2-thesis`).
-4. **Title-page date** reads September 2026 (`thesis/chapters/frontmatter.tex`); change it to the submission
-   month if the faculty requires that.
+4. ~~**Title-page date**~~ done: October 2026 / אוקטובר 2026 on all four title pages (`thesis/main.tex`), the author's choice
+   of 2026-10-13.
 5. If Khina replies with further comments, start a new task chain here, one branch and PR per fix.
 
 ### Task notes

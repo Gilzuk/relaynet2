@@ -1,4 +1,8 @@
-# Hebrew abstract: drafted, needs the author's review
+# Hebrew abstract: approved by the author (2026-10-13)
+
+**Status 2026-10-13: approved.** The author reviewed the rendered Hebrew abstract (page xii of the
+#175 build) and the two changes of the committee-audit round below, and approved them ("Hebrew ok").
+The earlier notes below are kept as the record of how the text was drafted.
 
 **Update 2026-10-13 (committee audit).** Two more changes to the English
 abstract were mirrored, in drafted Hebrew for the author to read:

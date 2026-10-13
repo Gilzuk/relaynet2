@@ -50,6 +50,11 @@ section lists each fix and how it relates to earlier changes. The main ones:
 - **Numbers sourced.** Two unsourced frame-error rates (20.23%, 10.58%) are
   replaced by the committed 19.98% and 10.64%, and one ratio is rounded (1.14).
 - **Bibliography.** Venues added for two entries.
+- **Author decisions (2026-10-13).**
+  - The Hebrew abstract is approved.
+  - H2's Table 8.1 verdict reads "Supported as matching: … none is detectably
+    better", which makes the matching sense explicit.
+  - The title-page date is October 2026 (אוקטובר 2026) on all four title pages.
 
 Build: 136 PDF pages, 120 countable (the limit); 0 errors and 0 overfull
 boxes. The verifier checks 708 cells (30 new), with 0 inconsistencies; 347
