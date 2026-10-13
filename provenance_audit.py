@@ -146,25 +146,25 @@ REGISTRY = {
         ["tbl:mmse-baseline", "prose: MMSE monotonicity by tap count"]),
     "Sequence models on memory": (
         "seq_models_on_memory.py", ["results/seq_models_on_memory.json"],
-        ["tbl:seq-on-memory"]),
+        ["tbl:seq-on-memory", "prose:seq-rerun (Table 6.7 dagger note and QPSK margin)"]),
     "Mamba readout on memory: centre control and full window": (
         "seq_models_on_memory_readout.py", ["results/seq_models_on_memory_readout.json"],
-        ["not in the thesis: audit A2 look-ahead check, decision pending"]),
+        ["prose:seq-rerun (Sec. 6.4.2 full-window readout; Mamba rows of the rerun)"]),
     "Mamba readout on memory: bidirectional": (
         "seq_models_on_memory_bidirectional.py",
         ["results/seq_models_on_memory_bidirectional.json"],
-        ["not in the thesis: audit A2 look-ahead check, decision pending"]),
+        ["prose:seq-rerun (Sec. 6.4.2 bidirectional readout)"]),
     "Sequence models on memory: MLP/Transformer rerun": (
         "seq_models_on_memory_rerun_controls.py",
         ["results/seq_models_on_memory_rerun_controls.json"],
-        ["not in the thesis: same-environment controls for the A2 check"]),
+        ["prose:seq-rerun (Sec. 6.4.2 rerun spreads, MLP and Transformer rows)"]),
     "Sequence models on memory: seeded-retraining repeat": (
         "seq_models_on_memory_repeat.py", ["results/seq_models_on_memory_repeat.json"],
-        ["not in the thesis: determinism check for the A2 rerun"]),
+        ["prose:seq-rerun (Sec. 6.4.2 cross-machine shift)"]),
     "Sequence models on memory: retraining fingerprints": (
         "seq_models_on_memory_repeat_probe.py",
         ["results/seq_models_on_memory_repeat_probe.jsonl"],
-        ["not in the thesis: same-machine repeats for the A2 determinism check"]),
+        ["prose:seq-rerun (Sec. 6.4.2 bit-for-bit repeats on one machine)"]),
     "Joint latency/memory": (
         "joint_latency_memory.py", ["results/joint_latency_memory.json"],
         ["tbl:joint-latency"]),

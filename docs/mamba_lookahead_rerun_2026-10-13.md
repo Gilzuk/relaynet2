@@ -1,7 +1,8 @@
 # Mamba look-ahead rerun (committee-audit finding A2), 2026-10-13
 
-**Status:** experiment only. No thesis text, table or figure has changed. Whether and how to use these
-results in the thesis is the author's decision. The decisions are listed at the end.
+**Status:** integrated into the thesis in PR #175 at the author's direction (2026-10-13): Sec. 6.4.2 and
+Table 6.7, with the Mamba-2 QPSK cell footnoted rather than the penalty definition changed. The last
+section lists what changed.
 
 ## Question
 
@@ -192,7 +193,7 @@ demonstrated here.
 
 The consequence is that a training seed fixes a sequence model only on one machine:
 
-- Across the two machines, the same seed moved by 0.22 dB for Mamba-S6 and by 0.88 dB for the
+- Across the two machines, the same seed moved by 0.21 dB for Mamba-S6 and by 0.89 dB for the
   Transformer.
 - Against the published run, per-seed values moved by up to 1.73 dB.
 - The MLP is the exception: it reproduced exactly.
@@ -239,33 +240,28 @@ spread table (Table 9.6, `tbl:seed-spread-3k`):
 
 No claim there changes.
 
-## What this means for the thesis (the author's decision)
+## What changed in the thesis (PR #175)
 
-All of these passages are in `thesis/chapters/ch07_unknown_and_mismatch_channels.tex` on the PR #175 branch, which
-already edits them for A2. Nothing has been edited for this rerun. Any edits would go into #175, or
-into a follow-up PR once #175 merges.
+The author chose to fold these results into PR #175 and to footnote the Mamba-2 QPSK cell. All edits
+are in `thesis/chapters/ch07_unknown_and_mismatch_channels.tex`, Sec. 6.4.2:
 
-1. **Sec. 6.4.2, second limitation (`ch07_unknown_and_mismatch_channels.tex:348`).** It currently says the Mamba rows "do not test
-   whether a sequence model can exploit the window". A sentence could add that two readouts giving the
-   Mamba relays the whole window, at the same parameter count, did worse than the centre readout under
-   the same protocol.
-2. **"Reproducibility inverts" paragraph (`:346`) and the Table 6.7 caption (`:332`).** This claim did not
-   reproduce in the rerun (Findings 2 and 3), and one of its numbers is the Finding 4 artefact.
-   The options are:
-   - qualify it as specific to one run;
-   - or drop it, keeping the canonical-channel spreads of Table 9.6, which are not in question.
+1. **Table 6.7.**
+   - The Mamba-2 QPSK cell carries a dagger. The caption explains it: the initialization does not
+     reach 10⁻³ by 20 dB, so its penalty covers 10⁻¹ and 10⁻² only, and the other two give +5.83 and
+     +6.80.
+   - The caption's claim that the Mamba variants "spread the most here" is replaced by a statement
+     that the spreads did not reproduce in a rerun.
+2. **Margin sentence.** "2.11 dB" now carries "(3.14 dB at QPSK without the marked initialization)".
+3. **"Reproducibility inverts" paragraph.** It is replaced by the rerun's result:
+   - ten of twelve best values reproduced within 0.25 dB, but not the spreads;
+   - seeded training is bit-exact on one machine, but the same Transformer seed moved by 0.89 dB
+     between machines;
+   - of the three architectures retested, only the MLP retrained identically.
+4. **Limitation paragraph.** One sentence is added: both look-ahead readouts made the Mamba relays
+   worse under this protocol.
 
-   The Appendix 9.2 reproducibility note could also say that seeded retraining of the sequence models
-   is exact only on one machine (Finding 3).
-3. **Table 6.7, Mamba-2 at QPSK, and the "2.11 dB" margin (`:338`, `:344`).** The options are:
-   - keep the definition and footnote that the best seed misses 10⁻³;
-   - or count a seed that misses a target the baseline reaches as failing it. The cell then becomes
-     +5.83 and the margin 3.14 dB, and the spread has no finite value, because seed 1's 10⁻³ penalty is
-     more than 9.1 dB.
+The page count is unchanged: 136 PDF pages, 120 countable.
 
-   The second option changes the definition in Appendix 9.6. It would have to be applied to every
-   table that uses it, so Tables 6.6, 9.4, 9.5 and 9.6 would need checking too.
-4. **Page budget.** The thesis is at 120 of 120 countable pages, so any addition must be offset.
-
-Any change to Table 6.7 or its prose needs `verify_thesis_tables.py` updated in the same commit, and
-`provenance_audit.py` will then list these experiments as backing the text.
+`verify_thesis_tables.py` has a new check, `prose:seq-rerun`, with 19 cells. It recomputes every new
+number and the three claims made in words. The verifier now covers 708 cells with 0 inconsistencies.
+The provenance labels of the five experiments now name the Sec. 6.4.2 statements they back.

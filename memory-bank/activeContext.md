@@ -2,7 +2,38 @@
 
 _Last updated: 2026-10-13_
 
-### Latest (2026-10-13): Mamba look-ahead rerun (audit A2), branch exp/mamba-full-window-readout
+### Latest (2026-10-13, later): Mamba rerun folded into #175; awaiting approval
+
+The author chose "Fold into #175" and "Footnote it". exp/mamba-full-window-readout was merged into
+fix/committee-audit-findings (9f1415f).
+
+**Sec. 6.4.2 edits:**
+- Table 6.7: the Mamba-2 QPSK cell has a dagger. The caption explains it: the initialization misses
+  1e-3 by 20 dB, and the other two seeds give +5.83 and +6.80. The caption's "Mamba spread the most"
+  claim is replaced by "spreads did not reproduce in a rerun".
+- The margin sentence adds "(3.14 dB at QPSK without the marked initialization)".
+- The "reproducibility inverts" paragraph is replaced by the rerun result: ten of twelve best values
+  within 0.25 dB, but not the spreads; bit-exact on one machine, but the Transformer seed moved by
+  0.89 dB across machines; only the MLP was identical.
+- The limitation paragraph adds one sentence: both look-ahead readouts made Mamba worse.
+
+**Checks and companions:**
+- New verifier check `prose:seq-rerun` (19 cells, MIN_CELLS 19). It was negative-tested: altered
+  numbers are flagged. The verifier is at 708 cells, 0 inconsistencies.
+- The provenance labels now name the Sec. 6.4.2 statements, and table_provenance.md is regenerated.
+- Build: 136 PDF pages, 120 countable; 0 errors and 0 overfull boxes. The preview and both zips are
+  rebuilt.
+- Companions updated: rerun summary (0.22/0.88 corrected to 0.21/0.89), audit Outcome A2 row, reply
+  (708 cells, Mamba bullet), REPRODUCE (rerun commands and the caveat that seeded training is exact
+  only on one machine), thesis/CHANGELOG, HANDOVER (MR row).
+
+**Still the author's:**
+- the Hebrew abstract drafts;
+- the H2 verdict wording;
+- the title-page date ("September 2026", main.tex lines 330, 364, 462, 491);
+- approval of #175, then the mirror republish.
+
+### Earlier (2026-10-13): Mamba look-ahead rerun (audit A2), branch exp/mamba-full-window-readout
 
 The author chose "rerun, show results first": no thesis text changes until they decide. Summary
 and decisions: `docs/mamba_lookahead_rerun_2026-10-13.md`.

@@ -2,7 +2,7 @@ Subject: Re: Thesis — response to your nine comments
 
 Dear Anatoly,
 
-Thank you for the detailed comments. I have addressed all nine and the presentation notes. Three of them (comments 3, 4 and 7) led to new measurements that change conclusions in the thesis, and I state those plainly below. The revised thesis runs to 120 pages from Chapter 1 through the appendices, within the 120-page limit. The table verifier now checks 689 cells with no inconsistencies, and all 347 tests pass.
+Thank you for the detailed comments. I have addressed all nine and the presentation notes. Three of them (comments 3, 4 and 7) led to new measurements that change conclusions in the thesis, and I state those plainly below. The revised thesis runs to 120 pages from Chapter 1 through the appendices, within the 120-page limit. The table verifier now checks 708 cells with no inconsistencies, and all 347 tests pass.
 
 **1. The relay-design problem.** A new Section 4.1.5 states the problem explicitly:
 - the relay's observations and the channel information it has;
@@ -19,7 +19,7 @@ A final recheck against the code found four more descriptions that did not match
 - The Hybrid relay does not use a learned threshold on the operating SNR. It compares a fixed 5 dB threshold with a per-axis received-power estimate that assumes unit signal power, and its MLP sub-network is trained separately at 2, 4 and 6 dB. I replayed the canonical run's first-hop draws; the replay reproduces the published error rate of every trial on which both axes took the DF branch. On the zero-forced Rayleigh observation the switch falls between 6 and 8 dB rather than at 5 dB (Section 4.2, Appendix 9.1).
 - The sequence models hold out 15% of their training windows for accuracy reporting and keep the epoch with the lowest training loss (Section 4.3.3).
 - The stated weight initialization (He and LeCun rules) was not the code's: the PyTorch relays use Xavier initialization (Section 4.3.3).
-- The Mamba blocks are simplified (no convolution or gating branch), and both Mamba relays read a causal scan at the window centre, so they never use the future half of their window (Remark 4.1, Section 4.2). Section 6.4.2 now says so; its conclusion that a sequence architecture does not help on channels with memory rests on the Transformer, which sees the whole window.
+- The Mamba blocks are simplified (no convolution or gating branch), and both Mamba relays read a causal scan at the window centre, so they never use the future half of their window (Remark 4.1, Section 4.2). Section 6.4.2 now says so; its conclusion that a sequence architecture does not help on channels with memory rests on the Transformer, which sees the whole window. Giving the Mamba relays the whole window at the same parameter count, in two different ways, made them worse. A rerun of Table 6.7 also showed that its per-seed spreads do not reproduce across machines, so Section 6.4.2 no longer ranks the sequence models by reproducibility.
 
 **2. Research questions, hypotheses and progression.** Section 3.1.1 now states the hierarchy:
 - O1 and O2 are answered in Chapter 6, the principal contribution. O1 is tested through H5 and the pilot sweep; O2 is answered descriptively by the delay and arithmetic studies.

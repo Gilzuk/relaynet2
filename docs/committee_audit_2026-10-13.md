@@ -46,13 +46,13 @@ All findings were acted on in one PR, on the author's instruction "fix thesis".
 - 136 PDF pages, **120 countable** (the limit is 120; it was 119).
 - 0 errors, undefined or multiply defined references, overfull boxes or missing glyphs.
 - BibTeX: 0 warnings, 52 entries. The LeCun entry is no longer cited.
-- Verifier: **689 cells** (11 new checks), 0 inconsistencies.
+- Verifier: **708 cells** (30 new checks, 19 of them for the A2 rerun), 0 inconsistencies.
 - 347 tests pass, and `provenance_audit.py` is clean.
 
 | ID | Outcome |
 |---|---|
 | A1 | Fixed in both abstracts, Table 6.1, Sec. 6.3, Ch. 8 finding 9, the App. 9.5 heading and the README. The 10-pilot 95% interval (±0.0108) is now stated and checked. |
-| A2 | Disclosed in Remark 4.1, the look-ahead item, the Transformer rationale, Ch. 2, Sec. 6.4.2 and App. 9.6. The Sec. 6.4.2 headline is qualified, the energy shares (42.5% and 34%) are checked from the taps, and nothing was rerun. |
+| A2 | Disclosed in Remark 4.1, the look-ahead item, the Transformer rationale, Ch. 2, Sec. 6.4.2 and App. 9.6. The Sec. 6.4.2 headline is qualified and the energy shares (42.5% and 34%) are checked from the taps. **Rerun (the author's choice):** a full-window and a bidirectional readout at the same parameter count both made the Mamba relays worse, so Table 6.7's conclusion stands. The rerun also found that the published spreads do not reproduce across machines, and that the Mamba-2 QPSK cell's best seed never reaches 10⁻³ (now footnoted). Sec. 6.4.2 reports all three. See `docs/mamba_lookahead_rerun_2026-10-13.md`. |
 | A3 | Fixed: training is BPSK over AWGN; testing is over Rayleigh. |
 | A4 | Fixed: Xavier for the PyTorch relays, PyTorch's default for the VAE, √(2/n_in) for the NumPy Chapter 6 MLPs. |
 | A5 | Fixed: the Mamba-S6 and Mamba-2 blocks are described as implemented. |
@@ -77,7 +77,8 @@ All findings were acted on in one PR, on the author's instruction "fix thesis".
   - comment 1 lists the two new code mismatches;
   - comment 2 notes the S3 result;
   - comment 3 gives the margin as the MLP's;
-  - the opening gives 120 pages and 689 cells.
+  - the opening gives 120 pages and 708 cells;
+  - the Mamba bullet reports the rerun.
 
 ## Summary
 

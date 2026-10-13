@@ -25,6 +25,16 @@ section lists each fix and how it relates to earlier changes. The main ones:
 - **Mamba relays.** Both are causal scans read at the window centre, so they
   have zero look-ahead. This is disclosed, and the Sec. 6.4.2 conclusion now
   rests on the Transformer.
+- **Mamba look-ahead rerun (Sec. 6.4.2, Table 6.7).** Two readouts that give the
+  Mamba relays the whole window, at the same parameter count, both made them
+  worse, so the conclusion stands. The rerun also showed two things:
+  - The published spreads do not reproduce across machines. Seeded training is
+    bit-exact on one machine, but the same Transformer seed moved by 0.89 dB on
+    another. The "reproducibility inverts" paragraph is replaced by this result.
+  - The best seed of the Mamba-2 QPSK cell never reaches 10⁻³. The cell is now
+    footnoted, and the margin notes 3.14 dB without it.
+
+  Data and scripts: `docs/mamba_lookahead_rerun_2026-10-13.md`.
 - **Methods text matches the code:**
   - Sec. 7.1.3 training (BPSK over AWGN);
   - Xavier initialization, correcting the LeCun relabel of 2026-09-14;
@@ -42,7 +52,7 @@ section lists each fix and how it relates to earlier changes. The main ones:
 - **Bibliography.** Venues added for two entries.
 
 Build: 136 PDF pages, 120 countable (the limit); 0 errors and 0 overfull
-boxes. The verifier checks 689 cells (11 new), with 0 inconsistencies; 347
+boxes. The verifier checks 708 cells (30 new), with 0 inconsistencies; 347
 tests pass.
 
 ---

@@ -485,3 +485,14 @@ and Transformer were rerun in the same environment.
 Thesis integration awaits the author: `docs/mamba_lookahead_rerun_2026-10-13.md`. The tests pass at
 347, and the provenance audit is clean with the five new experiments registered.
 
+## 2026-10-13 (later): Mamba rerun folded into PR #175
+
+At the author's direction the rerun is now in the thesis, in Sec. 6.4.2 and Table 6.7:
+- the dagger on the Mamba-2 QPSK cell, plus the 3.14 dB margin note;
+- the reproducibility paragraph, replaced;
+- the look-ahead sentence in the limitation paragraph.
+
+The new verifier check `prose:seq-rerun` brings the verifier to 708 cells, 0 inconsistencies. The
+build is 120 countable pages. Provenance labels and the ledger are updated, as are the companion
+documents. #175 still awaits the author's approval.
+
