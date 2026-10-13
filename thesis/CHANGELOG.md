@@ -13,6 +13,24 @@ produced them; it does not cover every number or figure.
 
 ---
 
+## [Committee-level audit] — 2026-10-13
+
+Report only; the thesis is unchanged (main 82875bc, 119 countable pages). The
+audit read every chapter, both abstracts and the appendices as an examining
+committee would, and checked them against the committed code and data. Findings,
+locations and suggested fixes are in `docs/committee_audit_2026-10-13.md`:
+
+- seven substantive items: the ten-pilot "lead" in both abstracts is not
+  resolved; the Mamba relays have zero look-ahead; Sec. 7.1.3 still says
+  training uses Rayleigh fading; the initialization and Mamba-block descriptions
+  do not match the code; Table 6.6's learned-relay column has no committed
+  source; H5 names an unreported channel;
+- seventeen cross-reference inconsistencies and twenty-three minor items.
+
+None of these fixes has been applied. Each awaits the author's decision.
+
+---
+
 ## [Pre-submission audit] — 2026-10-12
 
 Final audit of the combined branch (#173) before submission:
