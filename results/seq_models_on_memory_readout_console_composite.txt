@@ -1,3 +1,5 @@
 causality self-check (max output change when the 5 samples after the centre move):
   Mamba-S6-3K  center 0   last 1.41
   Mamba2-3K    center 0   last 1.88
+
+=== composite (bpsk, baseline MLSE; max |baseline - published| = 0.0) ===
