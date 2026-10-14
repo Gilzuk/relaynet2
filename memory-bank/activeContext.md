@@ -2,6 +2,12 @@
 
 _Last updated: 2026-10-14_
 
+### Latest (2026-10-14): reply to Khina made concise
+
+At the author's request the reply was cut from 3,041 to 1,431 words, keeping every fix and its
+location. Test statistics appear in one sentence only (the blind-regime p-values). The verifier and
+test-suite counts, intervals and trial counts were dropped. Branch docs/khina-email-concise.
+
 ### Latest (2026-10-14): reply to Khina extended with the changes since #175
 
 `thesis/submission/reply_to_khina_2026-10.md` (still unsent) gains a section "Further changes beyond
