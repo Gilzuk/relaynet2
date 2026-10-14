@@ -42,7 +42,7 @@ def main():
                  f"median of {d.get('timing_reps', '?')} runs, single-threaded; "
                  f"speedup {ratio.min():.0f}–{ratio.max():.0f}×")
     ax.grid(True, which="both", alpha=0.3)
-    ax.legend(loc="center right", fontsize=8)
+    ax.legend(loc="center", bbox_to_anchor=(0.5, 0.72), fontsize=8, ncol=2)
     fig.tight_layout()
     fig.savefig(OUT)
     print(f"saved {OUT}: speedup {ratio.min():.1f}-{ratio.max():.1f}x at n={list(n)}")

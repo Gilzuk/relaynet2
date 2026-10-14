@@ -124,6 +124,10 @@ REGISTRY = {
     "E6 blind regime, corrected intervals (red-team check)": (
         "e6_blind_intervals.py", ["results/e6_blind_intervals.json"],
         ["not in the thesis: red-team check of the Sec. 6.4 / Table 6.1 layer-4 intervals"]),
+    "E6 complexity: measured inference time": (
+        "e6_complexity_ported.py",
+        ["e6_unknown_channel_results/e6_complexity_ported_results.npy"],
+        ["fig:figE6complexity panel (b)", "prose: measured MLP/Viterbi speedup (Sec. 6.5)"]),
     "E6 QPSK unknown channel": (
         "e6_qpsk_unknown_channel.py",
         ["e6_unknown_channel_results/e6_qpsk_unknown_channel_results.npy"],
