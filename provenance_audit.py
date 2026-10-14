@@ -121,6 +121,13 @@ REGISTRY = {
     "E6 blind / posterior-free": (
         "e6_blind_ported.py", ["e6_unknown_channel_results/e6_blind_ported_results.npy"],
         ["fig:figE6blind", "prose:E6blind"]),
+    "E6 blind regime, corrected intervals (red-team check)": (
+        "e6_blind_intervals.py", ["results/e6_blind_intervals.json"],
+        ["prose:E6blind intervals and resolution (Sec. 6.4)", "tbl:layers layer 4 resolution", "Ch. 8 finding 8"]),
+    "E6 complexity: measured inference time": (
+        "e6_complexity_ported.py",
+        ["e6_unknown_channel_results/e6_complexity_ported_results.npy"],
+        ["fig:figE6complexity panel (b)", "prose: measured MLP/Viterbi speedup (Sec. 6.5)"]),
     "E6 QPSK unknown channel": (
         "e6_qpsk_unknown_channel.py",
         ["e6_unknown_channel_results/e6_qpsk_unknown_channel_results.npy"],

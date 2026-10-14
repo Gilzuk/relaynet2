@@ -2,6 +2,8 @@ Session note (2026-10-12, independent audit): branch `fix/khina-independent-audi
 
 # Progress — E6 Porting Checklist
 
+Session note (2026-10-14, red-team fixes): #176 merged (225d70e); R1–R8, R10, R11 applied on fix/red-team-findings (supersedes #177), R9 not applied; blind lead resolved 0–12 dB only; H1 margin 0.003–0.007 (Hebrew number re-drafted, needs author reading); Fig. 6.7(b) from committed data, 58–82×; verifier 732/0, 120 countable pages, 347 tests; merged-branch deletion skipped at the author's direction; awaiting approval.
+
 Session note (2026-10-13, audit fixes): all committee-audit findings fixed on fix/committee-audit-findings (supersedes #174): ten-pilot wording, Mamba look-ahead disclosure, Sec. 7.1.3, Xavier init, Mamba blocks, Table 6.6 column sourced and verified, S3 reported, H2, FER numbers sourced, bib venues; 120 countable pages, verifier 689/0, 347 tests; awaiting approval.
 
 Session note (2026-10-13, committee audit): #173 merged (main 82875bc), mirror 748962e; committee-level audit written to docs/committee_audit_2026-10-13.md (7 substantive: ten-pilot lead unresolved in both abstracts, Mamba zero look-ahead, Sec. 7.1.3 Rayleigh training, Xavier init, Mamba block descriptions, Table 6.6 learned-relay column unsourced, H5 nonlinear bias unreported; plus 17 B and 23 C items). Report only; fixes await the author.
@@ -507,4 +509,18 @@ the merge approval.
 #175 was merged into main as 4bac934 on the author's approval. It carries the committee-audit fixes,
 the A2 Mamba rerun and the author's three decisions. The Overleaf mirror was republished as a401ee4
 under the author's identity. On main: 120 countable pages, verifier 708/0, provenance clean, 347 tests.
+
+## 2026-10-13: red-team review (report only)
+
+`docs/red_team_review_2026-10-13.md` contains 2 high, 5 medium and 4 low findings, plus 7 cleared
+attacks. The new diagnostic `e6_blind_intervals.py` (results/e6_blind_intervals.json) is registered
+in the provenance audit. Fixes await the author's choice.
+
+## 2026-10-14: red-team fixes (PR into main, awaiting approval)
+
+All findings except R9 applied on `fix/red-team-findings`; the report's Outcome section lists each.
+New: `e6_complexity_ported.py` timing protocol and committed output, `scripts/plot_e6_timing.py`,
+`results/e6_timing_measured.png`; `e6_blind_intervals.py` now backs the thesis. Verifier 732/0,
+provenance clean, 347 tests, 120 countable pages. #176 merged as 225d70e. Deleting the merged
+remote branches was refused by the proxy and then skipped at the author's direction.
 

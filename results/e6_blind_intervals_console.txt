@@ -1,0 +1,16 @@
+  MLP: 169 params (trained on the channel FAMILY, blind at test)
+  MLP: 169 params (trained on the channel FAMILY, blind at test)
+  MLP: 169 params (trained on the channel FAMILY, blind at test)
+ 0 dB  MLP 0.39868  CMA 0.40489
+ 2 dB  MLP 0.32713  CMA 0.33998
+ 4 dB  MLP 0.24360  CMA 0.26365
+ 6 dB  MLP 0.16032  CMA 0.18431
+ 8 dB  MLP 0.09549  CMA 0.11824
+10 dB  MLP 0.05210  CMA 0.07067
+12 dB  MLP 0.02664  CMA 0.04425
+14 dB  MLP 0.01240  CMA 0.01839
+16 dB  MLP 0.00709  CMA 0.01247
+18 dB  MLP 0.00416  CMA 0.00583
+20 dB  MLP 0.00262  CMA 0.00329
+saved results/e6_blind_intervals.json
+exit 0

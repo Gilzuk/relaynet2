@@ -1,6 +1,53 @@
 # Active Context (update this file first, every session)
 
-_Last updated: 2026-10-13_
+_Last updated: 2026-10-14_
+
+### Latest (2026-10-14): red-team fixes on fix/red-team-findings, #178 into main awaiting approval (#177 closed as superseded)
+
+The author asked: "Merge 176, delete merged branches, apply red team findings in new PR".
+- **#176 merged** (225d70e).
+- **Branch deletion skipped** at the author's direction ("Skip deletion"), after the session proxy
+  refused `git push origin --delete` (HTTP 403). The merged remote branches stay.
+- **Red-team fixes (all but R9)** on `fix/red-team-findings` (branched from 225d70e; #177 merged into
+  it, so the PR supersedes #177, which should be closed). Outcome table in the report.
+  - R1: blind lead "resolved 0–12 dB (Wilcoxon p ≤ 0.003), not 14–20 dB (p ≥ 0.40; 19/50 draws at
+    20 dB)"; corrected intervals (MLP ±0.0046 hierarchical, CMA ±0.0140, DD-MLSE ±0.0361 at 8 dB);
+    Table 6.1 layer 4 now quotes 8 dB (0.0955 vs 0.1182).
+  - R2: H1 margin 0.003–0.007 by gain rule in both abstracts, Ch. 5, 7.1.1, finding 1, Table 8.1.
+    **The approved Hebrew abstract's number changed; the author must re-read it.**
+  - R7: `e6_complexity_ported.py` panel (b) uses the Table 5.11 protocol (single-threaded, warm-up,
+    median of 7); data committed; `scripts/plot_e6_timing.py` draws Fig. 6.7(b); 58–82× (was an
+    unsourced 30–90×; multithreaded without warm-up gave 4–16×).
+  - R3, R4, R5, R6, R8 (1.4–2.3 dB), R10, R11 applied. R9 not applied (Globecom 2026 not yet held).
+  - Verifier 732/0 (new `prose:timing-mmse-median`; E6blind, af-conventional, layers extended);
+    provenance clean; 347 tests; 136 PDF pages, **120 countable**, 0 overfull boxes. Page budget held
+    by tightening wording in Ch. 5, 7, 8 (no content removed beyond restatements).
+- **Not merged.** Wait for the author's approval; after merging, republish the mirror.
+
+
+### Latest (2026-10-13, red team): adversarial review of main 4bac934, report only
+
+The author asked for a red-team review before approving. Report: `docs/red_team_review_2026-10-13.md`,
+on branch docs/red-team-review. No thesis change.
+
+**High findings (they change a stated result):**
+- **R1, blind regime.** e6_blind_ported.py's intervals pool triplicated classical draws (√3 too
+  narrow) and treat the MLP non-hierarchically. `e6_blind_intervals.py` reran the protocol (means
+  reproduce exactly). The MLP's lead over CMA is resolved at 0–12 dB, but not at 14–20 dB: p 0.40–0.84,
+  and at 20 dB CMA is better on 31 of 50 draws. Table 6.1, Sec. 6.4 and Ch. 8 finding 8 cite 20 dB.
+- **R2, H1 margin.** "0.007" is against the variable-gain AF. The fixed-gain AF stored in the same JSON
+  is stronger at 0 dB (0.3384), which gives a margin of 0.0034.
+
+**Medium findings:**
+- R3: the matched coded comparison is information-asymmetric (|h1| goes to block DF only).
+- R4: canonical relays are trained off the deployment distribution.
+- R5: H5 is framed against strawman baselines.
+- R6: Table 9.6's spreads need the cross-machine caveat.
+- R7: Fig. 6.7(b) has no data and no generator.
+
+**Low findings:** R8–R11. Seven attacks were cleared.
+
+**Resolved 2026-10-14:** the author asked for all fixes in a new PR (see above).
 
 ### Latest (2026-10-13, final): #175 merged (4bac934); mirror a401ee4
 

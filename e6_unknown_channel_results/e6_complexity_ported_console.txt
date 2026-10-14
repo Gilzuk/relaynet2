@@ -1,0 +1,35 @@
+================================================================================
+E6_COMPLEXITY: Viterbi MLSE vs MLP-169 relay -- analytical cost + wall-clock
+================================================================================
+
+=== Panel (a): analytical per-symbol cost ===
+  M   L  Viterbi states  Vit branches/sym  Vit flops/sym  MLP flops/sym
+  2   3               4                 8             64            330
+  2   5              16                32            256            330
+  2   7              64               128          1,024            330
+  4   3              16                64            512            330
+  4   5             256             1,024          8,192            330
+ 16   3             256             4,096         32,768            330
+ 16   5          65,536         1,048,576      8,388,608            330
+
+MLP-169 is CONSTANT in M and L: 330 flops/symbol, 169 params.
+Viterbi grows as M^L per symbol (states M^(L-1) x M branches); intractable for large M or L.
+Honest caveat: at BPSK/L=3, Viterbi (64 flops/sym) is CHEAPER per-flop than the MLP (330 flops/sym); the MLP wins on scaling, not per-symbol cost here.
+
+=== Panel (b): measured wall-clock (relaynet's actual Viterbi vs actual MLP) ===
+  length  Viterbi (ms)   MLP (ms)  speedup
+    1000          7.19       0.12    58.1x
+    5000         35.69       0.43    82.1x
+   20000        142.46       1.86    76.7x
+   50000        418.67       5.23    80.1x
+
+Note: MLP forward pass is a vectorized batched matmul; relaynet's Viterbi decoder is an
+inherently sequential Python-loop scan (add-compare-select per symbol, per state).
+The wall-clock ratio above is numpy-MLP vs Python-Viterbi in THIS codebase -- implementation
+specific, not a universal claim. The M^L vs constant scaling in panel (a) is the robust claim.
+
+Results saved to /home/user/relaynet2/e6_unknown_channel_results/e6_complexity_ported_results.npy
+
+================================================================================
+E6_COMPLEXITY: Complete
+================================================================================

@@ -1,0 +1,495 @@
+{
+  "description": "Correct intervals for the blind-regime comparison (thesis Sec. 6.4, Table 6.1 layer 4).",
+  "git_rev": "33107969f9cc878536076c0b712319d03352e06c",
+  "snr_db": [
+    0,
+    2,
+    4,
+    6,
+    8,
+    10,
+    12,
+    14,
+    16,
+    18,
+    20
+  ],
+  "n_trials": 50,
+  "n_train": 3,
+  "n_bits": 20000,
+  "rows": {
+    "0": {
+      "DF-diff": {
+        "mean": 0.40938446922346117,
+        "ci_unique_draws": 0.0046921684149798795,
+        "ci_stored_pooled": 0.002615638993223842,
+        "mean_matches_stored": true
+      },
+      "CMA-blind": {
+        "mean": 0.40488924446222313,
+        "ci_unique_draws": 0.004678262330723575,
+        "ci_stored_pooled": 0.0026078870770505596,
+        "mean_matches_stored": true
+      },
+      "Viterbi-blind": {
+        "mean": 0.40584229211460565,
+        "ci_unique_draws": 0.013155585479772238,
+        "ci_stored_pooled": 0.007333552276113091,
+        "mean_matches_stored": true
+      },
+      "MLP-169": {
+        "mean": 0.398684,
+        "ci_hierarchical": 0.0049352502149090875,
+        "seed_means": [
+          0.397421,
+          0.400974,
+          0.39765700000000004
+        ],
+        "ci_stored_pooled": 0.0017937364696144439,
+        "mean_matches_stored": true
+      },
+      "MLP_minus_CMA": {
+        "mean": -0.006205244462223113,
+        "per_instance": [
+          -0.007468244462223113,
+          -0.003915244462223113,
+          -0.0072322444622231145
+        ],
+        "ci_over_instances": 0.004935250214909135,
+        "ci_over_draws": 0.003693839309993909,
+        "draws_mlp_better": 34,
+        "wilcoxon_p_draws": 0.002525686043762576
+      }
+    },
+    "2": {
+      "DF-diff": {
+        "mean": 0.3541327066353317,
+        "ci_unique_draws": 0.007610824679257702,
+        "ci_stored_pooled": 0.004242637527268328,
+        "mean_matches_stored": true
+      },
+      "CMA-blind": {
+        "mean": 0.33997599879994006,
+        "ci_unique_draws": 0.0073974696982005515,
+        "ci_stored_pooled": 0.004123703260955552,
+        "mean_matches_stored": true
+      },
+      "Viterbi-blind": {
+        "mean": 0.352185609280464,
+        "ci_unique_draws": 0.02286336806150717,
+        "ci_stored_pooled": 0.012745134387586385,
+        "mean_matches_stored": true
+      },
+      "MLP-169": {
+        "mean": 0.327129,
+        "ci_hierarchical": 0.006950291033689959,
+        "seed_means": [
+          0.325246,
+          0.33034399999999997,
+          0.325797
+        ],
+        "ci_stored_pooled": 0.0025992180472866147,
+        "mean_matches_stored": true
+      },
+      "MLP_minus_CMA": {
+        "mean": -0.012846998799939996,
+        "per_instance": [
+          -0.01472999879994,
+          -0.009631998799939999,
+          -0.014178998799939991
+        ],
+        "ci_over_instances": 0.006950291033689982,
+        "ci_over_draws": 0.004995000489150711,
+        "draws_mlp_better": 35,
+        "wilcoxon_p_draws": 1.9760169596594324e-05
+      }
+    },
+    "4": {
+      "DF-diff": {
+        "mean": 0.29689384469223457,
+        "ci_unique_draws": 0.011482848158097733,
+        "ci_stored_pooled": 0.006401088524380641,
+        "mean_matches_stored": true
+      },
+      "CMA-blind": {
+        "mean": 0.26365118255912795,
+        "ci_unique_draws": 0.010677963571355368,
+        "ci_stored_pooled": 0.0059524073765755015,
+        "mean_matches_stored": true
+      },
+      "Viterbi-blind": {
+        "mean": 0.3023921196059803,
+        "ci_unique_draws": 0.03137465155563329,
+        "ci_stored_pooled": 0.017489730706538892,
+        "mean_matches_stored": true
+      },
+      "MLP-169": {
+        "mean": 0.24360466666666666,
+        "ci_hierarchical": 0.00683168236758051,
+        "seed_means": [
+          0.24140499999999998,
+          0.24668800000000002,
+          0.24272100000000002
+        ],
+        "ci_stored_pooled": 0.0029302098832584473,
+        "mean_matches_stored": true
+      },
+      "MLP_minus_CMA": {
+        "mean": -0.020046515892461283,
+        "per_instance": [
+          -0.02224618255912795,
+          -0.016963182559127956,
+          -0.02093018255912795
+        ],
+        "ci_over_instances": 0.006831682367580463,
+        "ci_over_draws": 0.007344571738809031,
+        "draws_mlp_better": 35,
+        "wilcoxon_p_draws": 1.0451820186219152e-05
+      }
+    },
+    "6": {
+      "DF-diff": {
+        "mean": 0.24693334666733338,
+        "ci_unique_draws": 0.014090605371863029,
+        "ci_stored_pooled": 0.007854777064504048,
+        "mean_matches_stored": true
+      },
+      "CMA-blind": {
+        "mean": 0.18431221561078054,
+        "ci_unique_draws": 0.01168873728223395,
+        "ci_stored_pooled": 0.006515860965125118,
+        "mean_matches_stored": true
+      },
+      "Viterbi-blind": {
+        "mean": 0.19328266413320666,
+        "ci_unique_draws": 0.035600980086372955,
+        "ci_stored_pooled": 0.019845688277858188,
+        "mean_matches_stored": true
+      },
+      "MLP-169": {
+        "mean": 0.1603163333333333,
+        "ci_hierarchical": 0.004846731778092811,
+        "seed_means": [
+          0.15864,
+          0.162458,
+          0.15985100000000002
+        ],
+        "ci_stored_pooled": 0.0026811049596427664,
+        "mean_matches_stored": true
+      },
+      "MLP_minus_CMA": {
+        "mean": -0.023995882277447204,
+        "per_instance": [
+          -0.02567221561078054,
+          -0.021854215610780537,
+          -0.024461215610780535
+        ],
+        "ci_over_instances": 0.004846731778092834,
+        "ci_over_draws": 0.007946438308030764,
+        "draws_mlp_better": 38,
+        "wilcoxon_p_draws": 2.305757291765076e-07
+      }
+    },
+    "8": {
+      "DF-diff": {
+        "mean": 0.2085664283214161,
+        "ci_unique_draws": 0.01932111892131578,
+        "ci_stored_pooled": 0.010770515372374001,
+        "mean_matches_stored": true
+      },
+      "CMA-blind": {
+        "mean": 0.1182439121956098,
+        "ci_unique_draws": 0.013967565680368813,
+        "ci_stored_pooled": 0.007786188858300909,
+        "mean_matches_stored": true
+      },
+      "Viterbi-blind": {
+        "mean": 0.12761838091904598,
+        "ci_unique_draws": 0.03606448779558832,
+        "ci_stored_pooled": 0.020104069633909476,
+        "mean_matches_stored": true
+      },
+      "MLP-169": {
+        "mean": 0.09548700000000002,
+        "ci_hierarchical": 0.004578322413248978,
+        "seed_means": [
+          0.09372300000000001,
+          0.0974,
+          0.095338
+        ],
+        "ci_stored_pooled": 0.0026327041589922534,
+        "mean_matches_stored": true
+      },
+      "MLP_minus_CMA": {
+        "mean": -0.02275691219560978,
+        "per_instance": [
+          -0.02452091219560978,
+          -0.02084391219560978,
+          -0.02290591219560978
+        ],
+        "ci_over_instances": 0.004578322413248994,
+        "ci_over_draws": 0.009784595745586227,
+        "draws_mlp_better": 35,
+        "wilcoxon_p_draws": 1.2965142769161275e-05
+      }
+    },
+    "10": {
+      "DF-diff": {
+        "mean": 0.18505325266263312,
+        "ci_unique_draws": 0.02292177694645257,
+        "ci_stored_pooled": 0.012777694292411238,
+        "mean_matches_stored": true
+      },
+      "CMA-blind": {
+        "mean": 0.07066953347667383,
+        "ci_unique_draws": 0.01384631999451622,
+        "ci_stored_pooled": 0.0077186007166085225,
+        "mean_matches_stored": true
+      },
+      "Viterbi-blind": {
+        "mean": 0.09973398669933495,
+        "ci_unique_draws": 0.04323572556757165,
+        "ci_stored_pooled": 0.02410166040371131,
+        "mean_matches_stored": true
+      },
+      "MLP-169": {
+        "mean": 0.05210433333333333,
+        "ci_hierarchical": 0.003862098681794689,
+        "seed_means": [
+          0.050845,
+          0.05384200000000001,
+          0.051626000000000005
+        ],
+        "ci_stored_pooled": 0.002182385446101412,
+        "mean_matches_stored": true
+      },
+      "MLP_minus_CMA": {
+        "mean": -0.018565200143340496,
+        "per_instance": [
+          -0.019824533476673834,
+          -0.01682753347667383,
+          -0.01904353347667383
+        ],
+        "ci_over_instances": 0.003862098681794684,
+        "ci_over_draws": 0.010250037726117496,
+        "draws_mlp_better": 30,
+        "wilcoxon_p_draws": 0.0018425334424101436
+      }
+    },
+    "12": {
+      "DF-diff": {
+        "mean": 0.1702595129756488,
+        "ci_unique_draws": 0.030009208167442132,
+        "ci_stored_pooled": 0.016728567284145453,
+        "mean_matches_stored": true
+      },
+      "CMA-blind": {
+        "mean": 0.04425421271063554,
+        "ci_unique_draws": 0.01276856392341913,
+        "ci_stored_pooled": 0.007117807958244289,
+        "mean_matches_stored": true
+      },
+      "Viterbi-blind": {
+        "mean": 0.10524226211310567,
+        "ci_unique_draws": 0.048130884789270446,
+        "ci_stored_pooled": 0.026830456176991237,
+        "mean_matches_stored": true
+      },
+      "MLP-169": {
+        "mean": 0.026637666666666664,
+        "ci_hierarchical": 0.002118595698143867,
+        "seed_means": [
+          0.026038000000000002,
+          0.027613999999999996,
+          0.026261
+        ],
+        "ci_stored_pooled": 0.0015349337573472505,
+        "mean_matches_stored": true
+      },
+      "MLP_minus_CMA": {
+        "mean": -0.017616546043968867,
+        "per_instance": [
+          -0.018216212710635532,
+          -0.016640212710635535,
+          -0.01799321271063553
+        ],
+        "ci_over_instances": 0.00211859569814387,
+        "ci_over_draws": 0.010115187693456124,
+        "draws_mlp_better": 30,
+        "wilcoxon_p_draws": 0.0010644297047850415
+      }
+    },
+    "14": {
+      "DF-diff": {
+        "mean": 0.12537326866343318,
+        "ci_unique_draws": 0.03045965986085764,
+        "ci_stored_pooled": 0.016979670592820354,
+        "mean_matches_stored": true
+      },
+      "CMA-blind": {
+        "mean": 0.018387919395969798,
+        "ci_unique_draws": 0.005658530478039116,
+        "ci_stored_pooled": 0.0031543354060892385,
+        "mean_matches_stored": true
+      },
+      "Viterbi-blind": {
+        "mean": 0.0551157557877894,
+        "ci_unique_draws": 0.03282124877275833,
+        "ci_stored_pooled": 0.018296133152904952,
+        "mean_matches_stored": true
+      },
+      "MLP-169": {
+        "mean": 0.012395333333333333,
+        "ci_hierarchical": 0.0009102740672417739,
+        "seed_means": [
+          0.012166999999999999,
+          0.012818000000000001,
+          0.012201
+        ],
+        "ci_stored_pooled": 0.0006210780248987628,
+        "mean_matches_stored": true
+      },
+      "MLP_minus_CMA": {
+        "mean": -0.005992586062636464,
+        "per_instance": [
+          -0.006220919395969797,
+          -0.005569919395969799,
+          -0.006186919395969798
+        ],
+        "ci_over_instances": 0.0009102740672417689,
+        "ci_over_draws": 0.004622271529599899,
+        "draws_mlp_better": 20,
+        "wilcoxon_p_draws": 0.6321732707310517
+      }
+    },
+    "16": {
+      "DF-diff": {
+        "mean": 0.1258932946647332,
+        "ci_unique_draws": 0.03573837495438469,
+        "ci_stored_pooled": 0.019922278745730784,
+        "mean_matches_stored": true
+      },
+      "CMA-blind": {
+        "mean": 0.012467623381169059,
+        "ci_unique_draws": 0.005162664323063026,
+        "ci_stored_pooled": 0.0028779159054091894,
+        "mean_matches_stored": true
+      },
+      "Viterbi-blind": {
+        "mean": 0.037350867543377166,
+        "ci_unique_draws": 0.027641137961319364,
+        "ci_stored_pooled": 0.01540849174080993,
+        "mean_matches_stored": true
+      },
+      "MLP-169": {
+        "mean": 0.007087,
+        "ci_hierarchical": 0.00033351341289548887,
+        "seed_means": [
+          0.006967,
+          0.007232000000000001,
+          0.007062000000000001
+        ],
+        "ci_stored_pooled": 0.0003379614838962176,
+        "mean_matches_stored": true
+      },
+      "MLP_minus_CMA": {
+        "mean": -0.005380623381169058,
+        "per_instance": [
+          -0.005500623381169058,
+          -0.005235623381169056,
+          -0.005405623381169058
+        ],
+        "ci_over_instances": 0.0003335134128954903,
+        "ci_over_draws": 0.004615618680656764,
+        "draws_mlp_better": 25,
+        "wilcoxon_p_draws": 0.4042577575813002
+      }
+    },
+    "18": {
+      "DF-diff": {
+        "mean": 0.11429271463573178,
+        "ci_unique_draws": 0.03753014696563386,
+        "ci_stored_pooled": 0.020921098124129112,
+        "mean_matches_stored": true
+      },
+      "CMA-blind": {
+        "mean": 0.005830291514575728,
+        "ci_unique_draws": 0.0016139983812941342,
+        "ci_stored_pooled": 0.000899719858229173,
+        "mean_matches_stored": true
+      },
+      "Viterbi-blind": {
+        "mean": 0.03779788989449472,
+        "ci_unique_draws": 0.030741637010268996,
+        "ci_stored_pooled": 0.017136858136396968,
+        "mean_matches_stored": true
+      },
+      "MLP-169": {
+        "mean": 0.004164999999999999,
+        "ci_hierarchical": 4.331242098943304e-05,
+        "seed_means": [
+          0.004173,
+          0.004177,
+          0.004144999999999999
+        ],
+        "ci_stored_pooled": 0.00011447977288586836,
+        "mean_matches_stored": true
+      },
+      "MLP_minus_CMA": {
+        "mean": -0.0016652915145757288,
+        "per_instance": [
+          -0.0016572915145757288,
+          -0.0016532915145757287,
+          -0.001685291514575729
+        ],
+        "ci_over_instances": 4.3312420989432674e-05,
+        "ci_over_draws": 0.0014741861406369803,
+        "draws_mlp_better": 22,
+        "wilcoxon_p_draws": 0.8407540567937097
+      }
+    },
+    "20": {
+      "DF-diff": {
+        "mean": 0.1382779138956948,
+        "ci_unique_draws": 0.03811704491407729,
+        "ci_stored_pooled": 0.02124826309844904,
+        "mean_matches_stored": true
+      },
+      "CMA-blind": {
+        "mean": 0.0032881644082204107,
+        "ci_unique_draws": 0.0009111756446050856,
+        "ci_stored_pooled": 0.0005079328649193747,
+        "mean_matches_stored": true
+      },
+      "Viterbi-blind": {
+        "mean": 0.04977648882444122,
+        "ci_unique_draws": 0.03541386377147715,
+        "ci_stored_pooled": 0.019741380698456875,
+        "mean_matches_stored": true
+      },
+      "MLP-169": {
+        "mean": 0.00262,
+        "ci_hierarchical": 2.3697163449568042e-05,
+        "seed_means": [
+          0.0026309999999999997,
+          0.002615,
+          0.0026139999999999996
+        ],
+        "ci_stored_pooled": 5.71283871838005e-05,
+        "mean_matches_stored": true
+      },
+      "MLP_minus_CMA": {
+        "mean": -0.0006681644082204112,
+        "per_instance": [
+          -0.0006571644082204112,
+          -0.0006731644082204112,
+          -0.0006741644082204111
+        ],
+        "ci_over_instances": 2.369716344956831e-05,
+        "ci_over_draws": 0.000870480939355105,
+        "draws_mlp_better": 19,
+        "wilcoxon_p_draws": 0.5527237849111193
+      }
+    }
+  }
+}

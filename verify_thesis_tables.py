@@ -38,6 +38,7 @@ Data sources, by table:
   prose:nlbias          nonlinear-bias (S3) numbers, Ch. 6  <- e6_unknown_channel_results/e6_sim_ported_results.npy
   prose:coded-fer       20-dB frame-error rates, Ch. 5      <- results/coded_reliable_regime.json
   prose:mamba-lookahead causal-readout energy shares       <- tap vectors (size-sweep JSON and script)
+  prose:timing-mmse-median Fig. 6.7(b) speedup; Table 6.6 median lead <- e6_complexity_ported_results.npy, size sweep
   prose:seq-rerun       Sec. 6.4.2 rerun statements         <- results/seq_models_on_memory_{readout,bidirectional,
                                                                rerun_controls,repeat}.json, _repeat_probe.jsonl
 
@@ -246,7 +247,7 @@ MIN_CELLS = {
     "tbl:tableE6": 19, "tbl:tableE6flat": 24, "tbl:tableE6qpsk": 20,
     # E6partial 13 -> 12 (2026-10-03): the 10-pilot sentence no longer restates the MLP reference.
     # E6partial 12 -> 13 (2026-10-13): the 10-pilot 95% interval is now stated and checked.
-    "prose:E6blind": 9, "prose:E6partial": 13, "prose:E6composite": 6,
+    "prose:E6blind": 12, "prose:E6partial": 13, "prose:E6composite": 6,
     "tbl:table34": 30, "tbl:table37": 6, "tbl:table38": 10,
     "tbl:table39": 30, "tbl:table40": 12, "tbl:table41": 15,
     "tbl:table42": 27, "tbl:table43": 18, "tbl:table44": 20,
@@ -258,7 +259,7 @@ MIN_CELLS = {
     "arch:relay-param-counts": 5,
     "consistency:proof-copies": 7, "tbl:slicer-floor-inline": 24,
     "prose:qpsk-decomposition": 4, "prose:qpsk-controls": 3, "prose:scalar-map": 7,
-    "prose:af-conventional": 8, "prose:isi-penalty": 18, "prose:hybrid-branch": 21, "tbl:coded-matched": 46, "prose:flat-conclusion": 2, "coded-matched-secondary": 40,
+    "prose:af-conventional": 21, "prose:isi-penalty": 18, "prose:hybrid-branch": 21, "tbl:coded-matched": 46, "prose:flat-conclusion": 2, "coded-matched-secondary": 40,
     "prose:seed-spread-native": 6,
     "tbl:bcjr-benchmark": 12, "prose:soft-df-calibration": 2,
     "prose:mmse-monotonicity": 12,
@@ -266,6 +267,8 @@ MIN_CELLS = {
     "prose:nlbias": 3, "prose:coded-fer": 2, "prose:mamba-lookahead": 2,
     # seq-rerun (2026-10-13): Sec. 6.4.2 statements resting on the sequence-on-memory rerun.
     "prose:seq-rerun": 19,
+    # red-team fixes (2026-10-14): corrected blind intervals, fixed-gain AF, Fig. 6.7(b), Table 6.6 median.
+    "prose:timing-mmse-median": 6,
 }
 
 # Checks allowed to skip, with the reason. A skip means the check could not run
@@ -555,10 +558,11 @@ def check_layers_table(tex, rep):
     # Layer 4: blind regime at 20 dB, plus the unstable DD-MLSE tail.
     bs = blind["summary"]; bsnr = list(blind["snrs"])
     b16, b20 = bsnr.index(16), bsnr.index(20)
-    m = re.search(r"MLP reaches \$([\d.]+)\$ against CMA's \$([\d.]+)\$", body)
+    m = re.search(r"At 8~dB the MLP reaches \$([\d.]+)\$ against CMA's \$([\d.]+)\$", body)
     if m:
-        rep.cell(T, "L4/MLP@20dB", m.group(1), float(m.group(1)), bs["MLP-169"][0][b20])
-        rep.cell(T, "L4/CMA@20dB", m.group(2), float(m.group(2)), bs["CMA-blind"][0][b20])
+        b8 = bsnr.index(8)
+        rep.cell(T, "L4/MLP@8dB", m.group(1), float(m.group(1)), bs["MLP-169"][0][b8])
+        rep.cell(T, "L4/CMA@8dB", m.group(2), float(m.group(2)), bs["CMA-blind"][0][b8])
     m = re.search(r"worse at 20~dB \(\$([\d.]+)\$\) than at 16~dB \(\$([\d.]+)\$\)", body)
     if m:
         rep.cell(T, "L4/VITblind@20dB", m.group(1), float(m.group(1)), bs["Viterbi-blind"][0][b20])
@@ -1449,11 +1453,27 @@ def check_E6blind_prose(tex, rep):
         v16, v20 = (m.group(1) or m.group(3)), (m.group(2) or m.group(4))
         rep.cell(T, "Viterbi-blind/16dB", v16, float(v16), sm["Viterbi-blind"][0][i16])
         rep.cell(T, "Viterbi-blind/20dB", v20, float(v20), sm["Viterbi-blind"][0][i20])
+    # Intervals and resolution claims come from the corrected-interval rerun
+    # (e6_blind_intervals.py): classical intervals on the 50 unique draws, the
+    # MLP's hierarchical over its three trained instances. The stored npy
+    # intervals pool triplicated classical draws and are not used for these.
+    ip = os.path.join(ROOT, "results", "e6_blind_intervals.json")
+    iv = json.load(open(ip))["rows"] if os.path.exists(ip) else None
     m = re.search(r"interval at 8 dB is \$\\pm([\d.]+)\$.*?MLP's \$\\pm([\d.]+)\$.*?CMA's \$\\pm([\d.]+)\$", tex, re.S)
-    if m:
-        rep.cell(T, "Viterbi-blind CI/8dB", m.group(1), float(m.group(1)), sm["Viterbi-blind"][1][i8])
-        rep.cell(T, "MLP CI/8dB", m.group(2), float(m.group(2)), sm["MLP-169"][1][i8])
-        rep.cell(T, "CMA CI/8dB", m.group(3), float(m.group(3)), sm["CMA-blind"][1][i8])
+    if m and iv:
+        r8 = iv["8"]
+        rep.cell(T, "Viterbi-blind CI/8dB (unique draws)", m.group(1), float(m.group(1)), r8["Viterbi-blind"]["ci_unique_draws"])
+        rep.cell(T, "MLP CI/8dB (hierarchical)", m.group(2), float(m.group(2)), r8["MLP-169"]["ci_hierarchical"])
+        rep.cell(T, "CMA CI/8dB (unique draws)", m.group(3), float(m.group(3)), r8["CMA-blind"]["ci_unique_draws"])
+    m = re.search(r"resolved from 0 to 12 dB \(Wilcoxon \$p \\le ([\d.]+)\$\) but not from 14 to 20 dB \(\$p \\ge ([\d.]+)\$\)", tex)
+    if m and iv:
+        lo = [iv[str(k)]["MLP_minus_CMA"]["wilcoxon_p_draws"] for k in (0, 2, 4, 6, 8, 10, 12)]
+        hi = [iv[str(k)]["MLP_minus_CMA"]["wilcoxon_p_draws"] for k in (14, 16, 18, 20)]
+        rep.cell(T, "max p, 0-12 dB (bound)", m.group(1), "<%g" % (float(m.group(1)) + 1e-12), max(lo))
+        rep.cell(T, "min p, 14-20 dB", m.group(2), float(m.group(2)), min(hi))
+    m = re.search(r"at 20 dB the MLP is better on only (\d+) of the 50 draws", tex)
+    if m and iv:
+        rep.cell(T, "draws MLP better at 20 dB", m.group(1), float(m.group(1)), iv["20"]["MLP_minus_CMA"]["draws_mlp_better"])
     rep.finish_table(T, before)
 
 
@@ -1467,9 +1487,9 @@ def check_E6partial_prose(tex, rep):
     pb = d.get("panel_b", {})
     pbc = d.get("panel_b_cma", {})
 
-    m = re.search(r"payload BER \$([\d.]+)\$ at 800 pilots", tex)
+    m = re.search(r"payload BER \$([\d.]+)\$ at 200 pilots", tex)
     if m:
-        rep.cell(T, "Viterbi/800 pilots", m.group(1), float(m.group(1)), pa[800][0])
+        rep.cell(T, "Viterbi/200 pilots", m.group(1), float(m.group(1)), pa[200][0])
     m = re.search(r"(?:down to|and) \$([\d.]+)\$ at 20 pilots", tex)
     if m:
         rep.cell(T, "Viterbi/20 pilots", m.group(1), float(m.group(1)), pa[20][0])
@@ -1751,6 +1771,7 @@ def check_af_conventional_prose(tex, rep):
     c = json.load(open(os.path.join(ROOT, "results", "modulation", "qpsk_rayleigh.json")))["results"]
     i = lambda snr: d["snrs"].index(snr)
     imp, vg = d["implemented_af_by_block"], d["conventional_af_variable_gain"]
+    fg = d["conventional_af_fixed_gain"]
     mlp0, af0 = c["MLP (169p)"]["ber_mean"][0], c["AF"]["ber_mean"][0]
     checks = [
         (r"\$([\d.]+)\$ for 50-symbol blocks", ["impl@0dB,N=50"], [imp["50"][i(0)]]),
@@ -1760,7 +1781,19 @@ def check_af_conventional_prose(tex, rep):
          ["convAF@0dB", "convAF@4dB", "convAF@8dB"], [vg[i(0)], vg[i(4)], vg[i(8)]]),
         (r"margin at 0~dB falls from \$([\d.]+)\$ to \$([\d.]+)\$",
          ["margin vs implemented AF", "margin vs conventional AF"], [af0 - mlp0, vg[i(0)] - mlp0]),
+        (r"does better at 0 and 2~dB \(\$([\d.]+)\$ and \$([\d.]+)\$\)",
+         ["fixedAF@0dB", "fixedAF@2dB"], [fg[i(0)], fg[i(2)]]),
+        (r"against the fixed-gain one it is \$([\d.]+)\$", ["margin vs fixed-gain AF"], [fg[i(0)] - mlp0]),
+        (r"a fixed-gain AF does better at 0~dB \(\$([\d.]+)\$\), leaving \$([\d.]+)\$",
+         ["fixedAF@0dB (Ch. 5)", "margin vs fixed-gain AF (Ch. 5)"], [fg[i(0)], fg[i(0)] - mlp0]),
     ]
+    # The margin range quoted in both abstracts, Ch. 8 finding 1 and Table 8.1:
+    # the smaller end against the fixed-gain AF, the larger against variable gain.
+    for m in re.finditer(r"margin is (?:only )?\$([\d.]+)\$--\$([\d.]+)\$"
+                         r"|\\textenglish\{0 dB\} הוא \\textenglish\{([\d.]+)--([\d.]+)\}", tex):
+        lo_, hi_ = (m.group(1) or m.group(3)), (m.group(2) or m.group(4))
+        rep.cell(T, "margin range low (fixed gain)", lo_, float(lo_), fg[i(0)] - mlp0)
+        rep.cell(T, "margin range high (variable gain)", hi_, float(hi_), vg[i(0)] - mlp0)
     for pat, labels, srcs in checks:
         m = re.search(pat, tex)
         if not m:
@@ -2431,6 +2464,45 @@ def check_seq_rerun_prose(tex, rep):
     rep.finish_table(T, before)
 
 
+def check_timing_and_mmse_median_prose(tex, rep):
+    """Fig. 6.7(b) speedup and Table 6.6's median-initialization lead.
+
+    The speedup range is read from e6_complexity_ported_results.npy (median of
+    seven single-threaded runs per block length). The median-initialization lead
+    takes, on each channel, the size-sweep configuration with the best
+    best-of-seeds penalty (the one Table 6.6 reports), uses its median seed
+    instead, and subtracts it from the best MMSE penalty.
+    """
+    from ber_metrics import penalty_table
+    T = "prose:timing-mmse-median"; before = rep.checked
+    tp = os.path.join(ROOT, "e6_unknown_channel_results", "e6_complexity_ported_results.npy")
+    if os.path.exists(tp):
+        pb = np.load(tp, allow_pickle=True).item()["panel_b"]
+        ratios = [v[2] for v in pb.values()]
+        for m in re.finditer(r"MLP is \$([\d.]+)\$--\$([\d.]+)\\times\$ faster", tex):
+            rep.cell(T, "speedup low", m.group(1), float(m.group(1)), min(ratios))
+            rep.cell(T, "speedup high", m.group(2), float(m.group(2)), max(ratios))
+    m = re.search(r"\(\$([\d.]+)\$ to \$([\d.]+)\$~dB at the median initialization\)", tex)
+    mp = os.path.join(ROOT, "results", "mlp_min_size_all_channels.json")
+    ep = os.path.join(ROOT, "results", "mmse_equalizer.json")
+    if m and os.path.exists(mp) and os.path.exists(ep):
+        ms, mm = json.load(open(mp)), json.load(open(ep))
+        leads = []
+        for ch in ("isi", "isi_complex", "composite"):
+            c = ms["channels"][ch]
+            snr, base = ms["snr_db"], np.array(c["baseline_ber"])
+            best = None
+            for cfg in c["sweep"]:
+                ps = [penalty_table(snr, np.array(r["ber"]), base)["worst_db_penalty"] for r in cfg["seed_runs"]]
+                ps = [v for v in ps if v == v]
+                if ps and (best is None or min(ps) < best[0]):
+                    best = (min(ps), float(np.median(ps)))
+            leads.append(min(mm[ch].values()) - best[1])
+        rep.cell(T, "median-init lead low", m.group(1), float(m.group(1)), min(leads))
+        rep.cell(T, "median-init lead high", m.group(2), float(m.group(2)), max(leads))
+    rep.finish_table(T, before)
+
+
 def main():
     global TEX_DIR, MC_SLACK
     ap = argparse.ArgumentParser()
@@ -2485,7 +2557,7 @@ def main():
               check_mmse_monotonicity_prose,
               check_joint_latency, check_joint_memory,
               check_nlbias_prose, check_coded_fer_prose, check_mamba_lookahead_prose,
-              check_seq_rerun_prose]
+              check_seq_rerun_prose, check_timing_and_mmse_median_prose]
     for chk in checks:
         try:
             chk(tex, rep)
