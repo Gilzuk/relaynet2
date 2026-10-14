@@ -2,7 +2,7 @@ Subject: Re: Thesis — response to your nine comments
 
 Dear Anatoly,
 
-Thank you for the detailed comments. I have addressed all nine and the presentation notes. Three of them (comments 3, 4 and 7) led to new measurements that change conclusions in the thesis, and I state those plainly below. The revised thesis runs to 120 pages from Chapter 1 through the appendices, within the 120-page limit. The table verifier now checks 732 cells with no inconsistencies, and all 347 tests pass.
+Thank you for the detailed comments. I have addressed all nine and the presentation notes. Three of them (comments 3, 4 and 7) led to new measurements that change conclusions in the thesis, and I state those plainly below. After finishing them I reviewed the whole thesis twice more against its data and code. The further corrections, three of which change stated results, are listed after comment 9. The revised thesis runs to 120 pages from Chapter 1 through the appendices, within the 120-page limit. The table verifier now checks 732 cells with no inconsistencies, and all 347 tests pass.
 
 **1. The relay-design problem.** A new Section 4.1.5 states the problem explicitly:
 - the relay's observations and the channel information it has;
@@ -84,6 +84,24 @@ It states four things the thesis adds, beginning with the statement that the con
 **Presentation notes.** Chapter 5 now carries its own running headers. The experiment ledger (Appendix 9.3) uses table and figure references instead of internal labels. The verification-coverage statements in Section 4.3.4 and Appendices 9.2 and 9.3 now agree: the verifier checks a declared subset of numerical cells, not every number or figure. The ledger's channel descriptions are corrected, and it lists the new experiments. Figures and tables now show the same values. Figures 5.3–5.5 are redrawn from the 100-trial runs that their tables report; they had been drawn from earlier runs (Figures 5.3 and 5.4 printed 20 and 10 trials). Table 5.8's 20 dB soft block-DF cell is now the run that Figure 5.3 plots, with the doubled-variance value as a footnoted sensitivity check rather than as the reported value. Figure 6.3 shows only the AWGN case that Table 6.4 reports. Figure 6.7 labels the network in panel (a) as the 170-parameter relay and states which network panel (b) timed. The test counts in Section 4.3.4 and Appendix 9.2 now agree with the current suite, and the relay configuration table in Appendix 9.1 (Table 9.1) is corrected. The appendices are numbered 9.1–9.6; the former letter names, which began at B, are dropped. The coded figures and Tables 5.5 and 5.8 state that they use the unweighted metric and point to the matched results.
 
 The reversed coded conclusion is stated wherever the coded results are discussed, including the English and Hebrew abstracts.
+
+**Further changes beyond your comments.** These came from my two later reviews of the whole thesis. Three of them change stated results:
+- **Ten pilots.** The abstracts and Chapter 6 said the learned relay leads pilot-aided detection at ten pilots. At ten pilots the classical BER is 0.0545 ± 0.0108, an interval that contains the MLP's 0.0486, so that lead is not resolved. Both abstracts, Table 6.1, Section 6.3 and Chapter 8 now say the MLP trails at twenty pilots, is not resolved from the classical detector at ten, and leads at five.
+- **Blind regime.** The thesis cited the MLP's lead over CMA at 20 dB. Its intervals were too narrow: each classical draw was counted three times, and the MLP's training variance was ignored. With corrected intervals and a paired test over the 50 shared channel draws, the lead is resolved from 0 to 12 dB (Wilcoxon p ≤ 0.003) but not from 14 to 20 dB (p ≥ 0.40); at 20 dB the MLP is better on only 19 of the 50 draws. Section 6.4, Table 6.1 and Chapter 8 now say so.
+- **Measured inference time.** The "30–90× faster" figure for the MLP over the Python Viterbi in Figure 6.7(b) had no committed measurement behind it. I remeasured it single-threaded, as the median of seven runs, and the panel is now plotted from that committed data: the MLP is 58–82× faster. A multithreaded run without warm-up gave only 4–16×, so the text says the ratio depends on threading and machine.
+
+The other changes sharpen wording or disclose limits:
+- **H5** is now stated against the model-based detectors. The chosen taps defeat AF and zero-threshold DF analytically, so those comparisons carry little information on their own (Section 7.6, Table 8.1). H2's verdict reads "supported as matching": DF matches or beats every learned relay from 6 dB and none is detectably better.
+- **Training distribution.** The canonical relays are trained on BPSK over AWGN, so H1–H4 measure transfer from that training distribution (Section 7.1.1). The per-seed spreads of Table 9.6 come from one machine, and Section 6.4.2 shows that such spreads change between machines.
+- **Table 6.6.** Its learned-relay column takes the best seed of the best size-sweep configuration. That is now defined and checked, and the caption adds the lead at the median initialization (1.4–2.3 dB, against 1.8–2.4 dB at the best).
+- **Table 6.7.** The best seed of the Mamba-2 QPSK cell never reaches 10⁻³. That cell is now footnoted.
+- **Smaller corrections:**
+  - two frame-error rates that no committed run contained (20.23% and 10.58%) are replaced by the committed 19.98% and 10.64%;
+  - goodput is η(1−FER) throughout, and Figure 5.4 is relabelled to match;
+  - there are three sequence models, not two;
+  - Table 5.5's 20 dB entry records a tie it had omitted;
+  - two bibliography entries now cite their venues;
+  - the title pages are dated October 2026.
 
 Best regards,
 Gil

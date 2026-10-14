@@ -2,6 +2,14 @@
 
 _Last updated: 2026-10-14_
 
+### Latest (2026-10-14): reply to Khina extended with the changes since #175
+
+`thesis/submission/reply_to_khina_2026-10.md` (still unsent) gains a section "Further changes beyond
+your comments" covering the #175 and #178 changes that fall under none of his nine comments: the
+ten-pilot lead (not resolved), the blind lead (0–12 dB only), the 58–82× timing, then H5/H2 wording,
+the training-distribution and one-machine disclosures, Table 6.6/6.7, and smaller corrections. The
+opening paragraph points to it. Branch docs/khina-email-since-175.
+
 ### Latest (2026-10-14, final): #178 merged (fe8198b); mirror abf77f8
 
 The author: "Approve and confirm dr khina fixes were not overridden".
