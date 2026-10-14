@@ -25,7 +25,7 @@ The author: "Approve and confirm dr khina fixes were not overridden".
 - 120 countable pages, verifier 732/0, provenance clean, 347 tests; CI green on 3.10/3.11/3.12.
 - **Merged** as fe8198b; **mirror** republished as abf77f8 ("Thesis at fe8198b (clean)", author
   identity via env vars; repo user.name unchanged).
-- **Open for the author:** read the re-drafted Hebrew margin sentence (0.003–0.007).
+- **Hebrew margin sentence (0.003–0.007) approved by the author on 2026-10-14** ("Approve Hebrew").
 
 
 ### 2026-10-14: red-team fixes on fix/red-team-findings, #178 (#177 closed as superseded)
