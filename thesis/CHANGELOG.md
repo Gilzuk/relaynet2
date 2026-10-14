@@ -13,6 +13,40 @@ produced them; it does not cover every number or figure.
 
 ---
 
+## [Red-team fixes] — 2026-10-14
+
+The findings of `docs/red_team_review_2026-10-13.md` are applied, except R9. Its
+Outcome section lists each fix. The main ones:
+
+- **Blind regime (R1).** The MLP's lead over CMA is resolved from 0 to 12 dB
+  (paired Wilcoxon over 50 draws, p ≤ 0.003), not from 14 to 20 dB. Sec. 6.4,
+  Table 6.1 layer 4 (now quoted at 8 dB), App. 9.5.4, finding 8, Sec. 7.6 and
+  Table 8.1 say so. The intervals are corrected: the stored ones pooled three
+  identical copies of each classical draw and ignored MLP training variance
+  (`e6_blind_intervals.py`; every mean reproduces the stored one).
+- **H1 margin (R2).** A fixed-gain conventional AF is better than the
+  variable-gain one at 0 and 2 dB, so the MLP's 0 dB margin is 0.003–0.007
+  depending on the gain rule. Both abstracts (the Hebrew number is re-drafted
+  for the author), Ch. 5, Sec. 7.1.1, finding 1 and Table 8.1 quote the range.
+- **Disclosures (R3, R4, R6).** The matched coded decoder gets |h₁|², which the
+  learned relays do not; H1–H4 measure transfer from BPSK/AWGN training;
+  Table 9.6's spreads are from one machine.
+- **H5 (R5).** Stated against model-based detectors, since the chosen taps
+  defeat AF and zero-threshold DF analytically.
+- **Fig. 6.7(b) (R7).** Redrawn from committed timing data by
+  `scripts/plot_e6_timing.py`. Single-threaded, median of seven runs, the MLP
+  is 58–82× faster than the Python Viterbi, replacing the unsourced "30–90×".
+- **Smaller items.** Table 6.6's median-initialization lead (R8); Table 5.11's
+  coarse speedup ranges (R10); Sec. 6.3 quotes 200 pilots, as Table 6.1 (R11).
+- **Not applied.** R9: MambaCSP's Globecom 2026 publication cannot be confirmed
+  before the conference, so the arXiv entry stays.
+
+Build: 136 PDF pages, 120 countable (the limit), held by tightening wording in
+Chapters 5, 7 and 8; 0 errors and 0 overfull boxes. The verifier checks 732
+cells (24 new), with 0 inconsistencies; 347 tests pass.
+
+---
+
 ## [Committee-audit fixes] — 2026-10-13
 
 Every finding of `docs/committee_audit_2026-10-13.md` is fixed. Its Outcome

@@ -214,10 +214,31 @@ register it, or drop the panel and the ratio.
 |---|---|
 | `e6_blind_intervals.py` | `results/e6_blind_intervals.json`, `results/e6_blind_intervals_console.txt` |
 
-It is registered in `provenance_audit.py`, as not in the thesis. The other checks used committed data
+It is registered in `provenance_audit.py`; after the fixes below it backs the Sec. 6.4 intervals, Table 6.1 layer 4 and Ch. 8 finding 8. The other checks used committed data
 (`results/af_block_and_conventional.json`, `results/mlp_min_size_all_channels.json`,
 `results/modulation/qpsk_rayleigh.json`, `results/normalized_3k/3k_rayleigh.json`) and are
 reproducible from the commands given in each finding.
 
 **Page budget.** The thesis is at 120 of 120 countable pages. R1 and R2 rewrite existing sentences.
 R3–R6 add about one sentence each and would need offsets.
+
+## Outcome (2026-10-14, branch `fix/red-team-findings`)
+
+Applied in one PR into `main`, which supersedes this report-only PR (#177). Verifier 732 cells
+(24 new), 0 inconsistencies; provenance clean; 347 tests; 120 countable pages (136 PDF pages,
+unchanged). Wording elsewhere in Chapters 5, 7 and 8 was tightened to hold the page budget.
+
+| Finding | Fix |
+|---|---|
+| R1 | Sec. 6.4, Table 6.1 layer 4, App. 9.5.4 heading, Ch. 8 finding 8, Sec. 7.6 and Table 8.1 H5 say the lead over CMA is resolved from 0 to 12 dB (Wilcoxon p ≤ 0.003) and not from 14 to 20 dB (p ≥ 0.40; better on 19 of 50 draws at 20 dB). Layer 4 now quotes the 8 dB pair (0.0955 against 0.1182). The intervals are the corrected ones (MLP ±0.0046 hierarchical, CMA ±0.0140, DD-MLSE ±0.0361 at 8 dB). |
+| R2 | Both abstracts, Ch. 5, Sec. 7.1.1, finding 1 and Table 8.1 H1 quote a 0.003–0.007 margin depending on the gain rule; Sec. 7.1.1 notes that 0.003 lies just outside the MLP's Monte Carlo interval, which omits training variance, and inside the VAE's. The Hebrew abstract number changed and is re-drafted for the author (`thesis/HEBREW_ABSTRACT_SYNC.md`). |
+| R3 | Ch. 1 contribution 3 and the Ch. 8 coded paragraph state that the matched relay decoder uses \|h₁\|², which the learned relays do not get, and that a learned relay with that input was not evaluated. |
+| R4 | Sec. 7.1.1 states that H1–H4 measure transfer from the BPSK/AWGN training distribution; Ch. 5 adds it as a third reading of the sequence-model gap. |
+| R5 | Sec. 7.6 and Table 8.1 H5: AF and zero-threshold DF are defeated analytically by the chosen taps, so the informative evidence is against model-based detectors. |
+| R6 | Table 9.6 caption: three seeds on one machine, with the cross-machine pointer to Sec. 6.4.2. |
+| R7 | `e6_complexity_ported.py` panel (b) now follows the Table 5.11 protocol (single-threaded, one warm-up, median of seven) and saves its settings; its output is committed, and `scripts/plot_e6_timing.py` draws Fig. 6.7(b) from it. The speedup is 58–82×, replacing "30–90×", in the caption, Sec. 6.5 and the README. A first, multithreaded run without warm-up gave 4–16×; the ratio depends on threading and machine, and the text says so. |
+| R8 | Table 6.6 caption adds the median-initialization lead, 1.4 to 2.3 dB (the report's 2.4 was a rounding slip; the value is 2.346). |
+| R9 | **Not applied.** The Globecom 2026 publication could not be confirmed before the conference (December 2026), so the arXiv entry stays. |
+| R10 | The Table 5.11 follow-up says the MLP speedup ranges are coarse because the timings are sub-microsecond. |
+| R11 | Sec. 6.3 quotes the LS-plus-MLSE payload BER at 200 pilots (0.0283), as Table 6.1 does. |
+

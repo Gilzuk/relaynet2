@@ -1,6 +1,30 @@
 # Active Context (update this file first, every session)
 
-_Last updated: 2026-10-13_
+_Last updated: 2026-10-14_
+
+### Latest (2026-10-14): red-team fixes on fix/red-team-findings, PR into main awaiting approval
+
+The author asked: "Merge 176, delete merged branches, apply red team findings in new PR".
+- **#176 merged** (225d70e).
+- **Branch deletion blocked.** `git push origin --delete` gets HTTP 403 from the session proxy and the
+  GitHub MCP has no delete-branch tool. The 80 merged branches, with tip SHAs and a one-line delete
+  command, are in `docs/merged_branches_2026-10-14.txt` for the author to run.
+- **Red-team fixes (all but R9)** on `fix/red-team-findings` (branched from 225d70e; #177 merged into
+  it, so the PR supersedes #177, which should be closed). Outcome table in the report.
+  - R1: blind lead "resolved 0–12 dB (Wilcoxon p ≤ 0.003), not 14–20 dB (p ≥ 0.40; 19/50 draws at
+    20 dB)"; corrected intervals (MLP ±0.0046 hierarchical, CMA ±0.0140, DD-MLSE ±0.0361 at 8 dB);
+    Table 6.1 layer 4 now quotes 8 dB (0.0955 vs 0.1182).
+  - R2: H1 margin 0.003–0.007 by gain rule in both abstracts, Ch. 5, 7.1.1, finding 1, Table 8.1.
+    **The approved Hebrew abstract's number changed; the author must re-read it.**
+  - R7: `e6_complexity_ported.py` panel (b) uses the Table 5.11 protocol (single-threaded, warm-up,
+    median of 7); data committed; `scripts/plot_e6_timing.py` draws Fig. 6.7(b); 58–82× (was an
+    unsourced 30–90×; multithreaded without warm-up gave 4–16×).
+  - R3, R4, R5, R6, R8 (1.4–2.3 dB), R10, R11 applied. R9 not applied (Globecom 2026 not yet held).
+  - Verifier 732/0 (new `prose:timing-mmse-median`; E6blind, af-conventional, layers extended);
+    provenance clean; 347 tests; 136 PDF pages, **120 countable**, 0 overfull boxes. Page budget held
+    by tightening wording in Ch. 5, 7, 8 (no content removed beyond restatements).
+- **Not merged.** Wait for the author's approval; after merging, republish the mirror.
+
 
 ### Latest (2026-10-13, red team): adversarial review of main 4bac934, report only
 
@@ -24,7 +48,7 @@ on branch docs/red-team-review. No thesis change.
 
 **Low findings:** R8–R11. Seven attacks were cleared.
 
-**Waiting on the author:** which fixes to apply.
+**Resolved 2026-10-14:** the author asked for all fixes in a new PR (see above).
 
 ### Latest (2026-10-13, final): #175 merged (4bac934); mirror a401ee4
 

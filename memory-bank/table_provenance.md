@@ -41,6 +41,16 @@ rests on. Do not hand-edit; re-run the script.
 | data commit | `3c271cb` 2026-10-12 (Gilzuk) |
 | provenance | ok |
 
+## `Ch. 8 finding 8`
+
+| field | value |
+|---|---|
+| experiment | E6 blind regime, corrected intervals (red-team check) |
+| reproduce | `python e6_blind_intervals.py` |
+| data file | `results/e6_blind_intervals.json` |
+| data commit | `c41d5f4` 2026-10-13 (Claude) |
+| provenance | ok |
+
 ## `Ch. 9 H1 verdict row`
 
 | field | value |
@@ -160,6 +170,17 @@ rests on. Do not hand-edit; re-run the script.
 | N_TRAIN | `3` |
 | SNRS | `np.arange(0, 21, 2)` |
 | TRAIN_SNRS | `[5, 10, 15]` |
+| W | `11` |
+
+## `fig:figE6complexity panel (b)`
+
+| field | value |
+|---|---|
+| experiment | E6 complexity: measured inference time |
+| reproduce | `python e6_complexity_ported.py` |
+| data file | `e6_unknown_channel_results/e6_complexity_ported_results.npy` |
+| data commit | `9d2bd85` 2026-10-14 (Claude) |
+| provenance | ok |
 | W | `11` |
 
 ## `fig:minsize-budget`
@@ -294,6 +315,17 @@ rests on. Do not hand-edit; re-run the script.
 | provenance | ok |
 | SNRS | `(0, 4, 8, 12, 16, 20)` |
 
+## `prose: measured MLP/Viterbi speedup (Sec. 6.5)`
+
+| field | value |
+|---|---|
+| experiment | E6 complexity: measured inference time |
+| reproduce | `python e6_complexity_ported.py` |
+| data file | `e6_unknown_channel_results/e6_complexity_ported_results.npy` |
+| data commit | `9d2bd85` 2026-10-14 (Claude) |
+| provenance | ok |
+| W | `11` |
+
 ## `prose: stopping-rule bias and the 16 dB interval (Chapter 7)`
 
 | field | value |
@@ -328,6 +360,16 @@ rests on. Do not hand-edit; re-run the script.
 | SNRS | `np.arange(0, 21, 2)` |
 | TRAIN_SNRS | `[5, 10, 15]` |
 | W | `11` |
+
+## `prose:E6blind intervals and resolution (Sec. 6.4)`
+
+| field | value |
+|---|---|
+| experiment | E6 blind regime, corrected intervals (red-team check) |
+| reproduce | `python e6_blind_intervals.py` |
+| data file | `results/e6_blind_intervals.json` |
+| data commit | `c41d5f4` 2026-10-13 (Claude) |
+| provenance | ok |
 
 ## `prose:E6composite`
 
@@ -557,6 +599,16 @@ rests on. Do not hand-edit; re-run the script.
 | H_ISI | `H_CHANNEL / np.linalg.norm(H_CHANNEL)` |
 | SEEDS | `(0, 1, 2)` |
 | SNRS | `list(range(0, 21, 2))` |
+
+## `tbl:layers layer 4 resolution`
+
+| field | value |
+|---|---|
+| experiment | E6 blind regime, corrected intervals (red-team check) |
+| reproduce | `python e6_blind_intervals.py` |
+| data file | `results/e6_blind_intervals.json` |
+| data commit | `c41d5f4` 2026-10-13 (Claude) |
+| provenance | ok |
 
 ## `tbl:mmse-baseline`
 

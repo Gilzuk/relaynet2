@@ -4,6 +4,12 @@
 #175 build) and the two changes of the committee-audit round below, and approved them ("Hebrew ok").
 The earlier notes below are kept as the record of how the text was drafted.
 
+**Update 2026-10-14 (red-team findings, R2) — not yet author-approved.** One number in the
+approved text changed, mirroring the English abstract: the MLP's 0 dB margin against conventional
+AF is now "only 0.003–0.007, depending on the gain rule" (a fixed-gain AF does better than the
+variable-gain one at 0 dB). The drafted Hebrew reads
+"…הוא \textenglish{0.003--0.007} בלבד, בהתאם לכלל ההגבר;" and should be read by the author.
+
 **Update 2026-10-13 (committee audit).** Two more changes to the English
 abstract were mirrored, in drafted Hebrew for the author to read:
 - the pilot sentence now says the learned relay trails pilot-aided detection at
