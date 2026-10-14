@@ -1,6 +1,6 @@
 # Handover — Khina revision round (task chain)
 
-_Last updated: 2026-10-13. Khina round complete and #173 merged (mirror 748962e = main 82875bc). A committee-level audit (CA, `docs/committee_audit_2026-10-13.md`) found 7 substantive items, 17 inconsistencies and 23 minor ones; all were fixed in the CF PR (#175, branch `fix/committee-audit-findings`), which supersedes the report-only #174. The A2 look-ahead rerun (MR) was folded into the same PR at the author's direction. Thesis 120 countable pages (Chapter 1 through the appendices; the faculty limit is 120; 136 PDF pages); verifier 708 cells; 347 tests. The open items are the author's decisions listed under "Next"._
+_Last updated: 2026-10-13. Khina round complete and #173 merged. **#175 (committee-audit fixes, with the A2 Mamba rerun and the author's three decisions) merged as 4bac934; mirror a401ee4 = main 4bac934.** A committee-level audit (CA, `docs/committee_audit_2026-10-13.md`) found 7 substantive items, 17 inconsistencies and 23 minor ones; all were fixed in the CF PR (#175, branch `fix/committee-audit-findings`), which supersedes the report-only #174. The A2 look-ahead rerun (MR) was folded into the same PR at the author's direction. Thesis 120 countable pages (Chapter 1 through the appendices; the faculty limit is 120; 136 PDF pages); verifier 708 cells; 347 tests. The open items are the author's decisions listed under "Next"._
 
 **Independent recheck (2026-10-12):** draft #171 (branch `fix/khina-independent-audit-20261012`, now combined with #172 in #173) records additional wording/documentation corrections and a nine-comment evidence mapping in `docs/independent_khina_audit_2026-10-12.md`. The saved coded reversal is confirmed independently, but exact canonical training reproduction and verification against the absent original October email remain limited. That environment ran 343 passes and 4 Mamba-2 skips; where the Mamba-2 module imports, as in the session that combined it with #172, all 347 pass. Republish the generated mirror after this PR merges.
 
@@ -114,7 +114,7 @@ tells you where the work is; rerun any experiment script from scratch rather tha
 
 ### Next (author decisions)
 
-0. **Committee audit fixes:** review and approve the CF PR (branch `fix/committee-audit-findings`; it carries the audit report with an Outcome section and supersedes #174). After it merges, republish the mirror (P). The three reads are done (2026-10-13): the Hebrew abstract is approved, the H2 verdict reads "Supported as matching", and the date is October 2026. Only the merge approval remains.
+0. ~~**Committee audit fixes**~~ done: #175 merged as 4bac934 on the author's approval (2026-10-13), mirror republished as a401ee4 ("Thesis at 4bac934 (clean)", author identity). Hebrew abstract approved, H2 verdict "Supported as matching", title pages October 2026.
 1. **Send the reply** in `thesis/submission/reply_to_khina_2026-10.md` (drafted, not sent), with the
    revised PDF (`thesis/main.pdf`, 120 countable pages) or the Overleaf project. The Hebrew abstract is
    approved by the author (2026-10-13; `thesis/HEBREW_ABSTRACT_SYNC.md`).

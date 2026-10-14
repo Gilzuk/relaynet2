@@ -2,7 +2,30 @@
 
 _Last updated: 2026-10-13_
 
-### Latest (2026-10-13, last): author decisions applied to #175; only the merge approval remains
+### Latest (2026-10-13, final): #175 merged (4bac934); mirror a401ee4
+
+The author approved "Merge and republish", and GitHub CI was green on 3.10, 3.11 and 3.12. #175 was
+merged as 4bac934 (merge commit).
+
+**Mirror.** `scripts/overleaf_sync.py --repo` was run with GIT_AUTHOR/COMMITTER set to Gil Zukerman.
+The repo's user.name was left unchanged. Gilzuk/relaynet2-thesis main is now a401ee4, "Thesis at
+4bac934 (clean)". It contains the October date, the H2 wording and the Sec. 6.4.2 rerun text.
+
+**Checks re-run on main:**
+- 136 PDF pages, 120 countable (last appendix folio 120);
+- verifier 708/0;
+- provenance clean;
+- 347 tests.
+
+**Branches.** fix/committee-audit-findings and exp/mamba-full-window-readout are fully merged and can
+be deleted.
+
+**Remaining author items (HANDOVER "Next"):**
+- send the Khina reply (drafted, not sent);
+- pull the mirror into Overleaf;
+- the f174a3b mirror-identity rewrite (needs the author's OK).
+
+### Earlier (2026-10-13, last): author decisions applied to #175
 
 The author ruled on the three reads with "Hebrew ok, H2 explicit, October 2026":
 - **Hebrew abstract:** approved, no text change. `thesis/HEBREW_ABSTRACT_SYNC.md` now says so.

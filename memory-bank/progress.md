@@ -502,3 +502,9 @@ The Hebrew abstract is approved. The H2 verdict reads "Supported as matching …
 better". The title pages read October 2026. The build is still 120 countable pages, and #175 awaits
 the merge approval.
 
+## 2026-10-13 (final): #175 merged; mirror republished
+
+#175 was merged into main as 4bac934 on the author's approval. It carries the committee-audit fixes,
+the A2 Mamba rerun and the author's three decisions. The Overleaf mirror was republished as a401ee4
+under the author's identity. On main: 120 countable pages, verifier 708/0, provenance clean, 347 tests.
+
