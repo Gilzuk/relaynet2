@@ -2,7 +2,7 @@
 
 _Last updated: 2026-10-14_
 
-### Latest (2026-10-14): red-team fixes on fix/red-team-findings, PR into main awaiting approval
+### Latest (2026-10-14): red-team fixes on fix/red-team-findings, #178 into main awaiting approval (#177 closed as superseded)
 
 The author asked: "Merge 176, delete merged branches, apply red team findings in new PR".
 - **#176 merged** (225d70e).
