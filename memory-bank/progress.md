@@ -508,3 +508,9 @@ the merge approval.
 the A2 Mamba rerun and the author's three decisions. The Overleaf mirror was republished as a401ee4
 under the author's identity. On main: 120 countable pages, verifier 708/0, provenance clean, 347 tests.
 
+## 2026-10-13: red-team review (report only)
+
+`docs/red_team_review_2026-10-13.md` contains 2 high, 5 medium and 4 low findings, plus 7 cleared
+attacks. The new diagnostic `e6_blind_intervals.py` (results/e6_blind_intervals.json) is registered
+in the provenance audit. Fixes await the author's choice.
+

@@ -2,6 +2,32 @@
 
 _Last updated: 2026-10-13_
 
+### Latest (2026-10-13, red team): adversarial review of main 4bac934, report only
+
+The author asked for a red-team review before approving. Report: `docs/red_team_review_2026-10-13.md`,
+on branch docs/red-team-review. No thesis change.
+
+**High findings (they change a stated result):**
+- **R1, blind regime.** e6_blind_ported.py's intervals pool triplicated classical draws (√3 too
+  narrow) and treat the MLP non-hierarchically. `e6_blind_intervals.py` reran the protocol (means
+  reproduce exactly). The MLP's lead over CMA is resolved at 0–12 dB, but not at 14–20 dB: p 0.40–0.84,
+  and at 20 dB CMA is better on 31 of 50 draws. Table 6.1, Sec. 6.4 and Ch. 8 finding 8 cite 20 dB.
+- **R2, H1 margin.** "0.007" is against the variable-gain AF. The fixed-gain AF stored in the same JSON
+  is stronger at 0 dB (0.3384), which gives a margin of 0.0034.
+
+**Medium findings:**
+- R3: the matched coded comparison is information-asymmetric (|h1| goes to block DF only).
+- R4: canonical relays are trained off the deployment distribution.
+- R5: H5 is framed against strawman baselines.
+- R6: Table 9.6's spreads need the cross-machine caveat.
+- R7: Fig. 6.7(b) has no data and no generator.
+
+**Low findings:** R8–R11. Seven attacks were cleared.
+
+**Waiting on the author:** which fixes to apply.
+
+### Latest (2026-10-13, last): author decisions applied to #175; only the merge approval remains
+
 ### Latest (2026-10-13, final): #175 merged (4bac934); mirror a401ee4
 
 The author approved "Merge and republish", and GitHub CI was green on 3.10, 3.11 and 3.12. #175 was
