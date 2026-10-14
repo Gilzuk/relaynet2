@@ -26,8 +26,6 @@ on branch docs/red-team-review. No thesis change.
 
 **Waiting on the author:** which fixes to apply.
 
-### Latest (2026-10-13, last): author decisions applied to #175; only the merge approval remains
-
 ### Latest (2026-10-13, final): #175 merged (4bac934); mirror a401ee4
 
 The author approved "Merge and republish", and GitHub CI was green on 3.10, 3.11 and 3.12. #175 was

@@ -109,21 +109,23 @@ def main():
     h = h / np.linalg.norm(h)
     viterbi = ViterbiMLSERelay(channel_taps=h, channel_len=3)
 
+    # Timing protocol of Table 5.11: one discarded warm-up, then the median of
+    # REPS timed runs. Run single-threaded (OMP/OPENBLAS/MKL_NUM_THREADS=1) so
+    # the vectorized side is not credited with extra cores.
+    REPS = 7
     print(f'{"length":>8} {"Viterbi (ms)":>13} {"MLP (ms)":>10} {"speedup":>8}')
     panel_b = {}
     for n in [1000, 5000, 20000, 50000]:
         y = make_signal(n, h)
-
-        t0 = time.perf_counter()
-        for _ in range(3):
-            viterbi.process(y.real)
-        tv = (time.perf_counter() - t0) / 3 * 1000
-
-        t0 = time.perf_counter()
-        for _ in range(3):
-            mlp.fwd(cwin(y))
-        tm = (time.perf_counter() - t0) / 3 * 1000
-
+        viterbi.process(y.real)
+        mlp.fwd(cwin(y))
+        tv_runs, tm_runs = [], []
+        for _ in range(REPS):
+            t0 = time.perf_counter(); viterbi.process(y.real)
+            tv_runs.append((time.perf_counter() - t0) * 1000)
+            t0 = time.perf_counter(); mlp.fwd(cwin(y))
+            tm_runs.append((time.perf_counter() - t0) * 1000)
+        tv, tm = float(np.median(tv_runs)), float(np.median(tm_runs))
         panel_b[n] = (tv, tm, tv / tm)
         print(f'{n:>8} {tv:>13.2f} {tm:>10.2f} {tv/tm:>7.1f}x')
 
@@ -136,7 +138,10 @@ def main():
     np.save(output_path, {
         'panel_a_grid': grid, 'panel_a': panel_a,
         'mlp_flops': mlp_flops, 'mlp_params': mlp_params,
-        'panel_b': panel_b,
+        'panel_b': panel_b, 'timing_reps': REPS,
+        'threads': {k: os.environ.get(k) for k in ('OMP_NUM_THREADS', 'OPENBLAS_NUM_THREADS', 'MKL_NUM_THREADS')},
+        'machine': {'cpu': next((l.split(':', 1)[1].strip() for l in open('/proc/cpuinfo') if l.startswith('model name')), None)
+                    if os.path.exists('/proc/cpuinfo') else None, 'numpy': np.__version__},
     }, allow_pickle=True)
     print(f"\nResults saved to {output_path}")
     print("\n" + "=" * 80)
