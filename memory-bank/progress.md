@@ -2,6 +2,8 @@ Session note (2026-10-12, independent audit): branch `fix/khina-independent-audi
 
 # Progress — E6 Porting Checklist
 
+Session note (2026-10-14, merged): #178 merged as fe8198b after a Khina-fix check (one Sec. 7.1.1 referent slip fixed, two trimmed caveats restored, nothing else touched); mirror abf77f8 = main fe8198b; 120 countable pages, verifier 732/0, 347 tests, CI green. Hebrew margin sentence awaits the author's reading.
+
 Session note (2026-10-14, red-team fixes): #176 merged (225d70e); R1–R8, R10, R11 applied on fix/red-team-findings (supersedes #177), R9 not applied; blind lead resolved 0–12 dB only; H1 margin 0.003–0.007 (Hebrew number re-drafted, needs author reading); Fig. 6.7(b) from committed data, 58–82×; verifier 732/0, 120 countable pages, 347 tests; merged-branch deletion skipped at the author's direction; awaiting approval.
 
 Session note (2026-10-13, audit fixes): all committee-audit findings fixed on fix/committee-audit-findings (supersedes #174): ten-pilot wording, Mamba look-ahead disclosure, Sec. 7.1.3, Xavier init, Mamba blocks, Table 6.6 column sourced and verified, S3 reported, H2, FER numbers sourced, bib venues; 120 countable pages, verifier 689/0, 347 tests; awaiting approval.
@@ -516,7 +518,7 @@ under the author's identity. On main: 120 countable pages, verifier 708/0, prove
 attacks. The new diagnostic `e6_blind_intervals.py` (results/e6_blind_intervals.json) is registered
 in the provenance audit. Fixes await the author's choice.
 
-## 2026-10-14: red-team fixes (PR into main, awaiting approval)
+## 2026-10-14: red-team fixes (#178, merged as fe8198b; mirror abf77f8)
 
 All findings except R9 applied on `fix/red-team-findings`; the report's Outcome section lists each.
 New: `e6_complexity_ported.py` timing protocol and committed output, `scripts/plot_e6_timing.py`,

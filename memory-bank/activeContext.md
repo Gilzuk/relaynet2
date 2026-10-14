@@ -2,7 +2,25 @@
 
 _Last updated: 2026-10-14_
 
-### Latest (2026-10-14): red-team fixes on fix/red-team-findings, #178 into main awaiting approval (#177 closed as superseded)
+### Latest (2026-10-14, final): #178 merged (fe8198b); mirror abf77f8
+
+The author: "Approve and confirm dr khina fixes were not overridden".
+- **Khina check before merging.** Every sentence #178 removed or rewrote was traced with `git log -S`;
+  only two came from the Khina round (52e1126, comment 3, Sec. 7.1.1 AF paragraph). The page-budget
+  rewrite had attached "about 0.02 at 4–8 dB" to the fixed-gain margin (actually 0.024–0.035); fixed
+  so it is the variable-gain margin again, with "still outside the MLP's 95% interval" restored and
+  "worse than either conventional AF" (true for both). Two September caveats trimmed for pages were
+  restored (Sec. 7.6 "in the evaluated settings… depending on the target"; Table 8.1 H5 "a
+  substantial lead at QPSK" and the scope). A phrase check of all nine Khina comments plus the
+  presentation notes and abstracts found nothing lost. Interval claims re-derived: fixed-gain margin
+  0.00344 vs MLP ±0.00296 (outside), VAE 0.00248 vs ±0.00303 (inside).
+- 120 countable pages, verifier 732/0, provenance clean, 347 tests; CI green on 3.10/3.11/3.12.
+- **Merged** as fe8198b; **mirror** republished as abf77f8 ("Thesis at fe8198b (clean)", author
+  identity via env vars; repo user.name unchanged).
+- **Open for the author:** read the re-drafted Hebrew margin sentence (0.003–0.007).
+
+
+### 2026-10-14: red-team fixes on fix/red-team-findings, #178 (#177 closed as superseded)
 
 The author asked: "Merge 176, delete merged branches, apply red team findings in new PR".
 - **#176 merged** (225d70e).
@@ -22,7 +40,7 @@ The author asked: "Merge 176, delete merged branches, apply red team findings in
   - Verifier 732/0 (new `prose:timing-mmse-median`; E6blind, af-conventional, layers extended);
     provenance clean; 347 tests; 136 PDF pages, **120 countable**, 0 overfull boxes. Page budget held
     by tightening wording in Ch. 5, 7, 8 (no content removed beyond restatements).
-- **Not merged.** Wait for the author's approval; after merging, republish the mirror.
+- Merged as fe8198b after approval; mirror abf77f8 (see above).
 
 
 ### Latest (2026-10-13, red team): adversarial review of main 4bac934, report only
