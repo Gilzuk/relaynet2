@@ -1,14 +1,14 @@
-# Hebrew abstract: approved by the author (2026-10-13)
+# Hebrew abstract: approved by the author (2026-10-13; margin change approved 2026-10-14)
 
 **Status 2026-10-13: approved.** The author reviewed the rendered Hebrew abstract (page xii of the
 #175 build) and the two changes of the committee-audit round below, and approved them ("Hebrew ok").
 The earlier notes below are kept as the record of how the text was drafted.
 
-**Update 2026-10-14 (red-team findings, R2) — not yet author-approved.** One number in the
+**Update 2026-10-14 (red-team findings, R2) — approved by the author on 2026-10-14 ("Approve Hebrew").** One number in the
 approved text changed, mirroring the English abstract: the MLP's 0 dB margin against conventional
 AF is now "only 0.003–0.007, depending on the gain rule" (a fixed-gain AF does better than the
 variable-gain one at 0 dB). The drafted Hebrew reads
-"…הוא \textenglish{0.003--0.007} בלבד, בהתאם לכלל ההגבר;" and should be read by the author.
+"…הוא \textenglish{0.003--0.007} בלבד, בהתאם לכלל ההגבר;" and is approved as it stands in the merged build (main fe8198b, mirror abf77f8).
 
 **Update 2026-10-13 (committee audit).** Two more changes to the English
 abstract were mirrored, in drafted Hebrew for the author to read:

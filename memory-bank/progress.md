@@ -2,7 +2,7 @@ Session note (2026-10-12, independent audit): branch `fix/khina-independent-audi
 
 # Progress — E6 Porting Checklist
 
-Session note (2026-10-14, merged): #178 merged as fe8198b after a Khina-fix check (one Sec. 7.1.1 referent slip fixed, two trimmed caveats restored, nothing else touched); mirror abf77f8 = main fe8198b; 120 countable pages, verifier 732/0, 347 tests, CI green. Hebrew margin sentence awaits the author's reading.
+Session note (2026-10-14, merged): #178 merged as fe8198b after a Khina-fix check (one Sec. 7.1.1 referent slip fixed, two trimmed caveats restored, nothing else touched); mirror abf77f8 = main fe8198b; 120 countable pages, verifier 732/0, 347 tests, CI green. Hebrew margin sentence approved by the author on 2026-10-14.
 
 Session note (2026-10-14, red-team fixes): #176 merged (225d70e); R1–R8, R10, R11 applied on fix/red-team-findings (supersedes #177), R9 not applied; blind lead resolved 0–12 dB only; H1 margin 0.003–0.007 (Hebrew number re-drafted, needs author reading); Fig. 6.7(b) from committed data, 58–82×; verifier 732/0, 120 countable pages, 347 tests; merged-branch deletion skipped at the author's direction; awaiting approval.
 
