@@ -6,7 +6,9 @@ _Last updated: 2026-10-14_
 
 At the author's request the reply was cut from 3,041 to 1,431 words, keeping every fix and its
 location. Test statistics appear in one sentence only (the blind-regime p-values). The verifier and
-test-suite counts, intervals and trial counts were dropped. Branch docs/khina-email-concise.
+test-suite counts, intervals and trial counts were dropped. A before/now table after the opening
+summarizes each Khina comment (1–9, presentation) and each red-team finding (R1–R11, by topic, no
+test statistics). Branch docs/khina-email-concise (PR #182).
 
 ### Latest (2026-10-14): reply to Khina extended with the changes since #175
 

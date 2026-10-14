@@ -2,7 +2,33 @@ Subject: Re: Thesis — response to your nine comments
 
 Dear Anatoly,
 
-Thank you for the detailed comments. I have addressed all nine and the presentation notes, and the thesis runs to 120 pages from Chapter 1 through the appendices, within the limit. Comments 3, 4 and 7 led to new measurements that change conclusions, and I state those plainly below. Two later reviews of the whole thesis led to further corrections, listed at the end.
+Thank you for the detailed comments. I have addressed all nine and the presentation notes, and the thesis runs to 120 pages from Chapter 1 through the appendices, within the limit. Comments 3, 4 and 7 led to new measurements that change conclusions, and I state those plainly below. Two later reviews of the whole thesis led to further corrections, listed at the end. The table summarizes each of your points, and the findings of my later adversarial review, as they stood before and as they stand now. The details follow it.
+
+| Topic | Before | Now |
+|---|---|---|
+| **Your comments** | | |
+| 1. Relay-design problem | No formal problem statement. The methods said the canonical relays were trained over fading, gave the Hybrid a learned threshold on the operating SNR and He/LeCun initialization, and implied the Mamba relays used their whole window | Sec. 4.1.5 states the problem, with training as a surrogate objective. The methods match the code: BPSK/AWGN training, a fixed 5 dB Hybrid threshold that switches at 6–8 dB, Xavier initialization, and causal Mamba scans |
+| 2. Research questions and hypotheses | The hierarchy of O1/O2 and H1–H5 was not stated, and the nonlinear channel named in H5 was not reported | Sec. 3.1.1 gives the hierarchy, Table 3.1 maps questions to experiments, and Ch. 8 answers O1 and O2. The nonlinear channel is reported |
+| 3. AF implementation | The block-normalized AF was not described, and the MLP's 0.073 margin at 0 dB read as a learned advantage | The AF is described exactly, and a conventional AF is added. The margin is 0.003–0.007, and the advantage comes from regeneration, not from learning |
+| 4. Coded metrics | Under unweighted metrics the learned relays beat block DF at high SNR | With matched metrics block DF wins at every SNR. The earlier advantage came from the metric mismatch |
+| 5. QPSK MLSE factorization | The joint-trellis M^L count stood for the cost of MLSE | The factorized trellises are implemented and verified, the plotted count is labelled as the joint trellis, and the counting rule is stated |
+| 6. Delay accounting | Look-ahead, normalization buffering, scheduling and latency were conflated, and readiness was claimed | The four are separated, the delay columns are labelled as look-ahead, and the readiness claims are removed |
+| 7. Model specifications | Hop models, impairments and the penalty definition were unspecified. The ISI penalties had no derivation, and the flat channel doubled the Hop-2 noise | App. 9.6 (Table 9.7) and Table 9.3 give the specifications. A script reproduces the penalties, and the flat channel is fixed and rerun |
+| 8. Architecture comparisons | The Transformer count and width were inconsistent, the MLP was said to use SGD, and the equal-budget results read as isolating architecture | 17,697 parameters with width 64, and Adam throughout. No claim isolates architecture, and the unseeded initialization is disclosed |
+| 9. Positioning | There was no comparison with estimate-and-forward or ViterbiNet, and gains over zero-threshold DF read as evidence for learning | Sec. 2.2.4 and Table 3.2 position the work. A scalar MAP relay is measured, and the contribution is stated as a measured comparison |
+| Presentation notes | Figures 5.3–5.5 came from earlier runs, the ledger used internal labels, and the appendices were lettered | The figures are redrawn from the reported runs, the ledger uses references, and the appendices are numbered 9.1–9.6 |
+| **Later adversarial review** | | |
+| Blind regime | The lead over CMA was cited at 20 dB, with intervals that were too narrow | The lead is resolved only from 0 to 12 dB, and the intervals are corrected |
+| H1 margin | 0.007, quoted against the weaker variable-gain AF | 0.003–0.007, depending on the gain rule |
+| Coded comparison | It did not say that the matched relay decoder uses \|h₁\|², which the learned relays are not given | It says so, as a limit |
+| Training distribution | Not stated as a limit on H1–H4 | H1–H4 measure transfer from BPSK/AWGN training |
+| H5 | Supported against AF and zero-threshold DF, which the chosen taps defeat analytically | Stated against the model-based detectors |
+| Seed spreads (Table 9.6) | No caveat about the machine | Measured on one machine; such spreads change between machines |
+| Inference time (Fig. 6.7b) | "30–90× faster", with no committed data | 58–82×, measured single-threaded from committed data |
+| Table 6.6 | Best initialization only (1.8–2.4 dB lead) | Adds the median initialization (1.4–2.3 dB) |
+| Coded timings (Table 5.11) | Precise speedups, although the text called the timings too small for that | The ranges are described as coarse |
+| Pilot figures | 0.0283 at 200 pilots in Table 6.1, but 0.0285 at 800 in Sec. 6.3 | Both quote 200 pilots |
+| MambaCSP citation | arXiv | Unchanged until the Globecom 2026 version appears |
 
 **1. The relay-design problem.** A new Section 4.1.5 states the problem:
 - the relay's observations and channel information;
