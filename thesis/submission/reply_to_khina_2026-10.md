@@ -2,7 +2,7 @@ Subject: Re: Thesis — response to your nine comments
 
 Dear Anatoly,
 
-Thank you for the detailed comments. I have addressed all nine and the presentation notes. Three of them (comments 3, 4 and 7) led to new measurements that change conclusions in the thesis, and I state those plainly below. The revised thesis runs to 120 pages from Chapter 1 through the appendices, within the 120-page limit. The table verifier now checks 708 cells with no inconsistencies, and all 347 tests pass.
+Thank you for the detailed comments. I have addressed all nine and the presentation notes. Three of them (comments 3, 4 and 7) led to new measurements that change conclusions in the thesis, and I state those plainly below. The revised thesis runs to 120 pages from Chapter 1 through the appendices, within the 120-page limit. The table verifier now checks 732 cells with no inconsistencies, and all 347 tests pass.
 
 **1. The relay-design problem.** A new Section 4.1.5 states the problem explicitly:
 - the relay's observations and the channel information it has;
