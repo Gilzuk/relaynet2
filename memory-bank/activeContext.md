@@ -6,9 +6,8 @@ _Last updated: 2026-10-14_
 
 The author asked: "Merge 176, delete merged branches, apply red team findings in new PR".
 - **#176 merged** (225d70e).
-- **Branch deletion blocked.** `git push origin --delete` gets HTTP 403 from the session proxy and the
-  GitHub MCP has no delete-branch tool. The 80 merged branches, with tip SHAs and a one-line delete
-  command, are in `docs/merged_branches_2026-10-14.txt` for the author to run.
+- **Branch deletion skipped** at the author's direction ("Skip deletion"), after the session proxy
+  refused `git push origin --delete` (HTTP 403). The merged remote branches stay.
 - **Red-team fixes (all but R9)** on `fix/red-team-findings` (branched from 225d70e; #177 merged into
   it, so the PR supersedes #177, which should be closed). Outcome table in the report.
   - R1: blind lead "resolved 0–12 dB (Wilcoxon p ≤ 0.003), not 14–20 dB (p ≥ 0.40; 19/50 draws at
