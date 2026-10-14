@@ -220,7 +220,7 @@ All           & 152 & 0.180 & 1.229 & 3.182 \\
 
 \begin{table}[htbp]
 \centering
-\caption[Across-initialization spread at the 3K budget]{Spread in SNR penalty against symbol-wise DF between the best and worst of three initializations, for the equal-budget architectures on the canonical channel. The reader should observe the Transformer row: its spread is five times the roughly $0.18$~dB that H4's $4.1\%$ high-SNR architecture spread corresponds to, so a single run of that architecture cannot resolve the effect H4 claims. Every other architecture is comfortably inside it. Penalties follow the definition in Appendix~\ref{sec:appendix-g-channel-specs}}\label{tbl:seed-spread-3k}
+\caption[Across-initialization spread at the 3K budget]{Spread in SNR penalty against symbol-wise DF between the best and worst of three initializations, for the equal-budget architectures on the canonical channel. The reader should observe the Transformer row: its spread is five times the roughly $0.18$~dB that H4's $4.1\%$ high-SNR architecture spread corresponds to, so a single run of that architecture cannot resolve the effect H4 claims. Every other architecture is comfortably inside it. Three seeds on one machine; Section~\ref{sec:sequence-on-memory} finds that such spreads change between machines. Penalties follow the definition in Appendix~\ref{sec:appendix-g-channel-specs}}\label{tbl:seed-spread-3k}
 \begin{tabular}{lrrr}
 \toprule
 Architecture & Params & Per-seed penalty vs DF (dB) & Spread (dB) \\
@@ -264,7 +264,7 @@ With the normalized taps, the interferer magnitude sum $h_1 + h_2 \approx 0.910$
 \subsection{\texorpdfstring{Complexity: the $M^{L}$ trellis against a fixed forward pass}{Complexity: the M to the L trellis against a fixed forward pass}}
 An unrestricted joint-symbol MLSE implementation maintains $M^{L-1}$ states and evaluates $M^L$ branch metrics for channel length $L$ \cite{Forney1972MLSE,ProakisSalehi2008DigitalComm}. For the real-tap QPSK channel, exact I/Q factorization reduces that search to two binary trellises, and for square $M$-QAM to two $\sqrt{M}$-ary trellises with $2M^{L/2}$ branch metrics (Section~\ref{sec:iq-mlse-factorization}); the joint count is not a necessary cost of matched detection. The separate real $11\to13\to1$ MLP has $170$ parameters and $11\cdot13+13=156$ MACs, plus 14 bias additions and nonlinear activations. Counting a multiply and add as two FLOPs gives approximately 330 FLOPs excluding activation cost. Cost is fixed only for that deployed architecture; longer windows increase it. Reduced-state sequence estimation \cite{EyuboqluQureshi1988RSSE} is another unmeasured lower-cost classical alternative.
 
-\subsection{The blind regime: CMA converges where decision-directed MLSE does not}
+\subsection{The blind regime: CMA against decision-directed MLSE}
 
 CMA is a blind equalizer for constant-modulus signals \cite{Godard1980SelfRecovering,TreichlerAgee1983CMA}. The measured random composite family also contains nonlinearity and phase uncertainty, so the zeros of one fixed linear tap vector do not establish invertibility or convergence for the whole cascade. The observed CMA and decision-directed MLSE results are implementation-specific. Documented convergence and decision-feedback issues \cite{Ding1991IllConvergence,RaheliPolydorosTzou1995PSP} motivate possible explanations but do not identify the cause of these measurements.
 

@@ -8,7 +8,7 @@ length, with the speedup annotated. Replaces the hand-drawn panel that had the
 ratio typed into its title.
 
 Usage:  python3 scripts/plot_e6_timing.py
-Output: results/e6_timing_measured.png
+Output: results/e6_timing_measured.png and thesis/results/e6_timing_measured.png
 """
 import os
 
@@ -19,7 +19,9 @@ import numpy as np
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = os.path.join(ROOT, "e6_unknown_channel_results", "e6_complexity_ported_results.npy")
-OUT = os.path.join(ROOT, "results", "e6_timing_measured.png")
+NAME = "e6_timing_measured.png"
+# Written to both results/ and thesis/results/, like the other plot scripts.
+OUT_DIRS = [os.path.join(ROOT, "results"), os.path.join(ROOT, "thesis", "results")]
 
 
 def main():
@@ -44,8 +46,9 @@ def main():
     ax.grid(True, which="both", alpha=0.3)
     ax.legend(loc="center", bbox_to_anchor=(0.5, 0.72), fontsize=8, ncol=2)
     fig.tight_layout()
-    fig.savefig(OUT)
-    print(f"saved {OUT}: speedup {ratio.min():.1f}-{ratio.max():.1f}x at n={list(n)}")
+    for d_ in OUT_DIRS:
+        fig.savefig(os.path.join(d_, NAME))
+    print(f"saved {NAME} to results/ and thesis/results/: speedup {ratio.min():.1f}-{ratio.max():.1f}x at n={list(n)}")
 
 
 if __name__ == "__main__":

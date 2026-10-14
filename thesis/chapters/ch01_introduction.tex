@@ -30,7 +30,7 @@ The main contributions are:
 \begin{enumerate}
 \item A controlled canonical relay comparison, supplemented by equal-budget and replicated size studies. It distinguishes measured BER ordering from untested explanations involving capacity or overfitting.
 \item Bounded experiments under ISI, nonlinearity and imperfect channel information, including matched Viterbi references, a pilot-count crossover at one SNR, and separately preserved fixed-budget rare-event validation.
-\item A coded forwarding and memory/cost study that distinguishes symbol decisions, channel-sequence detection and error-correction decoding. With reliability-weighted (matched) decoder metrics, decoding at the relay outperforms the learned relays at every tested SNR, reversing the high-SNR advantage they showed under the originally implemented unweighted metric.
+\item A coded forwarding and memory/cost study that distinguishes symbol decisions, channel-sequence detection and error-correction decoding. With reliability-weighted (matched) decoder metrics, which give the relay decoder per-symbol channel reliability that the learned relays do not receive, decoding at the relay outperforms the learned relays at every tested SNR, reversing the high-SNR advantage they showed under the originally implemented unweighted metric.
 \end{enumerate}
 
 The canonical DF measurements agree with the stated two-hop closed form within $3.6\%$ relative error at every tabulated SNR, after the QPSK $E_s/N_0$ conversion (Table~\ref{tbl:table2}). This is a simulator calibration check, not proof of all implementations or results. The additional controls and their endpoints are documented in their experiment sections.

@@ -123,7 +123,7 @@ REGISTRY = {
         ["fig:figE6blind", "prose:E6blind"]),
     "E6 blind regime, corrected intervals (red-team check)": (
         "e6_blind_intervals.py", ["results/e6_blind_intervals.json"],
-        ["not in the thesis: red-team check of the Sec. 6.4 / Table 6.1 layer-4 intervals"]),
+        ["prose:E6blind intervals and resolution (Sec. 6.4)", "tbl:layers layer 4 resolution", "Ch. 8 finding 8"]),
     "E6 complexity: measured inference time": (
         "e6_complexity_ported.py",
         ["e6_unknown_channel_results/e6_complexity_ported_results.npy"],
