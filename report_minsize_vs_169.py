@@ -24,7 +24,7 @@ import json
 
 import numpy as np
 
-from ber_metrics import penalty_table
+from ber_metrics import penalty_table, penalty_common
 
 REF_W, REF_H = 5, 24
 THRESHOLDS = [0.0, 0.1, 0.25, 0.5, 1.0]
@@ -48,13 +48,16 @@ def analyse(path="results/mlp_min_size_all_channels.json"):
             if x["params"] >= ref_params:
                 continue                      # only interested in smaller
             worst = np.max([s["ber"] for s in x["seed_runs"]], axis=0)
-            p = penalty_table(snrs, worst, ref)
-            if not p["targets_reached"]:
+            # Comparable targets (penalty_common): the reference fixes the target
+            # set, and a candidate that misses one of its targets is only bounded
+            # below, so it cannot be shown to meet any budget and is skipped.
+            p = penalty_common(snrs, worst, ref)
+            if p["worst_db"] != p["worst_db"] or p["lower_bound"]:
                 continue
             usable = [i for i in range(len(ref)) if ref[i] > 1e-5]
             rel = max((worst[i] - ref[i]) / ref[i] for i in usable) if usable else np.nan
             rows.append({"params": x["params"], "window": x["window"],
-                         "hidden": x["hidden"], "db": p["worst_db_penalty"],
+                         "hidden": x["hidden"], "db": p["worst_db"],
                          "rel": rel})
         table[name] = {"memory": r["memory"], "modulation": r["modulation"],
                        "ref_params": ref_params, "rows": rows}

@@ -128,6 +128,14 @@ REGISTRY = {
         "e6_complexity_ported.py",
         ["e6_unknown_channel_results/e6_complexity_ported_results.npy"],
         ["fig:figE6complexity panel (b)", "prose: measured MLP/Viterbi speedup (Sec. 6.5)"]),
+    "Canonical runs: identification and configuration": (
+        "canonical_run_provenance.py", ["results/canonical_run_provenance.json"],
+        ["Sec. 4.3.3 canonical-run description (Tables 5.2-5.3 runs, window counts, parameters)",
+         "tbl:canonical-runs"]),
+    "SNR penalties on comparable target sets": (
+        "penalty_common_targets.py", ["results/penalty_common_targets.json"],
+        ["tbl:seq-on-memory", "tbl:table-minsize", "tbl:seed-spread", "tbl:seed-spread-3k",
+         "fig:minsize-crossover", "prose: Sec. 6.4.2 rerun, coded size sweep, seed spreads (App. 9.6)"]),
     "E6 QPSK unknown channel": (
         "e6_qpsk_unknown_channel.py",
         ["e6_unknown_channel_results/e6_qpsk_unknown_channel_results.npy"],

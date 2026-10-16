@@ -91,6 +91,88 @@ def penalty_table(snr_db, ber_relay, ber_base, targets=DEFAULT_TARGETS):
                                  if reached else float("nan"))}
 
 
+def penalty_common(snr_db, ber_relay, ber_ref, targets=DEFAULT_TARGETS):
+    """Worst penalty over the targets the *reference* reaches: comparable sets.
+
+    `penalty_table` keeps only the targets both curves bracket, so a relay that
+    never reaches 1e-3 is scored on 1e-1 and 1e-2 alone and can look better than
+    one that reaches every target. Here the target set is fixed by the
+    reference curve, so every relay compared against it is held to the same
+    targets. For each target t the reference reaches inside the tested range:
+
+      ok           the relay reaches t too: penalty = snr_relay - snr_ref;
+      not_reached  the relay is still above t at the last SNR, so it needs more
+                   than snr_max: the penalty is only bounded below, by
+                   snr_max - snr_ref;
+      below_range  the relay is already below t at the first SNR: the penalty
+                   is bounded above by snr_min - snr_ref.
+
+    `worst_db` is the largest exact penalty or lower bound over the common set;
+    `lower_bound` is True when any target is not reached, in which case the
+    true worst penalty is at least `worst_db`.
+    """
+    snr = np.asarray(snr_db, dtype=float)
+    br = np.asarray(ber_relay, dtype=float)
+    per, exact, lbs = {}, [], []
+    common = []
+    for t in targets:
+        b = snr_at_ber(snr, ber_ref, t)
+        if b != b:
+            continue
+        common.append(t)
+        a = snr_at_ber(snr, br, t)
+        if a == a:
+            per[t] = {"status": "ok", "db": a - b}
+            exact.append(a - b)
+        elif br[-1] > t:
+            per[t] = {"status": "not_reached", "db": float(snr[-1] - b)}
+            lbs.append(float(snr[-1] - b))
+        elif br[0] < t:
+            per[t] = {"status": "below_range", "db": float(snr[0] - b)}
+            exact.append(float(snr[0] - b))
+        else:
+            per[t] = {"status": "unbracketed", "db": float("nan")}
+    vals = exact + lbs
+    return {"common_targets": common, "per_target": per,
+            "unreached": [t for t, v in per.items() if v["status"] == "not_reached"],
+            "worst_db": float(max(vals)) if vals else float("nan"),
+            "lower_bound": bool(lbs)}
+
+
+def best_of_seeds(results):
+    """Best (smallest) worst-case penalty over seeds, honouring lower bounds.
+
+    `results` is a list of `penalty_common` outputs. Returns (value, flag):
+    flag is "" when exact, ">" when the best is itself only bounded below
+    (every seed misses a target, or a missing seed's bound is the smallest),
+    "nan" when nothing is defined.
+    """
+    ex = [r["worst_db"] for r in results if r["worst_db"] == r["worst_db"] and not r["lower_bound"]]
+    lb = [r["worst_db"] for r in results if r["worst_db"] == r["worst_db"] and r["lower_bound"]]
+    if ex and (not lb or min(ex) <= min(lb)):
+        return float(min(ex)), ""
+    if lb:
+        return float(min(lb)), ">"
+    return float("nan"), "nan"
+
+
+def spread_of_seeds(results):
+    """Largest minus smallest worst-case penalty over seeds, honouring bounds.
+
+    Returns (value, flag): "" exact; ">" when some seed misses a target, so the
+    spread is at least the value (the true smallest is at most the smallest
+    exact value, the true largest at least the largest value or bound); "nan"
+    when no seed is exact (the spread is then not determined by the data).
+    """
+    ex = [r["worst_db"] for r in results if r["worst_db"] == r["worst_db"] and not r["lower_bound"]]
+    lb = [r["worst_db"] for r in results if r["worst_db"] == r["worst_db"] and r["lower_bound"]]
+    if not ex:
+        return float("nan"), "nan"
+    if lb:
+        return float(max(ex + lb) - min(ex)), ">"
+    return float(max(ex) - min(ex)), ""
+
+
 def hierarchical_ci(samples, n_seeds, n_trials, conf=0.95):
     """95% CI for a mean over `n_seeds` trained networks x `n_trials` runs each.
 
