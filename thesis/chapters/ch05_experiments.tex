@@ -152,7 +152,7 @@ The complexity study of Section~\ref{sec:parameter-normalization-complexity-trad
 
 \section{Coded Block-DF: Measuring the Remark~\ref{rem:df-terminology} Caveat}\label{sec:coded-block-df}
 
-\paragraph{A note on constellation scope.} The fixed-MCS relay-decoding comparisons here are QPSK throughout. 16-QAM appears only as a rung of the modulation-and-coding ladder in Section~\ref{sec:coded-rate-adaptation}, where the object of study is the rate-and-modulation choice rather than the relay's ability to process a denser constellation; that question is left to future work (Section~\ref{sec:modulation-schemes}).
+\paragraph{A note on constellation scope.} The learned-versus-classical relay-decoding comparison uses QPSK. 16-QAM is also used in the equal-throughput control (Section~\ref{sec:coded-latency-throughput}) and modulation-and-coding ladder (Section~\ref{sec:coded-rate-adaptation}). These assess coding and rate choice; no standalone learned-relay architecture comparison for 16-QAM is reported.
 
 Remark~\ref{rem:df-terminology} cautions that the symbol-wise DF results ``should not be read as bounds on coded block-DF performance''. That is asserted there and measured here, by a practical finite-length block-DF relay built from a rate-1/2 convolutional code and a soft-decision Viterbi decoder, as a supplementary study on the canonical channel rather than a revision of the core comparison.
 

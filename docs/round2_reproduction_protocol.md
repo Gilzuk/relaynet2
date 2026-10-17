@@ -138,5 +138,13 @@ experiment whose learned fields differ, not a crash. Comparisons use relative
 band. Common BER targets stay fixed by the reference; missed targets are explicitly
 censored, never dropped. Fresh paired tests condition on each trained model;
 uncorrected exploratory p-values and unchanged rankings do not prove equivalence.
+The canonical and archived coded reanalyses reconstruct integer error counts
+before ranking differences, so floating-point BER subtraction cannot split
+ties. Their common trial denominators are 10,000 and 100,000 bits, respectively.
+SciPy 1.17.0 uses `wilcoxon(..., zero_method="wilcox", correction=False,
+alternative="two-sided", method="auto")`; zeros are omitted and all-zero pairs
+return p=1. Ten-pair results agree with independent exhaustive sign enumeration;
+the 30-trial coded results can use the asymptotic method. These numerical
+settings do not remove the signed-rank distributional assumptions.
 Keep historical and new JSONs separate, investigate configuration/RNG/environment
 differences, and document any change to a manuscript claim with its evidence.

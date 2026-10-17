@@ -6,7 +6,11 @@
     "numpy": "2.3.5",
     "scipy": "1.17.0"
   },
-  "paired_test": "Two-sided Wilcoxon signed-rank, uncorrected; conditional on each trained checkpoint. No equivalence test.",
+  "paired_test": "Two-sided Wilcoxon signed-rank on integer error-count differences; zeros omitted, method=auto, uncorrected; conditional on each trained checkpoint. No equivalence test.",
+  "paired_bits_per_trial": {
+    "canonical": 10000,
+    "coded": "n_frames * frame_info_bits from each result file"
+  },
   "interpretation": {
     "purpose": "Additional training replications and seed sensitivity; historical measurements retained.",
     "original_measurements": "Numerical differences between training realizations alone do not establish that historical measurements were incorrect.",
@@ -156,7 +160,7 @@
           {
             "snr_db": 0,
             "mean_diff": -0.0005899999999999961,
-            "p": 0.193359375,
+            "p": 0.185546875,
             "resolved": false
           },
           {
@@ -168,7 +172,7 @@
           {
             "snr_db": 4,
             "mean_diff": 0.0005400000000000043,
-            "p": 0.4921875,
+            "p": 0.4765625,
             "resolved": false
           },
           {
@@ -346,13 +350,13 @@
           {
             "snr_db": 18,
             "mean_diff": 0.0002000000000000007,
-            "p": 0.30078125,
+            "p": 0.3125,
             "resolved": false
           },
           {
             "snr_db": 20,
             "mean_diff": 6.999999999999993e-05,
-            "p": 0.2578125,
+            "p": 0.2109375,
             "resolved": false
           }
         ],
@@ -408,8 +412,8 @@
           {
             "snr_db": 16,
             "mean_diff": 0.0005400000000000005,
-            "p": 0.03515625,
-            "resolved": true
+            "p": 0.0546875,
+            "resolved": false
           },
           {
             "snr_db": 18,
@@ -420,7 +424,7 @@
           {
             "snr_db": 20,
             "mean_diff": 0.0001199999999999998,
-            "p": 0.1875,
+            "p": 0.15625,
             "resolved": false
           }
         ],
@@ -482,13 +486,13 @@
           {
             "snr_db": 18,
             "mean_diff": 0.00024000000000000098,
-            "p": 0.15234375,
+            "p": 0.16015625,
             "resolved": false
           },
           {
             "snr_db": 20,
             "mean_diff": 8.999999999999963e-05,
-            "p": 0.296875,
+            "p": 0.265625,
             "resolved": false
           }
         ]
@@ -820,7 +824,7 @@
           {
             "snr_db": 18,
             "mean_diff": 0.00027999999999999987,
-            "p": 0.30078125,
+            "p": 0.3046875,
             "resolved": false
           },
           {
@@ -956,7 +960,7 @@
           {
             "snr_db": 18,
             "mean_diff": 0.0005300000000000001,
-            "p": 0.013671875,
+            "p": 0.01953125,
             "resolved": true
           },
           {
@@ -1024,7 +1028,7 @@
           {
             "snr_db": 18,
             "mean_diff": 0.0003500000000000003,
-            "p": 0.060546875,
+            "p": 0.0546875,
             "resolved": false
           },
           {
@@ -1098,7 +1102,7 @@
           {
             "snr_db": 20,
             "mean_diff": 0.00014999999999999996,
-            "p": 0.5703125,
+            "p": 0.5234375,
             "resolved": false
           }
         ],
@@ -1154,7 +1158,7 @@
           {
             "snr_db": 16,
             "mean_diff": 0.0005400000000000005,
-            "p": 0.056640625,
+            "p": 0.068359375,
             "resolved": false
           },
           {
@@ -1166,7 +1170,7 @@
           {
             "snr_db": 20,
             "mean_diff": 4.9999999999999874e-05,
-            "p": 0.828125,
+            "p": 0.7265625,
             "resolved": false
           }
         ]
@@ -2321,7 +2325,7 @@
         "paired_vs_DF": {
           "snr_db": 4,
           "mean_diff": 0.16631399999999996,
-          "p": 1.862645149230957e-09,
+          "p": 1.7333066441991056e-06,
           "resolved": true
         }
       },
@@ -2483,7 +2487,7 @@
         "paired_vs_DF": {
           "snr_db": 16,
           "mean_diff": 0.004345333333333334,
-          "p": 1.7311263949197288e-06,
+          "p": 1.7300371292901245e-06,
           "resolved": true
         }
       },
@@ -2496,7 +2500,7 @@
         "paired_vs_DF": {
           "snr_db": 16,
           "mean_diff": 0.004307666666666667,
-          "p": 1.7300371292901245e-06,
+          "p": 1.7289484360195754e-06,
           "resolved": true
         }
       },
@@ -2509,7 +2513,7 @@
         "paired_vs_DF": {
           "snr_db": 16,
           "mean_diff": 0.0035440000000000007,
-          "p": 1.7311263949197288e-06,
+          "p": 1.7300371292901245e-06,
           "resolved": true
         }
       }
