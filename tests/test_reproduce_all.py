@@ -39,8 +39,12 @@ def test_steps_run_after_what_they_read():
 
 def test_matched_reruns_get_the_matched_metric():
     for s in RA.build_plan():
-        if any(o.endswith("_matched.json") for o in s["outputs"]) and "matched" not in s["script"]:
+        if not any(o.endswith("_matched.json") for o in s["outputs"]):
+            continue
+        if "matched" not in s["script"]:
             assert s["env"] == RA.MATCHED_ENV, s["name"]
+        elif "CODED_METRIC" in RA.source(s["script"]):
+            assert s["env"].get("CODED_METRIC") == "matched", s["name"]
 
 
 def test_default_invocation_runs_nothing():

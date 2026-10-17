@@ -90,8 +90,12 @@ def build_plan():
     from provenance_audit import REGISTRY
     steps = [dict(name=n, script=s, args=a, env=e, outputs=o) for n, s, a, e, o in EXTRA]
     for name, (script, outputs, _art) in REGISTRY.items():
-        matched = any(o.endswith("_matched.json") for o in outputs) and "matched" not in script
-        env = dict(MATCHED_ENV) if matched else {}
+        env = {}
+        if any(o.endswith("_matched.json") for o in outputs):
+            if "matched" not in script:      # a published script rerun with the matched metric
+                env = dict(MATCHED_ENV)
+            elif "CODED_METRIC" in source(script):   # a matched-only script that insists on the flag
+                env = {"CODED_METRIC": "matched"}
         dup = [s for s in steps if s["script"] == script and s["args"] == [] and s["env"] == env]
         if dup:  # same command already planned: merge outputs instead of running twice
             dup[0]["outputs"] = sorted(set(dup[0]["outputs"]) | set(outputs))
