@@ -23,7 +23,7 @@ Two distinct claims, checkable independently:
 
 1. **The thesis matches its data.** A declared subset of numerical table cells
    and prose numbers is compared against the file that produced it; it does not
-   cover every number or figure. This is `make verify`: **858 values,
+   cover every number or figure. This is `make verify`: **873 values,
    0 discrepancies** (2026-10-17), exit code 1 on any mismatch.
 2. **The data can be regenerated.** The experiments are re-runnable from
    scratch. The unknown-channel pipeline is fully seeded and reproduces its

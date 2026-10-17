@@ -71,7 +71,17 @@ The architecture ranking, the minimum-size conclusions outside the coded row, an
 - **Figure 6.5.** The caption says the difference at ten pilots is not resolved: 0.0545 ± 0.0108 against the MLP's 0.0486.
 - **Archived revision.** Sec. 4.3.4 names the tag `thesis-2026-10` of the Gilzuk/relaynet2 repository for this revision. It also names commits b4059e6 and 4cf9753 for the canonical runs.
 - **Chapter 5 headers.** The running header reads "Core Experiments" on every page of the chapter.
-- **Code references.** Scripts and result files are no longer named in the running text. The text cites them as [C1]–[C40], and the master experiment ledger (Appendix 9.3, Table 9.2) lists each entry's script, its result file and where the result is used.
+- **Code references.** Scripts and result files are no longer named in the running text. The text cites them as [C1]–[C41], and the master experiment ledger (Appendix 9.3, Table 9.2) lists each entry's script, its result file and where the result is used.
+
+**Further corrections from a final check.** I then rechecked the whole thesis against the kinds of issue you raised in both rounds. Two corrections change stated results:
+- **Canonical comparison (Sec. 5.2).** The thesis said the MLP, Hybrid and VAE show no detectable difference from DF from 4 dB, nor from one another. Paired over the ten shared trials, as Sec. 4.3.2 prescribes, DF has the lower BER at seven of the eleven SNRs against the MLP and against the VAE, and at one against the Hybrid. No learned relay is better than DF anywhere, and the differences are at most 0.004, so H2's verdict is unchanged; the text now reports the paired results.
+- **Table 6.6.** The equalizer and the learned relay had been measured against two different MLSE runs. Measured against one common curve, the learned relay's lead over the best equalizer is 1.8–2.3 dB, not 1.8–2.4.
+
+The other corrections are to ordering and consistency:
+- The coded summaries in Chapters 7 and 8 now lead with the matched result.
+- Factorized trellis counts now come first throughout.
+- The Hybrid's 2–6 dB training SNRs, the test count and the coded trial budgets are now consistent.
+- The pilot claim now says "at five pilots".
 
 Every changed number is recomputed by a committed script from the stored per-seed data and checked automatically against the text.
 

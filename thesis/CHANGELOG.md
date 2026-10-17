@@ -64,9 +64,19 @@ Dr. Khina's six remaining points are addressed; the reply is
   the single place that names each script, the result files whose names differ,
   and where each result is used; the canonical commands and commits are its
   notes. App. 9.2 test count 351 in 25 modules.
+- **Khina-checklist pass (author's request).** `docs/khina_checklist_review_2026-10-17.md`:
+  22 findings, 19 fixed. Two change stated results: the canonical feedforward
+  relays are not indistinguishable from DF (paired Wilcoxon on the shared trials:
+  DF ahead at 7 of 11 SNRs against the MLP and the VAE, 1 against the Hybrid;
+  never behind; `canonical_paired_tests.py`, ledger C6), and Table 6.6 now
+  measures every column against the size sweep's MLSE curve (ISI BPSK equalizer
+  -0.09 dB, composite +0.02 dB; lead 1.8-2.3 dB, was 1.8-2.4; App. 9.5.6 QPSK
+  per-target values +0.01-0.03 dB). The rest order matched/factorized results
+  first and remove contradictions (Sec. 7.1.3 Hybrid training SNRs, Sec. 4.3.4
+  test count, Sec. 5.5 trial budgets, five-pilot wording, Table 9.7 script names).
 - **Hebrew abstract.** The complexity and coded sentences are re-drafted to
   mirror the English (`HEBREW_ABSTRACT_SYNC.md`); not yet author-approved.
-- **Verification.** New `prose:khina-round2` check; verifier 858 cells, 0
+- **Verification.** New `prose:khina-round2` check; verifier 873 cells, 0
   inconsistencies; 351 tests.
 
 ## [Red-team fixes] — 2026-10-14

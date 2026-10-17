@@ -256,7 +256,7 @@ python verify_thesis_tables.py    # published cells vs their data sources
 python provenance_audit.py        # every result file is committed and newer than its script
 ```
 
-`verify_thesis_tables.py` reads the LaTeX, extracts each published value, and compares it against the `.json`/`.npy` that generated it, with a tolerance set by the number of decimals shown. It currently checks **858 cells across 44 tables and prose claims**.
+`verify_thesis_tables.py` reads the LaTeX, extracts each published value, and compares it against the `.json`/`.npy` that generated it, with a tolerance set by the number of decimals shown. It currently checks **873 cells across 44 tables and prose claims**.
 
 `provenance_audit.py` links each experiment to its script, its output files and the commit that produced them, and fails if a result is uncommitted or predates the script that generates it. `python provenance_audit.py --tables` regenerates the per-table reproduction ledger in `memory-bank/table_provenance.md`.
 

@@ -17,7 +17,11 @@ author's approval). Commits: 02459a0 (code and data: `ber_metrics.penalty_common
 - Hebrew abstract: complexity/coded sentence re-drafted; NOT approved yet (thesis/HEBREW_ABSTRACT_SYNC.md).
 - After merge (with approval): create tag `thesis-2026-10` on the merge commit (Sec. 4.3.4 names it) and republish
   the mirror with `scripts/overleaf_sync.py --repo` under the author's identity.
-- Verifier 858 cells / 0, 351 tests, provenance audit clean, 120 countable pages (136 PDF pages).
+- Verifier 873 cells / 0, 351 tests, provenance audit clean, 120 countable pages (136 PDF pages).
+- Khina-checklist pass done (docs/khina_checklist_review_2026-10-17.md): use its K1-K9 classes as the checklist for any
+  future change. Lessons: apply the thesis's declared paired test before writing 'no difference'; one reference curve per
+  table row; matched/factorized results first; search for every statement of a claim when fixing one. Open judgement
+  items: Fig. 6.7(a) plots joint counts; matched columns sit last in Tables 5.10/5.12/5.13; Table 9.5 'five of nine'.
 - The Hebrew reminder email about the 17 Oct deadline exists only in chat; the author said not to commit it.
 - Author's rule (2026-10-17): script names must be references, not embedded in the text. The thesis cites code as [C1]..[C40]
   via `\coderef{key}` (macros `\codeentry`/`\coderef` in thesis/main.tex); keys are defined in the ledger rows of
