@@ -58,6 +58,12 @@ Dr. Khina's six remaining points are addressed; the reply is
   window is not a common context); simplified Mamba named in Ch. 1–5; Fig. 6.5
   caption (ten pilots not resolved); archive tag `thesis-2026-10` named;
   Chapter 5 running header.
+- **Code references (author's request).** Scripts and result files are no longer
+  named in the running text. The text cites them as [C1]–[C40] (`\coderef` in
+  `main.tex`), and the master experiment ledger (Appendix 9.3, Table 9.2) is now
+  the single place that names each script, the result files whose names differ,
+  and where each result is used; the canonical commands and commits are its
+  notes. App. 9.2 test count 351 in 25 modules.
 - **Hebrew abstract.** The complexity and coded sentences are re-drafted to
   mirror the English (`HEBREW_ABSTRACT_SYNC.md`); not yet author-approved.
 - **Verification.** New `prose:khina-round2` check; verifier 858 cells, 0

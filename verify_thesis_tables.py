@@ -1747,7 +1747,7 @@ def check_scalar_map_prose(tex, rep):
     d = json.load(open(src_path))
     R, snrs = d["results"], d["snrs"]
     ber = lambda k, snr: R[k]["ber"][snrs.index(snr)]
-    i = tex.find("it was measured under the matched protocol (\\texttt{e6\\_scalar\\_map.py})")
+    i = tex.find("it was measured under the matched protocol~\\coderef{scalar-map}")
     if i < 0:
         return rep.skip(T, "scalar-MAP sentence not found in tex")
     stop = tex.find("temporal context its window spans", i)
@@ -1787,7 +1787,7 @@ def check_af_conventional_prose(tex, rep):
     checks = [
         (r"\$([\d.]+)\$ for 50-symbol blocks", ["impl@0dB,N=50"], [imp["50"][i(0)]]),
         (r"\$([\d.]+)\$ at the canonical 5\{,\}000", ["impl@0dB,N=5000"], [imp["5000"][i(0)]]),
-        (r"\$([\d.]+)\$ at 50\{,\}000 \(", ["impl@0dB,N=50000"], [imp["50000"][i(0)]]),
+        (r"\$([\d.]+)\$ at 50\{,\}000~\\coderef\{af-block\}", ["impl@0dB,N=50000"], [imp["50000"][i(0)]]),
         (r"reaches \$([\d.]+)\$ at 0~dB, \$([\d.]+)\$ at 4~dB and \$([\d.]+)\$ at 8~dB",
          ["convAF@0dB", "convAF@4dB", "convAF@8dB"], [vg[i(0)], vg[i(4)], vg[i(8)]]),
         (r"margin at 0~dB falls from \$([\d.]+)\$ to \$([\d.]+)\$",

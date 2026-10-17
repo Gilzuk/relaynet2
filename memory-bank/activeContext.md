@@ -19,6 +19,10 @@ author's approval). Commits: 02459a0 (code and data: `ber_metrics.penalty_common
   the mirror with `scripts/overleaf_sync.py --repo` under the author's identity.
 - Verifier 858 cells / 0, 351 tests, provenance audit clean, 120 countable pages (136 PDF pages).
 - The Hebrew reminder email about the 17 Oct deadline exists only in chat; the author said not to commit it.
+- Author's rule (2026-10-17): script names must be references, not embedded in the text. The thesis cites code as [C1]..[C40]
+  via `\coderef{key}` (macros `\codeentry`/`\coderef` in thesis/main.tex); keys are defined in the ledger rows of
+  appendices.tex (tbl:ledger). New experiments: add a ledger row and cite it; never write a .py/.json name in prose.
+  The same applies to reply emails (refer to the ledger entry).
 
 ### Latest (2026-10-14): reply to Khina made concise
 

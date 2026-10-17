@@ -63,17 +63,17 @@ PyTorch (CUDA) \\
 \hline
 \end{tabularx}
 
-\caption[Relay models, objectives and parameter counts]{Comparison of relay models, training objectives, parameter counts, and implementations, as configured for the canonical comparison (\texttt{run\_experiments.py}; Section~\ref{sec:training-protocol}), from which the cGAN was excluded on cost grounds}
+\caption[Relay models, objectives and parameter counts]{Comparison of relay models, training objectives, parameter counts, and implementations, as configured for the canonical comparison (\coderef{run-exp}; Section~\ref{sec:training-protocol}), from which the cGAN was excluded on cost grounds}
 \label{tab:relay_comparison}
 \end{table}
 
 \section{Reproducibility}\label{sec:appendix-c-software-architecture}
 
-\subsection{Testing} The simulation framework carries 347 automated pytest tests in 24 test modules, covering channels, modulation, coding, relay strategies, weight save and load, simulation, statistics and the verification tooling. In the revision environment (Python 3.11.17, PyTorch 2.14) the full suite passed. The four tests that need the Mamba-2 module are skipped when it cannot be imported.
+\subsection{Testing} The simulation framework carries 351 automated pytest tests in 25 test modules, covering channels, modulation, coding, relay strategies, weight save and load, simulation, statistics and the verification tooling. In the revision environment (Python 3.11.17, PyTorch 2.14) the full suite passed. The four tests that need the Mamba-2 module are skipped when it cannot be imported.
 
 \subsection{Reproducibility} Evaluation seeds are controlled for source-bit and noise generation. The canonical training never seeds PyTorch's weight initialization (Section~\ref{sec:training-protocol}), so the original checkpoints cannot be retrained exactly; the later replicated sweeps report training-seed variation explicitly.
 
-\paragraph{Provenance of the reported results.} Each reported result is associated with an experiment artifact in the source-code repository, using the experiment-specific budgets documented in the relevant section and ledger. Registered experiments are linked to their generating scripts and committed result files by \texttt{provenance\_audit.py}, and \texttt{verify\_thesis\_tables.py} checks a declared subset of numerical table cells against those files; neither covers every number, figure or prose statement (Appendix~\ref{sec:appendix-e-master-experiment-ledger}). Independent audit requires that repository at the archived revision identifier; the ledger below documents the claimed provenance but cannot by itself reproduce every table cell.
+\paragraph{Provenance of the reported results.} Each reported result is associated with an experiment artifact in the source-code repository, using the experiment-specific budgets documented in the relevant section and ledger. Registered experiments are linked to their generating scripts and committed result files by a provenance audit~\coderef{prov-audit}, and a table verifier~\coderef{verifier} checks a declared subset of numerical table cells against those files; neither covers every number, figure or prose statement (Appendix~\ref{sec:appendix-e-master-experiment-ledger}). Independent audit requires that repository at the archived revision identifier; the ledger below documents the claimed provenance but cannot by itself reproduce every table cell.
 
 
 
@@ -81,46 +81,65 @@ PyTorch (CUDA) \\
 
 \section{Master Experiment Ledger}\label{sec:appendix-e-master-experiment-ledger}
 
-This ledger links major studies to their experiment artifacts. The table verifier checks a declared subset of numerical cells, not every number or figure. Historical \texttt{e6\_*.npy} paths are relative to \url{e6_unknown_channel_results/}; the central ISI figure and table additionally use the matched-protocol and fixed-budget companion files listed below.
+This ledger names the code behind the reported results, and the text cites its entries as [C1], [C2], and so on. Scripts are at the root of the archived repository (Section~\ref{sec:reproducibility-and-weight-management}) unless a directory is given. A script that writes results writes a file of the same name, in \url{results/} (\url{.json}) or \url{e6_unknown_channel_results/} (\url{.npy}); other result files follow the arrow. The table verifier~\coderef{verifier} checks a declared subset of numerical cells, not every number or figure.
 
-{\footnotesize
-\begin{longtable}[]{@{}p{0.18\linewidth}p{0.10\linewidth}p{0.12\linewidth}p{0.12\linewidth}p{0.36\linewidth}@{}}
-\caption[Master experiment ledger]{Master experiment ledger: modulation, channel, and result-file provenance for the principal studies}\label{tbl:ledger}\tabularnewline
+{\footnotesize\setlength{\tabcolsep}{4pt}
+\begin{longtable}[]{@{}p{0.05\linewidth}>{\raggedright\arraybackslash}p{0.44\linewidth}>{\raggedright\arraybackslash}p{0.47\linewidth}@{}}
+\caption[Master experiment ledger]{Master experiment ledger: the code behind each reported result and where the result is used}\label{tbl:ledger}\tabularnewline
 \toprule\noalign{}
-Study & \shortstack[l]{Modu-\\lation} & Channel & Tbl/Fig & Result source \\
+Ref. & Result (where used) & Code $\rightarrow$ other result files \\
 \midrule\noalign{}
 \endfirsthead
 \toprule\noalign{}
-Study & \shortstack[l]{Modu-\\lation} & Channel & Tbl/Fig & Result source \\
+Ref. & Result (where used) & Code $\rightarrow$ other result files \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-Canonical benchmark & QPSK & Rayleigh & Tab.~\ref{tbl:table2}, Fig.~\ref{fig:fig10} & \url{results/modulation/qpsk_rayleigh.json} \\
-Normalized 3K-param.\ comparison & QPSK & Rayleigh & Tab.~\ref{tbl:table8} & \url{results/normalized_3k/3k_rayleigh.json} \\
-Coded block-DF, $K$-sweep & QPSK & Rayleigh & Tab.~\ref{tbl:table34} & \url{results/coded_df_experiment.json} \\
-Coded high-SNR paired re-test & QPSK & Rayleigh & Tab.~\ref{tbl:table37} & \url{results/coded_high_budget_test.json} \\
-Coded relay-error mechanism & QPSK & Rayleigh & Tab.~\ref{tbl:table38} & \url{results/coded_error_mechanism.json} \\
-Coded soft-decision relaying & QPSK & Rayleigh & Tab.~\ref{tbl:table39} & \url{results/coded_soft_decision.json} \\
-Equal-throughput \& latency & QPSK, 16-QAM & Rayleigh & Tabs.~\ref{tbl:table40}, \ref{tbl:table41} & \url{results/coded_latency_throughput.json} \\
-Adaptive modulation/coding (AMC) & QPSK, 16-QAM & Rayleigh & Tab.~\ref{tbl:table42} & \url{results/coded_rate_adaptation.json} \\
-Capacity under a latency budget & QPSK, 16-QAM & Rayleigh & Tab.~\ref{tbl:table43} & \url{results/coded_latency_capacity.json} \\
-Unknown ISI (layer 2) & BPSK & AWGN (Hop 2) & Tab.~\ref{tbl:tableE6} & Historical AF/DF/MLP below 12~dB: \url{e6_sim_ported_results.npy}; fixed-budget companion \url{codex_isi_fixed_budget_validation.json}; Viterbi: \url{results/e6_matched_protocol.json} and \url{results/e6_matched_highsnr.json}. \\
-Flat-channel control & BPSK; DBPSK (phase) & Flat unknown Hop 1; comp.\ Rayleigh Hop 2 & Tab.~\ref{tbl:tableE6flat} & \url{e6_flat_ported_results.npy} \\
-Unknown ISI, QPSK generalization & QPSK & ISI + Rayleigh Hop 1; AWGN Hop 2 & Tab.~\ref{tbl:tableE6qpsk}, Fig.~\ref{fig:figE6qpsk} & \url{e6_qpsk_unknown_channel_results.npy} \\
-Composite impairment cascade & DBPSK & Fixed composite Hop 1; comp.\ Rayleigh Hop 2 & Fig.~\ref{fig:figE6comp} & \url{e6_composite_ported_results.npy}; AF replaced by \url{codex_composite_af_validation.json}. \\
-Partial posterior (pilot sweep) & DBPSK & Random composite Hop 1; comp.\ Rayleigh Hop 2 & Fig.~\ref{fig:e6_partial_pilot_budget} & \url{e6_partial_ported_results.npy} \\
-Blind channel (layer 4) & DBPSK & Random composite Hop 1; comp.\ Rayleigh Hop 2 & Fig.~\ref{fig:figE6blind} & \url{e6_blind_ported_results.npy} \\
-Four-layer summary & mixed (above) & mixed (above) & Tab.~\ref{tbl:layers} & combination of the above \\
-AF block length and conventional AF & QPSK & Rayleigh & Sec.~\ref{sec:low-snr-advantage-of-neural-relays-h1-confirmed} & \url{results/af_block_and_conventional.json} \\
-Scalar MAP relay on unknown ISI & BPSK & ISI Hop 1; AWGN Hop 2 & Sec.~\ref{sec:unknown-channel-experiment} & \url{results/e6_scalar_map.json} \\
-ISI required-SNR penalties & BPSK & ISI Hop 1; AWGN Hop 2 & Tab.~\ref{tbl:layers} & \url{results/e6_isi_penalty.json} (from \url{results/e6_matched_protocol.json}) \\
-Factorized QPSK MLSE equivalence & QPSK & Real-tap ISI & Sec.~\ref{sec:iq-mlse-factorization} & \url{results/factorized_mlse_equivalence.json} \\
-Coded relaying, matched metrics & QPSK, 16-QAM & Rayleigh & Tabs.~\ref{tbl:coded-matched}, \ref{tbl:table38}, \ref{tbl:table40}, \ref{tbl:table42}, \ref{tbl:table43} & \url{results/coded_matched_metrics.json}; \url{results/*_matched.json}; \url{results/coded_matched_envelopes.json} \\
+\codeentry{fact-mlse} & Factorized QPSK MLSE equivalence (Sec.~\ref{sec:iq-mlse-factorization}) & \url{factorized_mlse_equivalence.py} \\
+\codeentry{relaynet} & Simulation framework: channels and zero forcing, relays, coded block-DF relay (Chs.~\ref{sec:methods}--\ref{sec:experiments}) & \url{relaynet/} \\
+\codeentry{hybrid-replay} & Hybrid branch selection, replayed (Sec.~\ref{sec:evaluated-configurations}) & \url{hybrid_branch_selection.py} \\
+\codeentry{run-exp} & Canonical benchmark and 3K comparison (Tables~\ref{tbl:table2}, \ref{tbl:table8}, \ref{tab:relay_comparison})$^{a}$ & \url{run_experiments.py} $\rightarrow$ \url{modulation/qpsk_rayleigh.json}; \url{normalized_3k/3k_rayleigh.json} \\
+\codeentry{canon-prov} & Canonical-run identification (Table~\ref{tbl:canonical-runs}) & \url{canonical_run_provenance.py} \\
+\codeentry{prov-audit} & Provenance audit: experiment, script, committed data & \url{provenance_audit.py} \\
+\codeentry{verifier} & Table verifier: declared cells against their data & \url{verify_thesis_tables.py} \\
+\codeentry{ksweep} & Coded block-DF $K$-sweep and coded learned relays (Tables~\ref{tbl:table34}, \ref{tbl:table40}) & \url{coded_df_experiment.py}; \url{coded_k_sweep_qpsk.py}; \url{coded_k_sweep_qam16.py}; \url{coded_learned_relay.py}; \url{coded_mamba_relay.py} $\rightarrow$ \url{coded_df_experiment.json} \\
+\codeentry{matched} & Matched decoder metrics (Table~\ref{tbl:coded-matched}) & \url{coded_matched_metrics.py} \\
+\codeentry{matched-reruns} & Matched reruns of the secondary coded studies and the coded size sweep (Tables~\ref{tbl:table38}, \ref{tbl:table44}, \ref{tbl:table40}, \ref{tbl:table42}, \ref{tbl:table43})$^{b}$ & the scripts of C8 and C12--C17; \url{coded_min_size_matched.py}; \url{coded_matched_envelopes.py} $\rightarrow$ \url{*_matched.json} \\
+\codeentry{high-budget} & High-SNR paired re-test (Table~\ref{tbl:table37}) & \url{coded_high_budget_test.py} \\
+\codeentry{err-mech} & Relay-error mechanism (Table~\ref{tbl:table38}) & \url{coded_error_mechanism.py} \\
+\codeentry{reliable} & Reliable-decoding regime (Table~\ref{tbl:table44}) & \url{coded_reliable_regime.py} \\
+\codeentry{soft} & Soft-decision relaying and soft block-DF calibration (Table~\ref{tbl:table39}) & \url{coded_soft_decision.py}; \url{coded_soft_df_calibration.py} \\
+\codeentry{throughput} & Equal throughput and look-ahead; Table~\ref{tbl:table41} timings on two machines (Tables~\ref{tbl:table40}, \ref{tbl:table41}) & \url{coded_latency_throughput.py} $\rightarrow$ \url{coded_latency_compute_machines.json} \\
+\codeentry{rate-adapt} & Rate adaptation (Table~\ref{tbl:table42}) & \url{coded_rate_adaptation.py} \\
+\codeentry{capacity} & Readiness budget (Table~\ref{tbl:table43}) & \url{coded_latency_capacity.py} \\
+\codeentry{slicer} & Slicer floor, closed form (Eq.~\eqref{eq:slicer-floor}) & \url{isi_slicer_floor.py} \\
+\codeentry{e6-sim} & Unknown ISI, setups S1--S4 (Table~\ref{tbl:tableE6}, Sec.~\ref{sec:unknown-channel-experiment}); fixed-budget companion & \url{e6_sim_ported.py} $\rightarrow$ \url{e6_sim_ported_results.npy}; \url{e6_unknown_channel_results/codex_isi_fixed_budget_validation.json} \\
+\codeentry{matched-protocol} & Matched-protocol Viterbi (Tables~\ref{tbl:layers}, \ref{tbl:tableE6}, Fig.~\ref{fig:figE6}) & \url{e6_matched_protocol.py}; \url{e6_matched_highsnr.py} \\
+\codeentry{isi-penalty} & ISI required-SNR penalties against genie MLSE (Table~\ref{tbl:layers}) & \url{e6_isi_penalty.py} \\
+\codeentry{scalar-map} & Scalar MAP relay on unknown ISI (Sec.~\ref{sec:unknown-channel-experiment}) & \url{e6_scalar_map.py} \\
+\codeentry{flat} & Flat-channel control (Table~\ref{tbl:tableE6flat}) & \url{e6_flat_ported.py} $\rightarrow$ \url{e6_flat_ported_results.npy} \\
+\codeentry{qpsk} & Unknown ISI with QPSK (Table~\ref{tbl:tableE6qpsk}, Fig.~\ref{fig:figE6qpsk}) & \url{e6_qpsk_unknown_channel.py} $\rightarrow$ \url{e6_qpsk_unknown_channel_results.npy} \\
+\codeentry{trellis-controls} & QPSK trellis controls (Sec.~\ref{sec:qpsk-unknown-channel}) & \url{qpsk_trellis_controls.py} \\
+\codeentry{err-decomp} & QPSK error decomposition (Sec.~\ref{sec:qpsk-unknown-channel}) & \url{qpsk_error_decomposition.py} \\
+\codeentry{bcjr-test} & Bit-MAP and symbol-MAP agreement (Sec.~\ref{sec:qpsk-unknown-channel}) & \url{tests/test_bcjr_qpsk.py} \\
+\codeentry{bcjr} & BCJR/APP against Viterbi MLSE (Table~\ref{tbl:bcjr-benchmark}) & \url{qpsk_bcjr_benchmark.py} \\
+\codeentry{composite} & Composite cascade; corrected AF curve (Fig.~\ref{fig:figE6comp}) & \url{e6_composite_ported.py}; \url{scripts/codex_composite_af_validation.py} $\rightarrow$ \url{e6_composite_ported_results.npy}; \url{e6_unknown_channel_results/codex_composite_af_validation.json} \\
+\codeentry{pilots} & Pilot-budget sweep (Fig.~\ref{fig:e6_partial_pilot_budget}) & \url{e6_partial_ported.py} $\rightarrow$ \url{e6_partial_ported_results.npy} \\
+\codeentry{blind} & Blind regime and its intervals (Fig.~\ref{fig:figE6blind}, Sec.~\ref{sec:blind-channel}) & \url{e6_blind_ported.py}; \url{e6_blind_intervals.py} $\rightarrow$ \url{e6_blind_ported_results.npy} \\
+\codeentry{mmse} & MMSE equalizer baseline (Table~\ref{tbl:mmse-baseline}) & \url{mmse_equalizer.py} \\
+\codeentry{seq-memory} & Sequence models on channels with memory, reruns and readouts (Table~\ref{tbl:seq-on-memory}) & \url{seq_models_on_memory*.py} $\rightarrow$ \url{seq_models_on_memory_repeat_probe.jsonl} \\
+\codeentry{complexity} & Measured inference time (Fig.~\ref{fig:figE6complexity}) & \url{e6_complexity_ported.py} $\rightarrow$ \url{e6_complexity_ported_results.npy} \\
+\codeentry{latency} & Decision delay, arithmetic and memory (Tables~\ref{tbl:joint-latency}, \ref{tbl:joint-memory}, Eq.~\eqref{eq:mac-crossover}) & \url{joint_latency_memory.py}; \url{joint_memory_precision.py}; \url{unified_latency_axis.py} \\
+\codeentry{af-block} & AF block length and conventional AF (Sec.~\ref{sec:low-snr-advantage-of-neural-relays-h1-confirmed}) & \url{af_block_and_conventional.py} \\
+\codeentry{minsize} & Minimum relay size and its initialization spreads (Sec.~\ref{sec:appendix-f-minimum-size}, Tables~\ref{tbl:mmse-baseline}, \ref{tbl:table-minsize}, \ref{tbl:seed-spread}) & \url{mlp_min_size_all_channels.py}; \url{mlp_min_size_bisect.py}; \url{coded_min_size.py} \\
+\codeentry{seed-spread} & Architecture initialization spreads (Table~\ref{tbl:seed-spread-3k}, Figs.~\ref{fig:transformer-seed-curves}, \ref{fig:transformer-loss-penalty}, Sec.~\ref{sec:appendix-claim-verification}) & \url{seed_spread_architectures.py}; \url{seed_spread_native_architectures.py}; \url{transformer_instability.py} \\
+\codeentry{ber-metrics} & SNR-penalty definition (Sec.~\ref{sec:appendix-g-channel-specs}) & \url{ber_metrics.py} \\
+\codeentry{common-targets} & Penalties on the common target set (Tables~\ref{tbl:seq-on-memory}, \ref{tbl:table-minsize}--\ref{tbl:seed-spread-3k}) & \url{penalty_common_targets.py} \\
 \end{longtable}
 }
 
-The result files above are themselves generated by named, committed scripts (e.g.\ \url{coded_rate_adaptation.py} produces \url{coded_rate_adaptation.json}); the correspondence between script and output file is one-to-one and is not separately tabulated here since the filenames make it explicit.
+{\footnotesize $^{a}$Table~\ref{tbl:table2}: \texttt{--exp 7.10}, code of commit \texttt{b4059e6}, data committed as \texttt{69a470c}; Table~\ref{tbl:table8}: \texttt{--exp 7.8}, code \texttt{4cf9753}, data \texttt{d27fcf7}; both with \texttt{--retrain} \texttt{--skip-relays cgan} \texttt{--num-trials 10} \texttt{--bits-per-trial 10000} \texttt{--snr-min 0} \texttt{--snr-max 20} \texttt{--snr-step 2} (Section~\ref{sec:training-protocol}). $^{b}$Run with \texttt{CODED\_METRIC=matched}, 30 trials on the published seeds.\par}
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
@@ -131,7 +150,7 @@ The result files above are themselves generated by named, committed scripts (e.g
 
 Supporting material for the minimum-size study of Section~\ref{sec:minimum-relay-size} and the initialization-variance measurements discussed in Section~\ref{sec:capacity-and-overfitting}. The findings themselves are stated in those sections; what follows is the underlying tabulation and the figures, collected here to keep the experiment and discussion chapters to their conclusions.
 
-\paragraph{Sweep configuration.} Every channel is run by \texttt{mlp\_min\_size\_all\_channels.py} (width and window grid) and \texttt{mlp\_min\_size\_bisect.py} (width bisection at depths 1--3), with the models of Table~\ref{tbl:minsize-channels}. Each configuration is trained three times, from initialization seeds 0, 1 and 2, on $60{,}000$ symbols drawn from its own Hop-1 channel, $20{,}000$ at each of 5, 10 and 15~dB (both axes of each QPSK symbol are used), for 25 epochs with batch size 256 and learning rate $3\times10^{-3}$; the network after the final epoch is evaluated. Evaluation uses 20 trials of $20{,}000$ bits at 0--20~dB in 4-dB steps, with the same bits and channel draws for every relay. Windows are completed with zeros at the trial edges; QPSK channels are processed per axis. Width runs from 1 to 48 hidden units and the window from 1 to 7 samples. Penalties follow Appendix~\ref{sec:appendix-g-channel-specs}: a candidate's worst-of-seeds BER at each SNR against its reference relay's mean-of-seeds curve.
+\paragraph{Sweep configuration.} Every channel is run on a width and window grid and by width bisection at depths 1--3~\coderef{minsize}, with the models of Table~\ref{tbl:minsize-channels}. Each configuration is trained three times, from initialization seeds 0, 1 and 2, on $60{,}000$ symbols drawn from its own Hop-1 channel, $20{,}000$ at each of 5, 10 and 15~dB (both axes of each QPSK symbol are used), for 25 epochs with batch size 256 and learning rate $3\times10^{-3}$; the network after the final epoch is evaluated. Evaluation uses 20 trials of $20{,}000$ bits at 0--20~dB in 4-dB steps, with the same bits and channel draws for every relay. Windows are completed with zeros at the trial edges; QPSK channels are processed per axis. Width runs from 1 to 48 hidden units and the window from 1 to 7 samples. Penalties follow Appendix~\ref{sec:appendix-g-channel-specs}: a candidate's worst-of-seeds BER at each SNR against its reference relay's mean-of-seeds curve.
 
 {\setlength{\tabcolsep}{4pt}\begin{longtable}[]{@{}>{\raggedright\arraybackslash}p{0.16\linewidth}>{\raggedright\arraybackslash}p{0.10\linewidth}>{\raggedright\arraybackslash}p{0.33\linewidth}>{\raggedright\arraybackslash}p{0.16\linewidth}>{\raggedright\arraybackslash}p{0.15\linewidth}@{}}
 \caption[Channels of the minimum-size sweep]{Channels of the minimum-size sweep (Table~\ref{tbl:table-minsize}). Hop-1 laws are those of Table~\ref{tbl:ch6-channel-specs} unless stated; ``comp.\ Rayleigh'' is coherently compensated Rayleigh fading with AWGN}\label{tbl:minsize-channels}\tabularnewline
@@ -317,7 +336,7 @@ Coded memory ({\footnotesize\texttt{joint\_\allowbreak{}latency\_\allowbreak{}me
 
 \paragraph{Training.} Each learned relay is trained once, at SNR $5$, $10$ and $15$~dB in equal proportions, on data drawn from the Hop-1 model of its own study, with fixed sample counts and epochs (for example $1.2\times10^{5}$ windows and $25$ epochs for the fixed ISI, and $1.6\times10^{5}$ windows and $30$ epochs for the composite studies). The network used for evaluation is the one left after the final epoch; no validation-based checkpoint selection or early stopping is applied. The sequence-model wrappers of the canonical comparison differ: they restore the epoch with the lowest training loss (Section~\ref{sec:training-protocol}).
 
-\paragraph{Single-number SNR penalties.} All required-SNR penalties use one definition, implemented in \texttt{ber\_metrics.py}. For a BER target $t$, the SNR at which a curve reaches $t$ is found by linear interpolation of $\ln \mathrm{BER}$ against SNR in dB between the two measured points that bracket $t$, taking the last such crossing. A zero-error point cannot be interpolated in log scale: if the preceding point lies above $t$, the crossing is placed at the zero-error point's SNR, which can only overstate the SNR the curve needs. The penalty at $t$ is the relay's SNR minus the reference's, positive when the relay needs more. The targets are fixed by the reference curve: of $10^{-1}$, $10^{-2}$ and $10^{-3}$, those the reference reaches within the tested SNR range form a common set for every curve compared against it. A curve that misses a target in that set needs more than the highest tested SNR there, so its penalty at that target is only bounded below, by that SNR minus the reference's, and is marked as a lower bound rather than dropped. Tables~\ref{tbl:mmse-baseline}, \ref{tbl:seq-on-memory}, \ref{tbl:table-minsize}, \ref{tbl:seed-spread} and~\ref{tbl:seed-spread-3k} report one number per configuration: the largest penalty over the common set, itself a lower bound when a target is missed. Their aggregation over training seeds differs, as follows.
+\paragraph{Single-number SNR penalties.} All required-SNR penalties use one definition~\coderef{ber-metrics}. For a BER target $t$, the SNR at which a curve reaches $t$ is found by linear interpolation of $\ln \mathrm{BER}$ against SNR in dB between the two measured points that bracket $t$, taking the last such crossing. A zero-error point cannot be interpolated in log scale: if the preceding point lies above $t$, the crossing is placed at the zero-error point's SNR, which can only overstate the SNR the curve needs. The penalty at $t$ is the relay's SNR minus the reference's, positive when the relay needs more. The targets are fixed by the reference curve: of $10^{-1}$, $10^{-2}$ and $10^{-3}$, those the reference reaches within the tested SNR range form a common set for every curve compared against it. A curve that misses a target in that set needs more than the highest tested SNR there, so its penalty at that target is only bounded below, by that SNR minus the reference's, and is marked as a lower bound rather than dropped. Tables~\ref{tbl:mmse-baseline}, \ref{tbl:seq-on-memory}, \ref{tbl:table-minsize}, \ref{tbl:seed-spread} and~\ref{tbl:seed-spread-3k} report one number per configuration: the largest penalty over the common set, itself a lower bound when a target is missed. Their aggregation over training seeds differs, as follows.
 \begin{itemize}
 \tightlist
 \item Table~\ref{tbl:mmse-baseline}: the learned-relay column is the best of three seeds of the best size-sweep configuration.
@@ -325,4 +344,4 @@ Coded memory ({\footnotesize\texttt{joint\_\allowbreak{}latency\_\allowbreak{}me
 \item Table~\ref{tbl:table-minsize}: the candidate's worst-of-seeds BER at each SNR, against the reference relay's mean-of-seeds curve; a candidate with only a lower bound meets no budget.
 \item Tables~\ref{tbl:seed-spread} and~\ref{tbl:seed-spread-3k}: the largest minus the smallest per-seed penalty, a lower bound when a seed is bounded.
 \end{itemize}
-\texttt{penalty\_\allowbreak{}common\_\allowbreak{}targets.py} recomputes them from the stored per-seed curves and reproduces the earlier values, which kept only the targets both curves reach. The fixed-ISI comparison with genie MLSE is reported per target ($10^{-1}$ to $10^{-4}$), computed from \texttt{results/e6\_matched\_protocol.json} by \texttt{e6\_isi\_penalty.py}.
+They are recomputed from the stored per-seed curves~\coderef{common-targets}, which reproduces the earlier values, which kept only the targets both curves reach. The fixed-ISI comparison with genie MLSE is reported per target ($10^{-1}$ to $10^{-4}$), computed from the matched-protocol data~\coderef{isi-penalty}.

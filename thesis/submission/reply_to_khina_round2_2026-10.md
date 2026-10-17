@@ -11,11 +11,13 @@ Thank you for the second round. I have addressed all six points, and the thesis 
 | 3. Matched-decoding scope | "Both/all learned relays" lose to matched block DF | Only the MLP hard and soft read-outs were rerun, and the statements say so. Mamba was not rerun |
 | 4. Formal problem | Normalization folded into the relay function. Expected BER called nondifferentiable | Sec. 4.1.5 separates the local function f from the block normalization α. The obstacle is now stated precisely |
 | 5. Principal comparisons | Coded discussion led with the unweighted pipeline. Complexity tables gave joint-trellis counts | Matched decoding leads (Sec. 5.5.1). Factorized counts are primary in Tables 6.8 and 6.9. The unweighted and joint-trellis results are short diagnostics |
-| 6. Scope and presentation | Six inconsistencies | All six fixed (details below) |
+| 6. Scope and presentation | Six inconsistencies | All six fixed (details below). Scripts are now cited as references to the ledger, not named in the text |
 
 **1. Canonical runs.** Both tables come from runs recorded in the repository's history (Sec. 4.3.3):
-- **Table 5.2.** Produced on 17 August 2026 by `run_experiments.py --exp 7.10 --retrain --skip-relays cgan`, ten trials of 10,000 bits at 0–20 dB. The code was commit b4059e6 and the data were committed as 69a470c. The run took 2,892 s on a four-core CPU without CUDA.
-- **Table 5.3.** Produced by `--exp 7.8` with the same options. The code was commit 4cf9753 and the data commit d27fcf7. The run took 746.6 s.
+- **Table 5.2.** Produced on 17 August 2026 by the canonical driver with fresh training and the cGAN skipped, ten trials of 10,000 bits at 0–20 dB. The code was commit b4059e6 and the data were committed as 69a470c. The run took 2,892 s on a four-core CPU without CUDA.
+- **Table 5.3.** Produced by the same driver and options. The code was commit 4cf9753 and the data commit d27fcf7. The run took 746.6 s.
+
+The exact commands are in ledger entry C4 (Appendix 9.3).
 
 Today's code reproduces both tables' AF and DF columns bit for bit. Those columns share every random draw with the learned relays, so this fixes the channel, the seeds and the evaluation budget. No executed code has changed since, apart from an optional Mamba read-out argument whose default is the configuration the runs used.
 
@@ -69,6 +71,7 @@ The architecture ranking, the minimum-size conclusions outside the coded row, an
 - **Figure 6.5.** The caption says the difference at ten pilots is not resolved: 0.0545 ± 0.0108 against the MLP's 0.0486.
 - **Archived revision.** Sec. 4.3.4 names the tag `thesis-2026-10` of the Gilzuk/relaynet2 repository for this revision. It also names commits b4059e6 and 4cf9753 for the canonical runs.
 - **Chapter 5 headers.** The running header reads "Core Experiments" on every page of the chapter.
+- **Code references.** Scripts and result files are no longer named in the running text. The text cites them as [C1]–[C40], and the master experiment ledger (Appendix 9.3, Table 9.2) lists each entry's script, its result file and where the result is used.
 
 Every changed number is recomputed by a committed script from the stored per-seed data and checked automatically against the text.
 
