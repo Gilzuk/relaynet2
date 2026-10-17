@@ -1,5 +1,8 @@
 # Final-submission review against Khina's round-2 feedback
 
+**Current submission review:** See [the final merged-snapshot readiness review](submission_readiness_review_2026-10-17.md) for the submission PDF, completed reviews and current validation. The report below is a preserved historical pass.
+
+
 **Historical first pass:** superseded by [the skeptical re-audit](skeptical_reaudit_2026-10-17.md), which records further fixes, current verification and the author’s subsequent push/merge authorization.
 
 **Reviewed:** PR #183 at `e58e94d9d6136963ef56a9b3586f5b437d8075fd`, then the local corrections on `fix/khina-round2-codex-review`, 17 October 2026. The PR head was reread through GitHub. This is an independent examiner-style assessment against the supplied email, not a statement of Dr. Khina's approval. No changes have been pushed.

@@ -1,10 +1,17 @@
+> Latest document update: the corrected PDF is pinned to PR #189 at `908687650929a74a969f74fa679f67633b8c3793`; that PR is merged at `2b817cde45e5fe09d4824b0c33826623a5f53394`; generated-mirror publication is the next integration step. Its committee audit closes the six scientific requests but flags administrative confirmation of the 120-body/136-physical page convention. No email has been sent.
+
 Subject: Re: Thesis — remaining points
+
+Draft for Gil to send; not sent. Updated after PRs #185, #186 and #187 merged.
+Reviewed submission: [`908687650929`](https://github.com/Gilzuk/relaynet2/tree/908687650929a74a969f74fa679f67633b8c3793).
+[Revised thesis PDF](https://github.com/Gilzuk/relaynet2/blob/908687650929a74a969f74fa679f67633b8c3793/thesis/main.pdf).
+Section/table numbers below refer to this PDF, including principal matched decoding in §5.5.1.
 
 Dear Anatoly,
 
-Thank you for the second round. I have addressed all six points, and the thesis is now 120 pages from Chapter 1 through the appendices. The recheck you asked for in point 2 changes several published numbers, and I list each change below with its old and new value. The coded Mamba relay was not rerun with matched metrics, so the matched-decoding statements are now restricted to the two MLP read-outs that were.
+Thank you for the second round. I have addressed all six points, and the thesis has 120 Arabic-numbered pages from Chapter 1 through the appendices (136 physical PDF pages including front and back matter). The recheck you asked for in point 2 changes several published numbers, and I list each change below with its old and new value. The coded Mamba relay was not rerun with matched metrics, so the matched-decoding statements are now restricted to the two MLP read-outs that were.
 
-**Additional training replications and seed sensitivity (17 October 2026).** The native and 3K canonical, sequence-memory and matched-coded repeats have now completed; all classical controls match exactly and learned results provide additional training realizations. Numerical differences alone do not establish that the original measurements were incorrect. The new discussion subsection “Additional Training Replications and Seed Sensitivity” reports them without overwriting historical tables. The native VAE–DF gap reaches 0.00640 at 4 dB, so the former 0.004 bound is explicitly historical. QPSK Transformer best penalty changes from 5.959 to 6.636 dB; Mamba2 spread changes from >3.282 to 0.973 dB, with its previously unsuccessful seed now reaching 1e-3. The sequence-memory best-of-three order survives, while some canonical pointwise ranks change. Fresh paired tests retain the matched block-DF advantage over both MLP read-outs at every tested SNR. An explicitly seeded full-budget MLP repeats exactly on one host; this does not recover the historical Torch state or prove cross-platform reproducibility. The minimum-size training grid was not rerun. The complete evidence is archived at [dc7c02c00cbe](https://github.com/Gilzuk/relaynet2/tree/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction). The sequence study repeats seed IDs 0, 1 and 2; coded initialization remains seed 0. Thus these runs supplement the multi-seed evidence, but all differences cannot be assigned to changed initial seeds, and repeated seed IDs are not independent new seeds. The descriptions below of original and earlier rerun values retain their historical scope.
+**Additional training replications and seed sensitivity (17 October 2026).** The native and 3K canonical, sequence-memory and matched-coded repeats have now completed; the classical control arrays match exactly in those four hosted jobs, while the learned outputs provide additional training realizations. Numerical differences alone do not establish that the original measurements were incorrect. The new discussion subsection “Additional Training Replications and Seed Sensitivity” reports them separately from the historical BER measurements; derived comparisons and statistical summaries have been corrected where required. The native VAE–DF gap reaches 0.00640 at 4 dB, so the former 0.004 bound is explicitly historical. QPSK Transformer best penalty changes from 5.959 to 6.636 dB; Mamba2 spread changes from >3.282 to 0.973 dB, with its previously unsuccessful seed now reaching 1e-3. The sequence-memory best-of-three order survives, while some canonical pointwise ranks change. Fresh paired tests retain the matched block-DF advantage over both MLP read-outs at every tested SNR. An explicitly seeded full-budget MLP repeats exactly on one host; this does not recover the historical Torch state or prove cross-platform reproducibility. The minimum-size training grid was not rerun. The complete evidence is archived at [dc7c02c00cbe](https://github.com/Gilzuk/relaynet2/tree/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction). The sequence study repeats seed IDs 0, 1 and 2; coded initialization remains seed 0. Thus these runs supplement the multi-seed evidence, but all differences cannot be assigned to changed initial seeds, and repeated seed IDs are not independent new seeds. The descriptions below of original and earlier rerun values retain their historical scope.
 
 | Point | Before | Now |
 |---|---|---|
@@ -21,7 +28,7 @@ Thank you for the second round. I have addressed all six points, and the thesis 
 
 The exact commands are in ledger entry C4 (Appendix 9.3).
 
-Today's code reproduces both tables' AF and DF columns bit for bit. Those columns share every random draw with the learned relays, so this fixes the channel, the seeds and the evaluation budget. No executed code has changed since, apart from an optional Mamba read-out argument whose default is the configuration the runs used.
+The archived checks reproduce both tables' AF and DF per-trial arrays bit for bit. Together with the traced driver and run metadata, this supports the documented classical channel, trial-seed and evaluation-budget configuration. It does not recover or independently verify the missing learned checkpoints, initialization states or historical software environment.
 
 New Table 4.2 gives each learned relay as trained:
 - parameters, window and training SNRs;
@@ -33,7 +40,7 @@ All evaluated learned relays in the two canonical tables train for 100 epochs on
 
 The sequence relays add the raw center sample after their tanh heads, so their complete outputs are not tanh-bounded. The text now states this skip connection, the Transformer dropout and positional encoding, disabled optional input normalization, and the complete VAE-3K widths. Table 6.7 uses a separate 40-epoch loop, now described with its own sample counts, optimizer and evaluation budget.
 
-What cannot be established is stated as such. The archived canonical execution path does not seed PyTorch's RNG, including initialization, sequence hold-out/dropout, MLP/sequence batch order and VAE latent training noise. The VAE's NumPy batch order is seeded, and evaluation decodes its latent mean deterministically. The canonical checkpoints, per-epoch losses and historical library versions are absent from the archived record. The configuration is therefore known, but the learned columns cannot be regenerated exactly.
+What cannot be established is stated as such. The archived canonical execution path does not seed PyTorch's RNG, including initialization, sequence hold-out/dropout, MLP/sequence batch order and VAE latent training noise. The VAE's NumPy batch order is seeded, and evaluation decodes its latent mean deterministically. The canonical checkpoints, per-epoch losses and historical library versions are absent from the archived record. The recoverable configuration is described explicitly, but exact replay of the historical learned columns is not established. Chapter 2 now also agrees with the implementation: the VAE samples its latent variable during training and decodes the encoder mean at inference. Equality of two historical point estimates is not presented as equivalence or evidence for a causal effect of variational regularization.
 
 **2. SNR penalties on comparable targets.** The rule is now:
 - the reference curve fixes the targets: those of 10⁻¹, 10⁻² and 10⁻³ it reaches by 20 dB;
@@ -42,7 +49,7 @@ What cannot be established is stated as such. The archived canonical execution p
 
 A script recomputes every affected table from the stored per-seed curves. The changes:
 - **Table 6.7.** The Mamba-2 initialization scored +4.69 dB at ISI (QPSK) needs more than +9.11 dB under the new rule. Mamba-2's best entry there is now +5.83 dB, with a spread above 3.28 dB (was +4.69 and 2.12). The MLP still has the best initialization on all three channels. Its lead on ISI (QPSK) is 3.14 dB; the thesis had quoted 2.11 dB, measured against the marked initialization. The other eleven cells are unchanged. The cross-machine rerun now reproduces eleven of the twelve best values within 0.25 dB, where it previously reproduced ten.
-- **Table 9.4 (minimum size).** Only the coded row changes. Its entries for the three strictest budgets (372p w9, 244p w5, 244p w5) miss 10⁻³, so no smaller configuration meets those budgets.
+- **Table 9.4 (minimum size).** Only the coded row changes. Its entries for the three strictest budgets (372p w9, 244p w5, 244p w5) miss 10⁻³, so no tested configuration is reported as meeting those budgets on the common target set.
 - **Table 9.5 (initialization spreads).** A configuration in which no seed reaches every target has no defined spread and is excluded:
   - pooled: 148 configurations (was 152), median 0.176 dB (was 0.180), 90th percentile ≥1.226 dB (was 1.229), maximum ≥1.555 dB (was 3.182);
   - the earlier 3.182 dB maximum was produced by the dropped target;
@@ -53,7 +60,7 @@ A script recomputes every affected table from the stored per-seed curves. The ch
 - **Window effect.** "8 to 11 dB between window 1 and window 7" becomes "more than 8 dB", since the window-1 values on the three-tap channels are lower bounds (open markers in Fig. 9.1).
 - **Coded size sweep (Ch. 8).** The range against unweighted block DF is +1.24 to +1.92 dB. The thesis had printed +1.86 to +1.92 dB, which the data never supported; this is an earlier error found in the recheck. Against matched block DF the penalty is at least +9.75 dB, replacing +7.6 to +9.9. The lower values came from configurations that miss 10⁻³.
 
-The MLP remains best on all three channels of Table 6.7, and the minimum-size conclusions outside the coded row are unchanged. On ISI (QPSK) the best-seed numerical order of Mamba-S6 and Mamba-2 reverses (5.72 against 5.83 dB). This is a numerical ordering, not evidence that either architecture is better, and the thesis does not read the order of the sequence models as resolved.
+The MLP retains the best measured initialization on all three channels of historical Table 6.7. Reanalysis of the archived size grid leaves its non-coded rows unchanged; the grid was not retrained in the October validation. On ISI (QPSK) the best-seed numerical order of Mamba-S6 and Mamba-2 reverses (5.72 against 5.83 dB). This is a numerical ordering, not evidence that either architecture is better, and the thesis does not read the order of the sequence models as resolved.
 
 **3. Matched-decoding scope.** Only the MLP hard and soft read-outs were rerun with matched metrics. Every statement that "both" or "all" learned relays lose to matched block DF now names those two read-outs and says that the coded Mamba relay was not rerun. This applies to Sec. 5.5.1, Chapter 1, Chapter 8, Chapter 9 and the abstract.
 
@@ -75,12 +82,12 @@ The MLP remains best on all three channels of Table 6.7, and the minimum-size co
   - Mamba-S6 has neither the depthwise convolution nor the gating branch;
   - Mamba-2 omits the depthwise convolution and uses a sigmoid gate in place of the normalized SiLU gate.
 - **Figure 6.5.** The caption says the difference at ten pilots is not resolved: 0.0545 ± 0.0108 against the MLP's 0.0486.
-- **Archived revision.** Sec. 4.3.4 links the existing immutable code/data snapshot 218a1c550cb8b917a95d9545c5211e109985bf38 of the Gilzuk/relaynet2 repository, including the revised plotting tools. It no longer claims that the planned release tag already exists. It also names commits b4059e6 and 4cf9753 for the canonical runs.
-- **Chapter 5 headers.** The running header reads "Core Experiments" on every page of the chapter.
+- **Archived revision.** Sec. 4.3.4 links the existing immutable code/data snapshot [80b4545adcc66e4be1f435364f7ec927e87f6414](https://github.com/Gilzuk/relaynet2/tree/80b4545adcc66e4be1f435364f7ec927e87f6414) of the Gilzuk/relaynet2 repository, including the revised plotting tools. It no longer claims that the planned release tag already exists. It also names commits b4059e6 and 4cf9753 for the canonical runs.
+- **Chapter 5 headers.** All running headers after the chapter-opening page read "Core Experiments" (folios 51–63); the opening page has the correct chapter title.
 - **Code references.** Scripts and result files are no longer named in the running text. The text cites them as [C1]–[C41], and the master experiment ledger (Appendix 9.3, Table 9.2) lists each entry's script, its result file and where the result is used.
 
-**Further corrections from a final check.** I then rechecked the whole thesis against the kinds of issue you raised in both rounds. Two corrections change stated results:
-- **Canonical comparison (Sec. 5.2).** The thesis said the MLP, Hybrid and VAE show no detectable difference from DF from 4 dB, nor from one another. Paired over the ten shared trials, as Sec. 4.3.2 prescribes, DF has the lower BER at seven of the eleven SNRs against the MLP and against the VAE, and at one against the Hybrid. No learned relay is better than DF anywhere, and the differences are at most 0.004, so H2's verdict is unchanged; the text now reports the paired results.
+**Further corrections from the earlier full-thesis check.** These changes to stated results are incorporated in the linked submission:
+- **Canonical comparison (Sec. 5.2).** The thesis said the MLP, Hybrid and VAE show no detectable difference from DF from 4 dB, nor from one another. Paired over the ten shared trials, as Sec. 4.3.2 prescribes, DF has the lower BER at seven of the eleven SNRs against the MLP and against the VAE, and at one against the Hybrid. No canonical learned relay has a resolved advantage over DF at any tested SNR. The historical MLP/Hybrid/VAE gaps stay within 0.004; the separate new VAE realization reaches 0.00640, as reported above. The text distinguishes these scopes.
 - **Table 6.6.** The equalizer and the learned relay had been measured against two different MLSE runs. Measured against one common curve, the learned relay's lead over the best equalizer is 1.8–2.3 dB, not 1.8–2.4.
 
 The other corrections are to ordering and consistency:
@@ -92,6 +99,19 @@ The other corrections are to ordering and consistency:
 - The pilot claim now says "at five pilots".
 
 The revised table values are recomputed from the stored per-seed data and checked automatically against the text. Both abstracts now state the real-tap factorization condition and the evaluated hard/soft MLP scope explicitly; the Hebrew multiplication ratio is unambiguous.
+
+**Final paired-test correction.** Floating-point subtraction of BERs could split ties between equal absolute error-count differences. The analysis now reconstructs integer error counts using the declared denominator (10,000 bits for canonical trials and 100,000 information bits for coded trials), validates it, and applies the two-sided Wilcoxon test to those differences. All 418 stored ten-pair contrasts agree with an independent sign-enumeration check. Two classifications cross the uncorrected 0.05 threshold:
+
+- Historical 3K Transformer versus DF at 20 dB: p changes from 0.05078125 to 0.04296875, resolving a DF advantage.
+- Additional native S6 versus DF at 16 dB: p changes from 0.03515625 to 0.05468750, leaving that difference unresolved.
+
+Neither change establishes a learned canonical advantage over DF. All 24 new matched-coded contrasts retain p < 10⁻⁵. These are exploratory, uncorrected comparisons conditional on trained checkpoints, not equivalence tests. Raw BER observations are unchanged by the statistical correction.
+
+**Reproduction evidence and final checks.** The retained-model audit loads 48 saved checkpoints and verifies 70 archived output hashes. These are the twelve new canonical and thirty-six sequence checkpoints; the trained classifier weights from the matched-coded rerun were not retained. Original canonical weights, complete training RNG states, per-epoch losses and historical library versions are also missing. Those limitations are stated in the thesis and researcher protocol.
+
+The broader runner now records a default Python/NumPy/Torch bootstrap seed of 42, preserves driver-local seeds, requires fresh outputs, retains per-step output versions and saved checkpoints, and reports missing outputs or verifier failures as errors. It distinguishes three historical archive references from executable producers. The full 73-entry plan has not been executed in full. A cheap committed-source ISI-penalty analysis regenerated its JSON byte-for-byte and passed verification; it is not a new BER simulation.
+
+The corrected PDF passes 892 numerical checks with zero inconsistencies, and 32 document/verifier regression tests pass. The earlier 386-test suite and Python 3.10–3.12 CI results apply to the unchanged experiment code. The PDF, preview and both Overleaf bundles are synchronized. The additional committee review aligns the README claims and reproduction routes, clarifies the two BPSK bit-label conventions, and reorders acknowledgments before the abstract. It finds the six scientific requests addressed within scope; formal confirmation of the page-count convention remains separate. The correction is merged through PR #189; verify generated-mirror publication before sending. This response remains an unsent draft.
 
 Best regards,
 Gil
