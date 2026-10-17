@@ -42,7 +42,7 @@ def main():
     print("\nOptional:")
     got_torch, tver = probe("torch")
     print(f"{OK if got_torch else NO} {'torch':<12} "
-          f"{tver or 'not installed (needed only for make repro-full)'}")
+          f"{tver or 'not installed (needed for canonical and sequence training)'}")
     if got_torch:
         import torch
         cuda = torch.cuda.is_available()
@@ -71,11 +71,11 @@ def main():
     print("\n" + "-" * 70)
     print("Available reproduction tiers:")
     print(f"  make verify         {'YES' if core else 'NO  (install numpy/scipy)'}"
-          "   -- check every thesis number against its data source (~1 min)")
+          "   -- check the verifier's declared subset against recorded data")
     print(f"  make repro-unknown  {'YES' if core else 'NO  (install numpy/scipy)'}"
-          "   -- re-run the unknown-channel study (~40 min, no torch)")
+          "   -- legacy unknown-channel drivers (adaptive tails may take hours)")
     print(f"  make repro-full     {'YES' if got_torch else 'NO  (install torch)'}"
-          "   -- re-run every experiment (hours; GPU strongly advised)")
+          "   -- legacy driver collection (hours; see REPRODUCE.md for scope)")
     print("-" * 70)
 
     if not core:

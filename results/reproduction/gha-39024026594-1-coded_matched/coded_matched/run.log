@@ -1,0 +1,133 @@
+Preparing worktree (detached HEAD c0394f0)
+HEAD is now at c0394f0 repro: recover interrupted evidence and run remaining experiments on Actions
+Training the QPSK classifier (as coded_soft_decision.py) ...
+[ 8 dB] 10/30  888s  df=0.06372/0.00324  mlp=0.10058/0.07843
+[ 0 dB] 10/30  888s  df=0.41976/0.26810  mlp=0.44293/0.40724
+[ 4 dB] 10/30  890s  df=0.22167/0.04700  mlp=0.29718/0.23489
+[12 dB] 10/30  890s  df=0.01547/0.00022  mlp=0.02147/0.02254
+[ 8 dB] 20/30  1789s  df=0.06416/0.00326  mlp=0.10070/0.07885
+[ 0 dB] 20/30  1790s  df=0.42066/0.26850  mlp=0.44401/0.40816
+[12 dB] 20/30  1795s  df=0.01544/0.00021  mlp=0.02155/0.02254
+[ 4 dB] 20/30  1800s  df=0.22228/0.04721  mlp=0.29655/0.23458
+[ 8 dB] 30/30  2699s  df=0.06381/0.00324  mlp=0.10058/0.07887
+[ 0 dB] 30/30  2703s  df=0.42068/0.26850  mlp=0.44425/0.40821
+[12 dB] 30/30  2709s  df=0.01535/0.00020  mlp=0.02137/0.02237
+[ 4 dB] 30/30  2714s  df=0.22311/0.04729  mlp=0.29692/0.23441
+[16 dB] 10/30  459s  df=0.00410/0.00001  mlp=0.00426/0.00680
+[20 dB] 10/30  458s  df=0.00139/0.00000  mlp=0.00105/0.00241
+[16 dB] 20/30  912s  df=0.00414/0.00001  mlp=0.00431/0.00681
+[20 dB] 20/30  913s  df=0.00138/0.00000  mlp=0.00103/0.00244
+[16 dB] 30/30  1366s  df=0.00413/0.00001  mlp=0.00432/0.00676
+[20 dB] 30/30  1366s  df=0.00136/0.00000  mlp=0.00105/0.00237
+
+0 dB  (max |plain - published| per trial: {'coded_df': 0.0, 'soft_df': 0.0, 'mlp_hard': 0.0026399999999999757, 'mlp_soft': 0.002840000000000009, 'oracle': 0.0})
+  coded_af|matched     0.481817 +/- 0.001307
+  coded_af|plain       0.489441 +/- 0.001024
+  coded_df_m|matched   0.268496 +/- 0.000772
+  coded_df_m|plain     0.364852 +/- 0.000932
+  coded_df|matched     0.364878 +/- 0.000660
+  coded_df|plain       0.420677 +/- 0.000567   vs matched block-DF +0.152181 W/L 0/30 p=1.7e-06
+  mlp_hard|matched     0.408212 +/- 0.000833   vs matched block-DF +0.139716 W/L 0/30 p=1.9e-09
+  mlp_hard|plain       0.444248 +/- 0.000863
+  mlp_soft|matched     0.396209 +/- 0.000766   vs matched block-DF +0.127713 W/L 0/30 p=1.7e-06
+  mlp_soft|plain       0.433630 +/- 0.000754
+  oracle|matched       0.160287 +/- 0.000968
+  oracle|plain         0.301508 +/- 0.000850
+  soft_df_m|matched    0.284502 +/- 0.000734   vs matched block-DF +0.016006 W/L 0/30 p=1.9e-09
+  soft_df_m|plain      0.361008 +/- 0.000839
+  soft_df|matched      0.361486 +/- 0.000701
+  soft_df|plain        0.414559 +/- 0.000776
+
+4 dB  (max |plain - published| per trial: {'coded_df': 0.0, 'soft_df': 0.0, 'mlp_hard': 0.0022199999999999998, 'mlp_soft': 0.0022199999999999998, 'oracle': 0.0})
+  coded_af|matched     0.405732 +/- 0.007748
+  coded_af|plain       0.447227 +/- 0.004288
+  coded_df_m|matched   0.047287 +/- 0.000402
+  coded_df_m|plain     0.145975 +/- 0.000940
+  coded_df|matched     0.146097 +/- 0.000950
+  coded_df|plain       0.223110 +/- 0.001213   vs matched block-DF +0.175822 W/L 0/30 p=1.9e-09
+  mlp_hard|matched     0.234407 +/- 0.000942   vs matched block-DF +0.187119 W/L 0/30 p=1.9e-09
+  mlp_hard|plain       0.296917 +/- 0.000967
+  mlp_soft|matched     0.213601 +/- 0.000880   vs matched block-DF +0.166314 W/L 0/30 p=1.9e-09
+  mlp_soft|plain       0.276013 +/- 0.000976
+  oracle|matched       0.024416 +/- 0.000277
+  oracle|plain         0.127977 +/- 0.001007
+  soft_df_m|matched    0.055312 +/- 0.000496   vs matched block-DF +0.008025 W/L 0/30 p=1.7e-06
+  soft_df_m|plain      0.150487 +/- 0.001015
+  soft_df|matched      0.147201 +/- 0.000942
+  soft_df|plain        0.221669 +/- 0.001179
+
+8 dB  (max |plain - published| per trial: {'coded_df': 0.0, 'soft_df': 0.0, 'mlp_hard': 0.0011399999999999882, 'mlp_soft': 0.0015500000000000097, 'oracle': 0.0})
+  coded_af|matched     0.157445 +/- 0.030724
+  coded_af|plain       0.277978 +/- 0.021704
+  coded_df_m|matched   0.003235 +/- 0.000118
+  coded_df_m|plain     0.034577 +/- 0.000491
+  coded_df|matched     0.034384 +/- 0.000414
+  coded_df|plain       0.063812 +/- 0.000662   vs matched block-DF +0.060577 W/L 0/30 p=1.7e-06
+  mlp_hard|matched     0.078875 +/- 0.000500   vs matched block-DF +0.075640 W/L 0/30 p=1.7e-06
+  mlp_hard|plain       0.100582 +/- 0.000557
+  mlp_soft|matched     0.062035 +/- 0.000434   vs matched block-DF +0.058800 W/L 0/30 p=1.9e-09
+  mlp_soft|plain       0.087514 +/- 0.000588
+  oracle|matched       0.001588 +/- 0.000067
+  oracle|plain         0.033076 +/- 0.000472
+  soft_df_m|matched    0.003502 +/- 0.000110   vs matched block-DF +0.000267 W/L 0/30 p=1.7e-06
+  soft_df_m|plain      0.034978 +/- 0.000495
+  soft_df|matched      0.034483 +/- 0.000418
+  soft_df|plain        0.063797 +/- 0.000638
+
+12 dB  (max |plain - published| per trial: {'coded_df': 0.0, 'soft_df': 0.0, 'mlp_hard': 0.0007300000000000015, 'mlp_soft': 0.0006999999999999992, 'oracle': 0.0})
+  coded_af|matched     0.005250 +/- 0.000675
+  coded_af|plain       0.052356 +/- 0.002990
+  coded_df_m|matched   0.000203 +/- 0.000015
+  coded_df_m|plain     0.007767 +/- 0.000167
+  coded_df|matched     0.007925 +/- 0.000150
+  coded_df|plain       0.015353 +/- 0.000208   vs matched block-DF +0.015150 W/L 0/30 p=1.7e-06
+  mlp_hard|matched     0.022367 +/- 0.000284   vs matched block-DF +0.022164 W/L 0/30 p=1.9e-09
+  mlp_hard|plain       0.021368 +/- 0.000266
+  mlp_soft|matched     0.015502 +/- 0.000248   vs matched block-DF +0.015298 W/L 0/30 p=1.7e-06
+  mlp_soft|plain       0.017806 +/- 0.000231
+  oracle|matched       0.000095 +/- 0.000010
+  oracle|plain         0.007660 +/- 0.000170
+  soft_df_m|matched    0.000206 +/- 0.000015   vs matched block-DF +0.000003 W/L 9/10 p=0.64
+  soft_df_m|plain      0.007783 +/- 0.000169
+  soft_df|matched      0.007927 +/- 0.000148
+  soft_df|plain        0.015369 +/- 0.000208
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/scipy/stats/_wilcoxon.py:181: RuntimeWarning: invalid value encountered in scalar divide
+  z = (r_plus - mn) / se
+
+16 dB  (max |plain - published| per trial: {'coded_df': 0.0, 'soft_df': 0.0, 'mlp_hard': 0.00019000000000000006, 'mlp_soft': 0.00022999999999999974, 'oracle': 0.0})
+  coded_af|matched     0.000113 +/- 0.000021
+  coded_af|plain       0.008147 +/- 0.000604
+  coded_df_m|matched   0.000010 +/- 0.000004
+  coded_df_m|plain     0.002104 +/- 0.000058
+  coded_df|matched     0.002045 +/- 0.000065
+  coded_df|plain       0.004127 +/- 0.000092   vs matched block-DF +0.004117 W/L 0/30 p=1.7e-06
+  mlp_hard|matched     0.006756 +/- 0.000167   vs matched block-DF +0.006746 W/L 0/30 p=1.7e-06
+  mlp_hard|plain       0.004318 +/- 0.000098
+  mlp_soft|matched     0.004355 +/- 0.000131   vs matched block-DF +0.004345 W/L 0/30 p=1.7e-06
+  mlp_soft|plain       0.003554 +/- 0.000084
+  oracle|matched       0.000004 +/- 0.000002
+  oracle|plain         0.002098 +/- 0.000059
+  soft_df_m|matched    0.000010 +/- 0.000004   vs matched block-DF +0.000000 W/L 0/0 p=nan
+  soft_df_m|plain      0.002104 +/- 0.000058
+  soft_df|matched      0.002045 +/- 0.000066
+  soft_df|plain        0.004127 +/- 0.000092
+
+20 dB  (max |plain - published| per trial: {'coded_df': 0.0, 'soft_df': 0.0, 'mlp_hard': 0.00013000000000000002, 'mlp_soft': 9.000000000000013e-05, 'oracle': 0.0})
+  coded_af|matched     0.000006 +/- 0.000003
+  coded_af|plain       0.001769 +/- 0.000080
+  coded_df_m|matched   0.000001 +/- 0.000001
+  coded_df_m|plain     0.000685 +/- 0.000049
+  coded_df|matched     0.000673 +/- 0.000039
+  coded_df|plain       0.001356 +/- 0.000056   vs matched block-DF +0.001355 W/L 0/30 p=1.7e-06
+  mlp_hard|matched     0.002372 +/- 0.000089   vs matched block-DF +0.002371 W/L 0/30 p=1.7e-06
+  mlp_hard|plain       0.001047 +/- 0.000060
+  mlp_soft|matched     0.001466 +/- 0.000056   vs matched block-DF +0.001465 W/L 0/30 p=1.7e-06
+  mlp_soft|plain       0.000899 +/- 0.000059
+  oracle|matched       0.000001 +/- 0.000001
+  oracle|plain         0.000684 +/- 0.000049
+  soft_df_m|matched    0.000001 +/- 0.000001   vs matched block-DF +0.000000 W/L 0/0 p=nan
+  soft_df_m|plain      0.000685 +/- 0.000049
+  soft_df|matched      0.001644 +/- 0.000071
+  soft_df|plain        0.002343 +/- 0.000083
+
+wrote results/coded_matched_metrics.json  (4104s)

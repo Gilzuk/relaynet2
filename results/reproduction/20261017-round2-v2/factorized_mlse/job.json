@@ -1,0 +1,55 @@
+{
+  "id": "factorized_mlse",
+  "kind": "deterministic_simulation",
+  "worker": "script",
+  "script": "factorized_mlse_equivalence.py",
+  "outputs": [
+    "results/factorized_mlse_equivalence.json"
+  ],
+  "ignored": [
+    "/git_rev"
+  ],
+  "scope": "Full joint/factorized control: L=3,5,7; six SNRs; 2,000 symbols per block; original depths",
+  "status": "MATCH",
+  "started_at": "2026-10-17T08:51:04.861519+00:00",
+  "reference_files": [
+    {
+      "path": "results/factorized_mlse_equivalence.json",
+      "sha256": "c0e72f6d52454a903582d0cc300ae013c83edb36d631294cc6126b4097f6dc4a",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/43ce4a6fbfe2a147a8c77c0fb06e44fcd5d7d5e2/results/factorized_mlse_equivalence.json"
+    }
+  ],
+  "source_commit": "43ce4a6fbfe2a147a8c77c0fb06e44fcd5d7d5e2",
+  "timeout_seconds": 28800,
+  "command": [
+    "/workspace/scratch/781ec23bff5d/repro-venv/bin/python",
+    "-u",
+    "scripts/reproduction_worker.py",
+    "--job",
+    "factorized_mlse",
+    "--threads",
+    "2"
+  ],
+  "environment_overrides": {
+    "OMP_NUM_THREADS": "2",
+    "OPENBLAS_NUM_THREADS": "2",
+    "MKL_NUM_THREADS": "2",
+    "NUMEXPR_NUM_THREADS": "2",
+    "PYTHONHASHSEED": "0",
+    "MPLBACKEND": "Agg",
+    "CUDA_VISIBLE_DEVICES": ""
+  },
+  "pid": 44,
+  "elapsed_seconds": 40.1,
+  "returncode": 0,
+  "artifacts": [
+    {
+      "path": "outputs/results/factorized_mlse_equivalence.json",
+      "sha256": "945d44ef3dc16000443f12e66a0fcc4b161d9cb9b9ba8ba4c51846711a7d0770",
+      "bytes": 21650
+    }
+  ],
+  "difference_count": 0,
+  "finished_at": "2026-10-17T08:51:44.928352+00:00",
+  "log_sha256": "d6f17cea94b52bcc7de2be9918442efac61d2888536d86fc990fae46cfb0b80e"
+}

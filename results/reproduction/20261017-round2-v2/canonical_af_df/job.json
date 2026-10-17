@@ -1,0 +1,60 @@
+{
+  "id": "canonical_af_df",
+  "kind": "deterministic_simulation",
+  "worker": "baselines",
+  "outputs": [
+    "results/reproduction_canonical_af_df.json"
+  ],
+  "references": [
+    "results/modulation/qpsk_rayleigh.json",
+    "results/normalized_3k/3k_rayleigh.json"
+  ],
+  "scope": "Fresh AF/DF evaluation: 11 SNRs, 10 trials \u00d7 10,000 bits, trial seeds 0\u20139",
+  "status": "MATCH",
+  "started_at": "2026-10-17T08:50:54.790516+00:00",
+  "reference_files": [
+    {
+      "path": "results/modulation/qpsk_rayleigh.json",
+      "sha256": "d2382010c95ae645d1687b4a3de4230ccfce54821487aa2437625448ce206b6f",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/43ce4a6fbfe2a147a8c77c0fb06e44fcd5d7d5e2/results/modulation/qpsk_rayleigh.json"
+    },
+    {
+      "path": "results/normalized_3k/3k_rayleigh.json",
+      "sha256": "1706260ae27a97b0d82adf2d763969cd6ea438d600861ac420fc720be8a311de",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/43ce4a6fbfe2a147a8c77c0fb06e44fcd5d7d5e2/results/normalized_3k/3k_rayleigh.json"
+    }
+  ],
+  "source_commit": "43ce4a6fbfe2a147a8c77c0fb06e44fcd5d7d5e2",
+  "timeout_seconds": 28800,
+  "command": [
+    "/workspace/scratch/781ec23bff5d/repro-venv/bin/python",
+    "-u",
+    "scripts/reproduction_worker.py",
+    "--job",
+    "canonical_af_df",
+    "--threads",
+    "2"
+  ],
+  "environment_overrides": {
+    "OMP_NUM_THREADS": "2",
+    "OPENBLAS_NUM_THREADS": "2",
+    "MKL_NUM_THREADS": "2",
+    "NUMEXPR_NUM_THREADS": "2",
+    "PYTHONHASHSEED": "0",
+    "MPLBACKEND": "Agg",
+    "CUDA_VISIBLE_DEVICES": ""
+  },
+  "pid": 34,
+  "elapsed_seconds": 10.1,
+  "returncode": 0,
+  "artifacts": [
+    {
+      "path": "outputs/results/reproduction_canonical_af_df.json",
+      "sha256": "a2389210c7c6662e41960e1a4715a8d7a88b1f104e8f45b0d414937969a8ffb4",
+      "bytes": 5129
+    }
+  ],
+  "difference_count": 0,
+  "finished_at": "2026-10-17T08:51:04.854644+00:00",
+  "log_sha256": "2654a2e50c5cae5415fb31002a9c7e67073f09fd5d0cad66888ea2dc47b63da8"
+}

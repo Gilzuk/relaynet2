@@ -1,0 +1,27 @@
+{
+  "run_id": "gha-39024026594-1-canonical_3k",
+  "source_commit": "c0394f0da5dac449594b89a9794fe251fad75e76",
+  "branch": "",
+  "pid": 2520,
+  "started_at": "2026-10-17T10:13:27.178392+00:00",
+  "status": "REVIEW_REQUIRED",
+  "jobs": [
+    {
+      "id": "canonical_3k",
+      "kind": "new_training_replication",
+      "worker": "canonical",
+      "stage": "7.8",
+      "outputs": [
+        "results/normalized_3k/3k_rayleigh.json"
+      ],
+      "seed": 20261017,
+      "scope": "Original 3K protocol, 100 epochs; new declared PyTorch seed, absent historical checkpoints/RNG",
+      "status": "RETRAINING_DIFFERENCE_REQUIRES_REVIEW",
+      "started_at": "2026-10-17T10:13:27.449196+00:00",
+      "finished_at": "2026-10-17T10:25:57.967280+00:00",
+      "elapsed_seconds": 750.5
+    }
+  ],
+  "updated_at": "2026-10-17T10:25:58.011282+00:00",
+  "finished_at": "2026-10-17T10:25:58.011279+00:00"
+}

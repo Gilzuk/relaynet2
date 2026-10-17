@@ -1,0 +1,19 @@
+{
+  "status": "MATCH",
+  "difference_count": 0,
+  "differences": [],
+  "classical_control_differences": [],
+  "reference_files": [
+    "results/canonical_paired_tests.json"
+  ],
+  "matching_reference": [
+    "results/canonical_paired_tests.json"
+  ],
+  "ignored_paths": [],
+  "numeric_tolerance": {
+    "rtol": 1e-12,
+    "atol": 1e-14
+  },
+  "scope": "Tables 5.2\u20135.3 paired comparisons; saved-curve reanalysis",
+  "interpretation": "MATCH means the selected scientific fields agree within roundoff; not byte identity, statistical equivalence or independent validation of every thesis claim."
+}

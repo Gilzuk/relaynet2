@@ -30,6 +30,8 @@ CHAPTERS = ROOT / "thesis" / "chapters"
 # (check name, file, exact published text to perturb, replacement)
 # Each replacement must be a value the source data does NOT support.
 MUTATIONS = [
+    ("prose:round2-rerun", "ch08_discussion.tex",
+     r"VAE--DF BER gap is $0.00640$", r"VAE--DF BER gap is $0.00400$"),
     ("tbl:tableE6", "ch07_unknown_and_mismatch_channels.tex",
      r"AF & 0.1813",
      r"AF & 0.9999"),

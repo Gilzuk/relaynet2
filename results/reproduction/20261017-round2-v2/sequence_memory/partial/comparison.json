@@ -1,0 +1,365 @@
+{
+  "status": "PARTIAL_RETRAINING_DIFFERENCE_REQUIRES_REVIEW",
+  "captured_at": "2026-10-17T08:54:26.203916+00:00",
+  "simulation_source_commit": "43ce4a6fbfe2a147a8c77c0fb06e44fcd5d7d5e2",
+  "snapshot_sha256": "3ca624888b81ab9699a2a052157caa30fb5c86f17fafb0053d7c3bb835bd28de",
+  "reference_files": [
+    "results/seq_models_on_memory.json",
+    "results/penalty_common_targets.json"
+  ],
+  "completed_seeds": [
+    {
+      "channel": "isi",
+      "architecture": "MLP-3K",
+      "seed": 0,
+      "status": "RETRAINING_DIFFERENCE_REQUIRES_REVIEW",
+      "ber_differences": [
+        {
+          "path": "/0",
+          "kind": "numeric",
+          "expected": 0.201735,
+          "actual": 0.2014275,
+          "abs_diff": 0.00030749999999998834
+        },
+        {
+          "path": "/1",
+          "kind": "numeric",
+          "expected": 0.0709375,
+          "actual": 0.07089749999999999,
+          "abs_diff": 4.000000000001225e-05
+        },
+        {
+          "path": "/2",
+          "kind": "numeric",
+          "expected": 0.010615000000000003,
+          "actual": 0.0106125,
+          "abs_diff": 2.5000000000025002e-06
+        },
+        {
+          "path": "/3",
+          "kind": "numeric",
+          "expected": 0.0004925,
+          "actual": 0.0004875,
+          "abs_diff": 5.000000000000013e-06
+        }
+      ],
+      "max_abs_ber_difference": 0.00030749999999998834,
+      "new_penalty": {
+        "common_targets": [
+          0.1,
+          0.01,
+          0.001
+        ],
+        "per_target": {
+          "0.1": {
+            "status": "ok",
+            "db": 0.6734738029954559
+          },
+          "0.01": {
+            "status": "ok",
+            "db": 2.3644110345625364
+          },
+          "0.001": {
+            "status": "ok",
+            "db": -0.9329207105964556
+          }
+        },
+        "unreached": [],
+        "worst_db": 2.3644110345625364,
+        "lower_bound": false
+      }
+    },
+    {
+      "channel": "isi",
+      "architecture": "MLP-3K",
+      "seed": 1,
+      "status": "RETRAINING_DIFFERENCE_REQUIRES_REVIEW",
+      "ber_differences": [
+        {
+          "path": "/0",
+          "kind": "numeric",
+          "expected": 0.19985999999999998,
+          "actual": 0.19983,
+          "abs_diff": 2.999999999997449e-05
+        },
+        {
+          "path": "/1",
+          "kind": "numeric",
+          "expected": 0.06810750000000002,
+          "actual": 0.06802499999999997,
+          "abs_diff": 8.250000000004087e-05
+        },
+        {
+          "path": "/2",
+          "kind": "numeric",
+          "expected": 0.008494999999999999,
+          "actual": 0.008455,
+          "abs_diff": 3.999999999999837e-05
+        },
+        {
+          "path": "/3",
+          "kind": "numeric",
+          "expected": 0.00017749999999999998,
+          "actual": 0.0001825,
+          "abs_diff": 5.000000000000013e-06
+        }
+      ],
+      "max_abs_ber_difference": 8.250000000004087e-05,
+      "new_penalty": {
+        "common_targets": [
+          0.1,
+          0.01,
+          0.001
+        ],
+        "per_target": {
+          "0.1": {
+            "status": "ok",
+            "db": 0.5607798630082375
+          },
+          "0.01": {
+            "status": "ok",
+            "db": 1.965266649360501
+          },
+          "0.001": {
+            "status": "ok",
+            "db": -1.7738375043480357
+          }
+        },
+        "unreached": [],
+        "worst_db": 1.965266649360501,
+        "lower_bound": false
+      }
+    },
+    {
+      "channel": "isi",
+      "architecture": "MLP-3K",
+      "seed": 2,
+      "status": "RETRAINING_DIFFERENCE_REQUIRES_REVIEW",
+      "ber_differences": [
+        {
+          "path": "/0",
+          "kind": "numeric",
+          "expected": 0.19894,
+          "actual": 0.19897,
+          "abs_diff": 3.0000000000002247e-05
+        },
+        {
+          "path": "/1",
+          "kind": "numeric",
+          "expected": 0.0675875,
+          "actual": 0.067675,
+          "abs_diff": 8.750000000000424e-05
+        },
+        {
+          "path": "/2",
+          "kind": "numeric",
+          "expected": 0.008882500000000002,
+          "actual": 0.008955,
+          "abs_diff": 7.249999999999791e-05
+        },
+        {
+          "path": "/3",
+          "kind": "numeric",
+          "expected": 0.0003025,
+          "actual": 0.0002975,
+          "abs_diff": 4.999999999999959e-06
+        }
+      ],
+      "max_abs_ber_difference": 8.750000000000424e-05,
+      "new_penalty": {
+        "common_targets": [
+          0.1,
+          0.01,
+          0.001
+        ],
+        "per_target": {
+          "0.1": {
+            "status": "ok",
+            "db": 0.54276810425403
+          },
+          "0.01": {
+            "status": "ok",
+            "db": 2.068929181865819
+          },
+          "0.001": {
+            "status": "ok",
+            "db": -1.4243761482024642
+          }
+        },
+        "unreached": [],
+        "worst_db": 2.068929181865819,
+        "lower_bound": false
+      }
+    },
+    {
+      "channel": "isi",
+      "architecture": "Transformer-3K",
+      "seed": 0,
+      "status": "RETRAINING_DIFFERENCE_REQUIRES_REVIEW",
+      "ber_differences": [
+        {
+          "path": "/0",
+          "kind": "numeric",
+          "expected": 0.22068,
+          "actual": 0.2208475,
+          "abs_diff": 0.00016750000000001486
+        },
+        {
+          "path": "/1",
+          "kind": "numeric",
+          "expected": 0.0925825,
+          "actual": 0.09246750000000001,
+          "abs_diff": 0.00011499999999999011
+        },
+        {
+          "path": "/2",
+          "kind": "numeric",
+          "expected": 0.022327500000000004,
+          "actual": 0.022170000000000002,
+          "abs_diff": 0.0001575000000000014
+        },
+        {
+          "path": "/3",
+          "kind": "numeric",
+          "expected": 0.0026074999999999996,
+          "actual": 0.0024149999999999996,
+          "abs_diff": 0.00019249999999999996
+        },
+        {
+          "path": "/4",
+          "kind": "numeric",
+          "expected": 0.00010500000000000002,
+          "actual": 9.000000000000002e-05,
+          "abs_diff": 1.4999999999999999e-05
+        }
+      ],
+      "max_abs_ber_difference": 0.00019249999999999996,
+      "new_penalty": {
+        "common_targets": [
+          0.1,
+          0.01,
+          0.001
+        ],
+        "per_target": {
+          "0.1": {
+            "status": "ok",
+            "db": 1.6311820799830694
+          },
+          "0.01": {
+            "status": "ok",
+            "db": 3.723647161844104
+          },
+          "0.001": {
+            "status": "ok",
+            "db": 1.0720905326187822
+          }
+        },
+        "unreached": [],
+        "worst_db": 3.723647161844104,
+        "lower_bound": false
+      }
+    }
+  ],
+  "checkpoints": [
+    {
+      "path": "reproduction_checkpoints/sequence/isi_MLP-3K_0.pt",
+      "sha256": "241c6db1418b7b31429358e3ae50e86b641ee38c47689478cafca6128d4de2c0",
+      "bytes": 20432
+    },
+    {
+      "path": "reproduction_checkpoints/sequence/isi_MLP-3K_1.pt",
+      "sha256": "b15b182ad897db9b829f710199bc9d0b7c043654f00bade0bac319265cb4d92d",
+      "bytes": 20432
+    },
+    {
+      "path": "reproduction_checkpoints/sequence/isi_MLP-3K_2.pt",
+      "sha256": "65d4b77cee3ba60cde01491ab1d6af619a845ff15fa0e5d385ef06872baa125b",
+      "bytes": 20432
+    },
+    {
+      "path": "reproduction_checkpoints/sequence/isi_Transformer-3K_0.pt",
+      "sha256": "e58f891dc0896415cb6a0ea16dfad1fa6dd0305ca38934d6050ac4b94d7a66ae",
+      "bytes": 26937
+    }
+  ],
+  "interpretation": "Partial results only. Differences are retained; cause is not yet isolated. The full suite remains running. No equivalence claim or change to published numbers.",
+  "classical_control_differences": {
+    "isi": []
+  },
+  "completed_architecture_summaries": {
+    "isi/MLP-3K": {
+      "new": {
+        "old_per_seed": [
+          2.3644110345625364,
+          1.965266649360501,
+          2.068929181865819
+        ],
+        "new_per_seed": [
+          2.3644110345625364,
+          1.965266649360501,
+          2.068929181865819
+        ],
+        "new_lower_bound": [
+          false,
+          false,
+          false
+        ],
+        "unreached": [
+          [],
+          [],
+          []
+        ],
+        "common_targets": [
+          "0.1",
+          "0.01",
+          "0.001"
+        ],
+        "old_best": 1.965266649360501,
+        "old_spread": 0.3991443852020353,
+        "new_best": 1.965266649360501,
+        "new_best_flag": "",
+        "new_spread": 0.3991443852020353,
+        "new_spread_flag": "",
+        "new_median": 2.068929181865819,
+        "new_median_flag": ""
+      },
+      "published": {
+        "old_per_seed": [
+          2.364968486574748,
+          1.9737935955601866,
+          2.0536415068616476
+        ],
+        "new_per_seed": [
+          2.364968486574748,
+          1.9737935955601866,
+          2.0536415068616476
+        ],
+        "new_lower_bound": [
+          false,
+          false,
+          false
+        ],
+        "unreached": [
+          [],
+          [],
+          []
+        ],
+        "common_targets": [
+          "0.1",
+          "0.01",
+          "0.001"
+        ],
+        "old_best": 1.9737935955601866,
+        "old_spread": 0.39117489101456115,
+        "new_best": 1.9737935955601866,
+        "new_best_flag": "",
+        "new_spread": 0.39117489101456115,
+        "new_spread_flag": "",
+        "new_median": 2.0536415068616476,
+        "new_median_flag": "",
+        "published_best": 1.9737935955601866,
+        "published_spread": 0.39117489101456115
+      }
+    }
+  }
+}

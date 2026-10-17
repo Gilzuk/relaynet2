@@ -1,0 +1,55 @@
+Preparing worktree (detached HEAD 43ce4a6)
+HEAD is now at 43ce4a6 fix: populate isolated sparse worktree before running experiments
+    baseline                       0.1995  0.0504  0.0012  0.0000  0.0000  0.0000
+    AF                             0.2805  0.2143  0.1805  0.1828  0.2071  0.2333
+START isi MLP-3K seed=0
+    isi MLP-3K seed 0              0.2014  0.0709  0.0106  0.0005  0.0000  0.0000
+END isi MLP-3K seed=0; penalty=2.3644110345625364; lower_bound=False
+START isi MLP-3K seed=1
+    isi MLP-3K seed 1              0.1998  0.0680  0.0085  0.0002  0.0000  0.0000
+END isi MLP-3K seed=1; penalty=1.965266649360501; lower_bound=False
+START isi MLP-3K seed=2
+    isi MLP-3K seed 2              0.1990  0.0677  0.0090  0.0003  0.0000  0.0000
+END isi MLP-3K seed=2; penalty=2.068929181865819; lower_bound=False
+START isi Transformer-3K seed=0
+    isi Transformer-3K seed 0      0.2208  0.0925  0.0222  0.0024  0.0001  0.0000
+END isi Transformer-3K seed=0; penalty=3.723647161844104; lower_bound=False
+START isi Transformer-3K seed=1
+    isi Transformer-3K seed 1      0.2216  0.0939  0.0250  0.0028  0.0001  0.0000
+END isi Transformer-3K seed=1; penalty=3.9593123586620322; lower_bound=False
+START isi Transformer-3K seed=2
+    isi Transformer-3K seed 2      0.2176  0.0905  0.0219  0.0026  0.0001  0.0000
+END isi Transformer-3K seed=2; penalty=3.771405028548557; lower_bound=False
+START isi Mamba-S6-3K seed=0
+    isi Mamba-S6-3K seed 0         0.2297  0.1060  0.0328  0.0049  0.0002  0.0000
+END isi Mamba-S6-3K seed=0; penalty=4.793640460838855; lower_bound=False
+START isi Mamba-S6-3K seed=1
+    isi Mamba-S6-3K seed 1         0.2289  0.1056  0.0342  0.0072  0.0005  0.0000
+END isi Mamba-S6-3K seed=1; penalty=5.4467576828513415; lower_bound=False
+START isi Mamba-S6-3K seed=2
+    isi Mamba-S6-3K seed 2         0.2289  0.1014  0.0288  0.0035  0.0000  0.0000
+END isi Mamba-S6-3K seed=2; penalty=4.298017768453493; lower_bound=False
+START isi Mamba2-3K seed=0
+    isi Mamba2-3K seed 0           0.2281  0.1029  0.0309  0.0042  0.0001  0.0000
+END isi Mamba2-3K seed=0; penalty=4.552580733685986; lower_bound=False
+START isi Mamba2-3K seed=1
+    isi Mamba2-3K seed 1           0.2286  0.1033  0.0306  0.0046  0.0003  0.0000
+END isi Mamba2-3K seed=1; penalty=4.658288790606537; lower_bound=False
+START isi Mamba2-3K seed=2
+    isi Mamba2-3K seed 2           0.2300  0.1027  0.0314  0.0047  0.0001  0.0000
+END isi Mamba2-3K seed=2; penalty=4.687892974629257; lower_bound=False
+    baseline                       0.3059  0.1610  0.0271  0.0003  0.0000  0.0000
+    AF                             0.3406  0.2614  0.2026  0.1782  0.1879  0.2141
+START isi_complex MLP-3K seed=0
+    isi_complex MLP-3K seed 0      0.3020  0.1638  0.0485  0.0048  0.0001  0.0000
+END isi_complex MLP-3K seed=0; penalty=2.5828480377909493; lower_bound=False
+START isi_complex MLP-3K seed=1
+    isi_complex MLP-3K seed 1      0.3011  0.1630  0.0475  0.0049  0.0001  0.0000
+END isi_complex MLP-3K seed=1; penalty=2.6645437423541054; lower_bound=False
+START isi_complex MLP-3K seed=2
+    isi_complex MLP-3K seed 2      0.3005  0.1658  0.0485  0.0047  0.0001  0.0000
+END isi_complex MLP-3K seed=2; penalty=2.523092016296431; lower_bound=False
+START isi_complex Transformer-3K seed=0
+    isi_complex Transformer-3K seed 0 0.3167  0.1813  0.0680  0.0165  0.0023  0.0001
+END isi_complex Transformer-3K seed=0; penalty=6.080812488681266; lower_bound=False
+START isi_complex Transformer-3K seed=1

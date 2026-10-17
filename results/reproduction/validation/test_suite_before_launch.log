@@ -1,0 +1,12 @@
+........................................................................ [ 20%]
+........................................................................ [ 40%]
+........................................................................ [ 60%]
+........................................................................ [ 80%]
+......................................................................   [100%]
+=============================== warnings summary ===============================
+tests/test_factorized_viterbi.py::test_rejects_complex_taps
+  /workspace/scratch/781ec23bff5d/relaynet2-review/relaynet/relays/viterbi.py:612: ComplexWarning: Casting complex values to real discards the imaginary part
+    self.h = np.asarray(channel_taps, dtype=float)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+358 passed, 1 warning in 17.08s

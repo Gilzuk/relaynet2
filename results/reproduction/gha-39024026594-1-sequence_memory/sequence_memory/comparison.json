@@ -1,0 +1,1712 @@
+{
+  "status": "RETRAINING_DIFFERENCE_REQUIRES_REVIEW",
+  "difference_count": 113,
+  "differences": [
+    {
+      "path": "/channels/composite/archs/MLP-3K/0/ber/0",
+      "kind": "numeric",
+      "expected": 0.337905,
+      "actual": 0.33795000000000003,
+      "abs_diff": 4.500000000001725e-05
+    },
+    {
+      "path": "/channels/composite/archs/MLP-3K/0/ber/1",
+      "kind": "numeric",
+      "expected": 0.231405,
+      "actual": 0.23146,
+      "abs_diff": 5.4999999999999494e-05
+    },
+    {
+      "path": "/channels/composite/archs/MLP-3K/0/ber/2",
+      "kind": "numeric",
+      "expected": 0.1181325,
+      "actual": 0.1179125,
+      "abs_diff": 0.00021999999999999797
+    },
+    {
+      "path": "/channels/composite/archs/MLP-3K/0/ber/3",
+      "kind": "numeric",
+      "expected": 0.037075,
+      "actual": 0.03695749999999999,
+      "abs_diff": 0.00011750000000000649
+    },
+    {
+      "path": "/channels/composite/archs/MLP-3K/0/ber/4",
+      "kind": "numeric",
+      "expected": 0.00843,
+      "actual": 0.0084425,
+      "abs_diff": 1.2500000000000358e-05
+    },
+    {
+      "path": "/channels/composite/archs/MLP-3K/0/ber/5",
+      "kind": "numeric",
+      "expected": 0.0025025,
+      "actual": 0.0024874999999999997,
+      "abs_diff": 1.5000000000000256e-05
+    },
+    {
+      "path": "/channels/composite/archs/MLP-3K/1/ber/0",
+      "kind": "numeric",
+      "expected": 0.3367874999999999,
+      "actual": 0.3369175,
+      "abs_diff": 0.0001300000000000745
+    },
+    {
+      "path": "/channels/composite/archs/MLP-3K/1/ber/1",
+      "kind": "numeric",
+      "expected": 0.23152500000000004,
+      "actual": 0.23164249999999997,
+      "abs_diff": 0.0001174999999999371
+    },
+    {
+      "path": "/channels/composite/archs/MLP-3K/1/ber/3",
+      "kind": "numeric",
+      "expected": 0.03607249999999999,
+      "actual": 0.03627,
+      "abs_diff": 0.00019750000000000323
+    },
+    {
+      "path": "/channels/composite/archs/MLP-3K/1/ber/4",
+      "kind": "numeric",
+      "expected": 0.00775,
+      "actual": 0.007772499999999999,
+      "abs_diff": 2.2499999999999083e-05
+    },
+    {
+      "path": "/channels/composite/archs/MLP-3K/1/ber/5",
+      "kind": "numeric",
+      "expected": 0.00252,
+      "actual": 0.0025324999999999996,
+      "abs_diff": 1.249999999999949e-05
+    },
+    {
+      "path": "/channels/composite/archs/MLP-3K/2/ber/0",
+      "kind": "numeric",
+      "expected": 0.33894,
+      "actual": 0.3385625,
+      "abs_diff": 0.0003775000000000306
+    },
+    {
+      "path": "/channels/composite/archs/MLP-3K/2/ber/1",
+      "kind": "numeric",
+      "expected": 0.231845,
+      "actual": 0.23167,
+      "abs_diff": 0.00017500000000000848
+    },
+    {
+      "path": "/channels/composite/archs/MLP-3K/2/ber/2",
+      "kind": "numeric",
+      "expected": 0.1175675,
+      "actual": 0.1172675,
+      "abs_diff": 0.0003000000000000086
+    },
+    {
+      "path": "/channels/composite/archs/MLP-3K/2/ber/3",
+      "kind": "numeric",
+      "expected": 0.03562,
+      "actual": 0.035425,
+      "abs_diff": 0.00019500000000000073
+    },
+    {
+      "path": "/channels/composite/archs/MLP-3K/2/ber/4",
+      "kind": "numeric",
+      "expected": 0.00762,
+      "actual": 0.007547500000000001,
+      "abs_diff": 7.249999999999878e-05
+    },
+    {
+      "path": "/channels/composite/archs/MLP-3K/2/ber/5",
+      "kind": "numeric",
+      "expected": 0.0024249999999999996,
+      "actual": 0.0024224999999999997,
+      "abs_diff": 2.499999999999898e-06
+    },
+    {
+      "path": "/channels/composite/archs/Mamba2-3K/0/ber/0",
+      "kind": "numeric",
+      "expected": 0.34954500000000005,
+      "actual": 0.3495375,
+      "abs_diff": 7.500000000049134e-06
+    },
+    {
+      "path": "/channels/composite/archs/Mamba2-3K/1/ber/0",
+      "kind": "numeric",
+      "expected": 0.350385,
+      "actual": 0.350345,
+      "abs_diff": 3.999999999998449e-05
+    },
+    {
+      "path": "/channels/composite/archs/Mamba2-3K/1/ber/1",
+      "kind": "numeric",
+      "expected": 0.246215,
+      "actual": 0.24627,
+      "abs_diff": 5.4999999999999494e-05
+    },
+    {
+      "path": "/channels/composite/archs/Mamba2-3K/1/ber/2",
+      "kind": "numeric",
+      "expected": 0.1312375,
+      "actual": 0.131565,
+      "abs_diff": 0.0003274999999999806
+    },
+    {
+      "path": "/channels/composite/archs/Mamba2-3K/1/ber/3",
+      "kind": "numeric",
+      "expected": 0.045704999999999996,
+      "actual": 0.046095,
+      "abs_diff": 0.00039000000000000146
+    },
+    {
+      "path": "/channels/composite/archs/Mamba2-3K/1/ber/4",
+      "kind": "numeric",
+      "expected": 0.01077,
+      "actual": 0.011322500000000001,
+      "abs_diff": 0.0005525000000000009
+    },
+    {
+      "path": "/channels/composite/archs/Mamba2-3K/1/ber/5",
+      "kind": "numeric",
+      "expected": 0.0028375,
+      "actual": 0.0031424999999999995,
+      "abs_diff": 0.0003049999999999993
+    },
+    {
+      "path": "/channels/composite/archs/Transformer-3K/0/ber/0",
+      "kind": "numeric",
+      "expected": 0.34565999999999997,
+      "actual": 0.34502499999999997,
+      "abs_diff": 0.0006349999999999967
+    },
+    {
+      "path": "/channels/composite/archs/Transformer-3K/0/ber/1",
+      "kind": "numeric",
+      "expected": 0.23842749999999996,
+      "actual": 0.23862749999999994,
+      "abs_diff": 0.00019999999999997797
+    },
+    {
+      "path": "/channels/composite/archs/Transformer-3K/0/ber/2",
+      "kind": "numeric",
+      "expected": 0.1253975,
+      "actual": 0.1267925,
+      "abs_diff": 0.0013950000000000073
+    },
+    {
+      "path": "/channels/composite/archs/Transformer-3K/0/ber/3",
+      "kind": "numeric",
+      "expected": 0.04569499999999999,
+      "actual": 0.047157500000000005,
+      "abs_diff": 0.0014625000000000124
+    },
+    {
+      "path": "/channels/composite/archs/Transformer-3K/0/ber/4",
+      "kind": "numeric",
+      "expected": 0.011492500000000001,
+      "actual": 0.01259,
+      "abs_diff": 0.0010974999999999995
+    },
+    {
+      "path": "/channels/composite/archs/Transformer-3K/0/ber/5",
+      "kind": "numeric",
+      "expected": 0.0031450000000000007,
+      "actual": 0.003320000000000001,
+      "abs_diff": 0.00017500000000000024
+    },
+    {
+      "path": "/channels/composite/archs/Transformer-3K/1/ber/0",
+      "kind": "numeric",
+      "expected": 0.346995,
+      "actual": 0.3469025,
+      "abs_diff": 9.249999999999536e-05
+    },
+    {
+      "path": "/channels/composite/archs/Transformer-3K/1/ber/1",
+      "kind": "numeric",
+      "expected": 0.24088500000000002,
+      "actual": 0.24057749999999997,
+      "abs_diff": 0.00030750000000004385
+    },
+    {
+      "path": "/channels/composite/archs/Transformer-3K/1/ber/2",
+      "kind": "numeric",
+      "expected": 0.126945,
+      "actual": 0.126805,
+      "abs_diff": 0.00014000000000000123
+    },
+    {
+      "path": "/channels/composite/archs/Transformer-3K/1/ber/3",
+      "kind": "numeric",
+      "expected": 0.042045000000000006,
+      "actual": 0.0420625,
+      "abs_diff": 1.7499999999996685e-05
+    },
+    {
+      "path": "/channels/composite/archs/Transformer-3K/1/ber/4",
+      "kind": "numeric",
+      "expected": 0.009292499999999999,
+      "actual": 0.009360000000000002,
+      "abs_diff": 6.750000000000332e-05
+    },
+    {
+      "path": "/channels/composite/archs/Transformer-3K/1/ber/5",
+      "kind": "numeric",
+      "expected": 0.0027199999999999998,
+      "actual": 0.002715,
+      "abs_diff": 4.999999999999796e-06
+    },
+    {
+      "path": "/channels/composite/archs/Transformer-3K/2/ber/0",
+      "kind": "numeric",
+      "expected": 0.34579250000000006,
+      "actual": 0.3458525,
+      "abs_diff": 5.999999999994898e-05
+    },
+    {
+      "path": "/channels/composite/archs/Transformer-3K/2/ber/1",
+      "kind": "numeric",
+      "expected": 0.23876499999999998,
+      "actual": 0.23918499999999998,
+      "abs_diff": 0.0004200000000000037
+    },
+    {
+      "path": "/channels/composite/archs/Transformer-3K/2/ber/2",
+      "kind": "numeric",
+      "expected": 0.12597250000000002,
+      "actual": 0.1261075,
+      "abs_diff": 0.00013499999999999623
+    },
+    {
+      "path": "/channels/composite/archs/Transformer-3K/2/ber/3",
+      "kind": "numeric",
+      "expected": 0.0443525,
+      "actual": 0.04437,
+      "abs_diff": 1.7499999999996685e-05
+    },
+    {
+      "path": "/channels/composite/archs/Transformer-3K/2/ber/5",
+      "kind": "numeric",
+      "expected": 0.002705,
+      "actual": 0.0026899999999999997,
+      "abs_diff": 1.5000000000000256e-05
+    },
+    {
+      "path": "/channels/isi/archs/MLP-3K/0/ber/0",
+      "kind": "numeric",
+      "expected": 0.201735,
+      "actual": 0.2014275,
+      "abs_diff": 0.00030749999999998834
+    },
+    {
+      "path": "/channels/isi/archs/MLP-3K/0/ber/1",
+      "kind": "numeric",
+      "expected": 0.0709375,
+      "actual": 0.07089749999999999,
+      "abs_diff": 4.000000000001225e-05
+    },
+    {
+      "path": "/channels/isi/archs/MLP-3K/0/ber/2",
+      "kind": "numeric",
+      "expected": 0.010615000000000003,
+      "actual": 0.0106125,
+      "abs_diff": 2.5000000000025002e-06
+    },
+    {
+      "path": "/channels/isi/archs/MLP-3K/0/ber/3",
+      "kind": "numeric",
+      "expected": 0.0004925,
+      "actual": 0.0004875,
+      "abs_diff": 5.000000000000013e-06
+    },
+    {
+      "path": "/channels/isi/archs/MLP-3K/1/ber/0",
+      "kind": "numeric",
+      "expected": 0.19985999999999998,
+      "actual": 0.19983,
+      "abs_diff": 2.999999999997449e-05
+    },
+    {
+      "path": "/channels/isi/archs/MLP-3K/1/ber/1",
+      "kind": "numeric",
+      "expected": 0.06810750000000002,
+      "actual": 0.06802499999999997,
+      "abs_diff": 8.250000000004087e-05
+    },
+    {
+      "path": "/channels/isi/archs/MLP-3K/1/ber/2",
+      "kind": "numeric",
+      "expected": 0.008494999999999999,
+      "actual": 0.008455,
+      "abs_diff": 3.999999999999837e-05
+    },
+    {
+      "path": "/channels/isi/archs/MLP-3K/1/ber/3",
+      "kind": "numeric",
+      "expected": 0.00017749999999999998,
+      "actual": 0.0001825,
+      "abs_diff": 5.000000000000013e-06
+    },
+    {
+      "path": "/channels/isi/archs/MLP-3K/2/ber/0",
+      "kind": "numeric",
+      "expected": 0.19894,
+      "actual": 0.19897,
+      "abs_diff": 3.0000000000002247e-05
+    },
+    {
+      "path": "/channels/isi/archs/MLP-3K/2/ber/1",
+      "kind": "numeric",
+      "expected": 0.0675875,
+      "actual": 0.067675,
+      "abs_diff": 8.750000000000424e-05
+    },
+    {
+      "path": "/channels/isi/archs/MLP-3K/2/ber/2",
+      "kind": "numeric",
+      "expected": 0.008882500000000002,
+      "actual": 0.008955,
+      "abs_diff": 7.249999999999791e-05
+    },
+    {
+      "path": "/channels/isi/archs/MLP-3K/2/ber/3",
+      "kind": "numeric",
+      "expected": 0.0003025,
+      "actual": 0.0002975,
+      "abs_diff": 4.999999999999959e-06
+    },
+    {
+      "path": "/channels/isi/archs/Mamba2-3K/1/ber/0",
+      "kind": "numeric",
+      "expected": 0.22917,
+      "actual": 0.228895,
+      "abs_diff": 0.0002750000000000252
+    },
+    {
+      "path": "/channels/isi/archs/Mamba2-3K/1/ber/1",
+      "kind": "numeric",
+      "expected": 0.1033725,
+      "actual": 0.10239500000000001,
+      "abs_diff": 0.0009774999999999923
+    },
+    {
+      "path": "/channels/isi/archs/Mamba2-3K/1/ber/2",
+      "kind": "numeric",
+      "expected": 0.0303375,
+      "actual": 0.029862500000000004,
+      "abs_diff": 0.00047499999999999626
+    },
+    {
+      "path": "/channels/isi/archs/Mamba2-3K/1/ber/3",
+      "kind": "numeric",
+      "expected": 0.00466,
+      "actual": 0.004432500000000001,
+      "abs_diff": 0.0002274999999999994
+    },
+    {
+      "path": "/channels/isi/archs/Mamba2-3K/1/ber/4",
+      "kind": "numeric",
+      "expected": 0.0005250000000000001,
+      "actual": 0.00029749999999999997,
+      "abs_diff": 0.0002275000000000001
+    },
+    {
+      "path": "/channels/isi/archs/Mamba2-3K/1/ber/5",
+      "kind": "numeric",
+      "expected": 0.00021999999999999998,
+      "actual": 7.500000000000001e-06,
+      "abs_diff": 0.0002125
+    },
+    {
+      "path": "/channels/isi/archs/Transformer-3K/0/ber/0",
+      "kind": "numeric",
+      "expected": 0.22068,
+      "actual": 0.22111999999999998,
+      "abs_diff": 0.00043999999999999595
+    },
+    {
+      "path": "/channels/isi/archs/Transformer-3K/0/ber/1",
+      "kind": "numeric",
+      "expected": 0.0925825,
+      "actual": 0.09340499999999999,
+      "abs_diff": 0.0008224999999999899
+    },
+    {
+      "path": "/channels/isi/archs/Transformer-3K/0/ber/2",
+      "kind": "numeric",
+      "expected": 0.022327500000000004,
+      "actual": 0.0243375,
+      "abs_diff": 0.002009999999999998
+    },
+    {
+      "path": "/channels/isi/archs/Transformer-3K/0/ber/3",
+      "kind": "numeric",
+      "expected": 0.0026074999999999996,
+      "actual": 0.00414,
+      "abs_diff": 0.0015325
+    },
+    {
+      "path": "/channels/isi/archs/Transformer-3K/0/ber/4",
+      "kind": "numeric",
+      "expected": 0.00010500000000000002,
+      "actual": 0.00040249999999999997,
+      "abs_diff": 0.00029749999999999997
+    },
+    {
+      "path": "/channels/isi/archs/Transformer-3K/0/ber/5",
+      "kind": "numeric",
+      "expected": 0.0,
+      "actual": 1.5000000000000002e-05,
+      "abs_diff": 1.5000000000000002e-05
+    },
+    {
+      "path": "/channels/isi/archs/Transformer-3K/1/ber/0",
+      "kind": "numeric",
+      "expected": 0.221585,
+      "actual": 0.2219775,
+      "abs_diff": 0.0003924999999999901
+    },
+    {
+      "path": "/channels/isi/archs/Transformer-3K/1/ber/1",
+      "kind": "numeric",
+      "expected": 0.093045,
+      "actual": 0.09331249999999999,
+      "abs_diff": 0.00026749999999998997
+    },
+    {
+      "path": "/channels/isi/archs/Transformer-3K/1/ber/2",
+      "kind": "numeric",
+      "expected": 0.023905000000000003,
+      "actual": 0.0236425,
+      "abs_diff": 0.0002625000000000023
+    },
+    {
+      "path": "/channels/isi/archs/Transformer-3K/1/ber/3",
+      "kind": "numeric",
+      "expected": 0.0025700000000000002,
+      "actual": 0.0024700000000000004,
+      "abs_diff": 9.999999999999983e-05
+    },
+    {
+      "path": "/channels/isi/archs/Transformer-3K/1/ber/4",
+      "kind": "numeric",
+      "expected": 6.5e-05,
+      "actual": 4e-05,
+      "abs_diff": 2.499999999999999e-05
+    },
+    {
+      "path": "/channels/isi/archs/Transformer-3K/2/ber/0",
+      "kind": "numeric",
+      "expected": 0.21716249999999998,
+      "actual": 0.21752749999999996,
+      "abs_diff": 0.00036499999999997645
+    },
+    {
+      "path": "/channels/isi/archs/Transformer-3K/2/ber/1",
+      "kind": "numeric",
+      "expected": 0.08911,
+      "actual": 0.09023250000000001,
+      "abs_diff": 0.0011225000000000124
+    },
+    {
+      "path": "/channels/isi/archs/Transformer-3K/2/ber/2",
+      "kind": "numeric",
+      "expected": 0.0203675,
+      "actual": 0.02127,
+      "abs_diff": 0.0009025000000000005
+    },
+    {
+      "path": "/channels/isi/archs/Transformer-3K/2/ber/3",
+      "kind": "numeric",
+      "expected": 0.002025,
+      "actual": 0.002235,
+      "abs_diff": 0.00021000000000000012
+    },
+    {
+      "path": "/channels/isi/archs/Transformer-3K/2/ber/4",
+      "kind": "numeric",
+      "expected": 3.7500000000000003e-05,
+      "actual": 5.4999999999999995e-05,
+      "abs_diff": 1.749999999999999e-05
+    },
+    {
+      "path": "/channels/isi_complex/archs/MLP-3K/0/ber/0",
+      "kind": "numeric",
+      "expected": 0.300555,
+      "actual": 0.30195000000000005,
+      "abs_diff": 0.001395000000000035
+    },
+    {
+      "path": "/channels/isi_complex/archs/MLP-3K/0/ber/1",
+      "kind": "numeric",
+      "expected": 0.16350000000000003,
+      "actual": 0.16384749999999998,
+      "abs_diff": 0.0003474999999999451
+    },
+    {
+      "path": "/channels/isi_complex/archs/MLP-3K/0/ber/2",
+      "kind": "numeric",
+      "expected": 0.04819749999999999,
+      "actual": 0.048502500000000004,
+      "abs_diff": 0.0003050000000000136
+    },
+    {
+      "path": "/channels/isi_complex/archs/MLP-3K/0/ber/3",
+      "kind": "numeric",
+      "expected": 0.004735,
+      "actual": 0.004785,
+      "abs_diff": 5.0000000000000565e-05
+    },
+    {
+      "path": "/channels/isi_complex/archs/MLP-3K/0/ber/4",
+      "kind": "numeric",
+      "expected": 7.25e-05,
+      "actual": 6.749999999999999e-05,
+      "abs_diff": 5.000000000000013e-06
+    },
+    {
+      "path": "/channels/isi_complex/archs/MLP-3K/1/ber/0",
+      "kind": "numeric",
+      "expected": 0.29950999999999994,
+      "actual": 0.30107500000000004,
+      "abs_diff": 0.001565000000000094
+    },
+    {
+      "path": "/channels/isi_complex/archs/MLP-3K/1/ber/1",
+      "kind": "numeric",
+      "expected": 0.16269999999999996,
+      "actual": 0.1630275,
+      "abs_diff": 0.0003275000000000361
+    },
+    {
+      "path": "/channels/isi_complex/archs/MLP-3K/1/ber/2",
+      "kind": "numeric",
+      "expected": 0.0472,
+      "actual": 0.04753,
+      "abs_diff": 0.0003300000000000039
+    },
+    {
+      "path": "/channels/isi_complex/archs/MLP-3K/1/ber/3",
+      "kind": "numeric",
+      "expected": 0.004749999999999999,
+      "actual": 0.0048575,
+      "abs_diff": 0.00010750000000000082
+    },
+    {
+      "path": "/channels/isi_complex/archs/MLP-3K/2/ber/0",
+      "kind": "numeric",
+      "expected": 0.3003975,
+      "actual": 0.30051999999999995,
+      "abs_diff": 0.00012249999999996986
+    },
+    {
+      "path": "/channels/isi_complex/archs/MLP-3K/2/ber/1",
+      "kind": "numeric",
+      "expected": 0.1657075,
+      "actual": 0.16578,
+      "abs_diff": 7.250000000000312e-05
+    },
+    {
+      "path": "/channels/isi_complex/archs/MLP-3K/2/ber/2",
+      "kind": "numeric",
+      "expected": 0.048445,
+      "actual": 0.0485225,
+      "abs_diff": 7.750000000000118e-05
+    },
+    {
+      "path": "/channels/isi_complex/archs/MLP-3K/2/ber/3",
+      "kind": "numeric",
+      "expected": 0.00469,
+      "actual": 0.004732500000000001,
+      "abs_diff": 4.250000000000087e-05
+    },
+    {
+      "path": "/channels/isi_complex/archs/MLP-3K/2/ber/4",
+      "kind": "numeric",
+      "expected": 7.000000000000001e-05,
+      "actual": 5.749999999999999e-05,
+      "abs_diff": 1.250000000000002e-05
+    },
+    {
+      "path": "/channels/isi_complex/archs/Mamba2-3K/1/ber/0",
+      "kind": "numeric",
+      "expected": 0.32311999999999996,
+      "actual": 0.32298,
+      "abs_diff": 0.00013999999999997348
+    },
+    {
+      "path": "/channels/isi_complex/archs/Mamba2-3K/1/ber/1",
+      "kind": "numeric",
+      "expected": 0.19029249999999998,
+      "actual": 0.19071749999999998,
+      "abs_diff": 0.0004250000000000087
+    },
+    {
+      "path": "/channels/isi_complex/archs/Mamba2-3K/1/ber/2",
+      "kind": "numeric",
+      "expected": 0.0757125,
+      "actual": 0.07569749999999999,
+      "abs_diff": 1.5000000000015001e-05
+    },
+    {
+      "path": "/channels/isi_complex/archs/Mamba2-3K/1/ber/3",
+      "kind": "numeric",
+      "expected": 0.0198075,
+      "actual": 0.019367500000000003,
+      "abs_diff": 0.00043999999999999595
+    },
+    {
+      "path": "/channels/isi_complex/archs/Mamba2-3K/1/ber/4",
+      "kind": "numeric",
+      "expected": 0.00344,
+      "actual": 0.002165,
+      "abs_diff": 0.001275
+    },
+    {
+      "path": "/channels/isi_complex/archs/Mamba2-3K/1/ber/5",
+      "kind": "numeric",
+      "expected": 0.001845,
+      "actual": 6.25e-05,
+      "abs_diff": 0.0017825
+    },
+    {
+      "path": "/channels/isi_complex/archs/Transformer-3K/0/ber/0",
+      "kind": "numeric",
+      "expected": 0.3173925,
+      "actual": 0.31748,
+      "abs_diff": 8.749999999996261e-05
+    },
+    {
+      "path": "/channels/isi_complex/archs/Transformer-3K/0/ber/1",
+      "kind": "numeric",
+      "expected": 0.182,
+      "actual": 0.18304250000000005,
+      "abs_diff": 0.0010425000000000573
+    },
+    {
+      "path": "/channels/isi_complex/archs/Transformer-3K/0/ber/2",
+      "kind": "numeric",
+      "expected": 0.068185,
+      "actual": 0.07040249999999999,
+      "abs_diff": 0.0022174999999999973
+    },
+    {
+      "path": "/channels/isi_complex/archs/Transformer-3K/0/ber/3",
+      "kind": "numeric",
+      "expected": 0.016212499999999998,
+      "actual": 0.018435,
+      "abs_diff": 0.0022225000000000023
+    },
+    {
+      "path": "/channels/isi_complex/archs/Transformer-3K/0/ber/4",
+      "kind": "numeric",
+      "expected": 0.0021775,
+      "actual": 0.0030525000000000005,
+      "abs_diff": 0.0008750000000000003
+    },
+    {
+      "path": "/channels/isi_complex/archs/Transformer-3K/0/ber/5",
+      "kind": "numeric",
+      "expected": 5.5e-05,
+      "actual": 0.00016749999999999995,
+      "abs_diff": 0.00011249999999999994
+    },
+    {
+      "path": "/channels/isi_complex/archs/Transformer-3K/1/ber/0",
+      "kind": "numeric",
+      "expected": 0.31391499999999994,
+      "actual": 0.3145225,
+      "abs_diff": 0.0006075000000000386
+    },
+    {
+      "path": "/channels/isi_complex/archs/Transformer-3K/1/ber/1",
+      "kind": "numeric",
+      "expected": 0.17764249999999998,
+      "actual": 0.1776575,
+      "abs_diff": 1.5000000000015001e-05
+    },
+    {
+      "path": "/channels/isi_complex/archs/Transformer-3K/1/ber/2",
+      "kind": "numeric",
+      "expected": 0.0650175,
+      "actual": 0.0650075,
+      "abs_diff": 1.0000000000010001e-05
+    },
+    {
+      "path": "/channels/isi_complex/archs/Transformer-3K/1/ber/3",
+      "kind": "numeric",
+      "expected": 0.01557,
+      "actual": 0.01611,
+      "abs_diff": 0.0005399999999999988
+    },
+    {
+      "path": "/channels/isi_complex/archs/Transformer-3K/1/ber/4",
+      "kind": "numeric",
+      "expected": 0.002475,
+      "actual": 0.0030250000000000003,
+      "abs_diff": 0.0005500000000000001
+    },
+    {
+      "path": "/channels/isi_complex/archs/Transformer-3K/1/ber/5",
+      "kind": "numeric",
+      "expected": 0.00015,
+      "actual": 0.0002775,
+      "abs_diff": 0.00012750000000000004
+    },
+    {
+      "path": "/channels/isi_complex/archs/Transformer-3K/2/ber/0",
+      "kind": "numeric",
+      "expected": 0.30870499999999995,
+      "actual": 0.308175,
+      "abs_diff": 0.0005299999999999749
+    },
+    {
+      "path": "/channels/isi_complex/archs/Transformer-3K/2/ber/1",
+      "kind": "numeric",
+      "expected": 0.17027,
+      "actual": 0.17023249999999998,
+      "abs_diff": 3.7500000000023626e-05
+    },
+    {
+      "path": "/channels/isi_complex/archs/Transformer-3K/2/ber/2",
+      "kind": "numeric",
+      "expected": 0.060367499999999984,
+      "actual": 0.0610675,
+      "abs_diff": 0.0007000000000000131
+    },
+    {
+      "path": "/channels/isi_complex/archs/Transformer-3K/2/ber/3",
+      "kind": "numeric",
+      "expected": 0.014145,
+      "actual": 0.015282500000000001,
+      "abs_diff": 0.0011375000000000014
+    },
+    {
+      "path": "/channels/isi_complex/archs/Transformer-3K/2/ber/4",
+      "kind": "numeric",
+      "expected": 0.0019625,
+      "actual": 0.0026474999999999997,
+      "abs_diff": 0.0006849999999999998
+    },
+    {
+      "path": "/channels/isi_complex/archs/Transformer-3K/2/ber/5",
+      "kind": "numeric",
+      "expected": 8.75e-05,
+      "actual": 0.00020499999999999997,
+      "abs_diff": 0.00011749999999999997
+    }
+  ],
+  "classical_control_differences": [],
+  "reference_files": [
+    "results/seq_models_on_memory.json",
+    "results/penalty_common_targets.json"
+  ],
+  "matching_reference": [],
+  "ignored_paths": [],
+  "numeric_tolerance": {
+    "rtol": 1e-12,
+    "atol": 1e-14
+  },
+  "scope": "All 3 channels \u00d7 4 architectures \u00d7 seeds 0,1,2; original 40 epochs and 20\u00d720,000-bit budget",
+  "interpretation": "MATCH means the selected scientific fields agree within roundoff; not byte identity, statistical equivalence or independent validation of every thesis claim.",
+  "common_target_findings": {
+    "isi": {
+      "ranking": {
+        "point_estimate_order": [
+          "MLP-3K",
+          "Transformer-3K",
+          "Mamba-S6-3K",
+          "Mamba2-3K"
+        ],
+        "mlp_best_resolved_by_bounds": true,
+        "interpretation": "Ordering of best-of-three penalties, not statistical superiority across training populations."
+      },
+      "summaries": {
+        "MLP-3K": {
+          "old_per_seed": [
+            2.3644110345625364,
+            1.965266649360501,
+            2.068929181865819
+          ],
+          "new_per_seed": [
+            2.3644110345625364,
+            1.965266649360501,
+            2.068929181865819
+          ],
+          "new_lower_bound": [
+            false,
+            false,
+            false
+          ],
+          "unreached": [
+            [],
+            [],
+            []
+          ],
+          "common_targets": [
+            "0.1",
+            "0.01",
+            "0.001"
+          ],
+          "old_best": 1.965266649360501,
+          "old_spread": 0.3991443852020353,
+          "new_best": 1.965266649360501,
+          "new_best_flag": "",
+          "new_spread": 0.3991443852020353,
+          "new_spread_flag": "",
+          "new_median": 2.068929181865819,
+          "new_median_flag": ""
+        },
+        "Transformer-3K": {
+          "old_per_seed": [
+            4.295736910346534,
+            3.8109488885219935,
+            3.6271100791323576
+          ],
+          "new_per_seed": [
+            4.295736910346534,
+            3.8109488885219935,
+            3.6271100791323576
+          ],
+          "new_lower_bound": [
+            false,
+            false,
+            false
+          ],
+          "unreached": [
+            [],
+            [],
+            []
+          ],
+          "common_targets": [
+            "0.1",
+            "0.01",
+            "0.001"
+          ],
+          "old_best": 3.6271100791323576,
+          "old_spread": 0.6686268312141763,
+          "new_best": 3.6271100791323576,
+          "new_best_flag": "",
+          "new_spread": 0.6686268312141763,
+          "new_spread_flag": "",
+          "new_median": 3.8109488885219935,
+          "new_median_flag": ""
+        },
+        "Mamba-S6-3K": {
+          "old_per_seed": [
+            4.793640460838855,
+            5.4467576828513415,
+            4.298017768453493
+          ],
+          "new_per_seed": [
+            4.793640460838855,
+            5.4467576828513415,
+            4.298017768453493
+          ],
+          "new_lower_bound": [
+            false,
+            false,
+            false
+          ],
+          "unreached": [
+            [],
+            [],
+            []
+          ],
+          "common_targets": [
+            "0.1",
+            "0.01",
+            "0.001"
+          ],
+          "old_best": 4.298017768453493,
+          "old_spread": 1.148739914397849,
+          "new_best": 4.298017768453493,
+          "new_best_flag": "",
+          "new_spread": 1.148739914397849,
+          "new_spread_flag": "",
+          "new_median": 4.793640460838855,
+          "new_median_flag": ""
+        },
+        "Mamba2-3K": {
+          "old_per_seed": [
+            4.552580733685986,
+            4.581191797389909,
+            4.687892974629257
+          ],
+          "new_per_seed": [
+            4.552580733685986,
+            4.581191797389909,
+            4.687892974629257
+          ],
+          "new_lower_bound": [
+            false,
+            false,
+            false
+          ],
+          "unreached": [
+            [],
+            [],
+            []
+          ],
+          "common_targets": [
+            "0.1",
+            "0.01",
+            "0.001"
+          ],
+          "old_best": 4.552580733685986,
+          "old_spread": 0.13531224094327143,
+          "new_best": 4.552580733685986,
+          "new_best_flag": "",
+          "new_spread": 0.13531224094327143,
+          "new_spread_flag": "",
+          "new_median": 4.581191797389909,
+          "new_median_flag": ""
+        }
+      }
+    },
+    "isi_complex": {
+      "ranking": {
+        "point_estimate_order": [
+          "MLP-3K",
+          "Mamba-S6-3K",
+          "Mamba2-3K",
+          "Transformer-3K"
+        ],
+        "mlp_best_resolved_by_bounds": true,
+        "interpretation": "Ordering of best-of-three penalties, not statistical superiority across training populations."
+      },
+      "summaries": {
+        "MLP-3K": {
+          "old_per_seed": [
+            2.5828480377909493,
+            2.6645437423541054,
+            2.523092016296431
+          ],
+          "new_per_seed": [
+            2.5828480377909493,
+            2.6645437423541054,
+            2.523092016296431
+          ],
+          "new_lower_bound": [
+            false,
+            false,
+            false
+          ],
+          "unreached": [
+            [],
+            [],
+            []
+          ],
+          "common_targets": [
+            "0.1",
+            "0.01",
+            "0.001"
+          ],
+          "old_best": 2.523092016296431,
+          "old_spread": 0.14145172605767442,
+          "new_best": 2.523092016296431,
+          "new_best_flag": "",
+          "new_spread": 0.14145172605767442,
+          "new_spread_flag": "",
+          "new_median": 2.5828480377909493,
+          "new_median_flag": ""
+        },
+        "Transformer-3K": {
+          "old_per_seed": [
+            6.651099576448958,
+            6.966758537217613,
+            6.635541522112733
+          ],
+          "new_per_seed": [
+            6.651099576448958,
+            6.966758537217613,
+            6.635541522112733
+          ],
+          "new_lower_bound": [
+            false,
+            false,
+            false
+          ],
+          "unreached": [
+            [],
+            [],
+            []
+          ],
+          "common_targets": [
+            "0.1",
+            "0.01",
+            "0.001"
+          ],
+          "old_best": 6.635541522112733,
+          "old_spread": 0.33121701510487966,
+          "new_best": 6.635541522112733,
+          "new_best_flag": "",
+          "new_spread": 0.33121701510487966,
+          "new_spread_flag": "",
+          "new_median": 6.651099576448958,
+          "new_median_flag": ""
+        },
+        "Mamba-S6-3K": {
+          "old_per_seed": [
+            5.981561949445753,
+            5.722446179633545,
+            7.055765651710631
+          ],
+          "new_per_seed": [
+            5.981561949445753,
+            5.722446179633545,
+            7.055765651710631
+          ],
+          "new_lower_bound": [
+            false,
+            false,
+            false
+          ],
+          "unreached": [
+            [],
+            [],
+            []
+          ],
+          "common_targets": [
+            "0.1",
+            "0.01",
+            "0.001"
+          ],
+          "old_best": 5.722446179633545,
+          "old_spread": 1.3333194720770862,
+          "new_best": 5.722446179633545,
+          "new_best_flag": "",
+          "new_spread": 1.3333194720770862,
+          "new_spread_flag": "",
+          "new_median": 5.981561949445753,
+          "new_median_flag": ""
+        },
+        "Mamba2-3K": {
+          "old_per_seed": [
+            5.831714685452889,
+            5.984850417313419,
+            6.804256792651335
+          ],
+          "new_per_seed": [
+            5.831714685452889,
+            5.984850417313419,
+            6.804256792651335
+          ],
+          "new_lower_bound": [
+            false,
+            false,
+            false
+          ],
+          "unreached": [
+            [],
+            [],
+            []
+          ],
+          "common_targets": [
+            "0.1",
+            "0.01",
+            "0.001"
+          ],
+          "old_best": 5.831714685452889,
+          "old_spread": 0.9725421071984464,
+          "new_best": 5.831714685452889,
+          "new_best_flag": "",
+          "new_spread": 0.9725421071984464,
+          "new_spread_flag": "",
+          "new_median": 5.984850417313419,
+          "new_median_flag": ""
+        }
+      }
+    },
+    "composite": {
+      "ranking": {
+        "point_estimate_order": [
+          "MLP-3K",
+          "Transformer-3K",
+          "Mamba2-3K",
+          "Mamba-S6-3K"
+        ],
+        "mlp_best_resolved_by_bounds": true,
+        "interpretation": "Ordering of best-of-three penalties, not statistical superiority across training populations."
+      },
+      "summaries": {
+        "MLP-3K": {
+          "old_per_seed": [
+            -2.0583109515179725,
+            -2.0505962965129374,
+            -2.0941359306325467
+          ],
+          "new_per_seed": [
+            -2.0583109515179725,
+            -2.0505962965129374,
+            -2.0941359306325467
+          ],
+          "new_lower_bound": [
+            false,
+            false,
+            false
+          ],
+          "unreached": [
+            [],
+            [],
+            []
+          ],
+          "common_targets": [
+            "0.1"
+          ],
+          "old_best": -2.0941359306325467,
+          "old_spread": 0.04353963411960926,
+          "new_best": -2.0941359306325467,
+          "new_best_flag": "",
+          "new_spread": 0.04353963411960926,
+          "new_spread_flag": "",
+          "new_median": -2.0583109515179725,
+          "new_median_flag": ""
+        },
+        "Transformer-3K": {
+          "old_per_seed": [
+            -1.6663764554387708,
+            -1.7655766638078791,
+            -1.7381400979785102
+          ],
+          "new_per_seed": [
+            -1.6663764554387708,
+            -1.7655766638078791,
+            -1.7381400979785102
+          ],
+          "new_lower_bound": [
+            false,
+            false,
+            false
+          ],
+          "unreached": [
+            [],
+            [],
+            []
+          ],
+          "common_targets": [
+            "0.1"
+          ],
+          "old_best": -1.7655766638078791,
+          "old_spread": 0.09920020836910837,
+          "new_best": -1.7655766638078791,
+          "new_best_flag": "",
+          "new_spread": 0.09920020836910837,
+          "new_spread_flag": "",
+          "new_median": -1.7381400979785102,
+          "new_median_flag": ""
+        },
+        "Mamba-S6-3K": {
+          "old_per_seed": [
+            -1.542914979974375,
+            -1.4792384980554214,
+            -1.5640120885966464
+          ],
+          "new_per_seed": [
+            -1.542914979974375,
+            -1.4792384980554214,
+            -1.5640120885966464
+          ],
+          "new_lower_bound": [
+            false,
+            false,
+            false
+          ],
+          "unreached": [
+            [],
+            [],
+            []
+          ],
+          "common_targets": [
+            "0.1"
+          ],
+          "old_best": -1.5640120885966464,
+          "old_spread": 0.08477359054122502,
+          "new_best": -1.5640120885966464,
+          "new_best_flag": "",
+          "new_spread": 0.08477359054122502,
+          "new_spread_flag": "",
+          "new_median": -1.542914979974375,
+          "new_median_flag": ""
+        },
+        "Mamba2-3K": {
+          "old_per_seed": [
+            -1.5351840552759075,
+            -1.580138090629502,
+            -1.5646943773179132
+          ],
+          "new_per_seed": [
+            -1.5351840552759075,
+            -1.580138090629502,
+            -1.5646943773179132
+          ],
+          "new_lower_bound": [
+            false,
+            false,
+            false
+          ],
+          "unreached": [
+            [],
+            [],
+            []
+          ],
+          "common_targets": [
+            "0.1"
+          ],
+          "old_best": -1.580138090629502,
+          "old_spread": 0.044954035353594435,
+          "new_best": -1.580138090629502,
+          "new_best_flag": "",
+          "new_spread": 0.044954035353594435,
+          "new_spread_flag": "",
+          "new_median": -1.5646943773179132,
+          "new_median_flag": ""
+        }
+      }
+    }
+  },
+  "published_common_target_summaries": {
+    "isi": {
+      "MLP-3K": {
+        "old_per_seed": [
+          2.364968486574748,
+          1.9737935955601866,
+          2.0536415068616476
+        ],
+        "new_per_seed": [
+          2.364968486574748,
+          1.9737935955601866,
+          2.0536415068616476
+        ],
+        "new_lower_bound": [
+          false,
+          false,
+          false
+        ],
+        "unreached": [
+          [],
+          [],
+          []
+        ],
+        "common_targets": [
+          "0.1",
+          "0.01",
+          "0.001"
+        ],
+        "old_best": 1.9737935955601866,
+        "old_spread": 0.39117489101456115,
+        "new_best": 1.9737935955601866,
+        "new_best_flag": "",
+        "new_spread": 0.39117489101456115,
+        "new_spread_flag": "",
+        "new_median": 2.0536415068616476,
+        "new_median_flag": "",
+        "published_best": 1.9737935955601866,
+        "published_spread": 0.39117489101456115
+      },
+      "Transformer-3K": {
+        "old_per_seed": [
+          3.783398275732763,
+          3.8503248923938944,
+          3.5198726267008436
+        ],
+        "new_per_seed": [
+          3.783398275732763,
+          3.8503248923938944,
+          3.5198726267008436
+        ],
+        "new_lower_bound": [
+          false,
+          false,
+          false
+        ],
+        "unreached": [
+          [],
+          [],
+          []
+        ],
+        "common_targets": [
+          "0.1",
+          "0.01",
+          "0.001"
+        ],
+        "old_best": 3.5198726267008436,
+        "old_spread": 0.33045226569305086,
+        "new_best": 3.5198726267008436,
+        "new_best_flag": "",
+        "new_spread": 0.33045226569305086,
+        "new_spread_flag": "",
+        "new_median": 3.783398275732763,
+        "new_median_flag": "",
+        "published_best": 3.5198726267008436,
+        "published_spread": 0.33045226569305086
+      },
+      "Mamba-S6-3K": {
+        "old_per_seed": [
+          4.793640460838855,
+          5.4467576828513415,
+          4.298017768453493
+        ],
+        "new_per_seed": [
+          4.793640460838855,
+          5.4467576828513415,
+          4.298017768453493
+        ],
+        "new_lower_bound": [
+          false,
+          false,
+          false
+        ],
+        "unreached": [
+          [],
+          [],
+          []
+        ],
+        "common_targets": [
+          "0.1",
+          "0.01",
+          "0.001"
+        ],
+        "old_best": 4.298017768453493,
+        "old_spread": 1.148739914397849,
+        "new_best": 4.298017768453493,
+        "new_best_flag": "",
+        "new_spread": 1.148739914397849,
+        "new_spread_flag": "",
+        "new_median": 4.793640460838855,
+        "new_median_flag": "",
+        "published_best": 4.298017768453493,
+        "published_spread": 1.148739914397849
+      },
+      "Mamba2-3K": {
+        "old_per_seed": [
+          4.552580733685986,
+          4.656852341904841,
+          4.687892974629257
+        ],
+        "new_per_seed": [
+          4.552580733685986,
+          4.656852341904841,
+          4.687892974629257
+        ],
+        "new_lower_bound": [
+          false,
+          false,
+          false
+        ],
+        "unreached": [
+          [],
+          [],
+          []
+        ],
+        "common_targets": [
+          "0.1",
+          "0.01",
+          "0.001"
+        ],
+        "old_best": 4.552580733685986,
+        "old_spread": 0.13531224094327143,
+        "new_best": 4.552580733685986,
+        "new_best_flag": "",
+        "new_spread": 0.13531224094327143,
+        "new_spread_flag": "",
+        "new_median": 4.656852341904841,
+        "new_median_flag": "",
+        "published_best": 4.552580733685986,
+        "published_spread": 0.13531224094327143
+      }
+    },
+    "isi_complex": {
+      "MLP-3K": {
+        "old_per_seed": [
+          2.601615581669275,
+          2.6510229266179888,
+          2.5834902159657034
+        ],
+        "new_per_seed": [
+          2.601615581669275,
+          2.6510229266179888,
+          2.5834902159657034
+        ],
+        "new_lower_bound": [
+          false,
+          false,
+          false
+        ],
+        "unreached": [
+          [],
+          [],
+          []
+        ],
+        "common_targets": [
+          "0.1",
+          "0.01",
+          "0.001"
+        ],
+        "old_best": 2.5834902159657034,
+        "old_spread": 0.06753271065228539,
+        "new_best": 2.5834902159657034,
+        "new_best_flag": "",
+        "new_spread": 0.06753271065228539,
+        "new_spread_flag": "",
+        "new_median": 2.601615581669275,
+        "new_median_flag": "",
+        "published_best": 2.5834902159657034,
+        "published_spread": 0.06753271065228539
+      },
+      "Transformer-3K": {
+        "old_per_seed": [
+          5.959459352437127,
+          6.406369567703395,
+          5.980361638523528
+        ],
+        "new_per_seed": [
+          5.959459352437127,
+          6.406369567703395,
+          5.980361638523528
+        ],
+        "new_lower_bound": [
+          false,
+          false,
+          false
+        ],
+        "unreached": [
+          [],
+          [],
+          []
+        ],
+        "common_targets": [
+          "0.1",
+          "0.01",
+          "0.001"
+        ],
+        "old_best": 5.959459352437127,
+        "old_spread": 0.44691021526626784,
+        "new_best": 5.959459352437127,
+        "new_best_flag": "",
+        "new_spread": 0.44691021526626784,
+        "new_spread_flag": "",
+        "new_median": 5.980361638523528,
+        "new_median_flag": "",
+        "published_best": 5.959459352437127,
+        "published_spread": 0.44691021526626784
+      },
+      "Mamba-S6-3K": {
+        "old_per_seed": [
+          5.981561949445753,
+          5.722446179633545,
+          7.055765651710631
+        ],
+        "new_per_seed": [
+          5.981561949445753,
+          5.722446179633545,
+          7.055765651710631
+        ],
+        "new_lower_bound": [
+          false,
+          false,
+          false
+        ],
+        "unreached": [
+          [],
+          [],
+          []
+        ],
+        "common_targets": [
+          "0.1",
+          "0.01",
+          "0.001"
+        ],
+        "old_best": 5.722446179633545,
+        "old_spread": 1.3333194720770862,
+        "new_best": 5.722446179633545,
+        "new_best_flag": "",
+        "new_spread": 1.3333194720770862,
+        "new_spread_flag": "",
+        "new_median": 5.981561949445753,
+        "new_median_flag": "",
+        "published_best": 5.722446179633545,
+        "published_spread": 1.3333194720770862
+      },
+      "Mamba2-3K": {
+        "old_per_seed": [
+          5.831714685452889,
+          4.688758637298054,
+          6.804256792651335
+        ],
+        "new_per_seed": [
+          5.831714685452889,
+          9.11329229916099,
+          6.804256792651335
+        ],
+        "new_lower_bound": [
+          false,
+          true,
+          false
+        ],
+        "unreached": [
+          [],
+          [
+            "0.001"
+          ],
+          []
+        ],
+        "common_targets": [
+          "0.1",
+          "0.01",
+          "0.001"
+        ],
+        "old_best": 4.688758637298054,
+        "old_spread": 2.115498155353281,
+        "new_best": 5.831714685452889,
+        "new_best_flag": "",
+        "new_spread": 3.2815776137081016,
+        "new_spread_flag": ">",
+        "new_median": 6.804256792651335,
+        "new_median_flag": "",
+        "published_best": 4.688758637298054,
+        "published_spread": 2.115498155353281
+      }
+    },
+    "composite": {
+      "MLP-3K": {
+        "old_per_seed": [
+          -2.05123458567153,
+          -2.0532379178640046,
+          -2.0842692133344958
+        ],
+        "new_per_seed": [
+          -2.05123458567153,
+          -2.0532379178640046,
+          -2.0842692133344958
+        ],
+        "new_lower_bound": [
+          false,
+          false,
+          false
+        ],
+        "unreached": [
+          [],
+          [],
+          []
+        ],
+        "common_targets": [
+          "0.1"
+        ],
+        "old_best": -2.0842692133344958,
+        "old_spread": 0.03303462766296583,
+        "new_best": -2.0842692133344958,
+        "new_best_flag": "",
+        "new_spread": 0.03303462766296583,
+        "new_spread_flag": "",
+        "new_median": -2.0532379178640046,
+        "new_median_flag": "",
+        "published_best": -2.0842692133344958,
+        "published_spread": 0.03303462766296583
+      },
+      "Transformer-3K": {
+        "old_per_seed": [
+          -1.729652117820148,
+          -1.7627661182690257,
+          -1.7416685701890096
+        ],
+        "new_per_seed": [
+          -1.729652117820148,
+          -1.7627661182690257,
+          -1.7416685701890096
+        ],
+        "new_lower_bound": [
+          false,
+          false,
+          false
+        ],
+        "unreached": [
+          [],
+          [],
+          []
+        ],
+        "common_targets": [
+          "0.1"
+        ],
+        "old_best": -1.7627661182690257,
+        "old_spread": 0.03311400044887769,
+        "new_best": -1.7627661182690257,
+        "new_best_flag": "",
+        "new_spread": 0.03311400044887769,
+        "new_spread_flag": "",
+        "new_median": -1.7416685701890096,
+        "new_median_flag": "",
+        "published_best": -1.7627661182690257,
+        "published_spread": 0.03311400044887769
+      },
+      "Mamba-S6-3K": {
+        "old_per_seed": [
+          -1.542914979974375,
+          -1.4792384980554214,
+          -1.5640120885966464
+        ],
+        "new_per_seed": [
+          -1.542914979974375,
+          -1.4792384980554214,
+          -1.5640120885966464
+        ],
+        "new_lower_bound": [
+          false,
+          false,
+          false
+        ],
+        "unreached": [
+          [],
+          [],
+          []
+        ],
+        "common_targets": [
+          "0.1"
+        ],
+        "old_best": -1.5640120885966464,
+        "old_spread": 0.08477359054122502,
+        "new_best": -1.5640120885966464,
+        "new_best_flag": "",
+        "new_spread": 0.08477359054122502,
+        "new_spread_flag": "",
+        "new_median": -1.542914979974375,
+        "new_median_flag": "",
+        "published_best": -1.5640120885966464,
+        "published_spread": 0.08477359054122502
+      },
+      "Mamba2-3K": {
+        "old_per_seed": [
+          -1.5351840552759075,
+          -1.5955454557162767,
+          -1.5646943773179132
+        ],
+        "new_per_seed": [
+          -1.5351840552759075,
+          -1.5955454557162767,
+          -1.5646943773179132
+        ],
+        "new_lower_bound": [
+          false,
+          false,
+          false
+        ],
+        "unreached": [
+          [],
+          [],
+          []
+        ],
+        "common_targets": [
+          "0.1"
+        ],
+        "old_best": -1.5955454557162767,
+        "old_spread": 0.060361400440369195,
+        "new_best": -1.5955454557162767,
+        "new_best_flag": "",
+        "new_spread": 0.060361400440369195,
+        "new_spread_flag": "",
+        "new_median": -1.5646943773179132,
+        "new_median_flag": "",
+        "published_best": -1.5955454557162767,
+        "published_spread": 0.060361400440369195
+      }
+    }
+  }
+}

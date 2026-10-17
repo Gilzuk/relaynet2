@@ -1,0 +1,19 @@
+{
+  "source_commit": "c0394f0da5dac449594b89a9794fe251fad75e76",
+  "jobs": [
+    {
+      "id": "canonical_3k",
+      "kind": "new_training_replication",
+      "worker": "canonical",
+      "stage": "7.8",
+      "outputs": [
+        "results/normalized_3k/3k_rayleigh.json"
+      ],
+      "seed": 20261017,
+      "scope": "Original 3K protocol, 100 epochs; new declared PyTorch seed, absent historical checkpoints/RNG"
+    }
+  ],
+  "training_difference_policy": "flag and investigate; never tune to match or infer equivalence",
+  "timeout_hours_per_job": 5.5,
+  "threads_per_worker": 2
+}

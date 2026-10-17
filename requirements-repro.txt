@@ -13,8 +13,8 @@ matplotlib==3.11.1
 pytest==9.1.1
 
 # ── Optional: PyTorch ────────────────────────────────────────────────────────
-# Required ONLY for the neural relays that use it (VAE, CGAN, Transformer,
-# Mamba S6, Mamba-2) and therefore only for `make repro-full`. The
+# Required for canonical MLP/Hybrid Torch execution, VAE, CGAN, Transformer,
+# Mamba S6 and Mamba-2, including the round-2 background suite. The
 # unknown-channel study (`make repro-unknown`) and the table verification
 # (`make verify`) are pure NumPy and run without it.
 #
