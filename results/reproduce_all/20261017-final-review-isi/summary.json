@@ -1,0 +1,17 @@
+[
+  {
+    "step": "ISI required-SNR penalties (MLP vs genie Viterbi)",
+    "command": "python3 e6_isi_penalty.py",
+    "kind": "experiment",
+    "started_utc": "2026-10-17T15:24:06.803728+00:00",
+    "returncode": 0,
+    "evidence": "steps/001-isi_required_snr_penalties_mlp_vs_genie_viterbi",
+    "archived_dependencies": [
+      "Matched-protocol unknown-ISI comparison"
+    ],
+    "status": "COMPLETED",
+    "extra_outputs": [],
+    "seconds": 0.333,
+    "finished_utc": "2026-10-17T15:24:07.136766+00:00"
+  }
+]

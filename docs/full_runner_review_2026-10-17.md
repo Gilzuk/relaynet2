@@ -51,5 +51,24 @@ review, and no existing background task was stopped or modified. Validation uses
 small committed fixture repositories plus one inexpensive analysis over archived
 BER inputs. Its evidence must not be presented as a new BER simulation.
 
-Validation results and the committed-source integration evidence are recorded
-below when the final checks complete.
+## Validation
+
+The 19 runner regression tests pass, including no-op/stale-output rejection,
+shared-file version preservation, partial failure, verifier exit propagation,
+archive classification, seed-42 NumPy/Python/Torch repetition on this host,
+checkpoint retention, dirty-source rejection and evidence-overwrite rejection.
+The complete test suite passes: **386 tests**, one existing ComplexWarning.
+The thesis verifier checks **892 values with zero inconsistencies**. Retained-model,
+archived-assessment and provenance audits pass with their documented limits.
+
+A real inexpensive CLI integration at immutable source
+`fef5916ad7c7049fe5814a9a825ef69de38d5dd3` recomputed ISI penalties from the
+committed matched-protocol BER input. The output is byte-identical to the committed
+JSON, the verifier passes, and the worktree was removed. It is an analysis check,
+not a new simulation or full-budget training run. Source/input hashes, logs,
+output, package versions and RNG states are retained in
+[`results/reproduce_all/20261017-final-review-isi`](../results/reproduce_all/20261017-final-review-isi).
+Other checks and the complete dry-run plan are in
+[`results/reproduction/validation/full_runner_20261017`](../results/reproduction/validation/full_runner_20261017).
+No remaining blocking defect was found within this reviewed scope; the explicit
+historical and full-execution limitations above remain.

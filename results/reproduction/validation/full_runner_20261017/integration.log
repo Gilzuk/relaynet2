@@ -1,0 +1,5 @@
+[1/1] ISI required-SNR penalties (MLP vs genie Viterbi) ... COMPLETED (0.3s); BYTE_MATCH
+
+Evidence: /workspace/scratch/781ec23bff5d/relaynet2-review/results/reproduce_all/20261017-final-review-isi
+Output comparisons: {'BYTE_MATCH': 1}
+Verifier: PASSED
