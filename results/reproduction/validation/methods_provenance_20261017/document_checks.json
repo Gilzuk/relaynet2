@@ -1,0 +1,38 @@
+{
+  "base_commit": "8734afb5e1421188237fe06fcc7c258ec6ab2a43",
+  "pdf_sha256": "f55ac2e3553af73f53bd241959a14e7395a4c4c1e5bbddc4ff2ddc67a9a0660e",
+  "physical_pages": 135,
+  "front_matter_pages": 13,
+  "numbered_body_pages": 119,
+  "hebrew_back_matter_pages": 3,
+  "changed_chapters": {
+    "thesis/chapters/ch04_methods.tex": {
+      "labels_retained": 44,
+      "table_and_figure_environments_identical": true
+    },
+    "thesis/chapters/ch08_discussion.tex": {
+      "labels_retained": 16,
+      "table_and_figure_environments_identical": true
+    },
+    "thesis/chapters/appendices.tex": {
+      "labels_retained": 28,
+      "table_and_figure_environments_identical": true
+    }
+  },
+  "main_body_bookkeeping_matches": [],
+  "all_active_table_and_figure_environments_unchanged": true,
+  "pdf_preview_and_bundle_pdf_bytes_match": true,
+  "bundle_entries_each": 52,
+  "undefined_references_citations_missing_characters_overfull_boxes": 0,
+  "existing_warning_classes": [
+    "font features",
+    "duplicate longtable anchors"
+  ],
+  "visually_checked_physical_pdf_pages": [
+    55,
+    56,
+    101,
+    115,
+    116
+  ]
+}

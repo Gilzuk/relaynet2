@@ -1,10 +1,10 @@
 {
-  "reviewed_commit": "908687650929a74a969f74fa679f67633b8c3793",
+  "reviewed_commit": "929d71bd1e14fcb1bf90013fd0aa393a7c22d77f",
   "pdf_path": "thesis/main.pdf",
-  "pdf_url": "https://github.com/Gilzuk/relaynet2/blob/908687650929a74a969f74fa679f67633b8c3793/thesis/main.pdf",
-  "pdf_sha256": "4262e711607c6cdf1e0cd877754b7883ee3300305118ddb45e0c1aeea7c206c6",
+  "pdf_url": "https://github.com/Gilzuk/relaynet2/blob/929d71bd1e14fcb1bf90013fd0aa393a7c22d77f/thesis/main.pdf",
+  "pdf_sha256": "f55ac2e3553af73f53bd241959a14e7395a4c4c1e5bbddc4ff2ddc67a9a0660e",
   "email_path": "thesis/submission/email_to_khina_round2_resubmission_2026-10-17.md",
-  "email_sha256": "0188a38e4f237c778f91574953081d2fbc4356f9b27ef92505309ae2107ce920",
+  "email_sha256": "00e9d037d553313d24b0063f1f021ece2cae648dc8808d8eb1fd3f7f62644921",
   "verification_date": "2026-10-17",
   "method": "Each curly-double-quoted email excerpt is a contiguous substring of its cited PDF page after collapsing whitespace and either preserving or removing line-break hyphens. No wording, case or numerical substitutions. Running-header quotation checked on every cited page. Printed body page n is physical PDF page n+13.",
   "quotes_verified": 21,
@@ -23,12 +23,12 @@
     },
     {
       "id": 2,
-      "section": "§4.3.3",
+      "section": "Appendix 9.2",
       "printed_pages": [
-        43
+        102
       ],
       "physical_pdf_pages": [
-        56
+        115
       ],
       "quote": "The canonical checkpoints, per-epoch losses and historical library versions are absent from the archived record.",
       "verified": true
@@ -37,10 +37,10 @@
       "id": 3,
       "section": "Table 6.7",
       "printed_pages": [
-        82
+        81
       ],
       "physical_pdf_pages": [
-        95
+        94
       ],
       "quote": "every initialization is held to the targets MLSE reaches",
       "verified": true
@@ -49,10 +49,10 @@
       "id": 4,
       "section": "Appendix 9.6",
       "printed_pages": [
-        115
+        114
       ],
       "physical_pdf_pages": [
-        128
+        127
       ],
       "quote": "is marked as a lower bound rather than dropped",
       "verified": true
@@ -61,10 +61,10 @@
       "id": 5,
       "section": "Table 6.7",
       "printed_pages": [
-        82
+        81
       ],
       "physical_pdf_pages": [
-        95
+        94
       ],
       "quote": "the ordering of the three sequence architectures should not be read as resolved.",
       "verified": true
@@ -73,10 +73,10 @@
       "id": 6,
       "section": "§5.4",
       "printed_pages": [
-        56
+        55
       ],
       "physical_pdf_pages": [
-        69
+        68
       ],
       "quote": "not mathematical lower bounds on architecture size",
       "verified": true
@@ -85,10 +85,10 @@
       "id": 7,
       "section": "§5.5.1",
       "printed_pages": [
-        57
+        56
       ],
       "physical_pdf_pages": [
-        70
+        69
       ],
       "quote": "The Mamba-coded relay of the unweighted study was not rerun with matched metrics, so every statement below concerns the two MLP read-outs.",
       "verified": true
@@ -133,10 +133,10 @@
       "id": 11,
       "section": "§5.5.1 heading",
       "printed_pages": [
-        56
+        55
       ],
       "physical_pdf_pages": [
-        69
+        68
       ],
       "quote": "Matched Decoder Metrics: The Principal Coded Comparison",
       "verified": true
@@ -145,10 +145,10 @@
       "id": 12,
       "section": "Table 6.8",
       "printed_pages": [
-        85
+        84
       ],
       "physical_pdf_pages": [
-        98
+        97
       ],
       "quote": "MLSE arithmetic is that of the exactly factorized detector, with the implemented joint trellis in brackets.",
       "verified": true
@@ -169,10 +169,10 @@
       "id": 14,
       "section": "§4.4",
       "printed_pages": [
-        45
+        44
       ],
       "physical_pdf_pages": [
-        58
+        57
       ],
       "quote": "but not a common context",
       "verified": true
@@ -205,22 +205,22 @@
       "id": 17,
       "section": "Figure 6.5",
       "printed_pages": [
-        79
+        78
       ],
       "physical_pdf_pages": [
-        92
+        91
       ],
       "quote": "at 10 pilots the difference is not resolved (0.0545 ± 0.0108 against the MLP’s 0.0486)",
       "verified": true
     },
     {
       "id": 18,
-      "section": "§4.3.4",
+      "section": "Appendix 9.2",
       "printed_pages": [
-        44
+        102
       ],
       "physical_pdf_pages": [
-        57
+        115
       ],
       "quote": "immutable repository snapshot 80b4545adcc6",
       "verified": true
@@ -229,6 +229,7 @@
       "id": 19,
       "section": "Chapter 5 running headers",
       "printed_pages": [
+        50,
         51,
         52,
         53,
@@ -240,10 +241,10 @@
         59,
         60,
         61,
-        62,
-        63
+        62
       ],
       "physical_pdf_pages": [
+        63,
         64,
         65,
         66,
@@ -255,8 +256,7 @@
         72,
         73,
         74,
-        75,
-        76
+        75
       ],
       "quote": "Chapter 5. Core Experiments",
       "verified": true
@@ -277,14 +277,14 @@
       "id": 21,
       "section": "§7.1.4",
       "printed_pages": [
-        89
+        88
       ],
       "physical_pdf_pages": [
-        102
+        101
       ],
       "quote": "Differences between trained models do not by themselves invalidate the original measurements, which remain unchanged.",
       "verified": true
     }
   ],
-  "publication_state": "Corrected PDF merged through PR #189 at 2b817cde45e5fe09d4824b0c33826623a5f53394; generated-mirror publication follows PR #188 integration. Email remains unsent."
+  "publication_state": "Methods/appendix revision prepared on its review branch; merge and generated-mirror publication pending. Email remains unsent."
 }
