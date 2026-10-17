@@ -129,13 +129,13 @@ def main():
         "MLP (169p)": (25_000, [5, 10, 15], 0.01, 32, "MSE", "final epoch"),
         "Hybrid": (25_000, [2, 4, 6], 0.01, 32, "MSE", "final epoch"),
         "VAE": (50_000, [5, 10, 15], 0.001, 64, "beta-VAE (MSE + 0.1 KL)", "final epoch"),
-        "Transformer": (50_000, [5, 10, 15], 0.001, 64, "MSE", "lowest mean training loss (15% held out)"),
-        "Mamba S6": (50_000, [5, 10, 15], 0.001, 64, "MSE", "lowest mean training loss (15% held out)"),
-        "Mamba2 (SSD)": (50_000, [5, 10, 15], 0.001, 64, "MSE", "lowest mean training loss (15% held out)"),
+        "Transformer": (50_000, [5, 10, 15], 0.001, 64, "MSE", "lowest mean training loss: kept when below the best kept loss by more than 1e-5, early stopping off (15% held out)"),
+        "Mamba S6": (50_000, [5, 10, 15], 0.001, 64, "MSE", "lowest mean training loss: kept when below the best kept loss by more than 1e-5, early stopping off (15% held out)"),
+        "Mamba2 (SSD)": (50_000, [5, 10, 15], 0.001, 64, "MSE", "lowest mean training loss: kept when below the best kept loss by more than 1e-5, early stopping off (15% held out)"),
     }
     out["relays"]["table_5_2"] = {n: relay_record(n, base[n], *v) for n, v in canon.items()}
     k3 = build_all_3k(prefer_gpu=False)
-    seq3 = "lowest mean training loss (15% held out)"
+    seq3 = "lowest mean training loss: kept when below the best kept loss by more than 1e-5, early stopping off (15% held out)"
     three = {
         "MLP-3K": (25_000, [5, 10, 15], 0.01, 32, "MSE", "final epoch"),
         "Hybrid-3K": (25_000, [5, 10, 15], 0.01, 32, "MSE", "final epoch"),
