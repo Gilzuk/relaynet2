@@ -101,6 +101,7 @@ Ref. & Result (where used) & Code $\rightarrow$ other result files \\
 \codeentry{hybrid-replay} & Hybrid branch selection, replayed (Sec.~\ref{sec:evaluated-configurations}) & \url{hybrid_branch_selection.py} \\
 \codeentry{run-exp} & Canonical benchmark and 3K comparison (Tables~\ref{tbl:table2}, \ref{tbl:table8}, \ref{tab:relay_comparison})$^{a}$ & \url{run_experiments.py} $\rightarrow$ \url{modulation/qpsk_rayleigh.json}; \url{normalized_3k/3k_rayleigh.json} \\
 \codeentry{canon-prov} & Canonical-run identification (Table~\ref{tbl:canonical-runs}) & \url{canonical_run_provenance.py} \\
+\codeentry{paired} & Paired tests between the canonical relays (Section~\ref{sec:siso-bpsk-performance-baseline-relay-comparison}) & \url{canonical_paired_tests.py} \\
 \codeentry{prov-audit} & Provenance audit: experiment, script, committed data & \url{provenance_audit.py} \\
 \codeentry{verifier} & Table verifier: declared cells against their data & \url{verify_thesis_tables.py} \\
 \codeentry{ksweep} & Coded block-DF $K$-sweep and coded learned relays (Tables~\ref{tbl:table34}, \ref{tbl:table40}) & \url{coded_df_experiment.py}; \url{coded_k_sweep_qpsk.py}; \url{coded_k_sweep_qam16.py}; \url{coded_learned_relay.py}; \url{coded_mamba_relay.py} $\rightarrow$ \url{coded_df_experiment.json} \\
@@ -127,7 +128,7 @@ Ref. & Result (where used) & Code $\rightarrow$ other result files \\
 \codeentry{composite} & Composite cascade; corrected AF curve (Fig.~\ref{fig:figE6comp}) & \url{e6_composite_ported.py}; \url{scripts/codex_composite_af_validation.py} $\rightarrow$ \url{e6_composite_ported_results.npy}; \url{e6_unknown_channel_results/codex_composite_af_validation.json} \\
 \codeentry{pilots} & Pilot-budget sweep (Fig.~\ref{fig:e6_partial_pilot_budget}) & \url{e6_partial_ported.py} $\rightarrow$ \url{e6_partial_ported_results.npy} \\
 \codeentry{blind} & Blind regime and its intervals (Fig.~\ref{fig:figE6blind}, Sec.~\ref{sec:blind-channel}) & \url{e6_blind_ported.py}; \url{e6_blind_intervals.py} $\rightarrow$ \url{e6_blind_ported_results.npy} \\
-\codeentry{mmse} & MMSE equalizer baseline (Table~\ref{tbl:mmse-baseline}) & \url{mmse_equalizer.py} \\
+\codeentry{mmse} & MMSE equalizer baseline, BER curves and its own MLSE reference (Table~\ref{tbl:mmse-baseline}) & \url{mmse_equalizer.py} \\
 \codeentry{seq-memory} & Sequence models on channels with memory, reruns and readouts (Table~\ref{tbl:seq-on-memory}) & \url{seq_models_on_memory*.py} $\rightarrow$ \url{seq_models_on_memory_repeat_probe.jsonl} \\
 \codeentry{complexity} & Measured inference time (Fig.~\ref{fig:figE6complexity}) & \url{e6_complexity_ported.py} $\rightarrow$ \url{e6_complexity_ported_results.npy} \\
 \codeentry{latency} & Decision delay, arithmetic and memory (Tables~\ref{tbl:joint-latency}, \ref{tbl:joint-memory}, Eq.~\eqref{eq:mac-crossover}) & \url{joint_latency_memory.py}; \url{joint_memory_precision.py}; \url{unified_latency_axis.py} \\
@@ -295,7 +296,7 @@ For bit-MAP decisions under the same model and side information, giving the dete
 
 \paragraph{Supplementary numerical checks.} The across-seed spread in SNR penalty against DF in the separate native-architecture replication is $0.004$~dB for Mamba-S6, $0.007$ for the Hybrid, $0.013$ for Mamba-2, $0.043$ for the MLP, and at least $0.075$ for the Transformer and $0.091$ for the VAE (one initialization of each misses $10^{-2}$). These finite three-seed ranges are not confidence bounds on failure probabilities.
 
-For the QPSK linear-MMSE detail run, the attained MSE at 16~dB is $0.0666,\allowbreak\ 0.0374,\allowbreak\ 0.0354,\allowbreak\ 0.0333$ for $N=3,5,7,11$. The required-SNR penalties at targets $10^{-1}$ and $10^{-2}$ are respectively $+3.24, +2.98, +2.79, +2.65$ and $+6.34, +4.27, +4.13, +4.02$~dB. These measurements do not imply monotonic BER at every target.
+For the QPSK linear-MMSE detail run, the attained MSE at 16~dB is $0.0666,\allowbreak\ 0.0374,\allowbreak\ 0.0354,\allowbreak\ 0.0333$ for $N=3,5,7,11$. The required-SNR penalties at targets $10^{-1}$ and $10^{-2}$ are respectively $+3.27, +3.01, +2.82, +2.68$ and $+6.35, +4.28, +4.14, +4.03$~dB against the size sweep's MLSE curve. These measurements do not imply monotonic BER at every target.
 
 \section{Channel Models and Metrics of Chapter~6}\label{sec:appendix-g-channel-specs}
 
@@ -304,24 +305,24 @@ This appendix specifies the channel models, relay inputs and summary metrics of 
 \begin{longtable}[]{@{}>{\raggedright\arraybackslash}p{0.17\linewidth}>{\raggedright\arraybackslash}p{0.37\linewidth}>{\raggedright\arraybackslash}p{0.20\linewidth}>{\raggedright\arraybackslash}p{0.18\linewidth}@{}}
 \caption[Channel models of Chapter~6]{Channel models of the Chapter~6 studies, as implemented. ``Per trial'' means that a parameter is drawn once per evaluation trial and held for all of its symbols; training data are generated in four blocks per training SNR, each with its own draw}\label{tbl:ch6-channel-specs}\tabularnewline
 \toprule\noalign{}
-Study (script) & Source and Hop 1 & Redraw & Hop 2 \\
+Study (code) & Source and Hop 1 & Redraw & Hop 2 \\
 \midrule\noalign{}
 \endfirsthead
 \toprule\noalign{}
-Study (script) & Source and Hop 1 & Redraw & Hop 2 \\
+Study (code) & Source and Hop 1 & Redraw & Hop 2 \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-Fixed ISI ({\footnotesize\texttt{e6\_\allowbreak{}sim\_\allowbreak{}ported.py}}, {\footnotesize\texttt{e6\_\allowbreak{}matched\_\allowbreak{}protocol.py}}) & BPSK; $y = h \ast x + n$, $h \propto [1, 0.7, 0.5]$ & Fixed & AWGN \\
-Nonlinear bias ({\footnotesize\texttt{e6\_\allowbreak{}sim\_\allowbreak{}ported.py}}) & BPSK; $y = \tanh(1.5x) + 0.5 + n$ & Fixed & AWGN \\
-QPSK ISI ({\footnotesize\texttt{e6\_\allowbreak{}qpsk\_\allowbreak{}unknown\_\allowbreak{}channel.py}}) & QPSK; the fixed-ISI taps, then a compensated Rayleigh magnitude $|h_1|$ per symbol, then complex AWGN & Taps fixed; $|h_1|$ per symbol & AWGN (a compensated-Rayleigh run is stored, not reported) \\
-Flat gain ({\footnotesize\texttt{e6\_\allowbreak{}flat\_\allowbreak{}ported.py}}) & BPSK; $y = gx + n$, $g \sim \mathcal{U}[0.3, 2.0]$ & Per trial of $10^5$ bits & Compensated Rayleigh, see below \\
-Branch asymmetry ({\footnotesize\texttt{e6\_\allowbreak{}flat\_\allowbreak{}ported.py}}) & BPSK; $y = a_{+} + n$ if $x=+1$, $y = -a_{-} + n$ if $x=-1$, with $a_{+}, a_{-} \sim \mathcal{U}[0.6, 1.4]$ independent & Per trial of $10^5$ bits & As flat gain \\
-Flat phase ({\footnotesize\texttt{e6\_\allowbreak{}flat\_\allowbreak{}ported.py}}) & DBPSK; $y = e^{j\theta}s + n$, $\theta \sim \mathcal{U}[0, 2\pi)$, complex AWGN & Per trial of $10^5$ bits & As flat gain \\
-Fixed composite ({\footnotesize\texttt{e6\_\allowbreak{}composite\_\allowbreak{}ported.py}}) & DBPSK; ISI $h \propto [1, 0.6, 0.4]$, then amplifier $A(\cdot)$, then $e^{j\theta}$, $\theta \sim \mathcal{U}[0, 2\pi)$, then complex AWGN & Taps fixed; $\theta$ per trial of $10^5$ bits & Compensated Rayleigh \\
-Random composite ({\footnotesize\texttt{e6\_\allowbreak{}blind\_\allowbreak{}ported.py}}, {\footnotesize\texttt{e6\_\allowbreak{}partial\_\allowbreak{}ported.py}}) & As the fixed composite, with $h \propto [1, u_1, u_2]$, $u_1 \sim \mathcal{U}[0.3, 0.7]$, $u_2 \sim \mathcal{U}[0.2, 0.5]$ & Taps and $\theta$ per trial of $2\times10^4$ bits, or per block in the block-length sweep & Compensated Rayleigh, complex AWGN \\
-Coded memory ({\footnotesize\texttt{joint\_\allowbreak{}latency\_\allowbreak{}memory.py}}) & Rate-$1/2$, $K=3$ convolutional code, QPSK; $h_k \propto 0.7^{k}$, $k = 0,\dots,L-1$, $L \in \{3,5,7\}$; complex AWGN & Fixed & Complex AWGN \\
+Fixed ISI (\coderef{e6-sim}, \coderef{matched-protocol}) & BPSK; $y = h \ast x + n$, $h \propto [1, 0.7, 0.5]$ & Fixed & AWGN \\
+Nonlinear bias (\coderef{e6-sim}) & BPSK; $y = \tanh(1.5x) + 0.5 + n$ & Fixed & AWGN \\
+QPSK ISI (\coderef{qpsk}) & QPSK; the fixed-ISI taps, then a compensated Rayleigh magnitude $|h_1|$ per symbol, then complex AWGN & Taps fixed; $|h_1|$ per symbol & AWGN (a compensated-Rayleigh run is stored, not reported) \\
+Flat gain (\coderef{flat}) & BPSK; $y = gx + n$, $g \sim \mathcal{U}[0.3, 2.0]$ & Per trial of $10^5$ bits & Compensated Rayleigh, see below \\
+Branch asymmetry (\coderef{flat}) & BPSK; $y = a_{+} + n$ if $x=+1$, $y = -a_{-} + n$ if $x=-1$, with $a_{+}, a_{-} \sim \mathcal{U}[0.6, 1.4]$ independent & Per trial of $10^5$ bits & As flat gain \\
+Flat phase (\coderef{flat}) & DBPSK; $y = e^{j\theta}s + n$, $\theta \sim \mathcal{U}[0, 2\pi)$, complex AWGN & Per trial of $10^5$ bits & As flat gain \\
+Fixed composite (\coderef{composite}) & DBPSK; ISI $h \propto [1, 0.6, 0.4]$, then amplifier $A(\cdot)$, then $e^{j\theta}$, $\theta \sim \mathcal{U}[0, 2\pi)$, then complex AWGN & Taps fixed; $\theta$ per trial of $10^5$ bits & Compensated Rayleigh \\
+Random composite (\coderef{blind}, \coderef{pilots}) & As the fixed composite, with $h \propto [1, u_1, u_2]$, $u_1 \sim \mathcal{U}[0.3, 0.7]$, $u_2 \sim \mathcal{U}[0.2, 0.5]$ & Taps and $\theta$ per trial of $2\times10^4$ bits, or per block in the block-length sweep & Compensated Rayleigh, complex AWGN \\
+Coded memory (\coderef{latency}) & Rate-$1/2$, $K=3$ convolutional code, QPSK; $h_k \propto 0.7^{k}$, $k = 0,\dots,L-1$, $L \in \{3,5,7\}$; complex AWGN & Fixed & Complex AWGN \\
 \end{longtable}
 
 \paragraph{Amplifier.} $A$ acts on the amplitude and preserves the phase: $A(r) = r/\sqrt{1 + (r/1.2)^{2}}$, a Rapp soft limiter with smoothness $1$ and saturation $1.2$. Because the ISI taps are real and the DBPSK symbols are $\pm1$, the amplifier input is real, so the rotation $e^{j\theta}$ applied after it is the only source of an imaginary component on Hop~1.
@@ -339,9 +340,9 @@ Coded memory ({\footnotesize\texttt{joint\_\allowbreak{}latency\_\allowbreak{}me
 \paragraph{Single-number SNR penalties.} All required-SNR penalties use one definition~\coderef{ber-metrics}. For a BER target $t$, the SNR at which a curve reaches $t$ is found by linear interpolation of $\ln \mathrm{BER}$ against SNR in dB between the two measured points that bracket $t$, taking the last such crossing. A zero-error point cannot be interpolated in log scale: if the preceding point lies above $t$, the crossing is placed at the zero-error point's SNR, which can only overstate the SNR the curve needs. The penalty at $t$ is the relay's SNR minus the reference's, positive when the relay needs more. The targets are fixed by the reference curve: of $10^{-1}$, $10^{-2}$ and $10^{-3}$, those the reference reaches within the tested SNR range form a common set for every curve compared against it. A curve that misses a target in that set needs more than the highest tested SNR there, so its penalty at that target is only bounded below, by that SNR minus the reference's, and is marked as a lower bound rather than dropped. Tables~\ref{tbl:mmse-baseline}, \ref{tbl:seq-on-memory}, \ref{tbl:table-minsize}, \ref{tbl:seed-spread} and~\ref{tbl:seed-spread-3k} report one number per configuration: the largest penalty over the common set, itself a lower bound when a target is missed. Their aggregation over training seeds differs, as follows.
 \begin{itemize}
 \tightlist
-\item Table~\ref{tbl:mmse-baseline}: the learned-relay column is the best of three seeds of the best size-sweep configuration.
+\item Table~\ref{tbl:mmse-baseline}: every column against the size sweep's MLSE curve; the learned-relay column is the best of three seeds of the best size-sweep configuration.
 \item Table~\ref{tbl:seq-on-memory}: the best of three seeds, with the spread in brackets.
 \item Table~\ref{tbl:table-minsize}: the candidate's worst-of-seeds BER at each SNR, against the reference relay's mean-of-seeds curve; a candidate with only a lower bound meets no budget.
 \item Tables~\ref{tbl:seed-spread} and~\ref{tbl:seed-spread-3k}: the largest minus the smallest per-seed penalty, a lower bound when a seed is bounded.
 \end{itemize}
-They are recomputed from the stored per-seed curves~\coderef{common-targets}, which reproduces the earlier values, which kept only the targets both curves reach. The fixed-ISI comparison with genie MLSE is reported per target ($10^{-1}$ to $10^{-4}$), computed from the matched-protocol data~\coderef{isi-penalty}.
+They are recomputed from the stored per-seed curves~\coderef{common-targets}; the same script reproduces the earlier values, which kept only the targets both curves reach. The fixed-ISI comparison with genie MLSE is reported per target ($10^{-1}$ to $10^{-4}$), computed from the matched-protocol data~\coderef{isi-penalty}.

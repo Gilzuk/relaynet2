@@ -1662,7 +1662,7 @@ def check_ber_validation(tex, rep):
 
 
 def check_mmse_baseline(tex, rep):
-    """MMSE linear-equalizer baseline (tbl:mmse-baseline) vs results/mmse_equalizer.json.
+    """MMSE linear-equalizer baseline (tbl:mmse-baseline), on the sweep's MLSE reference.
 
     Columns: Channel & 3 taps & 5 taps & 7 taps & 11 taps & Learned relay
     Rows: ISI (BPSK) / ISI (QPSK) / Composite
@@ -1701,7 +1701,7 @@ def check_mmse_baseline(tex, rep):
             pub_text, pub_val = row[col]
             if pub_val is None:
                 continue
-            src = mmse.get(src_key, {}).get(n)
+            src = _mmse_common_ref(src_key, n)
             if src is not None:
                 rep.cell(T, f"{src_key}/{n}tap", pub_text, pub_val, src)
         if len(row) > 5 and row[5][1] is not None:
@@ -1709,6 +1709,25 @@ def check_mmse_baseline(tex, rep):
             if best is not None:
                 rep.cell(T, f"{src_key}/learned relay", row[5][0], row[5][1], best)
     rep.finish_table(T, before)
+
+
+def _mmse_common_ref(channel, n, target=None):
+    """Equalizer penalty against the size sweep's MLSE curve (Table 6.6).
+
+    The equalizer run evaluated its own MLSE reference, a different Monte Carlo
+    curve from the one the learned-relay column is measured against, so its
+    stored worst_db is not on the row's common reference. The table now uses the
+    sweep's curve for every column; this recomputes the equalizer entries on it
+    from the stored equalizer BER curves (worst penalty over the common target
+    set, or the penalty at one target).
+    """
+    from ber_metrics import penalty_common
+    ms = json.load(open(os.path.join(ROOT, "results", "mlp_min_size_all_channels.json")))
+    det = json.load(open(os.path.join(ROOT, "results", "mmse_equalizer_detail.json")))
+    p = penalty_common(ms["snr_db"], det[channel][n]["ber"], ms["channels"][channel]["baseline_ber"])
+    if target is None:
+        return p["worst_db"]
+    return p["per_target"][target]["db"]
 
 
 def _best_sweep_penalty(channel):
@@ -2094,8 +2113,8 @@ def check_mmse_monotonicity_prose(tex, rep):
     nums = [float(x) for x in re.findall(r"[-+]?\d+\.\d+", tex[i:stop])]
     taps = ("3", "5", "7", "11")
     want = ([det[n]["attained_mmse"]["16"] for n in taps]
-            + [det[n]["per_target_db"]["0.1"] for n in taps]
-            + [det[n]["per_target_db"]["0.01"] for n in taps])
+            + [_mmse_common_ref("isi_complex", n, 0.1) for n in taps]
+            + [_mmse_common_ref("isi_complex", n, 0.01) for n in taps])
     if len(nums) != len(want):
         return rep.skip(T, f"expected {len(want)} numbers, found {len(nums)}")
     names = ([f"mmse16/{n}tap" for n in taps]
@@ -2649,13 +2668,13 @@ def check_khina_round2(tex, rep):
         vals = [penalty_common(c["snr_db"], np.max([r["ber"] for r in x["seed_runs"]], axis=0), c["df_ber"])
                 for x in c["sweep"]]
         rng[f] = vals
-    m = re.search(r"penalties of \$\+([\d.]+)\$--\$\+([\d.]+)\$~dB under its hard read-out against unweighted block DF, and at least \$\+([\d.]+)\$~dB against matched block DF", tex)
+    m = re.search(r"penalties under its hard read-out of at least \$\+([\d.]+)\$~dB against matched block DF, and of \$\+([\d.]+)\$--\$\+([\d.]+)\$~dB against the unweighted block DF", tex)
     if m:
         u = [r["worst_db"] for r in rng["coded_min_size.json"]]
-        rep.cell(T, "coded sweep, unweighted low", m.group(1), float(m.group(1)), min(u))
-        rep.cell(T, "coded sweep, unweighted high", m.group(2), float(m.group(2)), max(u))
-        rep.cell(T, "coded sweep, matched lowest", m.group(3), float(m.group(3)),
+        rep.cell(T, "coded sweep, matched lowest", m.group(1), float(m.group(1)),
                  min(r["worst_db"] for r in rng["coded_min_size_matched.json"]))
+        rep.cell(T, "coded sweep, unweighted low", m.group(2), float(m.group(2)), min(u))
+        rep.cell(T, "coded sweep, unweighted high", m.group(3), float(m.group(3)), max(u))
     # Window 1 -> 7 gain: "more than 8 dB" must be a true lower bound on every three-tap channel.
     gains = []
     for c in ms["channels"].values():
@@ -2670,6 +2689,56 @@ def check_khina_round2(tex, rep):
     n8 = len(re.findall(r"more than 8~dB", tex))
     rep.cell(T, "window-gain statements found", str(n8), float(n8 >= 3), 1.0)
     rep.cell(T, "smallest window 1->7 gain exceeds 8 dB", "8", 8.0, 8.0 if min(gains) > 8.0 else min(gains))
+    # Sec. 5.2-5.3: differences between the canonical relays, paired over the shared trials.
+    pt = json.load(open(os.path.join(R, "canonical_paired_tests.json")))["tables"]
+    t2, t3 = pt["table_5_2"], pt["table_5_3"]
+    ahead = lambda rows: [r["snr_db"] for r in rows if r["resolved"] and r["mean_diff"] > 0]
+    behind = lambda rows: [r["snr_db"] for r in rows if r["resolved"] and r["mean_diff"] < 0]
+    m = re.search(r"DF has the lower BER at (\w+) of the eleven SNRs against the MLP and against the VAE, and at (\w+) against the Hybrid", tex)
+    words = {"one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7, "eight": 8, "nine": 9}
+    if m:
+        rep.cell(T, "DF ahead of MLP (count)", str(words.get(m.group(1), -1)), float(words.get(m.group(1), -1)), float(len(ahead(t2["vs_DF"]["MLP (169p)"]))))
+        rep.cell(T, "DF ahead of VAE (count)", str(words.get(m.group(1), -1)), float(words.get(m.group(1), -1)), float(len(ahead(t2["vs_DF"]["VAE"]))))
+        rep.cell(T, "DF ahead of Hybrid (count)", str(words.get(m.group(2), -1)), float(words.get(m.group(2), -1)), float(len(ahead(t2["vs_DF"]["Hybrid"]))))
+    rep.cell(T, "no feedforward relay ahead of DF", "0", 0.0,
+             float(sum(len(behind(t2["vs_DF"][k])) for k in ("MLP (169p)", "Hybrid", "VAE"))))
+    rep.cell(T, "Hybrid ahead of VAE 0-12 dB", "0-12", 1.0,
+             float(ahead(t2["feedforward_pairs"]["Hybrid - VAE"]) == [] and
+                   [r["snr_db"] for r in t2["feedforward_pairs"]["Hybrid - VAE"] if r["resolved"] and r["mean_diff"] < 0] == list(range(0, 13, 2))))
+    mx = max(t2["max_abs_mean_diff_vs_DF"][k] for k in ("MLP (169p)", "Hybrid", "VAE"))
+    rep.cell(T, "feedforward within 0.004 of DF", "0.004", 0.004, 0.004 if mx < 0.004 else mx)
+    mx3 = max(t3["max_abs_mean_diff_vs_DF"][k] for k in ("MLP-3K", "Hybrid-3K", "VAE-3K"))
+    rep.cell(T, "3K feedforward within 0.009 of DF", "0.009", 0.009, 0.009 if mx3 < 0.009 else mx3)
+    seq16 = max(r["mean_diff"] for k in ("Transformer", "Mamba S6", "Mamba2 (SSD)") for r in t2["vs_DF"][k] if r["snr_db"] >= 16)
+    rep.cell(T, "sequence models within 0.002 of DF from 16 dB", "0.002", 0.002, 0.002 if seq16 < 0.002 else seq16)
+    res20 = [k for k in ("Transformer", "Mamba S6", "Mamba2 (SSD)") if [r for r in t2["vs_DF"][k] if r["snr_db"] == 20][0]["resolved"]]
+    rep.cell(T, "gap resolved at 20 dB: Transformer and Mamba-S6", "2", 1.0, float(res20 == ["Transformer", "Mamba S6"]))
+    hyb = [r for k in ("Hybrid",) for r in t2["vs_MLP169"][k] if r["resolved"] and r["mean_diff"] < 0]
+    others = [k for k, v in list(t2["vs_MLP169"].items()) + list(t3["vs_MLP169"].items())
+              if k not in ("Hybrid", "Hybrid-3K") and any(r["resolved"] and r["mean_diff"] < 0 for r in v)]
+    rep.cell(T, "only the Hybrids beat MLP-169", "0", 0.0, float(len(others)))
+    if re.search(r"except the two Hybrids, at a few SNRs and by at most \$0\.0021\$", tex):
+        rep.cell(T, "Hybrid lead over MLP-169 at most", "0.0021", 0.0021, max(-r["mean_diff"] for r in hyb))
+    # Table 6.6 caption: lead over the best equalizer, best and median initialization,
+    # every column on the size sweep's MLSE curve.
+    m = re.search(r"leads the equalizer by \$([\d.]+)\$ to \$([\d.]+)\$~dB on every channel \(\$([\d.]+)\$ to \$([\d.]+)\$~dB at the median initialization\)", tex)
+    if m:
+        lb, lm = [], []
+        for ch in ("isi", "isi_complex", "composite"):
+            c = ms["channels"][ch]; base = c["baseline_ber"]
+            eq = min(_mmse_common_ref(ch, n) for n in ("3", "5", "7", "11"))
+            best = None
+            for cfg in c["sweep"]:
+                v = [penalty_common(ms["snr_db"], r["ber"], base) for r in cfg["seed_runs"]]
+                if any(x["lower_bound"] for x in v):
+                    continue
+                w = [x["worst_db"] for x in v]
+                if best is None or min(w) < best[0]:
+                    best = (min(w), float(np.median(w)))
+            lb.append(eq - best[0]); lm.append(eq - best[1])
+        for g, lab, val in zip(m.groups(), ("lead low", "lead high", "median lead low", "median lead high"),
+                               (min(lb), max(lb), min(lm), max(lm))):
+            rep.cell(T, f"Table 6.6 caption {lab}", g, float(g), val)
     # Table 9.4 coded row: no smaller configuration meets the strict budgets.
     m = re.search(r"coded & code & (.*?) \\\\", tex)
     if m:

@@ -46,7 +46,7 @@ MUTATIONS = [
      r"at 16~dB is $0.0666,\allowbreak\ 0.0374,\allowbreak\ 0.0354,\allowbreak\ 0.0333$",
      r"at 16~dB is $0.9999,\allowbreak\ 0.0374,\allowbreak\ 0.0354,\allowbreak\ 0.0333$"),
     ("tbl:mmse-baseline", "ch07_unknown_and_mismatch_channels.tex",
-     r"ISI (BPSK)      & $+6.58$",
+     r"ISI (BPSK)      & $+6.48$",
      r"ISI (BPSK)      & $+9.99$"),
     ("tbl:table44", "ch05_experiments.tex",
      r"20 & 0.001378 & \textbf{0.001064} & 0.001092",

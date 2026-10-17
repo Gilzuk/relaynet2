@@ -18,7 +18,7 @@ DF matches or exceeds the evaluated learned relays from 6~dB upward. Coherent co
 
 \subsection{Robustness Across the Sampled Ensemble}\label{sec:channel-robustness}
 
-Training uses BPSK over AWGN at 5, 10 and 15~dB (Section~\ref{sec:training-protocol}); testing uses the specified Rayleigh distribution at the sampled SNRs, without online adaptation. This establishes performance over those draws, not every possible fade or an untested fading law. The equalization front end uses CSI, though the learned relay receives no explicit channel coefficient.
+Training uses BPSK over AWGN at 5, 10 and 15~dB, the Hybrid's sub-network at 2, 4 and 6~dB (Table~\ref{tbl:canonical-runs}); testing uses the specified Rayleigh distribution at the sampled SNRs, without online adaptation. This establishes performance over those draws, not every possible fade or an untested fading law. The equalization front end uses CSI, though the learned relay receives no explicit channel coefficient.
 
 \section{Capacity, Context and Training Variation}\label{sec:capacity-and-overfitting}
 \label{sec:information-theoretic-perspective}
@@ -29,7 +29,7 @@ The original fixed-checkpoint comparison finds the 169-parameter MLP competitive
 
 The three-initialization sweep does not demonstrate the capacity-induced BER upturn proposed by H3. Its median across-initialization spread is $0.176$~dB over 148 configurations, but varies from $0.008$~dB on the canonical channel to $1.231$~dB on nonlinear bias. The pooled median is not a universal significance threshold. Two clusters of training outcomes do not by themselves identify optimization attractors or prove a mechanism.
 
-Four-parameter configurations satisfy the zero-degradation criterion on three memoryless cases; selected three-tap cases use 73--145 parameters. These are empirical grid results, not architecture lower bounds. The coded size sweep spans 18--1{,}076 parameters with penalties of $+1.24$--$+1.92$~dB under its hard read-out against unweighted block DF, and at least $+9.75$~dB against matched block DF. This motivates testing interfaces and metrics, but does not prove an interface-limited regime.
+Four-parameter configurations satisfy the zero-degradation criterion on three memoryless cases; selected three-tap cases use 73--145 parameters. These are empirical grid results, not architecture lower bounds. The coded size sweep spans 18--1{,}076 parameters with penalties under its hard read-out of at least $+9.75$~dB against matched block DF, and of $+1.24$--$+1.92$~dB against the unweighted block DF of the diagnostic pipeline. This motivates testing interfaces and metrics, but does not prove an interface-limited regime.
 
 \subsection{Practical Implications}\label{sec:practical-implications}
 
@@ -81,4 +81,4 @@ H1 and H2 are supported within the canonical comparison. H3's overfitting explan
 
 Among eight Transformer initializations, one high-loss run has a much worse BER penalty. The all-run correlation is driven by that outlier. It motivates studying optimization failure, but does not establish a failure probability or validated screening rule; all runs remain in Appendix~\ref{sec:appendix-f-minimum-size}.
 
-H5 is supported in the evaluated settings against AF and zero-threshold DF, which the chosen taps defeat analytically; the informative evidence is against model-based detectors: matched BPSK MLSE keeps penalties of $0.26$--$2.53$~dB, depending on the target, and the MLP passes LS-plus-MLSE below ten pilots and leads blind CMA up to 12~dB. Similar rounded BERs and overlapping intervals elsewhere do not establish equivalence. The coherent conclusion is bounded: small trained relays can help in particular mismatched pipelines, while model information, temporal context, decoder metrics and computational budgets determine the comparisons actually measured.
+H5 is supported in the evaluated settings against AF and zero-threshold DF, which the chosen taps defeat analytically; the informative evidence is against model-based detectors: matched BPSK MLSE keeps penalties of $0.26$--$2.53$~dB, depending on the target, and the MLP leads LS-plus-MLSE at five pilots and leads blind CMA up to 12~dB. Similar rounded BERs and overlapping intervals elsewhere do not establish equivalence. The coherent conclusion is bounded: small trained relays can help in particular mismatched pipelines, while model information, temporal context, decoder metrics and computational budgets determine the comparisons actually measured.

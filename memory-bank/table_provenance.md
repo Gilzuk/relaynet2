@@ -62,6 +62,16 @@ rests on. Do not hand-edit; re-run the script.
 | provenance | ok |
 | SNRS | `list(range(0, 21, 2))` |
 
+## `Fig. 5.2 caption`
+
+| field | value |
+|---|---|
+| experiment | Canonical relays: paired tests |
+| reproduce | `python canonical_paired_tests.py` |
+| data file | `results/canonical_paired_tests.json` |
+| data commit | `6b9160d` 2026-10-17 (Claude) |
+| provenance | ok |
+
 ## `Limitations item 8: six across-seed spreads; prose:seed-spread-native`
 
 | field | value |
@@ -130,6 +140,16 @@ rests on. Do not hand-edit; re-run the script.
 | N_TRAIN | `3` |
 | TRAIN_SNRS | `[5, 10, 15]` |
 | W | `11` |
+
+## `fig:fig10 caption`
+
+| field | value |
+|---|---|
+| experiment | Canonical relays: paired tests |
+| reproduce | `python canonical_paired_tests.py` |
+| data file | `results/canonical_paired_tests.json` |
+| data commit | `6b9160d` 2026-10-17 (Claude) |
+| provenance | ok |
 
 ## `fig:figE6 Viterbi curve with high-SNR companion`
 
@@ -278,6 +298,16 @@ rests on. Do not hand-edit; re-run the script.
 | reproduce | `python qpsk_error_decomposition.py` |
 | data file | `results/qpsk_error_decomposition.json` |
 | data commit | `e35d9b7` 2026-09-04 (Gilzuk) |
+| provenance | ok |
+
+## `prose: Sec. 5.2 and 5.3 differences between the canonical relays (paired Wilcoxon)`
+
+| field | value |
+|---|---|
+| experiment | Canonical relays: paired tests |
+| reproduce | `python canonical_paired_tests.py` |
+| data file | `results/canonical_paired_tests.json` |
+| data commit | `6b9160d` 2026-10-17 (Claude) |
 | provenance | ok |
 
 ## `prose: Sec. 6.4.2 rerun, coded size sweep, seed spreads (App. 9.6)`
