@@ -1,0 +1,140 @@
+name: Round-2 reproduction
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - .github/workflows/round2-reproduction.yml
+      - requirements-round2.txt
+      - scripts/reproduce_round2.py
+      - scripts/reproduction_worker.py
+
+permissions:
+  contents: read
+
+# A later evidence-only push does not restart the computation. Never cancel a
+# running experiment when a new source revision is published.
+concurrency:
+  group: round2-reproduction-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  reproduce:
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.head.ref == 'experiments/round2-reproduction-20261017'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 350
+    strategy:
+      fail-fast: false
+      matrix:
+        experiment: [sequence_memory, coded_matched, canonical_native, canonical_3k]
+    env:
+      REPRO_RUN_ID: gha-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.experiment }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /*.py
+            /.gitignore
+            /requirements*
+            /relaynet/
+            /checkpoints/
+            /scripts/
+            /results/
+            /e6_unknown_channel_results/
+            /e6_unknown_channel_qpsk_results/
+            !*.png
+            !*.pdf
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12.14'
+      - name: Install the declared CPU environment
+        run: |
+          python -m pip install -r requirements-round2.txt
+          python -m pip install torch==2.8.0+cpu --index-url https://download.pytorch.org/whl/cpu
+      - name: Run the full original budget and retain discrepancies
+        env:
+          EXPERIMENT: ${{ matrix.experiment }}
+        run: |
+          python -u scripts/reproduce_round2.py --run-id "$REPRO_RUN_ID" --jobs "$EXPERIMENT" --threads 2 --timeout-hours 5.5
+      - name: Retain logs, references, outputs and checkpoints even on failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: round2-${{ env.REPRO_RUN_ID }}
+          path: results/reproduction/${{ env.REPRO_RUN_ID }}/
+          if-no-files-found: warn
+          retention-days: 90
+
+  archive:
+    name: Preserve experiment evidence on the reproduction branch
+    needs: reproduce
+    if: >-
+      always() &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.head.ref == 'experiments/round2-reproduction-20261017'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: experiments/round2-reproduction-20261017
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /.gitignore
+            /results/reproduction/
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: round2-gha-${{ github.run_id }}-${{ github.run_attempt }}-*
+          path: .reproduction-artifacts
+      - name: Build a durable evidence index
+        env:
+          REPRO_SOURCE: ${{ github.event.pull_request.head.sha }}
+          REPRO_RUN: ${{ github.run_id }}
+          REPRO_ATTEMPT: ${{ github.run_attempt }}
+        run: |
+          python - <<'PY'
+          import json, os, shutil
+          from pathlib import Path
+          prefix = f"gha-{os.environ['REPRO_RUN']}-{os.environ['REPRO_ATTEMPT']}"
+          root = Path('results/reproduction')
+          summary = {'source_commit': os.environ['REPRO_SOURCE'],
+                     'workflow_url': f"https://github.com/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['REPRO_RUN']}",
+                     'runs': [], 'missing_jobs': []}
+          for job in ['sequence_memory', 'coded_matched', 'canonical_native', 'canonical_3k']:
+              run_id = f'{prefix}-{job}'
+              source = Path('.reproduction-artifacts') / f'round2-{run_id}'
+              target = root / run_id
+              if not source.is_dir():
+                  summary['missing_jobs'].append(job)
+                  continue
+              state = json.loads((source / 'status.json').read_text())
+              if state['source_commit'] != os.environ['REPRO_SOURCE']:
+                  raise RuntimeError(f'Unexpected source revision for {job}')
+              # Refuse to overwrite an earlier attempt or mix environments.
+              shutil.copytree(source, target)
+              summary['runs'].append({'id': run_id, 'status': state['status'],
+                                      'jobs': state['jobs'], 'report': f'{run_id}/REPORT.md'})
+          index = root / f'{prefix}-index.json'
+          if index.exists():
+              raise RuntimeError('Refusing to overwrite an existing evidence index')
+          index.write_text(json.dumps(summary, indent=2) + '\n')
+          PY
+      - name: Commit evidence without changing the published thesis results
+        env:
+          REPRO_RUN: ${{ github.run_id }}
+          REPRO_ATTEMPT: ${{ github.run_attempt }}
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add --sparse -- results/reproduction/gha-"$REPRO_RUN"-"$REPRO_ATTEMPT"-*
+          git commit -m "evidence: preserve round-2 workflow $REPRO_RUN attempt $REPRO_ATTEMPT"
+          git push origin HEAD:refs/heads/experiments/round2-reproduction-20261017

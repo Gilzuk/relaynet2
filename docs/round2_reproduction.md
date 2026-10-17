@@ -2,8 +2,15 @@
 
 PR [183](https://github.com/Gilzuk/relaynet2/pull/183) was merged at `42e3e386e0b6d1c137a84cf609b51e9581e7e69a` after CI passed. This separate branch adds fresh evidence. It does not silently replace the published thesis or its inputs.
 
-Current evidence and investigation: [results/reproduction/README.md](../results/reproduction/README.md). The active run is `20261017-round2-v2`; the original ID is retained as a failed setup attempt. Choose an unused ID when launching another run. The hosted run uses a managed asynchronous execution session; the generic detached launcher alone did not establish a live heartbeat in that host.
+Current evidence and investigation: [results/reproduction/README.md](../results/reproduction/README.md). The initial setup attempt failed before simulation; the corrected local run `20261017-round2-v2` then lost its session after 09:07:25 UTC. Four completed checks matched and 16 training seeds/checkpoints were recovered. Both attempts remain preserved. Do not interpret their old heartbeat or PID as proof of continued execution.
 
+## Persistent hosted execution
+
+[`.github/workflows/round2-reproduction.yml`](../.github/workflows/round2-reproduction.yml) runs the four unfinished jobs independently on GitHub Actions when the declared workflow/runner/dependency files change on PR 184's branch. It is restricted to this repository and `experiments/round2-reproduction-20261017`; it never cancels an existing run on a new push. Every job checks out the exact PR head SHA and records its actual environment. Python 3.12.14, NumPy 2.3.5, SciPy 1.17.0, Matplotlib 3.10.8 and CPU Torch 2.8.0 are declared; CPU/hardware differences remain visible. Training, evaluation budgets and comparison tolerances are unchanged.
+
+Each experiment has a 5.5-hour timeout inside a 350-minute workflow job, leaving time to harvest failures. Fresh IDs include workflow run, attempt and experiment. The complete sequence study is repeated on the new host; seeds are not spliced across environments. Upload runs even when the comparator requires review. An independent final job copies the artifacts to versioned `results/reproduction/gha-*` directories, verifies their source revisions, refuses to overwrite previous evidence, records missing jobs explicitly, and commits only evidence to the reproduction branch. Artifacts are also retained for 90 days. There is no automatic merge or replacement of published thesis inputs. A nonzero comparison exit can mean a learned result needs review; inspect the JSON status rather than treating every red check as a setup failure.
+
+The local launcher below remains useful on a machine whose execution lifetime the author controls. The hosted chat execution session did not provide that persistence.
 ## Launch and monitor
 
 Use Python with NumPy, SciPy, Matplotlib and CPU PyTorch installed. The first execution environment uses Python 3.12.14 and PyTorch 2.8.0+cpu; the run's `environment.json` records the actual complete package set. These are new validation versions, not recovered historical versions.

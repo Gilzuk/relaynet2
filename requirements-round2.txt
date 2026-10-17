@@ -1,0 +1,7 @@
+# New validation environment, matching the interrupted local replay.
+# These pins do not establish the historical canonical training environment.
+# Install CPU torch separately as recorded in the workflow.
+numpy==2.3.5
+scipy==1.17.0
+matplotlib==3.10.8
+pytest==9.1.1

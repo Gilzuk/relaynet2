@@ -4,7 +4,7 @@
   "branch": "experiments/round2-reproduction-20261017",
   "pid": 5,
   "started_at": "2026-10-17T08:50:24.321313+00:00",
-  "status": "RUNNING",
+  "status": "INTERRUPTED_SESSION_LOST",
   "jobs": [
     {
       "id": "common_target_analysis",
@@ -84,7 +84,7 @@
         "results/penalty_common_targets.json"
       ],
       "scope": "All 3 channels \u00d7 4 architectures \u00d7 seeds 0,1,2; original 40 epochs and 20\u00d720,000-bit budget",
-      "status": "RUNNING"
+      "status": "INTERRUPTED_SESSION_LOST"
     },
     {
       "id": "coded_matched",
@@ -129,5 +129,7 @@
       "status": "PENDING"
     }
   ],
-  "updated_at": "2026-10-17T08:58:25.031660+00:00"
+  "updated_at": "2026-10-17T10:08:47.026244+00:00",
+  "last_live_heartbeat_at": "2026-10-17T09:07:25.101473+00:00",
+  "interruption_record": "sequence_memory/interruption/recovery.json"
 }

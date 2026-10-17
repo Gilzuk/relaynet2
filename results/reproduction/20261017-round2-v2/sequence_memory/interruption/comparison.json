@@ -1,0 +1,729 @@
+{
+  "status": "PARTIAL_RETRAINING_DIFFERENCE_REQUIRES_REVIEW",
+  "completed_seed_count": 16,
+  "differences": [
+    {
+      "path": "/0",
+      "kind": "numeric",
+      "expected": 0.201735,
+      "actual": 0.2014275,
+      "abs_diff": 0.00030749999999998834,
+      "channel": "isi",
+      "architecture": "MLP-3K",
+      "seed": 0
+    },
+    {
+      "path": "/1",
+      "kind": "numeric",
+      "expected": 0.0709375,
+      "actual": 0.07089749999999999,
+      "abs_diff": 4.000000000001225e-05,
+      "channel": "isi",
+      "architecture": "MLP-3K",
+      "seed": 0
+    },
+    {
+      "path": "/2",
+      "kind": "numeric",
+      "expected": 0.010615000000000003,
+      "actual": 0.0106125,
+      "abs_diff": 2.5000000000025002e-06,
+      "channel": "isi",
+      "architecture": "MLP-3K",
+      "seed": 0
+    },
+    {
+      "path": "/3",
+      "kind": "numeric",
+      "expected": 0.0004925,
+      "actual": 0.0004875,
+      "abs_diff": 5.000000000000013e-06,
+      "channel": "isi",
+      "architecture": "MLP-3K",
+      "seed": 0
+    },
+    {
+      "path": "/0",
+      "kind": "numeric",
+      "expected": 0.19985999999999998,
+      "actual": 0.19983,
+      "abs_diff": 2.999999999997449e-05,
+      "channel": "isi",
+      "architecture": "MLP-3K",
+      "seed": 1
+    },
+    {
+      "path": "/1",
+      "kind": "numeric",
+      "expected": 0.06810750000000002,
+      "actual": 0.06802499999999997,
+      "abs_diff": 8.250000000004087e-05,
+      "channel": "isi",
+      "architecture": "MLP-3K",
+      "seed": 1
+    },
+    {
+      "path": "/2",
+      "kind": "numeric",
+      "expected": 0.008494999999999999,
+      "actual": 0.008455,
+      "abs_diff": 3.999999999999837e-05,
+      "channel": "isi",
+      "architecture": "MLP-3K",
+      "seed": 1
+    },
+    {
+      "path": "/3",
+      "kind": "numeric",
+      "expected": 0.00017749999999999998,
+      "actual": 0.0001825,
+      "abs_diff": 5.000000000000013e-06,
+      "channel": "isi",
+      "architecture": "MLP-3K",
+      "seed": 1
+    },
+    {
+      "path": "/0",
+      "kind": "numeric",
+      "expected": 0.19894,
+      "actual": 0.19897,
+      "abs_diff": 3.0000000000002247e-05,
+      "channel": "isi",
+      "architecture": "MLP-3K",
+      "seed": 2
+    },
+    {
+      "path": "/1",
+      "kind": "numeric",
+      "expected": 0.0675875,
+      "actual": 0.067675,
+      "abs_diff": 8.750000000000424e-05,
+      "channel": "isi",
+      "architecture": "MLP-3K",
+      "seed": 2
+    },
+    {
+      "path": "/2",
+      "kind": "numeric",
+      "expected": 0.008882500000000002,
+      "actual": 0.008955,
+      "abs_diff": 7.249999999999791e-05,
+      "channel": "isi",
+      "architecture": "MLP-3K",
+      "seed": 2
+    },
+    {
+      "path": "/3",
+      "kind": "numeric",
+      "expected": 0.0003025,
+      "actual": 0.0002975,
+      "abs_diff": 4.999999999999959e-06,
+      "channel": "isi",
+      "architecture": "MLP-3K",
+      "seed": 2
+    },
+    {
+      "path": "/0",
+      "kind": "numeric",
+      "expected": 0.22068,
+      "actual": 0.2208475,
+      "abs_diff": 0.00016750000000001486,
+      "channel": "isi",
+      "architecture": "Transformer-3K",
+      "seed": 0
+    },
+    {
+      "path": "/1",
+      "kind": "numeric",
+      "expected": 0.0925825,
+      "actual": 0.09246750000000001,
+      "abs_diff": 0.00011499999999999011,
+      "channel": "isi",
+      "architecture": "Transformer-3K",
+      "seed": 0
+    },
+    {
+      "path": "/2",
+      "kind": "numeric",
+      "expected": 0.022327500000000004,
+      "actual": 0.022170000000000002,
+      "abs_diff": 0.0001575000000000014,
+      "channel": "isi",
+      "architecture": "Transformer-3K",
+      "seed": 0
+    },
+    {
+      "path": "/3",
+      "kind": "numeric",
+      "expected": 0.0026074999999999996,
+      "actual": 0.0024149999999999996,
+      "abs_diff": 0.00019249999999999996,
+      "channel": "isi",
+      "architecture": "Transformer-3K",
+      "seed": 0
+    },
+    {
+      "path": "/4",
+      "kind": "numeric",
+      "expected": 0.00010500000000000002,
+      "actual": 9.000000000000002e-05,
+      "abs_diff": 1.4999999999999999e-05,
+      "channel": "isi",
+      "architecture": "Transformer-3K",
+      "seed": 0
+    },
+    {
+      "path": "/0",
+      "kind": "numeric",
+      "expected": 0.221585,
+      "actual": 0.2215925,
+      "abs_diff": 7.499999999993623e-06,
+      "channel": "isi",
+      "architecture": "Transformer-3K",
+      "seed": 1
+    },
+    {
+      "path": "/1",
+      "kind": "numeric",
+      "expected": 0.093045,
+      "actual": 0.0938675,
+      "abs_diff": 0.0008225000000000038,
+      "channel": "isi",
+      "architecture": "Transformer-3K",
+      "seed": 1
+    },
+    {
+      "path": "/2",
+      "kind": "numeric",
+      "expected": 0.023905000000000003,
+      "actual": 0.024967499999999997,
+      "abs_diff": 0.001062499999999994,
+      "channel": "isi",
+      "architecture": "Transformer-3K",
+      "seed": 1
+    },
+    {
+      "path": "/3",
+      "kind": "numeric",
+      "expected": 0.0025700000000000002,
+      "actual": 0.0027975,
+      "abs_diff": 0.00022749999999999984,
+      "channel": "isi",
+      "architecture": "Transformer-3K",
+      "seed": 1
+    },
+    {
+      "path": "/4",
+      "kind": "numeric",
+      "expected": 6.5e-05,
+      "actual": 7.750000000000001e-05,
+      "abs_diff": 1.250000000000002e-05,
+      "channel": "isi",
+      "architecture": "Transformer-3K",
+      "seed": 1
+    },
+    {
+      "path": "/0",
+      "kind": "numeric",
+      "expected": 0.21716249999999998,
+      "actual": 0.217605,
+      "abs_diff": 0.00044250000000001233,
+      "channel": "isi",
+      "architecture": "Transformer-3K",
+      "seed": 2
+    },
+    {
+      "path": "/1",
+      "kind": "numeric",
+      "expected": 0.08911,
+      "actual": 0.090475,
+      "abs_diff": 0.001365000000000005,
+      "channel": "isi",
+      "architecture": "Transformer-3K",
+      "seed": 2
+    },
+    {
+      "path": "/2",
+      "kind": "numeric",
+      "expected": 0.0203675,
+      "actual": 0.0219025,
+      "abs_diff": 0.0015349999999999982,
+      "channel": "isi",
+      "architecture": "Transformer-3K",
+      "seed": 2
+    },
+    {
+      "path": "/3",
+      "kind": "numeric",
+      "expected": 0.002025,
+      "actual": 0.0026475,
+      "abs_diff": 0.0006225000000000002,
+      "channel": "isi",
+      "architecture": "Transformer-3K",
+      "seed": 2
+    },
+    {
+      "path": "/4",
+      "kind": "numeric",
+      "expected": 3.7500000000000003e-05,
+      "actual": 8.250000000000001e-05,
+      "abs_diff": 4.500000000000001e-05,
+      "channel": "isi",
+      "architecture": "Transformer-3K",
+      "seed": 2
+    },
+    {
+      "path": "/0",
+      "kind": "numeric",
+      "expected": 0.22917,
+      "actual": 0.2286025,
+      "abs_diff": 0.0005675000000000263,
+      "channel": "isi",
+      "architecture": "Mamba2-3K",
+      "seed": 1
+    },
+    {
+      "path": "/1",
+      "kind": "numeric",
+      "expected": 0.1033725,
+      "actual": 0.10332999999999999,
+      "abs_diff": 4.250000000001475e-05,
+      "channel": "isi",
+      "architecture": "Mamba2-3K",
+      "seed": 1
+    },
+    {
+      "path": "/2",
+      "kind": "numeric",
+      "expected": 0.0303375,
+      "actual": 0.030602499999999994,
+      "abs_diff": 0.0002649999999999944,
+      "channel": "isi",
+      "architecture": "Mamba2-3K",
+      "seed": 1
+    },
+    {
+      "path": "/3",
+      "kind": "numeric",
+      "expected": 0.00466,
+      "actual": 0.0046375,
+      "abs_diff": 2.249999999999995e-05,
+      "channel": "isi",
+      "architecture": "Mamba2-3K",
+      "seed": 1
+    },
+    {
+      "path": "/4",
+      "kind": "numeric",
+      "expected": 0.0005250000000000001,
+      "actual": 0.0002999999999999999,
+      "abs_diff": 0.00022500000000000016,
+      "channel": "isi",
+      "architecture": "Mamba2-3K",
+      "seed": 1
+    },
+    {
+      "path": "/5",
+      "kind": "numeric",
+      "expected": 0.00021999999999999998,
+      "actual": 7.500000000000001e-06,
+      "abs_diff": 0.0002125,
+      "channel": "isi",
+      "architecture": "Mamba2-3K",
+      "seed": 1
+    },
+    {
+      "path": "/0",
+      "kind": "numeric",
+      "expected": 0.300555,
+      "actual": 0.30195000000000005,
+      "abs_diff": 0.001395000000000035,
+      "channel": "isi_complex",
+      "architecture": "MLP-3K",
+      "seed": 0
+    },
+    {
+      "path": "/1",
+      "kind": "numeric",
+      "expected": 0.16350000000000003,
+      "actual": 0.16384749999999998,
+      "abs_diff": 0.0003474999999999451,
+      "channel": "isi_complex",
+      "architecture": "MLP-3K",
+      "seed": 0
+    },
+    {
+      "path": "/2",
+      "kind": "numeric",
+      "expected": 0.04819749999999999,
+      "actual": 0.048502500000000004,
+      "abs_diff": 0.0003050000000000136,
+      "channel": "isi_complex",
+      "architecture": "MLP-3K",
+      "seed": 0
+    },
+    {
+      "path": "/3",
+      "kind": "numeric",
+      "expected": 0.004735,
+      "actual": 0.004785,
+      "abs_diff": 5.0000000000000565e-05,
+      "channel": "isi_complex",
+      "architecture": "MLP-3K",
+      "seed": 0
+    },
+    {
+      "path": "/4",
+      "kind": "numeric",
+      "expected": 7.25e-05,
+      "actual": 6.749999999999999e-05,
+      "abs_diff": 5.000000000000013e-06,
+      "channel": "isi_complex",
+      "architecture": "MLP-3K",
+      "seed": 0
+    },
+    {
+      "path": "/0",
+      "kind": "numeric",
+      "expected": 0.29950999999999994,
+      "actual": 0.30107500000000004,
+      "abs_diff": 0.001565000000000094,
+      "channel": "isi_complex",
+      "architecture": "MLP-3K",
+      "seed": 1
+    },
+    {
+      "path": "/1",
+      "kind": "numeric",
+      "expected": 0.16269999999999996,
+      "actual": 0.1630275,
+      "abs_diff": 0.0003275000000000361,
+      "channel": "isi_complex",
+      "architecture": "MLP-3K",
+      "seed": 1
+    },
+    {
+      "path": "/2",
+      "kind": "numeric",
+      "expected": 0.0472,
+      "actual": 0.04753,
+      "abs_diff": 0.0003300000000000039,
+      "channel": "isi_complex",
+      "architecture": "MLP-3K",
+      "seed": 1
+    },
+    {
+      "path": "/3",
+      "kind": "numeric",
+      "expected": 0.004749999999999999,
+      "actual": 0.0048575,
+      "abs_diff": 0.00010750000000000082,
+      "channel": "isi_complex",
+      "architecture": "MLP-3K",
+      "seed": 1
+    },
+    {
+      "path": "/0",
+      "kind": "numeric",
+      "expected": 0.3003975,
+      "actual": 0.30051999999999995,
+      "abs_diff": 0.00012249999999996986,
+      "channel": "isi_complex",
+      "architecture": "MLP-3K",
+      "seed": 2
+    },
+    {
+      "path": "/1",
+      "kind": "numeric",
+      "expected": 0.1657075,
+      "actual": 0.16578,
+      "abs_diff": 7.250000000000312e-05,
+      "channel": "isi_complex",
+      "architecture": "MLP-3K",
+      "seed": 2
+    },
+    {
+      "path": "/2",
+      "kind": "numeric",
+      "expected": 0.048445,
+      "actual": 0.0485225,
+      "abs_diff": 7.750000000000118e-05,
+      "channel": "isi_complex",
+      "architecture": "MLP-3K",
+      "seed": 2
+    },
+    {
+      "path": "/3",
+      "kind": "numeric",
+      "expected": 0.00469,
+      "actual": 0.004732500000000001,
+      "abs_diff": 4.250000000000087e-05,
+      "channel": "isi_complex",
+      "architecture": "MLP-3K",
+      "seed": 2
+    },
+    {
+      "path": "/4",
+      "kind": "numeric",
+      "expected": 7.000000000000001e-05,
+      "actual": 5.749999999999999e-05,
+      "abs_diff": 1.250000000000002e-05,
+      "channel": "isi_complex",
+      "architecture": "MLP-3K",
+      "seed": 2
+    },
+    {
+      "path": "/0",
+      "kind": "numeric",
+      "expected": 0.3173925,
+      "actual": 0.3166675,
+      "abs_diff": 0.0007250000000000312,
+      "channel": "isi_complex",
+      "architecture": "Transformer-3K",
+      "seed": 0
+    },
+    {
+      "path": "/1",
+      "kind": "numeric",
+      "expected": 0.182,
+      "actual": 0.18125749999999996,
+      "abs_diff": 0.0007425000000000348,
+      "channel": "isi_complex",
+      "architecture": "Transformer-3K",
+      "seed": 0
+    },
+    {
+      "path": "/2",
+      "kind": "numeric",
+      "expected": 0.068185,
+      "actual": 0.067955,
+      "abs_diff": 0.0002299999999999941,
+      "channel": "isi_complex",
+      "architecture": "Transformer-3K",
+      "seed": 0
+    },
+    {
+      "path": "/3",
+      "kind": "numeric",
+      "expected": 0.016212499999999998,
+      "actual": 0.0164675,
+      "abs_diff": 0.00025500000000000175,
+      "channel": "isi_complex",
+      "architecture": "Transformer-3K",
+      "seed": 0
+    },
+    {
+      "path": "/4",
+      "kind": "numeric",
+      "expected": 0.0021775,
+      "actual": 0.00231,
+      "abs_diff": 0.0001324999999999998,
+      "channel": "isi_complex",
+      "architecture": "Transformer-3K",
+      "seed": 0
+    },
+    {
+      "path": "/5",
+      "kind": "numeric",
+      "expected": 5.5e-05,
+      "actual": 7.249999999999999e-05,
+      "abs_diff": 1.7499999999999985e-05,
+      "channel": "isi_complex",
+      "architecture": "Transformer-3K",
+      "seed": 0
+    }
+  ],
+  "classical_control_differences": [],
+  "complete_channel_rankings": {
+    "isi": {
+      "ranking": {
+        "point_estimate_order": [
+          "MLP-3K",
+          "Transformer-3K",
+          "Mamba-S6-3K",
+          "Mamba2-3K"
+        ],
+        "mlp_best_resolved_by_bounds": true,
+        "interpretation": "Ordering of best-of-three penalties, not statistical superiority across training populations."
+      },
+      "summaries": {
+        "MLP-3K": {
+          "old_per_seed": [
+            2.3644110345625364,
+            1.965266649360501,
+            2.068929181865819
+          ],
+          "new_per_seed": [
+            2.3644110345625364,
+            1.965266649360501,
+            2.068929181865819
+          ],
+          "new_lower_bound": [
+            false,
+            false,
+            false
+          ],
+          "unreached": [
+            [],
+            [],
+            []
+          ],
+          "common_targets": [
+            "0.1",
+            "0.01",
+            "0.001"
+          ],
+          "old_best": 1.965266649360501,
+          "old_spread": 0.3991443852020353,
+          "new_best": 1.965266649360501,
+          "new_best_flag": "",
+          "new_spread": 0.3991443852020353,
+          "new_spread_flag": "",
+          "new_median": 2.068929181865819,
+          "new_median_flag": ""
+        },
+        "Transformer-3K": {
+          "old_per_seed": [
+            3.723647161844104,
+            3.9593123586620322,
+            3.771405028548557
+          ],
+          "new_per_seed": [
+            3.723647161844104,
+            3.9593123586620322,
+            3.771405028548557
+          ],
+          "new_lower_bound": [
+            false,
+            false,
+            false
+          ],
+          "unreached": [
+            [],
+            [],
+            []
+          ],
+          "common_targets": [
+            "0.1",
+            "0.01",
+            "0.001"
+          ],
+          "old_best": 3.723647161844104,
+          "old_spread": 0.2356651968179282,
+          "new_best": 3.723647161844104,
+          "new_best_flag": "",
+          "new_spread": 0.2356651968179282,
+          "new_spread_flag": "",
+          "new_median": 3.771405028548557,
+          "new_median_flag": ""
+        },
+        "Mamba-S6-3K": {
+          "old_per_seed": [
+            4.793640460838855,
+            5.4467576828513415,
+            4.298017768453493
+          ],
+          "new_per_seed": [
+            4.793640460838855,
+            5.4467576828513415,
+            4.298017768453493
+          ],
+          "new_lower_bound": [
+            false,
+            false,
+            false
+          ],
+          "unreached": [
+            [],
+            [],
+            []
+          ],
+          "common_targets": [
+            "0.1",
+            "0.01",
+            "0.001"
+          ],
+          "old_best": 4.298017768453493,
+          "old_spread": 1.148739914397849,
+          "new_best": 4.298017768453493,
+          "new_best_flag": "",
+          "new_spread": 1.148739914397849,
+          "new_spread_flag": "",
+          "new_median": 4.793640460838855,
+          "new_median_flag": ""
+        },
+        "Mamba2-3K": {
+          "old_per_seed": [
+            4.552580733685986,
+            4.658288790606537,
+            4.687892974629257
+          ],
+          "new_per_seed": [
+            4.552580733685986,
+            4.658288790606537,
+            4.687892974629257
+          ],
+          "new_lower_bound": [
+            false,
+            false,
+            false
+          ],
+          "unreached": [
+            [],
+            [],
+            []
+          ],
+          "common_targets": [
+            "0.1",
+            "0.01",
+            "0.001"
+          ],
+          "old_best": 4.552580733685986,
+          "old_spread": 0.13531224094327143,
+          "new_best": 4.552580733685986,
+          "new_best_flag": "",
+          "new_spread": 0.13531224094327143,
+          "new_spread_flag": "",
+          "new_median": 4.658288790606537,
+          "new_median_flag": ""
+        }
+      }
+    }
+  },
+  "observed_runs": {
+    "isi": {
+      "MLP-3K": [
+        0,
+        1,
+        2
+      ],
+      "Transformer-3K": [
+        0,
+        1,
+        2
+      ],
+      "Mamba-S6-3K": [
+        0,
+        1,
+        2
+      ],
+      "Mamba2-3K": [
+        0,
+        1,
+        2
+      ]
+    },
+    "isi_complex": {
+      "MLP-3K": [
+        0,
+        1,
+        2
+      ],
+      "Transformer-3K": [
+        0
+      ]
+    }
+  },
+  "difference_count": 53,
+  "limits": "Partial data only; no conclusion about unfinished channels or overall reproduction. Historical cause of changed learned curves unresolved. Full numerical tolerance: rtol=1e-12, atol=1e-14."
+}
