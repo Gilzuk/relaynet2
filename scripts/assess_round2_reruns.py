@@ -17,7 +17,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 import numpy as np
 import scipy
-from canonical_paired_tests import paired
+from canonical_paired_tests import CANONICAL_BITS_PER_TRIAL, paired
 from penalty_common_targets import seeds_summary
 from scripts.reproduce_round2 import compare
 
@@ -42,7 +42,9 @@ def assess():
     out = {'archive_commit': ARCHIVE, 'execution_source': SOURCE,
            'analysis_environment': {'python': platform.python_version(), 'numpy': np.__version__,
                                     'scipy': scipy.__version__},
-           'paired_test': 'Two-sided Wilcoxon signed-rank, uncorrected; conditional on each trained checkpoint. No equivalence test.',
+           'paired_test': 'Two-sided Wilcoxon signed-rank on integer error-count differences; zeros omitted, method=auto, uncorrected; conditional on each trained checkpoint. No equivalence test.',
+           'paired_bits_per_trial': {'canonical': CANONICAL_BITS_PER_TRIAL,
+                                     'coded': 'n_frames * frame_info_bits from each result file'},
            'interpretation': {
                'purpose': 'Additional training replications and seed sensitivity; historical measurements retained.',
                'original_measurements': 'Numerical differences between training realizations alone do not establish that historical measurements were incorrect.',
@@ -79,7 +81,8 @@ def assess():
                 if not np.array_equal(old['results'][model]['ber_trials'], new['results'][model]['ber_trials']):
                     raise ValueError(f'Classical trials differ: {name}/{model}')
             snrs = new['snr_range']
-            pairs = {model: paired(v['ber_trials'], new['results']['DF']['ber_trials'], snrs)
+            pairs = {model: paired(v['ber_trials'], new['results']['DF']['ber_trials'], snrs,
+                                   bits_per_trial=CANONICAL_BITS_PER_TRIAL)
                      for model, v in new['results'].items() if model not in ('AF', 'DF')}
             reversals = []
             models = list(new['results'])
@@ -139,7 +142,8 @@ def assess():
                         'historical_mean': float(np.mean(old['per_trial'][snr][model])),
                         'rerun_mean': float(values.mean()), 'matched_DF_mean': float(df.mean()),
                         'DF_wins': int(np.sum(df < values)), 'ties': int(np.sum(df == values)),
-                        'paired_vs_DF': paired([values], [df], [int(snr)])[0]}
+                        'paired_vs_DF': paired([values], [df], [int(snr)],
+                                               bits_per_trial=new['n_frames'] * new['frame_info_bits'])[0]}
     seed_dir = ROOT / 'results/reproduction/20261017-rng-seed42'
     manifest = load(seed_dir / 'manifest.json')
     for artifact in manifest['artifacts']:
