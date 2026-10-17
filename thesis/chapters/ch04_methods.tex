@@ -46,7 +46,7 @@ QPSK carries data in every canonical relay comparison; BPSK carries data mainly 
 \begin{equation}\protect\phantomsection\label{eq:bpsk-mapping}{x = 1 - 2b, \quad b \in \{0, 1\} \implies x \in \{-1, +1\}}\end{equation}
 \addcontentsline{equ}{listequations}{\protect\numberline{\theequation}\quad bpsk-mapping}
 
-with hard-decision demodulation \(\hat{b} = \mathbb{1}[\hat{x} < 0]\) at the destination. QPSK is defined in Section~\ref{sec:modulation-schemes}. Both are normalized to unit average symbol energy, \(E_s = 1\), so they differ in bits per symbol rather than in transmit power: \(k = 1\) and \(2\) respectively, giving \(E_b = E_s/k\). Higher-order constellations as a relay design question are future work; 16-QAM is used in coded equal-throughput and link-adaptation controls.
+with \(\hat{b} = \mathbb{1}[\hat{x} < 0]\). This labeling is used in QPSK and the fixed-ISI training generator; the framework's BPSK modulator instead uses \(x=2b-1\), with \(\hat{b}=\mathbb{1}[\hat{x}\geq0]\). Consistent relabeling leaves expected BER unchanged, but sample-level replay must follow each driver's convention. QPSK is defined in Section~\ref{sec:modulation-schemes}. Both constellations have unit average symbol energy, \(E_s=1\), with \(k=1\) and \(2\) bits per symbol respectively, so \(E_b=E_s/k\).
 
 \subsection{Hop Model}\label{sec:hop-model}\label{sec:two-hop-relay-model}
 

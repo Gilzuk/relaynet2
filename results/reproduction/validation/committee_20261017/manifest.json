@@ -1,0 +1,46 @@
+{
+  "scope": "Submission/README audit only, not new learned training",
+  "baseline_source_commit": "5eb34ab3ed01bc9df17498358656965af2fa916b",
+  "files": {
+    "assessment.log": {
+      "sha256": "1f41d959e8c18caff82c829817c25568b0a0474f6e93b6adcee357300c3b325c",
+      "bytes": 62
+    },
+    "document-tests.log": {
+      "sha256": "a013e5907406b686401dca6c6e9221ca5a8834060fdb6ba172d2c9643b733d4e",
+      "bytes": 110
+    },
+    "email_quotes_rechecked.json": {
+      "sha256": "2fae43bdd1d75ecfa5f42dc7e5b070681277e9ea8e61656e4f060b3a2817bbc9",
+      "bytes": 6687
+    },
+    "latex-final.log": {
+      "sha256": "eacafcc5a1f2e35c4c7756b6cd7d89cb44b35e879214e24cda96d2e289c16662",
+      "bytes": 101567
+    },
+    "models.log": {
+      "sha256": "d9aeb18a531f22927a145259c31e9db880a3bfa37546278b1dc4d9f00b9a1124",
+      "bytes": 89
+    },
+    "numerical-verifier-final.log": {
+      "sha256": "3dc0e80358a32d80ab9452634cd082bf039765215bece1f3b6bd4461df7d4b6c",
+      "bytes": 2884
+    },
+    "pdf_review.json": {
+      "sha256": "eeaed4a052e838aae1d70cd4df763708c77c8544f9f432145eb19cfff1ea8186",
+      "bytes": 871
+    },
+    "provenance.log": {
+      "sha256": "ce0e4c56520d0770e96f25c28ab43836fc6e8f7428e332ab4a5b3694866cc8cc",
+      "bytes": 13597
+    },
+    "readme_validation.json": {
+      "sha256": "acfdf99b57e4bfbca03ddd4a81672fa6537a7bcc655341f01505189bdb010f02",
+      "bytes": 920
+    },
+    "readme_validation.log": {
+      "sha256": "a18d16a9829a9f6456ba2108c0f9dbedab16d0f00fdb5a15be6960b5c2d6ba8f",
+      "bytes": 550
+    }
+  }
+}
