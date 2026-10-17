@@ -1,6 +1,6 @@
 {
  "description": "SNR penalties on comparable target sets (thesis Tables 6.6, 6.7, 9.4-9.6).",
- "git_rev": "44fe834152ed880ebb3b55cbb128563f0110c144",
+ "git_rev": "4a92416ac3d0c5aef7fbb30b51d354608f550e9a",
  "rule": "worst penalty over the targets the reference curve reaches; a relay that misses one is a lower bound",
  "table_6_7": {
   "isi": {
@@ -1321,7 +1321,7 @@
    "new_spread": 0.8919083647827613,
    "new_spread_flag": ">",
    "new_median": 1.1466998265818216,
-   "new_median_flag": "",
+   "new_median_flag": ">",
    "published_spread": 0.9056300018506995
   },
   "Mamba-S6-3K": {
@@ -1672,7 +1672,7 @@
    "new_spread": 0.9081437165328445,
    "new_spread_flag": ">",
    "new_median": 1.1511293593513194,
-   "new_median_flag": "",
+   "new_median_flag": ">",
    "published_per_seed": [
     2.038608191364583,
     1.1466998265818216,

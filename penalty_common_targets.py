@@ -58,6 +58,13 @@ def seeds_summary(snr, runs, ref):
     o = [v for v in old if v == v]
     best_n, best_f = best_of_seeds(nw)
     spr_n, spr_f = spread_of_seeds(nw)
+    median = float(np.median([r["worst_db"] for r in nw])) if nw else float("nan")
+    # A censored seed below the middle entry can move above it. Inspecting
+    # only the flag of the currently middle seed would falsely call that
+    # median exact. Bounds strictly above the upper middle entry cannot
+    # change the median (including the even-sized case).
+    upper_middle = sorted(r["worst_db"] for r in nw)[len(nw) // 2] if nw else float("nan")
+    median_bounded = any(r["lower_bound"] and r["worst_db"] <= upper_middle for r in nw)
     return {
         "old_per_seed": old,
         "new_per_seed": [r["worst_db"] for r in nw],
@@ -68,8 +75,8 @@ def seeds_summary(snr, runs, ref):
         "old_spread": (max(o) - min(o)) if len(o) > 1 else float("nan"),
         "new_best": best_n, "new_best_flag": best_f,
         "new_spread": spr_n, "new_spread_flag": spr_f,
-        "new_median": float(np.median([r["worst_db"] for r in nw])) if nw else float("nan"),
-        "new_median_flag": (">" if nw and sorted(nw, key=lambda r: r["worst_db"])[len(nw) // 2]["lower_bound"] else ""),
+        "new_median": median,
+        "new_median_flag": ">" if median_bounded else "",
     }
 
 

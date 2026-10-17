@@ -28,9 +28,10 @@ centre readout the runs used. This script makes those statements checkable:
 4. it confirms from git that the run-time code and today's code agree on the
    files the runs execute.
 
-The learned relays themselves cannot be reproduced: their PyTorch weight
-initialization and batch order were never seeded, and the trained weights were
-not saved. That limit is recorded in the output rather than hidden.
+The learned relays themselves cannot be reproduced exactly: PyTorch's RNG was
+not seeded and the canonical checkpoints are absent from the archived record.
+The VAE shuffles batches with the seeded NumPy generator but draws its latent
+training noise with PyTorch. That limit is recorded rather than hidden.
 
 Output: results/canonical_run_provenance.json
 Usage:  python canonical_run_provenance.py
@@ -145,9 +146,11 @@ def main():
         "Mamba2-3K": (25_000, [5, 10, 15], 0.001, 64, "MSE", seq3),
     }
     out["relays"]["table_5_3"] = {n: relay_record(n, k3[n], *v) for n, v in three.items()}
-    out["not_reproducible"] = ("PyTorch weight initialization, batch order and the VAE's sampling noise were not "
-                               "seeded, and the trained weights were not saved, so the learned relays' columns cannot "
-                               "be regenerated; their training data are seeded (seed 42 + training SNR).")
+    out["not_reproducible"] = ("PyTorch's RNG was not seeded (weight initialization, sequence splits/dropout, "
+                               "MLP/sequence batch order and VAE latent training noise). VAE batch order uses "
+                               "seeded NumPy; evaluation decodes its latent mean. The canonical checkpoints "
+                               "are absent from the archived record, so learned columns cannot be regenerated "
+                               "exactly; training data are seeded (seed 42 + training SNR).")
     for t, rel in out["relays"].items():
         for n, r in rel.items():
             print(f"  {t} {n:15s} {r['params']:6d} params  window {r['window']:2d}  {r['windows']:6d} windows "

@@ -1,72 +1,64 @@
 #!/usr/bin/env python3
-"""Regenerate panel (a) of fig:figE6complexity (Section 6.5): per-symbol cost.
+"""Regenerate the analytical cost panel of fig:figE6complexity.
 
-The panel was previously a checked-in PNG with no generating script. It is
-analytical, so it is rebuilt here from the counting rules the thesis states:
+Count real multiplications with precomputed branch expectations, as in the
+main coded-memory tables. BPSK costs 2**L residual squares; square QAM with
+real taps separates into two real trellises, costing 2*M**(L/2). The joint
+complex trellis (2*M**L) is shown only as a diagnostic. Additions, comparisons,
+traceback and activations are excluded. The 156-multiplication line belongs
+only to the deployed 170-parameter BPSK network; it does not claim that this
+architecture maintains accuracy for the other modulation/memory pairs.
 
-  Viterbi MLSE  the joint trellis, M^L branch metrics per symbol at about
-                eight operations each -- e6_complexity_ported.viterbi_ops,
-                64 operations for BPSK with L = 3 (Section 6.5).
-  MLP           the deployed BPSK, L = 3 relay: the real 11-13-1 network,
-                170 parameters, 156 MACs plus 14 additions = 326 operations,
-                "about 330" in the text. It is drawn as a reference line,
-                not as a bar at every (M, L): Section 6.5 says this count is a
-                constant of the deployed architecture, not of the channel,
-                since the window and output size grow with L and M.
-
-The earlier PNG labelled the network "MLP-169", the composite-study I/Q relay,
-while the caption and text describe the 170-parameter relay; both cost about
-330 operations per symbol, so the bars are unchanged and only the label moves.
-Panel (b), the measured timing, is not regenerated: its timings were never
-committed (e6_complexity_ported.py writes them only when re-measured).
-
-Writes to both results/ and thesis/results/, like the other plot scripts.
+No experiment or timing is rerun. Writes to results/ and thesis/results/.
 """
-import os
-import sys
+from pathlib import Path
 
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.insert(0, ROOT)
-
-from e6_complexity_ported import mlp_ops, viterbi_ops  # noqa: E402
-from relaynet.relays import MLPRelay  # noqa: E402
-
-OUT_DIRS = [os.path.join(ROOT, "results"), os.path.join(ROOT, "thesis", "results")]
+ROOT = Path(__file__).resolve().parent.parent
 NAME = "e6_per_symbol_cost_vs_modulation_memory.png"
 GRID = [(2, 3), (2, 5), (2, 7), (4, 3), (4, 5), (16, 3), (16, 5)]
 
 
 def main():
-    vit = np.array([viterbi_ops(M, L)[2] for M, L in GRID], dtype=float)
-    mlp = MLPRelay(input_size=11, hidden_size=13, output_size=1, window_size=None, seed=0)
-    params, macs, flops = mlp_ops(mlp)
-    assert params == 170 and macs == 156, (params, macs)
-
-    fig, ax = plt.subplots(figsize=(3.0, 2.05))
+    factorized = np.array([2**L if M == 2 else 2 * int(M**0.5)**L
+                           for M, L in GRID])
+    joint = np.array([2**L if M == 2 else 2 * M**L for M, L in GRID])
+    mlp_mults = 11 * 13 + 13  # deployed real 11 -> 13 -> 1 network
+    fig, ax = plt.subplots(figsize=(3.5, 2.45))
     x = np.arange(len(GRID))
-    ax.bar(x, vit, width=0.6, color="tab:purple", label=r"Viterbi MLSE, joint trellis ($8M^{L}$)")
-    ax.axhline(flops, color="tab:blue", ls="--", lw=1.2,
-               label=f"MLP-{params}, deployed BPSK $L{{=}}3$ (~330)")
+    # Put the corrected comparison first. No duplicated BPSK diagnostic bars.
+    ax.bar(x - 0.16, factorized, width=0.32, color="#009E73",
+           label="MLSE: real / I,Q-factorized")
+    qam = np.array([M > 2 for M, _ in GRID])
+    ax.bar(x[qam] + 0.16, joint[qam], width=0.32, facecolor="none",
+           edgecolor="#777777", hatch="///", linewidth=0.7,
+           label="Joint QAM (diagnostic)")
+    ax.axhline(mlp_mults, color="#0072B2", ls="--", lw=1.0,
+               label="MLP-170, BPSK L=3 (156)")
     ax.set_yscale("log")
-    ax.set_ylim(10, 3e8)
+    ax.set_ylim(4, 4e6)
     ax.set_xticks(x)
-    ax.set_xticklabels([f"$M{{=}}{M}, L{{=}}{L}$" for M, L in GRID], rotation=35, ha="right", fontsize=6)
-    ax.tick_params(axis="y", labelsize=6.5)
-    ax.set_ylabel("Operations per symbol", fontsize=7.5)
-    ax.set_title(r"(a) Per-symbol cost vs modulation $M$, memory $L$", fontsize=8)
-    ax.grid(True, axis="y", which="major", alpha=0.3)
-    ax.legend(loc="upper left", fontsize=5.8, framealpha=0.9)
-    fig.tight_layout()
-    for d in OUT_DIRS:
-        os.makedirs(d, exist_ok=True)
-        fig.savefig(os.path.join(d, NAME), dpi=300, bbox_inches="tight")
+    ax.set_xticklabels([f"{M}, {L}" for M, L in GRID], fontsize=7)
+    ax.tick_params(axis="y", labelsize=7)
+    ax.set_xlabel("Modulation order M, tap count L", fontsize=8)
+    ax.set_ylabel("Real multiplications / symbol", fontsize=8)
+    ax.set_title("(a) Analytical arithmetic counts", fontsize=9)
+    ax.grid(True, axis="y", which="major", alpha=0.25)
+    ax.set_axisbelow(True)
+    handles, labels = ax.get_legend_handles_labels()
+    order = [1, 0, 2]  # factorized comparison before the joint diagnostic
+    ax.legend([handles[i] for i in order], [labels[i] for i in order],
+              loc="upper left", fontsize=6.8, framealpha=0.95)
+    fig.tight_layout(pad=0.5)
+    for d in (ROOT / "results", ROOT / "thesis/results"):
+        d.mkdir(exist_ok=True)
+        fig.savefig(d / NAME, dpi=300, bbox_inches="tight")
     plt.close(fig)
-    print(f"wrote {NAME}: Viterbi {vit.astype(int).tolist()}, MLP-{params} {flops} ops/symbol")
+    print(f"wrote {NAME}: primary {factorized.tolist()}, joint {joint.tolist()}, MLP {mlp_mults}")
 
 
 if __name__ == "__main__":

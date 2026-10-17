@@ -329,5 +329,5 @@
    }
   }
  },
- "not_reproducible": "PyTorch weight initialization, batch order and the VAE's sampling noise were not seeded, and the trained weights were not saved, so the learned relays' columns cannot be regenerated; their training data are seeded (seed 42 + training SNR)."
+ "not_reproducible": "PyTorch's RNG was not seeded (weight initialization, sequence splits/dropout, MLP/sequence batch order and VAE latent training noise). VAE batch order uses seeded NumPy; evaluation decodes its latent mean. The canonical checkpoints are absent from the archived record, so learned columns cannot be regenerated exactly; training data are seeded (seed 42 + training SNR)."
 }

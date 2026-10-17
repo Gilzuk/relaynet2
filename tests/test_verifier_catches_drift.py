@@ -48,7 +48,7 @@ MUTATIONS = [
     ("tbl:mmse-baseline", "ch07_unknown_and_mismatch_channels.tex",
      r"ISI (BPSK)      & $+6.48$",
      r"ISI (BPSK)      & $+9.99$"),
-    ("tbl:table44", "ch05_experiments.tex",
+    ("tbl:table44", "appendices.tex",
      r"20 & 0.001378 & \textbf{0.001064} & 0.001092",
      r"20 & 0.001378 & \textbf{0.001064} & 0.009999"),
 ]

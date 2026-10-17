@@ -941,9 +941,10 @@ def check_coded_matched(tex, rep):
     if body is None:
         return rep.skip(T, "label not found in tex")
     d = json.load(open(p)); S = d["summary"]
-    cols = {1: ["coded_df|plain"], 2: ["coded_df_m|matched"], 3: ["soft_df_m|matched"],
-            4: ["mlp_hard|plain", "mlp_hard|matched"],
-            5: ["mlp_soft|plain", "mlp_soft|matched"], 6: ["oracle|matched"]}
+    cols = {1: ["coded_df_m|matched"], 2: ["soft_df_m|matched"],
+            3: ["mlp_hard|plain", "mlp_hard|matched"],
+            4: ["mlp_soft|plain", "mlp_soft|matched"], 5: ["oracle|matched"],
+            6: ["coded_df|plain"]}
     for row in data_rows(body):
         if not row or row[0][1] is None:
             continue
@@ -1034,11 +1035,11 @@ def check_coded_matched_secondary(tex, rep):
     for row in data_rows(table_body(tex, "tbl:table40") or ""):
         if len(row) >= 6 and row[0][1] is not None and int(row[0][1]) in lt:
             r = lt[int(row[0][1])]
-            rep.cell(T, f"t40/{int(row[0][1])}/coded_matched", row[4][0], row[4][1], r["coded_qam16"])
-            rep.cell(T, f"t40/{int(row[0][1])}/gain_matched", row[5][0], row[5][1],
+            rep.cell(T, f"t40/{int(row[0][1])}/coded_matched", row[2][0], row[2][1], r["coded_qam16"])
+            rep.cell(T, f"t40/{int(row[0][1])}/gain_matched", row[3][0], row[3][1],
                      r["uncoded_qpsk"] / r["coded_qam16"])
     # Tables 42/43 matched block-DF column ("MCS, G")
-    for lab, key, col in (("tbl:table42", "unconstrained", 6), ("tbl:table43", "150", 5)):
+    for lab, key, col in (("tbl:table42", "unconstrained", 1), ("tbl:table43", "150", 1)):
         rows = {r["snr_db"]: r["blockdf"] for r in env[key]}
         for row in data_rows(table_body(tex, lab) or ""):
             if len(row) > col and row[0][1] is not None and int(row[0][1]) in rows:
@@ -1067,10 +1068,10 @@ def check_table40(tex, rep):
         if not row or row[0][1] is None:
             continue
         snr = int(row[0][1])
-        if snr not in rows or len(row) < 3:
+        if snr not in rows or len(row) < 5:
             continue
         rep.cell(T, f"{snr}dB/uncoded_qpsk", row[1][0], row[1][1], rows[snr]["uncoded_qpsk"])
-        rep.cell(T, f"{snr}dB/coded_qam16", row[2][0], row[2][1], rows[snr]["coded_qam16"])
+        rep.cell(T, f"{snr}dB/coded_qam16", row[4][0], row[4][1], rows[snr]["coded_qam16"])
     rep.finish_table(T, before)
 
 
@@ -1151,7 +1152,7 @@ def check_table41(tex, rep):
 def check_table42(tex, rep):
     """Link-adaptation envelope (tbl:table42) vs coded_rate_adaptation.json.
 
-    Column 6, "C (Shannon)", is not simulated -- it is the closed-form
+    Column 7, "C (Shannon)", is not simulated -- it is the closed-form
     ergodic Rayleigh capacity, an upper-bound sanity ceiling on goodput.
     """
     T = "tbl:table42"; before = rep.checked
@@ -1165,15 +1166,15 @@ def check_table42(tex, rep):
         if not row or row[0][1] is None:
             continue
         snr = int(row[0][1])
-        if snr not in env["blockdf"] or len(row) < 5:
+        if snr not in env["blockdf"] or len(row) < 6:
             continue
         rb, rd = env["blockdf"][snr], env["denoise"][snr]
-        if row[2][1] is not None:
-            rep.cell(T, f"{snr}dB/blockdf_goodput", row[2][0], row[2][1], rb["goodput"])
-        if row[4][1] is not None:
-            rep.cell(T, f"{snr}dB/denoise_goodput", row[4][0], row[4][1], rd["goodput"])
-        if len(row) >= 6 and row[5][1] is not None:
-            rep.cell(T, f"{snr}dB/capacity", row[5][0], row[5][1],
+        if row[5][1] is not None:
+            rep.cell(T, f"{snr}dB/blockdf_goodput", row[5][0], row[5][1], rb["goodput"])
+        if row[3][1] is not None:
+            rep.cell(T, f"{snr}dB/denoise_goodput", row[3][0], row[3][1], rd["goodput"])
+        if len(row) >= 7 and row[6][1] is not None:
+            rep.cell(T, f"{snr}dB/capacity", row[6][0], row[6][1],
                      ergodic_rayleigh_capacity(snr))
     rep.finish_table(T, before)
 
@@ -1190,13 +1191,13 @@ def check_table43(tex, rep):
         if not row or row[0][1] is None:
             continue
         snr = int(row[0][1])
-        if snr not in snap or len(row) < 5:
+        if snr not in snap or len(row) < 6:
             continue
         rb, rd = snap[snr]["blockdf"], snap[snr]["denoise"]
-        if row[2][1] is not None:
-            rep.cell(T, f"{snr}dB/blockdf_goodput", row[2][0], row[2][1], rb["goodput"])
-        if row[4][1] is not None:
-            rep.cell(T, f"{snr}dB/denoise_goodput", row[4][0], row[4][1], rd["goodput"])
+        if row[5][1] is not None:
+            rep.cell(T, f"{snr}dB/blockdf_goodput", row[5][0], row[5][1], rb["goodput"])
+        if row[3][1] is not None:
+            rep.cell(T, f"{snr}dB/denoise_goodput", row[3][0], row[3][1], rd["goodput"])
     rep.finish_table(T, before)
 
 
@@ -1769,7 +1770,10 @@ def check_scalar_map_prose(tex, rep):
     i = tex.find("it was measured under the matched protocol~\\coderef{scalar-map}")
     if i < 0:
         return rep.skip(T, "scalar-MAP sentence not found in tex")
-    stop = tex.find("temporal context its window spans", i)
+    # The closing interpretation can change without changing the seven
+    # measured values. Stop at the paragraph boundary instead of requiring
+    # the old, overly causal wording.
+    stop = tex.find("\n\n", i)
     if stop < 0:
         return rep.skip(T, "scalar-MAP paragraph does not reach its closing clause")
     seg = tex[i:stop]
@@ -2546,7 +2550,7 @@ def check_timing_and_mmse_median_prose(tex, rep):
     if os.path.exists(tp):
         pb = np.load(tp, allow_pickle=True).item()["panel_b"]
         ratios = [v[2] for v in pb.values()]
-        for m in re.finditer(r"MLP is \$([\d.]+)\$--\$([\d.]+)\\times\$ faster", tex):
+        for m in re.finditer(r"(?:MLP|vectorized matmul) is \$([\d.]+)\$--\$([\d.]+)\\times\$ faster", tex):
             rep.cell(T, "speedup low", m.group(1), float(m.group(1)), min(ratios))
             rep.cell(T, "speedup high", m.group(2), float(m.group(2)), max(ratios))
     m = re.search(r"\(\$([\d.]+)\$ to \$([\d.]+)\$~dB at the median initialization\)", tex)

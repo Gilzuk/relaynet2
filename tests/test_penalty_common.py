@@ -42,3 +42,25 @@ def test_best_and_spread_honour_bounds():
     assert sflag == ">" and spread >= 0.0
     assert spread_of_seeds([bounded, bounded])[1] == "nan"
     assert spread_of_seeds([exact, exact]) == (0.0, "")
+
+
+def test_median_is_bounded_when_a_lower_ranked_censored_seed_can_pass_it():
+    import json
+    from pathlib import Path
+    from penalty_common_targets import seeds_summary
+
+    # In this recorded run the middle substituted value is exact, but the
+    # lower-ranked censored seed can pass it. Both odd and even ensembles
+    # must retain that uncertainty.
+    data = json.loads((Path(__file__).resolve().parents[1] /
+                       "results/seed_spread_architectures.json").read_text())
+    runs = [r["ber"] for r in data["architectures"]["Transformer-3K"]["runs"]]
+    summary = seeds_summary(data["snr_db"], runs, data["df_ber"])
+    assert summary["new_median_flag"] == ">"
+    exact_run = next(run for run, bounded in zip(runs, summary["new_lower_bound"]) if not bounded)
+    assert seeds_summary(data["snr_db"], runs + [exact_run], data["df_ber"])["new_median_flag"] == ">"
+    assert seeds_summary(data["snr_db"], [exact_run] * 3, data["df_ber"])["new_median_flag"] == ""
+    bounded_run = next(run for run, value, bounded in
+                       zip(runs, summary["new_per_seed"], summary["new_lower_bound"])
+                       if bounded and value > summary["new_median"])
+    assert seeds_summary(data["snr_db"], [exact_run, exact_run, bounded_run], data["df_ber"])["new_median_flag"] == ""
