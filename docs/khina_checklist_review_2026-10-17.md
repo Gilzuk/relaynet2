@@ -11,7 +11,7 @@ reads every chapter against it.
 - Where the thesis declares a test, that test was applied.
 
 **Results.**
-- **Findings and fixes.** 22 findings. 19 are fixed in commits `6b9160d` (code and data) and `d0f4073` (thesis). Three judgement items are left for the author.
+- **Findings and fixes.** 22 findings. 19 are fixed in commits `6b9160d` (code and data) and `d0f4073` (thesis). Findings 20–22 were subsequently resolved in the local independent follow-up below.
 - **Verifier.** 873 cells, 0 inconsistencies. A paired-test check was added, and the Table 6.6 checks now measure every column against one common reference.
 - **Tests and build.** 351 tests pass. The PDF builds with 0 errors and 0 overfull boxes, at 120 countable pages.
 
@@ -53,9 +53,9 @@ reads every chapter against it.
 | 17 | K2 | Ch. 3, Gap 1 | It cited Mamba and Mamba-2 as the compared state space models, without saying the implementations here are simplified | Fixed |
 | 18 | K9 | App. 9.6 | A garbled "which … which" sentence, introduced by the script-reference edit | Fixed |
 | 19 | Rule | Table 9.7 | The "Study (script)" column named scripts directly | Fixed. The column now holds ledger references |
-| 20 | K3 | Fig. 6.7(a) | The figure plots the joint-trellis count. The caption states the factorized count and how far the plot overstates it | **Judgement.** Redrawing the figure with factorized bars would make it consistent with Tables 6.8 and 6.9 |
-| 21 | K3 | Tables 5.10, 5.12, 5.13 | The matched results are the last column, while the text leads with them | **Judgement.** Moving the columns is cosmetic; the text and captions already lead with the matched results |
-| 22 | K1 | Table 9.5 caption | "On five of the nine channels the median spread is comparable to or larger than the entire effect of varying model size." Not rechecked after the comparable-target recomputation | **Judgement.** The medians moved by at most 0.07 dB (ISI complex 0.332 → 0.404), so the statement very probably stands, but it was not re-derived |
+| 20 | K3 | Fig. 6.7(a) | The figure plots the joint-trellis count. The caption states the factorized count and how far the plot overstates it | **Fixed locally.** Figure 6.7 now leads with factorized multiplication counts, with the joint trellis marked as a diagnostic |
+| 21 | K3 | Tables 5.10, 5.12, 5.13 | The matched results are the last column, while the text leads with them | **Fixed locally.** Matched columns come first and obsolete winner emphasis is corrected; the table verifier follows the reordered columns |
+| 22 | K1 | Table 9.5 caption | "On five of the nine channels the median spread is comparable to or larger than the entire effect of varying model size." Not rechecked after the comparable-target recomputation | **Fixed in the independent follow-up.** Removed the unverified five-of-nine comparison; the caption now describes configuration-dependent initialization variability without asserting an uncomputed size-effect count |
 
 ## Checked and found consistent
 
@@ -80,3 +80,18 @@ The following were checked against the data or the code and are left unchanged:
 
 The Table 6.6 recomputation needs no new data. The verifier recomputes the equalizer entries from the stored
 equalizer BER curves and the size sweep's MLSE curve.
+
+## Independent follow-up against PR head e58e94d (2026-10-17)
+
+The latest PR already corrects the per-axis normalization, checkpoint tolerance, matched MLP scope, numerical architecture ordering and coded budgets. Those fixes were retained. The following remaining corrections are prepared locally; the author explicitly requires confirmation before any push.
+
+- Use a block normalization operator in the formal objective, including the separate I/Q gains and the Hybrid's block switch. Limit the Gaussian smoothness argument to the uncoded slicer and exclude zero-energy and switching boundaries.
+- Describe the optimizer options left at library defaults, with the missing historical library version explicit.
+- Replace the nonexistent release-tag claim with the existing immutable experimental snapshot `e58e94d9d6136963ef56a9b3586f5b437d8075fd`.
+- Reduce the two main unweighted diagnostic subsections to one paragraph each; preserve all five numerical tables and the soft-decision plot in Appendix 9.7. Bring matched constraint-length and high-SNR checks into the principal subsection.
+- Remove the unverified five-of-nine size-effect comparison. A VAE spread bounded below by 0.156 dB cannot be claimed to be below 0.18 dB.
+- Redraw the loss-versus-penalty plot from the stored BER curves using common targets, marking its three censored penalties as lower bounds. Remove the correlation interpretation that treated those bounds as measured penalties. No experiments were rerun.
+
+An independent exact signed-rank calculation on integer bit-error differences confirms the canonical DF-ahead counts (MLP 7/11, VAE 7/11, Hybrid 1/11), with no learned relay ahead of DF. The table verifier checks 873 values with zero inconsistencies. The local test run passes 347 tests and skips four requiring the unavailable optional PyTorch/Mamba-2 module; this is distinct from the earlier author's full-environment test claim.
+
+The final examiner-style pass also corrected the remaining causality and look-ahead claims, removed the censored-loss correlation from the discussion, qualified the regeneration and budget conclusions, and resolved both presentation choices. The five diagnostic tables and three plots are preserved in Appendix 9.7. See `docs/final_submission_review_2026-10-17.md` for the acceptance matrix and final verdict.

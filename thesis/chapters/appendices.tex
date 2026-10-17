@@ -32,7 +32,7 @@ MSE (MLP only), Adam lr=0.01, trained at 2/4/6~dB &
 PyTorch (CPU) \\
 \hline
 VAE &
-Encoder--decoder latent model (7$\to$8$\to$1) &
+Encoder $7\to32\to16\to(\mu,\log\sigma^2)_8$; decoder $8\to16\to32\to1$ &
 $\beta$-VAE ($\beta=0.1$), Adam lr=$10^{-3}$ &
 1{,}777 &
 PyTorch (CPU) \\
@@ -41,25 +41,25 @@ cGAN (WGAN-GP) &
 Conditional GAN (generator + critic) &
 WGAN-GP, Adam lr=$10^{-4}$ &
 2{,}946 &
-PyTorch (CUDA) \\
+Not evaluated \\
 \hline
 Transformer &
 2-layer encoder, 4 heads, $d_{\text{model}}=32$ &
 MSE, Adam lr=$10^{-3}$; 15\% held out, lowest-training-loss epoch kept &
 17{,}697 &
-PyTorch (CUDA/CPU) \\
+PyTorch (CPU) \\
 \hline
 Mamba-S6 &
-Selective SSM, 2 S6 layers &
+Simplified SSM, 2 S6 layers &
 MSE, Adam lr=$10^{-3}$; 15\% held out, lowest-training-loss epoch kept &
 24{,}001 &
-PyTorch (CUDA/CPU) \\
+PyTorch (CPU) \\
 \hline
 Mamba-2 SSD &
-Selective SSM with SSD kernel (2 layers) &
+Simplified SSD kernel (2 layers) &
 MSE, Adam lr=$10^{-3}$, clip=1.0; 15\% held out, lowest-training-loss epoch kept &
 26{,}179 &
-PyTorch (CUDA) \\
+PyTorch (CPU) \\
 \hline
 \end{tabularx}
 
@@ -69,7 +69,7 @@ PyTorch (CUDA) \\
 
 \section{Reproducibility}\label{sec:appendix-c-software-architecture}
 
-\subsection{Testing} The simulation framework carries 351 automated pytest tests in 25 test modules, covering channels, modulation, coding, relay strategies, weight save and load, simulation, statistics and the verification tooling. In the revision environment (Python 3.11.17, PyTorch 2.14) the full suite passed. The four tests that need the Mamba-2 module are skipped when it cannot be imported.
+\subsection{Testing} Automated pytest tests cover channels, modulation, coding, relay strategies, weight persistence, simulation, statistics and verification. Record the environment and skipped tests when repeating the suite; four tests require the optional Mamba-2 module. The canonical runs did not retain their historical library versions.
 
 \subsection{Reproducibility} Evaluation seeds are controlled for source-bit and noise generation. The canonical training never seeds PyTorch's weight initialization (Section~\ref{sec:training-protocol}), so the original checkpoints cannot be retrained exactly; the later replicated sweeps report training-seed variation explicitly.
 
@@ -106,7 +106,7 @@ Ref. & Result (where used) & Code $\rightarrow$ other result files \\
 \codeentry{verifier} & Table verifier: declared cells against their data & \url{verify_thesis_tables.py} \\
 \codeentry{ksweep} & Coded block-DF $K$-sweep and coded learned relays (Tables~\ref{tbl:table34}, \ref{tbl:table40}) & \url{coded_df_experiment.py}; \url{coded_k_sweep_qpsk.py}; \url{coded_k_sweep_qam16.py}; \url{coded_learned_relay.py}; \url{coded_mamba_relay.py} $\rightarrow$ \url{coded_df_experiment.json} \\
 \codeentry{matched} & Matched decoder metrics (Table~\ref{tbl:coded-matched}) & \url{coded_matched_metrics.py} \\
-\codeentry{matched-reruns} & Matched reruns of the secondary coded studies and the coded size sweep (Tables~\ref{tbl:table38}, \ref{tbl:table44}, \ref{tbl:table40}, \ref{tbl:table42}, \ref{tbl:table43})$^{b}$ & the scripts of C8 and C12--C17; \url{coded_min_size_matched.py}; \url{coded_matched_envelopes.py} $\rightarrow$ \url{*_matched.json} \\
+\codeentry{matched-reruns} & Matched reruns of the secondary coded studies and the coded size sweep (Tables~\ref{tbl:table38}, \ref{tbl:table44}, \ref{tbl:table40}, \ref{tbl:table42}, \ref{tbl:table43})$^{b}$ & \coderef{ksweep}, \coderef{err-mech}, \coderef{reliable}, \coderef{throughput}, \coderef{rate-adapt} and \coderef{capacity}; \url{coded_min_size_matched.py}; \url{coded_matched_envelopes.py} $\rightarrow$ \url{*_matched.json} \\
 \codeentry{high-budget} & High-SNR paired re-test (Table~\ref{tbl:table37}) & \url{coded_high_budget_test.py} \\
 \codeentry{err-mech} & Relay-error mechanism (Table~\ref{tbl:table38}) & \url{coded_error_mechanism.py} \\
 \codeentry{reliable} & Reliable-decoding regime (Table~\ref{tbl:table44}) & \url{coded_reliable_regime.py} \\
@@ -130,17 +130,17 @@ Ref. & Result (where used) & Code $\rightarrow$ other result files \\
 \codeentry{blind} & Blind regime and its intervals (Fig.~\ref{fig:figE6blind}, Sec.~\ref{sec:blind-channel}) & \url{e6_blind_ported.py}; \url{e6_blind_intervals.py} $\rightarrow$ \url{e6_blind_ported_results.npy} \\
 \codeentry{mmse} & MMSE equalizer baseline, BER curves and its own MLSE reference (Table~\ref{tbl:mmse-baseline}) & \url{mmse_equalizer.py} \\
 \codeentry{seq-memory} & Sequence models on channels with memory, reruns and readouts (Table~\ref{tbl:seq-on-memory}) & \url{seq_models_on_memory*.py} $\rightarrow$ \url{seq_models_on_memory_repeat_probe.jsonl} \\
-\codeentry{complexity} & Measured inference time (Fig.~\ref{fig:figE6complexity}) & \url{e6_complexity_ported.py} $\rightarrow$ \url{e6_complexity_ported_results.npy} \\
+\codeentry{complexity} & Arithmetic and measured inference time (Fig.~\ref{fig:figE6complexity}) & \url{scripts/plot_e6_complexity_cost.py}; \url{e6_complexity_ported.py} $\rightarrow$ \url{e6_complexity_ported_results.npy} \\
 \codeentry{latency} & Decision delay, arithmetic and memory (Tables~\ref{tbl:joint-latency}, \ref{tbl:joint-memory}, Eq.~\eqref{eq:mac-crossover}) & \url{joint_latency_memory.py}; \url{joint_memory_precision.py}; \url{unified_latency_axis.py} \\
 \codeentry{af-block} & AF block length and conventional AF (Sec.~\ref{sec:low-snr-advantage-of-neural-relays-h1-confirmed}) & \url{af_block_and_conventional.py} \\
 \codeentry{minsize} & Minimum relay size and its initialization spreads (Sec.~\ref{sec:appendix-f-minimum-size}, Tables~\ref{tbl:mmse-baseline}, \ref{tbl:table-minsize}, \ref{tbl:seed-spread}) & \url{mlp_min_size_all_channels.py}; \url{mlp_min_size_bisect.py}; \url{coded_min_size.py} \\
-\codeentry{seed-spread} & Architecture initialization spreads (Table~\ref{tbl:seed-spread-3k}, Figs.~\ref{fig:transformer-seed-curves}, \ref{fig:transformer-loss-penalty}, Sec.~\ref{sec:appendix-claim-verification}) & \url{seed_spread_architectures.py}; \url{seed_spread_native_architectures.py}; \url{transformer_instability.py} \\
+\codeentry{seed-spread} & Architecture initialization spreads (Table~\ref{tbl:seed-spread-3k}, Figs.~\ref{fig:transformer-seed-curves}, \ref{fig:transformer-loss-penalty}, Sec.~\ref{sec:appendix-claim-verification}) & \url{seed_spread_architectures.py}; \url{seed_spread_native_architectures.py}; \url{transformer_instability.py}; \url{plot_seed_stability.py} \\
 \codeentry{ber-metrics} & SNR-penalty definition (Sec.~\ref{sec:appendix-g-channel-specs}) & \url{ber_metrics.py} \\
 \codeentry{common-targets} & Penalties on the common target set (Tables~\ref{tbl:seq-on-memory}, \ref{tbl:table-minsize}--\ref{tbl:seed-spread-3k}) & \url{penalty_common_targets.py} \\
 \end{longtable}
 }
 
-{\footnotesize $^{a}$Table~\ref{tbl:table2}: \texttt{--exp 7.10}, code of commit \texttt{b4059e6}, data committed as \texttt{69a470c}; Table~\ref{tbl:table8}: \texttt{--exp 7.8}, code \texttt{4cf9753}, data \texttt{d27fcf7}; both with \texttt{--retrain} \texttt{--skip-relays cgan} \texttt{--num-trials 10} \texttt{--bits-per-trial 10000} \texttt{--snr-min 0} \texttt{--snr-max 20} \texttt{--snr-step 2} (Section~\ref{sec:training-protocol}). $^{b}$Run with \texttt{CODED\_METRIC=matched}, 30 trials on the published seeds.\par}
+{\footnotesize $^{a}$Table~\ref{tbl:table2}: \texttt{--exp 7.10}, code of commit \texttt{b4059e6}, data committed as \texttt{69a470c}; Table~\ref{tbl:table8}: \texttt{--exp 7.8}, code \texttt{4cf9753}, data \texttt{d27fcf7}; both with \texttt{--retrain} \texttt{--skip-relays cgan} \texttt{--num-trials 10} \texttt{--bits-per-trial 10000} \texttt{--snr-min 0} \texttt{--snr-max 20} \texttt{--snr-step 2} (Section~\ref{sec:training-protocol}). $^{b}$The secondary simulation reruns use \texttt{CODED\_METRIC=matched} and \texttt{CODED\_TRIALS=30}. The coded size sweep instead uses ten trials of 100 frames, rerunning block DF only and retaining the learned curves with unweighted destination decoding. Adaptation envelopes are derived from the saved curves. C10 uses \texttt{CMM\_TRIALS=30}; the unweighted C12 and C15 drivers do not implement the metric switch.\par}
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
@@ -216,7 +216,7 @@ coded & code & --- & --- & --- & 18p w1 & 18p w1 & 18p w1 \\
 
 \begin{table}[htbp]
 \centering
-\caption[Across-initialization spread]{Spread in SNR penalty between the best and worst of three initializations at an identical configuration, summarized over all configurations swept on each channel. The reader should observe that on five of the nine channels the median spread is comparable to or larger than the entire effect of varying model size, so a single-initialization size comparison on those channels measures the draw rather than the architecture. Configurations in which no seed reaches every target the comparator reaches have no defined spread and are not counted; three ISI (complex) spreads are lower bounds, and so are the statistics marked $\geq$ (the earlier rule gave that row a maximum of $3.182$~dB). Penalties follow the definition in Appendix~\ref{sec:appendix-g-channel-specs}}\label{tbl:seed-spread}
+\caption[Across-initialization spread]{Spread in SNR penalty between the best and worst of three initializations at an identical configuration, summarized over all configurations swept on each channel. The median spread varies substantially across channels; a single-initialization size comparison does not separate initialization variability from the effect of architecture size. Configurations in which no seed reaches every target the comparator reaches have no defined spread and are not counted; three ISI (complex) spreads are lower bounds, and so are the statistics marked $\geq$ (the earlier rule gave that row a maximum of $3.182$~dB). Penalties follow the definition in Appendix~\ref{sec:appendix-g-channel-specs}}\label{tbl:seed-spread}
 \begin{tabular}{lrrrr}
 \toprule
 Channel & Configs & Median (dB) & 90th pct.\ (dB) & Max (dB) \\
@@ -238,7 +238,7 @@ All           & 148 & 0.176 & ${\geq}1.226$ & ${\geq}1.555$ \\
 
 \begin{table}[htbp]
 \centering
-\caption[Across-initialization spread at the 3K budget]{Spread in SNR penalty against symbol-wise DF between the best and worst of three initializations, for the equal-budget architectures on the canonical channel. The reader should observe the Transformer row: its spread is at least five times the roughly $0.18$~dB that H4's $4.1\%$ high-SNR architecture spread corresponds to, so a single run of that architecture cannot resolve the effect H4 claims. Every other architecture is comfortably inside it. Three seeds on one machine; Section~\ref{sec:sequence-on-memory} finds that such spreads change between machines. Values marked $\geq$ are initializations that do not reach $10^{-2}$ by 20~dB, where DF does; they and the spreads they enter are lower bounds. Penalties follow the definition in Appendix~\ref{sec:appendix-g-channel-specs}}\label{tbl:seed-spread-3k}
+\caption[Across-initialization spread at the 3K budget]{Spread in SNR penalty against symbol-wise DF between the best and worst of three initializations, for the equal-budget architectures on the canonical channel. The Transformer spread is bounded below by $0.892$~dB, already exceeding the roughly $0.18$~dB scale associated with H4's $4.1\%$ high-SNR BER spread. The VAE spread is also only a lower bound, so it cannot be placed below that scale. The three remaining architectures have measured ranges below it. Three seeds on one machine; Section~\ref{sec:sequence-on-memory} finds that such spreads change between machines. Values marked $\geq$ are initializations that do not reach $10^{-2}$ by 20~dB, where DF does; they and the spreads they enter are lower bounds. Penalties follow the definition in Appendix~\ref{sec:appendix-g-channel-specs}}\label{tbl:seed-spread-3k}
 \begin{tabular}{lrrr}
 \toprule
 Architecture & Params & Per-seed penalty vs DF (dB) & Spread (dB) \\
@@ -263,7 +263,7 @@ Eight Transformer initializations are shown in the following figures: seven clus
 \begin{figure}[htbp]
 \centering
 \pandocbounded{\includegraphics[width=0.78\linewidth,height=0.34\textheight,keepaspectratio]{results/transformer_loss_vs_penalty.png}}
-\caption[Training loss against SNR penalty]{Final training loss against SNR penalty for the eight Transformer initializations and the four-seed Mamba-S6 control. The correlation over all eight seeds is $r=+0.998$, but that figure is the outlier's leverage: among the seven runs that converge it is $r=-0.38$ ($p=0.41$), so loss identifies the failure and carries no information about relative quality once training has succeeded. Three runs, the failing one included, miss $10^{-2}$ by 20~dB, so their values are lower bounds}\label{fig:transformer-loss-penalty}
+\caption[Training loss against SNR penalty]{Final training loss against SNR penalty for eight Transformer initializations and the four-seed Mamba-S6 control. Three Transformer runs miss $10^{-2}$ by 20~dB; open markers and upward arrows show their penalty lower bounds, with the low-loss cluster enlarged. One run has much higher final loss. Correlations obtained by treating the bounds as measured penalties do not establish a relationship between training loss and the true common-target penalty, or validate loss as a screening rule}\label{fig:transformer-loss-penalty}
 \end{figure}
 
 
@@ -331,7 +331,7 @@ Coded memory (\coderef{latency}) & Rate-$1/2$, $K=3$ convolutional code, QPSK; $
 
 \paragraph{Pilots.} Pilot symbols are the first $N_p$ transmitted symbols of a trial or block, which are known to the estimator. The estimator fits three complex taps by least squares to a linear model, so it does not model the amplifier. In the fixed-composite study ($N_p = 200$) the decoded pilot region is scored together with the payload; in the pilot-budget sweep it is excluded, and in its block-length panel every block of $L$ symbols carries $10$ pilots and its own channel draw.
 
-\paragraph{Windows and their boundaries.} The learned relays of the uncoded Chapter~\ref{sec:unknown-channels} studies read a window of $W = 11$ samples centered on the decided symbol (the coded-memory study sweeps $W$ from $1$ to $21$, the size sweep from $1$ to $7$, and the two Mamba relays of Section~\ref{sec:sequence-on-memory} use only the causal half of theirs); on complex channels the $I$ and $Q$ windows are concatenated into $2W$ inputs. At both ends of a trial the window is completed with zeros. The canonical MLP of Chapter~\ref{sec:experiments} repeats the edge sample instead.
+\paragraph{Windows and their boundaries.} The learned relays of the uncoded Chapter~\ref{sec:unknown-channels} studies read a window of $W = 11$ samples centered on the decided symbol (the coded-memory study sweeps $W$ from $1$ to $21$, the size sweep from $1$ to $7$, and the two Mamba relays of Section~\ref{sec:sequence-on-memory} use only the causal half of theirs); on complex channels the $I$ and $Q$ windows are concatenated into $2W$ inputs. The NumPy MLPs complete trial-end windows with zeros. The sequence-on-memory study zero-pads training windows but repeats edge samples in the inherited inference wrappers (Section~\ref{sec:sequence-on-memory}); canonical inference also repeats the edge sample.
 
 \paragraph{DBPSK.} The source bits $x_i \in \{\pm1\}$ are differentially encoded as $s_i = s_{i-1}x_i$. The learned relay is trained with the information bit $x_i$ as its target, so it estimates $x_i$ directly rather than the differential symbol; its real output, scaled to unit power, is forwarded as a BPSK signal, and the destination decides on the sign of its real part without differential decoding. The DF relay performs differential detection, $\hat{x}_i = \operatorname{sign}\operatorname{Re}\{y_i y_{i-1}^{*}\}$, and forwards $\hat{x}_i$; AF forwards the complex observation and the destination performs the differential detection. The first bit, the differential reference, is excluded from scoring, except for the learned relay in the fixed-composite study, where it is scored (one bit per $10^{5}$).
 
@@ -346,3 +346,154 @@ Coded memory (\coderef{latency}) & Rate-$1/2$, $K=3$ convolutional code, QPSK; $
 \item Tables~\ref{tbl:seed-spread} and~\ref{tbl:seed-spread-3k}: the largest minus the smallest per-seed penalty, a lower bound when a seed is bounded.
 \end{itemize}
 They are recomputed from the stored per-seed curves~\coderef{common-targets}; the same script reproduces the earlier values, which kept only the targets both curves reach. The fixed-ISI comparison with genie MLSE is reported per target ($10^{-1}$ to $10^{-4}$), computed from the matched-protocol data~\coderef{isi-penalty}.
+
+
+\section{Coded Unweighted-Pipeline Diagnostics}\label{sec:appendix-coded-diagnostics}
+
+These historical comparisons retain the unweighted decoder metrics; the principal matched results and their scope are in Section~\ref{sec:coded-matched-metrics}. Unless a caption specifies otherwise, each point uses 100 trials of $100{,}000$ information bits. The Mamba relay appears only in the unweighted study.
+
+\subsection{Original and paired comparisons}
+
+\begin{longtable}[]{@{}lcccccc@{}}
+\caption[Coded block-DF vs.\ uncoded DF and coded-aware learned relays]{Coded block-DF vs.\ uncoded symbol-wise DF and coded-aware learned relays, canonical QPSK/Rayleigh, rate-1/2 $K{=}3$ code. ``coded-AF'' forwards the noisy codeword unmodified (the relay does not decode), isolating the code's own gain from any relay intelligence. Decoder metrics are unweighted; Table~\ref{tbl:coded-matched} gives the matched MLP comparison; Mamba was not rerun}\label{tbl:table34}\tabularnewline
+\toprule\noalign{}
+SNR (dB) & uncoded DF & coded AF & coded DF & MLP-coded & Mamba-coded \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+SNR (dB) & uncoded DF & coded AF & coded DF & MLP-coded & Mamba-coded \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & \textbf{0.3337} & 0.4902 & 0.4204 & 0.4439 & 0.4505 \\
+4 & \textbf{0.2216} & 0.4468 & 0.2229 & 0.2974 & 0.3214 \\
+8 & 0.1205 & 0.2722 & \textbf{0.0638} & 0.1010 & 0.1174 \\
+12 & 0.0560 & 0.0539 & \textbf{0.0154} & 0.0214 & 0.0226 \\
+16 & 0.0239 & 0.0099 & 0.0042 & 0.0045 & \textbf{0.0041} \\
+20 & 0.0098 & 0.0020 & 0.0014 & 0.0011 & \textbf{0.0010} \\
+\end{longtable}
+
+\begin{longtable}[]{@{}lccccc@{}}
+\caption[Paired re-measurement of the high-SNR points]{Paired re-measurement of the two high-SNR points of Table~\ref{tbl:table34}, 100 paired trials $\times$ 100{,}000 information bits. ``Diff'' is the mean per-trial BER difference against coded-DF (negative favors the learned relay); ``W/L'' counts trials won/lost (one tie, MLP-coded at 20~dB); $p$ is Wilcoxon signed-rank. Decoder metrics are unweighted; with matched metrics the ordering reverses for the MLP read-outs only; Mamba was not rerun (Table~\ref{tbl:coded-matched})}\label{tbl:table37}\tabularnewline
+\toprule\noalign{}
+SNR & Relay & BER & Diff vs.\ coded-DF & W/L & $p$ \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+SNR & Relay & BER & Diff vs.\ coded-DF & W/L & $p$ \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+16 dB & coded-DF & 0.004245 & --- & --- & --- \\
+ & MLP-coded & 0.004437 & $+0.000192$ & 23/77 & $<10^{-4}$ \\
+ & Mamba-coded & \textbf{0.004124} & $-0.000121$ & 68/32 & $<10^{-4}$ \\
+\hline
+20 dB & coded-DF & 0.001362 & --- & --- & --- \\
+ & MLP-coded & 0.001066 & $-0.000295$ & 99/0 & $<10^{-4}$ \\
+ & Mamba-coded & \textbf{0.000967} & $-0.000395$ & 100/0 & $<10^{-4}$ \\
+\end{longtable}
+
+At equal $E_s/N_0$, unweighted coded block DF beats uncoded symbol-wise DF from 8~dB upward, by $5.7\times$ at 16~dB and $7.2\times$ at 20~dB, at about half the information throughput. The equal-throughput comparison is in Section~\ref{sec:coded-latency-throughput}.
+
+\subsection{Error locations and the higher-SNR extension}
+
+Table~\ref{tbl:table38} distinguishes relay-output errors from those that survive destination decoding.
+
+\begin{longtable}[]{@{}lccccc@{}}
+\caption[Where the errors go: relay output versus destination output]{Where the errors go, 100 trials $\times$ 500 frames. ``Relay symbol ER'' counts symbols the relay put on the air that differ from the transmitted ones; ``repaired'' is the fraction of those that do not survive the destination's decoder. The oracle relay forwards the clean codeword and so isolates the hop-2-only floor. Rows marked ``matched'' use $|h|^{2}$-weighted relay and destination metrics, and ``weighted dest.'' the $|h_2|^{2}$ destination metric for the learned relay; those rows use 30 trials (Section~\ref{sec:coded-matched-metrics})}\label{tbl:table38}\tabularnewline
+\toprule\noalign{}
+SNR & Relay & Relay symbol ER & Repaired & Final BER \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+SNR & Relay & Relay symbol ER & Repaired & Final BER \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+16 dB & coded-DF & 0.00505 & 15.7\% & 0.004257 \\
+ & MLP-coded & 0.01065 & \textbf{57.9\%} & 0.004487 \\
+ & oracle & --- & --- & 0.002140 \\
+ & coded-DF, matched & $\mathbf{1.6\times10^{-5}}$ & 34.8\% & $\mathbf{1.0\times10^{-5}}$ \\
+ & MLP-coded, weighted dest. & 0.01060 & 36.2\% & 0.006768 \\
+ & oracle, matched & --- & --- & $5.0\times10^{-6}$ \\
+\hline
+20 dB & coded-DF & 0.00182 & 24.7\% & 0.001369 \\
+ & MLP-coded & 0.00385 & \textbf{73.0\%} & 0.001039 \\
+ & oracle & --- & --- & 0.000668 \\
+ & coded-DF, matched & $\mathbf{1.0\times10^{-6}}$ & 32.7\% & $\mathbf{6.7\times10^{-7}}$ \\
+ & MLP-coded, weighted dest. & 0.00385 & 37.1\% & 0.002422 \\
+ & oracle, matched & --- & --- & 0 errors \\
+\end{longtable}
+
+With unweighted metrics, the tested $K\in\{3,5,7\}$ generators give higher BER for larger $K$ across 0--8~dB and rounded means $0.0014$, $0.0015$, $0.0012$ at 20~dB~\coderef{ksweep}. The matched sweep reverses that trend above 0~dB (Section~\ref{sec:coded-matched-metrics}).
+
+Under the unweighted metric at 20~dB, destination frame errors occur in $19.98\%$ of coded-DF frames and $10.64\%$ even with an oracle relay. The higher-SNR extension below includes a second MLP trained on $5$--$30$~dB. Its two MLP columns are distinct training instances, not the hard/soft read-outs of Table~\ref{tbl:coded-matched}.
+
+\begingroup\footnotesize
+\begin{longtable}[]{@{}lccccc@{}}
+\caption[Block-DF into the reliable-decoding regime]{Block-DF into the reliable-decoding regime: the rate-1/2 $K{=}3$ code and canonical QPSK/Rayleigh link of Table~\ref{tbl:table34}, with unweighted decoder metrics, extended up the SNR axis, $100$ trials $\times$ $1{,}000$ frames ($20{,}000{,}000$ information bits) per point. ``MLP (5/10/15)'' uses that table's training recipe; ``MLP (5--30)'' is the same architecture retrained on $5$--$30$~dB, bracketing all but the $32$~dB point, hence a different instance whose $20$~dB entry need not reproduce it. Bold marks the best \emph{relay} in each row (both marked where they tie); the oracle forwards the clean codeword and is the single-decode floor they are measured against, not a competitor}\label{tbl:table44}\tabularnewline
+\toprule\noalign{}
+SNR (dB) & coded-DF & MLP (5/10/15) & MLP (5--30) & oracle & coded-DF FER \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+SNR (dB) & coded-DF & MLP (5/10/15) & MLP (5--30) & oracle & coded-DF FER \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+20 & 0.001378 & \textbf{0.001064} & 0.001092 & 0.000703 & 0.1998 \\
+24 & 0.000485 & \textbf{0.000308} & 0.000318 & 0.000253 & 0.0804 \\
+28 & 0.000187 & \textbf{0.000105} & \textbf{0.000105} & 0.000092 & 0.0324 \\
+32 & 0.000069 & \textbf{0.000037} & \textbf{0.000037} & 0.000034 & 0.0122 \\
+\end{longtable}
+\endgroup
+
+\subsection{Hard and soft read-outs}
+
+BCJR supplies the soft block-DF symbol weights under the implemented metric. For the MLP, $\sum_k p_k s_k$ replaces the hard argmax without retraining. These scores were not tested for calibration. The nominal-variance soft block-DF point at 20~dB is retained so that the table and figure describe the same run; the separate sensitivity result is in the footnote.
+
+\begin{longtable}[]{@{}lccccc@{}}
+\caption[Soft- versus hard-decision relaying on the coded link]{Soft- versus hard-decision relaying, canonical QPSK/Rayleigh, rate-1/2 $K{=}3$, 100 paired trials $\times$ 100{,}000 information bits. The MLP hard/soft pair shares one set of trained weights and differs only in the read-out. The oracle relay forwards the clean codeword, giving the hop-2-only floor. Both block-DF variants are marked at 8 and 12~dB, where no difference is resolved. Decoder metrics are unweighted; Table~\ref{tbl:coded-matched} repeats the comparison with matched metrics}\label{tbl:table39}\tabularnewline
+\toprule\noalign{}
+SNR (dB) & hard block-DF & soft block-DF & MLP hard & MLP soft & oracle \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+SNR (dB) & hard block-DF & soft block-DF & MLP hard & MLP soft & oracle \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 0.4208 & \textbf{0.4150} & 0.4443 & 0.4343 & 0.3022 \\
+4 & 0.2231 & \textbf{0.2218} & 0.2969 & 0.2761 & 0.1278 \\
+8 & \textbf{0.0636} & \textbf{0.0636} & 0.1008 & 0.0878 & 0.0327 \\
+12 & \textbf{0.01537} & \textbf{0.01537} & 0.02142 & 0.01768 & 0.00768 \\
+16 & 0.004222 & 0.004222 & 0.004403 & \textbf{0.003633} & 0.002105 \\
+20 & 0.001354 & 0.002348$^{\dagger}$ & 0.001056 & \textbf{0.000912} & 0.000682 \\
+\multicolumn{6}{p{0.94\linewidth}}{\footnotesize $^{\dagger}$Nominal assumed noise variance, the same run as the rest of the table and as Figure~\ref{fig:fig57}; it is miscalibrated at this SNR (Section~\ref{sec:coded-soft-decision}). With the assumed variance doubled, a separate sensitivity sweep gives $0.001376$, not resolved from hard block-DF's $0.001375$ in that sweep. Neither variant is the matched metric of Section~\ref{sec:coded-matched-metrics}.} \\
+\end{longtable}
+
+\begin{figure}[htbp]
+\centering
+\pandocbounded{\includegraphics[width=0.84\linewidth,height=0.31\textheight,keepaspectratio]{results/coded_soft_decision.png}}
+\caption[Soft- versus hard-decision relaying: BER curves]{Soft- and hard-decision coded relaying under the implemented (unweighted) metrics, with 100 paired trials; Table~\ref{tbl:coded-matched} gives the separate 30-trial matched-metric comparison. The MLP soft constellation average has lower measured BER than its hard read-out at every sampled SNR. The soft block-DF curve uses the nominal noise variance, so its 20~dB point is the miscalibrated value discussed in the text. Neither the curves nor the repair counts isolate a causal explanation for the high-SNR ordering. The oracle forwards the clean codeword}\label{fig:fig57}
+\end{figure}
+
+\subsection{Unweighted rate-adaptation and readiness diagnostics}
+The original curves below illustrate the superseded unweighted pipeline. The principal matched comparisons are Tables~\ref{tbl:table42} and~\ref{tbl:table43}.
+
+\begin{figure}[htbp]
+\centering
+\pandocbounded{\includegraphics[width=0.84\linewidth,height=0.31\textheight,keepaspectratio]{results/coded_rate_adaptation.png}}
+\caption[Link-adaptation envelope]{The envelope of Table~\ref{tbl:table42} (colored) against every individual fixed MCS on the block-DF relay (grey), which is the visual case for adaptation: the envelope tracks the upper hull of the grey curves rather than any single one of them, switching MCS as SNR crosses each rate's operating threshold. The curves use the unweighted decoder metric, under which the two relay strategies' envelopes are visually almost the same curve; with the matched metric, block-DF's envelope is far higher (matched column of Table~\ref{tbl:table42})}\label{fig:fig58}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\pandocbounded{\includegraphics[width=0.84\linewidth,height=0.31\textheight,keepaspectratio]{results/coded_latency_capacity.png}}
+\caption[Goodput vs. buffer-readiness budget]{Best achievable goodput as a function of the idealized buffer-readiness budget $L_{\max}$, at four SNRs (16, 20, 24, 28~dB). Each curve is a step function under this accounting. The omitted two-hop transmission time prevents interpreting this axis as end-to-end latency. The curves use the unweighted decoder metric; the matched block-DF values at a 150-symbol budget are in the matched column of Table~\ref{tbl:table43}}\label{fig:fig59}
+\end{figure}

@@ -1,17 +1,17 @@
-# Hebrew abstract: one sentence re-drafted 2026-10-17, awaiting the author's approval (earlier text approved 2026-10-13/14)
+# Hebrew abstract: technical wording synchronized 2026-10-17; final author reading pending
 
 **Status 2026-10-13: approved.** The author reviewed the rendered Hebrew abstract (page xii of the
 #175 build) and the two changes of the committee-audit round below, and approved them ("Hebrew ok").
 The earlier notes below are kept as the record of how the text was drafted.
 
-**Update 2026-10-17 (Khina round 2) — drafted, NOT yet approved by the author.** The English abstract's
-complexity and coded sentences changed (factorized MLSE first; the coded reversal scoped to the learned
-MLP relays), and the Hebrew paragraph was re-drafted to mirror them. The drafted Hebrew reads:
-"גלאי \textenglish{MLSE} המופרד במדויק לרכיבי \textenglish{I/Q} דורש פחות פעולות כפל מממסר זה עד שישה
-מקדמים ופי \textenglish{1.23} יותר בשבעה, ושומר על שיעור שגיאה נמוך יותר; ספירת הטרליס המשותף שמומש,
-החוצה את עלות הממסר בין שלושה לחמישה מקדמים, היא כלי אבחון של מימוש זה בלבד." and, in the coded
-sentence, "יתרונם של ממסרי ה־\textenglish{MLP} הנלמדים". Everything else in the Hebrew abstract is the
-approved text. It renders on page xii (PDF page 134 of 136).
+**Update 2026-10-17 (final correction requested by the author: “Fix”).** The Hebrew and English abstracts now state the same technical claims:
+- Exact I/Q factorization is scoped to the studied real-tap channel.
+- At seven taps the factorized count is **1.23 times** the relay's count. The ambiguous Hebrew “פי 1.23 יותר” is removed; the text says “פי 1.23 ממספר הכפלים של הממסר”.
+- The coded reversal concerns the evaluated **hard and soft MLP outputs**. Decoder metrics are described as reliability-weighted, and the BCJR control is explicitly QPSK and relay-output only.
+- The Hebrew canonical-channel sentence now includes both independence and identical distribution. “מבוסס חלון” replaces the awkward “ממוסגר־חלון”.
+- Both abstracts keep the joint-trellis comparison as a short implementation diagnostic. The detailed crossover remains in the body.
+
+These are wording corrections to existing findings, not new experimental results. The earlier English/Hebrew scope and the author's October approvals remain part of the record below. The new wording has been technically checked and rendered; this note does **not** record a new author approval of the final wording. The author should read the final Hebrew abstract before submission. It is printed page xii (PDF page 133 of 135).
 
 **Update 2026-10-14 (red-team findings, R2) — approved by the author on 2026-10-14 ("Approve Hebrew").** One number in the
 approved text changed, mirroring the English abstract: the MLP's 0 dB margin against conventional

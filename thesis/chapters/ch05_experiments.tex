@@ -60,7 +60,7 @@ Minimum relay size and the capacity hypothesis H3, with three initializations pe
 
 \textbf{Goal:} Evaluate the classical and AI-based relay strategies on the canonical setup of this thesis.
 
-\textbf{Configuration.} SISO on both hops; QPSK; i.i.d.\ Rayleigh fast fading (canonical); one-tap zero-forcing equalization per hop, with no ISI equalizer (the channel is memoryless); six learned relays: supervised (MLP, Hybrid), generative (VAE) and sequence (Transformer and the simplified Mamba-S6 and Mamba-2 SSD of Section~\ref{sec:relay-strategies}), each with a tanh output; training and run settings as executed are in Table~\ref{tbl:canonical-runs}.
+\textbf{Configuration.} SISO on both hops; QPSK; i.i.d.\ Rayleigh fast fading (canonical); one-tap zero-forcing equalization per hop, with no ISI equalizer (the channel is memoryless); six learned relays: supervised (MLP, Hybrid), generative (VAE) and sequence (Transformer and the simplified Mamba-S6 and Mamba-2 SSD of Section~\ref{sec:relay-strategies}), with tanh heads (the three sequence models then add the raw centre sample); training and run settings as executed are in Table~\ref{tbl:canonical-runs}.
 
 \textbf{Conclusion:} On the canonical Rayleigh channel, AI relays match but do not surpass symbol-wise DF: DF achieves the lowest or tied-lowest BER at essentially every SNR point, including the low-SNR regime, while the best neural relays (MLP, Hybrid, VAE) stay within $0.004$ of it in BER, are never resolvably better than it, and clearly outperform AF. This supports H1 (some AI relays beat AF at low SNR) and, in its matching sense, H2: at $\geq 6$~dB DF matches or beats every learned relay on the canonical channel, with zero trainable parameters. The AF column is the block-normalized implementation of Section~\ref{sec:evaluated-configurations}. A conventional finite-power, variable-gain AF with coherent destination processing reaches $0.3418$, $0.2450$ and $0.1437$ at 0, 4 and 8~dB, so against it the MLP's 0~dB margin is $0.007$ rather than $0.073$; a fixed-gain AF does better at 0~dB ($0.3384$), leaving $0.003$ (Section~\ref{sec:low-snr-advantage-of-neural-relays-h1-confirmed}).
 
@@ -160,203 +160,68 @@ Remark~\ref{rem:df-terminology} cautions that the symbol-wise DF results ``shoul
 
 \subsection{Matched Decoder Metrics: The Principal Coded Comparison}\label{sec:coded-matched-metrics}
 
-The zero-forced observation $y/h = x + n/h$ has noise variance $1/(2\gamma|h|^{2})$ per real axis, which changes from symbol to symbol. The matched metric weights each squared residual by $|h|^{2}$, which is the same as decoding $|y - hx|^{2}$ on the unequalized observation, and it is the comparison this section reports as its result. The comparisons of Tables~\ref{tbl:table34}, \ref{tbl:table37} and~\ref{tbl:table39} are rerun with it~\coderef{matched}. The relay Viterbi decoder weights its branch metrics by $|h_1|^{2}$; the soft relay's BCJR uses the per-symbol variance $1/(2\gamma|h_1|^{2})$; and the destination weights by $|h_2|^{2}$, or for AF by the end-to-end variance, which requires both hops' gains. The learned relays evaluated are the hard and soft read-outs of the 756-parameter MLP, unchanged and still given no channel gain; only their destination metric changes, and both destination metrics are reported. The Mamba-coded relay of the unweighted study was not rerun with matched metrics, so every statement below concerns the two MLP read-outs. The run uses the first 30 of the 100 paired trials of Table~\ref{tbl:table39}, each of $100{,}000$ information bits. Its unweighted rows reproduce that table's per-trial values exactly. The 30-trial budget was retained after inspecting running means, so the paired tests below are exploratory; the within-trial differences isolate the metric change.
+The zero-forced observation $y/h = x + n/h$ has noise variance $1/(2\gamma|h|^{2})$ per real axis, which changes from symbol to symbol. The matched metric weights each squared residual by $|h|^{2}$, which is the same as decoding $|y - hx|^{2}$ on the unequalized observation, and it is the comparison this section reports as its result. The hard/soft MLP and classical comparisons are rerun with it~\coderef{matched}; Appendix~\ref{sec:appendix-coded-diagnostics} retains the original unweighted results, including the unmatched Mamba comparison. The relay Viterbi decoder weights its branch metrics by $|h_1|^{2}$; the soft relay's BCJR uses the per-symbol variance $1/(2\gamma|h_1|^{2})$; and the destination weights by $|h_2|^{2}$, or for AF by the end-to-end variance, which requires both hops' gains. The learned relays evaluated are the hard and soft read-outs of the 756-parameter MLP, unchanged and still given no channel gain; only their destination metric changes, and both destination metrics are reported. The Mamba-coded relay of the unweighted study was not rerun with matched metrics, so every statement below concerns the two MLP read-outs. The run uses the first 30 of the 100 paired trials of Table~\ref{tbl:table39}, each of $100{,}000$ information bits. Its unweighted rows reproduce that table's per-trial values exactly. The 30-trial budget was retained after inspecting running means, so the paired tests below are exploratory; the within-trial differences isolate the metric change.
 
-{\setlength{\tabcolsep}{3pt}\begin{longtable}[]{@{}>{\raggedright\arraybackslash}p{0.06\linewidth}>{\raggedright\arraybackslash}p{0.11\linewidth}>{\raggedright\arraybackslash}p{0.13\linewidth}>{\raggedright\arraybackslash}p{0.13\linewidth}>{\raggedright\arraybackslash}p{0.17\linewidth}>{\raggedright\arraybackslash}p{0.17\linewidth}>{\raggedright\arraybackslash}p{0.11\linewidth}@{}}
+{\setlength{\tabcolsep}{3pt}\begin{longtable}[]{@{}>{\raggedright\arraybackslash}p{0.06\linewidth}>{\raggedright\arraybackslash}p{0.13\linewidth}>{\raggedright\arraybackslash}p{0.13\linewidth}>{\raggedright\arraybackslash}p{0.17\linewidth}>{\raggedright\arraybackslash}p{0.17\linewidth}>{\raggedright\arraybackslash}p{0.11\linewidth}>{\raggedright\arraybackslash}p{0.11\linewidth}@{}}
 \caption[Coded relaying with reliability-weighted metrics]{Coded relaying with reliability-weighted (matched) decoder metrics, canonical QPSK/Rayleigh, rate-1/2 $K{=}3$, 30 paired trials $\times$ 100{,}000 information bits. ``Unweighted'' repeats the published pipeline on the same draws. For the two MLP read-outs, ``plain / weighted'' gives the unweighted and the $|h_2|^{2}$-weighted destination metric; the Mamba relay was not rerun. At 16 and 20~dB, matched block DF makes 30 and 3 errors in $3\times10^{6}$ bits, and the oracle 13 and 2}\label{tbl:coded-matched}\tabularnewline
 \toprule\noalign{}
-SNR (dB) & Block DF, unweighted & Block DF, matched & Soft block DF, matched & MLP hard, plain / weighted & MLP soft, plain / weighted & Oracle, matched \\
+SNR (dB) & Block DF, matched & Soft block DF, matched & MLP hard, plain / weighted & MLP soft, plain / weighted & Oracle, matched & Block DF, unweighted \\
 \midrule\noalign{}
 \endfirsthead
 \toprule\noalign{}
-SNR (dB) & Block DF, unweighted & Block DF, matched & Soft block DF, matched & MLP hard, plain / weighted & MLP soft, plain / weighted & Oracle, matched \\
+SNR (dB) & Block DF, matched & Soft block DF, matched & MLP hard, plain / weighted & MLP soft, plain / weighted & Oracle, matched & Block DF, unweighted \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-0 & 0.4207 & \textbf{0.2685} & 0.2845 & 0.4436 / 0.4080 & 0.4332 / 0.3960 & 0.1603 \\
-4 & 0.2231 & \textbf{0.0473} & 0.0553 & 0.2966 / 0.2341 & 0.2760 / 0.2131 & 0.0244 \\
-8 & 0.0638 & \textbf{0.003235} & 0.003502 & 0.1005 / 0.0787 & 0.0875 / 0.0619 & 0.001588 \\
-12 & 0.0154 & \textbf{0.000203} & 0.000206 & 0.0214 / 0.0224 & 0.0177 / 0.0154 & $9.5\times10^{-5}$ \\
-16 & 0.004127 & {\boldmath$1.0\times10^{-5}$} & {\boldmath$1.0\times10^{-5}$} & 0.004359 / 0.006797 & 0.003559 / 0.004311 & $4.3\times10^{-6}$ \\
-20 & 0.001356 & {\boldmath$1.0\times10^{-6}$} & {\boldmath$1.0\times10^{-6}$} & 0.001050 / 0.002377 & 0.000889 / 0.001449 & $6.7\times10^{-7}$ \\
+0 & 0.2685 & 0.2845 & 0.4436 / 0.4080 & 0.4332 / 0.3960 & 0.1603 & 0.4207 \\
+4 & 0.0473 & 0.0553 & 0.2966 / 0.2341 & 0.2760 / 0.2131 & 0.0244 & 0.2231 \\
+8 & 0.003235 & 0.003502 & 0.1005 / 0.0787 & 0.0875 / 0.0619 & 0.001588 & 0.0638 \\
+12 & 0.000203 & 0.000206 & 0.0214 / 0.0224 & 0.0177 / 0.0154 & $9.5\times10^{-5}$ & 0.0154 \\
+16 & {\boldmath$1.0\times10^{-5}$} & {\boldmath$1.0\times10^{-5}$} & 0.004359 / 0.006797 & 0.003559 / 0.004311 & $4.3\times10^{-6}$ & 0.004127 \\
+20 & {\boldmath$1.0\times10^{-6}$} & {\boldmath$1.0\times10^{-6}$} & 0.001050 / 0.002377 & 0.000889 / 0.001449 & $6.7\times10^{-7}$ & 0.001356 \\
 \end{longtable}}
 
 \textbf{With matched metrics, block DF leads at every tested SNR.} Matched hard block DF has lower BER than both MLP read-outs at all six SNRs from 0 to 20~dB, in all 30 paired trials at each point (Wilcoxon $p<10^{-5}$), whichever destination metric the MLP is given. At 8~dB it reaches $0.0032$ against the better MLP's $0.0619$. At 20~dB it makes 3 errors in $3\times10^{6}$ bits ($1.0\times10^{-6}$), against $2{,}667$ for the soft MLP ($8.9\times10^{-4}$), and stays within a factor of $2.4$ of the clean-codeword oracle at every SNR. Soft block DF with the matched BCJR is no better than hard block DF: it is worse at 0--8~dB and not resolved from it at 12--20~dB.
 
 \textbf{The weighted destination metric does not help the MLP read-outs at high SNR.} Weighting by $|h_2|^{2}$ is matched to the second hop only. It lowers the MLP read-outs' BER below 12~dB but raises it from 12~dB for the hard MLP and from 16~dB for both, because a wrong relay symbol received over a strong second hop is then trusted. A destination metric that also models relay errors, and a learned relay given $|h_1|$, were not evaluated. Either way the MLP read-outs remain far behind matched block DF.
 
-\textbf{Consequences for this section.} The published coded tables used an unweighted metric, under which the learned relays appeared ahead of block DF at high SNR. Changing only the metric reverses that ordering at every SNR for the two MLP read-outs, so the published comparisons established an advantage over a mismatched decoding pipeline, not a disadvantage of decoding and re-encoding at the relay. They are kept below as a diagnostic (Section~\ref{sec:coded-unweighted}). The other coded studies of this chapter, the error-location diagnostic (Table~\ref{tbl:table38}), the constraint-length sweep, the reliable-decoding regime (Table~\ref{tbl:table44}), the equal-throughput, rate-adaptation and readiness-budget studies (Tables~\ref{tbl:table40}, \ref{tbl:table42} and~\ref{tbl:table43}) and the coded size sweep, were rerun with the matched metric on their published seeds (30 trials~\coderef{matched-reruns}), and their matched results are given first where each appears. The coded-memory study of Section~\ref{sec:joint-latency-memory} has no fading, so per-symbol reliability weights do not arise there.
+\textbf{Consequences for this section.} The published coded tables used an unweighted metric, under which the learned relays appeared ahead of block DF at high SNR. Changing only the metric reverses that ordering at every SNR for the two MLP read-outs, so the published comparisons established an advantage over a mismatched decoding pipeline, not a disadvantage of decoding and re-encoding at the relay. The short diagnostic discussion below points to the full unweighted tables in Appendix~\ref{sec:appendix-coded-diagnostics}. The other coded studies of this chapter, the error-location diagnostic (Table~\ref{tbl:table38}), the constraint-length sweep, the reliable-decoding regime (Table~\ref{tbl:table44}), the equal-throughput, rate-adaptation and readiness-budget studies (Tables~\ref{tbl:table40}, \ref{tbl:table42} and~\ref{tbl:table43}) and the coded size sweep, were rerun with the matched metric on their published seeds (30 trials~\coderef{matched-reruns}), and their matched results are given first where each appears. The coded-memory study of Section~\ref{sec:joint-latency-memory} has no fading, so per-symbol reliability weights do not arise there.
+
+\paragraph{Constraint-length and higher-SNR checks.} With the matched metric (\coderef{matched-reruns}, 30 trials) larger $K$ helps from 4~dB upward: at 8~dB the BER is $0.0033$, $0.00069$ and $6.7\times10^{-5}$ for $K=3,5,7$. At 16 and 20~dB, $K=5,7$ make no errors in $3\times10^6$ bits; these are finite-budget observations, not zero expected BER. At 0~dB larger $K$ remains worse. In the higher-SNR $K=3$ rerun (30 trials of $2\times10^5$ bits), matched block DF and the matched oracle each make one bit error at 20~dB and none at 24--32~dB. Both MLP training variants remain at $1.1\times10^{-3}$ to $3.7\times10^{-5}$ under their better destination metric. Appendix~\ref{sec:appendix-coded-diagnostics} retains the unweighted diagnostic results.
 
 \subsection{Diagnostic: The Published Unweighted Pipeline}\label{sec:coded-unweighted}
 
-The tables of this subsection and the next are the published comparisons, with unweighted decoder metrics at the relay and the destination and the Mamba-coded relay included. They show what the metric mismatch did; the results of the section are those of Section~\ref{sec:coded-matched-metrics}.
-
-\begin{longtable}[]{@{}lcccccc@{}}
-\caption[Coded block-DF vs.\ uncoded DF and coded-aware learned relays]{Coded block-DF vs.\ uncoded symbol-wise DF and coded-aware learned relays, canonical QPSK/Rayleigh, rate-1/2 $K{=}3$ code. ``coded-AF'' forwards the noisy codeword unmodified (the relay does not decode), isolating the code's own gain from any relay intelligence. Decoder metrics are unweighted; Table~\ref{tbl:coded-matched} repeats the comparison with matched metrics}\label{tbl:table34}\tabularnewline
-\toprule\noalign{}
-SNR (dB) & uncoded DF & coded AF & coded DF & MLP-coded & Mamba-coded \\
-\midrule\noalign{}
-\endfirsthead
-\toprule\noalign{}
-SNR (dB) & uncoded DF & coded AF & coded DF & MLP-coded & Mamba-coded \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-0 & \textbf{0.3337} & 0.4902 & 0.4204 & 0.4439 & 0.4505 \\
-4 & \textbf{0.2216} & 0.4468 & 0.2229 & 0.2974 & 0.3214 \\
-8 & 0.1205 & 0.2722 & \textbf{0.0638} & 0.1010 & 0.1174 \\
-12 & 0.0560 & 0.0539 & \textbf{0.0154} & 0.0214 & 0.0226 \\
-16 & 0.0239 & 0.0099 & 0.0042 & 0.0045 & \textbf{0.0041} \\
-20 & 0.0098 & 0.0020 & 0.0014 & 0.0011 & \textbf{0.0010} \\
-\end{longtable}
-
-\textbf{Coded-DF is stronger over part of the tested range.} At equal $E_s/N_0$, coded block-DF beats uncoded symbol-wise DF from 8~dB upward, by $5.7\times$ in BER at 16~dB and $7.2\times$ at 20~dB. The rate-1/2 code also reduces information throughput; Section~\ref{sec:coded-latency-throughput} examines an approximately equal-rate comparison. At 0 and 4~dB, coded AF and coded DF are worse than uncoded DF, with the crossover between 4 and 8~dB for this code, metric and frame.
-
-\textbf{The larger coded relay does not consistently improve BER.} Both learned relays trail coded-DF at 4--8~dB, and the simplified Mamba-S6 has higher measured BER than the 756-parameter MLP there (Table~\ref{tbl:table34}), while at higher SNR it can be lower.
-
-\textbf{Paired high-SNR comparisons resolve different orderings.} Table~\ref{tbl:table37} uses 100 paired trials with the same source bits and channel draws for each relay. At 20~dB both learned relays have lower BER than coded-DF in at least 99 trials, with Wilcoxon $p<10^{-4}$. At 16~dB Mamba-coded wins 68 trials, whereas MLP-coded wins 23 and loses 77; both paired comparisons give $p<10^{-4}$. With matched metrics the ordering reverses at both points for the MLP read-outs; the Mamba relay was not rerun (Section~\ref{sec:coded-matched-metrics}).
-
-\begin{longtable}[]{@{}lccccc@{}}
-\caption[Paired re-measurement of the high-SNR points]{Paired re-measurement of the two high-SNR points of Table~\ref{tbl:table34}, 100 paired trials $\times$ 100{,}000 information bits. ``Diff'' is the mean per-trial BER difference against coded-DF (negative favors the learned relay); ``W/L'' counts trials won/lost (one tie, MLP-coded at 20~dB); $p$ is Wilcoxon signed-rank. Decoder metrics are unweighted; with matched metrics the ordering reverses (Table~\ref{tbl:coded-matched})}\label{tbl:table37}\tabularnewline
-\toprule\noalign{}
-SNR & Relay & BER & Diff vs.\ coded-DF & W/L & $p$ \\
-\midrule\noalign{}
-\endfirsthead
-\toprule\noalign{}
-SNR & Relay & BER & Diff vs.\ coded-DF & W/L & $p$ \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-16 dB & coded-DF & 0.004245 & --- & --- & --- \\
- & MLP-coded & 0.004437 & $+0.000192$ & 23/77 & $<10^{-4}$ \\
- & Mamba-coded & \textbf{0.004124} & $-0.000121$ & 68/32 & $<10^{-4}$ \\
-\hline
-20 dB & coded-DF & 0.001362 & --- & --- & --- \\
- & MLP-coded & 0.001066 & $-0.000295$ & 99/0 & $<10^{-4}$ \\
- & Mamba-coded & \textbf{0.000967} & $-0.000395$ & 100/0 & $<10^{-4}$ \\
-\end{longtable}
-
-\textbf{The metric mismatch is sufficient to produce the MLP ordering.} Table~\ref{tbl:table38} records fewer relay-output symbol errors for coded-DF but a lower destination repair fraction than for the learned relay, which decode--re-encode forwarding of wrong codewords could explain. The matched rows show why that explanation does not apply once the metric is matched: the matched relay's symbol error rate is $1.6\times10^{-5}$ at 16~dB and $1.0\times10^{-6}$ at 20~dB, so there is almost nothing for re-encoding to lock in.
-
-\begin{longtable}[]{@{}lccccc@{}}
-\caption[Where the errors go: relay output versus destination output]{Where the errors go, 100 trials $\times$ 500 frames. ``Relay symbol ER'' counts symbols the relay put on the air that differ from the transmitted ones; ``repaired'' is the fraction of those that do not survive the destination's decoder. The oracle relay forwards the clean codeword and so isolates the hop-2-only floor. Rows marked ``matched'' use $|h|^{2}$-weighted relay and destination metrics, and ``weighted dest.'' the $|h_2|^{2}$ destination metric for the learned relay; those rows use 30 trials (Section~\ref{sec:coded-matched-metrics})}\label{tbl:table38}\tabularnewline
-\toprule\noalign{}
-SNR & Relay & Relay symbol ER & Repaired & Final BER \\
-\midrule\noalign{}
-\endfirsthead
-\toprule\noalign{}
-SNR & Relay & Relay symbol ER & Repaired & Final BER \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-16 dB & coded-DF & 0.00505 & 15.7\% & 0.004257 \\
- & MLP-coded & 0.01065 & \textbf{57.9\%} & 0.004487 \\
- & oracle & --- & --- & 0.002140 \\
- & coded-DF, matched & $\mathbf{1.6\times10^{-5}}$ & 34.8\% & $\mathbf{1.0\times10^{-5}}$ \\
- & MLP-coded, weighted dest. & 0.01060 & 36.2\% & 0.006768 \\
- & oracle, matched & --- & --- & $5.0\times10^{-6}$ \\
-\hline
-20 dB & coded-DF & 0.00182 & 24.7\% & 0.001369 \\
- & MLP-coded & 0.00385 & \textbf{73.0\%} & 0.001039 \\
- & oracle & --- & --- & 0.000668 \\
- & coded-DF, matched & $\mathbf{1.0\times10^{-6}}$ & 32.7\% & $\mathbf{6.7\times10^{-7}}$ \\
- & MLP-coded, weighted dest. & 0.00385 & 37.1\% & 0.002422 \\
- & oracle, matched & --- & --- & 0 errors \\
-\end{longtable}
-
-\paragraph{Constraint-length sweep.} With the unweighted metric, the tested $K\in\{3,5,7\}$ generators show higher BER for larger $K$ across 0--8~dB, and rounded means of $0.0014$, $0.0015$ and $0.0012$ at 20~dB~\coderef{ksweep}. With the matched metric (\coderef{matched-reruns}, 30 trials) larger $K$ helps from 4~dB upward, as code theory predicts: at 8~dB the BER is $0.0033$, $0.00069$ and $6.7\times10^{-5}$ for $K=3,5,7$, and $K=5$ and $K=7$ make no errors at 16 and 20~dB in $3\times10^{6}$ bits. Only at 0~dB, below the codes' thresholds, does larger $K$ remain worse; the unweighted sweep's ordering reflects the metric, not the codes.
-
-\paragraph{Higher-SNR evaluation.} Table~\ref{tbl:table44} extends the same short code to higher SNR; it does not approach the capacity-achieving code of Remark~\ref{rem:df-terminology}, since at 20~dB destination frame errors occur in $19.98\%$ of coded-DF frames and $10.64\%$ even with an oracle relay. A second learned relay is retrained on $5$--$30$~dB.
-
-\begingroup\footnotesize
-\begin{longtable}[]{@{}lccccc@{}}
-\caption[Block-DF into the reliable-decoding regime]{Block-DF into the reliable-decoding regime: the rate-1/2 $K{=}3$ code and canonical QPSK/Rayleigh link of Table~\ref{tbl:table34}, extended up the SNR axis, $100$ trials $\times$ $1{,}000$ frames ($20{,}000{,}000$ information bits) per point. ``MLP (5/10/15)'' uses that table's training recipe; ``MLP (5--30)'' is the same architecture retrained on $5$--$30$~dB, bracketing all but the $32$~dB point, hence a different instance whose $20$~dB entry need not reproduce it. Bold marks the best \emph{relay} in each row (both marked where they tie); the oracle forwards the clean codeword and is the single-decode floor they are measured against, not a competitor}\label{tbl:table44}\tabularnewline
-\toprule\noalign{}
-SNR (dB) & coded-DF & MLP (5/10/15) & MLP (5--30) & oracle & coded-DF FER \\
-\midrule\noalign{}
-\endfirsthead
-\toprule\noalign{}
-SNR (dB) & coded-DF & MLP (5/10/15) & MLP (5--30) & oracle & coded-DF FER \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-20 & 0.001378 & \textbf{0.001064} & 0.001092 & 0.000703 & 0.1998 \\
-24 & 0.000485 & \textbf{0.000308} & 0.000318 & 0.000253 & 0.0804 \\
-28 & 0.000187 & \textbf{0.000105} & \textbf{0.000105} & 0.000092 & 0.0324 \\
-32 & 0.000069 & \textbf{0.000037} & \textbf{0.000037} & 0.000034 & 0.0122 \\
-\end{longtable}
-\endgroup
-
-\textbf{With matched metrics the higher-SNR gap closes.} Rerun with matched metrics (\coderef{matched-reruns}, 30 trials of $2\times10^{5}$ bits), coded-DF makes one bit error in $6\times10^{6}$ bits at 20~dB and none at 24--32~dB, exactly as many as the matched oracle, while both MLP read-outs remain at $1.1\times10^{-3}$ to $3.7\times10^{-5}$ under their better destination metric. Under the unweighted metric of the table, coded-DF's BER-to-oracle ratios across 20--32~dB are $1.96$, $1.92$, $2.03$ and $2.00$, against $1.55$, $1.26$, $1.14$ and $1.08$ for the retrained MLP, whose 636 frame errors at 32~dB against the oracle's 607 in 100{,}000 frames are not resolved ($z=+0.8$). That gap is a property of the unweighted metric, not of block-DF.
+The original unweighted comparison included the MLP and simplified Mamba-S6 (Tables~\ref{tbl:table34} and~\ref{tbl:table37}, Appendix~\ref{sec:appendix-coded-diagnostics}). At 20~dB both have lower BER than unweighted block DF in at least 99 of 100 paired trials; at 16~dB Mamba wins 68, while the MLP wins 23 and loses 77. This describes that mismatched pipeline. Matched decoding reverses the ordering for the two evaluated MLP read-outs; no matched Mamba result is available. The error-location diagnostic (Table~\ref{tbl:table38}) likewise does not establish a general penalty for decoding and re-encoding: matched block DF makes almost no relay-output errors at these SNRs.
 
 \subsection{Soft-Decision Relaying under the Unweighted Metrics (Diagnostic)}\label{sec:coded-soft-decision}
 
-Table~\ref{tbl:table39} compares hard read-out with soft constellation averages. At the classical relay, BCJR replaces Viterbi and supplies symbol weights under the implemented metric; those weights need not be calibrated under fading. For the MLP, the soft average $\sum_k p_k s_k$ replaces the hard argmax without retraining, but requires the weighted-sum computation. Its hard/soft pair shares the same weights, isolating the implemented read-out change rather than proving that the scores are exact posteriors. The paired experiment also includes a clean-codeword oracle relay.
-
-\begin{longtable}[]{@{}lccccc@{}}
-\caption[Soft- versus hard-decision relaying on the coded link]{Soft- versus hard-decision relaying, canonical QPSK/Rayleigh, rate-1/2 $K{=}3$, 100 paired trials $\times$ 100{,}000 information bits. The MLP hard/soft pair shares one set of trained weights and differs only in the read-out. The oracle relay forwards the clean codeword, giving the hop-2-only floor. Both block-DF variants are marked at 8 and 12~dB, where no difference is resolved. Decoder metrics are unweighted; Table~\ref{tbl:coded-matched} repeats the comparison with matched metrics}\label{tbl:table39}\tabularnewline
-\toprule\noalign{}
-SNR (dB) & hard block-DF & soft block-DF & MLP hard & MLP soft & oracle \\
-\midrule\noalign{}
-\endfirsthead
-\toprule\noalign{}
-SNR (dB) & hard block-DF & soft block-DF & MLP hard & MLP soft & oracle \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-0 & 0.4208 & \textbf{0.4150} & 0.4443 & 0.4343 & 0.3022 \\
-4 & 0.2231 & \textbf{0.2218} & 0.2969 & 0.2761 & 0.1278 \\
-8 & \textbf{0.0636} & \textbf{0.0636} & 0.1008 & 0.0878 & 0.0327 \\
-12 & \textbf{0.01537} & \textbf{0.01537} & 0.02142 & 0.01768 & 0.00768 \\
-16 & 0.004222 & 0.004222 & 0.004403 & \textbf{0.003633} & 0.002105 \\
-20 & 0.001354 & 0.002348$^{\dagger}$ & 0.001056 & \textbf{0.000912} & 0.000682 \\
-\multicolumn{6}{p{0.94\linewidth}}{\footnotesize $^{\dagger}$Nominal assumed noise variance, the same run as the rest of the table and as Figure~\ref{fig:fig57}; it is miscalibrated at this SNR (see text below). With the assumed variance doubled, a separate sensitivity sweep gives $0.001376$, not resolved from hard block-DF's $0.001375$ in that sweep. Neither variant is the matched metric of Section~\ref{sec:coded-matched-metrics}.} \\
-\end{longtable}
-
-\begin{figure}[htbp]
-\centering
-\pandocbounded{\includegraphics[width=\linewidth]{results/coded_soft_decision.png}}
-\caption[Soft- versus hard-decision relaying: BER curves]{Soft- and hard-decision coded relaying under the implemented (unweighted) metrics, with 100 paired trials; Table~\ref{tbl:coded-matched} gives the separate 30-trial matched-metric comparison. The MLP soft constellation average has lower measured BER than its hard read-out at every sampled SNR. The soft block-DF curve uses the nominal noise variance, so its 20~dB point is the miscalibrated value discussed in the text. Neither the curves nor the repair counts isolate a causal explanation for the high-SNR ordering. The oracle forwards the clean codeword}\label{fig:fig57}
-\end{figure}
-
-\textbf{Soft MLP read-out improves the sampled points} (Figure~\ref{fig:fig57}). Its BER is lower than the hard read-out at every measured SNR on identical weights. Here the term posterior mean denotes the softmax-weighted constellation average; calibration was not tested. At 16~dB the hard MLP loses to block-DF in 80 paired trials, wins 19 and ties one, whereas the soft MLP wins all 100. At 20~dB the soft MLP's measured BER is within $0.00023$ of the clean-codeword oracle. The comparison does not identify the physical mechanism or establish optimality of this read-out for destination BER.
-
-\textbf{Soft block-DF does not rescue the implemented block-DF baseline.} The relay is given a nominal noise variance, although post-equalization Rayleigh noise has variance $1/(2\gamma|h|^2)$ per real axis. Its BCJR metrics are therefore mismatched and overconfident on deep-fade symbols. Uniformly inflating the assumed variance removes the 20-dB gap, but this sensitivity sweep does not supply the required per-symbol reliability weights and should not be described as matched calibration. The same limitation applies to unweighted Viterbi distances: multiplying every branch metric by one constant leaves its decisions unchanged, whereas omitted symbol-dependent weights can change the selected path.
-
-Soft and hard block-DF have similar reported BER at 16~dB under these decoder metrics. At 20~dB the nominal-variance soft block-DF is worse, and with the assumed variance doubled the two are not resolved (footnote to Table~\ref{tbl:table39}). This does not isolate hard quantization as the cause of the gap, nor prove a general disadvantage of decoding at a relay.
-
-Under the unweighted metrics the coded study therefore shows a configuration-specific high-SNR benefit for the learned relays and a benefit from soft MLP read-out; Section~\ref{sec:coded-matched-metrics} shows that the first does not survive matched decoding for the two MLP read-outs, the only learned relays rerun; the coded Mamba relay was not rerun.
+The MLP softmax-weighted constellation average has lower measured BER than its hard argmax on the same weights at every sampled SNR under unweighted metrics (Table~\ref{tbl:table39}, Figure~\ref{fig:fig57}); its calibration was not tested. Unweighted soft block DF uses a nominal variance despite the varying $1/(2\gamma|h|^2)$ noise variance after equalization. Doubling that assumed variance removes its resolved 20-dB gap to hard block DF, but does not supply the missing per-symbol reliability. These diagnostic benefits do not establish a learned-relay advantage under matched decoding; both evaluated MLP read-outs remain behind matched block DF.
 
 \subsection{Throughput and Latency: What the BER Tables Leave Out}\label{sec:coded-latency-throughput}
 
-Every table above compares relays at equal $E_s/N_0$. That is the correct axis for asking which relay detects better, and the wrong one for asking which relay a link should use, because it silently ignores two costs that differ by orders of magnitude across these designs.
+Equal $E_s/N_0$ does not by itself hold throughput or relay readiness fixed. The following controls account for these costs.
 
-\textbf{Throughput: the coded comparison was not like-for-like.} A rate-1/2 code carries half the information per channel use. Concretely, the coded QPSK link spends $202$ symbols to deliver $200$ information bits ($0.99$ bits/symbol) where uncoded QPSK spends $100$ ($2.00$ bits/symbol). The ``$5.7\times$ better at 16~dB'' quoted above is therefore bought with half the data rate, and a link designer given that trade would not read it as a $5.7\times$ improvement at all. The honest comparison holds spectral efficiency fixed, and the measurements already collected supply it: rate-1/2 \emph{16-QAM} delivers $4 \times \tfrac12 \times \tfrac{200}{202} \approx 1.98$ information bits per symbol, matching uncoded QPSK's $2.00$. Table~\ref{tbl:table40} places those two side by side.
+\textbf{Throughput: the coded comparison was not like-for-like.} A rate-1/2 code carries half the information per channel use. Concretely, the coded QPSK link spends $202$ symbols to deliver $200$ information bits ($0.99$ bits/symbol) where uncoded QPSK spends $100$ ($2.00$ bits/symbol). The $5.7\times$ BER gain at 16~dB in the unweighted Table~\ref{tbl:table34} is therefore bought with half the data rate, and a link designer given that trade would not read it as a $5.7\times$ improvement at all. The honest comparison holds spectral efficiency fixed, and the measurements already collected supply it: rate-1/2 \emph{16-QAM} delivers $4 \times \tfrac12 \times \tfrac{200}{202} \approx 1.98$ information bits per symbol, matching uncoded QPSK's $2.00$. Table~\ref{tbl:table40} places those two side by side.
 
-{\small\setlength{\tabcolsep}{2.5pt}\begin{longtable}[]{@{}lccccc@{}}
-\caption[Coded versus uncoded at equal spectral efficiency]{Coded versus uncoded at equal spectral efficiency ($\approx$2 information bits per channel symbol): uncoded QPSK against rate-1/2 $K{=}3$ 16-QAM, both on the canonical Rayleigh channel. Recomputed from the data of Table~\ref{tbl:table34}~\coderef{ksweep}; the last two columns use the matched-metric 16-QAM decoder (\coderef{matched-reruns}, 30 trials), against the same uncoded reference, which the metric cannot change}\label{tbl:table40}\tabularnewline
+{\small\setlength{\tabcolsep}{2pt}\begin{longtable}[]{@{}lccccc@{}}
+\caption[Coded versus uncoded at equal spectral efficiency]{Coded versus uncoded at equal spectral efficiency ($\approx$2 information bits per channel symbol): uncoded QPSK against rate-1/2 $K{=}3$ 16-QAM, both on the canonical Rayleigh channel. Recomputed from the data of Table~\ref{tbl:table34}~\coderef{ksweep}; the matched columns use the reliability-weighted 16-QAM decoder (\coderef{matched-reruns}, 30 trials), against the same uncoded reference, which the metric cannot change. The final two columns are the unweighted diagnostic; bold marks the lower BER in the principal matched comparison}\label{tbl:table40}\tabularnewline
 \toprule\noalign{}
-SNR (dB) & uncoded QPSK & rate-1/2 16-QAM & Coding gain & 16-QAM, matched & Gain, matched \\
+SNR (dB) & uncoded QPSK & 16-QAM, matched & Gain, matched & 16-QAM, unweighted & Gain, unweighted \\
 \midrule\noalign{}
 \endfirsthead
 \toprule\noalign{}
-SNR (dB) & uncoded QPSK & rate-1/2 16-QAM & Coding gain & 16-QAM, matched & Gain, matched \\
+SNR (dB) & uncoded QPSK & 16-QAM, matched & Gain, matched & 16-QAM, unweighted & Gain, unweighted \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-0 & \textbf{0.3337} & 0.4680 & $0.71\times$ (worse) & 0.4496 & $0.74\times$ \\
-4 & \textbf{0.2216} & 0.4203 & $0.53\times$ (worse) & 0.3325 & $0.67\times$ \\
-8 & \textbf{0.1205} & 0.2726 & $0.44\times$ (worse) & 0.1072 & $1.12\times$ \\
-12 & \textbf{0.0560} & 0.1001 & $0.56\times$ (worse) & 0.01539 & $3.64\times$ \\
-16 & \textbf{0.0239} & 0.0273 & $0.88\times$ (worse) & 0.001954 & $12.3\times$ \\
-20 & 0.0098 & 0.0076 & $1.29\times$ (better) & 0.00025 & $39\times$ \\
+0 & \textbf{0.3337} & 0.4496 & $0.74\times$ & 0.4680 & $0.71\times$ (worse) \\
+4 & \textbf{0.2216} & 0.3325 & $0.67\times$ & 0.4203 & $0.53\times$ (worse) \\
+8 & 0.1205 & \textbf{0.1072} & $1.12\times$ & 0.2726 & $0.44\times$ (worse) \\
+12 & 0.0560 & \textbf{0.01539} & $3.64\times$ & 0.1001 & $0.56\times$ (worse) \\
+16 & 0.0239 & \textbf{0.001954} & $12.3\times$ & 0.0273 & $0.88\times$ (worse) \\
+20 & 0.0098 & \textbf{0.00025} & $39\times$ & 0.0076 & $1.29\times$ (better) \\
 \end{longtable}}
 
 With the matched 16-QAM decoder the coded link wins at equal throughput from 8~dB upward: by $1.12\times$ at 8~dB, $3.6\times$ at 12~dB and $12.3\times$ at 16~dB. Coding is still reliability bought with bandwidth, but on this channel the purchase pays once the decoder uses the fading reliability. Under the unweighted metric (diagnostic) the rate-1/2 code did not pay for itself below 20~dB, and gained only $1.29\times$ there, not the $5.7$--$7.2\times$ of the equal-$E_s/N_0$ reading.
@@ -392,46 +257,42 @@ Table~\ref{tbl:table40} limits the coding benefit at approximately equal spectra
 
 \subsection{Adaptive Modulation and Coding: Choosing the Rate, Not Just the Relay}\label{sec:coded-rate-adaptation}
 
-Every comparison above, including the equal-throughput one, holds the modulation-and-coding scheme (MCS) fixed and asks which relay achieves the lower BER. A real link does not hold the MCS fixed; it adapts. The question a link actually faces is not ``which relay wins at rate~$R$'' but ``what is the highest \emph{useful} rate this link can sustain at this SNR'', and answering it requires more than one code rate to choose from. The mother code of Section~\ref{sec:coded-block-df} is extended here with the standard punctured rates $2/3$ and $3/4$ (deleting a periodic subset of the rate-1/2 output, re-inserted as soft zeros at the decoder, so the same Viterbi decoder runs unmodified at every rate), and evaluated via bit-interleaved coded modulation across the full grid $\{\text{QPSK}, \text{16-QAM}\} \times \{\text{uncoded}, 1/2, 2/3, 3/4\}$.
+Rate adaptation chooses the modulation-and-coding scheme (MCS) with the highest useful rate at each SNR from a finite grid. The mother code of Section~\ref{sec:coded-block-df} is extended here with the standard punctured rates $2/3$ and $3/4$ (deleting a periodic subset of the rate-1/2 output, re-inserted as soft zeros at the decoder, so the same Viterbi decoder runs unmodified at every rate), and evaluated via bit-interleaved coded modulation across the full grid $\{\text{QPSK}, \text{16-QAM}\} \times \{\text{uncoded}, 1/2, 2/3, 3/4\}$.
 
 The objective is an idealized one-shot \emph{goodput}, $G = \eta\,(1-\mathrm{FER})$ (Eq.~\ref{eq:goodput}), assuming perfect frame-error detection and discarding failed frames without accounting for feedback or retransmission overhead. $G$ and $\eta$ are both measured per channel symbol transmitted on the active hop, matching the ergodic-capacity reference $C$ introduced below; because the relay is half-duplex, expressing goodput instead as a fraction of the total two-slot cycle (source-to-relay plus relay-to-destination) would halve every figure in this section without changing which MCS or relay strategy is preferred, since that factor of $\tfrac12$ applies identically to both. Maximizing $G$ over the MCS grid at each SNR traces the link-adaptation envelope, compared here for two implemented classical forwarding strategies: \emph{block-DF}, which decodes the code at the relay and re-encodes its message decision before transmitting, against \emph{denoise-only}, which hard-decides each bit and re-modulates without ever invoking the code, retaining the original transmitted code constraints for destination decoding and requiring no training and no code knowledge at the relay.
 
 \begingroup\footnotesize
 \begin{longtable}[]{@{}lcccccl@{}}
-\caption[Link-adaptation envelope: best MCS per SNR]{Link-adaptation envelope: the MCS maximizing goodput at each SNR, block-DF versus denoise-only relaying, canonical Rayleigh channel, 100 trials $\times$ 200 frames $\times$ 200 information bits per point. Columns are SNR in dB, the goodput-maximizing MCS and its goodput $G$ for each relay, and $C$, the ergodic Rayleigh (Shannon) capacity at that SNR, $C=\log_2(e)\,e^{1/\gamma}E_1(1/\gamma)$ -- an unconstrained-input upper bound no achievable goodput may exceed, included as a sanity ceiling rather than a target: the gap to it here is dominated by the finite constellation and coding loss, not by relay strategy. The capacity column is a \emph{single-link} reference evaluated per active-hop channel symbol; it is not a capacity bound for the half-duplex two-hop relay system studied here, whose own bound would additionally account for the two-slot cycle and the relay constraint. The last column gives block-DF's best MCS and goodput with the matched decoder metric (\coderef{matched-reruns}, 30 trials)}\label{tbl:table42}\tabularnewline
+\caption[Link-adaptation envelope: best MCS per SNR]{Link-adaptation envelope: the MCS maximizing goodput at each SNR, block-DF versus denoise-only relaying, canonical Rayleigh channel, 100 trials $\times$ 200 frames $\times$ 200 information bits per point. Columns are SNR in dB, the goodput-maximizing MCS and its goodput $G$ for each relay, and $C$, the ergodic Rayleigh (Shannon) capacity at that SNR, $C=\log_2(e)\,e^{1/\gamma}E_1(1/\gamma)$ -- an unconstrained-input upper bound no achievable goodput may exceed, included as a sanity ceiling rather than a target: the gap to it here is dominated by the finite constellation and coding loss, not by relay strategy. The capacity column is a \emph{single-link} reference evaluated per active-hop channel symbol; it is not a capacity bound for the half-duplex two-hop relay system studied here, whose own bound would additionally account for the two-slot cycle and the relay constraint. The first result column gives block-DF's best MCS and goodput with the matched decoder metric (\coderef{matched-reruns}, 30 trials)}\label{tbl:table42}\tabularnewline
 \toprule\noalign{}
-SNR & MCS (block-DF) & $G$ & MCS (denoise) & $G$ & $C$ & Block-DF, matched \\
+SNR & Block DF, matched & MCS (denoise) & $G$ & Block DF, unweighted & $G$ & $C$ \\
 \midrule\noalign{}
 \endfirsthead
 \toprule\noalign{}
-SNR & MCS (block-DF) & $G$ & MCS (denoise) & $G$ & $C$ & Block-DF, matched \\
+SNR & Block DF, matched & MCS (denoise) & $G$ & Block DF, unweighted & $G$ & $C$ \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
- 8 & QPSK $\frac{1}{2}$ & \textbf{0.0039} & QPSK $\frac{1}{2}$ & 0.0003 & 2.40 & QPSK $\frac{1}{2}$, 0.6625 \\
-12 & QPSK $\frac{1}{2}$ & \textbf{0.1708} & QPSK $\frac{1}{2}$ & 0.1342 & 3.45 & QPSK $\frac{2}{3}$, 0.9914 \\
-16 & QPSK $\frac{1}{2}$ & 0.5406 & QPSK $\frac{1}{2}$ & \textbf{0.6046} & 4.63 & 16-QAM $\frac{1}{2}$, 1.5158 \\
-20 & QPSK $\frac{3}{4}$ & 0.9545 & QPSK  $\frac{3}{4}$  & \textbf{0.9635} & 5.88 & 16-QAM $\frac{1}{2}$, 1.8997 \\
-24 & 16-QAM $\frac{2}{3}$ & \textbf{1.5790} & 16-QAM  $\frac{2}{3}$ & 1.4739 & 7.17 & 16-QAM $\frac{3}{4}$, 2.3536 \\
-28 & 16-QAM $\frac{3}{4}$ & \textbf{2.3003} & 16-QAM $\frac{3}{4}$ & 2.2625 & 8.48 & 16-QAM $\frac{3}{4}$, 2.7254 \\
-32 & 16-QAM $\frac{3}{4}$ & \textbf{2.6807} & 16-QAM  $\frac{3}{4}$ & 2.6726 & 9.80 & 16-QAM $\frac{3}{4}$, 2.8642 \\
-36 & 16-QAM uncoded & 3.3920 & 16-QAM uncoded & 3.3920 & 11.13 & 16-QAM uncoded, 3.4020 \\
-40 & 16-QAM uncoded & 3.7336 & 16-QAM uncoded & 3.7336 & 12.46 & 16-QAM uncoded, 3.7327 \\
+8 & QPSK $\frac{1}{2}$, 0.6625 & QPSK $\frac{1}{2}$ & 0.0003 & QPSK $\frac{1}{2}$ & 0.0039 & 2.40 \\
+12 & QPSK $\frac{2}{3}$, 0.9914 & QPSK $\frac{1}{2}$ & 0.1342 & QPSK $\frac{1}{2}$ & 0.1708 & 3.45 \\
+16 & 16-QAM $\frac{1}{2}$, 1.5158 & QPSK $\frac{1}{2}$ & 0.6046 & QPSK $\frac{1}{2}$ & 0.5406 & 4.63 \\
+20 & 16-QAM $\frac{1}{2}$, 1.8997 & QPSK  $\frac{3}{4}$ & 0.9635 & QPSK $\frac{3}{4}$ & 0.9545 & 5.88 \\
+24 & 16-QAM $\frac{3}{4}$, 2.3536 & 16-QAM  $\frac{2}{3}$ & 1.4739 & 16-QAM $\frac{2}{3}$ & 1.5790 & 7.17 \\
+28 & 16-QAM $\frac{3}{4}$, 2.7254 & 16-QAM $\frac{3}{4}$ & 2.2625 & 16-QAM $\frac{3}{4}$ & 2.3003 & 8.48 \\
+32 & 16-QAM $\frac{3}{4}$, 2.8642 & 16-QAM  $\frac{3}{4}$ & 2.6726 & 16-QAM $\frac{3}{4}$ & 2.6807 & 9.80 \\
+36 & 16-QAM uncoded, 3.4020 & 16-QAM uncoded & 3.3920 & 16-QAM uncoded & 3.3920 & 11.13 \\
+40 & 16-QAM uncoded, 3.7327 & 16-QAM uncoded & 3.7336 & 16-QAM uncoded & 3.7336 & 12.46 \\
 \end{longtable}
 \endgroup
 
-\begin{figure}[htbp]
-\centering
-\pandocbounded{\includegraphics[width=\linewidth]{results/coded_rate_adaptation.png}}
-\caption[Link-adaptation envelope]{The envelope of Table~\ref{tbl:table42} (colored) against every individual fixed MCS on the block-DF relay (grey), which is the visual case for adaptation: the envelope tracks the upper hull of the grey curves rather than any single one of them, switching MCS as SNR crosses each rate's operating threshold. The curves use the unweighted decoder metric, under which the two relay strategies' envelopes are visually almost the same curve; with the matched metric, block-DF's envelope is far higher (last column of Table~\ref{tbl:table42})}\label{fig:fig58}
-\end{figure}
 
-Two observations follow within this finite modulation-and-coding grid.
+
+The original unweighted envelope is retained as Figure~\ref{fig:fig58} in Appendix~\ref{sec:appendix-coded-diagnostics}. Two observations follow within this finite modulation-and-coding grid.
 
 \textbf{The envelope is a real staircase, and its top step is ``turn the code off''.} With the matched metric, block DF climbs QPSK~1/2~$\to$~QPSK~2/3~$\to$~16-QAM~1/2~$\to$~16-QAM~3/4~$\to$~\emph{16-QAM uncoded} as SNR rises from 8 to 40~dB; with the unweighted metric both relay strategies climb QPSK~1/2~$\to$~QPSK~3/4~$\to$~16-QAM~2/3~$\to$~16-QAM~3/4~$\to$~\emph{16-QAM uncoded}; each switch occurs once the next rate's threshold has cleared. The optimum at high SNR is no code at all: once the channel is good enough, coding redundancy is pure overhead, and the highest-goodput choice is the raw $4$~bits/symbol of 16-QAM with zero coding loss. This is the same lesson as the equal-throughput correction above, now reached by direct optimization over the grid rather than by hand-picking one comparison. Table~\ref{tbl:table42}'s $C$ column confirms the envelope never approaches the information-theoretic ceiling: at 40~dB the achieved $3.73$ sits at $30\%$ of the $12.46$-bit Shannon capacity there, a gap set by the fixed 16-QAM constellation (itself capped at $4$ bits/symbol) and residual FER, not by anything a smarter relay strategy could close.
 
-\textbf{With the matched metric, decoding at the relay matters.} Block-DF's matched envelope (last column of Table~\ref{tbl:table42}) is far above both published envelopes at every SNR where a code is used: $0.66$ against $0.0003$ information bits/symbol at 8~dB, $0.99$ against $0.13$ at 12~dB, $1.52$ against $0.60$ at 16~dB, $1.90$ against $0.96$ at 20~dB and $2.35$ against $1.47$ at 24~dB, and it reaches each higher-rate MCS at a lower SNR. The denoise relay is taken here with the unweighted destination metric, which serves it better than the $|h_2|^{2}$ weight because its hard decisions carry relay errors that weight does not model. Above 32~dB both strategies select 16-QAM uncoded. Neither comparison is neural versus classical.
+\textbf{With the matched metric, decoding at the relay matters.} Block-DF's matched envelope (matched column of Table~\ref{tbl:table42}) is far above both published envelopes at every SNR where a code is used: $0.66$ against $0.0003$ information bits/symbol at 8~dB, $0.99$ against $0.13$ at 12~dB, $1.52$ against $0.60$ at 16~dB, $1.90$ against $0.96$ at 20~dB and $2.35$ against $1.47$ at 24~dB, and it reaches each higher-rate MCS at a lower SNR. The denoise relay is taken here with the unweighted destination metric, which serves it better than the $|h_2|^{2}$ weight because its hard decisions carry relay errors that weight does not model. Above 32~dB both strategies select 16-QAM uncoded. Neither comparison is neural versus classical.
 
 \textbf{With the unweighted metric (diagnostic), relay strategy barely mattered.} The two published envelopes in Table~\ref{tbl:table42} differ by at most $0.105$ information bits/symbol (at 24~dB, under $7\%$ of the envelope value) and are identical from 36~dB, where both select 16-QAM uncoded, whereas the MCS choice moves goodput by $1.25$ at 24~dB and by more than $1.7$ from 32~dB. That finding is a property of the unweighted decoder.
 
@@ -439,39 +300,35 @@ Two observations follow within this finite modulation-and-coding grid.
 
 The coded relay of Section~\ref{sec:coded-block-df} decodes a whole frame before forwarding, and every comparison so far has left the frame length free. A link with a deadline cannot: the deadline bounds the blocklength and with it the redundancy the relay has to spend. The achievable rate once blocklength is fixed is a standard question --- the finite-blocklength capacity of Polyanskiy, Poor and Verd\'{u} \cite{PolyanskiyPoorVerdu2010FiniteBlocklength} and the delay-limited capacity of Hanly and Tse \cite{HanlyTse1998DelayLimited} for fading channels.
 
-The following calculation uses an idealized \emph{buffer-readiness budget}, not physical round-trip latency. It counts one destination frame buffer for both strategies and an additional relay frame buffer for block-DF, while assigning only the learned relay's look-ahead to denoise-only relaying. It omits the channel-use duration of the two half-duplex transmission phases, which both strategies incur. Re-deriving the goodput envelope of Table~\ref{tbl:table42} under this accounting illustrates the effect of relay buffering, but does not establish performance under a complete end-to-end deadline.
+The following calculation uses an idealized \emph{buffer-readiness budget}, not physical round-trip latency. It counts one destination frame buffer for both strategies and an additional relay frame buffer for block-DF, while assigning a ten-symbol look-ahead allowance to denoise-only relaying. It omits the channel-use duration of the two half-duplex transmission phases, which both strategies incur. Re-deriving the goodput envelope of Table~\ref{tbl:table42} under this accounting illustrates the effect of relay buffering, but does not establish performance under a complete end-to-end deadline.
 
 \enlargethispage{3pt}
 {\small\setlength{\tabcolsep}{3pt}\begin{longtable}[]{@{}lccccl@{}}
 \caption[Link-adaptation envelope under a 150-symbol readiness budget]{Link-adaptation envelope re-derived under the idealized 150-symbol buffer-readiness budget, same layout and data source as Table~\ref{tbl:table42}, including the matched block-DF column}\label{tbl:table43}\tabularnewline
 \toprule\noalign{}
-SNR (dB) & MCS, block DF & $G$ & MCS, denoise & $G$ & Block DF, matched \\
+SNR (dB) & Block DF, matched & MCS, denoise & $G$ & Block DF, unweighted & $G$ \\
 \midrule\noalign{}
 \endfirsthead
 \toprule\noalign{}
-SNR (dB) & MCS, block DF & $G$ & MCS, denoise & $G$ & Block DF, matched \\
+SNR (dB) & Block DF, matched & MCS, denoise & $G$ & Block DF, unweighted & $G$ \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-8 & QPSK uncoded & 0.0000 & QPSK uncoded & 0.0000 & QPSK uncoded, 0.0000 \\
-12 & QPSK uncoded & 0.0000 & QPSK 3/4 & \textbf{0.0105} & QPSK uncoded, 0.0000 \\
-16 & QPSK uncoded & 0.0251 & QPSK 3/4 & \textbf{0.3582} & 16-QAM 3/4, 0.2637 \\
-20 & 16-QAM 3/4 & 0.4966 & QPSK 3/4 & \textbf{0.9635} & 16-QAM 3/4, 1.4538 \\
-24 & 16-QAM 3/4 & \textbf{1.5357} & 16-QAM 2/3 & 1.4739 & 16-QAM 3/4, 2.3536 \\
-28 & 16-QAM 3/4 & \textbf{2.3003} & 16-QAM 3/4 & 2.2625 & 16-QAM 3/4, 2.7254 \\
-32 & 16-QAM 3/4 & \textbf{2.6807} & 16-QAM 3/4 & 2.6726 & 16-QAM 3/4, 2.8642 \\
-36 & 16-QAM uncoded & 3.3920 & 16-QAM uncoded & 3.3920 & 16-QAM uncoded, 3.4020 \\
-40 & 16-QAM uncoded & 3.7336 & 16-QAM uncoded & 3.7336 & 16-QAM uncoded, 3.7327 \\
+8 & QPSK uncoded, 0.0000 & QPSK uncoded & 0.0000 & QPSK uncoded & 0.0000 \\
+12 & QPSK uncoded, 0.0000 & QPSK 3/4 & 0.0105 & QPSK uncoded & 0.0000 \\
+16 & 16-QAM 3/4, 0.2637 & QPSK 3/4 & 0.3582 & QPSK uncoded & 0.0251 \\
+20 & 16-QAM 3/4, 1.4538 & QPSK 3/4 & 0.9635 & 16-QAM 3/4 & 0.4966 \\
+24 & 16-QAM 3/4, 2.3536 & 16-QAM 2/3 & 1.4739 & 16-QAM 3/4 & 1.5357 \\
+28 & 16-QAM 3/4, 2.7254 & 16-QAM 3/4 & 2.2625 & 16-QAM 3/4 & 2.3003 \\
+32 & 16-QAM 3/4, 2.8642 & 16-QAM 3/4 & 2.6726 & 16-QAM 3/4 & 2.6807 \\
+36 & 16-QAM uncoded, 3.4020 & 16-QAM uncoded & 3.3920 & 16-QAM uncoded & 3.3920 \\
+40 & 16-QAM uncoded, 3.7327 & 16-QAM uncoded & 3.7336 & 16-QAM uncoded & 3.7336 \\
 \end{longtable}}
 
-\begin{figure}[htbp]
-\centering
-\pandocbounded{\includegraphics[width=\linewidth]{results/coded_latency_capacity.png}}
-\caption[Goodput vs. buffer-readiness budget]{Best achievable goodput as a function of the idealized buffer-readiness budget $L_{\max}$, at four SNRs (16, 20, 24, 28~dB). Each curve is a step function under this accounting. The omitted two-hop transmission time prevents interpreting this axis as end-to-end latency. The curves use the unweighted decoder metric; the matched block-DF values at a 150-symbol budget are in the last column of Table~\ref{tbl:table43}}\label{fig:fig59}
-\end{figure}
 
-\textbf{Under this idealized readiness budget, block-DF can be locked out of coding.} At $L_{\max}=150$ symbols (Table~\ref{tbl:table43}), block-DF's cheapest coded option barely clears the budget while its next-cheapest does not. With the matched metric (last column), that option, 16-QAM~3/4, carries $0.2637$ information bits/symbol at 16~dB and $1.4538$ at 20~dB, so denoise-only leads by $1.36\times$ at 16~dB and block-DF leads by $1.51\times$ at 20~dB and at every higher SNR where a code is used. Under the unweighted metric (diagnostic) the 16-dB entries differed by $14.3\times$ ($0.3582$ against $0.0251$) and the 20-dB entries by $1.9\times$. These figures illustrate buffering sensitivity only; they are not end-to-end latency results.
+
+\textbf{Under this idealized readiness budget, block-DF can be locked out of coding.} At $L_{\max}=150$ symbols (Table~\ref{tbl:table43}), block-DF's cheapest coded option barely clears the budget while its next-cheapest does not. With the matched metric, that option, 16-QAM~3/4, carries $0.2637$ information bits/symbol at 16~dB and $1.4538$ at 20~dB, so denoise-only leads by $1.36\times$ at 16~dB and block-DF leads by $1.51\times$ at 20~dB and at every higher SNR where a code is used. Under the unweighted metric (diagnostic) the 16-dB entries differed by $14.3\times$ ($0.3582$ against $0.0251$) and the 20-dB entries by $1.9\times$. These figures illustrate buffering sensitivity only; they are not end-to-end latency results. Figure~\ref{fig:fig59} in Appendix~\ref{sec:appendix-coded-diagnostics} retains the original unweighted budget curves.
 
 \textbf{Tighten the budget further and the reversal spreads to SNRs where block-DF led unconstrained.} At $L_{\max}=100$ symbols, block-DF has \emph{no} coded option left at any of these four SNRs -- every one of its coded MCS choices exceeds the budget -- so it is pinned to uncoded transmission throughout, while the denoise-only relay still reaches 16-QAM~2/3 or~3/4 at 20, 24 and 28~dB. At 24 and 28~dB, this is a direct reversal: Table~\ref{tbl:table42}'s unconstrained envelope has block-DF \emph{ahead} at both points, but under the 100-symbol budget denoise-only leads by $1.46\times$ and $1.54\times$ respectively, because the MCS that gave block-DF its unconstrained edge is no longer reachable in time. This structural lock-out does not depend on the decoder metric: with matched metrics block-DF is still pinned to uncoded transmission at 100 symbols, and denoise-only leads at 24 and 28~dB by $1.46\times$ and $1.52\times$.
 
