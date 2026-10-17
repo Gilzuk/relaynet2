@@ -1,0 +1,250 @@
+{
+  "historical_source": "b4059e615ef8e1f9985bb3b61fed987eefa62945",
+  "published_data_commit": "69a470cf5931453bc11d67a99943aa56ae565757",
+  "driver_sha256": "9715179c33ff4b36cc4a56a5b5e95c3d33ddbad932e39fbfdf46c811b8f64063",
+  "commands": [
+    [
+      "/workspace/scratch/781ec23bff5d/repro-venv/bin/python",
+      "-u",
+      "/workspace/scratch/781ec23bff5d/relaynet2-review/scripts/audit_rng_reproducibility.py",
+      "--source-dir",
+      "/workspace/scratch/781ec23bff5d/relaynet2-review/_reproduction_work/20261017-rng-seed42-historical",
+      "--output-dir",
+      "/workspace/scratch/781ec23bff5d/relaynet2-review/results/reproduction/20261017-rng-seed42/all_seeded_1",
+      "--worker",
+      "all_seeded"
+    ],
+    [
+      "/workspace/scratch/781ec23bff5d/repro-venv/bin/python",
+      "-u",
+      "/workspace/scratch/781ec23bff5d/relaynet2-review/scripts/audit_rng_reproducibility.py",
+      "--source-dir",
+      "/workspace/scratch/781ec23bff5d/relaynet2-review/_reproduction_work/20261017-rng-seed42-historical",
+      "--output-dir",
+      "/workspace/scratch/781ec23bff5d/relaynet2-review/results/reproduction/20261017-rng-seed42/all_seeded_2",
+      "--worker",
+      "all_seeded"
+    ],
+    [
+      "/workspace/scratch/781ec23bff5d/repro-venv/bin/python",
+      "-u",
+      "/workspace/scratch/781ec23bff5d/relaynet2-review/scripts/audit_rng_reproducibility.py",
+      "--source-dir",
+      "/workspace/scratch/781ec23bff5d/relaynet2-review/_reproduction_work/20261017-rng-seed42-historical",
+      "--output-dir",
+      "/workspace/scratch/781ec23bff5d/relaynet2-review/results/reproduction/20261017-rng-seed42/legacy_default_1",
+      "--worker",
+      "legacy_default"
+    ],
+    [
+      "/workspace/scratch/781ec23bff5d/repro-venv/bin/python",
+      "-u",
+      "/workspace/scratch/781ec23bff5d/relaynet2-review/scripts/audit_rng_reproducibility.py",
+      "--source-dir",
+      "/workspace/scratch/781ec23bff5d/relaynet2-review/_reproduction_work/20261017-rng-seed42-historical",
+      "--output-dir",
+      "/workspace/scratch/781ec23bff5d/relaynet2-review/results/reproduction/20261017-rng-seed42/legacy_default_2",
+      "--worker",
+      "legacy_default"
+    ]
+  ],
+  "environment_overrides": {
+    "OMP_NUM_THREADS": "2",
+    "MKL_NUM_THREADS": "2",
+    "OPENBLAS_NUM_THREADS": "2",
+    "NUMEXPR_NUM_THREADS": "2",
+    "PYTHONHASHSEED": "0",
+    "MPLBACKEND": "Agg",
+    "CUDA_VISIBLE_DEVICES": ""
+  },
+  "artifacts": [
+    {
+      "path": "all_seeded_1/execution.json",
+      "sha256": "5cb3c871155fbd91787e9713b9ae8ba6b43257c65ab22113ed0f946fe8b96f7a"
+    },
+    {
+      "path": "all_seeded_1/final_weights.npz",
+      "sha256": "fe0b6adbb0bfcfec8e2bd9a930351dedc3bae03f83931951e5858e76f565b0af"
+    },
+    {
+      "path": "all_seeded_1/initial_weights.npz",
+      "sha256": "f911539ba18a02dfe5d640c82deadc3ba43fbaddc184a884be6ebd01c637cc7c"
+    },
+    {
+      "path": "all_seeded_1/result.json",
+      "sha256": "c1efbe3b8459d1ad6302227220db999108a90733ae8ab9a0d3fc0ad14ea878c1"
+    },
+    {
+      "path": "all_seeded_1/rng_after_training.json",
+      "sha256": "078a0f4c95ead8437c3262640b1c919606ca706ab66ac78a68bfbdb8b551b6e9"
+    },
+    {
+      "path": "all_seeded_1/rng_before_construction.json",
+      "sha256": "c3cdfd1c19f937c56d4ff471f8bfa809213f30d106171e4be8f28d667f91fc95"
+    },
+    {
+      "path": "all_seeded_1/rng_before_training.json",
+      "sha256": "959b5062187bf71d5b8586485259dfb0ea846ac14b0b5070f3a444c74a6a1649"
+    },
+    {
+      "path": "all_seeded_1/run.log",
+      "sha256": "3b5d8eba87345b222043fe7ffa3559c5bd94f18f5157177c2684e33919ea31d6"
+    },
+    {
+      "path": "all_seeded_1/torch_rng_after_training.pt",
+      "sha256": "f1feaff6b6c605092e52f9e0654ee6112df1d7939055fa6ae136236c0ac7a7e5"
+    },
+    {
+      "path": "all_seeded_1/torch_rng_before_construction.pt",
+      "sha256": "d606c984486544b36475f45221d12c9cd2c7928e8f63de957d322b135952958f"
+    },
+    {
+      "path": "all_seeded_1/torch_rng_before_training.pt",
+      "sha256": "8dc8ee82ba2ee63d9096aa0f2b92b291ddb189bf325947085dd06035227439db"
+    },
+    {
+      "path": "all_seeded_2/execution.json",
+      "sha256": "bc4bab0ddf2cc7a304da03a0f0f50d06d3b075a77a7e8380791d64968dd10ff3"
+    },
+    {
+      "path": "all_seeded_2/final_weights.npz",
+      "sha256": "fe0b6adbb0bfcfec8e2bd9a930351dedc3bae03f83931951e5858e76f565b0af"
+    },
+    {
+      "path": "all_seeded_2/initial_weights.npz",
+      "sha256": "f911539ba18a02dfe5d640c82deadc3ba43fbaddc184a884be6ebd01c637cc7c"
+    },
+    {
+      "path": "all_seeded_2/result.json",
+      "sha256": "424fb61dfb42ae863608f28c194d9547912a12a4de666b200dac668fc57ab266"
+    },
+    {
+      "path": "all_seeded_2/rng_after_training.json",
+      "sha256": "078a0f4c95ead8437c3262640b1c919606ca706ab66ac78a68bfbdb8b551b6e9"
+    },
+    {
+      "path": "all_seeded_2/rng_before_construction.json",
+      "sha256": "c3cdfd1c19f937c56d4ff471f8bfa809213f30d106171e4be8f28d667f91fc95"
+    },
+    {
+      "path": "all_seeded_2/rng_before_training.json",
+      "sha256": "959b5062187bf71d5b8586485259dfb0ea846ac14b0b5070f3a444c74a6a1649"
+    },
+    {
+      "path": "all_seeded_2/run.log",
+      "sha256": "057e2b3ec53ccd0c4fe2141b3acaf7082452a4b11e5dc01fad1ab82c8b252807"
+    },
+    {
+      "path": "all_seeded_2/torch_rng_after_training.pt",
+      "sha256": "f1feaff6b6c605092e52f9e0654ee6112df1d7939055fa6ae136236c0ac7a7e5"
+    },
+    {
+      "path": "all_seeded_2/torch_rng_before_construction.pt",
+      "sha256": "d606c984486544b36475f45221d12c9cd2c7928e8f63de957d322b135952958f"
+    },
+    {
+      "path": "all_seeded_2/torch_rng_before_training.pt",
+      "sha256": "8dc8ee82ba2ee63d9096aa0f2b92b291ddb189bf325947085dd06035227439db"
+    },
+    {
+      "path": "comparison.json",
+      "sha256": "deec91c888019b0af7de1a9dc3c4125fa65a88ab0f50f8a317d53f512a86b11f"
+    },
+    {
+      "path": "executed_driver.py",
+      "sha256": "9715179c33ff4b36cc4a56a5b5e95c3d33ddbad932e39fbfdf46c811b8f64063"
+    },
+    {
+      "path": "legacy_default_1/execution.json",
+      "sha256": "a85037238b140438b5ced3a721d117ff04c62d5e184b67d631bc16f171a1c1ba"
+    },
+    {
+      "path": "legacy_default_1/final_weights.npz",
+      "sha256": "c8befd85ab2e0fa444e5085ef19643102e0d3f3b0b2a8de1f975d14831355c3f"
+    },
+    {
+      "path": "legacy_default_1/initial_weights.npz",
+      "sha256": "dc63b7e8bf3e0de23b265e3568e6570d6324ad834e48dd00143f2cc2ab1f2cdc"
+    },
+    {
+      "path": "legacy_default_1/result.json",
+      "sha256": "ecb565191b39b65708de744d79cbc968c443462c6305768fd6b696a3caa3f88a"
+    },
+    {
+      "path": "legacy_default_1/rng_after_training.json",
+      "sha256": "85b70fed1afd646e4c0fdb3bd6f6774811b1def943900be5789eb3d5bf72a72e"
+    },
+    {
+      "path": "legacy_default_1/rng_before_construction.json",
+      "sha256": "d5c0693a4adc1d7104e4356cb9096d90129674b3a3caed2a287bb7480a4f334e"
+    },
+    {
+      "path": "legacy_default_1/rng_before_training.json",
+      "sha256": "e7a64cd201946094462b750485af001005b400f360971fdd1afde0d14b8f86e3"
+    },
+    {
+      "path": "legacy_default_1/run.log",
+      "sha256": "057e2b3ec53ccd0c4fe2141b3acaf7082452a4b11e5dc01fad1ab82c8b252807"
+    },
+    {
+      "path": "legacy_default_1/torch_rng_after_training.pt",
+      "sha256": "84a816a8394efbc472a9c3dd8723d56167ce358fae657f8815eac1deaf3fa9f9"
+    },
+    {
+      "path": "legacy_default_1/torch_rng_before_construction.pt",
+      "sha256": "2ad290c9bcbd41566bb4f453f43e5709d52f078b4528c7c02acacdfd4465eb38"
+    },
+    {
+      "path": "legacy_default_1/torch_rng_before_training.pt",
+      "sha256": "642cd346db8c5e7fadc8334d66205a94ae2f6c5f8794806b2ab42e23cce4b8ab"
+    },
+    {
+      "path": "legacy_default_2/execution.json",
+      "sha256": "41e0dfdd4d85b4b0f92fb7fa8f586ffa96bf0fee1355d8541b281eaf37379dff"
+    },
+    {
+      "path": "legacy_default_2/final_weights.npz",
+      "sha256": "a6cb9022cc36201c3d86958d7ac21de0353653304e4d22b05d37df276132be5d"
+    },
+    {
+      "path": "legacy_default_2/initial_weights.npz",
+      "sha256": "16f3aca5c63ef1f49041adfbc07fd9d04d8996a913483f8c7bb32a7651e5112a"
+    },
+    {
+      "path": "legacy_default_2/result.json",
+      "sha256": "a86034aebc56c2d791ca59c88d61322f1b07c32219b7bcd8994ee114f64046b7"
+    },
+    {
+      "path": "legacy_default_2/rng_after_training.json",
+      "sha256": "d71243bb990b48b1173ba7a676db24497cc16bc8342529190d65ded0d7105941"
+    },
+    {
+      "path": "legacy_default_2/rng_before_construction.json",
+      "sha256": "0464be3323499f571ca488fa52b94933691f32ade66e2864eba4a22bacaa20c6"
+    },
+    {
+      "path": "legacy_default_2/rng_before_training.json",
+      "sha256": "f3dc6aac7f759e55c248ea272dfeb45f413418759b3960abe3c8d87a62ea240d"
+    },
+    {
+      "path": "legacy_default_2/run.log",
+      "sha256": "9855ab1c96664805394d13b9f916b18afdd610ae6a391fb5f4bb8b30b14f8f64"
+    },
+    {
+      "path": "legacy_default_2/torch_rng_after_training.pt",
+      "sha256": "96d9d924450c87c6c9941d3d936ddc1a3cd8b73fb2f51ca83ead4e4349cae9c3"
+    },
+    {
+      "path": "legacy_default_2/torch_rng_before_construction.pt",
+      "sha256": "08a2c22262444e303a5878dd45e78598dac6a0efdb3ed2720669e186118b838b"
+    },
+    {
+      "path": "legacy_default_2/torch_rng_before_training.pt",
+      "sha256": "0b8d6a2b3f35b5ef5829fed38dae689da95f1073cc2292b24ba25fc037954d09"
+    },
+    {
+      "path": "published.json",
+      "sha256": "d2382010c95ae645d1687b4a3de4230ccfce54821487aa2437625448ce206b6f"
+    }
+  ]
+}

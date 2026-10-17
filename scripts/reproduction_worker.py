@@ -16,6 +16,40 @@ sys.path.insert(0, str(ROOT))
 from scripts.reproduce_round2 import jobs, write_json, git
 
 
+def configure_rng(job, torch_module):
+    """Seed every global RNG before importing/constructing experiment models.
+
+    Experiment-local seeds remain part of their original protocol. The
+    bootstrap also fixes otherwise unused fallback-network initialization.
+    """
+    import numpy as np
+    seed = job["rng_policy"]["bootstrap_python_numpy_torch_seed"]
+    random.seed(seed)
+    np.random.seed(seed)
+    if torch_module is not None:
+        torch_module.manual_seed(seed)
+        torch_module.use_deterministic_algorithms(True)
+        torch_module.backends.cudnn.benchmark = False
+        torch_module.backends.cudnn.deterministic = True
+
+
+def snapshot_rng(job, label, torch_module):
+    """Record states without consuming random draws; kept with job artifacts."""
+    import numpy as np
+    state = np.random.get_state()
+    record = {"policy": job["rng_policy"], "source_commit": git("rev-parse", "HEAD"),
+              "python_state": random.getstate(),
+              "numpy_legacy_state": [state[0], state[1].tolist(), *state[2:]],
+              "torch": None}
+    if torch_module is not None:
+        record["torch"] = {
+            "initial_seed": torch_module.initial_seed(),
+            "cpu_state_hex": bytes(torch_module.get_rng_state().tolist()).hex(),
+            "deterministic_algorithms": torch_module.are_deterministic_algorithms_enabled(),
+            "threads": torch_module.get_num_threads(), "version": torch_module.__version__}
+    write_json(ROOT / "reproduction_checkpoints" / "rng" / f"{job['id']}_{label}.json", record)
+
+
 def safe(value):
     if isinstance(value, dict):
         return {str(k): safe(v) for k, v in value.items()}
@@ -113,7 +147,8 @@ def canonical(job):
     torch.save(torch.get_rng_state(), checkpoint_dir / "torch_rng_before_construction.pt")
     write_json(checkpoint_dir / "protocol.json", {
         "stage": job["stage"], "new_python_numpy_torch_seed": seed,
-        "training_data_seed": 42, "epochs": 100, "trials": 10, "bits_per_trial": 10000,
+        "training_seed_argument": 42, "training_data_seed_rule": "42 + int(training SNR in dB)",
+        "rng_policy": job["rng_policy"], "epochs": 100, "trials": 10, "bits_per_trial": 10000,
         "snrs_db": list(range(0, 21, 2)), "torch_version": torch.__version__,
         "threads": torch.get_num_threads(), "checkpoint_rule": "unchanged original per-family rule",
         "historical_limit": "Original PyTorch seed and learned checkpoint absent; this is new protocol replication."})
@@ -154,6 +189,7 @@ def main():
     ap.add_argument("--threads", type=int, default=2)
     args = ap.parse_args()
     job = next(j for j in jobs() if j["id"] == args.job)
+    torch = None
     try:
         import torch
         torch.set_num_threads(args.threads)
@@ -161,15 +197,20 @@ def main():
     except ImportError:
         if job["worker"] in ("canonical", "sequence"):
             raise
-    if job["worker"] == "script":
-        sys.argv = [job["script"]]
-        runpy.run_path(str(ROOT / job["script"]), run_name="__main__")
-    elif job["worker"] == "baselines":
-        baselines()
-    elif job["worker"] == "sequence":
-        sequence()
-    elif job["worker"] == "canonical":
-        canonical(job)
+    configure_rng(job, torch)
+    snapshot_rng(job, "start", torch)
+    try:
+        if job["worker"] == "script":
+            sys.argv = [job["script"]]
+            runpy.run_path(str(ROOT / job["script"]), run_name="__main__")
+        elif job["worker"] == "baselines":
+            baselines()
+        elif job["worker"] == "sequence":
+            sequence()
+        elif job["worker"] == "canonical":
+            canonical(job)
+    finally:
+        snapshot_rng(job, "end", torch)
 
 
 if __name__ == "__main__":

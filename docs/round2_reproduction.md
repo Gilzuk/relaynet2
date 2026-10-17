@@ -42,6 +42,19 @@ The first two jobs are saved-data reanalysis, not new Monte Carlo evidence. The 
 
 ## Evidence and decisions
 
+Future runs declare and enforce an RNG policy for every job: Python, global
+NumPy and Torch bootstrap seed 20261017, `PYTHONHASHSEED=0`, CPU execution,
+fixed thread counts and deterministic Torch algorithms. Each study's original
+local seeds remain explicit in the policy. Global states at job entry/exit
+are archived under `outputs/reproduction_checkpoints/rng/`; local-generator
+seeds and the original call order support replay from the beginning. These
+snapshots do not implement mid-job resume. See the
+[historical RNG audit and full-budget seed-42 control](rng_reproducibility_audit_2026-10-17.md).
+The already launched hosted run 39024026594 uses frozen source `c0394f0` and
+continues with its original settings; the new flags/snapshots apply only to
+later runs. Same-host seed-42 MLP repeats matched exactly, but cross-environment
+identity and historical learned-result recovery remain unestablished.
+
 Every run retains `manifest.json`, `environment.json`, `status.json` and `REPORT.md`. Each job retains its exact command and environment overrides, source revision, start/end times, exit status, log, reference JSON snapshots with SHA-256 hashes and immutable GitHub links, raw new outputs, and `comparison.json`. Checkpoints from new canonical and Table 6.7 training are included under the job's output folder. Table 6.7 outputs are updated after every completed seed in the worktree; final/failed-job harvesting preserves the available outputs.
 
 `MATCH` means the declared scientific fields agree (roundoff tolerance only: relative 1e-12, absolute 1e-14). It supplies `matching_reference` paths back to the relevant original JSON. It does not imply byte identity, statistical equivalence, or verification of untested claims. Deterministic/control changes are `MISMATCH`. Changed learned results are `RETRAINING_DIFFERENCE_REQUIRES_REVIEW`, with every differing field retained. Missing output, exceptions and timeouts are failures, never matches. A changed ranking or failed target is explicit in the new per-target summaries.

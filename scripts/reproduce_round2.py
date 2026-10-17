@@ -107,7 +107,7 @@ def differences(expected, actual, ignored=()):
 
 def jobs():
     """Principal round-2 claims; no reduced-budget smoke runs in this manifest."""
-    return [
+    specifications = [
         dict(id="common_target_analysis", kind="analysis", worker="script",
              script="penalty_common_targets.py", outputs=["results/penalty_common_targets.json"],
              ignored=["/git_rev"], scope="Table 6.7, Appendix 9.6 and minimum-size conclusions; saved-curve reanalysis"),
@@ -136,6 +136,35 @@ def jobs():
              outputs=["results/normalized_3k/3k_rayleigh.json"], seed=20261017,
              scope="Original 3K protocol, 100 epochs; new declared PyTorch seed, absent historical checkpoints/RNG"),
     ]
+    for job in specifications:
+        job["rng_policy"] = {
+            "bootstrap_python_numpy_torch_seed": job.get("seed", 20261017),
+            "python_hash_seed": 0, "torch_deterministic_algorithms": True,
+            "scope": "Same source, software, hardware, thread settings and call order; not a cross-platform guarantee.",
+        }
+        if job["worker"] == "canonical":
+            job["rng_policy"].update(
+                training_seed_argument=42, training_data_seed_rule="42 + int(training SNR in dB)",
+                evaluation_trial_seeds=list(range(10)),
+                historical_torch_seed="unknown; bootstrap is a new declared seed")
+        elif job["worker"] == "sequence":
+            job["rng_policy"].update(
+                torch_initialization_and_training_seeds=[0, 1, 2],
+                numpy_training_bit_generator_seeds=[1000, 1001, 1002],
+                hop1_constructor_seed=1, evaluation_trial_seeds=list(range(20)),
+                channel_state_rule="Preserve original baseline/AF/training/evaluation call order")
+        elif job["id"] == "coded_matched":
+            job["rng_policy"].update(
+                numpy_initialization_seed=0, numpy_training_bits_fading_noise_seed=0,
+                numpy_training_shuffle_seed=42,
+                evaluation_seed_rule="800000 + 1000 * SNR_dB + trial (0..29)")
+        elif job["id"] == "factorized_mlse":
+            job["rng_policy"]["numpy_local_generator_seed"] = 20261012
+        elif job["worker"] == "baselines":
+            job["rng_policy"]["evaluation_trial_seeds"] = list(range(10))
+        else:
+            job["rng_policy"]["scientific_random_draws"] = "none; saved-data analysis"
+    return specifications
 
 
 def canonical_projection(data, classical_only=False):

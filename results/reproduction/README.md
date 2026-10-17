@@ -1,5 +1,24 @@
 # Round-2 reproduction evidence
 
+## Seed-42 control and explicit RNG policies
+
+The [historical RNG audit](../../docs/rng_reproducibility_audit_2026-10-17.md)
+found that the canonical `--seed 42` path seeded training data but not Torch
+initialization/minibatch order. Four fresh full-budget native MLP runs show:
+legacy handling differs in 102/110 trial BERs between repeats; explicit
+Python/NumPy/Torch seed 42 before construction plus deterministic algorithms
+produces identical initial/final weights and all 110 BERs on this host.
+The seeded result still differs from the historical published MLP by up to
+0.00150 mean BER. See [comparison](20261017-rng-seed42/comparison.json) and
+[manifest](20261017-rng-seed42/manifest.json), with all four results, weights,
+RNG states, commands and logs. This control does not replace a thesis input.
+
+Future suite revisions declare all seed schedules, require deterministic
+Torch algorithms and retain global RNG state snapshots. Hosted run
+39024026594 remains on source `c0394f0` with its original settings.
+
+## Earlier local run and hosted continuation
+
 The thesis corrections were merged in [PR 183](https://github.com/Gilzuk/relaynet2/pull/183). Follow-on experiments are kept separately in [PR 184](https://github.com/Gilzuk/relaynet2/pull/184). Original published result files are preserved.
 
 **Recovery snapshot: 17 October 2026.** The local run [`20261017-round2-v2`](20261017-round2-v2/REPORT.md), frozen source `43ce4a6fbfe2a147a8c77c0fb06e44fcd5d7d5e2`, lost its execution session after its last heartbeat at **09:07:25 UTC**. It is marked `INTERRUPTED_SESSION_LOST`; it is not still running. The exact termination mechanism and time are unknown. All 16 completed sequence seeds and checkpoints were recovered. The original last-live status is preserved in the [interruption record](20261017-round2-v2/sequence_memory/interruption/recovery.json).

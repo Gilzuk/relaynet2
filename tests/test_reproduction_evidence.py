@@ -95,3 +95,76 @@ def test_isolated_worktree_executes_fresh_output_and_preserves_reference(tmp_pat
 
 def read_json_fixture(path):
     return json.loads(path.read_text())
+
+
+def test_archived_provenance_uses_pinned_producer_and_rejects_wrong_source(tmp_path, monkeypatch):
+    import provenance_audit as audit
+    path = "manifest.json"
+    revision = "a" * 40
+    monkeypatch.setattr(audit, "ROOT", str(tmp_path))
+    monkeypatch.setattr(audit, "REGISTRY", {"archived": ("runner.py", [path], ["evidence"])} )
+    monkeypatch.setattr(audit, "FROZEN_RUN_SOURCES", {path: revision})
+
+    def fake_commit(path, ref="HEAD"):
+        # The current runner is newer than the archived data, its frozen
+        # producer is older. Only the latter actually generated this run.
+        ts = 10 if ref == revision else (20 if path == "manifest.json" else 30)
+        return [ref, "2026-10-17", "Test", "fixture", ts]
+
+    monkeypatch.setattr(audit, "last_commit", fake_commit)
+    write_json(tmp_path / path, {"source_commit": revision})
+    rows, warnings = audit.audit()
+    assert not warnings
+    assert rows[0]["producer_revision"] == revision
+    write_json(tmp_path / path, {"source_commit": "b" * 40})
+    assert audit.audit()[1][0][1] == "FROZEN SOURCE MISMATCH"
+
+
+def test_rng_bootstrap_repeats_all_generators_and_fails_closed_for_nondeterminism():
+    import random
+    import numpy as np
+    import pytest
+    from scripts.reproduction_worker import configure_rng
+    torch = pytest.importorskip("torch")
+    py_state, np_state, torch_state = random.getstate(), np.random.get_state(), torch.get_rng_state()
+    deterministic = torch.are_deterministic_algorithms_enabled()
+    benchmark, cudnn_deterministic = torch.backends.cudnn.benchmark, torch.backends.cudnn.deterministic
+    try:
+        job = next(j for j in jobs() if j["id"] == "canonical_native")
+        configure_rng(job, torch)
+        first = (random.random(), np.random.random(8), torch.rand(8))
+        configure_rng(job, torch)
+        second = (random.random(), np.random.random(8), torch.rand(8))
+        assert first[0] == second[0]
+        assert np.array_equal(first[1], second[1])
+        assert torch.equal(first[2], second[2])
+        assert torch.initial_seed() == job["seed"] == 20261017
+        assert torch.are_deterministic_algorithms_enabled()
+    finally:
+        random.setstate(py_state)
+        np.random.set_state(np_state)
+        torch.set_rng_state(torch_state)
+        torch.use_deterministic_algorithms(deterministic)
+        torch.backends.cudnn.benchmark = benchmark
+        torch.backends.cudnn.deterministic = cudnn_deterministic
+
+
+def test_rng_evidence_records_state_without_advancing_it(tmp_path, monkeypatch):
+    import random
+    import numpy as np
+    import pytest
+    from scripts import reproduction_worker as worker
+    torch = pytest.importorskip("torch")
+    monkeypatch.setattr(worker, "ROOT", tmp_path)
+    monkeypatch.setattr(worker, "git", lambda *a: "frozen-source")
+    py_state, np_state, torch_state = random.getstate(), np.random.get_state(), torch.get_rng_state()
+    job = next(j for j in jobs() if j["id"] == "coded_matched")
+    worker.snapshot_rng(job, "start", torch)
+    assert random.getstate() == py_state
+    current = np.random.get_state()
+    assert current[0] == np_state[0] and np.array_equal(current[1], np_state[1])
+    assert current[2:] == np_state[2:]
+    assert torch.equal(torch.get_rng_state(), torch_state)
+    saved = read_json_fixture(tmp_path / "reproduction_checkpoints/rng/coded_matched_start.json")
+    assert saved["torch"]["cpu_state_hex"] == bytes(torch_state.tolist()).hex()
+    assert saved["policy"]["numpy_training_shuffle_seed"] == 42
