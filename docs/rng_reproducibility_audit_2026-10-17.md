@@ -6,6 +6,10 @@ confirms that explicitly seeding all RNGs before construction makes this
 example repeat exactly on the current host. This does not recover the
 historical learned weights or establish reproducibility of every architecture.
 
+## Interpretation of additional training runs
+
+A fresh stochastic training realization can differ numerically without making the original measurement incorrect. The October runs supplement the original results and repeated multi-seed evidence. Their seed design is summarized in [the manuscript assessment](round2_rerun_manuscript_update_2026-10-17.md). Historical Torch state is unavailable; the sequence and coded paths retain declared local seeds. Consequently, these records do not isolate a changed-initial-seed explanation for every difference, and repeated seed IDs must not be counted as independent new seeds.
+
 ## What the historical code actually seeded
 
 Native canonical source:

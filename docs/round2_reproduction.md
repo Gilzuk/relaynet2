@@ -4,7 +4,7 @@ PR [183](https://github.com/Gilzuk/relaynet2/pull/183) was merged at `42e3e386e0
 
 Current evidence and investigation: [results/reproduction/README.md](../results/reproduction/README.md). The initial setup attempt failed before simulation; the corrected local run `20261017-round2-v2` then lost its session after 09:07:25 UTC. Four completed checks matched and 16 training seeds/checkpoints were recovered. Both attempts remain preserved. Do not interpret their old heartbeat or PID as proof of continued execution.
 
-All four hosted jobs in run 39024026594 have now completed. Their complete evidence is committed at `dc7c02c00cbebdfb566362a810ab4b45cb6abbe0`; all learned comparisons require review, with exact classical controls. The [post-run assessment](round2_rerun_manuscript_update_2026-10-17.md) explains the manuscript updates and fresh paired tests. No new run was launched for this assessment.
+All four hosted jobs in run 39024026594 have now completed. Their complete evidence is committed at `dc7c02c00cbebdfb566362a810ab4b45cb6abbe0`; the numerical comparator flags learned differences for review, with exact classical controls. These runs supplement the training-realization and multi-seed evidence; they do not, from numerical disagreement alone, invalidate original measurements. The sequence study repeats the same three seed IDs, and the coded study retains its initialization seed; not all differences can be attributed to changed seeds. The [post-run assessment](round2_rerun_manuscript_update_2026-10-17.md) explains the manuscript updates and fresh paired tests. No new run was launched for this assessment.
 
 ## Persistent hosted execution
 

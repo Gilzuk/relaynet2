@@ -1,6 +1,6 @@
 # October 2026 validation update
 
-The full-budget repetition of 17 October is documented in `docs/round2_rerun_manuscript_update_2026-10-17.md` and `results/round2_rerun_assessment.json`. Four workers exited successfully; learned outputs differ from historical results while classical controls match exactly. Evidence is archived at `dc7c02c00cbebdfb566362a810ab4b45cb6abbe0`. Historical inputs and numeric tables are preserved; Section 7.1.4 adds the new results and limits. No historical learned checkpoint recovery or equivalence is claimed.
+The full-budget repetition of 17 October is documented in `docs/round2_rerun_manuscript_update_2026-10-17.md` and `results/round2_rerun_assessment.json`. Four workers exited successfully; learned outputs differ from historical results while classical controls match exactly. Evidence is archived at `dc7c02c00cbebdfb566362a810ab4b45cb6abbe0`. Historical inputs and numeric tables are preserved; Section 7.1.4 adds the new training realizations, repeated multi-seed evidence and limits. Numerical differences alone do not invalidate original measurements. No historical learned checkpoint recovery or equivalence is claimed.
 
 The August record below is historical, not a claim that every experiment was repeated in October.
 

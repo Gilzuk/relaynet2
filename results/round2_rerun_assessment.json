@@ -7,6 +7,46 @@
     "scipy": "1.17.0"
   },
   "paired_test": "Two-sided Wilcoxon signed-rank, uncorrected; conditional on each trained checkpoint. No equivalence test.",
+  "interpretation": {
+    "purpose": "Additional training replications and seed sensitivity; historical measurements retained.",
+    "original_measurements": "Numerical differences between training realizations alone do not establish that historical measurements were incorrect.",
+    "causal_limit": "Historical canonical RNG states are unknown; repeated seed IDs and changed environments prevent attributing all differences to initial seed alone.",
+    "pooling": "Do not pool protocols or repeated seed IDs as independent new training seeds."
+  },
+  "seed_design": {
+    "canonical_native": {
+      "historical_torch_seed": null,
+      "additional_run_bootstrap_seed": 20261017,
+      "design": "Additional training realization; historical RNG state unavailable, not an isolated seed-only experiment."
+    },
+    "canonical_3k": {
+      "historical_torch_seed": null,
+      "additional_run_bootstrap_seed": 20261017,
+      "design": "Additional training realization; historical RNG state unavailable, not an isolated seed-only experiment."
+    },
+    "sequence_memory": {
+      "historical_seed_ids": [
+        0,
+        1,
+        2
+      ],
+      "additional_run_seed_ids": [
+        0,
+        1,
+        2
+      ],
+      "distinct_recorded_seed_ids": [
+        0,
+        1,
+        2
+      ],
+      "design": "Repeated multi-seed study, grouped by execution environment; repeated seed IDs are not independent new seeds."
+    },
+    "coded_matched": {
+      "design": "Additional same-protocol replication with the same declared local seed policy, not a new initial-seed sweep.",
+      "policy_evidence": "docs/rng_reproducibility_audit_2026-10-17.md"
+    }
+  },
   "jobs": {
     "canonical_native": {
       "finished_at": "2026-10-17T10:49:37.625853+00:00",

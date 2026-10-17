@@ -43,7 +43,12 @@ def assess():
            'analysis_environment': {'python': platform.python_version(), 'numpy': np.__version__,
                                     'scipy': scipy.__version__},
            'paired_test': 'Two-sided Wilcoxon signed-rank, uncorrected; conditional on each trained checkpoint. No equivalence test.',
-           'jobs': {}, 'canonical': {}, 'sequence': {}, 'coded': {}, 'evidence': evidence}
+           'interpretation': {
+               'purpose': 'Additional training replications and seed sensitivity; historical measurements retained.',
+               'original_measurements': 'Numerical differences between training realizations alone do not establish that historical measurements were incorrect.',
+               'causal_limit': 'Historical canonical RNG states are unknown; repeated seed IDs and changed environments prevent attributing all differences to initial seed alone.',
+               'pooling': 'Do not pool protocols or repeated seed IDs as independent new training seeds.'},
+           'seed_design': {}, 'jobs': {}, 'canonical': {}, 'sequence': {}, 'coded': {}, 'evidence': evidence}
     for name in ('canonical_native', 'canonical_3k', 'sequence_memory', 'coded_matched'):
         directory = ROOT / 'results/reproduction' / f'{RUN}-{name}' / name
         job = load(directory / 'job.json')
@@ -66,6 +71,10 @@ def assess():
         new = load(directory / 'outputs' / job['outputs'][0])
         old = load(directory / 'references' / job['reference_files'][0]['path'])
         if name.startswith('canonical_'):
+            out['seed_design'][name] = {
+                'historical_torch_seed': None,
+                'additional_run_bootstrap_seed': job['seed'],
+                'design': 'Additional training realization; historical RNG state unavailable, not an isolated seed-only experiment.'}
             for model in ('AF', 'DF'):
                 if not np.array_equal(old['results'][model]['ber_trials'], new['results'][model]['ber_trials']):
                     raise ValueError(f'Classical trials differ: {name}/{model}')
@@ -89,6 +98,16 @@ def assess():
             out['canonical'][name] = {'paired_vs_DF': pairs, 'max_gap_vs_DF': gaps,
                                      'strict_pointwise_reversals': reversals}
         elif name == 'sequence_memory':
+            old_seeds, new_seeds = old['train_seeds'], new['train_seeds']
+            for label, dataset, expected in (('historical', old, old_seeds), ('additional', new, new_seeds)):
+                for channel in dataset['channels'].values():
+                    for arch in channel['archs'].values():
+                        if sorted(r['seed'] for r in arch['runs']) != sorted(expected):
+                            raise ValueError(f'Incomplete {label} training-seed group')
+            out['seed_design'][name] = {
+                'historical_seed_ids': old_seeds, 'additional_run_seed_ids': new_seeds,
+                'distinct_recorded_seed_ids': sorted(set(old_seeds + new_seeds)),
+                'design': 'Repeated multi-seed study, grouped by execution environment; repeated seed IDs are not independent new seeds.'}
             published = load(directory / 'references/results/penalty_common_targets.json')['table_6_7']
             for channel, current in new['channels'].items():
                 if not np.array_equal(old['channels'][channel]['baseline_ber'], current['baseline_ber']):
@@ -106,6 +125,9 @@ def assess():
                 out['sequence'][channel] = {'summaries': summaries, 'best_of_three_order': ranks,
                                            'order_unchanged': ranks['historical'] == ranks['rerun']}
         else:
+            out['seed_design'][name] = {
+                'design': 'Additional same-protocol replication with the same declared local seed policy, not a new initial-seed sweep.',
+                'policy_evidence': 'docs/rng_reproducibility_audit_2026-10-17.md'}
             for snr, rows in new['per_trial'].items():
                 for model, values in rows.items():
                     if not model.startswith('mlp_') and not np.array_equal(old['per_trial'][snr][model], values):

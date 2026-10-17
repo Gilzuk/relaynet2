@@ -17,7 +17,7 @@ The revisions cover the following:
 5. **Principal comparisons:** Matched decoding now leads the coded discussion, and factorized-trellis counts appear in the main complexity comparisons. The earlier comparisons remain as shorter diagnostics.
 6. **Scope and presentation:** I reconciled the causality and input-context statements, consistently identified the simplified Mamba implementations, corrected the ten-pilot caption, provided an identifiable code revision and fixed Chapter 5’s running headers.
 
-I also completed full-budget validation runs. Classical controls reproduced exactly, while learned numerical results differed. The revised thesis reports these differences separately, qualifies the historical BER bound and initialization spreads, and retains the original tables as historical measurements. Fresh paired tests preserve the matched-coded conclusion, but I do not claim exact historical learned-result reproduction. The numerical verifier now checks 892 values against the recorded evidence.
+I also added full-budget training replications and repeated multi-seed tests. These supplement the original measurements; differences between trained realizations do not by themselves show that the original results were incorrect. The revised thesis separates the new canonical realizations, the repeated three-seed sequence study and the same-seed repeatability control. Classical controls reproduce exactly, and fresh paired tests preserve the matched-coded conclusion. Original tables remain intact, with the numerical variation and limits of seed attribution reported alongside them. The numerical verifier checks 892 values against the recorded evidence.
 
 Thank you again for your careful review and guidance.
 
