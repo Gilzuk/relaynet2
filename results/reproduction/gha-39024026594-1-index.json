@@ -1,0 +1,103 @@
+{
+  "source_commit": "c0394f0da5dac449594b89a9794fe251fad75e76",
+  "workflow_url": "https://github.com/Gilzuk/relaynet2/actions/runs/39024026594",
+  "runs": [
+    {
+      "id": "gha-39024026594-1-sequence_memory",
+      "status": "REVIEW_REQUIRED",
+      "jobs": [
+        {
+          "id": "sequence_memory",
+          "kind": "seeded_retraining",
+          "worker": "sequence",
+          "outputs": [
+            "results/reproduction_seq_memory.json"
+          ],
+          "references": [
+            "results/seq_models_on_memory.json",
+            "results/penalty_common_targets.json"
+          ],
+          "scope": "All 3 channels \u00d7 4 architectures \u00d7 seeds 0,1,2; original 40 epochs and 20\u00d720,000-bit budget",
+          "status": "RETRAINING_DIFFERENCE_REQUIRES_REVIEW",
+          "started_at": "2026-10-17T10:13:30.227904+00:00",
+          "finished_at": "2026-10-17T11:00:50.796167+00:00",
+          "elapsed_seconds": 2840.6
+        }
+      ],
+      "report": "gha-39024026594-1-sequence_memory/REPORT.md"
+    },
+    {
+      "id": "gha-39024026594-1-coded_matched",
+      "status": "REVIEW_REQUIRED",
+      "jobs": [
+        {
+          "id": "coded_matched",
+          "kind": "seeded_retraining",
+          "worker": "script",
+          "script": "coded_matched_metrics.py",
+          "outputs": [
+            "results/coded_matched_metrics.json"
+          ],
+          "env": {
+            "CMM_TRIALS": "30",
+            "CMM_SNRS": "0,4,8,12,16,20"
+          },
+          "ignored": [
+            "/seconds"
+          ],
+          "scope": "Full matched coded comparison: 30 trials \u00d7 500 frames at six SNRs; hard/soft MLP, no Mamba",
+          "status": "RETRAINING_DIFFERENCE_REQUIRES_REVIEW",
+          "started_at": "2026-10-17T10:13:29.435550+00:00",
+          "finished_at": "2026-10-17T11:22:00.702030+00:00",
+          "elapsed_seconds": 4111.3
+        }
+      ],
+      "report": "gha-39024026594-1-coded_matched/REPORT.md"
+    },
+    {
+      "id": "gha-39024026594-1-canonical_native",
+      "status": "REVIEW_REQUIRED",
+      "jobs": [
+        {
+          "id": "canonical_native",
+          "kind": "new_training_replication",
+          "worker": "canonical",
+          "stage": "7.10",
+          "outputs": [
+            "results/modulation/qpsk_rayleigh.json"
+          ],
+          "seed": 20261017,
+          "scope": "Original native protocol, 100 epochs; new declared PyTorch seed, absent historical checkpoints/RNG",
+          "status": "RETRAINING_DIFFERENCE_REQUIRES_REVIEW",
+          "started_at": "2026-10-17T10:13:26.725142+00:00",
+          "finished_at": "2026-10-17T10:49:37.625853+00:00",
+          "elapsed_seconds": 2170.9
+        }
+      ],
+      "report": "gha-39024026594-1-canonical_native/REPORT.md"
+    },
+    {
+      "id": "gha-39024026594-1-canonical_3k",
+      "status": "REVIEW_REQUIRED",
+      "jobs": [
+        {
+          "id": "canonical_3k",
+          "kind": "new_training_replication",
+          "worker": "canonical",
+          "stage": "7.8",
+          "outputs": [
+            "results/normalized_3k/3k_rayleigh.json"
+          ],
+          "seed": 20261017,
+          "scope": "Original 3K protocol, 100 epochs; new declared PyTorch seed, absent historical checkpoints/RNG",
+          "status": "RETRAINING_DIFFERENCE_REQUIRES_REVIEW",
+          "started_at": "2026-10-17T10:13:27.449196+00:00",
+          "finished_at": "2026-10-17T10:25:57.967280+00:00",
+          "elapsed_seconds": 750.5
+        }
+      ],
+      "report": "gha-39024026594-1-canonical_3k/REPORT.md"
+    }
+  ],
+  "missing_jobs": []
+}

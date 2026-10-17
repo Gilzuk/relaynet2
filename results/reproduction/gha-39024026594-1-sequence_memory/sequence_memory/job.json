@@ -1,0 +1,240 @@
+{
+  "id": "sequence_memory",
+  "kind": "seeded_retraining",
+  "worker": "sequence",
+  "outputs": [
+    "results/reproduction_seq_memory.json"
+  ],
+  "references": [
+    "results/seq_models_on_memory.json",
+    "results/penalty_common_targets.json"
+  ],
+  "scope": "All 3 channels \u00d7 4 architectures \u00d7 seeds 0,1,2; original 40 epochs and 20\u00d720,000-bit budget",
+  "status": "RETRAINING_DIFFERENCE_REQUIRES_REVIEW",
+  "started_at": "2026-10-17T10:13:30.227904+00:00",
+  "reference_files": [
+    {
+      "path": "results/seq_models_on_memory.json",
+      "sha256": "ad07c32795f53e6993751e1f8514eb0760ea9168e8ed325582da0dc339e615f9",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/c0394f0da5dac449594b89a9794fe251fad75e76/results/seq_models_on_memory.json"
+    },
+    {
+      "path": "results/penalty_common_targets.json",
+      "sha256": "52547e01e768f88d6fea547551727a746f19c820f682f9ddee2a657d15c44e3d",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/c0394f0da5dac449594b89a9794fe251fad75e76/results/penalty_common_targets.json"
+    }
+  ],
+  "source_commit": "c0394f0da5dac449594b89a9794fe251fad75e76",
+  "timeout_seconds": 19800.0,
+  "command": [
+    "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+    "-u",
+    "scripts/reproduction_worker.py",
+    "--job",
+    "sequence_memory",
+    "--threads",
+    "2"
+  ],
+  "environment_overrides": {
+    "OMP_NUM_THREADS": "2",
+    "OPENBLAS_NUM_THREADS": "2",
+    "MKL_NUM_THREADS": "2",
+    "NUMEXPR_NUM_THREADS": "2",
+    "PYTHONHASHSEED": "0",
+    "MPLBACKEND": "Agg",
+    "CUDA_VISIBLE_DEVICES": ""
+  },
+  "pid": 2561,
+  "elapsed_seconds": 2840.6,
+  "returncode": 0,
+  "artifacts": [
+    {
+      "path": "outputs/reproduction_checkpoints/sequence/composite_MLP-3K_0.pt",
+      "sha256": "11af1b0358e958c3f1f7d14ba436f664d01a084694a3ce108e29c4e27edb6fc6",
+      "bytes": 20498
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/sequence/composite_MLP-3K_1.pt",
+      "sha256": "a66536e8d1d6c1786203d479424a9a0e563b4ca12a2913d3b9416df57bc14f69",
+      "bytes": 20498
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/sequence/composite_MLP-3K_2.pt",
+      "sha256": "9f6c684943197e68f586bdf57ec93682e7e4bd42bb824ad84c5cc67b2d1ef559",
+      "bytes": 20498
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/sequence/composite_Mamba-S6-3K_0.pt",
+      "sha256": "be7a1eef7e2523f2ff70b24eb7cc2720a9704cc2767e5a3ff5527b5a7c9a0231",
+      "bytes": 27720
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/sequence/composite_Mamba-S6-3K_1.pt",
+      "sha256": "7ed33e8c15298affc9036db8b8d080079c1129d0e5018617756feb60d9330c98",
+      "bytes": 27720
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/sequence/composite_Mamba-S6-3K_2.pt",
+      "sha256": "0ef849d6f4828e88a14676a96558766a5d1eb0e4445ff5ca83e09b00cac342fd",
+      "bytes": 27720
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/sequence/composite_Mamba2-3K_0.pt",
+      "sha256": "9b110744e2e9ccae9b8d50bfd8daebc2f5db3eed1783d2e06afe493c0c897f9e",
+      "bytes": 28192
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/sequence/composite_Mamba2-3K_1.pt",
+      "sha256": "802490d58ba06576e2c9cb3599529ad1cd9ed818bf5c3dd106401d7ff476a42c",
+      "bytes": 28192
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/sequence/composite_Mamba2-3K_2.pt",
+      "sha256": "f0e8ac9ed4a44919c6c3565fc8992828c40946c93084005cfee4e970ff3893bf",
+      "bytes": 28192
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/sequence/composite_Transformer-3K_0.pt",
+      "sha256": "ba67bb54f37e5f24beb992c864fcd846c5598ecb9fd85445481e2d2eeb1d9489",
+      "bytes": 27221
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/sequence/composite_Transformer-3K_1.pt",
+      "sha256": "af4a51f6502f0645f3491aee4ee6752009bf05eaf10ee70b3f2f11623b593ad1",
+      "bytes": 27221
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/sequence/composite_Transformer-3K_2.pt",
+      "sha256": "0cf862f3d2ff9ee5362e4e526d60519cf43098993780ed673227fa2bdedd7963",
+      "bytes": 27221
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/sequence/isi_MLP-3K_0.pt",
+      "sha256": "241c6db1418b7b31429358e3ae50e86b641ee38c47689478cafca6128d4de2c0",
+      "bytes": 20432
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/sequence/isi_MLP-3K_1.pt",
+      "sha256": "b15b182ad897db9b829f710199bc9d0b7c043654f00bade0bac319265cb4d92d",
+      "bytes": 20432
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/sequence/isi_MLP-3K_2.pt",
+      "sha256": "65d4b77cee3ba60cde01491ab1d6af619a845ff15fa0e5d385ef06872baa125b",
+      "bytes": 20432
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/sequence/isi_Mamba-S6-3K_0.pt",
+      "sha256": "094c49ff4e9d4ec6b5d90e84d93ee9aab14585fe932cb8a6f85e3b6eb5e26aa7",
+      "bytes": 27470
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/sequence/isi_Mamba-S6-3K_1.pt",
+      "sha256": "aa16f4a99ddbf24317ff9a231db29b5c0012034c7a1e3e81210b93eb98f1eac5",
+      "bytes": 27470
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/sequence/isi_Mamba-S6-3K_2.pt",
+      "sha256": "8ef1f7d811f0edbb813564ed36eac02b3f0d6ebc6e740d5382ce4a35d72bff59",
+      "bytes": 27470
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/sequence/isi_Mamba2-3K_0.pt",
+      "sha256": "5043551590d07356a9b0351fb31a53581f41bcf5699188e13765ee9b69aa7018",
+      "bytes": 27738
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/sequence/isi_Mamba2-3K_1.pt",
+      "sha256": "11cb33ef5fe7635f819a4d03a941410590526813718887d53951c554158129ee",
+      "bytes": 27738
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/sequence/isi_Mamba2-3K_2.pt",
+      "sha256": "df0f660f8e5403eeaafd89d88e1b020d9d64b4703d94ad0dc9b1256154a205ef",
+      "bytes": 27738
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/sequence/isi_Transformer-3K_0.pt",
+      "sha256": "dc0bf97fb75a5796346af9ab8d87f9749f5f42df472d5260b304c53fd4729f14",
+      "bytes": 26937
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/sequence/isi_Transformer-3K_1.pt",
+      "sha256": "2984120461c443adc338ac77072d49a60b58a603c939e60ba064fb89aba1d54c",
+      "bytes": 26937
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/sequence/isi_Transformer-3K_2.pt",
+      "sha256": "e9ea34d92d8de91c0e06d72d3f191df76e14ed8a1f2bef818981d4a5cd1f5684",
+      "bytes": 26937
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/sequence/isi_complex_MLP-3K_0.pt",
+      "sha256": "ddab752ff9b7778e88149dc7827f21528f9fad8b024b7bc22e52fcc05679d69c",
+      "bytes": 20584
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/sequence/isi_complex_MLP-3K_1.pt",
+      "sha256": "679bf4ab460d6ae72204a8440d6d2ac4bc47660ab6a7c6d00185813d4fbf8449",
+      "bytes": 20584
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/sequence/isi_complex_MLP-3K_2.pt",
+      "sha256": "6f4056e308b1b35ea66dec0c049dfb6c03e4b5fadac970cede3c10023800294a",
+      "bytes": 20584
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/sequence/isi_complex_Mamba-S6-3K_0.pt",
+      "sha256": "9a36bc14abd3ba1d37aeb8f7dc5f5c368433314ebec322f03d72a72430189807",
+      "bytes": 27782
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/sequence/isi_complex_Mamba-S6-3K_1.pt",
+      "sha256": "de76773846aeae86898803d8200276e31573a6dc8c61a3dc77f6bd0d091b881f",
+      "bytes": 27782
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/sequence/isi_complex_Mamba-S6-3K_2.pt",
+      "sha256": "8df7b127a97c5dd1f4f7805c69ee991f38401c5ff0fd24a64de8bb24a03dbd73",
+      "bytes": 27782
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/sequence/isi_complex_Mamba2-3K_0.pt",
+      "sha256": "5e64ee068b62cbdd791773e029bfbbb737c3684f34fbe5a47d2bd0e80c207784",
+      "bytes": 28322
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/sequence/isi_complex_Mamba2-3K_1.pt",
+      "sha256": "3f212109b8a2b47d1a399fdc64373cb01d9c2c96726be380011214197c327468",
+      "bytes": 28322
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/sequence/isi_complex_Mamba2-3K_2.pt",
+      "sha256": "81a5c948cd2d6967901cbc525bb489b946ee047aad4e4fd0bbb8ad023a6ce049",
+      "bytes": 28322
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/sequence/isi_complex_Transformer-3K_0.pt",
+      "sha256": "113c30d1493364c76e9f9fafaddcf416d4e4563b863b4c25ad5cd93a7a072916",
+      "bytes": 27273
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/sequence/isi_complex_Transformer-3K_1.pt",
+      "sha256": "56638202cb224a8cf44cc33cea2ce6075bb27caddb91467e3bb7318380d0f224",
+      "bytes": 27273
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/sequence/isi_complex_Transformer-3K_2.pt",
+      "sha256": "71a25342c97b61ca913e1a1ff3d38ddc729bf47af359fcb7daef343689fdf7a1",
+      "bytes": 27273
+    },
+    {
+      "path": "outputs/results/reproduction_seq_memory.json",
+      "sha256": "7b4a9ce45fcc0bc61d39c8deb96aad8aebca5a75a8c5902139ec949c8eb3e401",
+      "bytes": 187288
+    }
+  ],
+  "difference_count": 113,
+  "finished_at": "2026-10-17T11:00:50.796167+00:00",
+  "log_sha256": "028ed04672344456fdb2a17fcf6522052c7d9be9042444733e3f869774a30a05"
+}

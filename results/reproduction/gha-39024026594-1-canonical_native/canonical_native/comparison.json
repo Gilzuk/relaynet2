@@ -1,0 +1,4463 @@
+{
+  "status": "RETRAINING_DIFFERENCE_REQUIRES_REVIEW",
+  "difference_count": 635,
+  "differences": [
+    {
+      "path": "/results/Hybrid/ber_mean/0",
+      "kind": "numeric",
+      "expected": 0.33290000000000003,
+      "actual": 0.3331,
+      "abs_diff": 0.00019999999999997797
+    },
+    {
+      "path": "/results/Hybrid/ber_mean/1",
+      "kind": "numeric",
+      "expected": 0.27993,
+      "actual": 0.28013999999999994,
+      "abs_diff": 0.00020999999999993246
+    },
+    {
+      "path": "/results/Hybrid/ber_mean/2",
+      "kind": "numeric",
+      "expected": 0.22197,
+      "actual": 0.22246000000000005,
+      "abs_diff": 0.000490000000000046
+    },
+    {
+      "path": "/results/Hybrid/ber_mean/3",
+      "kind": "numeric",
+      "expected": 0.16872000000000004,
+      "actual": 0.16845,
+      "abs_diff": 0.000270000000000048
+    },
+    {
+      "path": "/results/Hybrid/ber_mean/4",
+      "kind": "numeric",
+      "expected": 0.12197999999999998,
+      "actual": 0.12201999999999999,
+      "abs_diff": 4.000000000001225e-05
+    },
+    {
+      "path": "/results/Hybrid/ber_mean/5",
+      "kind": "numeric",
+      "expected": 0.08579,
+      "actual": 0.08569,
+      "abs_diff": 0.00010000000000000286
+    },
+    {
+      "path": "/results/Hybrid/ber_mean/6",
+      "kind": "numeric",
+      "expected": 0.05789999999999999,
+      "actual": 0.05791999999999999,
+      "abs_diff": 1.9999999999999185e-05
+    },
+    {
+      "path": "/results/Hybrid/ber_trials/0/0",
+      "kind": "numeric",
+      "expected": 0.3331,
+      "actual": 0.3335,
+      "abs_diff": 0.00040000000000001146
+    },
+    {
+      "path": "/results/Hybrid/ber_trials/0/1",
+      "kind": "numeric",
+      "expected": 0.3259,
+      "actual": 0.3276,
+      "abs_diff": 0.0016999999999999793
+    },
+    {
+      "path": "/results/Hybrid/ber_trials/0/2",
+      "kind": "numeric",
+      "expected": 0.3395,
+      "actual": 0.3389,
+      "abs_diff": 0.0006000000000000449
+    },
+    {
+      "path": "/results/Hybrid/ber_trials/0/3",
+      "kind": "numeric",
+      "expected": 0.3312,
+      "actual": 0.3326,
+      "abs_diff": 0.0014000000000000123
+    },
+    {
+      "path": "/results/Hybrid/ber_trials/0/4",
+      "kind": "numeric",
+      "expected": 0.3388,
+      "actual": 0.3385,
+      "abs_diff": 0.00029999999999996696
+    },
+    {
+      "path": "/results/Hybrid/ber_trials/0/5",
+      "kind": "numeric",
+      "expected": 0.3312,
+      "actual": 0.3325,
+      "abs_diff": 0.0013000000000000234
+    },
+    {
+      "path": "/results/Hybrid/ber_trials/0/6",
+      "kind": "numeric",
+      "expected": 0.331,
+      "actual": 0.3304,
+      "abs_diff": 0.0005999999999999894
+    },
+    {
+      "path": "/results/Hybrid/ber_trials/0/7",
+      "kind": "numeric",
+      "expected": 0.3397,
+      "actual": 0.3379,
+      "abs_diff": 0.0018000000000000238
+    },
+    {
+      "path": "/results/Hybrid/ber_trials/0/8",
+      "kind": "numeric",
+      "expected": 0.3288,
+      "actual": 0.33,
+      "abs_diff": 0.0012000000000000344
+    },
+    {
+      "path": "/results/Hybrid/ber_trials/0/9",
+      "kind": "numeric",
+      "expected": 0.3298,
+      "actual": 0.3291,
+      "abs_diff": 0.0006999999999999784
+    },
+    {
+      "path": "/results/Hybrid/ber_trials/1/1",
+      "kind": "numeric",
+      "expected": 0.2711,
+      "actual": 0.2716,
+      "abs_diff": 0.0005000000000000004
+    },
+    {
+      "path": "/results/Hybrid/ber_trials/1/2",
+      "kind": "numeric",
+      "expected": 0.2845,
+      "actual": 0.2837,
+      "abs_diff": 0.0007999999999999674
+    },
+    {
+      "path": "/results/Hybrid/ber_trials/1/3",
+      "kind": "numeric",
+      "expected": 0.2786,
+      "actual": 0.2812,
+      "abs_diff": 0.002599999999999991
+    },
+    {
+      "path": "/results/Hybrid/ber_trials/1/4",
+      "kind": "numeric",
+      "expected": 0.2841,
+      "actual": 0.284,
+      "abs_diff": 0.0001000000000000445
+    },
+    {
+      "path": "/results/Hybrid/ber_trials/1/5",
+      "kind": "numeric",
+      "expected": 0.2803,
+      "actual": 0.2804,
+      "abs_diff": 9.999999999998899e-05
+    },
+    {
+      "path": "/results/Hybrid/ber_trials/1/6",
+      "kind": "numeric",
+      "expected": 0.2779,
+      "actual": 0.2784,
+      "abs_diff": 0.0005000000000000004
+    },
+    {
+      "path": "/results/Hybrid/ber_trials/1/7",
+      "kind": "numeric",
+      "expected": 0.284,
+      "actual": 0.2845,
+      "abs_diff": 0.0005000000000000004
+    },
+    {
+      "path": "/results/Hybrid/ber_trials/1/8",
+      "kind": "numeric",
+      "expected": 0.2808,
+      "actual": 0.2809,
+      "abs_diff": 9.999999999998899e-05
+    },
+    {
+      "path": "/results/Hybrid/ber_trials/1/9",
+      "kind": "numeric",
+      "expected": 0.275,
+      "actual": 0.2737,
+      "abs_diff": 0.0013000000000000234
+    },
+    {
+      "path": "/results/Hybrid/ber_trials/2/0",
+      "kind": "numeric",
+      "expected": 0.2265,
+      "actual": 0.2291,
+      "abs_diff": 0.002599999999999991
+    },
+    {
+      "path": "/results/Hybrid/ber_trials/2/1",
+      "kind": "numeric",
+      "expected": 0.2155,
+      "actual": 0.2166,
+      "abs_diff": 0.0010999999999999899
+    },
+    {
+      "path": "/results/Hybrid/ber_trials/2/2",
+      "kind": "numeric",
+      "expected": 0.2261,
+      "actual": 0.2257,
+      "abs_diff": 0.0003999999999999837
+    },
+    {
+      "path": "/results/Hybrid/ber_trials/2/3",
+      "kind": "numeric",
+      "expected": 0.2204,
+      "actual": 0.2206,
+      "abs_diff": 0.00019999999999997797
+    },
+    {
+      "path": "/results/Hybrid/ber_trials/2/6",
+      "kind": "numeric",
+      "expected": 0.2225,
+      "actual": 0.2237,
+      "abs_diff": 0.0012000000000000066
+    },
+    {
+      "path": "/results/Hybrid/ber_trials/2/7",
+      "kind": "numeric",
+      "expected": 0.2234,
+      "actual": 0.2233,
+      "abs_diff": 9.999999999998899e-05
+    },
+    {
+      "path": "/results/Hybrid/ber_trials/2/8",
+      "kind": "numeric",
+      "expected": 0.2236,
+      "actual": 0.2238,
+      "abs_diff": 0.00020000000000000573
+    },
+    {
+      "path": "/results/Hybrid/ber_trials/2/9",
+      "kind": "numeric",
+      "expected": 0.214,
+      "actual": 0.2141,
+      "abs_diff": 0.00010000000000001674
+    },
+    {
+      "path": "/results/Hybrid/ber_trials/3/0",
+      "kind": "numeric",
+      "expected": 0.1751,
+      "actual": 0.1747,
+      "abs_diff": 0.00040000000000001146
+    },
+    {
+      "path": "/results/Hybrid/ber_trials/3/1",
+      "kind": "numeric",
+      "expected": 0.1637,
+      "actual": 0.1636,
+      "abs_diff": 0.00010000000000001674
+    },
+    {
+      "path": "/results/Hybrid/ber_trials/3/2",
+      "kind": "numeric",
+      "expected": 0.1706,
+      "actual": 0.1695,
+      "abs_diff": 0.0010999999999999899
+    },
+    {
+      "path": "/results/Hybrid/ber_trials/3/3",
+      "kind": "numeric",
+      "expected": 0.1698,
+      "actual": 0.1697,
+      "abs_diff": 0.00010000000000001674
+    },
+    {
+      "path": "/results/Hybrid/ber_trials/3/4",
+      "kind": "numeric",
+      "expected": 0.1691,
+      "actual": 0.169,
+      "abs_diff": 9.999999999998899e-05
+    },
+    {
+      "path": "/results/Hybrid/ber_trials/3/5",
+      "kind": "numeric",
+      "expected": 0.1654,
+      "actual": 0.1653,
+      "abs_diff": 9.999999999998899e-05
+    },
+    {
+      "path": "/results/Hybrid/ber_trials/3/6",
+      "kind": "numeric",
+      "expected": 0.169,
+      "actual": 0.1692,
+      "abs_diff": 0.00019999999999997797
+    },
+    {
+      "path": "/results/Hybrid/ber_trials/3/7",
+      "kind": "numeric",
+      "expected": 0.1688,
+      "actual": 0.1682,
+      "abs_diff": 0.0006000000000000172
+    },
+    {
+      "path": "/results/Hybrid/ber_trials/3/8",
+      "kind": "numeric",
+      "expected": 0.1711,
+      "actual": 0.1701,
+      "abs_diff": 0.0010000000000000009
+    },
+    {
+      "path": "/results/Hybrid/ber_trials/3/9",
+      "kind": "numeric",
+      "expected": 0.1646,
+      "actual": 0.1652,
+      "abs_diff": 0.0006000000000000172
+    },
+    {
+      "path": "/results/Hybrid/ber_trials/4/0",
+      "kind": "numeric",
+      "expected": 0.128,
+      "actual": 0.1276,
+      "abs_diff": 0.00040000000000001146
+    },
+    {
+      "path": "/results/Hybrid/ber_trials/4/5",
+      "kind": "numeric",
+      "expected": 0.1205,
+      "actual": 0.1213,
+      "abs_diff": 0.000800000000000009
+    },
+    {
+      "path": "/results/Hybrid/ber_trials/4/8",
+      "kind": "numeric",
+      "expected": 0.1276,
+      "actual": 0.1277,
+      "abs_diff": 0.00010000000000001674
+    },
+    {
+      "path": "/results/Hybrid/ber_trials/4/9",
+      "kind": "numeric",
+      "expected": 0.1157,
+      "actual": 0.1156,
+      "abs_diff": 0.00010000000000000286
+    },
+    {
+      "path": "/results/Hybrid/ber_trials/5/5",
+      "kind": "numeric",
+      "expected": 0.0875,
+      "actual": 0.0865,
+      "abs_diff": 0.0010000000000000009
+    },
+    {
+      "path": "/results/Hybrid/ber_trials/6/5",
+      "kind": "numeric",
+      "expected": 0.0584,
+      "actual": 0.0586,
+      "abs_diff": 0.0001999999999999988
+    },
+    {
+      "path": "/results/MLP (169p)/ber_mean/0",
+      "kind": "numeric",
+      "expected": 0.33494999999999997,
+      "actual": 0.33601000000000003,
+      "abs_diff": 0.001060000000000061
+    },
+    {
+      "path": "/results/MLP (169p)/ber_mean/1",
+      "kind": "numeric",
+      "expected": 0.28076999999999996,
+      "actual": 0.28226,
+      "abs_diff": 0.0014900000000000468
+    },
+    {
+      "path": "/results/MLP (169p)/ber_mean/2",
+      "kind": "numeric",
+      "expected": 0.22335,
+      "actual": 0.22458999999999998,
+      "abs_diff": 0.0012399999999999911
+    },
+    {
+      "path": "/results/MLP (169p)/ber_mean/3",
+      "kind": "numeric",
+      "expected": 0.16759,
+      "actual": 0.16918000000000002,
+      "abs_diff": 0.0015900000000000358
+    },
+    {
+      "path": "/results/MLP (169p)/ber_mean/4",
+      "kind": "numeric",
+      "expected": 0.12291,
+      "actual": 0.12364,
+      "abs_diff": 0.0007299999999999945
+    },
+    {
+      "path": "/results/MLP (169p)/ber_mean/5",
+      "kind": "numeric",
+      "expected": 0.08629,
+      "actual": 0.0869,
+      "abs_diff": 0.0006099999999999994
+    },
+    {
+      "path": "/results/MLP (169p)/ber_mean/6",
+      "kind": "numeric",
+      "expected": 0.058609999999999995,
+      "actual": 0.059219999999999995,
+      "abs_diff": 0.0006099999999999994
+    },
+    {
+      "path": "/results/MLP (169p)/ber_mean/7",
+      "kind": "numeric",
+      "expected": 0.03845,
+      "actual": 0.038990000000000004,
+      "abs_diff": 0.0005400000000000058
+    },
+    {
+      "path": "/results/MLP (169p)/ber_mean/8",
+      "kind": "numeric",
+      "expected": 0.02469,
+      "actual": 0.025119999999999996,
+      "abs_diff": 0.00042999999999999636
+    },
+    {
+      "path": "/results/MLP (169p)/ber_mean/9",
+      "kind": "numeric",
+      "expected": 0.01577,
+      "actual": 0.016069999999999997,
+      "abs_diff": 0.0002999999999999982
+    },
+    {
+      "path": "/results/MLP (169p)/ber_mean/10",
+      "kind": "numeric",
+      "expected": 0.00992,
+      "actual": 0.010260000000000002,
+      "abs_diff": 0.00034000000000000176
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/0/0",
+      "kind": "numeric",
+      "expected": 0.3335,
+      "actual": 0.3343,
+      "abs_diff": 0.0007999999999999674
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/0/1",
+      "kind": "numeric",
+      "expected": 0.3311,
+      "actual": 0.3309,
+      "abs_diff": 0.00019999999999997797
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/0/2",
+      "kind": "numeric",
+      "expected": 0.3405,
+      "actual": 0.3438,
+      "abs_diff": 0.0032999999999999696
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/0/3",
+      "kind": "numeric",
+      "expected": 0.3319,
+      "actual": 0.3338,
+      "abs_diff": 0.0019000000000000128
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/0/4",
+      "kind": "numeric",
+      "expected": 0.3422,
+      "actual": 0.342,
+      "abs_diff": 0.00019999999999997797
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/0/5",
+      "kind": "numeric",
+      "expected": 0.3361,
+      "actual": 0.3355,
+      "abs_diff": 0.0005999999999999894
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/0/6",
+      "kind": "numeric",
+      "expected": 0.3335,
+      "actual": 0.3365,
+      "abs_diff": 0.0030000000000000027
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/0/7",
+      "kind": "numeric",
+      "expected": 0.3382,
+      "actual": 0.341,
+      "abs_diff": 0.0028000000000000247
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/0/8",
+      "kind": "numeric",
+      "expected": 0.3299,
+      "actual": 0.3311,
+      "abs_diff": 0.0011999999999999789
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/0/9",
+      "kind": "numeric",
+      "expected": 0.3326,
+      "actual": 0.3312,
+      "abs_diff": 0.0014000000000000123
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/1/0",
+      "kind": "numeric",
+      "expected": 0.2837,
+      "actual": 0.2848,
+      "abs_diff": 0.0010999999999999899
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/1/1",
+      "kind": "numeric",
+      "expected": 0.2702,
+      "actual": 0.273,
+      "abs_diff": 0.0028000000000000247
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/1/2",
+      "kind": "numeric",
+      "expected": 0.2861,
+      "actual": 0.2868,
+      "abs_diff": 0.0006999999999999784
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/1/3",
+      "kind": "numeric",
+      "expected": 0.2797,
+      "actual": 0.2816,
+      "abs_diff": 0.0019000000000000128
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/1/4",
+      "kind": "numeric",
+      "expected": 0.2843,
+      "actual": 0.2865,
+      "abs_diff": 0.0021999999999999797
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/1/5",
+      "kind": "numeric",
+      "expected": 0.2801,
+      "actual": 0.2807,
+      "abs_diff": 0.0005999999999999894
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/1/6",
+      "kind": "numeric",
+      "expected": 0.2808,
+      "actual": 0.2826,
+      "abs_diff": 0.0018000000000000238
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/1/7",
+      "kind": "numeric",
+      "expected": 0.2863,
+      "actual": 0.288,
+      "abs_diff": 0.0016999999999999793
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/1/8",
+      "kind": "numeric",
+      "expected": 0.2807,
+      "actual": 0.2817,
+      "abs_diff": 0.0010000000000000009
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/1/9",
+      "kind": "numeric",
+      "expected": 0.2758,
+      "actual": 0.2769,
+      "abs_diff": 0.0010999999999999899
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/2/0",
+      "kind": "numeric",
+      "expected": 0.2251,
+      "actual": 0.2275,
+      "abs_diff": 0.0024000000000000132
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/2/1",
+      "kind": "numeric",
+      "expected": 0.2173,
+      "actual": 0.219,
+      "abs_diff": 0.001700000000000007
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/2/2",
+      "kind": "numeric",
+      "expected": 0.2279,
+      "actual": 0.2291,
+      "abs_diff": 0.0012000000000000066
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/2/3",
+      "kind": "numeric",
+      "expected": 0.2249,
+      "actual": 0.225,
+      "abs_diff": 0.00010000000000001674
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/2/4",
+      "kind": "numeric",
+      "expected": 0.2257,
+      "actual": 0.227,
+      "abs_diff": 0.0012999999999999956
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/2/5",
+      "kind": "numeric",
+      "expected": 0.2221,
+      "actual": 0.2227,
+      "abs_diff": 0.0006000000000000172
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/2/6",
+      "kind": "numeric",
+      "expected": 0.2234,
+      "actual": 0.2241,
+      "abs_diff": 0.0007000000000000062
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/2/7",
+      "kind": "numeric",
+      "expected": 0.2268,
+      "actual": 0.2271,
+      "abs_diff": 0.0002999999999999947
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/2/8",
+      "kind": "numeric",
+      "expected": 0.2225,
+      "actual": 0.2248,
+      "abs_diff": 0.0022999999999999965
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/2/9",
+      "kind": "numeric",
+      "expected": 0.2178,
+      "actual": 0.2196,
+      "abs_diff": 0.001799999999999996
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/3/0",
+      "kind": "numeric",
+      "expected": 0.173,
+      "actual": 0.1741,
+      "abs_diff": 0.0011000000000000176
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/3/1",
+      "kind": "numeric",
+      "expected": 0.1619,
+      "actual": 0.1644,
+      "abs_diff": 0.0025000000000000022
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/3/2",
+      "kind": "numeric",
+      "expected": 0.1678,
+      "actual": 0.169,
+      "abs_diff": 0.0012000000000000066
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/3/3",
+      "kind": "numeric",
+      "expected": 0.1704,
+      "actual": 0.1715,
+      "abs_diff": 0.0011000000000000176
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/3/4",
+      "kind": "numeric",
+      "expected": 0.1685,
+      "actual": 0.1704,
+      "abs_diff": 0.001899999999999985
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/3/5",
+      "kind": "numeric",
+      "expected": 0.1622,
+      "actual": 0.1658,
+      "abs_diff": 0.003599999999999992
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/3/6",
+      "kind": "numeric",
+      "expected": 0.1688,
+      "actual": 0.1698,
+      "abs_diff": 0.0010000000000000009
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/3/7",
+      "kind": "numeric",
+      "expected": 0.1686,
+      "actual": 0.1697,
+      "abs_diff": 0.0010999999999999899
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/3/8",
+      "kind": "numeric",
+      "expected": 0.1723,
+      "actual": 0.1726,
+      "abs_diff": 0.0002999999999999947
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/3/9",
+      "kind": "numeric",
+      "expected": 0.1624,
+      "actual": 0.1645,
+      "abs_diff": 0.0021000000000000185
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/4/0",
+      "kind": "numeric",
+      "expected": 0.1285,
+      "actual": 0.1297,
+      "abs_diff": 0.0012000000000000066
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/4/1",
+      "kind": "numeric",
+      "expected": 0.1194,
+      "actual": 0.1203,
+      "abs_diff": 0.000899999999999998
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/4/2",
+      "kind": "numeric",
+      "expected": 0.1219,
+      "actual": 0.1236,
+      "abs_diff": 0.001700000000000007
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/4/3",
+      "kind": "numeric",
+      "expected": 0.1248,
+      "actual": 0.1259,
+      "abs_diff": 0.0011000000000000176
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/4/4",
+      "kind": "numeric",
+      "expected": 0.121,
+      "actual": 0.1229,
+      "abs_diff": 0.001899999999999999
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/4/5",
+      "kind": "numeric",
+      "expected": 0.122,
+      "actual": 0.1214,
+      "abs_diff": 0.0006000000000000033
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/4/6",
+      "kind": "numeric",
+      "expected": 0.1207,
+      "actual": 0.1216,
+      "abs_diff": 0.000899999999999998
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/4/7",
+      "kind": "numeric",
+      "expected": 0.125,
+      "actual": 0.1253,
+      "abs_diff": 0.0002999999999999947
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/4/8",
+      "kind": "numeric",
+      "expected": 0.1275,
+      "actual": 0.1274,
+      "abs_diff": 9.999999999998899e-05
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/5/0",
+      "kind": "numeric",
+      "expected": 0.0897,
+      "actual": 0.0903,
+      "abs_diff": 0.0006000000000000033
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/5/1",
+      "kind": "numeric",
+      "expected": 0.0829,
+      "actual": 0.0834,
+      "abs_diff": 0.0005000000000000004
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/5/2",
+      "kind": "numeric",
+      "expected": 0.0859,
+      "actual": 0.0867,
+      "abs_diff": 0.0007999999999999952
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/5/3",
+      "kind": "numeric",
+      "expected": 0.088,
+      "actual": 0.0887,
+      "abs_diff": 0.0007000000000000062
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/5/4",
+      "kind": "numeric",
+      "expected": 0.0865,
+      "actual": 0.087,
+      "abs_diff": 0.0005000000000000004
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/5/5",
+      "kind": "numeric",
+      "expected": 0.0866,
+      "actual": 0.0878,
+      "abs_diff": 0.0012000000000000066
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/5/6",
+      "kind": "numeric",
+      "expected": 0.0835,
+      "actual": 0.0849,
+      "abs_diff": 0.0013999999999999985
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/5/7",
+      "kind": "numeric",
+      "expected": 0.0869,
+      "actual": 0.088,
+      "abs_diff": 0.0010999999999999899
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/5/8",
+      "kind": "numeric",
+      "expected": 0.0903,
+      "actual": 0.0888,
+      "abs_diff": 0.0015000000000000013
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/5/9",
+      "kind": "numeric",
+      "expected": 0.0826,
+      "actual": 0.0834,
+      "abs_diff": 0.0007999999999999952
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/6/0",
+      "kind": "numeric",
+      "expected": 0.0602,
+      "actual": 0.0596,
+      "abs_diff": 0.0005999999999999964
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/6/1",
+      "kind": "numeric",
+      "expected": 0.0561,
+      "actual": 0.0565,
+      "abs_diff": 0.0004000000000000045
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/6/2",
+      "kind": "numeric",
+      "expected": 0.0591,
+      "actual": 0.0597,
+      "abs_diff": 0.0006000000000000033
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/6/3",
+      "kind": "numeric",
+      "expected": 0.0596,
+      "actual": 0.06,
+      "abs_diff": 0.0003999999999999976
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/6/4",
+      "kind": "numeric",
+      "expected": 0.058,
+      "actual": 0.0595,
+      "abs_diff": 0.0014999999999999944
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/6/5",
+      "kind": "numeric",
+      "expected": 0.0587,
+      "actual": 0.0593,
+      "abs_diff": 0.0005999999999999964
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/6/6",
+      "kind": "numeric",
+      "expected": 0.0574,
+      "actual": 0.0572,
+      "abs_diff": 0.0001999999999999988
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/6/7",
+      "kind": "numeric",
+      "expected": 0.0579,
+      "actual": 0.0584,
+      "abs_diff": 0.0005000000000000004
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/6/8",
+      "kind": "numeric",
+      "expected": 0.0628,
+      "actual": 0.0642,
+      "abs_diff": 0.0013999999999999985
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/6/9",
+      "kind": "numeric",
+      "expected": 0.0563,
+      "actual": 0.0578,
+      "abs_diff": 0.0014999999999999944
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/7/0",
+      "kind": "numeric",
+      "expected": 0.0405,
+      "actual": 0.0409,
+      "abs_diff": 0.0003999999999999976
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/7/1",
+      "kind": "numeric",
+      "expected": 0.0379,
+      "actual": 0.0382,
+      "abs_diff": 0.0002999999999999947
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/7/2",
+      "kind": "numeric",
+      "expected": 0.0361,
+      "actual": 0.0372,
+      "abs_diff": 0.0010999999999999968
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/7/3",
+      "kind": "numeric",
+      "expected": 0.0383,
+      "actual": 0.0393,
+      "abs_diff": 0.0010000000000000009
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/7/4",
+      "kind": "numeric",
+      "expected": 0.0394,
+      "actual": 0.0407,
+      "abs_diff": 0.0013000000000000025
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/7/5",
+      "kind": "numeric",
+      "expected": 0.0405,
+      "actual": 0.0409,
+      "abs_diff": 0.0003999999999999976
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/7/6",
+      "kind": "numeric",
+      "expected": 0.0355,
+      "actual": 0.0364,
+      "abs_diff": 0.000900000000000005
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/7/7",
+      "kind": "numeric",
+      "expected": 0.0379,
+      "actual": 0.0373,
+      "abs_diff": 0.0006000000000000033
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/7/8",
+      "kind": "numeric",
+      "expected": 0.0401,
+      "actual": 0.0404,
+      "abs_diff": 0.00030000000000000165
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/7/9",
+      "kind": "numeric",
+      "expected": 0.0383,
+      "actual": 0.0386,
+      "abs_diff": 0.00030000000000000165
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/8/0",
+      "kind": "numeric",
+      "expected": 0.0253,
+      "actual": 0.0258,
+      "abs_diff": 0.0005000000000000004
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/8/1",
+      "kind": "numeric",
+      "expected": 0.0241,
+      "actual": 0.0243,
+      "abs_diff": 0.0001999999999999988
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/8/2",
+      "kind": "numeric",
+      "expected": 0.0241,
+      "actual": 0.0246,
+      "abs_diff": 0.0005000000000000004
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/8/3",
+      "kind": "numeric",
+      "expected": 0.024,
+      "actual": 0.0243,
+      "abs_diff": 0.0002999999999999982
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/8/4",
+      "kind": "numeric",
+      "expected": 0.0254,
+      "actual": 0.0263,
+      "abs_diff": 0.0009000000000000015
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/8/5",
+      "kind": "numeric",
+      "expected": 0.0262,
+      "actual": 0.0264,
+      "abs_diff": 0.0001999999999999988
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/8/6",
+      "kind": "numeric",
+      "expected": 0.0233,
+      "actual": 0.024,
+      "abs_diff": 0.0006999999999999992
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/8/7",
+      "kind": "numeric",
+      "expected": 0.0241,
+      "actual": 0.0245,
+      "abs_diff": 0.00040000000000000105
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/8/8",
+      "kind": "numeric",
+      "expected": 0.0257,
+      "actual": 0.026,
+      "abs_diff": 0.0002999999999999982
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/8/9",
+      "kind": "numeric",
+      "expected": 0.0247,
+      "actual": 0.025,
+      "abs_diff": 0.00030000000000000165
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/9/0",
+      "kind": "numeric",
+      "expected": 0.0158,
+      "actual": 0.0159,
+      "abs_diff": 9.99999999999994e-05
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/9/1",
+      "kind": "numeric",
+      "expected": 0.016,
+      "actual": 0.0161,
+      "abs_diff": 9.99999999999994e-05
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/9/2",
+      "kind": "numeric",
+      "expected": 0.0153,
+      "actual": 0.0159,
+      "abs_diff": 0.0006000000000000016
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/9/3",
+      "kind": "numeric",
+      "expected": 0.0153,
+      "actual": 0.0154,
+      "abs_diff": 0.00010000000000000113
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/9/4",
+      "kind": "numeric",
+      "expected": 0.0166,
+      "actual": 0.0172,
+      "abs_diff": 0.0005999999999999998
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/9/5",
+      "kind": "numeric",
+      "expected": 0.0158,
+      "actual": 0.0162,
+      "abs_diff": 0.0003999999999999976
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/9/6",
+      "kind": "numeric",
+      "expected": 0.0159,
+      "actual": 0.0165,
+      "abs_diff": 0.0005999999999999998
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/9/7",
+      "kind": "numeric",
+      "expected": 0.0157,
+      "actual": 0.0161,
+      "abs_diff": 0.00040000000000000105
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/9/8",
+      "kind": "numeric",
+      "expected": 0.0153,
+      "actual": 0.0155,
+      "abs_diff": 0.00020000000000000052
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/9/9",
+      "kind": "numeric",
+      "expected": 0.016,
+      "actual": 0.0159,
+      "abs_diff": 9.99999999999994e-05
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/10/0",
+      "kind": "numeric",
+      "expected": 0.0096,
+      "actual": 0.0101,
+      "abs_diff": 0.0005000000000000004
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/10/1",
+      "kind": "numeric",
+      "expected": 0.0105,
+      "actual": 0.0098,
+      "abs_diff": 0.000700000000000001
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/10/2",
+      "kind": "numeric",
+      "expected": 0.0103,
+      "actual": 0.0104,
+      "abs_diff": 9.99999999999994e-05
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/10/3",
+      "kind": "numeric",
+      "expected": 0.0087,
+      "actual": 0.0091,
+      "abs_diff": 0.00040000000000000105
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/10/4",
+      "kind": "numeric",
+      "expected": 0.0098,
+      "actual": 0.0104,
+      "abs_diff": 0.0005999999999999998
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/10/5",
+      "kind": "numeric",
+      "expected": 0.0106,
+      "actual": 0.011,
+      "abs_diff": 0.0003999999999999993
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/10/6",
+      "kind": "numeric",
+      "expected": 0.0103,
+      "actual": 0.0108,
+      "abs_diff": 0.0005000000000000004
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/10/7",
+      "kind": "numeric",
+      "expected": 0.01,
+      "actual": 0.0106,
+      "abs_diff": 0.0005999999999999998
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/10/8",
+      "kind": "numeric",
+      "expected": 0.0099,
+      "actual": 0.0101,
+      "abs_diff": 0.0001999999999999988
+    },
+    {
+      "path": "/results/MLP (169p)/ber_trials/10/9",
+      "kind": "numeric",
+      "expected": 0.0095,
+      "actual": 0.0103,
+      "abs_diff": 0.0008000000000000004
+    },
+    {
+      "path": "/results/Mamba S6/ber_mean/0",
+      "kind": "numeric",
+      "expected": 0.40709999999999996,
+      "actual": 0.40144,
+      "abs_diff": 0.005659999999999943
+    },
+    {
+      "path": "/results/Mamba S6/ber_mean/1",
+      "kind": "numeric",
+      "expected": 0.3508,
+      "actual": 0.34569000000000005,
+      "abs_diff": 0.005109999999999948
+    },
+    {
+      "path": "/results/Mamba S6/ber_mean/2",
+      "kind": "numeric",
+      "expected": 0.28121,
+      "actual": 0.27632,
+      "abs_diff": 0.0048900000000000055
+    },
+    {
+      "path": "/results/Mamba S6/ber_mean/3",
+      "kind": "numeric",
+      "expected": 0.20735,
+      "actual": 0.20368999999999998,
+      "abs_diff": 0.0036600000000000243
+    },
+    {
+      "path": "/results/Mamba S6/ber_mean/4",
+      "kind": "numeric",
+      "expected": 0.14476000000000003,
+      "actual": 0.14167000000000002,
+      "abs_diff": 0.0030900000000000094
+    },
+    {
+      "path": "/results/Mamba S6/ber_mean/5",
+      "kind": "numeric",
+      "expected": 0.09708,
+      "actual": 0.09534,
+      "abs_diff": 0.0017400000000000054
+    },
+    {
+      "path": "/results/Mamba S6/ber_mean/6",
+      "kind": "numeric",
+      "expected": 0.06369,
+      "actual": 0.062259999999999996,
+      "abs_diff": 0.0014300000000000007
+    },
+    {
+      "path": "/results/Mamba S6/ber_mean/7",
+      "kind": "numeric",
+      "expected": 0.04113,
+      "actual": 0.04006,
+      "abs_diff": 0.0010700000000000015
+    },
+    {
+      "path": "/results/Mamba S6/ber_mean/8",
+      "kind": "numeric",
+      "expected": 0.02586,
+      "actual": 0.02505,
+      "abs_diff": 0.0008100000000000017
+    },
+    {
+      "path": "/results/Mamba S6/ber_mean/9",
+      "kind": "numeric",
+      "expected": 0.01611,
+      "actual": 0.015870000000000002,
+      "abs_diff": 0.00023999999999999716
+    },
+    {
+      "path": "/results/Mamba S6/ber_mean/10",
+      "kind": "numeric",
+      "expected": 0.00997,
+      "actual": 0.00984,
+      "abs_diff": 0.0001299999999999999
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/0/0",
+      "kind": "numeric",
+      "expected": 0.42,
+      "actual": 0.4144,
+      "abs_diff": 0.005599999999999994
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/0/1",
+      "kind": "numeric",
+      "expected": 0.4008,
+      "actual": 0.3943,
+      "abs_diff": 0.006500000000000006
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/0/2",
+      "kind": "numeric",
+      "expected": 0.4041,
+      "actual": 0.4003,
+      "abs_diff": 0.0038000000000000256
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/0/3",
+      "kind": "numeric",
+      "expected": 0.3944,
+      "actual": 0.3894,
+      "abs_diff": 0.004999999999999949
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/0/4",
+      "kind": "numeric",
+      "expected": 0.4071,
+      "actual": 0.4022,
+      "abs_diff": 0.0049000000000000155
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/0/5",
+      "kind": "numeric",
+      "expected": 0.438,
+      "actual": 0.4329,
+      "abs_diff": 0.005099999999999993
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/0/6",
+      "kind": "numeric",
+      "expected": 0.3967,
+      "actual": 0.3905,
+      "abs_diff": 0.006199999999999983
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/0/7",
+      "kind": "numeric",
+      "expected": 0.4043,
+      "actual": 0.3956,
+      "abs_diff": 0.008699999999999986
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/0/8",
+      "kind": "numeric",
+      "expected": 0.4073,
+      "actual": 0.4009,
+      "abs_diff": 0.006400000000000017
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/0/9",
+      "kind": "numeric",
+      "expected": 0.3983,
+      "actual": 0.3939,
+      "abs_diff": 0.004400000000000015
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/1/0",
+      "kind": "numeric",
+      "expected": 0.3645,
+      "actual": 0.3603,
+      "abs_diff": 0.0041999999999999815
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/1/1",
+      "kind": "numeric",
+      "expected": 0.3405,
+      "actual": 0.3337,
+      "abs_diff": 0.006800000000000028
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/1/2",
+      "kind": "numeric",
+      "expected": 0.348,
+      "actual": 0.3454,
+      "abs_diff": 0.002599999999999991
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/1/3",
+      "kind": "numeric",
+      "expected": 0.3351,
+      "actual": 0.331,
+      "abs_diff": 0.0040999999999999925
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/1/4",
+      "kind": "numeric",
+      "expected": 0.3467,
+      "actual": 0.342,
+      "abs_diff": 0.004699999999999982
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/1/5",
+      "kind": "numeric",
+      "expected": 0.3957,
+      "actual": 0.3913,
+      "abs_diff": 0.004400000000000015
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/1/6",
+      "kind": "numeric",
+      "expected": 0.3361,
+      "actual": 0.3313,
+      "abs_diff": 0.0048000000000000265
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/1/7",
+      "kind": "numeric",
+      "expected": 0.3464,
+      "actual": 0.3389,
+      "abs_diff": 0.007500000000000007
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/1/8",
+      "kind": "numeric",
+      "expected": 0.3516,
+      "actual": 0.3452,
+      "abs_diff": 0.006400000000000017
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/1/9",
+      "kind": "numeric",
+      "expected": 0.3434,
+      "actual": 0.3378,
+      "abs_diff": 0.005599999999999994
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/2/0",
+      "kind": "numeric",
+      "expected": 0.2944,
+      "actual": 0.2884,
+      "abs_diff": 0.006000000000000005
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/2/1",
+      "kind": "numeric",
+      "expected": 0.27,
+      "actual": 0.263,
+      "abs_diff": 0.007000000000000006
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/2/2",
+      "kind": "numeric",
+      "expected": 0.2778,
+      "actual": 0.2751,
+      "abs_diff": 0.00269999999999998
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/2/3",
+      "kind": "numeric",
+      "expected": 0.2626,
+      "actual": 0.2587,
+      "abs_diff": 0.0039000000000000146
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/2/4",
+      "kind": "numeric",
+      "expected": 0.273,
+      "actual": 0.2689,
+      "abs_diff": 0.004100000000000048
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/2/5",
+      "kind": "numeric",
+      "expected": 0.3391,
+      "actual": 0.3326,
+      "abs_diff": 0.006500000000000006
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/2/6",
+      "kind": "numeric",
+      "expected": 0.2689,
+      "actual": 0.263,
+      "abs_diff": 0.005899999999999961
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/2/7",
+      "kind": "numeric",
+      "expected": 0.2733,
+      "actual": 0.2703,
+      "abs_diff": 0.0030000000000000027
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/2/8",
+      "kind": "numeric",
+      "expected": 0.2809,
+      "actual": 0.2776,
+      "abs_diff": 0.0032999999999999696
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/2/9",
+      "kind": "numeric",
+      "expected": 0.2721,
+      "actual": 0.2656,
+      "abs_diff": 0.006500000000000006
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/3/0",
+      "kind": "numeric",
+      "expected": 0.2207,
+      "actual": 0.2154,
+      "abs_diff": 0.005299999999999999
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/3/1",
+      "kind": "numeric",
+      "expected": 0.1972,
+      "actual": 0.1929,
+      "abs_diff": 0.004299999999999998
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/3/2",
+      "kind": "numeric",
+      "expected": 0.2016,
+      "actual": 0.1985,
+      "abs_diff": 0.0030999999999999917
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/3/3",
+      "kind": "numeric",
+      "expected": 0.1972,
+      "actual": 0.1941,
+      "abs_diff": 0.0030999999999999917
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/3/4",
+      "kind": "numeric",
+      "expected": 0.1983,
+      "actual": 0.1958,
+      "abs_diff": 0.0025000000000000022
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/3/5",
+      "kind": "numeric",
+      "expected": 0.2557,
+      "actual": 0.2527,
+      "abs_diff": 0.0030000000000000027
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/3/6",
+      "kind": "numeric",
+      "expected": 0.196,
+      "actual": 0.1922,
+      "abs_diff": 0.003799999999999998
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/3/7",
+      "kind": "numeric",
+      "expected": 0.1991,
+      "actual": 0.1962,
+      "abs_diff": 0.002899999999999986
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/3/8",
+      "kind": "numeric",
+      "expected": 0.2096,
+      "actual": 0.2045,
+      "abs_diff": 0.005100000000000021
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/3/9",
+      "kind": "numeric",
+      "expected": 0.1981,
+      "actual": 0.1946,
+      "abs_diff": 0.003500000000000003
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/4/0",
+      "kind": "numeric",
+      "expected": 0.1539,
+      "actual": 0.1516,
+      "abs_diff": 0.0022999999999999965
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/4/1",
+      "kind": "numeric",
+      "expected": 0.1385,
+      "actual": 0.1341,
+      "abs_diff": 0.004400000000000015
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/4/2",
+      "kind": "numeric",
+      "expected": 0.1402,
+      "actual": 0.1363,
+      "abs_diff": 0.003899999999999987
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/4/3",
+      "kind": "numeric",
+      "expected": 0.1388,
+      "actual": 0.1367,
+      "abs_diff": 0.0021000000000000185
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/4/4",
+      "kind": "numeric",
+      "expected": 0.1378,
+      "actual": 0.1353,
+      "abs_diff": 0.0025000000000000022
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/4/5",
+      "kind": "numeric",
+      "expected": 0.1815,
+      "actual": 0.1783,
+      "abs_diff": 0.0032000000000000084
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/4/6",
+      "kind": "numeric",
+      "expected": 0.1355,
+      "actual": 0.1319,
+      "abs_diff": 0.00360000000000002
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/4/7",
+      "kind": "numeric",
+      "expected": 0.1401,
+      "actual": 0.1378,
+      "abs_diff": 0.0022999999999999965
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/4/8",
+      "kind": "numeric",
+      "expected": 0.1449,
+      "actual": 0.1425,
+      "abs_diff": 0.0024000000000000132
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/4/9",
+      "kind": "numeric",
+      "expected": 0.1364,
+      "actual": 0.1322,
+      "abs_diff": 0.0041999999999999815
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/5/0",
+      "kind": "numeric",
+      "expected": 0.104,
+      "actual": 0.1021,
+      "abs_diff": 0.001899999999999999
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/5/1",
+      "kind": "numeric",
+      "expected": 0.0924,
+      "actual": 0.0907,
+      "abs_diff": 0.0016999999999999932
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/5/2",
+      "kind": "numeric",
+      "expected": 0.0946,
+      "actual": 0.0929,
+      "abs_diff": 0.001700000000000007
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/5/3",
+      "kind": "numeric",
+      "expected": 0.0956,
+      "actual": 0.0939,
+      "abs_diff": 0.001700000000000007
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/5/4",
+      "kind": "numeric",
+      "expected": 0.0933,
+      "actual": 0.0913,
+      "abs_diff": 0.001999999999999988
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/5/5",
+      "kind": "numeric",
+      "expected": 0.1176,
+      "actual": 0.1149,
+      "abs_diff": 0.002699999999999994
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/5/6",
+      "kind": "numeric",
+      "expected": 0.0883,
+      "actual": 0.0873,
+      "abs_diff": 0.0010000000000000009
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/5/7",
+      "kind": "numeric",
+      "expected": 0.0941,
+      "actual": 0.0922,
+      "abs_diff": 0.001899999999999999
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/5/8",
+      "kind": "numeric",
+      "expected": 0.0982,
+      "actual": 0.0972,
+      "abs_diff": 0.0010000000000000009
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/5/9",
+      "kind": "numeric",
+      "expected": 0.0927,
+      "actual": 0.0909,
+      "abs_diff": 0.00180000000000001
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/6/0",
+      "kind": "numeric",
+      "expected": 0.0665,
+      "actual": 0.0653,
+      "abs_diff": 0.0012000000000000066
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/6/1",
+      "kind": "numeric",
+      "expected": 0.0606,
+      "actual": 0.0593,
+      "abs_diff": 0.0013000000000000025
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/6/2",
+      "kind": "numeric",
+      "expected": 0.0635,
+      "actual": 0.0614,
+      "abs_diff": 0.0020999999999999977
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/6/3",
+      "kind": "numeric",
+      "expected": 0.0632,
+      "actual": 0.0617,
+      "abs_diff": 0.0015000000000000083
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/6/4",
+      "kind": "numeric",
+      "expected": 0.0625,
+      "actual": 0.0603,
+      "abs_diff": 0.0022000000000000006
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/6/5",
+      "kind": "numeric",
+      "expected": 0.0752,
+      "actual": 0.0731,
+      "abs_diff": 0.0021000000000000046
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/6/6",
+      "kind": "numeric",
+      "expected": 0.0602,
+      "actual": 0.06,
+      "abs_diff": 0.0001999999999999988
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/6/7",
+      "kind": "numeric",
+      "expected": 0.0603,
+      "actual": 0.0592,
+      "abs_diff": 0.0010999999999999968
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/6/8",
+      "kind": "numeric",
+      "expected": 0.0664,
+      "actual": 0.065,
+      "abs_diff": 0.0013999999999999985
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/6/9",
+      "kind": "numeric",
+      "expected": 0.0585,
+      "actual": 0.0573,
+      "abs_diff": 0.0012000000000000066
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/7/0",
+      "kind": "numeric",
+      "expected": 0.0434,
+      "actual": 0.0422,
+      "abs_diff": 0.0011999999999999997
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/7/1",
+      "kind": "numeric",
+      "expected": 0.0401,
+      "actual": 0.0386,
+      "abs_diff": 0.0014999999999999944
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/7/2",
+      "kind": "numeric",
+      "expected": 0.0389,
+      "actual": 0.0384,
+      "abs_diff": 0.0005000000000000004
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/7/3",
+      "kind": "numeric",
+      "expected": 0.042,
+      "actual": 0.04,
+      "abs_diff": 0.0020000000000000018
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/7/4",
+      "kind": "numeric",
+      "expected": 0.042,
+      "actual": 0.04,
+      "abs_diff": 0.0020000000000000018
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/7/5",
+      "kind": "numeric",
+      "expected": 0.0468,
+      "actual": 0.0463,
+      "abs_diff": 0.0005000000000000004
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/7/6",
+      "kind": "numeric",
+      "expected": 0.0377,
+      "actual": 0.0367,
+      "abs_diff": 0.000999999999999994
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/7/8",
+      "kind": "numeric",
+      "expected": 0.0417,
+      "actual": 0.0413,
+      "abs_diff": 0.0003999999999999976
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/7/9",
+      "kind": "numeric",
+      "expected": 0.0403,
+      "actual": 0.0387,
+      "abs_diff": 0.0016000000000000042
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/8/0",
+      "kind": "numeric",
+      "expected": 0.0264,
+      "actual": 0.026,
+      "abs_diff": 0.00040000000000000105
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/8/1",
+      "kind": "numeric",
+      "expected": 0.0249,
+      "actual": 0.0239,
+      "abs_diff": 0.0009999999999999974
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/8/2",
+      "kind": "numeric",
+      "expected": 0.0254,
+      "actual": 0.0251,
+      "abs_diff": 0.0002999999999999982
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/8/3",
+      "kind": "numeric",
+      "expected": 0.0263,
+      "actual": 0.0242,
+      "abs_diff": 0.002100000000000001
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/8/4",
+      "kind": "numeric",
+      "expected": 0.0262,
+      "actual": 0.025,
+      "abs_diff": 0.0011999999999999997
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/8/5",
+      "kind": "numeric",
+      "expected": 0.0294,
+      "actual": 0.0286,
+      "abs_diff": 0.0007999999999999986
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/8/6",
+      "kind": "numeric",
+      "expected": 0.0244,
+      "actual": 0.0233,
+      "abs_diff": 0.0011000000000000003
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/8/7",
+      "kind": "numeric",
+      "expected": 0.0244,
+      "actual": 0.0238,
+      "abs_diff": 0.0005999999999999998
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/8/8",
+      "kind": "numeric",
+      "expected": 0.0261,
+      "actual": 0.026,
+      "abs_diff": 0.00010000000000000286
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/8/9",
+      "kind": "numeric",
+      "expected": 0.0251,
+      "actual": 0.0246,
+      "abs_diff": 0.0005000000000000004
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/9/0",
+      "kind": "numeric",
+      "expected": 0.0161,
+      "actual": 0.0158,
+      "abs_diff": 0.0002999999999999982
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/9/1",
+      "kind": "numeric",
+      "expected": 0.0162,
+      "actual": 0.0161,
+      "abs_diff": 9.99999999999994e-05
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/9/2",
+      "kind": "numeric",
+      "expected": 0.0153,
+      "actual": 0.0154,
+      "abs_diff": 0.00010000000000000113
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/9/3",
+      "kind": "numeric",
+      "expected": 0.0156,
+      "actual": 0.0151,
+      "abs_diff": 0.0004999999999999987
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/9/4",
+      "kind": "numeric",
+      "expected": 0.0177,
+      "actual": 0.0169,
+      "abs_diff": 0.0008000000000000021
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/9/5",
+      "kind": "numeric",
+      "expected": 0.0168,
+      "actual": 0.0167,
+      "abs_diff": 9.99999999999994e-05
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/9/9",
+      "kind": "numeric",
+      "expected": 0.0164,
+      "actual": 0.0157,
+      "abs_diff": 0.0007000000000000027
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/10/0",
+      "kind": "numeric",
+      "expected": 0.0102,
+      "actual": 0.01,
+      "abs_diff": 0.00020000000000000052
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/10/1",
+      "kind": "numeric",
+      "expected": 0.0101,
+      "actual": 0.0103,
+      "abs_diff": 0.00020000000000000052
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/10/2",
+      "kind": "numeric",
+      "expected": 0.01,
+      "actual": 0.0099,
+      "abs_diff": 9.99999999999994e-05
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/10/3",
+      "kind": "numeric",
+      "expected": 0.0089,
+      "actual": 0.0087,
+      "abs_diff": 0.00020000000000000052
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/10/4",
+      "kind": "numeric",
+      "expected": 0.0099,
+      "actual": 0.0096,
+      "abs_diff": 0.00030000000000000165
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/10/5",
+      "kind": "numeric",
+      "expected": 0.0113,
+      "actual": 0.0112,
+      "abs_diff": 9.99999999999994e-05
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/10/6",
+      "kind": "numeric",
+      "expected": 0.0104,
+      "actual": 0.0101,
+      "abs_diff": 0.0002999999999999999
+    },
+    {
+      "path": "/results/Mamba S6/ber_trials/10/8",
+      "kind": "numeric",
+      "expected": 0.0102,
+      "actual": 0.0099,
+      "abs_diff": 0.0002999999999999999
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_mean/0",
+      "kind": "numeric",
+      "expected": 0.40319000000000005,
+      "actual": 0.40414000000000005,
+      "abs_diff": 0.0009500000000000064
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_mean/1",
+      "kind": "numeric",
+      "expected": 0.34680000000000005,
+      "actual": 0.34899,
+      "abs_diff": 0.0021899999999999697
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_mean/2",
+      "kind": "numeric",
+      "expected": 0.27721,
+      "actual": 0.27958,
+      "abs_diff": 0.0023699999999999832
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_mean/3",
+      "kind": "numeric",
+      "expected": 0.20393,
+      "actual": 0.20615999999999998,
+      "abs_diff": 0.002229999999999982
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_mean/4",
+      "kind": "numeric",
+      "expected": 0.14160999999999999,
+      "actual": 0.14308,
+      "abs_diff": 0.0014700000000000268
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_mean/5",
+      "kind": "numeric",
+      "expected": 0.09492,
+      "actual": 0.09569,
+      "abs_diff": 0.0007699999999999929
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_mean/6",
+      "kind": "numeric",
+      "expected": 0.06209,
+      "actual": 0.06233999999999999,
+      "abs_diff": 0.0002499999999999933
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_mean/7",
+      "kind": "numeric",
+      "expected": 0.03989,
+      "actual": 0.0402,
+      "abs_diff": 0.0003099999999999978
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_mean/9",
+      "kind": "numeric",
+      "expected": 0.015819999999999997,
+      "actual": 0.01583,
+      "abs_diff": 1.0000000000003062e-05
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_mean/10",
+      "kind": "numeric",
+      "expected": 0.009760000000000001,
+      "actual": 0.00981,
+      "abs_diff": 4.999999999999796e-05
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/0/0",
+      "kind": "numeric",
+      "expected": 0.4159,
+      "actual": 0.4168,
+      "abs_diff": 0.0009000000000000119
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/0/1",
+      "kind": "numeric",
+      "expected": 0.3963,
+      "actual": 0.3971,
+      "abs_diff": 0.0008000000000000229
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/0/2",
+      "kind": "numeric",
+      "expected": 0.4028,
+      "actual": 0.4033,
+      "abs_diff": 0.0005000000000000004
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/0/3",
+      "kind": "numeric",
+      "expected": 0.3915,
+      "actual": 0.394,
+      "abs_diff": 0.0025000000000000022
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/0/4",
+      "kind": "numeric",
+      "expected": 0.4044,
+      "actual": 0.4052,
+      "abs_diff": 0.0008000000000000229
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/0/5",
+      "kind": "numeric",
+      "expected": 0.4338,
+      "actual": 0.4332,
+      "abs_diff": 0.0006000000000000449
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/0/6",
+      "kind": "numeric",
+      "expected": 0.3912,
+      "actual": 0.3935,
+      "abs_diff": 0.0023000000000000242
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/0/7",
+      "kind": "numeric",
+      "expected": 0.3983,
+      "actual": 0.3995,
+      "abs_diff": 0.0012000000000000344
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/0/8",
+      "kind": "numeric",
+      "expected": 0.4019,
+      "actual": 0.4042,
+      "abs_diff": 0.0023000000000000242
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/0/9",
+      "kind": "numeric",
+      "expected": 0.3958,
+      "actual": 0.3946,
+      "abs_diff": 0.0011999999999999789
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/1/0",
+      "kind": "numeric",
+      "expected": 0.3622,
+      "actual": 0.3637,
+      "abs_diff": 0.0015000000000000013
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/1/1",
+      "kind": "numeric",
+      "expected": 0.3349,
+      "actual": 0.3391,
+      "abs_diff": 0.004200000000000037
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/1/2",
+      "kind": "numeric",
+      "expected": 0.3449,
+      "actual": 0.3467,
+      "abs_diff": 0.0018000000000000238
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/1/3",
+      "kind": "numeric",
+      "expected": 0.3299,
+      "actual": 0.3331,
+      "abs_diff": 0.0031999999999999806
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/1/4",
+      "kind": "numeric",
+      "expected": 0.3425,
+      "actual": 0.3454,
+      "abs_diff": 0.002899999999999958
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/1/5",
+      "kind": "numeric",
+      "expected": 0.3931,
+      "actual": 0.3936,
+      "abs_diff": 0.0005000000000000004
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/1/6",
+      "kind": "numeric",
+      "expected": 0.3326,
+      "actual": 0.337,
+      "abs_diff": 0.004400000000000015
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/1/7",
+      "kind": "numeric",
+      "expected": 0.341,
+      "actual": 0.3433,
+      "abs_diff": 0.0022999999999999687
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/1/8",
+      "kind": "numeric",
+      "expected": 0.3467,
+      "actual": 0.349,
+      "abs_diff": 0.0022999999999999687
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/1/9",
+      "kind": "numeric",
+      "expected": 0.3402,
+      "actual": 0.339,
+      "abs_diff": 0.0011999999999999789
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/2/0",
+      "kind": "numeric",
+      "expected": 0.2907,
+      "actual": 0.2927,
+      "abs_diff": 0.0020000000000000018
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/2/1",
+      "kind": "numeric",
+      "expected": 0.2634,
+      "actual": 0.2671,
+      "abs_diff": 0.003699999999999981
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/2/2",
+      "kind": "numeric",
+      "expected": 0.2749,
+      "actual": 0.2775,
+      "abs_diff": 0.0026000000000000467
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/2/3",
+      "kind": "numeric",
+      "expected": 0.2594,
+      "actual": 0.2627,
+      "abs_diff": 0.0032999999999999696
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/2/4",
+      "kind": "numeric",
+      "expected": 0.2694,
+      "actual": 0.2724,
+      "abs_diff": 0.0030000000000000027
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/2/5",
+      "kind": "numeric",
+      "expected": 0.3325,
+      "actual": 0.3329,
+      "abs_diff": 0.00039999999999995595
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/2/6",
+      "kind": "numeric",
+      "expected": 0.2641,
+      "actual": 0.2665,
+      "abs_diff": 0.0024000000000000132
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/2/7",
+      "kind": "numeric",
+      "expected": 0.271,
+      "actual": 0.2729,
+      "abs_diff": 0.0018999999999999573
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/2/8",
+      "kind": "numeric",
+      "expected": 0.2775,
+      "actual": 0.2792,
+      "abs_diff": 0.0016999999999999793
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/2/9",
+      "kind": "numeric",
+      "expected": 0.2692,
+      "actual": 0.2719,
+      "abs_diff": 0.00269999999999998
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/3/0",
+      "kind": "numeric",
+      "expected": 0.2156,
+      "actual": 0.2186,
+      "abs_diff": 0.002999999999999975
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/3/1",
+      "kind": "numeric",
+      "expected": 0.1949,
+      "actual": 0.1956,
+      "abs_diff": 0.0007000000000000062
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/3/2",
+      "kind": "numeric",
+      "expected": 0.1983,
+      "actual": 0.2013,
+      "abs_diff": 0.0030000000000000027
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/3/3",
+      "kind": "numeric",
+      "expected": 0.193,
+      "actual": 0.1953,
+      "abs_diff": 0.0022999999999999965
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/3/4",
+      "kind": "numeric",
+      "expected": 0.1974,
+      "actual": 0.1986,
+      "abs_diff": 0.0012000000000000066
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/3/5",
+      "kind": "numeric",
+      "expected": 0.252,
+      "actual": 0.2543,
+      "abs_diff": 0.0023000000000000242
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/3/6",
+      "kind": "numeric",
+      "expected": 0.193,
+      "actual": 0.1969,
+      "abs_diff": 0.003899999999999987
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/3/7",
+      "kind": "numeric",
+      "expected": 0.1957,
+      "actual": 0.1979,
+      "abs_diff": 0.0021999999999999797
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/3/8",
+      "kind": "numeric",
+      "expected": 0.2043,
+      "actual": 0.2061,
+      "abs_diff": 0.001799999999999996
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/3/9",
+      "kind": "numeric",
+      "expected": 0.1951,
+      "actual": 0.197,
+      "abs_diff": 0.0019000000000000128
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/4/0",
+      "kind": "numeric",
+      "expected": 0.152,
+      "actual": 0.1543,
+      "abs_diff": 0.0022999999999999965
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/4/1",
+      "kind": "numeric",
+      "expected": 0.1344,
+      "actual": 0.1356,
+      "abs_diff": 0.0012000000000000066
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/4/2",
+      "kind": "numeric",
+      "expected": 0.1376,
+      "actual": 0.1382,
+      "abs_diff": 0.0005999999999999894
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/4/3",
+      "kind": "numeric",
+      "expected": 0.1366,
+      "actual": 0.1376,
+      "abs_diff": 0.0010000000000000009
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/4/4",
+      "kind": "numeric",
+      "expected": 0.1341,
+      "actual": 0.1358,
+      "abs_diff": 0.001700000000000007
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/4/5",
+      "kind": "numeric",
+      "expected": 0.1786,
+      "actual": 0.179,
+      "abs_diff": 0.0003999999999999837
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/4/6",
+      "kind": "numeric",
+      "expected": 0.133,
+      "actual": 0.1351,
+      "abs_diff": 0.0020999999999999908
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/4/7",
+      "kind": "numeric",
+      "expected": 0.1357,
+      "actual": 0.1376,
+      "abs_diff": 0.0019000000000000128
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/4/8",
+      "kind": "numeric",
+      "expected": 0.1419,
+      "actual": 0.1435,
+      "abs_diff": 0.0015999999999999903
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/4/9",
+      "kind": "numeric",
+      "expected": 0.1322,
+      "actual": 0.1341,
+      "abs_diff": 0.001899999999999985
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/5/0",
+      "kind": "numeric",
+      "expected": 0.102,
+      "actual": 0.1019,
+      "abs_diff": 9.999999999998899e-05
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/5/1",
+      "kind": "numeric",
+      "expected": 0.0894,
+      "actual": 0.0902,
+      "abs_diff": 0.000800000000000009
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/5/2",
+      "kind": "numeric",
+      "expected": 0.093,
+      "actual": 0.094,
+      "abs_diff": 0.0010000000000000009
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/5/3",
+      "kind": "numeric",
+      "expected": 0.0926,
+      "actual": 0.0932,
+      "abs_diff": 0.0006000000000000033
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/5/4",
+      "kind": "numeric",
+      "expected": 0.0897,
+      "actual": 0.0899,
+      "abs_diff": 0.00019999999999999185
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/5/5",
+      "kind": "numeric",
+      "expected": 0.1148,
+      "actual": 0.1159,
+      "abs_diff": 0.0011000000000000038
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/5/6",
+      "kind": "numeric",
+      "expected": 0.0876,
+      "actual": 0.0881,
+      "abs_diff": 0.0005000000000000004
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/5/7",
+      "kind": "numeric",
+      "expected": 0.0927,
+      "actual": 0.0933,
+      "abs_diff": 0.0005999999999999894
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/5/8",
+      "kind": "numeric",
+      "expected": 0.0967,
+      "actual": 0.0986,
+      "abs_diff": 0.001899999999999999
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/5/9",
+      "kind": "numeric",
+      "expected": 0.0907,
+      "actual": 0.0918,
+      "abs_diff": 0.0011000000000000038
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/6/0",
+      "kind": "numeric",
+      "expected": 0.065,
+      "actual": 0.0645,
+      "abs_diff": 0.0005000000000000004
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/6/1",
+      "kind": "numeric",
+      "expected": 0.0593,
+      "actual": 0.0598,
+      "abs_diff": 0.0005000000000000004
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/6/2",
+      "kind": "numeric",
+      "expected": 0.0607,
+      "actual": 0.0613,
+      "abs_diff": 0.0006000000000000033
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/6/4",
+      "kind": "numeric",
+      "expected": 0.06,
+      "actual": 0.0602,
+      "abs_diff": 0.0001999999999999988
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/6/5",
+      "kind": "numeric",
+      "expected": 0.0739,
+      "actual": 0.0737,
+      "abs_diff": 0.00019999999999999185
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/6/6",
+      "kind": "numeric",
+      "expected": 0.059,
+      "actual": 0.0595,
+      "abs_diff": 0.0005000000000000004
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/6/7",
+      "kind": "numeric",
+      "expected": 0.0598,
+      "actual": 0.0594,
+      "abs_diff": 0.0003999999999999976
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/6/8",
+      "kind": "numeric",
+      "expected": 0.0633,
+      "actual": 0.0645,
+      "abs_diff": 0.0012000000000000066
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/6/9",
+      "kind": "numeric",
+      "expected": 0.058,
+      "actual": 0.0586,
+      "abs_diff": 0.0005999999999999964
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/7/0",
+      "kind": "numeric",
+      "expected": 0.0423,
+      "actual": 0.0429,
+      "abs_diff": 0.0006000000000000033
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/7/1",
+      "kind": "numeric",
+      "expected": 0.0393,
+      "actual": 0.04,
+      "abs_diff": 0.0006999999999999992
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/7/2",
+      "kind": "numeric",
+      "expected": 0.0383,
+      "actual": 0.0388,
+      "abs_diff": 0.0005000000000000004
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/7/3",
+      "kind": "numeric",
+      "expected": 0.0402,
+      "actual": 0.0405,
+      "abs_diff": 0.00030000000000000165
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/7/4",
+      "kind": "numeric",
+      "expected": 0.0397,
+      "actual": 0.0394,
+      "abs_diff": 0.00030000000000000165
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/7/5",
+      "kind": "numeric",
+      "expected": 0.0461,
+      "actual": 0.0466,
+      "abs_diff": 0.0005000000000000004
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/7/6",
+      "kind": "numeric",
+      "expected": 0.0364,
+      "actual": 0.0363,
+      "abs_diff": 0.00010000000000000286
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/7/7",
+      "kind": "numeric",
+      "expected": 0.0375,
+      "actual": 0.038,
+      "abs_diff": 0.0005000000000000004
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/7/8",
+      "kind": "numeric",
+      "expected": 0.0409,
+      "actual": 0.0411,
+      "abs_diff": 0.0001999999999999988
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/7/9",
+      "kind": "numeric",
+      "expected": 0.0382,
+      "actual": 0.0384,
+      "abs_diff": 0.0001999999999999988
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/8/0",
+      "kind": "numeric",
+      "expected": 0.0257,
+      "actual": 0.0258,
+      "abs_diff": 9.99999999999994e-05
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/8/1",
+      "kind": "numeric",
+      "expected": 0.024,
+      "actual": 0.0237,
+      "abs_diff": 0.00030000000000000165
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/8/2",
+      "kind": "numeric",
+      "expected": 0.0245,
+      "actual": 0.0246,
+      "abs_diff": 9.99999999999994e-05
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/8/3",
+      "kind": "numeric",
+      "expected": 0.0244,
+      "actual": 0.0245,
+      "abs_diff": 9.99999999999994e-05
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/8/4",
+      "kind": "numeric",
+      "expected": 0.0256,
+      "actual": 0.0252,
+      "abs_diff": 0.00040000000000000105
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/8/5",
+      "kind": "numeric",
+      "expected": 0.0289,
+      "actual": 0.0287,
+      "abs_diff": 0.0001999999999999988
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/8/6",
+      "kind": "numeric",
+      "expected": 0.0235,
+      "actual": 0.0234,
+      "abs_diff": 9.99999999999994e-05
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/8/8",
+      "kind": "numeric",
+      "expected": 0.0256,
+      "actual": 0.0257,
+      "abs_diff": 9.99999999999994e-05
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/8/9",
+      "kind": "numeric",
+      "expected": 0.0244,
+      "actual": 0.025,
+      "abs_diff": 0.0005999999999999998
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/9/1",
+      "kind": "numeric",
+      "expected": 0.0163,
+      "actual": 0.016,
+      "abs_diff": 0.0002999999999999982
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/9/2",
+      "kind": "numeric",
+      "expected": 0.0151,
+      "actual": 0.0155,
+      "abs_diff": 0.0003999999999999993
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/9/3",
+      "kind": "numeric",
+      "expected": 0.0152,
+      "actual": 0.0148,
+      "abs_diff": 0.0003999999999999993
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/9/4",
+      "kind": "numeric",
+      "expected": 0.0171,
+      "actual": 0.017,
+      "abs_diff": 9.99999999999994e-05
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/9/5",
+      "kind": "numeric",
+      "expected": 0.0167,
+      "actual": 0.017,
+      "abs_diff": 0.00030000000000000165
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/9/6",
+      "kind": "numeric",
+      "expected": 0.0161,
+      "actual": 0.0165,
+      "abs_diff": 0.00040000000000000105
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/9/7",
+      "kind": "numeric",
+      "expected": 0.0153,
+      "actual": 0.0151,
+      "abs_diff": 0.0001999999999999988
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/9/8",
+      "kind": "numeric",
+      "expected": 0.0153,
+      "actual": 0.0154,
+      "abs_diff": 0.00010000000000000113
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/9/9",
+      "kind": "numeric",
+      "expected": 0.0152,
+      "actual": 0.0151,
+      "abs_diff": 9.99999999999994e-05
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/10/1",
+      "kind": "numeric",
+      "expected": 0.01,
+      "actual": 0.0101,
+      "abs_diff": 9.99999999999994e-05
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/10/2",
+      "kind": "numeric",
+      "expected": 0.0098,
+      "actual": 0.0097,
+      "abs_diff": 9.99999999999994e-05
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/10/3",
+      "kind": "numeric",
+      "expected": 0.0088,
+      "actual": 0.009,
+      "abs_diff": 0.0001999999999999988
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/10/5",
+      "kind": "numeric",
+      "expected": 0.0106,
+      "actual": 0.0107,
+      "abs_diff": 9.99999999999994e-05
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/10/6",
+      "kind": "numeric",
+      "expected": 0.0101,
+      "actual": 0.0103,
+      "abs_diff": 0.00020000000000000052
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/10/8",
+      "kind": "numeric",
+      "expected": 0.0101,
+      "actual": 0.01,
+      "abs_diff": 9.99999999999994e-05
+    },
+    {
+      "path": "/results/Mamba2 (SSD)/ber_trials/10/9",
+      "kind": "numeric",
+      "expected": 0.0092,
+      "actual": 0.0093,
+      "abs_diff": 9.99999999999994e-05
+    },
+    {
+      "path": "/results/Transformer/ber_mean/0",
+      "kind": "numeric",
+      "expected": 0.40145,
+      "actual": 0.40035999999999994,
+      "abs_diff": 0.0010900000000000354
+    },
+    {
+      "path": "/results/Transformer/ber_mean/1",
+      "kind": "numeric",
+      "expected": 0.34428000000000003,
+      "actual": 0.34340000000000004,
+      "abs_diff": 0.0008799999999999919
+    },
+    {
+      "path": "/results/Transformer/ber_mean/2",
+      "kind": "numeric",
+      "expected": 0.27584,
+      "actual": 0.27476,
+      "abs_diff": 0.0010799999999999699
+    },
+    {
+      "path": "/results/Transformer/ber_mean/3",
+      "kind": "numeric",
+      "expected": 0.20368000000000003,
+      "actual": 0.20192000000000002,
+      "abs_diff": 0.0017600000000000116
+    },
+    {
+      "path": "/results/Transformer/ber_mean/4",
+      "kind": "numeric",
+      "expected": 0.14243999999999998,
+      "actual": 0.14047,
+      "abs_diff": 0.0019699999999999718
+    },
+    {
+      "path": "/results/Transformer/ber_mean/5",
+      "kind": "numeric",
+      "expected": 0.09564,
+      "actual": 0.09457999999999998,
+      "abs_diff": 0.0010600000000000193
+    },
+    {
+      "path": "/results/Transformer/ber_mean/6",
+      "kind": "numeric",
+      "expected": 0.06281,
+      "actual": 0.06187,
+      "abs_diff": 0.0009400000000000033
+    },
+    {
+      "path": "/results/Transformer/ber_mean/7",
+      "kind": "numeric",
+      "expected": 0.04042,
+      "actual": 0.03979,
+      "abs_diff": 0.0006299999999999986
+    },
+    {
+      "path": "/results/Transformer/ber_mean/8",
+      "kind": "numeric",
+      "expected": 0.02596,
+      "actual": 0.025239999999999995,
+      "abs_diff": 0.0007200000000000054
+    },
+    {
+      "path": "/results/Transformer/ber_mean/9",
+      "kind": "numeric",
+      "expected": 0.01615,
+      "actual": 0.015790000000000002,
+      "abs_diff": 0.0003599999999999992
+    },
+    {
+      "path": "/results/Transformer/ber_mean/10",
+      "kind": "numeric",
+      "expected": 0.01014,
+      "actual": 0.009789999999999998,
+      "abs_diff": 0.00035000000000000135
+    },
+    {
+      "path": "/results/Transformer/ber_trials/0/0",
+      "kind": "numeric",
+      "expected": 0.4144,
+      "actual": 0.4136,
+      "abs_diff": 0.0007999999999999674
+    },
+    {
+      "path": "/results/Transformer/ber_trials/0/1",
+      "kind": "numeric",
+      "expected": 0.3936,
+      "actual": 0.3919,
+      "abs_diff": 0.0016999999999999793
+    },
+    {
+      "path": "/results/Transformer/ber_trials/0/2",
+      "kind": "numeric",
+      "expected": 0.4008,
+      "actual": 0.399,
+      "abs_diff": 0.0017999999999999683
+    },
+    {
+      "path": "/results/Transformer/ber_trials/0/3",
+      "kind": "numeric",
+      "expected": 0.3873,
+      "actual": 0.3869,
+      "abs_diff": 0.00039999999999995595
+    },
+    {
+      "path": "/results/Transformer/ber_trials/0/4",
+      "kind": "numeric",
+      "expected": 0.4031,
+      "actual": 0.4017,
+      "abs_diff": 0.0014000000000000123
+    },
+    {
+      "path": "/results/Transformer/ber_trials/0/5",
+      "kind": "numeric",
+      "expected": 0.434,
+      "actual": 0.4336,
+      "abs_diff": 0.00040000000000001146
+    },
+    {
+      "path": "/results/Transformer/ber_trials/0/6",
+      "kind": "numeric",
+      "expected": 0.3909,
+      "actual": 0.3876,
+      "abs_diff": 0.003300000000000025
+    },
+    {
+      "path": "/results/Transformer/ber_trials/0/7",
+      "kind": "numeric",
+      "expected": 0.3962,
+      "actual": 0.3954,
+      "abs_diff": 0.0008000000000000229
+    },
+    {
+      "path": "/results/Transformer/ber_trials/0/8",
+      "kind": "numeric",
+      "expected": 0.4001,
+      "actual": 0.4008,
+      "abs_diff": 0.0006999999999999784
+    },
+    {
+      "path": "/results/Transformer/ber_trials/0/9",
+      "kind": "numeric",
+      "expected": 0.3941,
+      "actual": 0.3931,
+      "abs_diff": 0.0010000000000000009
+    },
+    {
+      "path": "/results/Transformer/ber_trials/1/0",
+      "kind": "numeric",
+      "expected": 0.3585,
+      "actual": 0.3576,
+      "abs_diff": 0.0009000000000000119
+    },
+    {
+      "path": "/results/Transformer/ber_trials/1/1",
+      "kind": "numeric",
+      "expected": 0.3318,
+      "actual": 0.3309,
+      "abs_diff": 0.0008999999999999564
+    },
+    {
+      "path": "/results/Transformer/ber_trials/1/2",
+      "kind": "numeric",
+      "expected": 0.3432,
+      "actual": 0.3424,
+      "abs_diff": 0.0008000000000000229
+    },
+    {
+      "path": "/results/Transformer/ber_trials/1/3",
+      "kind": "numeric",
+      "expected": 0.3267,
+      "actual": 0.3294,
+      "abs_diff": 0.0027000000000000357
+    },
+    {
+      "path": "/results/Transformer/ber_trials/1/4",
+      "kind": "numeric",
+      "expected": 0.3402,
+      "actual": 0.3387,
+      "abs_diff": 0.0015000000000000013
+    },
+    {
+      "path": "/results/Transformer/ber_trials/1/5",
+      "kind": "numeric",
+      "expected": 0.3915,
+      "actual": 0.3901,
+      "abs_diff": 0.0014000000000000123
+    },
+    {
+      "path": "/results/Transformer/ber_trials/1/6",
+      "kind": "numeric",
+      "expected": 0.3299,
+      "actual": 0.329,
+      "abs_diff": 0.0009000000000000119
+    },
+    {
+      "path": "/results/Transformer/ber_trials/1/7",
+      "kind": "numeric",
+      "expected": 0.3396,
+      "actual": 0.3367,
+      "abs_diff": 0.0029000000000000137
+    },
+    {
+      "path": "/results/Transformer/ber_trials/1/8",
+      "kind": "numeric",
+      "expected": 0.3438,
+      "actual": 0.3435,
+      "abs_diff": 0.00029999999999996696
+    },
+    {
+      "path": "/results/Transformer/ber_trials/1/9",
+      "kind": "numeric",
+      "expected": 0.3376,
+      "actual": 0.3357,
+      "abs_diff": 0.0019000000000000128
+    },
+    {
+      "path": "/results/Transformer/ber_trials/2/0",
+      "kind": "numeric",
+      "expected": 0.2886,
+      "actual": 0.2884,
+      "abs_diff": 0.00020000000000003348
+    },
+    {
+      "path": "/results/Transformer/ber_trials/2/1",
+      "kind": "numeric",
+      "expected": 0.262,
+      "actual": 0.2616,
+      "abs_diff": 0.00040000000000001146
+    },
+    {
+      "path": "/results/Transformer/ber_trials/2/2",
+      "kind": "numeric",
+      "expected": 0.2747,
+      "actual": 0.2725,
+      "abs_diff": 0.0021999999999999797
+    },
+    {
+      "path": "/results/Transformer/ber_trials/2/3",
+      "kind": "numeric",
+      "expected": 0.2595,
+      "actual": 0.2587,
+      "abs_diff": 0.0008000000000000229
+    },
+    {
+      "path": "/results/Transformer/ber_trials/2/4",
+      "kind": "numeric",
+      "expected": 0.2695,
+      "actual": 0.2662,
+      "abs_diff": 0.003300000000000025
+    },
+    {
+      "path": "/results/Transformer/ber_trials/2/5",
+      "kind": "numeric",
+      "expected": 0.3305,
+      "actual": 0.3313,
+      "abs_diff": 0.0007999999999999674
+    },
+    {
+      "path": "/results/Transformer/ber_trials/2/6",
+      "kind": "numeric",
+      "expected": 0.2616,
+      "actual": 0.2623,
+      "abs_diff": 0.0006999999999999784
+    },
+    {
+      "path": "/results/Transformer/ber_trials/2/8",
+      "kind": "numeric",
+      "expected": 0.2767,
+      "actual": 0.2744,
+      "abs_diff": 0.0023000000000000242
+    },
+    {
+      "path": "/results/Transformer/ber_trials/2/9",
+      "kind": "numeric",
+      "expected": 0.2671,
+      "actual": 0.264,
+      "abs_diff": 0.0030999999999999917
+    },
+    {
+      "path": "/results/Transformer/ber_trials/3/0",
+      "kind": "numeric",
+      "expected": 0.2159,
+      "actual": 0.2147,
+      "abs_diff": 0.0012000000000000066
+    },
+    {
+      "path": "/results/Transformer/ber_trials/3/1",
+      "kind": "numeric",
+      "expected": 0.1914,
+      "actual": 0.1906,
+      "abs_diff": 0.0007999999999999952
+    },
+    {
+      "path": "/results/Transformer/ber_trials/3/2",
+      "kind": "numeric",
+      "expected": 0.1996,
+      "actual": 0.1974,
+      "abs_diff": 0.0022000000000000075
+    },
+    {
+      "path": "/results/Transformer/ber_trials/3/3",
+      "kind": "numeric",
+      "expected": 0.193,
+      "actual": 0.1909,
+      "abs_diff": 0.0021000000000000185
+    },
+    {
+      "path": "/results/Transformer/ber_trials/3/4",
+      "kind": "numeric",
+      "expected": 0.1964,
+      "actual": 0.1938,
+      "abs_diff": 0.002599999999999991
+    },
+    {
+      "path": "/results/Transformer/ber_trials/3/5",
+      "kind": "numeric",
+      "expected": 0.2523,
+      "actual": 0.252,
+      "abs_diff": 0.00030000000000002247
+    },
+    {
+      "path": "/results/Transformer/ber_trials/3/6",
+      "kind": "numeric",
+      "expected": 0.1917,
+      "actual": 0.1906,
+      "abs_diff": 0.0011000000000000176
+    },
+    {
+      "path": "/results/Transformer/ber_trials/3/7",
+      "kind": "numeric",
+      "expected": 0.1959,
+      "actual": 0.1936,
+      "abs_diff": 0.0022999999999999965
+    },
+    {
+      "path": "/results/Transformer/ber_trials/3/8",
+      "kind": "numeric",
+      "expected": 0.2049,
+      "actual": 0.2031,
+      "abs_diff": 0.001799999999999996
+    },
+    {
+      "path": "/results/Transformer/ber_trials/3/9",
+      "kind": "numeric",
+      "expected": 0.1957,
+      "actual": 0.1925,
+      "abs_diff": 0.0032000000000000084
+    },
+    {
+      "path": "/results/Transformer/ber_trials/4/0",
+      "kind": "numeric",
+      "expected": 0.152,
+      "actual": 0.1513,
+      "abs_diff": 0.0007000000000000062
+    },
+    {
+      "path": "/results/Transformer/ber_trials/4/1",
+      "kind": "numeric",
+      "expected": 0.1351,
+      "actual": 0.1332,
+      "abs_diff": 0.001899999999999985
+    },
+    {
+      "path": "/results/Transformer/ber_trials/4/2",
+      "kind": "numeric",
+      "expected": 0.1378,
+      "actual": 0.1357,
+      "abs_diff": 0.0021000000000000185
+    },
+    {
+      "path": "/results/Transformer/ber_trials/4/3",
+      "kind": "numeric",
+      "expected": 0.1373,
+      "actual": 0.1345,
+      "abs_diff": 0.002799999999999997
+    },
+    {
+      "path": "/results/Transformer/ber_trials/4/4",
+      "kind": "numeric",
+      "expected": 0.1359,
+      "actual": 0.133,
+      "abs_diff": 0.002899999999999986
+    },
+    {
+      "path": "/results/Transformer/ber_trials/4/5",
+      "kind": "numeric",
+      "expected": 0.1777,
+      "actual": 0.1778,
+      "abs_diff": 0.00010000000000001674
+    },
+    {
+      "path": "/results/Transformer/ber_trials/4/6",
+      "kind": "numeric",
+      "expected": 0.1336,
+      "actual": 0.132,
+      "abs_diff": 0.0015999999999999903
+    },
+    {
+      "path": "/results/Transformer/ber_trials/4/7",
+      "kind": "numeric",
+      "expected": 0.1375,
+      "actual": 0.136,
+      "abs_diff": 0.0015000000000000013
+    },
+    {
+      "path": "/results/Transformer/ber_trials/4/8",
+      "kind": "numeric",
+      "expected": 0.1435,
+      "actual": 0.1411,
+      "abs_diff": 0.0023999999999999855
+    },
+    {
+      "path": "/results/Transformer/ber_trials/4/9",
+      "kind": "numeric",
+      "expected": 0.134,
+      "actual": 0.1301,
+      "abs_diff": 0.0039000000000000146
+    },
+    {
+      "path": "/results/Transformer/ber_trials/5/0",
+      "kind": "numeric",
+      "expected": 0.1034,
+      "actual": 0.1015,
+      "abs_diff": 0.001899999999999999
+    },
+    {
+      "path": "/results/Transformer/ber_trials/5/1",
+      "kind": "numeric",
+      "expected": 0.09,
+      "actual": 0.0892,
+      "abs_diff": 0.0007999999999999952
+    },
+    {
+      "path": "/results/Transformer/ber_trials/5/2",
+      "kind": "numeric",
+      "expected": 0.0925,
+      "actual": 0.0934,
+      "abs_diff": 0.000899999999999998
+    },
+    {
+      "path": "/results/Transformer/ber_trials/5/3",
+      "kind": "numeric",
+      "expected": 0.0959,
+      "actual": 0.0932,
+      "abs_diff": 0.002699999999999994
+    },
+    {
+      "path": "/results/Transformer/ber_trials/5/4",
+      "kind": "numeric",
+      "expected": 0.0895,
+      "actual": 0.0886,
+      "abs_diff": 0.000899999999999998
+    },
+    {
+      "path": "/results/Transformer/ber_trials/5/5",
+      "kind": "numeric",
+      "expected": 0.1154,
+      "actual": 0.1144,
+      "abs_diff": 0.0010000000000000009
+    },
+    {
+      "path": "/results/Transformer/ber_trials/5/6",
+      "kind": "numeric",
+      "expected": 0.0881,
+      "actual": 0.0872,
+      "abs_diff": 0.000899999999999998
+    },
+    {
+      "path": "/results/Transformer/ber_trials/5/7",
+      "kind": "numeric",
+      "expected": 0.0933,
+      "actual": 0.092,
+      "abs_diff": 0.0012999999999999956
+    },
+    {
+      "path": "/results/Transformer/ber_trials/5/8",
+      "kind": "numeric",
+      "expected": 0.0975,
+      "actual": 0.0962,
+      "abs_diff": 0.0013000000000000095
+    },
+    {
+      "path": "/results/Transformer/ber_trials/5/9",
+      "kind": "numeric",
+      "expected": 0.0908,
+      "actual": 0.0901,
+      "abs_diff": 0.0007000000000000062
+    },
+    {
+      "path": "/results/Transformer/ber_trials/6/0",
+      "kind": "numeric",
+      "expected": 0.0652,
+      "actual": 0.065,
+      "abs_diff": 0.00019999999999999185
+    },
+    {
+      "path": "/results/Transformer/ber_trials/6/1",
+      "kind": "numeric",
+      "expected": 0.0593,
+      "actual": 0.0585,
+      "abs_diff": 0.0007999999999999952
+    },
+    {
+      "path": "/results/Transformer/ber_trials/6/2",
+      "kind": "numeric",
+      "expected": 0.063,
+      "actual": 0.061,
+      "abs_diff": 0.0020000000000000018
+    },
+    {
+      "path": "/results/Transformer/ber_trials/6/3",
+      "kind": "numeric",
+      "expected": 0.062,
+      "actual": 0.0614,
+      "abs_diff": 0.0005999999999999964
+    },
+    {
+      "path": "/results/Transformer/ber_trials/6/4",
+      "kind": "numeric",
+      "expected": 0.0594,
+      "actual": 0.0597,
+      "abs_diff": 0.00030000000000000165
+    },
+    {
+      "path": "/results/Transformer/ber_trials/6/5",
+      "kind": "numeric",
+      "expected": 0.0751,
+      "actual": 0.0731,
+      "abs_diff": 0.0020000000000000018
+    },
+    {
+      "path": "/results/Transformer/ber_trials/6/6",
+      "kind": "numeric",
+      "expected": 0.0594,
+      "actual": 0.0592,
+      "abs_diff": 0.0001999999999999988
+    },
+    {
+      "path": "/results/Transformer/ber_trials/6/7",
+      "kind": "numeric",
+      "expected": 0.0604,
+      "actual": 0.0597,
+      "abs_diff": 0.0006999999999999992
+    },
+    {
+      "path": "/results/Transformer/ber_trials/6/8",
+      "kind": "numeric",
+      "expected": 0.0647,
+      "actual": 0.0638,
+      "abs_diff": 0.000899999999999998
+    },
+    {
+      "path": "/results/Transformer/ber_trials/6/9",
+      "kind": "numeric",
+      "expected": 0.0596,
+      "actual": 0.0573,
+      "abs_diff": 0.0023000000000000034
+    },
+    {
+      "path": "/results/Transformer/ber_trials/7/0",
+      "kind": "numeric",
+      "expected": 0.0433,
+      "actual": 0.0424,
+      "abs_diff": 0.000899999999999998
+    },
+    {
+      "path": "/results/Transformer/ber_trials/7/1",
+      "kind": "numeric",
+      "expected": 0.0391,
+      "actual": 0.0383,
+      "abs_diff": 0.0008000000000000021
+    },
+    {
+      "path": "/results/Transformer/ber_trials/7/2",
+      "kind": "numeric",
+      "expected": 0.038,
+      "actual": 0.0382,
+      "abs_diff": 0.0001999999999999988
+    },
+    {
+      "path": "/results/Transformer/ber_trials/7/3",
+      "kind": "numeric",
+      "expected": 0.0395,
+      "actual": 0.0399,
+      "abs_diff": 0.0003999999999999976
+    },
+    {
+      "path": "/results/Transformer/ber_trials/7/4",
+      "kind": "numeric",
+      "expected": 0.0405,
+      "actual": 0.0396,
+      "abs_diff": 0.000899999999999998
+    },
+    {
+      "path": "/results/Transformer/ber_trials/7/5",
+      "kind": "numeric",
+      "expected": 0.047,
+      "actual": 0.0455,
+      "abs_diff": 0.0015000000000000013
+    },
+    {
+      "path": "/results/Transformer/ber_trials/7/6",
+      "kind": "numeric",
+      "expected": 0.0364,
+      "actual": 0.0361,
+      "abs_diff": 0.00030000000000000165
+    },
+    {
+      "path": "/results/Transformer/ber_trials/7/7",
+      "kind": "numeric",
+      "expected": 0.0388,
+      "actual": 0.0378,
+      "abs_diff": 0.0010000000000000009
+    },
+    {
+      "path": "/results/Transformer/ber_trials/7/8",
+      "kind": "numeric",
+      "expected": 0.0417,
+      "actual": 0.0413,
+      "abs_diff": 0.0003999999999999976
+    },
+    {
+      "path": "/results/Transformer/ber_trials/7/9",
+      "kind": "numeric",
+      "expected": 0.0399,
+      "actual": 0.0388,
+      "abs_diff": 0.0010999999999999968
+    },
+    {
+      "path": "/results/Transformer/ber_trials/8/0",
+      "kind": "numeric",
+      "expected": 0.0271,
+      "actual": 0.0261,
+      "abs_diff": 0.0009999999999999974
+    },
+    {
+      "path": "/results/Transformer/ber_trials/8/1",
+      "kind": "numeric",
+      "expected": 0.0245,
+      "actual": 0.024,
+      "abs_diff": 0.0005000000000000004
+    },
+    {
+      "path": "/results/Transformer/ber_trials/8/2",
+      "kind": "numeric",
+      "expected": 0.0254,
+      "actual": 0.0245,
+      "abs_diff": 0.000899999999999998
+    },
+    {
+      "path": "/results/Transformer/ber_trials/8/3",
+      "kind": "numeric",
+      "expected": 0.0252,
+      "actual": 0.0248,
+      "abs_diff": 0.00040000000000000105
+    },
+    {
+      "path": "/results/Transformer/ber_trials/8/4",
+      "kind": "numeric",
+      "expected": 0.0257,
+      "actual": 0.0258,
+      "abs_diff": 9.99999999999994e-05
+    },
+    {
+      "path": "/results/Transformer/ber_trials/8/5",
+      "kind": "numeric",
+      "expected": 0.0302,
+      "actual": 0.0287,
+      "abs_diff": 0.0015000000000000013
+    },
+    {
+      "path": "/results/Transformer/ber_trials/8/6",
+      "kind": "numeric",
+      "expected": 0.0248,
+      "actual": 0.0236,
+      "abs_diff": 0.0011999999999999997
+    },
+    {
+      "path": "/results/Transformer/ber_trials/8/7",
+      "kind": "numeric",
+      "expected": 0.0254,
+      "actual": 0.0243,
+      "abs_diff": 0.0011000000000000003
+    },
+    {
+      "path": "/results/Transformer/ber_trials/8/8",
+      "kind": "numeric",
+      "expected": 0.0256,
+      "actual": 0.0254,
+      "abs_diff": 0.00020000000000000226
+    },
+    {
+      "path": "/results/Transformer/ber_trials/8/9",
+      "kind": "numeric",
+      "expected": 0.0257,
+      "actual": 0.0252,
+      "abs_diff": 0.0005000000000000004
+    },
+    {
+      "path": "/results/Transformer/ber_trials/9/0",
+      "kind": "numeric",
+      "expected": 0.0157,
+      "actual": 0.0158,
+      "abs_diff": 0.00010000000000000286
+    },
+    {
+      "path": "/results/Transformer/ber_trials/9/1",
+      "kind": "numeric",
+      "expected": 0.0157,
+      "actual": 0.0158,
+      "abs_diff": 0.00010000000000000286
+    },
+    {
+      "path": "/results/Transformer/ber_trials/9/2",
+      "kind": "numeric",
+      "expected": 0.016,
+      "actual": 0.0151,
+      "abs_diff": 0.0008999999999999998
+    },
+    {
+      "path": "/results/Transformer/ber_trials/9/3",
+      "kind": "numeric",
+      "expected": 0.0158,
+      "actual": 0.015,
+      "abs_diff": 0.0008000000000000021
+    },
+    {
+      "path": "/results/Transformer/ber_trials/9/4",
+      "kind": "numeric",
+      "expected": 0.0166,
+      "actual": 0.0176,
+      "abs_diff": 0.0010000000000000009
+    },
+    {
+      "path": "/results/Transformer/ber_trials/9/5",
+      "kind": "numeric",
+      "expected": 0.0175,
+      "actual": 0.0168,
+      "abs_diff": 0.0007000000000000027
+    },
+    {
+      "path": "/results/Transformer/ber_trials/9/6",
+      "kind": "numeric",
+      "expected": 0.0165,
+      "actual": 0.016,
+      "abs_diff": 0.0005000000000000004
+    },
+    {
+      "path": "/results/Transformer/ber_trials/9/7",
+      "kind": "numeric",
+      "expected": 0.0154,
+      "actual": 0.0151,
+      "abs_diff": 0.0002999999999999999
+    },
+    {
+      "path": "/results/Transformer/ber_trials/9/8",
+      "kind": "numeric",
+      "expected": 0.0161,
+      "actual": 0.0153,
+      "abs_diff": 0.0008000000000000004
+    },
+    {
+      "path": "/results/Transformer/ber_trials/9/9",
+      "kind": "numeric",
+      "expected": 0.0162,
+      "actual": 0.0154,
+      "abs_diff": 0.0007999999999999986
+    },
+    {
+      "path": "/results/Transformer/ber_trials/10/0",
+      "kind": "numeric",
+      "expected": 0.0098,
+      "actual": 0.0099,
+      "abs_diff": 0.00010000000000000113
+    },
+    {
+      "path": "/results/Transformer/ber_trials/10/2",
+      "kind": "numeric",
+      "expected": 0.0102,
+      "actual": 0.0096,
+      "abs_diff": 0.0006000000000000016
+    },
+    {
+      "path": "/results/Transformer/ber_trials/10/3",
+      "kind": "numeric",
+      "expected": 0.0092,
+      "actual": 0.0085,
+      "abs_diff": 0.0006999999999999992
+    },
+    {
+      "path": "/results/Transformer/ber_trials/10/4",
+      "kind": "numeric",
+      "expected": 0.0107,
+      "actual": 0.0098,
+      "abs_diff": 0.0008999999999999998
+    },
+    {
+      "path": "/results/Transformer/ber_trials/10/5",
+      "kind": "numeric",
+      "expected": 0.0114,
+      "actual": 0.011,
+      "abs_diff": 0.00040000000000000105
+    },
+    {
+      "path": "/results/Transformer/ber_trials/10/6",
+      "kind": "numeric",
+      "expected": 0.011,
+      "actual": 0.0105,
+      "abs_diff": 0.0004999999999999987
+    },
+    {
+      "path": "/results/Transformer/ber_trials/10/7",
+      "kind": "numeric",
+      "expected": 0.0096,
+      "actual": 0.0094,
+      "abs_diff": 0.0001999999999999988
+    },
+    {
+      "path": "/results/Transformer/ber_trials/10/8",
+      "kind": "numeric",
+      "expected": 0.01,
+      "actual": 0.0097,
+      "abs_diff": 0.0002999999999999999
+    },
+    {
+      "path": "/results/VAE/ber_mean/0",
+      "kind": "numeric",
+      "expected": 0.33591000000000004,
+      "actual": 0.33934,
+      "abs_diff": 0.003429999999999933
+    },
+    {
+      "path": "/results/VAE/ber_mean/1",
+      "kind": "numeric",
+      "expected": 0.2818,
+      "actual": 0.2853,
+      "abs_diff": 0.003500000000000003
+    },
+    {
+      "path": "/results/VAE/ber_mean/2",
+      "kind": "numeric",
+      "expected": 0.22543000000000002,
+      "actual": 0.22832,
+      "abs_diff": 0.002889999999999976
+    },
+    {
+      "path": "/results/VAE/ber_mean/3",
+      "kind": "numeric",
+      "expected": 0.17,
+      "actual": 0.1724,
+      "abs_diff": 0.0023999999999999855
+    },
+    {
+      "path": "/results/VAE/ber_mean/4",
+      "kind": "numeric",
+      "expected": 0.12351999999999999,
+      "actual": 0.12614999999999998,
+      "abs_diff": 0.0026299999999999935
+    },
+    {
+      "path": "/results/VAE/ber_mean/5",
+      "kind": "numeric",
+      "expected": 0.08715,
+      "actual": 0.08855,
+      "abs_diff": 0.0013999999999999985
+    },
+    {
+      "path": "/results/VAE/ber_mean/6",
+      "kind": "numeric",
+      "expected": 0.05885999999999999,
+      "actual": 0.05969,
+      "abs_diff": 0.0008300000000000113
+    },
+    {
+      "path": "/results/VAE/ber_mean/7",
+      "kind": "numeric",
+      "expected": 0.038220000000000004,
+      "actual": 0.03868,
+      "abs_diff": 0.00045999999999999514
+    },
+    {
+      "path": "/results/VAE/ber_mean/8",
+      "kind": "numeric",
+      "expected": 0.02468,
+      "actual": 0.025119999999999996,
+      "abs_diff": 0.00043999999999999595
+    },
+    {
+      "path": "/results/VAE/ber_mean/9",
+      "kind": "numeric",
+      "expected": 0.01565,
+      "actual": 0.015950000000000002,
+      "abs_diff": 0.00030000000000000165
+    },
+    {
+      "path": "/results/VAE/ber_mean/10",
+      "kind": "numeric",
+      "expected": 0.009720000000000001,
+      "actual": 0.010060000000000001,
+      "abs_diff": 0.00034
+    },
+    {
+      "path": "/results/VAE/ber_trials/0/0",
+      "kind": "numeric",
+      "expected": 0.3371,
+      "actual": 0.34,
+      "abs_diff": 0.0029000000000000137
+    },
+    {
+      "path": "/results/VAE/ber_trials/0/1",
+      "kind": "numeric",
+      "expected": 0.3297,
+      "actual": 0.3329,
+      "abs_diff": 0.0031999999999999806
+    },
+    {
+      "path": "/results/VAE/ber_trials/0/2",
+      "kind": "numeric",
+      "expected": 0.3406,
+      "actual": 0.3453,
+      "abs_diff": 0.004699999999999982
+    },
+    {
+      "path": "/results/VAE/ber_trials/0/3",
+      "kind": "numeric",
+      "expected": 0.3349,
+      "actual": 0.3351,
+      "abs_diff": 0.00020000000000003348
+    },
+    {
+      "path": "/results/VAE/ber_trials/0/4",
+      "kind": "numeric",
+      "expected": 0.3431,
+      "actual": 0.3479,
+      "abs_diff": 0.004799999999999971
+    },
+    {
+      "path": "/results/VAE/ber_trials/0/5",
+      "kind": "numeric",
+      "expected": 0.3334,
+      "actual": 0.3369,
+      "abs_diff": 0.003500000000000003
+    },
+    {
+      "path": "/results/VAE/ber_trials/0/6",
+      "kind": "numeric",
+      "expected": 0.3341,
+      "actual": 0.3384,
+      "abs_diff": 0.0042999999999999705
+    },
+    {
+      "path": "/results/VAE/ber_trials/0/7",
+      "kind": "numeric",
+      "expected": 0.3403,
+      "actual": 0.3427,
+      "abs_diff": 0.0024000000000000132
+    },
+    {
+      "path": "/results/VAE/ber_trials/0/8",
+      "kind": "numeric",
+      "expected": 0.3325,
+      "actual": 0.3363,
+      "abs_diff": 0.00379999999999997
+    },
+    {
+      "path": "/results/VAE/ber_trials/0/9",
+      "kind": "numeric",
+      "expected": 0.3334,
+      "actual": 0.3379,
+      "abs_diff": 0.004500000000000004
+    },
+    {
+      "path": "/results/VAE/ber_trials/1/0",
+      "kind": "numeric",
+      "expected": 0.2862,
+      "actual": 0.2885,
+      "abs_diff": 0.0022999999999999687
+    },
+    {
+      "path": "/results/VAE/ber_trials/1/1",
+      "kind": "numeric",
+      "expected": 0.2715,
+      "actual": 0.2754,
+      "abs_diff": 0.003899999999999959
+    },
+    {
+      "path": "/results/VAE/ber_trials/1/2",
+      "kind": "numeric",
+      "expected": 0.287,
+      "actual": 0.2902,
+      "abs_diff": 0.003200000000000036
+    },
+    {
+      "path": "/results/VAE/ber_trials/1/3",
+      "kind": "numeric",
+      "expected": 0.2811,
+      "actual": 0.2839,
+      "abs_diff": 0.002799999999999969
+    },
+    {
+      "path": "/results/VAE/ber_trials/1/4",
+      "kind": "numeric",
+      "expected": 0.2863,
+      "actual": 0.2906,
+      "abs_diff": 0.004300000000000026
+    },
+    {
+      "path": "/results/VAE/ber_trials/1/5",
+      "kind": "numeric",
+      "expected": 0.2795,
+      "actual": 0.2829,
+      "abs_diff": 0.0033999999999999586
+    },
+    {
+      "path": "/results/VAE/ber_trials/1/6",
+      "kind": "numeric",
+      "expected": 0.2822,
+      "actual": 0.2842,
+      "abs_diff": 0.0020000000000000018
+    },
+    {
+      "path": "/results/VAE/ber_trials/1/7",
+      "kind": "numeric",
+      "expected": 0.2857,
+      "actual": 0.2894,
+      "abs_diff": 0.003699999999999981
+    },
+    {
+      "path": "/results/VAE/ber_trials/1/8",
+      "kind": "numeric",
+      "expected": 0.2828,
+      "actual": 0.2873,
+      "abs_diff": 0.004500000000000004
+    },
+    {
+      "path": "/results/VAE/ber_trials/1/9",
+      "kind": "numeric",
+      "expected": 0.2757,
+      "actual": 0.2806,
+      "abs_diff": 0.0049000000000000155
+    },
+    {
+      "path": "/results/VAE/ber_trials/2/0",
+      "kind": "numeric",
+      "expected": 0.2299,
+      "actual": 0.2329,
+      "abs_diff": 0.0030000000000000027
+    },
+    {
+      "path": "/results/VAE/ber_trials/2/1",
+      "kind": "numeric",
+      "expected": 0.2177,
+      "actual": 0.2211,
+      "abs_diff": 0.0033999999999999864
+    },
+    {
+      "path": "/results/VAE/ber_trials/2/2",
+      "kind": "numeric",
+      "expected": 0.2299,
+      "actual": 0.2308,
+      "abs_diff": 0.0009000000000000119
+    },
+    {
+      "path": "/results/VAE/ber_trials/2/3",
+      "kind": "numeric",
+      "expected": 0.2273,
+      "actual": 0.2306,
+      "abs_diff": 0.0032999999999999974
+    },
+    {
+      "path": "/results/VAE/ber_trials/2/4",
+      "kind": "numeric",
+      "expected": 0.2276,
+      "actual": 0.2308,
+      "abs_diff": 0.0032000000000000084
+    },
+    {
+      "path": "/results/VAE/ber_trials/2/5",
+      "kind": "numeric",
+      "expected": 0.2234,
+      "actual": 0.2263,
+      "abs_diff": 0.0029000000000000137
+    },
+    {
+      "path": "/results/VAE/ber_trials/2/6",
+      "kind": "numeric",
+      "expected": 0.2252,
+      "actual": 0.2275,
+      "abs_diff": 0.0022999999999999965
+    },
+    {
+      "path": "/results/VAE/ber_trials/2/7",
+      "kind": "numeric",
+      "expected": 0.227,
+      "actual": 0.23,
+      "abs_diff": 0.0030000000000000027
+    },
+    {
+      "path": "/results/VAE/ber_trials/2/8",
+      "kind": "numeric",
+      "expected": 0.2268,
+      "actual": 0.23,
+      "abs_diff": 0.0032000000000000084
+    },
+    {
+      "path": "/results/VAE/ber_trials/2/9",
+      "kind": "numeric",
+      "expected": 0.2195,
+      "actual": 0.2232,
+      "abs_diff": 0.003700000000000009
+    },
+    {
+      "path": "/results/VAE/ber_trials/3/0",
+      "kind": "numeric",
+      "expected": 0.1747,
+      "actual": 0.1766,
+      "abs_diff": 0.0019000000000000128
+    },
+    {
+      "path": "/results/VAE/ber_trials/3/1",
+      "kind": "numeric",
+      "expected": 0.1646,
+      "actual": 0.1687,
+      "abs_diff": 0.0040999999999999925
+    },
+    {
+      "path": "/results/VAE/ber_trials/3/2",
+      "kind": "numeric",
+      "expected": 0.1716,
+      "actual": 0.1746,
+      "abs_diff": 0.0030000000000000027
+    },
+    {
+      "path": "/results/VAE/ber_trials/3/3",
+      "kind": "numeric",
+      "expected": 0.1716,
+      "actual": 0.1754,
+      "abs_diff": 0.003799999999999998
+    },
+    {
+      "path": "/results/VAE/ber_trials/3/4",
+      "kind": "numeric",
+      "expected": 0.1717,
+      "actual": 0.174,
+      "abs_diff": 0.0022999999999999965
+    },
+    {
+      "path": "/results/VAE/ber_trials/3/5",
+      "kind": "numeric",
+      "expected": 0.1659,
+      "actual": 0.1673,
+      "abs_diff": 0.0014000000000000123
+    },
+    {
+      "path": "/results/VAE/ber_trials/3/6",
+      "kind": "numeric",
+      "expected": 0.169,
+      "actual": 0.1712,
+      "abs_diff": 0.0021999999999999797
+    },
+    {
+      "path": "/results/VAE/ber_trials/3/7",
+      "kind": "numeric",
+      "expected": 0.1721,
+      "actual": 0.1723,
+      "abs_diff": 0.00020000000000000573
+    },
+    {
+      "path": "/results/VAE/ber_trials/3/8",
+      "kind": "numeric",
+      "expected": 0.1739,
+      "actual": 0.1765,
+      "abs_diff": 0.002599999999999991
+    },
+    {
+      "path": "/results/VAE/ber_trials/3/9",
+      "kind": "numeric",
+      "expected": 0.1649,
+      "actual": 0.1674,
+      "abs_diff": 0.0025000000000000022
+    },
+    {
+      "path": "/results/VAE/ber_trials/4/0",
+      "kind": "numeric",
+      "expected": 0.1296,
+      "actual": 0.1328,
+      "abs_diff": 0.0032000000000000084
+    },
+    {
+      "path": "/results/VAE/ber_trials/4/1",
+      "kind": "numeric",
+      "expected": 0.1195,
+      "actual": 0.1227,
+      "abs_diff": 0.0032000000000000084
+    },
+    {
+      "path": "/results/VAE/ber_trials/4/2",
+      "kind": "numeric",
+      "expected": 0.1249,
+      "actual": 0.127,
+      "abs_diff": 0.0021000000000000046
+    },
+    {
+      "path": "/results/VAE/ber_trials/4/3",
+      "kind": "numeric",
+      "expected": 0.1285,
+      "actual": 0.1302,
+      "abs_diff": 0.001700000000000007
+    },
+    {
+      "path": "/results/VAE/ber_trials/4/4",
+      "kind": "numeric",
+      "expected": 0.1219,
+      "actual": 0.1251,
+      "abs_diff": 0.0031999999999999945
+    },
+    {
+      "path": "/results/VAE/ber_trials/4/5",
+      "kind": "numeric",
+      "expected": 0.1212,
+      "actual": 0.1245,
+      "abs_diff": 0.0032999999999999974
+    },
+    {
+      "path": "/results/VAE/ber_trials/4/6",
+      "kind": "numeric",
+      "expected": 0.1208,
+      "actual": 0.1235,
+      "abs_diff": 0.002699999999999994
+    },
+    {
+      "path": "/results/VAE/ber_trials/4/7",
+      "kind": "numeric",
+      "expected": 0.1239,
+      "actual": 0.127,
+      "abs_diff": 0.0031000000000000055
+    },
+    {
+      "path": "/results/VAE/ber_trials/4/8",
+      "kind": "numeric",
+      "expected": 0.1276,
+      "actual": 0.1293,
+      "abs_diff": 0.001700000000000007
+    },
+    {
+      "path": "/results/VAE/ber_trials/4/9",
+      "kind": "numeric",
+      "expected": 0.1173,
+      "actual": 0.1194,
+      "abs_diff": 0.0021000000000000046
+    },
+    {
+      "path": "/results/VAE/ber_trials/5/0",
+      "kind": "numeric",
+      "expected": 0.0898,
+      "actual": 0.0912,
+      "abs_diff": 0.0013999999999999985
+    },
+    {
+      "path": "/results/VAE/ber_trials/5/1",
+      "kind": "numeric",
+      "expected": 0.0835,
+      "actual": 0.085,
+      "abs_diff": 0.0015000000000000013
+    },
+    {
+      "path": "/results/VAE/ber_trials/5/3",
+      "kind": "numeric",
+      "expected": 0.0884,
+      "actual": 0.0913,
+      "abs_diff": 0.0029
+    },
+    {
+      "path": "/results/VAE/ber_trials/5/4",
+      "kind": "numeric",
+      "expected": 0.087,
+      "actual": 0.0889,
+      "abs_diff": 0.0019000000000000128
+    },
+    {
+      "path": "/results/VAE/ber_trials/5/5",
+      "kind": "numeric",
+      "expected": 0.0864,
+      "actual": 0.0887,
+      "abs_diff": 0.0022999999999999965
+    },
+    {
+      "path": "/results/VAE/ber_trials/5/6",
+      "kind": "numeric",
+      "expected": 0.0844,
+      "actual": 0.084,
+      "abs_diff": 0.0003999999999999976
+    },
+    {
+      "path": "/results/VAE/ber_trials/5/7",
+      "kind": "numeric",
+      "expected": 0.0887,
+      "actual": 0.0913,
+      "abs_diff": 0.002600000000000005
+    },
+    {
+      "path": "/results/VAE/ber_trials/5/8",
+      "kind": "numeric",
+      "expected": 0.0919,
+      "actual": 0.0925,
+      "abs_diff": 0.0006000000000000033
+    },
+    {
+      "path": "/results/VAE/ber_trials/5/9",
+      "kind": "numeric",
+      "expected": 0.0835,
+      "actual": 0.0847,
+      "abs_diff": 0.0011999999999999927
+    },
+    {
+      "path": "/results/VAE/ber_trials/6/1",
+      "kind": "numeric",
+      "expected": 0.0565,
+      "actual": 0.0569,
+      "abs_diff": 0.0003999999999999976
+    },
+    {
+      "path": "/results/VAE/ber_trials/6/2",
+      "kind": "numeric",
+      "expected": 0.06,
+      "actual": 0.0607,
+      "abs_diff": 0.0006999999999999992
+    },
+    {
+      "path": "/results/VAE/ber_trials/6/3",
+      "kind": "numeric",
+      "expected": 0.0601,
+      "actual": 0.0613,
+      "abs_diff": 0.0011999999999999997
+    },
+    {
+      "path": "/results/VAE/ber_trials/6/4",
+      "kind": "numeric",
+      "expected": 0.0586,
+      "actual": 0.0593,
+      "abs_diff": 0.0006999999999999992
+    },
+    {
+      "path": "/results/VAE/ber_trials/6/5",
+      "kind": "numeric",
+      "expected": 0.06,
+      "actual": 0.0599,
+      "abs_diff": 9.999999999999593e-05
+    },
+    {
+      "path": "/results/VAE/ber_trials/6/6",
+      "kind": "numeric",
+      "expected": 0.0571,
+      "actual": 0.0579,
+      "abs_diff": 0.0008000000000000021
+    },
+    {
+      "path": "/results/VAE/ber_trials/6/7",
+      "kind": "numeric",
+      "expected": 0.0574,
+      "actual": 0.0596,
+      "abs_diff": 0.0022000000000000006
+    },
+    {
+      "path": "/results/VAE/ber_trials/6/8",
+      "kind": "numeric",
+      "expected": 0.0627,
+      "actual": 0.0638,
+      "abs_diff": 0.0010999999999999899
+    },
+    {
+      "path": "/results/VAE/ber_trials/6/9",
+      "kind": "numeric",
+      "expected": 0.0568,
+      "actual": 0.0581,
+      "abs_diff": 0.0012999999999999956
+    },
+    {
+      "path": "/results/VAE/ber_trials/7/0",
+      "kind": "numeric",
+      "expected": 0.0404,
+      "actual": 0.0403,
+      "abs_diff": 9.999999999999593e-05
+    },
+    {
+      "path": "/results/VAE/ber_trials/7/1",
+      "kind": "numeric",
+      "expected": 0.0387,
+      "actual": 0.038,
+      "abs_diff": 0.0006999999999999992
+    },
+    {
+      "path": "/results/VAE/ber_trials/7/2",
+      "kind": "numeric",
+      "expected": 0.0365,
+      "actual": 0.0378,
+      "abs_diff": 0.0013000000000000025
+    },
+    {
+      "path": "/results/VAE/ber_trials/7/3",
+      "kind": "numeric",
+      "expected": 0.0389,
+      "actual": 0.0394,
+      "abs_diff": 0.0005000000000000004
+    },
+    {
+      "path": "/results/VAE/ber_trials/7/4",
+      "kind": "numeric",
+      "expected": 0.0386,
+      "actual": 0.0391,
+      "abs_diff": 0.0005000000000000004
+    },
+    {
+      "path": "/results/VAE/ber_trials/7/5",
+      "kind": "numeric",
+      "expected": 0.0391,
+      "actual": 0.0395,
+      "abs_diff": 0.0003999999999999976
+    },
+    {
+      "path": "/results/VAE/ber_trials/7/6",
+      "kind": "numeric",
+      "expected": 0.0357,
+      "actual": 0.0356,
+      "abs_diff": 0.00010000000000000286
+    },
+    {
+      "path": "/results/VAE/ber_trials/7/7",
+      "kind": "numeric",
+      "expected": 0.0363,
+      "actual": 0.0379,
+      "abs_diff": 0.0016000000000000042
+    },
+    {
+      "path": "/results/VAE/ber_trials/7/8",
+      "kind": "numeric",
+      "expected": 0.0401,
+      "actual": 0.0408,
+      "abs_diff": 0.0007000000000000062
+    },
+    {
+      "path": "/results/VAE/ber_trials/7/9",
+      "kind": "numeric",
+      "expected": 0.0379,
+      "actual": 0.0384,
+      "abs_diff": 0.0004999999999999935
+    },
+    {
+      "path": "/results/VAE/ber_trials/8/0",
+      "kind": "numeric",
+      "expected": 0.0255,
+      "actual": 0.0256,
+      "abs_diff": 0.00010000000000000286
+    },
+    {
+      "path": "/results/VAE/ber_trials/8/1",
+      "kind": "numeric",
+      "expected": 0.024,
+      "actual": 0.0249,
+      "abs_diff": 0.000899999999999998
+    },
+    {
+      "path": "/results/VAE/ber_trials/8/2",
+      "kind": "numeric",
+      "expected": 0.0249,
+      "actual": 0.0255,
+      "abs_diff": 0.0005999999999999998
+    },
+    {
+      "path": "/results/VAE/ber_trials/8/3",
+      "kind": "numeric",
+      "expected": 0.0243,
+      "actual": 0.0244,
+      "abs_diff": 0.00010000000000000286
+    },
+    {
+      "path": "/results/VAE/ber_trials/8/4",
+      "kind": "numeric",
+      "expected": 0.0251,
+      "actual": 0.0264,
+      "abs_diff": 0.001299999999999999
+    },
+    {
+      "path": "/results/VAE/ber_trials/8/5",
+      "kind": "numeric",
+      "expected": 0.0255,
+      "actual": 0.0258,
+      "abs_diff": 0.00030000000000000165
+    },
+    {
+      "path": "/results/VAE/ber_trials/8/6",
+      "kind": "numeric",
+      "expected": 0.0233,
+      "actual": 0.0237,
+      "abs_diff": 0.0003999999999999976
+    },
+    {
+      "path": "/results/VAE/ber_trials/8/7",
+      "kind": "numeric",
+      "expected": 0.0244,
+      "actual": 0.0238,
+      "abs_diff": 0.0005999999999999998
+    },
+    {
+      "path": "/results/VAE/ber_trials/8/8",
+      "kind": "numeric",
+      "expected": 0.0249,
+      "actual": 0.0257,
+      "abs_diff": 0.0008000000000000021
+    },
+    {
+      "path": "/results/VAE/ber_trials/8/9",
+      "kind": "numeric",
+      "expected": 0.0249,
+      "actual": 0.0254,
+      "abs_diff": 0.0005000000000000004
+    },
+    {
+      "path": "/results/VAE/ber_trials/9/0",
+      "kind": "numeric",
+      "expected": 0.0155,
+      "actual": 0.0162,
+      "abs_diff": 0.0006999999999999992
+    },
+    {
+      "path": "/results/VAE/ber_trials/9/1",
+      "kind": "numeric",
+      "expected": 0.0162,
+      "actual": 0.0165,
+      "abs_diff": 0.00030000000000000165
+    },
+    {
+      "path": "/results/VAE/ber_trials/9/2",
+      "kind": "numeric",
+      "expected": 0.0155,
+      "actual": 0.0158,
+      "abs_diff": 0.00030000000000000165
+    },
+    {
+      "path": "/results/VAE/ber_trials/9/3",
+      "kind": "numeric",
+      "expected": 0.0148,
+      "actual": 0.0149,
+      "abs_diff": 9.99999999999994e-05
+    },
+    {
+      "path": "/results/VAE/ber_trials/9/4",
+      "kind": "numeric",
+      "expected": 0.017,
+      "actual": 0.0171,
+      "abs_diff": 9.99999999999994e-05
+    },
+    {
+      "path": "/results/VAE/ber_trials/9/5",
+      "kind": "numeric",
+      "expected": 0.0161,
+      "actual": 0.0166,
+      "abs_diff": 0.0005000000000000004
+    },
+    {
+      "path": "/results/VAE/ber_trials/9/6",
+      "kind": "numeric",
+      "expected": 0.0159,
+      "actual": 0.0163,
+      "abs_diff": 0.0003999999999999976
+    },
+    {
+      "path": "/results/VAE/ber_trials/9/8",
+      "kind": "numeric",
+      "expected": 0.0151,
+      "actual": 0.0155,
+      "abs_diff": 0.0003999999999999993
+    },
+    {
+      "path": "/results/VAE/ber_trials/9/9",
+      "kind": "numeric",
+      "expected": 0.0153,
+      "actual": 0.0155,
+      "abs_diff": 0.00020000000000000052
+    },
+    {
+      "path": "/results/VAE/ber_trials/10/0",
+      "kind": "numeric",
+      "expected": 0.01,
+      "actual": 0.0106,
+      "abs_diff": 0.0005999999999999998
+    },
+    {
+      "path": "/results/VAE/ber_trials/10/1",
+      "kind": "numeric",
+      "expected": 0.0103,
+      "actual": 0.0106,
+      "abs_diff": 0.0002999999999999999
+    },
+    {
+      "path": "/results/VAE/ber_trials/10/2",
+      "kind": "numeric",
+      "expected": 0.0095,
+      "actual": 0.0097,
+      "abs_diff": 0.00020000000000000052
+    },
+    {
+      "path": "/results/VAE/ber_trials/10/3",
+      "kind": "numeric",
+      "expected": 0.0084,
+      "actual": 0.0086,
+      "abs_diff": 0.00020000000000000052
+    },
+    {
+      "path": "/results/VAE/ber_trials/10/4",
+      "kind": "numeric",
+      "expected": 0.0097,
+      "actual": 0.0102,
+      "abs_diff": 0.0005000000000000004
+    },
+    {
+      "path": "/results/VAE/ber_trials/10/5",
+      "kind": "numeric",
+      "expected": 0.0108,
+      "actual": 0.0112,
+      "abs_diff": 0.0003999999999999993
+    },
+    {
+      "path": "/results/VAE/ber_trials/10/6",
+      "kind": "numeric",
+      "expected": 0.0102,
+      "actual": 0.0106,
+      "abs_diff": 0.0003999999999999993
+    },
+    {
+      "path": "/results/VAE/ber_trials/10/7",
+      "kind": "numeric",
+      "expected": 0.0097,
+      "actual": 0.0098,
+      "abs_diff": 9.99999999999994e-05
+    },
+    {
+      "path": "/results/VAE/ber_trials/10/8",
+      "kind": "numeric",
+      "expected": 0.0098,
+      "actual": 0.0097,
+      "abs_diff": 9.99999999999994e-05
+    },
+    {
+      "path": "/results/VAE/ber_trials/10/9",
+      "kind": "numeric",
+      "expected": 0.0088,
+      "actual": 0.0096,
+      "abs_diff": 0.0007999999999999986
+    }
+  ],
+  "classical_control_differences": [],
+  "reference_files": [
+    "results/modulation/qpsk_rayleigh.json"
+  ],
+  "matching_reference": [],
+  "ignored_paths": [],
+  "numeric_tolerance": {
+    "rtol": 1e-12,
+    "atol": 1e-14
+  },
+  "scope": "Original native protocol, 100 epochs; new declared PyTorch seed, absent historical checkpoints/RNG",
+  "interpretation": "MATCH means the selected scientific fields agree within roundoff; not byte identity, statistical equivalence or independent validation of every thesis claim."
+}

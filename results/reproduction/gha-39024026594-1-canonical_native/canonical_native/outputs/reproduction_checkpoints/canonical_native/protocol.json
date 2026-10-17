@@ -1,0 +1,25 @@
+{
+  "stage": "7.10",
+  "new_python_numpy_torch_seed": 20261017,
+  "training_data_seed": 42,
+  "epochs": 100,
+  "trials": 10,
+  "bits_per_trial": 10000,
+  "snrs_db": [
+    0,
+    2,
+    4,
+    6,
+    8,
+    10,
+    12,
+    14,
+    16,
+    18,
+    20
+  ],
+  "torch_version": "2.8.0+cpu",
+  "threads": 2,
+  "checkpoint_rule": "unchanged original per-family rule",
+  "historical_limit": "Original PyTorch seed and learned checkpoint absent; this is new protocol replication."
+}

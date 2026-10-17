@@ -1,0 +1,139 @@
+Preparing worktree (detached HEAD c0394f0)
+HEAD is now at c0394f0 repro: recover interrupted evidence and run remaining experiments on Actions
+  Skipping relays: cgan
+
+============================================================
+  Thesis Experiment Runner
+  Experiments: 7.8
+  Quick: False  |  GPU: False  |  Seed: 42
+  Retrain: True  |  Inference-only: False
+  Results → results/  |  Weights → weights/
+  Log → results/logs/experiments_20261017_101330.log
+============================================================
+2026-10-17 10:13:30,819 [INFO] START  §7.8 Normalized 3K Comparison
+
+══ §7.8 Normalized 3K-Parameter Comparison ══
+  Training MLP-3K …     Checkpoint → weights/seed_42/3k/mlp-3k.pt
+done (44.9s)
+  Training Hybrid-3K …     Checkpoint → weights/seed_42/3k/hybrid-3k.pt
+done (44.5s)
+  Training VAE-3K …     Checkpoint → weights/seed_42/3k/vae-3k.pt
+done (53.1s)
+  Training Transformer-3K …   Transformer Training Configuration:
+    Device: cpu
+    Architecture: 11-token Transformer
+    d_model: 18, heads: 2
+    in_channels: 1
+    Layers: 1
+    Parameters: 3,007
+    Training SNRs: [5, 10, 15] dB
+    Samples: 25,000, Epochs: 100
+
+  Generating training data...
+  Training data ready: 21,224 train, 3,745 val samples
+
+  Training Transformer...
+    Epoch 1/100, Loss: 0.050950, Train Acc: 0.9983, Val Acc: 0.9989, Best: 0.050950
+    Epoch 10/100, Loss: 0.005395, Train Acc: 0.9979, Val Acc: 0.9987, Best: 0.005395
+    Epoch 20/100, Loss: 0.005099, Train Acc: 0.9985, Val Acc: 0.9987, Best: 0.004902
+    Epoch 30/100, Loss: 0.004802, Train Acc: 0.9984, Val Acc: 0.9987, Best: 0.004795
+    Epoch 40/100, Loss: 0.004772, Train Acc: 0.9986, Val Acc: 0.9984, Best: 0.004475
+    Epoch 50/100, Loss: 0.004453, Train Acc: 0.9986, Val Acc: 0.9984, Best: 0.004453
+    Epoch 60/100, Loss: 0.004572, Train Acc: 0.9986, Val Acc: 0.9989, Best: 0.004453
+    Epoch 70/100, Loss: 0.004596, Train Acc: 0.9987, Val Acc: 0.9984, Best: 0.004379
+    Epoch 80/100, Loss: 0.004444, Train Acc: 0.9987, Val Acc: 0.9984, Best: 0.004379
+    Epoch 90/100, Loss: 0.004694, Train Acc: 0.9986, Val Acc: 0.9984, Best: 0.004332
+    Epoch 100/100, Loss: 0.004550, Train Acc: 0.9986, Val Acc: 0.9984, Best: 0.004332
+
+  Transformer training complete!
+  Final loss: 0.004550, Best loss: 0.004332
+  Total parameters: 3,007
+    Checkpoint → weights/seed_42/3k/transformer-3k.pt
+done (127.3s)
+  Training Mamba-3K …   Mamba S6 Training Configuration:
+    Device: cpu
+    Architecture: 11-token Mamba (S6)
+    d_model: 16, d_state: 6
+    in_channels: 1
+    Layers: 1
+    Parameters: 3,027
+    Training SNRs: [5, 10, 15] dB
+    Samples: 25,000, Epochs: 100
+
+  Generating training data...
+  Training data ready: 21,224 train, 3,745 val samples
+
+  Training Mamba S6...
+    Epoch 1/100, Loss: 0.053213, Train Acc: 0.9985, Val Acc: 0.9984, Best: 0.053213
+    Epoch 10/100, Loss: 0.005239, Train Acc: 0.9985, Val Acc: 0.9987, Best: 0.005239
+    Epoch 20/100, Loss: 0.005027, Train Acc: 0.9984, Val Acc: 0.9987, Best: 0.005027
+    Epoch 30/100, Loss: 0.004850, Train Acc: 0.9984, Val Acc: 0.9987, Best: 0.004850
+    Epoch 40/100, Loss: 0.004823, Train Acc: 0.9985, Val Acc: 0.9984, Best: 0.004776
+    Epoch 50/100, Loss: 0.004743, Train Acc: 0.9985, Val Acc: 0.9987, Best: 0.004688
+    Epoch 60/100, Loss: 0.004732, Train Acc: 0.9985, Val Acc: 0.9987, Best: 0.004558
+    Epoch 70/100, Loss: 0.004569, Train Acc: 0.9985, Val Acc: 0.9987, Best: 0.004558
+    Epoch 80/100, Loss: 0.004668, Train Acc: 0.9985, Val Acc: 0.9984, Best: 0.004358
+    Epoch 90/100, Loss: 0.004579, Train Acc: 0.9987, Val Acc: 0.9989, Best: 0.004358
+    Epoch 100/100, Loss: 0.004549, Train Acc: 0.9985, Val Acc: 0.9984, Best: 0.004358
+
+  Mamba training complete!
+  Final loss: 0.004549, Best loss: 0.004358
+  Total parameters: 3,027
+    Checkpoint → weights/seed_42/3k/mamba-3k.pt
+done (203.7s)
+  Training Mamba2-3K …   Mamba-2 (SSD) Training Configuration:
+    Device: cpu
+    Architecture: 11-token Mamba-2 (SSD)
+    d_model: 15, d_state: 6
+    in_channels: 1
+    Layers: 1
+    Parameters: 3,004
+    Training SNRs: [5, 10, 15] dB
+    Samples: 25,000, Epochs: 100
+  Training data: 21,224 train, 3,745 val samples
+    Epoch 1/100, Loss: 0.024171, Train Acc: 0.9985, Val Acc: 0.9979, Best: 0.024171
+    Epoch 10/100, Loss: 0.005017, Train Acc: 0.9986, Val Acc: 0.9981, Best: 0.004949
+    Epoch 20/100, Loss: 0.004770, Train Acc: 0.9986, Val Acc: 0.9979, Best: 0.004763
+    Epoch 30/100, Loss: 0.004724, Train Acc: 0.9986, Val Acc: 0.9976, Best: 0.004623
+    Epoch 40/100, Loss: 0.004924, Train Acc: 0.9987, Val Acc: 0.9979, Best: 0.004574
+    Epoch 50/100, Loss: 0.004465, Train Acc: 0.9987, Val Acc: 0.9979, Best: 0.004465
+    Epoch 60/100, Loss: 0.004604, Train Acc: 0.9987, Val Acc: 0.9979, Best: 0.004465
+    Epoch 70/100, Loss: 0.004458, Train Acc: 0.9988, Val Acc: 0.9979, Best: 0.004465
+    Epoch 80/100, Loss: 0.004427, Train Acc: 0.9987, Val Acc: 0.9981, Best: 0.004406
+    Epoch 90/100, Loss: 0.004360, Train Acc: 0.9988, Val Acc: 0.9976, Best: 0.004354
+    Epoch 100/100, Loss: 0.004493, Train Acc: 0.9987, Val Acc: 0.9976, Best: 0.004216
+
+  Mamba-2 training complete!  Final loss: 0.004493, Best: 0.004216  Parameters: 3,004
+    Checkpoint → weights/seed_42/3k/mamba2-3k.pt
+done (224.1s)
+  AWGN …
+    MLP-3K … done (1.6s)
+    Hybrid-3K … done (0.2s)
+    VAE-3K … done (0.7s)
+    Transformer-3K … done (6.1s)
+    Mamba-3K … done (3.4s)
+    Mamba2-3K … done (10.1s)
+    AF … done (0.1s)
+    DF … done (0.1s)
+  JSON → results/normalized_3k/3k_awgn.json
+  Plot → results/normalized_3k/3k_awgn.png
+  Rayleigh Fading …
+    MLP-3K … done (0.8s)
+    Hybrid-3K … done (0.4s)
+    VAE-3K … done (0.8s)
+    Transformer-3K … done (5.6s)
+    Mamba-3K … done (3.1s)
+    Mamba2-3K … done (8.3s)
+    AF … done (0.1s)
+    DF … done (0.1s)
+  JSON → results/normalized_3k/3k_rayleigh.json
+/home/runner/work/relaynet2/relaynet2/_reproduction_work/gha-39024026594-1-canonical_3k/canonical_3k/run_experiments.py:440: UserWarning: This figure includes Axes that are not compatible with tight_layout, so results might be incorrect.
+  plt.tight_layout()
+  Plot → results/normalized_3k/3k_rayleigh.png
+  §7.8 complete → results/normalized_3k/
+2026-10-17 10:25:52,316 [INFO] DONE   §7.8 Normalized 3K Comparison  (741.5s)
+
+============================================================
+  All experiments completed in 741.5s
+  Succeeded: 1  |  Failed: 0
+============================================================

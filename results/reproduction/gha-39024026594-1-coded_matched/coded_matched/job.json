@@ -1,0 +1,61 @@
+{
+  "id": "coded_matched",
+  "kind": "seeded_retraining",
+  "worker": "script",
+  "script": "coded_matched_metrics.py",
+  "outputs": [
+    "results/coded_matched_metrics.json"
+  ],
+  "env": {
+    "CMM_TRIALS": "30",
+    "CMM_SNRS": "0,4,8,12,16,20"
+  },
+  "ignored": [
+    "/seconds"
+  ],
+  "scope": "Full matched coded comparison: 30 trials \u00d7 500 frames at six SNRs; hard/soft MLP, no Mamba",
+  "status": "RETRAINING_DIFFERENCE_REQUIRES_REVIEW",
+  "started_at": "2026-10-17T10:13:29.435550+00:00",
+  "reference_files": [
+    {
+      "path": "results/coded_matched_metrics.json",
+      "sha256": "b7c421a3f441fa19a05e1dc93e35a11e1aab601ee5d3110c2f2333597d89cc6e",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/c0394f0da5dac449594b89a9794fe251fad75e76/results/coded_matched_metrics.json"
+    }
+  ],
+  "source_commit": "c0394f0da5dac449594b89a9794fe251fad75e76",
+  "timeout_seconds": 19800.0,
+  "command": [
+    "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+    "-u",
+    "scripts/reproduction_worker.py",
+    "--job",
+    "coded_matched",
+    "--threads",
+    "2"
+  ],
+  "environment_overrides": {
+    "OMP_NUM_THREADS": "2",
+    "OPENBLAS_NUM_THREADS": "2",
+    "MKL_NUM_THREADS": "2",
+    "NUMEXPR_NUM_THREADS": "2",
+    "PYTHONHASHSEED": "0",
+    "MPLBACKEND": "Agg",
+    "CUDA_VISIBLE_DEVICES": "",
+    "CMM_TRIALS": "30",
+    "CMM_SNRS": "0,4,8,12,16,20"
+  },
+  "pid": 2558,
+  "elapsed_seconds": 4111.3,
+  "returncode": 0,
+  "artifacts": [
+    {
+      "path": "outputs/results/coded_matched_metrics.json",
+      "sha256": "2a28a4875735ce2b7e9de8843308f94fc27efd2a0a54036387b2661e9f081518",
+      "bytes": 69994
+    }
+  ],
+  "difference_count": 802,
+  "finished_at": "2026-10-17T11:22:00.702030+00:00",
+  "log_sha256": "a9ef5c1b4782ed29584d32f0e6a05b3af9f468982aa9316eb1233cbad711655e"
+}

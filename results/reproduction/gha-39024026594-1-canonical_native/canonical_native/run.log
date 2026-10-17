@@ -1,0 +1,148 @@
+Preparing worktree (detached HEAD c0394f0)
+HEAD is now at c0394f0 repro: recover interrupted evidence and run remaining experiments on Actions
+  Skipping relays: cgan
+
+============================================================
+  Thesis Experiment Runner
+  Experiments: 7.10
+  Quick: False  |  GPU: False  |  Seed: 42
+  Retrain: True  |  Inference-only: False
+  Results → results/  |  Weights → weights/
+  Log → results/logs/experiments_20261017_101328.log
+============================================================
+2026-10-17 10:13:28,686 [INFO] START  §7.10 Modulation Comparison
+
+══ §7.10 Modulation Comparison ══
+  Training MLP (169p) … done (24.2s)
+  Training Hybrid … done (24.6s)
+  Training VAE … done (73.1s)
+  Training Transformer …   Transformer Training Configuration:
+    Device: cpu
+    Architecture: 11-token Transformer
+    d_model: 32, heads: 4
+    in_channels: 1
+    Layers: 2
+    Parameters: 17,697
+    Training SNRs: [5, 10, 15] dB
+    Samples: 50,000, Epochs: 100
+
+  Generating training data...
+  Training data ready: 42,473 train, 7,495 val samples
+
+  Training Transformer...
+    Epoch 1/100, Loss: 0.035164, Train Acc: 0.9976, Val Acc: 0.9977, Best: 0.035164
+    Epoch 10/100, Loss: 0.007305, Train Acc: 0.9980, Val Acc: 0.9979, Best: 0.007305
+    Epoch 20/100, Loss: 0.006746, Train Acc: 0.9980, Val Acc: 0.9977, Best: 0.006635
+    Epoch 30/100, Loss: 0.006618, Train Acc: 0.9980, Val Acc: 0.9979, Best: 0.006542
+    Epoch 40/100, Loss: 0.006327, Train Acc: 0.9980, Val Acc: 0.9981, Best: 0.006327
+    Epoch 50/100, Loss: 0.006213, Train Acc: 0.9981, Val Acc: 0.9976, Best: 0.006213
+    Epoch 60/100, Loss: 0.006341, Train Acc: 0.9977, Val Acc: 0.9973, Best: 0.006166
+    Epoch 70/100, Loss: 0.006263, Train Acc: 0.9982, Val Acc: 0.9977, Best: 0.006087
+    Epoch 80/100, Loss: 0.006015, Train Acc: 0.9982, Val Acc: 0.9980, Best: 0.005963
+    Epoch 90/100, Loss: 0.006063, Train Acc: 0.9983, Val Acc: 0.9976, Best: 0.005947
+    Epoch 100/100, Loss: 0.005871, Train Acc: 0.9983, Val Acc: 0.9976, Best: 0.005871
+
+  Transformer training complete!
+  Final loss: 0.005871, Best loss: 0.005871
+  Total parameters: 17,697
+done (508.8s)
+  Training Mamba S6 …   Mamba S6 Training Configuration:
+    Device: cpu
+    Architecture: 11-token Mamba (S6)
+    d_model: 32, d_state: 16
+    in_channels: 1
+    Layers: 2
+    Parameters: 24,001
+    Training SNRs: [5, 10, 15] dB
+    Samples: 50,000, Epochs: 100
+
+  Generating training data...
+  Training data ready: 42,473 train, 7,495 val samples
+
+  Training Mamba S6...
+    Epoch 1/100, Loss: 0.009394, Train Acc: 0.9980, Val Acc: 0.9972, Best: 0.009394
+    Epoch 10/100, Loss: 0.006611, Train Acc: 0.9980, Val Acc: 0.9979, Best: 0.006571
+    Epoch 20/100, Loss: 0.006487, Train Acc: 0.9981, Val Acc: 0.9972, Best: 0.006442
+    Epoch 30/100, Loss: 0.006355, Train Acc: 0.9980, Val Acc: 0.9973, Best: 0.006355
+    Epoch 40/100, Loss: 0.006309, Train Acc: 0.9981, Val Acc: 0.9977, Best: 0.006312
+    Epoch 50/100, Loss: 0.006307, Train Acc: 0.9981, Val Acc: 0.9973, Best: 0.006238
+    Epoch 60/100, Loss: 0.006260, Train Acc: 0.9981, Val Acc: 0.9973, Best: 0.006238
+    Epoch 70/100, Loss: 0.006274, Train Acc: 0.9981, Val Acc: 0.9972, Best: 0.006168
+    Epoch 80/100, Loss: 0.006238, Train Acc: 0.9981, Val Acc: 0.9973, Best: 0.006168
+    Epoch 90/100, Loss: 0.006198, Train Acc: 0.9982, Val Acc: 0.9973, Best: 0.006121
+    Epoch 100/100, Loss: 0.006172, Train Acc: 0.9981, Val Acc: 0.9979, Best: 0.006029
+
+  Mamba training complete!
+  Final loss: 0.006172, Best loss: 0.006029
+  Total parameters: 24,001
+done (620.5s)
+  Training Mamba2 (SSD) …   Mamba-2 (SSD) Training Configuration:
+    Device: cpu
+    Architecture: 11-token Mamba-2 (SSD)
+    d_model: 32, d_state: 16
+    in_channels: 1
+    Layers: 2
+    Parameters: 26,179
+    Training SNRs: [5, 10, 15] dB
+    Samples: 50,000, Epochs: 100
+  Training data: 42,473 train, 7,495 val samples
+    Epoch 1/100, Loss: 0.009575, Train Acc: 0.9981, Val Acc: 0.9972, Best: 0.009575
+    Epoch 10/100, Loss: 0.006656, Train Acc: 0.9981, Val Acc: 0.9972, Best: 0.006464
+    Epoch 20/100, Loss: 0.006470, Train Acc: 0.9980, Val Acc: 0.9979, Best: 0.006420
+    Epoch 30/100, Loss: 0.006507, Train Acc: 0.9980, Val Acc: 0.9973, Best: 0.006341
+    Epoch 40/100, Loss: 0.006221, Train Acc: 0.9982, Val Acc: 0.9975, Best: 0.006221
+    Epoch 50/100, Loss: 0.006238, Train Acc: 0.9982, Val Acc: 0.9975, Best: 0.006106
+    Epoch 60/100, Loss: 0.006262, Train Acc: 0.9982, Val Acc: 0.9975, Best: 0.006053
+    Epoch 70/100, Loss: 0.006067, Train Acc: 0.9983, Val Acc: 0.9976, Best: 0.005916
+    Epoch 80/100, Loss: 0.006056, Train Acc: 0.9983, Val Acc: 0.9977, Best: 0.005830
+    Epoch 90/100, Loss: 0.005899, Train Acc: 0.9983, Val Acc: 0.9976, Best: 0.005809
+    Epoch 100/100, Loss: 0.005923, Train Acc: 0.9984, Val Acc: 0.9972, Best: 0.005740
+
+  Mamba-2 training complete!  Final loss: 0.005923, Best: 0.005740  Parameters: 26,179
+done (766.4s)
+
+  BPSK × AWGN
+    AF … done (0.6s)
+    DF … done (0.1s)
+    MLP (169p) … done (0.5s)
+    Hybrid … done (0.1s)
+    VAE … done (0.5s)
+    Transformer … done (18.6s)
+    Mamba S6 … done (13.7s)
+    Mamba2 (SSD) … done (36.6s)
+  JSON → results/modulation/bpsk_awgn.json
+  Plot → results/modulation/bpsk_awgn_ci.png
+
+  QPSK × RAYLEIGH
+    AF … done (0.1s)
+    DF … done (0.1s)
+    MLP (169p) … done (0.5s)
+    Hybrid … done (0.3s)
+    VAE … done (0.6s)
+    Transformer … done (15.2s)
+    Mamba S6 … done (6.6s)
+    Mamba2 (SSD) … done (26.9s)
+  JSON → results/modulation/qpsk_rayleigh.json
+/home/runner/work/relaynet2/relaynet2/_reproduction_work/gha-39024026594-1-canonical_native/canonical_native/run_experiments.py:440: UserWarning: This figure includes Axes that are not compatible with tight_layout, so results might be incorrect.
+  plt.tight_layout()
+  Plot → results/modulation/qpsk_rayleigh_ci.png
+
+  QAM16 × RAYLEIGH
+    AF … done (0.1s)
+    DF … done (0.1s)
+    MLP (169p) … done (0.3s)
+    Hybrid … done (0.2s)
+    VAE … done (0.3s)
+    Transformer … done (7.7s)
+    Mamba S6 … done (3.5s)
+    Mamba2 (SSD) … done (10.3s)
+  JSON → results/modulation/qam16_rayleigh.json
+  Plot → results/modulation/qam16_rayleigh_ci.png
+
+  §7.10 complete → results/modulation/
+2026-10-17 10:49:31,788 [INFO] DONE   §7.10 Modulation Comparison  (2163.1s)
+
+============================================================
+  All experiments completed in 2163.1s
+  Succeeded: 1  |  Failed: 0
+============================================================
