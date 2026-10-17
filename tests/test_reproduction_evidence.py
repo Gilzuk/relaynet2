@@ -60,3 +60,38 @@ def test_atomic_writer_rejects_invalid_numbers(tmp_path):
     with pytest.raises(ValueError):
         write_json(p, {"bad": float("nan")})
     assert json.loads(p.read_text()) == {"status": "RUNNING"}
+
+
+def test_isolated_worktree_executes_fresh_output_and_preserves_reference(tmp_path, monkeypatch):
+    import subprocess
+    from types import SimpleNamespace
+    from scripts import reproduce_round2 as suite
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    subprocess.run(["git", "init", str(repo)], check=True, capture_output=True)
+    (repo / "scripts").mkdir()
+    (repo / "results").mkdir()
+    write_json(repo / "results/value.json", {"value": 2})
+    (repo / "scripts/reproduction_worker.py").write_text(
+        'from pathlib import Path\n'
+        'p=Path("results/value.json")\n'
+        'assert not p.exists(), "stale output was not removed"\n'
+        'p.write_text(\'{"value": 2}\\n\')\n')
+    subprocess.run(["git", "add", "."], cwd=repo, check=True)
+    subprocess.run(["git", "-c", "user.name=Test", "-c", "user.email=test@example.invalid",
+                    "commit", "-m", "fixture"], cwd=repo, check=True, capture_output=True)
+    source = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=repo, text=True).strip()
+    monkeypatch.setattr(suite, "ROOT", repo)
+    job = dict(id="fixture", kind="analysis", worker="script", outputs=["results/value.json"], scope="fixture")
+    run_dir = repo / "results/reproduction/test"
+    run_dir.mkdir(parents=True)
+    state = dict(run_id="test", source_commit=source, status="RUNNING", jobs=[dict(job, status="RUNNING")])
+    rec = suite.run_job(job, run_dir, state, SimpleNamespace(threads=1, timeout_hours=1))
+    assert rec["status"] == "MATCH"
+    assert read_json_fixture(repo / "results/value.json") == {"value": 2}
+    assert (run_dir / "fixture/outputs/results/value.json").exists()
+    assert not (repo / "_reproduction_work/test/fixture").exists()
+
+
+def read_json_fixture(path):
+    return json.loads(path.read_text())

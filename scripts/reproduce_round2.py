@@ -284,6 +284,10 @@ def run_job(job, run_dir, state, args):
                             "/e6_unknown_channel_results/", "/e6_unknown_channel_qpsk_results/",
                             "!*.png", "!*.pdf"], cwd=work, stdout=log, stderr=subprocess.STDOUT,
                            check=True, timeout=300)
+            # --no-checkout leaves an empty index. Populate it only after the
+            # sparse paths are configured; otherwise no worker exists to run.
+            subprocess.run(["git", "reset", "--hard", state["source_commit"]], cwd=work,
+                           stdout=log, stderr=subprocess.STDOUT, check=True, timeout=300)
             # Remove the exact target before execution: a stale output cannot
             # pass a failed/no-op run. Caches in the isolated checkout are removed.
             for rel in job["outputs"]:
