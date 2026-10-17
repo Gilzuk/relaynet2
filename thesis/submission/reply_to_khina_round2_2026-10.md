@@ -1,8 +1,10 @@
+> Latest document update: the corrected PDF is pinned to PR #189 at `908687650929a74a969f74fa679f67633b8c3793`; that PR is not yet merged or published to the generated thesis mirror. Its committee audit closes the six scientific requests but flags administrative confirmation of the 120-body/136-physical page convention. No email has been sent.
+
 Subject: Re: Thesis — remaining points
 
 Draft for Gil to send; not sent. Updated after PRs #185, #186 and #187 merged.
-Reviewed submission: [`5eb34ab3ed01`](https://github.com/Gilzuk/relaynet2/tree/5eb34ab3ed01bc9df17498358656965af2fa916b).
-[Revised thesis PDF](https://github.com/Gilzuk/relaynet2/blob/5eb34ab3ed01bc9df17498358656965af2fa916b/thesis/main.pdf).
+Reviewed submission: [`908687650929`](https://github.com/Gilzuk/relaynet2/tree/908687650929a74a969f74fa679f67633b8c3793).
+[Revised thesis PDF](https://github.com/Gilzuk/relaynet2/blob/908687650929a74a969f74fa679f67633b8c3793/thesis/main.pdf).
 Section/table numbers below refer to this PDF, including principal matched decoding in §5.5.1.
 
 Dear Anatoly,
@@ -109,7 +111,7 @@ Neither change establishes a learned canonical advantage over DF. All 24 new mat
 
 The broader runner now records a default Python/NumPy/Torch bootstrap seed of 42, preserves driver-local seeds, requires fresh outputs, retains per-step output versions and saved checkpoints, and reports missing outputs or verifier failures as errors. It distinguishes three historical archive references from executable producers. The full 73-entry plan has not been executed in full. A cheap committed-source ISI-penalty analysis regenerated its JSON byte-for-byte and passed verification; it is not a new BER simulation.
 
-The final merged snapshot passes 892 numerical checks with zero inconsistencies. Its code has 386 passing tests, and CI passed on Python 3.10, 3.11 and 3.12. The PDF, preview and both Overleaf bundles are synchronized. A final targeted source/PDF check against your six requests identified no further blocking correction within the evaluated and disclosed scope. This is a technical readiness assessment; the response remains a draft until sent.
+The corrected PDF passes 892 numerical checks with zero inconsistencies, and 32 document/verifier regression tests pass. The earlier 386-test suite and Python 3.10–3.12 CI results apply to the unchanged experiment code. The PDF, preview and both Overleaf bundles are synchronized. The additional committee review aligns the README claims and reproduction routes, clarifies the two BPSK bit-label conventions, and reorders acknowledgments before the abstract. It finds the six scientific requests addressed within scope; formal confirmation of the page-count convention remains separate. The correction is in PR #189, awaiting integration and generated-mirror publication. This response remains an unsent draft.
 
 Best regards,
 Gil

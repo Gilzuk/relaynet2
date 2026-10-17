@@ -1,13 +1,39 @@
 # Submission readiness review — 17 October 2026
 
+## Later committee audit: current qualification
+
+The follow-up [PR #189](https://github.com/Gilzuk/relaynet2/pull/189) at
+`908687650929a74a969f74fa679f67633b8c3793` adds reviewed corrections to both README
+sources, BPSK bit-label disclosure and front-matter order. Its PDF SHA-256 is
+`4262e711607c6cdf1e0cd877754b7883ee3300305118ddb45e0c1aeea7c206c6`.
+Only physical text pages 3/4/5/40 change; body pages and all 21 email quotations
+are unchanged. Fresh verifier 892/0, 32 document/verifier tests and clean PDF
+build checks pass. The earlier 386-test result below is unchanged-code evidence.
+
+All six round-2 scientific items remain addressed. **The earlier readiness verdict
+below is qualified:** integrate PR #189, publish its generated mirror, and confirm
+the accepted page-count convention before unconditional submission clearance.
+The December 2025 faculty instructions say 120 pages including appendices but do
+not explicitly exclude front/back matter; the repo assumes exclusion. The PDF is
+120 numbered body / 136 physical pages. No written faculty clarification was
+found in the audited record. This is uncertainty, not a finding of a 16-page
+violation. The full [committee report](https://github.com/Gilzuk/relaynet2/blob/908687650929a74a969f74fa679f67633b8c3793/docs/committee_submission_audit_2026-10-17.md)
+records the criteria, repairs and evidence.
+
+The email draft now links to that immutable corrected PDF and its quotation
+inventory was reverified. It is unsent. PR #189 is open, and the currently published
+mirror remains at `0278959d9e981f0e0b8d8e7dcef0c8d3dab1c1a9`; do not mistake a
+prepared correction for a completed merge or Overleaf pull.
+
+## Earlier targeted review (retained record)
+
 Reviewed merged snapshot: **`5eb34ab3ed01bc9df17498358656965af2fa916b`**,
 after PRs #183–#187. The submission PDF is
 [archived at that revision](https://github.com/Gilzuk/relaynet2/blob/5eb34ab3ed01bc9df17498358656965af2fa916b/thesis/main.pdf).
-This is the current readiness review; earlier review reports describe their own
-starting revisions and findings. This is a technical assessment, not Dr. Khina's
+This section preserves the earlier targeted review; the later qualification above governs current readiness. Earlier review reports describe their own starting revisions and findings. This is a technical assessment, not Dr. Khina's
 approval or evidence that the thesis or email has already been submitted.
 
-## Verdict
+## Earlier verdict (qualified above)
 
 **Ready for the author's submission within the stated experimental scope.**
 All six supplied round-2 requests are addressed. This final targeted review found
