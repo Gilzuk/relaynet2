@@ -31,6 +31,14 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 
 # experiment -> (script, [output files], [published tables/figures])
 REGISTRY = {
+    "Round-2 reproduction evidence (separate from published inputs)": (
+        "scripts/reproduce_round2.py",
+        ["results/reproduction/20261017-round2-v2/manifest.json"],
+        ["new reproduction suite; status and scope in results/reproduction/README.md"]),
+    "Original-driver MLP reproduction control": (
+        "scripts/reproduction_original_control.py",
+        ["results/reproduction/20261017-original-control/comparison.json"],
+        ["instrumentation control only; does not replace Table 6.7"]),
     "Coded error location, matched metrics": (
         "coded_error_mechanism.py", ["results/coded_error_mechanism_matched.json"], ["tbl:table38 matched rows"]),
     "Coded reliable regime, matched metrics": (

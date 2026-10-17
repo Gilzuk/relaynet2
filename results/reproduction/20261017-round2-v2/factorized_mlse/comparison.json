@@ -1,0 +1,21 @@
+{
+  "status": "MATCH",
+  "difference_count": 0,
+  "differences": [],
+  "classical_control_differences": [],
+  "reference_files": [
+    "results/factorized_mlse_equivalence.json"
+  ],
+  "matching_reference": [
+    "results/factorized_mlse_equivalence.json"
+  ],
+  "ignored_paths": [
+    "/git_rev"
+  ],
+  "numeric_tolerance": {
+    "rtol": 1e-12,
+    "atol": 1e-14
+  },
+  "scope": "Full joint/factorized control: L=3,5,7; six SNRs; 2,000 symbols per block; original depths",
+  "interpretation": "MATCH means the selected scientific fields agree within roundoff; not byte identity, statistical equivalence or independent validation of every thesis claim."
+}

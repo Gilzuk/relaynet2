@@ -1,0 +1,46 @@
+{
+  "id": "canonical_3k",
+  "kind": "new_training_replication",
+  "worker": "canonical",
+  "stage": "7.8",
+  "outputs": [
+    "results/normalized_3k/3k_rayleigh.json"
+  ],
+  "seed": 20261017,
+  "scope": "Original 3K protocol, 100 epochs; new declared PyTorch seed, absent historical checkpoints/RNG",
+  "status": "FAILED",
+  "started_at": "2026-10-17T08:48:59.583920+00:00",
+  "reference_files": [
+    {
+      "path": "results/normalized_3k/3k_rayleigh.json",
+      "sha256": "1706260ae27a97b0d82adf2d763969cd6ea438d600861ac420fc720be8a311de",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/634ec5c3572b0b6848bf5adb3f7cc61251c8c733/results/normalized_3k/3k_rayleigh.json"
+    }
+  ],
+  "source_commit": "634ec5c3572b0b6848bf5adb3f7cc61251c8c733",
+  "timeout_seconds": 28800,
+  "command": [
+    "/workspace/scratch/781ec23bff5d/repro-venv/bin/python",
+    "-u",
+    "scripts/reproduction_worker.py",
+    "--job",
+    "canonical_3k",
+    "--threads",
+    "2"
+  ],
+  "environment_overrides": {
+    "OMP_NUM_THREADS": "2",
+    "OPENBLAS_NUM_THREADS": "2",
+    "MKL_NUM_THREADS": "2",
+    "NUMEXPR_NUM_THREADS": "2",
+    "PYTHONHASHSEED": "0",
+    "MPLBACKEND": "Agg",
+    "CUDA_VISIBLE_DEVICES": ""
+  },
+  "pid": 48,
+  "elapsed_seconds": 10.0,
+  "returncode": 2,
+  "artifacts": [],
+  "finished_at": "2026-10-17T08:49:09.597725+00:00",
+  "log_sha256": "ce6a32f08e688f4a0f0cccdbd7af17387c5cf6b45a4e04d9ea99f48079510ccf"
+}

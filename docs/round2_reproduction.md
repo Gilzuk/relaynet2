@@ -2,6 +2,8 @@
 
 PR [183](https://github.com/Gilzuk/relaynet2/pull/183) was merged at `42e3e386e0b6d1c137a84cf609b51e9581e7e69a` after CI passed. This separate branch adds fresh evidence. It does not silently replace the published thesis or its inputs.
 
+Current evidence and investigation: [results/reproduction/README.md](../results/reproduction/README.md). The active run is `20261017-round2-v2`; the original ID is retained as a failed setup attempt. Choose an unused ID when launching another run. The hosted run uses a managed asynchronous execution session; the generic detached launcher alone did not establish a live heartbeat in that host.
+
 ## Launch and monitor
 
 Use Python with NumPy, SciPy, Matplotlib and CPU PyTorch installed. The first execution environment uses Python 3.12.14 and PyTorch 2.8.0+cpu; the run's `environment.json` records the actual complete package set. These are new validation versions, not recovered historical versions.

@@ -1,0 +1,1102 @@
+{
+  "description": "Symbol-by-symbol comparison of joint QPSK MLSE and the exact two-binary-trellis factorization, real taps, circular AWGN.",
+  "taps": "h_k = 0.7^k, unit-energy normalized",
+  "channel_lengths": [
+    3,
+    5,
+    7
+  ],
+  "snrs_db": [
+    0,
+    4,
+    8,
+    12,
+    16,
+    20
+  ],
+  "tracebacks": [
+    0,
+    1,
+    2,
+    3,
+    5,
+    15,
+    "5L"
+  ],
+  "full_sequence_lengths": [
+    3,
+    5
+  ],
+  "symbols_per_block": 2000,
+  "joint_states": {
+    "3": 16,
+    "5": 256,
+    "7": 4096
+  },
+  "factorized_states_per_axis": {
+    "3": 4,
+    "5": 16,
+    "7": 64
+  },
+  "total_symbols_compared": 264000,
+  "total_disagreements": 0,
+  "git_rev": "43ce4a6fbfe2a147a8c77c0fb06e44fcd5d7d5e2",
+  "rows": [
+    {
+      "L": 3,
+      "snr_db": 0,
+      "decoder": "D=0",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.432
+    },
+    {
+      "L": 3,
+      "snr_db": 0,
+      "decoder": "D=1",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.396
+    },
+    {
+      "L": 3,
+      "snr_db": 0,
+      "decoder": "D=2",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.382
+    },
+    {
+      "L": 3,
+      "snr_db": 0,
+      "decoder": "D=3",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.3755
+    },
+    {
+      "L": 3,
+      "snr_db": 0,
+      "decoder": "D=5",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.3695
+    },
+    {
+      "L": 3,
+      "snr_db": 0,
+      "decoder": "D=15",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.3715
+    },
+    {
+      "L": 3,
+      "snr_db": 0,
+      "decoder": "full",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.3715
+    },
+    {
+      "L": 3,
+      "snr_db": 4,
+      "decoder": "D=0",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.2605
+    },
+    {
+      "L": 3,
+      "snr_db": 4,
+      "decoder": "D=1",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.236
+    },
+    {
+      "L": 3,
+      "snr_db": 4,
+      "decoder": "D=2",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.2205
+    },
+    {
+      "L": 3,
+      "snr_db": 4,
+      "decoder": "D=3",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.214
+    },
+    {
+      "L": 3,
+      "snr_db": 4,
+      "decoder": "D=5",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.2105
+    },
+    {
+      "L": 3,
+      "snr_db": 4,
+      "decoder": "D=15",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.207
+    },
+    {
+      "L": 3,
+      "snr_db": 4,
+      "decoder": "full",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.207
+    },
+    {
+      "L": 3,
+      "snr_db": 8,
+      "decoder": "D=0",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.085
+    },
+    {
+      "L": 3,
+      "snr_db": 8,
+      "decoder": "D=1",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.07
+    },
+    {
+      "L": 3,
+      "snr_db": 8,
+      "decoder": "D=2",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.067
+    },
+    {
+      "L": 3,
+      "snr_db": 8,
+      "decoder": "D=3",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.055
+    },
+    {
+      "L": 3,
+      "snr_db": 8,
+      "decoder": "D=5",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0515
+    },
+    {
+      "L": 3,
+      "snr_db": 8,
+      "decoder": "D=15",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0495
+    },
+    {
+      "L": 3,
+      "snr_db": 8,
+      "decoder": "full",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0495
+    },
+    {
+      "L": 3,
+      "snr_db": 12,
+      "decoder": "D=0",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0015
+    },
+    {
+      "L": 3,
+      "snr_db": 12,
+      "decoder": "D=1",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.001
+    },
+    {
+      "L": 3,
+      "snr_db": 12,
+      "decoder": "D=2",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.001
+    },
+    {
+      "L": 3,
+      "snr_db": 12,
+      "decoder": "D=3",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.001
+    },
+    {
+      "L": 3,
+      "snr_db": 12,
+      "decoder": "D=5",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.001
+    },
+    {
+      "L": 3,
+      "snr_db": 12,
+      "decoder": "D=15",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.001
+    },
+    {
+      "L": 3,
+      "snr_db": 12,
+      "decoder": "full",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.001
+    },
+    {
+      "L": 3,
+      "snr_db": 16,
+      "decoder": "D=0",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0
+    },
+    {
+      "L": 3,
+      "snr_db": 16,
+      "decoder": "D=1",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0
+    },
+    {
+      "L": 3,
+      "snr_db": 16,
+      "decoder": "D=2",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0
+    },
+    {
+      "L": 3,
+      "snr_db": 16,
+      "decoder": "D=3",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0
+    },
+    {
+      "L": 3,
+      "snr_db": 16,
+      "decoder": "D=5",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0
+    },
+    {
+      "L": 3,
+      "snr_db": 16,
+      "decoder": "D=15",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0
+    },
+    {
+      "L": 3,
+      "snr_db": 16,
+      "decoder": "full",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0
+    },
+    {
+      "L": 3,
+      "snr_db": 20,
+      "decoder": "D=0",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0
+    },
+    {
+      "L": 3,
+      "snr_db": 20,
+      "decoder": "D=1",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0
+    },
+    {
+      "L": 3,
+      "snr_db": 20,
+      "decoder": "D=2",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0
+    },
+    {
+      "L": 3,
+      "snr_db": 20,
+      "decoder": "D=3",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0
+    },
+    {
+      "L": 3,
+      "snr_db": 20,
+      "decoder": "D=5",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0
+    },
+    {
+      "L": 3,
+      "snr_db": 20,
+      "decoder": "D=15",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0
+    },
+    {
+      "L": 3,
+      "snr_db": 20,
+      "decoder": "full",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0
+    },
+    {
+      "L": 5,
+      "snr_db": 0,
+      "decoder": "D=0",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.4655
+    },
+    {
+      "L": 5,
+      "snr_db": 0,
+      "decoder": "D=1",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.4345
+    },
+    {
+      "L": 5,
+      "snr_db": 0,
+      "decoder": "D=2",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.433
+    },
+    {
+      "L": 5,
+      "snr_db": 0,
+      "decoder": "D=3",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.426
+    },
+    {
+      "L": 5,
+      "snr_db": 0,
+      "decoder": "D=5",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.4265
+    },
+    {
+      "L": 5,
+      "snr_db": 0,
+      "decoder": "D=15",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.424
+    },
+    {
+      "L": 5,
+      "snr_db": 0,
+      "decoder": "D=25",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.424
+    },
+    {
+      "L": 5,
+      "snr_db": 0,
+      "decoder": "full",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.424
+    },
+    {
+      "L": 5,
+      "snr_db": 4,
+      "decoder": "D=0",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.293
+    },
+    {
+      "L": 5,
+      "snr_db": 4,
+      "decoder": "D=1",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.2785
+    },
+    {
+      "L": 5,
+      "snr_db": 4,
+      "decoder": "D=2",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.2725
+    },
+    {
+      "L": 5,
+      "snr_db": 4,
+      "decoder": "D=3",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.2675
+    },
+    {
+      "L": 5,
+      "snr_db": 4,
+      "decoder": "D=5",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.2565
+    },
+    {
+      "L": 5,
+      "snr_db": 4,
+      "decoder": "D=15",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.2485
+    },
+    {
+      "L": 5,
+      "snr_db": 4,
+      "decoder": "D=25",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.2485
+    },
+    {
+      "L": 5,
+      "snr_db": 4,
+      "decoder": "full",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.2485
+    },
+    {
+      "L": 5,
+      "snr_db": 8,
+      "decoder": "D=0",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.096
+    },
+    {
+      "L": 5,
+      "snr_db": 8,
+      "decoder": "D=1",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.081
+    },
+    {
+      "L": 5,
+      "snr_db": 8,
+      "decoder": "D=2",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0745
+    },
+    {
+      "L": 5,
+      "snr_db": 8,
+      "decoder": "D=3",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.071
+    },
+    {
+      "L": 5,
+      "snr_db": 8,
+      "decoder": "D=5",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.062
+    },
+    {
+      "L": 5,
+      "snr_db": 8,
+      "decoder": "D=15",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0605
+    },
+    {
+      "L": 5,
+      "snr_db": 8,
+      "decoder": "D=25",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0605
+    },
+    {
+      "L": 5,
+      "snr_db": 8,
+      "decoder": "full",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0605
+    },
+    {
+      "L": 5,
+      "snr_db": 12,
+      "decoder": "D=0",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.004
+    },
+    {
+      "L": 5,
+      "snr_db": 12,
+      "decoder": "D=1",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.002
+    },
+    {
+      "L": 5,
+      "snr_db": 12,
+      "decoder": "D=2",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0015
+    },
+    {
+      "L": 5,
+      "snr_db": 12,
+      "decoder": "D=3",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.001
+    },
+    {
+      "L": 5,
+      "snr_db": 12,
+      "decoder": "D=5",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0
+    },
+    {
+      "L": 5,
+      "snr_db": 12,
+      "decoder": "D=15",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0
+    },
+    {
+      "L": 5,
+      "snr_db": 12,
+      "decoder": "D=25",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0
+    },
+    {
+      "L": 5,
+      "snr_db": 12,
+      "decoder": "full",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0
+    },
+    {
+      "L": 5,
+      "snr_db": 16,
+      "decoder": "D=0",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0005
+    },
+    {
+      "L": 5,
+      "snr_db": 16,
+      "decoder": "D=1",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0
+    },
+    {
+      "L": 5,
+      "snr_db": 16,
+      "decoder": "D=2",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0
+    },
+    {
+      "L": 5,
+      "snr_db": 16,
+      "decoder": "D=3",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0
+    },
+    {
+      "L": 5,
+      "snr_db": 16,
+      "decoder": "D=5",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0
+    },
+    {
+      "L": 5,
+      "snr_db": 16,
+      "decoder": "D=15",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0
+    },
+    {
+      "L": 5,
+      "snr_db": 16,
+      "decoder": "D=25",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0
+    },
+    {
+      "L": 5,
+      "snr_db": 16,
+      "decoder": "full",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0
+    },
+    {
+      "L": 5,
+      "snr_db": 20,
+      "decoder": "D=0",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0
+    },
+    {
+      "L": 5,
+      "snr_db": 20,
+      "decoder": "D=1",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0
+    },
+    {
+      "L": 5,
+      "snr_db": 20,
+      "decoder": "D=2",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0
+    },
+    {
+      "L": 5,
+      "snr_db": 20,
+      "decoder": "D=3",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0
+    },
+    {
+      "L": 5,
+      "snr_db": 20,
+      "decoder": "D=5",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0
+    },
+    {
+      "L": 5,
+      "snr_db": 20,
+      "decoder": "D=15",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0
+    },
+    {
+      "L": 5,
+      "snr_db": 20,
+      "decoder": "D=25",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0
+    },
+    {
+      "L": 5,
+      "snr_db": 20,
+      "decoder": "full",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0
+    },
+    {
+      "L": 7,
+      "snr_db": 0,
+      "decoder": "D=0",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.4515
+    },
+    {
+      "L": 7,
+      "snr_db": 0,
+      "decoder": "D=1",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.4345
+    },
+    {
+      "L": 7,
+      "snr_db": 0,
+      "decoder": "D=2",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.4245
+    },
+    {
+      "L": 7,
+      "snr_db": 0,
+      "decoder": "D=3",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.4235
+    },
+    {
+      "L": 7,
+      "snr_db": 0,
+      "decoder": "D=5",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.426
+    },
+    {
+      "L": 7,
+      "snr_db": 0,
+      "decoder": "D=15",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.424
+    },
+    {
+      "L": 7,
+      "snr_db": 0,
+      "decoder": "D=35",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.4245
+    },
+    {
+      "L": 7,
+      "snr_db": 4,
+      "decoder": "D=0",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.3255
+    },
+    {
+      "L": 7,
+      "snr_db": 4,
+      "decoder": "D=1",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.2895
+    },
+    {
+      "L": 7,
+      "snr_db": 4,
+      "decoder": "D=2",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.279
+    },
+    {
+      "L": 7,
+      "snr_db": 4,
+      "decoder": "D=3",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.2755
+    },
+    {
+      "L": 7,
+      "snr_db": 4,
+      "decoder": "D=5",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.2745
+    },
+    {
+      "L": 7,
+      "snr_db": 4,
+      "decoder": "D=15",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.275
+    },
+    {
+      "L": 7,
+      "snr_db": 4,
+      "decoder": "D=35",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.2735
+    },
+    {
+      "L": 7,
+      "snr_db": 8,
+      "decoder": "D=0",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.085
+    },
+    {
+      "L": 7,
+      "snr_db": 8,
+      "decoder": "D=1",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0655
+    },
+    {
+      "L": 7,
+      "snr_db": 8,
+      "decoder": "D=2",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.057
+    },
+    {
+      "L": 7,
+      "snr_db": 8,
+      "decoder": "D=3",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.058
+    },
+    {
+      "L": 7,
+      "snr_db": 8,
+      "decoder": "D=5",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0535
+    },
+    {
+      "L": 7,
+      "snr_db": 8,
+      "decoder": "D=15",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0545
+    },
+    {
+      "L": 7,
+      "snr_db": 8,
+      "decoder": "D=35",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0545
+    },
+    {
+      "L": 7,
+      "snr_db": 12,
+      "decoder": "D=0",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0065
+    },
+    {
+      "L": 7,
+      "snr_db": 12,
+      "decoder": "D=1",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0045
+    },
+    {
+      "L": 7,
+      "snr_db": 12,
+      "decoder": "D=2",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.004
+    },
+    {
+      "L": 7,
+      "snr_db": 12,
+      "decoder": "D=3",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.002
+    },
+    {
+      "L": 7,
+      "snr_db": 12,
+      "decoder": "D=5",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.002
+    },
+    {
+      "L": 7,
+      "snr_db": 12,
+      "decoder": "D=15",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.002
+    },
+    {
+      "L": 7,
+      "snr_db": 12,
+      "decoder": "D=35",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.002
+    },
+    {
+      "L": 7,
+      "snr_db": 16,
+      "decoder": "D=0",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0
+    },
+    {
+      "L": 7,
+      "snr_db": 16,
+      "decoder": "D=1",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0
+    },
+    {
+      "L": 7,
+      "snr_db": 16,
+      "decoder": "D=2",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0005
+    },
+    {
+      "L": 7,
+      "snr_db": 16,
+      "decoder": "D=3",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0
+    },
+    {
+      "L": 7,
+      "snr_db": 16,
+      "decoder": "D=5",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0
+    },
+    {
+      "L": 7,
+      "snr_db": 16,
+      "decoder": "D=15",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0
+    },
+    {
+      "L": 7,
+      "snr_db": 16,
+      "decoder": "D=35",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0
+    },
+    {
+      "L": 7,
+      "snr_db": 20,
+      "decoder": "D=0",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0
+    },
+    {
+      "L": 7,
+      "snr_db": 20,
+      "decoder": "D=1",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0
+    },
+    {
+      "L": 7,
+      "snr_db": 20,
+      "decoder": "D=2",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0
+    },
+    {
+      "L": 7,
+      "snr_db": 20,
+      "decoder": "D=3",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0
+    },
+    {
+      "L": 7,
+      "snr_db": 20,
+      "decoder": "D=5",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0
+    },
+    {
+      "L": 7,
+      "snr_db": 20,
+      "decoder": "D=15",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0
+    },
+    {
+      "L": 7,
+      "snr_db": 20,
+      "decoder": "D=35",
+      "symbols": 2000,
+      "disagreements": 0,
+      "joint_symbol_error_rate": 0.0
+    }
+  ]
+}

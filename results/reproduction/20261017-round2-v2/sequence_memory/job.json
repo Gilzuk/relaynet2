@@ -1,0 +1,49 @@
+{
+  "id": "sequence_memory",
+  "kind": "seeded_retraining",
+  "worker": "sequence",
+  "outputs": [
+    "results/reproduction_seq_memory.json"
+  ],
+  "references": [
+    "results/seq_models_on_memory.json",
+    "results/penalty_common_targets.json"
+  ],
+  "scope": "All 3 channels \u00d7 4 architectures \u00d7 seeds 0,1,2; original 40 epochs and 20\u00d720,000-bit budget",
+  "status": "RUNNING",
+  "started_at": "2026-10-17T08:51:44.935425+00:00",
+  "reference_files": [
+    {
+      "path": "results/seq_models_on_memory.json",
+      "sha256": "ad07c32795f53e6993751e1f8514eb0760ea9168e8ed325582da0dc339e615f9",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/43ce4a6fbfe2a147a8c77c0fb06e44fcd5d7d5e2/results/seq_models_on_memory.json"
+    },
+    {
+      "path": "results/penalty_common_targets.json",
+      "sha256": "52547e01e768f88d6fea547551727a746f19c820f682f9ddee2a657d15c44e3d",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/43ce4a6fbfe2a147a8c77c0fb06e44fcd5d7d5e2/results/penalty_common_targets.json"
+    }
+  ],
+  "source_commit": "43ce4a6fbfe2a147a8c77c0fb06e44fcd5d7d5e2",
+  "timeout_seconds": 28800,
+  "command": [
+    "/workspace/scratch/781ec23bff5d/repro-venv/bin/python",
+    "-u",
+    "scripts/reproduction_worker.py",
+    "--job",
+    "sequence_memory",
+    "--threads",
+    "2"
+  ],
+  "environment_overrides": {
+    "OMP_NUM_THREADS": "2",
+    "OPENBLAS_NUM_THREADS": "2",
+    "MKL_NUM_THREADS": "2",
+    "NUMEXPR_NUM_THREADS": "2",
+    "PYTHONHASHSEED": "0",
+    "MPLBACKEND": "Agg",
+    "CUDA_VISIBLE_DEVICES": ""
+  },
+  "pid": 54,
+  "elapsed_seconds": 400.1
+}
