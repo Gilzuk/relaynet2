@@ -6,6 +6,8 @@
 #   make verify         - Check declared thesis values against their data sources
 #   make repro-unknown  - Re-run the unknown-channel study, then verify
 #   make repro-full     - Run the legacy experiment driver (hours, needs torch)
+#   make reproduce-plan - Print the plan that re-runs every thesis experiment
+#   make reproduce-all  - Re-run every thesis experiment in a separate worktree, then verify
 #   make thesis         - Build the thesis PDF
 #
 # Experiment runner:
@@ -38,7 +40,7 @@ endif
 # ──────────────────────────────────────────
 
 .PHONY: help quick full charts test exp list clean clean-results clean-weights clean-logs \
-        setup check verify repro-unknown repro-qpsk repro-full thesis bundles \
+        setup check verify repro-unknown repro-qpsk repro-full reproduce-plan reproduce-all thesis bundles \
         overleaf-sync overleaf-show overleaf-mirror \
         overleaf-repo overleaf-push overleaf-pull
 
@@ -54,6 +56,8 @@ help: ## Show this help
 	@echo "    make repro-unknown   Tier 1: re-run unknown-channel study + verify (~40 min)"
 	@echo "    make repro-qpsk      Tier 1b: re-run the QPSK unknown-channel study (~20 min)"
 	@echo "    make repro-full      Tier 2: run the legacy experiment driver (hours, needs torch)"
+	@echo "    make reproduce-plan  Tier 3: print the plan that re-runs every thesis experiment"
+	@echo "    make reproduce-all   Tier 3: re-run every thesis experiment in a worktree, then verify"
 	@echo "    make bundles         Rebuild the two Overleaf zips from thesis/"
 	@echo ""
 	@echo "  OVERLEAF SYNC (see thesis/OVERLEAF_SYNC.md)"
@@ -108,6 +112,12 @@ repro-full: ## Tier 2: run the legacy experiment driver (hours; requires torch)
 	@echo ">> Running the legacy experiment driver; revision studies have separate commands."
 	$(PYTHON) $(RUNNER) --all --seed $(SEED)
 	$(MAKE) verify
+
+reproduce-plan: ## Tier 3: print the ordered plan that re-runs every thesis experiment (runs nothing)
+	$(PYTHON) scripts/reproduce_all.py
+
+reproduce-all: ## Tier 3: re-run every thesis experiment in a separate worktree, then verify (many hours)
+	$(PYTHON) scripts/reproduce_all.py --run
 
 overleaf-sync: ## Rebuild the overleaf-dist branch (thesis only, annotations stripped)
 	$(PYTHON) scripts/overleaf_sync.py

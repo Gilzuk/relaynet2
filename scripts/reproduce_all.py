@@ -15,10 +15,23 @@ the reading script's source) runs after it; otherwise the declared order holds.
 
 Nothing runs unless ``--run`` is given. Without it the script prints the plan:
 each step's command, environment, outputs, whether those outputs are committed,
-and whether the step needs PyTorch. With ``--run`` each step's console output
-goes to ``results/reproduce_logs/<step>.log``; a failing step is reported and
-the rest continue; ``verify_thesis_tables.py`` runs at the end and
-``git diff --stat`` shows which committed results changed.
+and whether the step needs PyTorch.
+
+``--run`` never touches the published results. It checks out the current commit
+into a separate, detached git worktree and runs every step there, in order, so a
+later step reads what an earlier step regenerated. Evidence goes to
+``results/reproduce_all/<run-id>/``: the plan and environment, one log per step,
+a copy of every declared output, and ``comparison.json``, which compares each
+regenerated file with the committed one by SHA-256 (MATCH, DIFFERS, MISSING or
+NEW). A difference is recorded for review, never accepted under a tolerance.
+``verify_thesis_tables.py`` then runs inside the worktree, against the
+regenerated data, and the worktree is removed unless ``--keep-worktree``.
+Uncommitted changes in the main checkout are not part of a run.
+
+For the round-2 experiments, ``scripts/reproduce_round2.py`` (PR #184) is the
+more detailed runner: frozen-source jobs, reference hashes and per-field
+comparisons, run in GitHub Actions. This script covers every registered
+experiment, including those outside that suite.
 
 What a full re-run can and cannot show. Seeded experiments should reproduce
 their committed files. The learned columns of Tables 5.2 and 5.3 cannot: the
@@ -30,15 +43,20 @@ Usage:
     python scripts/reproduce_all.py                 # print the plan (dry run)
     python scripts/reproduce_all.py --only coded    # plan for matching steps
     python scripts/reproduce_all.py --run --no-torch
-    python scripts/reproduce_all.py --run --yes     # everything, dirty tree allowed
+    python scripts/reproduce_all.py --run           # everything, in a worktree
 """
 import argparse
+import hashlib
 import json
 import os
+import platform
 import re
+import shutil
 import subprocess
 import sys
+import tempfile
 import time
+from datetime import datetime, timezone
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
@@ -73,7 +91,7 @@ EXTRA = [
      ["results/coded_latency_capacity_matched.json"]),
 ]
 TORCH_HINTS = ("torch", "run_experiments", "checkpoint_", "relaynet.relays.genai", "build_all_3k")
-LOG_DIR = os.path.join(ROOT, "results", "reproduce_logs")
+EVIDENCE_ROOT = os.path.join(ROOT, "results", "reproduce_all")
 
 
 def slug(name):
@@ -164,35 +182,107 @@ def print_plan(plan):
           "Nothing was run; add --run to execute.")
 
 
-def run(plan):
-    os.makedirs(LOG_DIR, exist_ok=True)
-    summary = []
-    for k, s in enumerate(plan, 1):
-        log = os.path.join(LOG_DIR, slug(s["name"])[:80] + ".log")
-        print(f"[{k}/{len(plan)}] {s['name']} ... ", end="", flush=True)
-        t0 = time.time()
-        with open(log, "w") as fh:
-            fh.write(f"$ {command(s)}\n")
-            fh.flush()
-            r = subprocess.run([sys.executable, s["script"]] + s["args"], cwd=ROOT,
-                               env={**os.environ, **s["env"]}, stdout=fh, stderr=subprocess.STDOUT)
-        dt = time.time() - t0
-        print(f"{'ok' if r.returncode == 0 else 'FAILED (exit %d)' % r.returncode}  {dt:.0f} s")
-        summary.append({"step": s["name"], "command": command(s), "returncode": r.returncode,
-                        "seconds": round(dt, 1), "log": os.path.relpath(log, ROOT)})
-    with open(os.path.join(LOG_DIR, "summary.json"), "w") as fh:
-        json.dump(summary, fh, indent=1)
-    return summary
+def git(*args, cwd=ROOT):
+    return subprocess.run(["git", *args], cwd=cwd, capture_output=True, text=True, check=True).stdout.strip()
+
+
+def sha256_file(path):
+    h = hashlib.sha256()
+    with open(path, "rb") as fh:
+        for block in iter(lambda: fh.read(1 << 20), b""):
+            h.update(block)
+    return h.hexdigest()
+
+
+def committed_sha256(source, path):
+    """SHA-256 of `path` as committed at `source`, or None if it is not tracked there."""
+    r = subprocess.run(["git", "show", f"{source}:{path}"], cwd=ROOT, capture_output=True)
+    return hashlib.sha256(r.stdout).hexdigest() if r.returncode == 0 else None
+
+
+def compare(source, worktree, path, outdir):
+    """Copy a regenerated output into the evidence folder and compare it with the committed file."""
+    regen = os.path.join(worktree, path)
+    ref = committed_sha256(source, path)
+    if not os.path.exists(regen):
+        return {"path": path, "status": "MISSING", "committed_sha256": ref}
+    dst = os.path.join(outdir, path)
+    os.makedirs(os.path.dirname(dst), exist_ok=True)
+    shutil.copy2(regen, dst)
+    new = sha256_file(regen)
+    status = "NEW" if ref is None else ("MATCH" if new == ref else "DIFFERS")
+    return {"path": path, "status": status, "committed_sha256": ref, "regenerated_sha256": new}
+
+
+def run(plan, evidence_dir, worktree_dir=None, keep_worktree=False, verify=True):
+    """Run the plan in a detached worktree; write evidence under `evidence_dir`. Returns the summary."""
+    source = git("rev-parse", "HEAD")
+    os.makedirs(evidence_dir, exist_ok=True)
+    logs, outdir = os.path.join(evidence_dir, "logs"), os.path.join(evidence_dir, "outputs")
+    os.makedirs(logs, exist_ok=True)
+    wt = worktree_dir or tempfile.mkdtemp(prefix="reproduce_all_")
+    if os.path.exists(wt) and os.listdir(wt):
+        raise SystemExit(f"worktree directory {wt} is not empty")
+    git("worktree", "add", "--detach", wt, source)
+    meta = {"source_commit": source, "started_utc": datetime.now(timezone.utc).isoformat(),
+            "python": sys.version.split()[0], "platform": platform.platform(), "worktree": wt,
+            "uncommitted_changes_excluded": bool(git("status", "--porcelain")), "steps": plan}
+    with open(os.path.join(evidence_dir, "plan.json"), "w") as fh:
+        json.dump(meta, fh, indent=1)
+    summary, comparison = [], []
+    try:
+        for k, s in enumerate(plan, 1):
+            log = os.path.join(logs, slug(s["name"])[:80] + ".log")
+            print(f"[{k}/{len(plan)}] {s['name']} ... ", end="", flush=True)
+            t0 = time.time()
+            with open(log, "w") as fh:
+                fh.write(f"$ {command(s)}\n")
+                fh.flush()
+                r = subprocess.run([sys.executable, s["script"]] + s["args"], cwd=wt,
+                                   env={**os.environ, **s["env"]}, stdout=fh, stderr=subprocess.STDOUT)
+            dt = time.time() - t0
+            cmp = [compare(source, wt, o, outdir) for o in s["outputs"]]
+            comparison += [dict(c, step=s["name"]) for c in cmp]
+            tally = ", ".join(f"{c['status']} {os.path.basename(c['path'])}" for c in cmp)
+            print(f"{'ok' if r.returncode == 0 else 'FAILED (exit %d)' % r.returncode}  {dt:.0f} s  [{tally}]")
+            summary.append({"step": s["name"], "command": command(s), "returncode": r.returncode,
+                            "seconds": round(dt, 1), "log": os.path.relpath(log, evidence_dir)})
+        if verify:
+            print("\nVerifying the thesis against the regenerated results, inside the worktree "
+                  "(the unseeded canonical learned columns are expected to move):")
+            with open(os.path.join(evidence_dir, "verify.log"), "w") as fh:
+                v = subprocess.run([sys.executable, "verify_thesis_tables.py"], cwd=wt,
+                                   stdout=fh, stderr=subprocess.STDOUT)
+            tail = open(os.path.join(evidence_dir, "verify.log")).read().strip().splitlines()
+            print("\n".join(l for l in tail if "cells checked" in l or "MISMATCH" in l) or "(see verify.log)")
+            meta["verify_returncode"] = v.returncode
+    finally:
+        meta["finished_utc"] = datetime.now(timezone.utc).isoformat()
+        with open(os.path.join(evidence_dir, "plan.json"), "w") as fh:
+            json.dump(meta, fh, indent=1)
+        with open(os.path.join(evidence_dir, "summary.json"), "w") as fh:
+            json.dump(summary, fh, indent=1)
+        with open(os.path.join(evidence_dir, "comparison.json"), "w") as fh:
+            json.dump(comparison, fh, indent=1)
+        if keep_worktree:
+            print(f"\nWorktree kept at {wt}")
+        else:
+            subprocess.run(["git", "worktree", "remove", "--force", wt], cwd=ROOT, capture_output=True)
+    return summary, comparison
 
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
-    ap.add_argument("--run", action="store_true", help="execute the plan (default: print it only)")
+    ap.add_argument("--run", action="store_true", help="execute the plan in a separate worktree (default: print it)")
     ap.add_argument("--only", help="regex: keep steps whose name or script matches")
     ap.add_argument("--skip", help="regex: drop steps whose name or script matches")
     ap.add_argument("--no-torch", action="store_true", help="drop steps that need PyTorch")
-    ap.add_argument("--yes", action="store_true", help="run even with uncommitted changes in the tree")
     ap.add_argument("--json", action="store_true", help="print the plan as JSON")
+    ap.add_argument("--run-id", help="evidence folder name (default: UTC time and short commit)")
+    ap.add_argument("--evidence-dir", help="where to write evidence (default: results/reproduce_all/<run-id>)")
+    ap.add_argument("--worktree-dir", help="empty directory for the worktree (default: a new temporary one)")
+    ap.add_argument("--keep-worktree", action="store_true", help="leave the worktree in place afterwards")
+    ap.add_argument("--no-verify", action="store_true", help="skip the final verify_thesis_tables.py run")
     a = ap.parse_args()
     plan = select(build_plan(), a.only, a.skip, a.no_torch)
     if a.json:
@@ -201,21 +291,19 @@ def main():
     if not a.run:
         print_plan(plan)
         return 0
-    dirty = subprocess.run(["git", "status", "--porcelain"], cwd=ROOT, capture_output=True, text=True).stdout.strip()
-    if dirty and not a.yes:
-        print("The working tree has uncommitted changes, and these steps overwrite committed result files.\n"
-              "Commit or stash first, or pass --yes.")
-        return 2
-    summary = run(plan)
+    run_id = a.run_id or datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S") + "-" + git("rev-parse", "--short", "HEAD")
+    evidence = a.evidence_dir or os.path.join(EVIDENCE_ROOT, run_id)
+    if git("status", "--porcelain"):
+        print("Note: uncommitted changes are not part of this run; it uses the committed HEAD.")
+    summary, comparison = run(plan, evidence, a.worktree_dir, a.keep_worktree, verify=not a.no_verify)
     failed = [s for s in summary if s["returncode"] != 0]
-    print(f"\n{len(summary) - len(failed)} of {len(summary)} steps succeeded; logs in "
-          f"{os.path.relpath(LOG_DIR, ROOT)}/.")
-    print("\nVerifying the thesis against the regenerated results "
-          "(the unseeded canonical learned columns are expected to move):")
-    subprocess.run([sys.executable, "verify_thesis_tables.py"], cwd=ROOT)
-    diff = subprocess.run(["git", "diff", "--stat", "--", "results", "e6_unknown_channel_results"],
-                          cwd=ROOT, capture_output=True, text=True).stdout.strip()
-    print("\nCommitted result files that changed:\n" + (diff or "none: every regenerated file is identical"))
+    counts = {}
+    for c in comparison:
+        counts[c["status"]] = counts.get(c["status"], 0) + 1
+    print(f"\n{len(summary) - len(failed)} of {len(summary)} steps succeeded. Outputs: "
+          + (", ".join(f"{v} {k}" for k, v in sorted(counts.items())) or "none")
+          + f".\nEvidence: {os.path.relpath(evidence, ROOT) if evidence.startswith(ROOT) else evidence}/ "
+          "(published results untouched).")
     return 1 if failed else 0
 
 

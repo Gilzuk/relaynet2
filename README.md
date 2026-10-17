@@ -525,7 +525,7 @@ relaynet2/
 │   ├── run_full_comparison.py            # Full pipeline: train + evaluate all
 │   └── plot_normalized_3k.py             # Standalone 3K comparison plots
 │
-├── tests/                            # 352 collected tests (pytest)
+├── tests/                            # 358 collected tests (pytest)
 │   ├── test_channels.py                  # AWGN and Rayleigh channel tests
 │   ├── test_modulation.py                # BPSK modulation tests
 │   ├── test_relays.py                    # All relay strategy tests
@@ -662,11 +662,11 @@ for snr, ber, ci_lo, ci_hi in results:
 
 ## Testing
 
-The current suite collects 352 tests. This audit environment passed 348 and skipped four optional PyTorch/Mamba-2 tests:
+The current suite collects 358 tests. With PyTorch and the Mamba-2 module all 358 pass; without them four optional tests skip:
 
 ```bash
 python -m pytest tests/ -q
-# 348 passed, 4 skipped (without the optional PyTorch/Mamba-2 module)
+# 358 passed (354 passed, 4 skipped without the optional PyTorch/Mamba-2 module)
 ```
 
 Tests cover:

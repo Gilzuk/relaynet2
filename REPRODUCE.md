@@ -50,6 +50,7 @@ above it.
 | 1 | `make repro-unknown` | budget dependent; potentially hours | numpy, scipy | Runs six legacy BPSK drivers, then verifies; does not run later fixed-budget confirmations or every Chapter 6 study |
 | 1b | `make repro-qpsk` | ~20 min | numpy, scipy | Recomputes the QPSK unknown-channel study (ISI → AWGN and → Rayleigh) |
 | 2 | `make repro-full` | hours | **+ torch** | Runs the legacy driver, then verifies; revision studies below are separate |
+| 3 | `make reproduce-all` | many hours | **+ torch** | Re-runs every registered experiment in a separate worktree, compares each output with the committed file, then verifies; published results untouched (`make reproduce-plan` prints the plan) |
 
 ### Tier 0 — verification
 
@@ -98,6 +99,34 @@ and ledger C4–C5. Inspect `--list` and select the intended experiment.
 nine-relay training pass took ~3.2 hours, of which the CGAN alone was ~2 hours
 (64%). On CPU it is substantially slower. For a smoke test rather than a
 publication-quality run, use `make quick`.
+
+### Tier 3 — re-run every registered experiment, without touching the archive
+
+```bash
+make reproduce-plan     # print the ordered plan; runs nothing
+make reproduce-all      # run it in a separate worktree, then verify
+```
+
+`scripts/reproduce_all.py` builds its plan from `provenance_audit.REGISTRY` plus the producers the registry
+does not list: the two canonical `run_experiments.py` stages behind Tables 5.2 and 5.3 (the commands in
+ledger C4) and the original unweighted coded studies. Matched coded reruns get `CODED_METRIC=matched
+CODED_TRIALS=30`; `coded_min_size_matched.py` gets `CODED_METRIC=matched` with its own budget. A step that
+reads another step's result file runs after it. Options: `--only REGEX`, `--skip REGEX`, `--no-torch`,
+`--json`, `--keep-worktree`, `--no-verify`.
+
+`--run` checks out the committed `HEAD` into a detached worktree and runs every step there, so the archived
+results are never overwritten and uncommitted changes are not part of a run. Evidence goes to
+`results/reproduce_all/<run-id>/`: the plan and environment, a log per step, a copy of every declared output,
+and `comparison.json`, which compares each regenerated file with the committed one by SHA-256 (MATCH,
+DIFFERS, MISSING or NEW). Differences are recorded for review, not accepted under a tolerance.
+`verify_thesis_tables.py` then runs inside the worktree against the regenerated data.
+
+Seeded experiments should MATCH. The learned columns of Tables 5.2 and 5.3 will DIFFER: the canonical runs
+seeded their training data and evaluation trials but not PyTorch.
+
+For the round-2 experiments, `scripts/reproduce_round2.py` (PR #184) is the more detailed runner, with
+frozen-source jobs, reference hashes and per-field comparisons in GitHub Actions. `reproduce_all.py` is the
+complete list: it also covers the experiments outside that suite.
 
 ---
 

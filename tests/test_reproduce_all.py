@@ -52,3 +52,25 @@ def test_default_invocation_runs_nothing():
                        cwd=ROOT, capture_output=True, text=True)
     assert r.returncode == 0
     assert "Nothing was run" in r.stdout
+
+
+def test_run_uses_a_worktree_and_leaves_published_results_alone(tmp_path):
+    """One cheap, deterministic step through --run: the output is regenerated in a
+    separate worktree, copied to the evidence folder and matches the committed file,
+    and nothing in the main checkout changes."""
+    before = subprocess.run(["git", "status", "--porcelain", "--", "results"], cwd=ROOT,
+                            capture_output=True, text=True).stdout
+    ev, wt = tmp_path / "evidence", tmp_path / "wt"
+    r = subprocess.run([sys.executable, os.path.join(ROOT, "scripts", "reproduce_all.py"), "--run",
+                        "--only", "ISI required-SNR", "--no-verify",
+                        "--evidence-dir", str(ev), "--worktree-dir", str(wt)],
+                       cwd=ROOT, capture_output=True, text=True)
+    assert r.returncode == 0, r.stdout + r.stderr
+    import json
+    cmp = json.loads((ev / "comparison.json").read_text())
+    assert [c["status"] for c in cmp] == ["MATCH"]
+    assert (ev / "outputs" / "results" / "e6_isi_penalty.json").exists()
+    assert not wt.exists() or not any(wt.iterdir()), "worktree was not removed"
+    after = subprocess.run(["git", "status", "--porcelain", "--", "results"], cwd=ROOT,
+                           capture_output=True, text=True).stdout
+    assert after == before
