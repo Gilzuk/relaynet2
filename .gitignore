@@ -58,3 +58,9 @@ _test_*.py
 *.fdb_latexmk
 *.fls
 *.synctex*
+
+# Disposable reproduction checkouts; completed evidence is committed.
+/_reproduction_work/
+!/results/reproduction/**/*.log
+!/results/reproduction/**/weights/
+!/results/reproduction/**/weights/**

@@ -2,11 +2,13 @@
 
 _Last updated: 2026-10-17_
 
-### Current authorization, audit and reproduction request
+### Current state: merged thesis and separate reproduction branch
 
-The author authorized “Merge and push”, then requested another skeptical audit and fixes to inconsistent sentences or missing reproduction details. Latest instruction: publish first, create a new experiments-reproduction branch, run a script in the background, retain evidence and reference JSON links, and flag/resolve/report inconsistencies. Earlier pending-confirmation notes below are historical.
+PR #183 merged at 42e3e386e0b6d1c137a84cf609b51e9581e7e69a after CI success. Published via GitHub connector because CLI push lacked credentials; remote tree matches the verified local tree. Archive 218a1c550cb8b917a95d9545c5211e109985bf38. Thesis 120 countable/136 total pages, verifier873/0, pre-Torch tests348 passed/4 skipped. The user authorized publication and then a separate reproduction branch, background execution, evidence/reference links and discrepancy reporting.
 
-The re-audit is complete (`docs/skeptical_reaudit_2026-10-17.md`): architecture/input-skip, VAE, canonical RNG/checkpoint, Table 6.7 protocol, padding/device/ledger and causal-scope corrections; two censored-median flags fixed with no numerical penalty changes. Verification 873/0; provenance clean; 348 passed / 4 optional skips; PDF 120 countable / 136 total. Immutable experimental snapshot 218a1c550cb8b917a95d9545c5211e109985bf38. No training/BER rerun during the audit. Next: push and merge PR #183, branch from updated main and launch evidence-preserving reproduction. Reply unsent.
+New branch experiments/round2-reproduction-20261017 is based on merged main. Runner and worker scripts, comparison tests and docs/round2_reproduction.md are prepared. Eight jobs cover corrected analysis, canonical AF/DF, factorization, Table6.7, matched coded and fresh native/3K canonical training. Canonical learned historical weights/RNG are missing; new seeded training is explicitly protocol replication. CPU Torch2.8.0 installed in /workspace/scratch/781ec23bff5d/repro-venv. Next: publish/freeze runner and launch20261017-round2 in the background, inspect/save initial evidence and report differences. No experiments claimed completed yet.
+
+User also requested a concise resubmission email while preparation continues. Draft thesis/submission/email_to_khina_round2_resubmission_2026-10-17.md is prepared and shown in chat, not sent; the reproduction task continues without waiting for the advisor. Earlier approval notes below are historical.
 
 ### Local follow-up (2026-10-17): confirmation required before push
 
