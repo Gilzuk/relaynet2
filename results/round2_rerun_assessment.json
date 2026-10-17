@@ -1,0 +1,3022 @@
+{
+  "archive_commit": "dc7c02c00cbebdfb566362a810ab4b45cb6abbe0",
+  "execution_source": "c0394f0da5dac449594b89a9794fe251fad75e76",
+  "analysis_environment": {
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0"
+  },
+  "paired_test": "Two-sided Wilcoxon signed-rank on integer error-count differences; zeros omitted, method=auto, uncorrected; conditional on each trained checkpoint. No equivalence test.",
+  "paired_bits_per_trial": {
+    "canonical": 10000,
+    "coded": "n_frames * frame_info_bits from each result file"
+  },
+  "interpretation": {
+    "purpose": "Additional training replications and seed sensitivity; historical measurements retained.",
+    "original_measurements": "Numerical differences between training realizations alone do not establish that historical measurements were incorrect.",
+    "causal_limit": "Historical canonical RNG states are unknown; repeated seed IDs and changed environments prevent attributing all differences to initial seed alone.",
+    "pooling": "Do not pool protocols or repeated seed IDs as independent new training seeds."
+  },
+  "seed_design": {
+    "canonical_native": {
+      "historical_torch_seed": null,
+      "additional_run_bootstrap_seed": 20261017,
+      "design": "Additional training realization; historical RNG state unavailable, not an isolated seed-only experiment."
+    },
+    "canonical_3k": {
+      "historical_torch_seed": null,
+      "additional_run_bootstrap_seed": 20261017,
+      "design": "Additional training realization; historical RNG state unavailable, not an isolated seed-only experiment."
+    },
+    "sequence_memory": {
+      "historical_seed_ids": [
+        0,
+        1,
+        2
+      ],
+      "additional_run_seed_ids": [
+        0,
+        1,
+        2
+      ],
+      "distinct_recorded_seed_ids": [
+        0,
+        1,
+        2
+      ],
+      "design": "Repeated multi-seed study, grouped by execution environment; repeated seed IDs are not independent new seeds."
+    },
+    "coded_matched": {
+      "design": "Additional same-protocol replication with the same declared local seed policy, not a new initial-seed sweep.",
+      "policy_evidence": "docs/rng_reproducibility_audit_2026-10-17.md"
+    }
+  },
+  "jobs": {
+    "canonical_native": {
+      "finished_at": "2026-10-17T10:49:37.625853+00:00",
+      "elapsed_seconds": 2170.9,
+      "returncode": 0,
+      "status": "RETRAINING_DIFFERENCE_REQUIRES_REVIEW",
+      "difference_count": 635,
+      "classical_control_differences": []
+    },
+    "canonical_3k": {
+      "finished_at": "2026-10-17T10:25:57.967280+00:00",
+      "elapsed_seconds": 750.5,
+      "returncode": 0,
+      "status": "RETRAINING_DIFFERENCE_REQUIRES_REVIEW",
+      "difference_count": 633,
+      "classical_control_differences": []
+    },
+    "sequence_memory": {
+      "finished_at": "2026-10-17T11:00:50.796167+00:00",
+      "elapsed_seconds": 2840.6,
+      "returncode": 0,
+      "status": "RETRAINING_DIFFERENCE_REQUIRES_REVIEW",
+      "difference_count": 113,
+      "classical_control_differences": []
+    },
+    "coded_matched": {
+      "finished_at": "2026-10-17T11:22:00.702030+00:00",
+      "elapsed_seconds": 4111.3,
+      "returncode": 0,
+      "status": "RETRAINING_DIFFERENCE_REQUIRES_REVIEW",
+      "difference_count": 802,
+      "classical_control_differences": []
+    }
+  },
+  "canonical": {
+    "canonical_native": {
+      "paired_vs_DF": {
+        "MLP (169p)": [
+          {
+            "snr_db": 0,
+            "mean_diff": 0.0023200000000000052,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 2,
+            "mean_diff": 0.0030399999999999984,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 4,
+            "mean_diff": 0.002670000000000003,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 6,
+            "mean_diff": 0.0015500000000000069,
+            "p": 0.009765625,
+            "resolved": true
+          },
+          {
+            "snr_db": 8,
+            "mean_diff": 0.0018500000000000031,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 10,
+            "mean_diff": 0.0013800000000000006,
+            "p": 0.009765625,
+            "resolved": true
+          },
+          {
+            "snr_db": 12,
+            "mean_diff": 0.0012699999999999981,
+            "p": 0.00390625,
+            "resolved": true
+          },
+          {
+            "snr_db": 14,
+            "mean_diff": 0.001059999999999999,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 16,
+            "mean_diff": 0.0006100000000000001,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 18,
+            "mean_diff": 0.00048000000000000055,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 20,
+            "mean_diff": 0.0005399999999999997,
+            "p": 0.015625,
+            "resolved": true
+          }
+        ],
+        "Hybrid": [
+          {
+            "snr_db": 0,
+            "mean_diff": -0.0005899999999999961,
+            "p": 0.185546875,
+            "resolved": false
+          },
+          {
+            "snr_db": 2,
+            "mean_diff": 0.0009199999999999875,
+            "p": 0.201171875,
+            "resolved": false
+          },
+          {
+            "snr_db": 4,
+            "mean_diff": 0.0005400000000000043,
+            "p": 0.4765625,
+            "resolved": false
+          },
+          {
+            "snr_db": 6,
+            "mean_diff": 0.0008200000000000041,
+            "p": 0.130859375,
+            "resolved": false
+          },
+          {
+            "snr_db": 8,
+            "mean_diff": 0.00022999999999999965,
+            "p": 0.375,
+            "resolved": false
+          },
+          {
+            "snr_db": 10,
+            "mean_diff": 0.0001699999999999993,
+            "p": 1.0,
+            "resolved": false
+          },
+          {
+            "snr_db": 12,
+            "mean_diff": -3.0000000000000167e-05,
+            "p": 1.0,
+            "resolved": false
+          },
+          {
+            "snr_db": 14,
+            "mean_diff": 0.0,
+            "p": 1.0,
+            "resolved": false
+          },
+          {
+            "snr_db": 16,
+            "mean_diff": 0.0,
+            "p": 1.0,
+            "resolved": false
+          },
+          {
+            "snr_db": 18,
+            "mean_diff": 0.0,
+            "p": 1.0,
+            "resolved": false
+          },
+          {
+            "snr_db": 20,
+            "mean_diff": 0.0,
+            "p": 1.0,
+            "resolved": false
+          }
+        ],
+        "VAE": [
+          {
+            "snr_db": 0,
+            "mean_diff": 0.005649999999999988,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 2,
+            "mean_diff": 0.006079999999999997,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 4,
+            "mean_diff": 0.0064000000000000055,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 6,
+            "mean_diff": 0.004770000000000002,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 8,
+            "mean_diff": 0.004360000000000001,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 10,
+            "mean_diff": 0.0030300000000000036,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 12,
+            "mean_diff": 0.0017399999999999985,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 14,
+            "mean_diff": 0.00075,
+            "p": 0.005859375,
+            "resolved": true
+          },
+          {
+            "snr_db": 16,
+            "mean_diff": 0.0006100000000000001,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 18,
+            "mean_diff": 0.0003600000000000004,
+            "p": 0.02734375,
+            "resolved": true
+          },
+          {
+            "snr_db": 20,
+            "mean_diff": 0.00033999999999999986,
+            "p": 0.021484375,
+            "resolved": true
+          }
+        ],
+        "Transformer": [
+          {
+            "snr_db": 0,
+            "mean_diff": 0.06667000000000001,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 2,
+            "mean_diff": 0.06418,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 4,
+            "mean_diff": 0.05284,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 6,
+            "mean_diff": 0.03429,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 8,
+            "mean_diff": 0.018680000000000006,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 10,
+            "mean_diff": 0.00906,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 12,
+            "mean_diff": 0.00392,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 14,
+            "mean_diff": 0.0018599999999999999,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 16,
+            "mean_diff": 0.0007300000000000001,
+            "p": 0.0078125,
+            "resolved": true
+          },
+          {
+            "snr_db": 18,
+            "mean_diff": 0.0002000000000000007,
+            "p": 0.3125,
+            "resolved": false
+          },
+          {
+            "snr_db": 20,
+            "mean_diff": 6.999999999999993e-05,
+            "p": 0.2109375,
+            "resolved": false
+          }
+        ],
+        "Mamba S6": [
+          {
+            "snr_db": 0,
+            "mean_diff": 0.06775,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 2,
+            "mean_diff": 0.06647,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 4,
+            "mean_diff": 0.054400000000000004,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 6,
+            "mean_diff": 0.036059999999999995,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 8,
+            "mean_diff": 0.019880000000000002,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 10,
+            "mean_diff": 0.009819999999999999,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 12,
+            "mean_diff": 0.004309999999999999,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 14,
+            "mean_diff": 0.00213,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 16,
+            "mean_diff": 0.0005400000000000005,
+            "p": 0.0546875,
+            "resolved": false
+          },
+          {
+            "snr_db": 18,
+            "mean_diff": 0.00028000000000000003,
+            "p": 0.03125,
+            "resolved": true
+          },
+          {
+            "snr_db": 20,
+            "mean_diff": 0.0001199999999999998,
+            "p": 0.15625,
+            "resolved": false
+          }
+        ],
+        "Mamba2 (SSD)": [
+          {
+            "snr_db": 0,
+            "mean_diff": 0.07045,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 2,
+            "mean_diff": 0.06977,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 4,
+            "mean_diff": 0.05766,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 6,
+            "mean_diff": 0.03853000000000001,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 8,
+            "mean_diff": 0.021289999999999996,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 10,
+            "mean_diff": 0.01017,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 12,
+            "mean_diff": 0.004389999999999999,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 14,
+            "mean_diff": 0.002269999999999999,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 16,
+            "mean_diff": 0.0005700000000000004,
+            "p": 0.015625,
+            "resolved": true
+          },
+          {
+            "snr_db": 18,
+            "mean_diff": 0.00024000000000000098,
+            "p": 0.16015625,
+            "resolved": false
+          },
+          {
+            "snr_db": 20,
+            "mean_diff": 8.999999999999963e-05,
+            "p": 0.265625,
+            "resolved": false
+          }
+        ]
+      },
+      "max_gap_vs_DF": {
+        "MLP (169p)": {
+          "snr_db": 2,
+          "abs_mean_ber_gap": 0.0030399999999999984
+        },
+        "Hybrid": {
+          "snr_db": 2,
+          "abs_mean_ber_gap": 0.0009199999999999875
+        },
+        "VAE": {
+          "snr_db": 4,
+          "abs_mean_ber_gap": 0.0064000000000000055
+        },
+        "Transformer": {
+          "snr_db": 0,
+          "abs_mean_ber_gap": 0.06667000000000001
+        },
+        "Mamba S6": {
+          "snr_db": 0,
+          "abs_mean_ber_gap": 0.06775
+        },
+        "Mamba2 (SSD)": {
+          "snr_db": 0,
+          "abs_mean_ber_gap": 0.07045
+        }
+      },
+      "strict_pointwise_reversals": [
+        {
+          "snr_db": 0.0,
+          "a": "Mamba S6",
+          "b": "Mamba2 (SSD)",
+          "historical_mean_difference": 0.0039099999999999135,
+          "rerun_mean_difference": -0.0027000000000000357
+        },
+        {
+          "snr_db": 2.0,
+          "a": "Mamba S6",
+          "b": "Mamba2 (SSD)",
+          "historical_mean_difference": 0.003999999999999948,
+          "rerun_mean_difference": -0.0032999999999999696
+        },
+        {
+          "snr_db": 4.0,
+          "a": "Mamba S6",
+          "b": "Mamba2 (SSD)",
+          "historical_mean_difference": 0.0040000000000000036,
+          "rerun_mean_difference": -0.003259999999999985
+        },
+        {
+          "snr_db": 6.0,
+          "a": "DF",
+          "b": "MLP (169p)",
+          "historical_mean_difference": 4.000000000001225e-05,
+          "rerun_mean_difference": -0.0015500000000000236
+        },
+        {
+          "snr_db": 6.0,
+          "a": "MLP (169p)",
+          "b": "Hybrid",
+          "historical_mean_difference": -0.0011300000000000476,
+          "rerun_mean_difference": 0.0007300000000000362
+        },
+        {
+          "snr_db": 6.0,
+          "a": "Mamba S6",
+          "b": "Mamba2 (SSD)",
+          "historical_mean_difference": 0.0034200000000000064,
+          "rerun_mean_difference": -0.00247
+        },
+        {
+          "snr_db": 8.0,
+          "a": "Transformer",
+          "b": "Mamba2 (SSD)",
+          "historical_mean_difference": 0.0008299999999999974,
+          "rerun_mean_difference": -0.002610000000000001
+        },
+        {
+          "snr_db": 8.0,
+          "a": "Mamba S6",
+          "b": "Mamba2 (SSD)",
+          "historical_mean_difference": 0.0031500000000000417,
+          "rerun_mean_difference": -0.0014099999999999946
+        },
+        {
+          "snr_db": 10.0,
+          "a": "Transformer",
+          "b": "Mamba2 (SSD)",
+          "historical_mean_difference": 0.0007199999999999984,
+          "rerun_mean_difference": -0.0011100000000000138
+        },
+        {
+          "snr_db": 10.0,
+          "a": "Mamba S6",
+          "b": "Mamba2 (SSD)",
+          "historical_mean_difference": 0.0021599999999999953,
+          "rerun_mean_difference": -0.0003500000000000031
+        },
+        {
+          "snr_db": 12.0,
+          "a": "Transformer",
+          "b": "Mamba2 (SSD)",
+          "historical_mean_difference": 0.0007200000000000054,
+          "rerun_mean_difference": -0.00046999999999999126
+        },
+        {
+          "snr_db": 12.0,
+          "a": "Mamba S6",
+          "b": "Mamba2 (SSD)",
+          "historical_mean_difference": 0.0015999999999999973,
+          "rerun_mean_difference": -7.999999999999674e-05
+        },
+        {
+          "snr_db": 14.0,
+          "a": "Transformer",
+          "b": "Mamba2 (SSD)",
+          "historical_mean_difference": 0.0005299999999999958,
+          "rerun_mean_difference": -0.00041000000000000064
+        },
+        {
+          "snr_db": 14.0,
+          "a": "Mamba S6",
+          "b": "Mamba2 (SSD)",
+          "historical_mean_difference": 0.001239999999999998,
+          "rerun_mean_difference": -0.00014000000000000123
+        },
+        {
+          "snr_db": 16.0,
+          "a": "MLP (169p)",
+          "b": "Mamba S6",
+          "historical_mean_difference": -0.001170000000000001,
+          "rerun_mean_difference": 6.999999999999715e-05
+        },
+        {
+          "snr_db": 16.0,
+          "a": "MLP (169p)",
+          "b": "Mamba2 (SSD)",
+          "historical_mean_difference": -0.000389999999999998,
+          "rerun_mean_difference": 3.99999999999949e-05
+        },
+        {
+          "snr_db": 16.0,
+          "a": "VAE",
+          "b": "Mamba S6",
+          "historical_mean_difference": -0.0011800000000000005,
+          "rerun_mean_difference": 6.999999999999715e-05
+        },
+        {
+          "snr_db": 16.0,
+          "a": "VAE",
+          "b": "Mamba2 (SSD)",
+          "historical_mean_difference": -0.0003999999999999976,
+          "rerun_mean_difference": 3.99999999999949e-05
+        },
+        {
+          "snr_db": 16.0,
+          "a": "Mamba S6",
+          "b": "Mamba2 (SSD)",
+          "historical_mean_difference": 0.0007800000000000029,
+          "rerun_mean_difference": -3.0000000000002247e-05
+        },
+        {
+          "snr_db": 18.0,
+          "a": "MLP (169p)",
+          "b": "Transformer",
+          "historical_mean_difference": -0.00038000000000000186,
+          "rerun_mean_difference": 0.00027999999999999553
+        },
+        {
+          "snr_db": 18.0,
+          "a": "MLP (169p)",
+          "b": "Mamba S6",
+          "historical_mean_difference": -0.00034,
+          "rerun_mean_difference": 0.00019999999999999532
+        },
+        {
+          "snr_db": 18.0,
+          "a": "MLP (169p)",
+          "b": "Mamba2 (SSD)",
+          "historical_mean_difference": -4.999999999999796e-05,
+          "rerun_mean_difference": 0.00023999999999999716
+        },
+        {
+          "snr_db": 18.0,
+          "a": "VAE",
+          "b": "Transformer",
+          "historical_mean_difference": -0.0005000000000000004,
+          "rerun_mean_difference": 0.00016000000000000042
+        },
+        {
+          "snr_db": 18.0,
+          "a": "VAE",
+          "b": "Mamba S6",
+          "historical_mean_difference": -0.0004599999999999986,
+          "rerun_mean_difference": 8.000000000000021e-05
+        },
+        {
+          "snr_db": 18.0,
+          "a": "VAE",
+          "b": "Mamba2 (SSD)",
+          "historical_mean_difference": -0.00016999999999999654,
+          "rerun_mean_difference": 0.00012000000000000205
+        },
+        {
+          "snr_db": 18.0,
+          "a": "Transformer",
+          "b": "Mamba S6",
+          "historical_mean_difference": 4.000000000000184e-05,
+          "rerun_mean_difference": -8.000000000000021e-05
+        },
+        {
+          "snr_db": 18.0,
+          "a": "Transformer",
+          "b": "Mamba2 (SSD)",
+          "historical_mean_difference": 0.0003300000000000039,
+          "rerun_mean_difference": -3.999999999999837e-05
+        },
+        {
+          "snr_db": 20.0,
+          "a": "MLP (169p)",
+          "b": "Transformer",
+          "historical_mean_difference": -0.0002199999999999997,
+          "rerun_mean_difference": 0.0004700000000000034
+        },
+        {
+          "snr_db": 20.0,
+          "a": "MLP (169p)",
+          "b": "Mamba S6",
+          "historical_mean_difference": -4.99999999999997e-05,
+          "rerun_mean_difference": 0.00042000000000000197
+        },
+        {
+          "snr_db": 20.0,
+          "a": "VAE",
+          "b": "Transformer",
+          "historical_mean_difference": -0.0004199999999999985,
+          "rerun_mean_difference": 0.0002700000000000029
+        },
+        {
+          "snr_db": 20.0,
+          "a": "VAE",
+          "b": "Mamba S6",
+          "historical_mean_difference": -0.0002499999999999985,
+          "rerun_mean_difference": 0.00022000000000000144
+        },
+        {
+          "snr_db": 20.0,
+          "a": "VAE",
+          "b": "Mamba2 (SSD)",
+          "historical_mean_difference": -4.0000000000000105e-05,
+          "rerun_mean_difference": 0.00025000000000000196
+        },
+        {
+          "snr_db": 20.0,
+          "a": "Transformer",
+          "b": "Mamba S6",
+          "historical_mean_difference": 0.00017,
+          "rerun_mean_difference": -5.000000000000143e-05
+        },
+        {
+          "snr_db": 20.0,
+          "a": "Transformer",
+          "b": "Mamba2 (SSD)",
+          "historical_mean_difference": 0.0003799999999999984,
+          "rerun_mean_difference": -2.000000000000092e-05
+        }
+      ]
+    },
+    "canonical_3k": {
+      "paired_vs_DF": {
+        "MLP-3K": [
+          {
+            "snr_db": 0,
+            "mean_diff": 0.00588999999999999,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 2,
+            "mean_diff": 0.006459999999999999,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 4,
+            "mean_diff": 0.006040000000000006,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 6,
+            "mean_diff": 0.004930000000000004,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 8,
+            "mean_diff": 0.0040999999999999995,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 10,
+            "mean_diff": 0.002190000000000003,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 12,
+            "mean_diff": 0.0014999999999999985,
+            "p": 0.00390625,
+            "resolved": true
+          },
+          {
+            "snr_db": 14,
+            "mean_diff": 0.00119,
+            "p": 0.009765625,
+            "resolved": true
+          },
+          {
+            "snr_db": 16,
+            "mean_diff": 0.0006999999999999999,
+            "p": 0.01171875,
+            "resolved": true
+          },
+          {
+            "snr_db": 18,
+            "mean_diff": 0.00027999999999999987,
+            "p": 0.3046875,
+            "resolved": false
+          },
+          {
+            "snr_db": 20,
+            "mean_diff": 0.00037,
+            "p": 0.0078125,
+            "resolved": true
+          }
+        ],
+        "Hybrid-3K": [
+          {
+            "snr_db": 0,
+            "mean_diff": 0.005599999999999989,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 2,
+            "mean_diff": 0.005769999999999997,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 4,
+            "mean_diff": 0.005270000000000002,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 6,
+            "mean_diff": 0.004020000000000001,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 8,
+            "mean_diff": 0.0008199999999999999,
+            "p": 0.125,
+            "resolved": false
+          },
+          {
+            "snr_db": 10,
+            "mean_diff": 0.00030000000000000024,
+            "p": 1.0,
+            "resolved": false
+          },
+          {
+            "snr_db": 12,
+            "mean_diff": 8.99999999999998e-05,
+            "p": 1.0,
+            "resolved": false
+          },
+          {
+            "snr_db": 14,
+            "mean_diff": 0.0,
+            "p": 1.0,
+            "resolved": false
+          },
+          {
+            "snr_db": 16,
+            "mean_diff": 0.0,
+            "p": 1.0,
+            "resolved": false
+          },
+          {
+            "snr_db": 18,
+            "mean_diff": 0.0,
+            "p": 1.0,
+            "resolved": false
+          },
+          {
+            "snr_db": 20,
+            "mean_diff": 0.0,
+            "p": 1.0,
+            "resolved": false
+          }
+        ],
+        "VAE-3K": [
+          {
+            "snr_db": 0,
+            "mean_diff": 0.010660000000000003,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 2,
+            "mean_diff": 0.010310000000000003,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 4,
+            "mean_diff": 0.008629999999999999,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 6,
+            "mean_diff": 0.0063800000000000055,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 8,
+            "mean_diff": 0.004800000000000001,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 10,
+            "mean_diff": 0.00358,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 12,
+            "mean_diff": 0.0025399999999999984,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 14,
+            "mean_diff": 0.00114,
+            "p": 0.00390625,
+            "resolved": true
+          },
+          {
+            "snr_db": 16,
+            "mean_diff": 0.0006399999999999999,
+            "p": 0.005859375,
+            "resolved": true
+          },
+          {
+            "snr_db": 18,
+            "mean_diff": 0.0005300000000000001,
+            "p": 0.01953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 20,
+            "mean_diff": 0.0004099999999999998,
+            "p": 0.0078125,
+            "resolved": true
+          }
+        ],
+        "Transformer-3K": [
+          {
+            "snr_db": 0,
+            "mean_diff": 0.06865,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 2,
+            "mean_diff": 0.06568,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 4,
+            "mean_diff": 0.05364,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 6,
+            "mean_diff": 0.035019999999999996,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 8,
+            "mean_diff": 0.019360000000000002,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 10,
+            "mean_diff": 0.009449999999999998,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 12,
+            "mean_diff": 0.004549999999999999,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 14,
+            "mean_diff": 0.0023200000000000004,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 16,
+            "mean_diff": 0.0006500000000000002,
+            "p": 0.015625,
+            "resolved": true
+          },
+          {
+            "snr_db": 18,
+            "mean_diff": 0.0003500000000000003,
+            "p": 0.0546875,
+            "resolved": false
+          },
+          {
+            "snr_db": 20,
+            "mean_diff": 0.00022999999999999965,
+            "p": 0.015625,
+            "resolved": true
+          }
+        ],
+        "Mamba-3K": [
+          {
+            "snr_db": 0,
+            "mean_diff": 0.06677,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 2,
+            "mean_diff": 0.06436,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 4,
+            "mean_diff": 0.052550000000000006,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 6,
+            "mean_diff": 0.034230000000000003,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 8,
+            "mean_diff": 0.018730000000000004,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 10,
+            "mean_diff": 0.00908,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 12,
+            "mean_diff": 0.004639999999999999,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 14,
+            "mean_diff": 0.0023699999999999993,
+            "p": 0.00390625,
+            "resolved": true
+          },
+          {
+            "snr_db": 16,
+            "mean_diff": 0.000530000000000001,
+            "p": 0.01171875,
+            "resolved": true
+          },
+          {
+            "snr_db": 18,
+            "mean_diff": 0.00040999999999999994,
+            "p": 0.0078125,
+            "resolved": true
+          },
+          {
+            "snr_db": 20,
+            "mean_diff": 0.00014999999999999996,
+            "p": 0.5234375,
+            "resolved": false
+          }
+        ],
+        "Mamba2-3K": [
+          {
+            "snr_db": 0,
+            "mean_diff": 0.0665,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 2,
+            "mean_diff": 0.06372000000000003,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 4,
+            "mean_diff": 0.05241,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 6,
+            "mean_diff": 0.033589999999999995,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 8,
+            "mean_diff": 0.018180000000000005,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 10,
+            "mean_diff": 0.00872,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 12,
+            "mean_diff": 0.0038,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 14,
+            "mean_diff": 0.00207,
+            "p": 0.001953125,
+            "resolved": true
+          },
+          {
+            "snr_db": 16,
+            "mean_diff": 0.0005400000000000005,
+            "p": 0.068359375,
+            "resolved": false
+          },
+          {
+            "snr_db": 18,
+            "mean_diff": 0.00028000000000000057,
+            "p": 0.03125,
+            "resolved": true
+          },
+          {
+            "snr_db": 20,
+            "mean_diff": 4.9999999999999874e-05,
+            "p": 0.7265625,
+            "resolved": false
+          }
+        ]
+      },
+      "max_gap_vs_DF": {
+        "MLP-3K": {
+          "snr_db": 2,
+          "abs_mean_ber_gap": 0.006459999999999999
+        },
+        "Hybrid-3K": {
+          "snr_db": 2,
+          "abs_mean_ber_gap": 0.005769999999999997
+        },
+        "VAE-3K": {
+          "snr_db": 0,
+          "abs_mean_ber_gap": 0.010660000000000003
+        },
+        "Transformer-3K": {
+          "snr_db": 0,
+          "abs_mean_ber_gap": 0.06865
+        },
+        "Mamba-3K": {
+          "snr_db": 0,
+          "abs_mean_ber_gap": 0.06677
+        },
+        "Mamba2-3K": {
+          "snr_db": 0,
+          "abs_mean_ber_gap": 0.0665
+        }
+      },
+      "strict_pointwise_reversals": [
+        {
+          "snr_db": 0.0,
+          "a": "MLP-3K",
+          "b": "Hybrid-3K",
+          "historical_mean_difference": -0.0030499999999999416,
+          "rerun_mean_difference": 0.000290000000000068
+        },
+        {
+          "snr_db": 2.0,
+          "a": "MLP-3K",
+          "b": "Hybrid-3K",
+          "historical_mean_difference": -0.0034399999999998876,
+          "rerun_mean_difference": 0.0006900000000000239
+        },
+        {
+          "snr_db": 4.0,
+          "a": "MLP-3K",
+          "b": "Hybrid-3K",
+          "historical_mean_difference": -0.0026999999999999524,
+          "rerun_mean_difference": 0.0007700000000000207
+        },
+        {
+          "snr_db": 6.0,
+          "a": "MLP-3K",
+          "b": "Hybrid-3K",
+          "historical_mean_difference": -0.002669999999999978,
+          "rerun_mean_difference": 0.0009099999999999664
+        },
+        {
+          "snr_db": 12.0,
+          "a": "Transformer-3K",
+          "b": "Mamba-3K",
+          "historical_mean_difference": 0.0019400000000000112,
+          "rerun_mean_difference": -9.000000000000674e-05
+        },
+        {
+          "snr_db": 12.0,
+          "a": "Mamba-3K",
+          "b": "Mamba2-3K",
+          "historical_mean_difference": -0.00021000000000000185,
+          "rerun_mean_difference": 0.0008400000000000143
+        },
+        {
+          "snr_db": 14.0,
+          "a": "MLP-3K",
+          "b": "VAE-3K",
+          "historical_mean_difference": -0.0005399999999999988,
+          "rerun_mean_difference": 5.000000000000143e-05
+        },
+        {
+          "snr_db": 14.0,
+          "a": "Transformer-3K",
+          "b": "Mamba-3K",
+          "historical_mean_difference": 0.0006199999999999886,
+          "rerun_mean_difference": -5.000000000000143e-05
+        },
+        {
+          "snr_db": 16.0,
+          "a": "MLP-3K",
+          "b": "VAE-3K",
+          "historical_mean_difference": -0.0003999999999999976,
+          "rerun_mean_difference": 6.0000000000001025e-05
+        },
+        {
+          "snr_db": 16.0,
+          "a": "MLP-3K",
+          "b": "Transformer-3K",
+          "historical_mean_difference": -0.0012499999999999976,
+          "rerun_mean_difference": 4.999999999999449e-05
+        },
+        {
+          "snr_db": 16.0,
+          "a": "MLP-3K",
+          "b": "Mamba-3K",
+          "historical_mean_difference": -0.000389999999999998,
+          "rerun_mean_difference": 0.00017
+        },
+        {
+          "snr_db": 16.0,
+          "a": "MLP-3K",
+          "b": "Mamba2-3K",
+          "historical_mean_difference": -0.0004600000000000021,
+          "rerun_mean_difference": 0.00016000000000000042
+        },
+        {
+          "snr_db": 16.0,
+          "a": "VAE-3K",
+          "b": "Mamba2-3K",
+          "historical_mean_difference": -6.0000000000004494e-05,
+          "rerun_mean_difference": 9.99999999999994e-05
+        },
+        {
+          "snr_db": 18.0,
+          "a": "MLP-3K",
+          "b": "Mamba-3K",
+          "historical_mean_difference": 0.00012000000000000552,
+          "rerun_mean_difference": -0.00012999999999999817
+        },
+        {
+          "snr_db": 18.0,
+          "a": "VAE-3K",
+          "b": "Transformer-3K",
+          "historical_mean_difference": -4.000000000000184e-05,
+          "rerun_mean_difference": 0.00018000000000000307
+        },
+        {
+          "snr_db": 18.0,
+          "a": "Transformer-3K",
+          "b": "Mamba-3K",
+          "historical_mean_difference": 0.0003300000000000039,
+          "rerun_mean_difference": -5.9999999999997555e-05
+        },
+        {
+          "snr_db": 18.0,
+          "a": "Mamba-3K",
+          "b": "Mamba2-3K",
+          "historical_mean_difference": -0.00020000000000000226,
+          "rerun_mean_difference": 0.0001299999999999947
+        },
+        {
+          "snr_db": 20.0,
+          "a": "MLP-3K",
+          "b": "Transformer-3K",
+          "historical_mean_difference": -7.999999999999848e-05,
+          "rerun_mean_difference": 0.0001399999999999995
+        },
+        {
+          "snr_db": 20.0,
+          "a": "Mamba-3K",
+          "b": "Mamba2-3K",
+          "historical_mean_difference": -2.000000000000092e-05,
+          "rerun_mean_difference": 9.99999999999994e-05
+        }
+      ]
+    }
+  },
+  "sequence": {
+    "isi": {
+      "summaries": {
+        "MLP-3K": {
+          "historical": {
+            "old_per_seed": [
+              2.364968486574748,
+              1.9737935955601866,
+              2.0536415068616476
+            ],
+            "new_per_seed": [
+              2.364968486574748,
+              1.9737935955601866,
+              2.0536415068616476
+            ],
+            "new_lower_bound": [
+              false,
+              false,
+              false
+            ],
+            "unreached": [
+              [],
+              [],
+              []
+            ],
+            "common_targets": [
+              "0.1",
+              "0.01",
+              "0.001"
+            ],
+            "old_best": 1.9737935955601866,
+            "old_spread": 0.39117489101456115,
+            "new_best": 1.9737935955601866,
+            "new_best_flag": "",
+            "new_spread": 0.39117489101456115,
+            "new_spread_flag": "",
+            "new_median": 2.0536415068616476,
+            "new_median_flag": ""
+          },
+          "rerun": {
+            "old_per_seed": [
+              2.3644110345625364,
+              1.965266649360501,
+              2.068929181865819
+            ],
+            "new_per_seed": [
+              2.3644110345625364,
+              1.965266649360501,
+              2.068929181865819
+            ],
+            "new_lower_bound": [
+              false,
+              false,
+              false
+            ],
+            "unreached": [
+              [],
+              [],
+              []
+            ],
+            "common_targets": [
+              "0.1",
+              "0.01",
+              "0.001"
+            ],
+            "old_best": 1.965266649360501,
+            "old_spread": 0.3991443852020353,
+            "new_best": 1.965266649360501,
+            "new_best_flag": "",
+            "new_spread": 0.3991443852020353,
+            "new_spread_flag": "",
+            "new_median": 2.068929181865819,
+            "new_median_flag": ""
+          }
+        },
+        "Transformer-3K": {
+          "historical": {
+            "old_per_seed": [
+              3.783398275732763,
+              3.8503248923938944,
+              3.5198726267008436
+            ],
+            "new_per_seed": [
+              3.783398275732763,
+              3.8503248923938944,
+              3.5198726267008436
+            ],
+            "new_lower_bound": [
+              false,
+              false,
+              false
+            ],
+            "unreached": [
+              [],
+              [],
+              []
+            ],
+            "common_targets": [
+              "0.1",
+              "0.01",
+              "0.001"
+            ],
+            "old_best": 3.5198726267008436,
+            "old_spread": 0.33045226569305086,
+            "new_best": 3.5198726267008436,
+            "new_best_flag": "",
+            "new_spread": 0.33045226569305086,
+            "new_spread_flag": "",
+            "new_median": 3.783398275732763,
+            "new_median_flag": ""
+          },
+          "rerun": {
+            "old_per_seed": [
+              4.295736910346534,
+              3.8109488885219935,
+              3.6271100791323576
+            ],
+            "new_per_seed": [
+              4.295736910346534,
+              3.8109488885219935,
+              3.6271100791323576
+            ],
+            "new_lower_bound": [
+              false,
+              false,
+              false
+            ],
+            "unreached": [
+              [],
+              [],
+              []
+            ],
+            "common_targets": [
+              "0.1",
+              "0.01",
+              "0.001"
+            ],
+            "old_best": 3.6271100791323576,
+            "old_spread": 0.6686268312141763,
+            "new_best": 3.6271100791323576,
+            "new_best_flag": "",
+            "new_spread": 0.6686268312141763,
+            "new_spread_flag": "",
+            "new_median": 3.8109488885219935,
+            "new_median_flag": ""
+          }
+        },
+        "Mamba-S6-3K": {
+          "historical": {
+            "old_per_seed": [
+              4.793640460838855,
+              5.4467576828513415,
+              4.298017768453493
+            ],
+            "new_per_seed": [
+              4.793640460838855,
+              5.4467576828513415,
+              4.298017768453493
+            ],
+            "new_lower_bound": [
+              false,
+              false,
+              false
+            ],
+            "unreached": [
+              [],
+              [],
+              []
+            ],
+            "common_targets": [
+              "0.1",
+              "0.01",
+              "0.001"
+            ],
+            "old_best": 4.298017768453493,
+            "old_spread": 1.148739914397849,
+            "new_best": 4.298017768453493,
+            "new_best_flag": "",
+            "new_spread": 1.148739914397849,
+            "new_spread_flag": "",
+            "new_median": 4.793640460838855,
+            "new_median_flag": ""
+          },
+          "rerun": {
+            "old_per_seed": [
+              4.793640460838855,
+              5.4467576828513415,
+              4.298017768453493
+            ],
+            "new_per_seed": [
+              4.793640460838855,
+              5.4467576828513415,
+              4.298017768453493
+            ],
+            "new_lower_bound": [
+              false,
+              false,
+              false
+            ],
+            "unreached": [
+              [],
+              [],
+              []
+            ],
+            "common_targets": [
+              "0.1",
+              "0.01",
+              "0.001"
+            ],
+            "old_best": 4.298017768453493,
+            "old_spread": 1.148739914397849,
+            "new_best": 4.298017768453493,
+            "new_best_flag": "",
+            "new_spread": 1.148739914397849,
+            "new_spread_flag": "",
+            "new_median": 4.793640460838855,
+            "new_median_flag": ""
+          }
+        },
+        "Mamba2-3K": {
+          "historical": {
+            "old_per_seed": [
+              4.552580733685986,
+              4.656852341904841,
+              4.687892974629257
+            ],
+            "new_per_seed": [
+              4.552580733685986,
+              4.656852341904841,
+              4.687892974629257
+            ],
+            "new_lower_bound": [
+              false,
+              false,
+              false
+            ],
+            "unreached": [
+              [],
+              [],
+              []
+            ],
+            "common_targets": [
+              "0.1",
+              "0.01",
+              "0.001"
+            ],
+            "old_best": 4.552580733685986,
+            "old_spread": 0.13531224094327143,
+            "new_best": 4.552580733685986,
+            "new_best_flag": "",
+            "new_spread": 0.13531224094327143,
+            "new_spread_flag": "",
+            "new_median": 4.656852341904841,
+            "new_median_flag": ""
+          },
+          "rerun": {
+            "old_per_seed": [
+              4.552580733685986,
+              4.581191797389909,
+              4.687892974629257
+            ],
+            "new_per_seed": [
+              4.552580733685986,
+              4.581191797389909,
+              4.687892974629257
+            ],
+            "new_lower_bound": [
+              false,
+              false,
+              false
+            ],
+            "unreached": [
+              [],
+              [],
+              []
+            ],
+            "common_targets": [
+              "0.1",
+              "0.01",
+              "0.001"
+            ],
+            "old_best": 4.552580733685986,
+            "old_spread": 0.13531224094327143,
+            "new_best": 4.552580733685986,
+            "new_best_flag": "",
+            "new_spread": 0.13531224094327143,
+            "new_spread_flag": "",
+            "new_median": 4.581191797389909,
+            "new_median_flag": ""
+          }
+        }
+      },
+      "best_of_three_order": {
+        "historical": [
+          "MLP-3K",
+          "Transformer-3K",
+          "Mamba-S6-3K",
+          "Mamba2-3K"
+        ],
+        "rerun": [
+          "MLP-3K",
+          "Transformer-3K",
+          "Mamba-S6-3K",
+          "Mamba2-3K"
+        ]
+      },
+      "order_unchanged": true
+    },
+    "isi_complex": {
+      "summaries": {
+        "MLP-3K": {
+          "historical": {
+            "old_per_seed": [
+              2.601615581669275,
+              2.6510229266179888,
+              2.5834902159657034
+            ],
+            "new_per_seed": [
+              2.601615581669275,
+              2.6510229266179888,
+              2.5834902159657034
+            ],
+            "new_lower_bound": [
+              false,
+              false,
+              false
+            ],
+            "unreached": [
+              [],
+              [],
+              []
+            ],
+            "common_targets": [
+              "0.1",
+              "0.01",
+              "0.001"
+            ],
+            "old_best": 2.5834902159657034,
+            "old_spread": 0.06753271065228539,
+            "new_best": 2.5834902159657034,
+            "new_best_flag": "",
+            "new_spread": 0.06753271065228539,
+            "new_spread_flag": "",
+            "new_median": 2.601615581669275,
+            "new_median_flag": ""
+          },
+          "rerun": {
+            "old_per_seed": [
+              2.5828480377909493,
+              2.6645437423541054,
+              2.523092016296431
+            ],
+            "new_per_seed": [
+              2.5828480377909493,
+              2.6645437423541054,
+              2.523092016296431
+            ],
+            "new_lower_bound": [
+              false,
+              false,
+              false
+            ],
+            "unreached": [
+              [],
+              [],
+              []
+            ],
+            "common_targets": [
+              "0.1",
+              "0.01",
+              "0.001"
+            ],
+            "old_best": 2.523092016296431,
+            "old_spread": 0.14145172605767442,
+            "new_best": 2.523092016296431,
+            "new_best_flag": "",
+            "new_spread": 0.14145172605767442,
+            "new_spread_flag": "",
+            "new_median": 2.5828480377909493,
+            "new_median_flag": ""
+          }
+        },
+        "Transformer-3K": {
+          "historical": {
+            "old_per_seed": [
+              5.959459352437127,
+              6.406369567703395,
+              5.980361638523528
+            ],
+            "new_per_seed": [
+              5.959459352437127,
+              6.406369567703395,
+              5.980361638523528
+            ],
+            "new_lower_bound": [
+              false,
+              false,
+              false
+            ],
+            "unreached": [
+              [],
+              [],
+              []
+            ],
+            "common_targets": [
+              "0.1",
+              "0.01",
+              "0.001"
+            ],
+            "old_best": 5.959459352437127,
+            "old_spread": 0.44691021526626784,
+            "new_best": 5.959459352437127,
+            "new_best_flag": "",
+            "new_spread": 0.44691021526626784,
+            "new_spread_flag": "",
+            "new_median": 5.980361638523528,
+            "new_median_flag": ""
+          },
+          "rerun": {
+            "old_per_seed": [
+              6.651099576448958,
+              6.966758537217613,
+              6.635541522112733
+            ],
+            "new_per_seed": [
+              6.651099576448958,
+              6.966758537217613,
+              6.635541522112733
+            ],
+            "new_lower_bound": [
+              false,
+              false,
+              false
+            ],
+            "unreached": [
+              [],
+              [],
+              []
+            ],
+            "common_targets": [
+              "0.1",
+              "0.01",
+              "0.001"
+            ],
+            "old_best": 6.635541522112733,
+            "old_spread": 0.33121701510487966,
+            "new_best": 6.635541522112733,
+            "new_best_flag": "",
+            "new_spread": 0.33121701510487966,
+            "new_spread_flag": "",
+            "new_median": 6.651099576448958,
+            "new_median_flag": ""
+          }
+        },
+        "Mamba-S6-3K": {
+          "historical": {
+            "old_per_seed": [
+              5.981561949445753,
+              5.722446179633545,
+              7.055765651710631
+            ],
+            "new_per_seed": [
+              5.981561949445753,
+              5.722446179633545,
+              7.055765651710631
+            ],
+            "new_lower_bound": [
+              false,
+              false,
+              false
+            ],
+            "unreached": [
+              [],
+              [],
+              []
+            ],
+            "common_targets": [
+              "0.1",
+              "0.01",
+              "0.001"
+            ],
+            "old_best": 5.722446179633545,
+            "old_spread": 1.3333194720770862,
+            "new_best": 5.722446179633545,
+            "new_best_flag": "",
+            "new_spread": 1.3333194720770862,
+            "new_spread_flag": "",
+            "new_median": 5.981561949445753,
+            "new_median_flag": ""
+          },
+          "rerun": {
+            "old_per_seed": [
+              5.981561949445753,
+              5.722446179633545,
+              7.055765651710631
+            ],
+            "new_per_seed": [
+              5.981561949445753,
+              5.722446179633545,
+              7.055765651710631
+            ],
+            "new_lower_bound": [
+              false,
+              false,
+              false
+            ],
+            "unreached": [
+              [],
+              [],
+              []
+            ],
+            "common_targets": [
+              "0.1",
+              "0.01",
+              "0.001"
+            ],
+            "old_best": 5.722446179633545,
+            "old_spread": 1.3333194720770862,
+            "new_best": 5.722446179633545,
+            "new_best_flag": "",
+            "new_spread": 1.3333194720770862,
+            "new_spread_flag": "",
+            "new_median": 5.981561949445753,
+            "new_median_flag": ""
+          }
+        },
+        "Mamba2-3K": {
+          "historical": {
+            "old_per_seed": [
+              5.831714685452889,
+              4.688758637298054,
+              6.804256792651335
+            ],
+            "new_per_seed": [
+              5.831714685452889,
+              9.11329229916099,
+              6.804256792651335
+            ],
+            "new_lower_bound": [
+              false,
+              true,
+              false
+            ],
+            "unreached": [
+              [],
+              [
+                "0.001"
+              ],
+              []
+            ],
+            "common_targets": [
+              "0.1",
+              "0.01",
+              "0.001"
+            ],
+            "old_best": 4.688758637298054,
+            "old_spread": 2.115498155353281,
+            "new_best": 5.831714685452889,
+            "new_best_flag": "",
+            "new_spread": 3.2815776137081016,
+            "new_spread_flag": ">",
+            "new_median": 6.804256792651335,
+            "new_median_flag": ""
+          },
+          "rerun": {
+            "old_per_seed": [
+              5.831714685452889,
+              5.984850417313419,
+              6.804256792651335
+            ],
+            "new_per_seed": [
+              5.831714685452889,
+              5.984850417313419,
+              6.804256792651335
+            ],
+            "new_lower_bound": [
+              false,
+              false,
+              false
+            ],
+            "unreached": [
+              [],
+              [],
+              []
+            ],
+            "common_targets": [
+              "0.1",
+              "0.01",
+              "0.001"
+            ],
+            "old_best": 5.831714685452889,
+            "old_spread": 0.9725421071984464,
+            "new_best": 5.831714685452889,
+            "new_best_flag": "",
+            "new_spread": 0.9725421071984464,
+            "new_spread_flag": "",
+            "new_median": 5.984850417313419,
+            "new_median_flag": ""
+          }
+        }
+      },
+      "best_of_three_order": {
+        "historical": [
+          "MLP-3K",
+          "Mamba-S6-3K",
+          "Mamba2-3K",
+          "Transformer-3K"
+        ],
+        "rerun": [
+          "MLP-3K",
+          "Mamba-S6-3K",
+          "Mamba2-3K",
+          "Transformer-3K"
+        ]
+      },
+      "order_unchanged": true
+    },
+    "composite": {
+      "summaries": {
+        "MLP-3K": {
+          "historical": {
+            "old_per_seed": [
+              -2.05123458567153,
+              -2.0532379178640046,
+              -2.0842692133344958
+            ],
+            "new_per_seed": [
+              -2.05123458567153,
+              -2.0532379178640046,
+              -2.0842692133344958
+            ],
+            "new_lower_bound": [
+              false,
+              false,
+              false
+            ],
+            "unreached": [
+              [],
+              [],
+              []
+            ],
+            "common_targets": [
+              "0.1"
+            ],
+            "old_best": -2.0842692133344958,
+            "old_spread": 0.03303462766296583,
+            "new_best": -2.0842692133344958,
+            "new_best_flag": "",
+            "new_spread": 0.03303462766296583,
+            "new_spread_flag": "",
+            "new_median": -2.0532379178640046,
+            "new_median_flag": ""
+          },
+          "rerun": {
+            "old_per_seed": [
+              -2.0583109515179725,
+              -2.0505962965129374,
+              -2.0941359306325467
+            ],
+            "new_per_seed": [
+              -2.0583109515179725,
+              -2.0505962965129374,
+              -2.0941359306325467
+            ],
+            "new_lower_bound": [
+              false,
+              false,
+              false
+            ],
+            "unreached": [
+              [],
+              [],
+              []
+            ],
+            "common_targets": [
+              "0.1"
+            ],
+            "old_best": -2.0941359306325467,
+            "old_spread": 0.04353963411960926,
+            "new_best": -2.0941359306325467,
+            "new_best_flag": "",
+            "new_spread": 0.04353963411960926,
+            "new_spread_flag": "",
+            "new_median": -2.0583109515179725,
+            "new_median_flag": ""
+          }
+        },
+        "Transformer-3K": {
+          "historical": {
+            "old_per_seed": [
+              -1.729652117820148,
+              -1.7627661182690257,
+              -1.7416685701890096
+            ],
+            "new_per_seed": [
+              -1.729652117820148,
+              -1.7627661182690257,
+              -1.7416685701890096
+            ],
+            "new_lower_bound": [
+              false,
+              false,
+              false
+            ],
+            "unreached": [
+              [],
+              [],
+              []
+            ],
+            "common_targets": [
+              "0.1"
+            ],
+            "old_best": -1.7627661182690257,
+            "old_spread": 0.03311400044887769,
+            "new_best": -1.7627661182690257,
+            "new_best_flag": "",
+            "new_spread": 0.03311400044887769,
+            "new_spread_flag": "",
+            "new_median": -1.7416685701890096,
+            "new_median_flag": ""
+          },
+          "rerun": {
+            "old_per_seed": [
+              -1.6663764554387708,
+              -1.7655766638078791,
+              -1.7381400979785102
+            ],
+            "new_per_seed": [
+              -1.6663764554387708,
+              -1.7655766638078791,
+              -1.7381400979785102
+            ],
+            "new_lower_bound": [
+              false,
+              false,
+              false
+            ],
+            "unreached": [
+              [],
+              [],
+              []
+            ],
+            "common_targets": [
+              "0.1"
+            ],
+            "old_best": -1.7655766638078791,
+            "old_spread": 0.09920020836910837,
+            "new_best": -1.7655766638078791,
+            "new_best_flag": "",
+            "new_spread": 0.09920020836910837,
+            "new_spread_flag": "",
+            "new_median": -1.7381400979785102,
+            "new_median_flag": ""
+          }
+        },
+        "Mamba-S6-3K": {
+          "historical": {
+            "old_per_seed": [
+              -1.542914979974375,
+              -1.4792384980554214,
+              -1.5640120885966464
+            ],
+            "new_per_seed": [
+              -1.542914979974375,
+              -1.4792384980554214,
+              -1.5640120885966464
+            ],
+            "new_lower_bound": [
+              false,
+              false,
+              false
+            ],
+            "unreached": [
+              [],
+              [],
+              []
+            ],
+            "common_targets": [
+              "0.1"
+            ],
+            "old_best": -1.5640120885966464,
+            "old_spread": 0.08477359054122502,
+            "new_best": -1.5640120885966464,
+            "new_best_flag": "",
+            "new_spread": 0.08477359054122502,
+            "new_spread_flag": "",
+            "new_median": -1.542914979974375,
+            "new_median_flag": ""
+          },
+          "rerun": {
+            "old_per_seed": [
+              -1.542914979974375,
+              -1.4792384980554214,
+              -1.5640120885966464
+            ],
+            "new_per_seed": [
+              -1.542914979974375,
+              -1.4792384980554214,
+              -1.5640120885966464
+            ],
+            "new_lower_bound": [
+              false,
+              false,
+              false
+            ],
+            "unreached": [
+              [],
+              [],
+              []
+            ],
+            "common_targets": [
+              "0.1"
+            ],
+            "old_best": -1.5640120885966464,
+            "old_spread": 0.08477359054122502,
+            "new_best": -1.5640120885966464,
+            "new_best_flag": "",
+            "new_spread": 0.08477359054122502,
+            "new_spread_flag": "",
+            "new_median": -1.542914979974375,
+            "new_median_flag": ""
+          }
+        },
+        "Mamba2-3K": {
+          "historical": {
+            "old_per_seed": [
+              -1.5351840552759075,
+              -1.5955454557162767,
+              -1.5646943773179132
+            ],
+            "new_per_seed": [
+              -1.5351840552759075,
+              -1.5955454557162767,
+              -1.5646943773179132
+            ],
+            "new_lower_bound": [
+              false,
+              false,
+              false
+            ],
+            "unreached": [
+              [],
+              [],
+              []
+            ],
+            "common_targets": [
+              "0.1"
+            ],
+            "old_best": -1.5955454557162767,
+            "old_spread": 0.060361400440369195,
+            "new_best": -1.5955454557162767,
+            "new_best_flag": "",
+            "new_spread": 0.060361400440369195,
+            "new_spread_flag": "",
+            "new_median": -1.5646943773179132,
+            "new_median_flag": ""
+          },
+          "rerun": {
+            "old_per_seed": [
+              -1.5351840552759075,
+              -1.580138090629502,
+              -1.5646943773179132
+            ],
+            "new_per_seed": [
+              -1.5351840552759075,
+              -1.580138090629502,
+              -1.5646943773179132
+            ],
+            "new_lower_bound": [
+              false,
+              false,
+              false
+            ],
+            "unreached": [
+              [],
+              [],
+              []
+            ],
+            "common_targets": [
+              "0.1"
+            ],
+            "old_best": -1.580138090629502,
+            "old_spread": 0.044954035353594435,
+            "new_best": -1.580138090629502,
+            "new_best_flag": "",
+            "new_spread": 0.044954035353594435,
+            "new_spread_flag": "",
+            "new_median": -1.5646943773179132,
+            "new_median_flag": ""
+          }
+        }
+      },
+      "best_of_three_order": {
+        "historical": [
+          "MLP-3K",
+          "Transformer-3K",
+          "Mamba2-3K",
+          "Mamba-S6-3K"
+        ],
+        "rerun": [
+          "MLP-3K",
+          "Transformer-3K",
+          "Mamba2-3K",
+          "Mamba-S6-3K"
+        ]
+      },
+      "order_unchanged": true
+    }
+  },
+  "coded": {
+    "0": {
+      "mlp_hard|matched": {
+        "historical_mean": 0.407987,
+        "rerun_mean": 0.40821166666666664,
+        "matched_DF_mean": 0.268496,
+        "DF_wins": 30,
+        "ties": 0,
+        "paired_vs_DF": {
+          "snr_db": 0,
+          "mean_diff": 0.13971566666666668,
+          "p": 1.862645149230957e-09,
+          "resolved": true
+        }
+      },
+      "mlp_soft|matched": {
+        "historical_mean": 0.39599500000000004,
+        "rerun_mean": 0.39620900000000003,
+        "matched_DF_mean": 0.268496,
+        "DF_wins": 30,
+        "ties": 0,
+        "paired_vs_DF": {
+          "snr_db": 0,
+          "mean_diff": 0.12771300000000002,
+          "p": 1.7333066441991056e-06,
+          "resolved": true
+        }
+      },
+      "mlp_hard|plain": {
+        "historical_mean": 0.4436116666666667,
+        "rerun_mean": 0.4442483333333333,
+        "matched_DF_mean": 0.268496,
+        "DF_wins": 30,
+        "ties": 0,
+        "paired_vs_DF": {
+          "snr_db": 0,
+          "mean_diff": 0.17575233333333337,
+          "p": 1.862645149230957e-09,
+          "resolved": true
+        }
+      },
+      "mlp_soft|plain": {
+        "historical_mean": 0.4331933333333333,
+        "rerun_mean": 0.4336296666666667,
+        "matched_DF_mean": 0.268496,
+        "DF_wins": 30,
+        "ties": 0,
+        "paired_vs_DF": {
+          "snr_db": 0,
+          "mean_diff": 0.16513366666666668,
+          "p": 1.862645149230957e-09,
+          "resolved": true
+        }
+      }
+    },
+    "4": {
+      "mlp_hard|matched": {
+        "historical_mean": 0.23409266666666667,
+        "rerun_mean": 0.23440666666666668,
+        "matched_DF_mean": 0.047287333333333334,
+        "DF_wins": 30,
+        "ties": 0,
+        "paired_vs_DF": {
+          "snr_db": 4,
+          "mean_diff": 0.18711933333333333,
+          "p": 1.862645149230957e-09,
+          "resolved": true
+        }
+      },
+      "mlp_soft|matched": {
+        "historical_mean": 0.21314399999999994,
+        "rerun_mean": 0.21360133333333337,
+        "matched_DF_mean": 0.047287333333333334,
+        "DF_wins": 30,
+        "ties": 0,
+        "paired_vs_DF": {
+          "snr_db": 4,
+          "mean_diff": 0.16631399999999996,
+          "p": 1.7333066441991056e-06,
+          "resolved": true
+        }
+      },
+      "mlp_hard|plain": {
+        "historical_mean": 0.296559,
+        "rerun_mean": 0.2969173333333332,
+        "matched_DF_mean": 0.047287333333333334,
+        "DF_wins": 30,
+        "ties": 0,
+        "paired_vs_DF": {
+          "snr_db": 4,
+          "mean_diff": 0.24963000000000005,
+          "p": 1.862645149230957e-09,
+          "resolved": true
+        }
+      },
+      "mlp_soft|plain": {
+        "historical_mean": 0.27603033333333327,
+        "rerun_mean": 0.276013,
+        "matched_DF_mean": 0.047287333333333334,
+        "DF_wins": 30,
+        "ties": 0,
+        "paired_vs_DF": {
+          "snr_db": 4,
+          "mean_diff": 0.22872566666666666,
+          "p": 1.862645149230957e-09,
+          "resolved": true
+        }
+      }
+    },
+    "8": {
+      "mlp_hard|matched": {
+        "historical_mean": 0.078652,
+        "rerun_mean": 0.07887466666666666,
+        "matched_DF_mean": 0.003235,
+        "DF_wins": 30,
+        "ties": 0,
+        "paired_vs_DF": {
+          "snr_db": 8,
+          "mean_diff": 0.07563966666666667,
+          "p": 1.7333066441991056e-06,
+          "resolved": true
+        }
+      },
+      "mlp_soft|matched": {
+        "historical_mean": 0.061908,
+        "rerun_mean": 0.06203533333333333,
+        "matched_DF_mean": 0.003235,
+        "DF_wins": 30,
+        "ties": 0,
+        "paired_vs_DF": {
+          "snr_db": 8,
+          "mean_diff": 0.05880033333333333,
+          "p": 1.862645149230957e-09,
+          "resolved": true
+        }
+      },
+      "mlp_hard|plain": {
+        "historical_mean": 0.10046433333333332,
+        "rerun_mean": 0.10058166666666665,
+        "matched_DF_mean": 0.003235,
+        "DF_wins": 30,
+        "ties": 0,
+        "paired_vs_DF": {
+          "snr_db": 8,
+          "mean_diff": 0.09734666666666666,
+          "p": 1.732216233144114e-06,
+          "resolved": true
+        }
+      },
+      "mlp_soft|plain": {
+        "historical_mean": 0.08747833333333334,
+        "rerun_mean": 0.08751366666666666,
+        "matched_DF_mean": 0.003235,
+        "DF_wins": 30,
+        "ties": 0,
+        "paired_vs_DF": {
+          "snr_db": 8,
+          "mean_diff": 0.08427866666666665,
+          "p": 1.862645149230957e-09,
+          "resolved": true
+        }
+      }
+    },
+    "12": {
+      "mlp_hard|matched": {
+        "historical_mean": 0.02242566666666667,
+        "rerun_mean": 0.022367000000000005,
+        "matched_DF_mean": 0.0002033333333333333,
+        "DF_wins": 30,
+        "ties": 0,
+        "paired_vs_DF": {
+          "snr_db": 12,
+          "mean_diff": 0.022163666666666658,
+          "p": 1.862645149230957e-09,
+          "resolved": true
+        }
+      },
+      "mlp_soft|matched": {
+        "historical_mean": 0.015366666666666667,
+        "rerun_mean": 0.015501666666666665,
+        "matched_DF_mean": 0.0002033333333333333,
+        "DF_wins": 30,
+        "ties": 0,
+        "paired_vs_DF": {
+          "snr_db": 12,
+          "mean_diff": 0.015298333333333332,
+          "p": 1.732216233144114e-06,
+          "resolved": true
+        }
+      },
+      "mlp_hard|plain": {
+        "historical_mean": 0.02138033333333333,
+        "rerun_mean": 0.021367666666666667,
+        "matched_DF_mean": 0.0002033333333333333,
+        "DF_wins": 30,
+        "ties": 0,
+        "paired_vs_DF": {
+          "snr_db": 12,
+          "mean_diff": 0.021164333333333334,
+          "p": 1.862645149230957e-09,
+          "resolved": true
+        }
+      },
+      "mlp_soft|plain": {
+        "historical_mean": 0.017725,
+        "rerun_mean": 0.017805999999999995,
+        "matched_DF_mean": 0.0002033333333333333,
+        "DF_wins": 30,
+        "ties": 0,
+        "paired_vs_DF": {
+          "snr_db": 12,
+          "mean_diff": 0.017602666666666662,
+          "p": 1.7333066441991056e-06,
+          "resolved": true
+        }
+      }
+    },
+    "16": {
+      "mlp_hard|matched": {
+        "historical_mean": 0.006797000000000001,
+        "rerun_mean": 0.006756333333333332,
+        "matched_DF_mean": 1.0000000000000003e-05,
+        "DF_wins": 30,
+        "ties": 0,
+        "paired_vs_DF": {
+          "snr_db": 16,
+          "mean_diff": 0.0067463333333333325,
+          "p": 1.732216233144114e-06,
+          "resolved": true
+        }
+      },
+      "mlp_soft|matched": {
+        "historical_mean": 0.004310666666666667,
+        "rerun_mean": 0.0043553333333333335,
+        "matched_DF_mean": 1.0000000000000003e-05,
+        "DF_wins": 30,
+        "ties": 0,
+        "paired_vs_DF": {
+          "snr_db": 16,
+          "mean_diff": 0.004345333333333334,
+          "p": 1.7300371292901245e-06,
+          "resolved": true
+        }
+      },
+      "mlp_hard|plain": {
+        "historical_mean": 0.004359333333333334,
+        "rerun_mean": 0.004317666666666667,
+        "matched_DF_mean": 1.0000000000000003e-05,
+        "DF_wins": 30,
+        "ties": 0,
+        "paired_vs_DF": {
+          "snr_db": 16,
+          "mean_diff": 0.004307666666666667,
+          "p": 1.7289484360195754e-06,
+          "resolved": true
+        }
+      },
+      "mlp_soft|plain": {
+        "historical_mean": 0.0035589999999999997,
+        "rerun_mean": 0.003554,
+        "matched_DF_mean": 1.0000000000000003e-05,
+        "DF_wins": 30,
+        "ties": 0,
+        "paired_vs_DF": {
+          "snr_db": 16,
+          "mean_diff": 0.0035440000000000007,
+          "p": 1.7300371292901245e-06,
+          "resolved": true
+        }
+      }
+    },
+    "20": {
+      "mlp_hard|matched": {
+        "historical_mean": 0.0023766666666666667,
+        "rerun_mean": 0.002372333333333333,
+        "matched_DF_mean": 1.0000000000000002e-06,
+        "DF_wins": 30,
+        "ties": 0,
+        "paired_vs_DF": {
+          "snr_db": 20,
+          "mean_diff": 0.0023713333333333334,
+          "p": 1.7333066441991056e-06,
+          "resolved": true
+        }
+      },
+      "mlp_soft|matched": {
+        "historical_mean": 0.001448666666666667,
+        "rerun_mean": 0.001466,
+        "matched_DF_mean": 1.0000000000000002e-06,
+        "DF_wins": 30,
+        "ties": 0,
+        "paired_vs_DF": {
+          "snr_db": 20,
+          "mean_diff": 0.0014650000000000002,
+          "p": 1.7256857880058036e-06,
+          "resolved": true
+        }
+      },
+      "mlp_hard|plain": {
+        "historical_mean": 0.00105,
+        "rerun_mean": 0.0010473333333333335,
+        "matched_DF_mean": 1.0000000000000002e-06,
+        "DF_wins": 30,
+        "ties": 0,
+        "paired_vs_DF": {
+          "snr_db": 20,
+          "mean_diff": 0.0010463333333333334,
+          "p": 1.7289484360195754e-06,
+          "resolved": true
+        }
+      },
+      "mlp_soft|plain": {
+        "historical_mean": 0.0008889999999999999,
+        "rerun_mean": 0.0008993333333333333,
+        "matched_DF_mean": 1.0000000000000002e-06,
+        "DF_wins": 30,
+        "ties": 0,
+        "paired_vs_DF": {
+          "snr_db": 20,
+          "mean_diff": 0.0008983333333333332,
+          "p": 1.7224282827430733e-06,
+          "resolved": true
+        }
+      }
+    }
+  },
+  "evidence": [
+    {
+      "path": "results/reproduction/gha-39024026594-1-canonical_native/canonical_native/job.json",
+      "sha256": "69e62f5404da2e65065794ca63064f344c8a66db665dba85ac8ee133f8052639",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-canonical_native/canonical_native/job.json"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-canonical_native/canonical_native/comparison.json",
+      "sha256": "59e1afa52e1c4ef769256a6eb0212e319fc7d7815d1e3f8c3b9adec470c9b5b5",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-canonical_native/canonical_native/comparison.json"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-canonical_native/canonical_native/run.log",
+      "sha256": "30a98dd3d004dd11f9eed95cf16e66d97fbcdf98bd7005658b5837e27411ba0d",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-canonical_native/canonical_native/run.log"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-canonical_native/canonical_native/outputs/reproduction_checkpoints/canonical_native/Hybrid.pt",
+      "sha256": "462fcce7081e39089ba67230e21725140a97faf64a6024b2447ab5d1db1dea24",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-canonical_native/canonical_native/outputs/reproduction_checkpoints/canonical_native/Hybrid.pt"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-canonical_native/canonical_native/outputs/reproduction_checkpoints/canonical_native/MLP_169p_.pt",
+      "sha256": "5c4bca08949ed8a42bd470b5a31ae441a9598010cbdc2b48e4ad3341e08fcd23",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-canonical_native/canonical_native/outputs/reproduction_checkpoints/canonical_native/MLP_169p_.pt"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-canonical_native/canonical_native/outputs/reproduction_checkpoints/canonical_native/Mamba2_SSD_.pt",
+      "sha256": "31ad63d433654685df53fa66258696f3d75670dc7fc12c886d5b92f1fb8324ae",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-canonical_native/canonical_native/outputs/reproduction_checkpoints/canonical_native/Mamba2_SSD_.pt"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-canonical_native/canonical_native/outputs/reproduction_checkpoints/canonical_native/Mamba_S6.pt",
+      "sha256": "532f11e1de36f72011548191ba6128b4a78cfdf2b2157130061e3c55d131976a",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-canonical_native/canonical_native/outputs/reproduction_checkpoints/canonical_native/Mamba_S6.pt"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-canonical_native/canonical_native/outputs/reproduction_checkpoints/canonical_native/Transformer.pt",
+      "sha256": "e869a8690dccf5fe1ba2058a7d169621848ac5e3c90b69fe76a62e4699d84cec",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-canonical_native/canonical_native/outputs/reproduction_checkpoints/canonical_native/Transformer.pt"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-canonical_native/canonical_native/outputs/reproduction_checkpoints/canonical_native/VAE.pt",
+      "sha256": "115961f932ee9a06081cf7b4efe2d58830cd3cfb36a2709ff5f32c62a80da352",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-canonical_native/canonical_native/outputs/reproduction_checkpoints/canonical_native/VAE.pt"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-canonical_native/canonical_native/outputs/reproduction_checkpoints/canonical_native/protocol.json",
+      "sha256": "c5c7f6fa362950527835f7d63cff85f339651d1e233c4b72ecfe08c76f5f022c",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-canonical_native/canonical_native/outputs/reproduction_checkpoints/canonical_native/protocol.json"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-canonical_native/canonical_native/outputs/reproduction_checkpoints/canonical_native/torch_rng_before_construction.pt",
+      "sha256": "81c84046655ab159c9099b72c93a419674095e0c83affdae9cb5ed6803be492d",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-canonical_native/canonical_native/outputs/reproduction_checkpoints/canonical_native/torch_rng_before_construction.pt"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-canonical_native/canonical_native/outputs/results/modulation/bpsk_awgn.json",
+      "sha256": "e84ae72bc3bfcd49eb9503758136b374b99764e70cc8865d913a17226bdb0dfd",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-canonical_native/canonical_native/outputs/results/modulation/bpsk_awgn.json"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-canonical_native/canonical_native/outputs/results/modulation/bpsk_awgn_ci.png",
+      "sha256": "bc3d4304e4835f94e27ff0bf3cb9b10fde551e643a916373e41b04fb9f15f5bf",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-canonical_native/canonical_native/outputs/results/modulation/bpsk_awgn_ci.png"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-canonical_native/canonical_native/outputs/results/modulation/qam16_rayleigh.json",
+      "sha256": "77dea930db56a9a0c4c5937f0e02cd9ab4734543582291d2a8c1bb4acff8998b",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-canonical_native/canonical_native/outputs/results/modulation/qam16_rayleigh.json"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-canonical_native/canonical_native/outputs/results/modulation/qam16_rayleigh_ci.png",
+      "sha256": "fd3c99c8c1c35092177224b002da94b1bfb6062c05b77e95b07d96a953f0e7e8",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-canonical_native/canonical_native/outputs/results/modulation/qam16_rayleigh_ci.png"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-canonical_native/canonical_native/outputs/results/modulation/qpsk_rayleigh.json",
+      "sha256": "3383e50339bf8f6cd8b87804ec82a556ae8d118b174325f28b3090b121998f22",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-canonical_native/canonical_native/outputs/results/modulation/qpsk_rayleigh.json"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-canonical_native/canonical_native/outputs/results/modulation/qpsk_rayleigh_ci.png",
+      "sha256": "e30850bf0b12e4bd404c318d515317b7a3fe77ed822b6d7af99ddc94ae2133ca",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-canonical_native/canonical_native/outputs/results/modulation/qpsk_rayleigh_ci.png"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-canonical_native/canonical_native/references/results/modulation/qpsk_rayleigh.json",
+      "sha256": "d2382010c95ae645d1687b4a3de4230ccfce54821487aa2437625448ce206b6f",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-canonical_native/canonical_native/references/results/modulation/qpsk_rayleigh.json"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-canonical_3k/canonical_3k/job.json",
+      "sha256": "9214962ee0d8afa6ca81bbf4fa86abe972b7fdbfefb626604afb8f0b64248ede",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-canonical_3k/canonical_3k/job.json"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-canonical_3k/canonical_3k/comparison.json",
+      "sha256": "f2a65f2806bc961042d58169a467bb113d6709d2312a370c545e04e55dba187e",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-canonical_3k/canonical_3k/comparison.json"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-canonical_3k/canonical_3k/run.log",
+      "sha256": "a5a716957bf82cfb294e066c25dd1fbab67d3dba29fdedd380fe7cf6784b2fce",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-canonical_3k/canonical_3k/run.log"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-canonical_3k/canonical_3k/outputs/reproduction_checkpoints/canonical_3k/Hybrid-3K.pt",
+      "sha256": "a9151f474a20c3e5b269e1a6a04bfe7d11be65cf6174133061d1eaf43330ed0f",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-canonical_3k/canonical_3k/outputs/reproduction_checkpoints/canonical_3k/Hybrid-3K.pt"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-canonical_3k/canonical_3k/outputs/reproduction_checkpoints/canonical_3k/MLP-3K.pt",
+      "sha256": "2424191fc1aec290d1c044e50f6f8351dba0af1b0b1e94f13db280b0c73cf414",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-canonical_3k/canonical_3k/outputs/reproduction_checkpoints/canonical_3k/MLP-3K.pt"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-canonical_3k/canonical_3k/outputs/reproduction_checkpoints/canonical_3k/Mamba-3K.pt",
+      "sha256": "ba6a73da0132f7538e31f63c71253b8f0c1ea8b334c1c73ee8accc26471ee1be",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-canonical_3k/canonical_3k/outputs/reproduction_checkpoints/canonical_3k/Mamba-3K.pt"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-canonical_3k/canonical_3k/outputs/reproduction_checkpoints/canonical_3k/Mamba2-3K.pt",
+      "sha256": "f26d5e3bbe106a2ce548b94872ce26bfe207ac28a09fd0074afc2a28d498cd43",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-canonical_3k/canonical_3k/outputs/reproduction_checkpoints/canonical_3k/Mamba2-3K.pt"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-canonical_3k/canonical_3k/outputs/reproduction_checkpoints/canonical_3k/Transformer-3K.pt",
+      "sha256": "498ae0562efe108455aa5cc2b3bdcbe78e98575ae1fb5c898586daa69d7e8094",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-canonical_3k/canonical_3k/outputs/reproduction_checkpoints/canonical_3k/Transformer-3K.pt"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-canonical_3k/canonical_3k/outputs/reproduction_checkpoints/canonical_3k/VAE-3K.pt",
+      "sha256": "f2ec0875500b7cd687b02e22b8dd6a174c06e9d850b1e60a60f5397acaf0ad8a",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-canonical_3k/canonical_3k/outputs/reproduction_checkpoints/canonical_3k/VAE-3K.pt"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-canonical_3k/canonical_3k/outputs/reproduction_checkpoints/canonical_3k/protocol.json",
+      "sha256": "145dad51e4a77cb1c56e33ab63c338e99b552de6c9d5ad96fccc689eee74d151",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-canonical_3k/canonical_3k/outputs/reproduction_checkpoints/canonical_3k/protocol.json"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-canonical_3k/canonical_3k/outputs/reproduction_checkpoints/canonical_3k/torch_rng_before_construction.pt",
+      "sha256": "81c84046655ab159c9099b72c93a419674095e0c83affdae9cb5ed6803be492d",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-canonical_3k/canonical_3k/outputs/reproduction_checkpoints/canonical_3k/torch_rng_before_construction.pt"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-canonical_3k/canonical_3k/outputs/results/normalized_3k/3k_awgn.json",
+      "sha256": "c03ced89bd22f82587f8cb90efda0926b4876f66c39280ac7824720e965549f5",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-canonical_3k/canonical_3k/outputs/results/normalized_3k/3k_awgn.json"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-canonical_3k/canonical_3k/outputs/results/normalized_3k/3k_awgn.png",
+      "sha256": "903c421ad2912715e5b6b121fcb342212c8c6f3b289fca799b97a1df9d53bd85",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-canonical_3k/canonical_3k/outputs/results/normalized_3k/3k_awgn.png"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-canonical_3k/canonical_3k/outputs/results/normalized_3k/3k_rayleigh.json",
+      "sha256": "c4542e72c2327c93f473fcf6ed643532594c0ea3c67ceee29488924b70566beb",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-canonical_3k/canonical_3k/outputs/results/normalized_3k/3k_rayleigh.json"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-canonical_3k/canonical_3k/outputs/results/normalized_3k/3k_rayleigh.png",
+      "sha256": "7806f782121a28817db2c8c35a6b38b88a784406c31cf1408e808774d52fa050",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-canonical_3k/canonical_3k/outputs/results/normalized_3k/3k_rayleigh.png"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-canonical_3k/canonical_3k/outputs/weights/seed_42/3k/hybrid-3k.pt",
+      "sha256": "d72fa233581e5b1d65d32a896f097a20c9bf3d9c75673473b43eb8d9c771bcfe",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-canonical_3k/canonical_3k/outputs/weights/seed_42/3k/hybrid-3k.pt"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-canonical_3k/canonical_3k/outputs/weights/seed_42/3k/mamba-3k.pt",
+      "sha256": "67ce5b099d4ea1063ad8ad31eb943ace3d833bf0e280f93a08fea05fd76f21bd",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-canonical_3k/canonical_3k/outputs/weights/seed_42/3k/mamba-3k.pt"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-canonical_3k/canonical_3k/outputs/weights/seed_42/3k/mamba2-3k.pt",
+      "sha256": "1b372ebb0542d1b109f7efeecf902c21feea08d291be37e9145934f8a6cdf17c",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-canonical_3k/canonical_3k/outputs/weights/seed_42/3k/mamba2-3k.pt"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-canonical_3k/canonical_3k/outputs/weights/seed_42/3k/mlp-3k.pt",
+      "sha256": "0b09f6a8bf65613e8bf93fec68c294581d032e60d06bdecd0d05face01f9793f",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-canonical_3k/canonical_3k/outputs/weights/seed_42/3k/mlp-3k.pt"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-canonical_3k/canonical_3k/outputs/weights/seed_42/3k/transformer-3k.pt",
+      "sha256": "27768644bef6da0ee4c204b8c7026fc72bc1253b14e4cd09b0c8c6f7cb4bec00",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-canonical_3k/canonical_3k/outputs/weights/seed_42/3k/transformer-3k.pt"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-canonical_3k/canonical_3k/outputs/weights/seed_42/3k/vae-3k.pt",
+      "sha256": "4515506dfd8db3baa454e22d40121190d2b64b7f83d137966afa48e568fe2b44",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-canonical_3k/canonical_3k/outputs/weights/seed_42/3k/vae-3k.pt"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-canonical_3k/canonical_3k/references/results/normalized_3k/3k_rayleigh.json",
+      "sha256": "1706260ae27a97b0d82adf2d763969cd6ea438d600861ac420fc720be8a311de",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-canonical_3k/canonical_3k/references/results/normalized_3k/3k_rayleigh.json"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/job.json",
+      "sha256": "760f1cebfb2abba96dddcc3b5bf7e8754245553b122545f71c652dacf5cd57e9",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/job.json"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/comparison.json",
+      "sha256": "de25a98d4f004000cb47f840a85aebd4a6250ab33d9b32f364301c905f88d649",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/comparison.json"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/run.log",
+      "sha256": "028ed04672344456fdb2a17fcf6522052c7d9be9042444733e3f869774a30a05",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/run.log"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/composite_MLP-3K_0.pt",
+      "sha256": "11af1b0358e958c3f1f7d14ba436f664d01a084694a3ce108e29c4e27edb6fc6",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/composite_MLP-3K_0.pt"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/composite_MLP-3K_1.pt",
+      "sha256": "a66536e8d1d6c1786203d479424a9a0e563b4ca12a2913d3b9416df57bc14f69",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/composite_MLP-3K_1.pt"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/composite_MLP-3K_2.pt",
+      "sha256": "9f6c684943197e68f586bdf57ec93682e7e4bd42bb824ad84c5cc67b2d1ef559",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/composite_MLP-3K_2.pt"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/composite_Mamba-S6-3K_0.pt",
+      "sha256": "be7a1eef7e2523f2ff70b24eb7cc2720a9704cc2767e5a3ff5527b5a7c9a0231",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/composite_Mamba-S6-3K_0.pt"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/composite_Mamba-S6-3K_1.pt",
+      "sha256": "7ed33e8c15298affc9036db8b8d080079c1129d0e5018617756feb60d9330c98",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/composite_Mamba-S6-3K_1.pt"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/composite_Mamba-S6-3K_2.pt",
+      "sha256": "0ef849d6f4828e88a14676a96558766a5d1eb0e4445ff5ca83e09b00cac342fd",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/composite_Mamba-S6-3K_2.pt"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/composite_Mamba2-3K_0.pt",
+      "sha256": "9b110744e2e9ccae9b8d50bfd8daebc2f5db3eed1783d2e06afe493c0c897f9e",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/composite_Mamba2-3K_0.pt"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/composite_Mamba2-3K_1.pt",
+      "sha256": "802490d58ba06576e2c9cb3599529ad1cd9ed818bf5c3dd106401d7ff476a42c",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/composite_Mamba2-3K_1.pt"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/composite_Mamba2-3K_2.pt",
+      "sha256": "f0e8ac9ed4a44919c6c3565fc8992828c40946c93084005cfee4e970ff3893bf",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/composite_Mamba2-3K_2.pt"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/composite_Transformer-3K_0.pt",
+      "sha256": "ba67bb54f37e5f24beb992c864fcd846c5598ecb9fd85445481e2d2eeb1d9489",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/composite_Transformer-3K_0.pt"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/composite_Transformer-3K_1.pt",
+      "sha256": "af4a51f6502f0645f3491aee4ee6752009bf05eaf10ee70b3f2f11623b593ad1",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/composite_Transformer-3K_1.pt"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/composite_Transformer-3K_2.pt",
+      "sha256": "0cf862f3d2ff9ee5362e4e526d60519cf43098993780ed673227fa2bdedd7963",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/composite_Transformer-3K_2.pt"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/isi_MLP-3K_0.pt",
+      "sha256": "241c6db1418b7b31429358e3ae50e86b641ee38c47689478cafca6128d4de2c0",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/isi_MLP-3K_0.pt"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/isi_MLP-3K_1.pt",
+      "sha256": "b15b182ad897db9b829f710199bc9d0b7c043654f00bade0bac319265cb4d92d",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/isi_MLP-3K_1.pt"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/isi_MLP-3K_2.pt",
+      "sha256": "65d4b77cee3ba60cde01491ab1d6af619a845ff15fa0e5d385ef06872baa125b",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/isi_MLP-3K_2.pt"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/isi_Mamba-S6-3K_0.pt",
+      "sha256": "094c49ff4e9d4ec6b5d90e84d93ee9aab14585fe932cb8a6f85e3b6eb5e26aa7",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/isi_Mamba-S6-3K_0.pt"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/isi_Mamba-S6-3K_1.pt",
+      "sha256": "aa16f4a99ddbf24317ff9a231db29b5c0012034c7a1e3e81210b93eb98f1eac5",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/isi_Mamba-S6-3K_1.pt"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/isi_Mamba-S6-3K_2.pt",
+      "sha256": "8ef1f7d811f0edbb813564ed36eac02b3f0d6ebc6e740d5382ce4a35d72bff59",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/isi_Mamba-S6-3K_2.pt"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/isi_Mamba2-3K_0.pt",
+      "sha256": "5043551590d07356a9b0351fb31a53581f41bcf5699188e13765ee9b69aa7018",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/isi_Mamba2-3K_0.pt"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/isi_Mamba2-3K_1.pt",
+      "sha256": "11cb33ef5fe7635f819a4d03a941410590526813718887d53951c554158129ee",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/isi_Mamba2-3K_1.pt"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/isi_Mamba2-3K_2.pt",
+      "sha256": "df0f660f8e5403eeaafd89d88e1b020d9d64b4703d94ad0dc9b1256154a205ef",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/isi_Mamba2-3K_2.pt"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/isi_Transformer-3K_0.pt",
+      "sha256": "dc0bf97fb75a5796346af9ab8d87f9749f5f42df472d5260b304c53fd4729f14",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/isi_Transformer-3K_0.pt"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/isi_Transformer-3K_1.pt",
+      "sha256": "2984120461c443adc338ac77072d49a60b58a603c939e60ba064fb89aba1d54c",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/isi_Transformer-3K_1.pt"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/isi_Transformer-3K_2.pt",
+      "sha256": "e9ea34d92d8de91c0e06d72d3f191df76e14ed8a1f2bef818981d4a5cd1f5684",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/isi_Transformer-3K_2.pt"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/isi_complex_MLP-3K_0.pt",
+      "sha256": "ddab752ff9b7778e88149dc7827f21528f9fad8b024b7bc22e52fcc05679d69c",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/isi_complex_MLP-3K_0.pt"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/isi_complex_MLP-3K_1.pt",
+      "sha256": "679bf4ab460d6ae72204a8440d6d2ac4bc47660ab6a7c6d00185813d4fbf8449",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/isi_complex_MLP-3K_1.pt"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/isi_complex_MLP-3K_2.pt",
+      "sha256": "6f4056e308b1b35ea66dec0c049dfb6c03e4b5fadac970cede3c10023800294a",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/isi_complex_MLP-3K_2.pt"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/isi_complex_Mamba-S6-3K_0.pt",
+      "sha256": "9a36bc14abd3ba1d37aeb8f7dc5f5c368433314ebec322f03d72a72430189807",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/isi_complex_Mamba-S6-3K_0.pt"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/isi_complex_Mamba-S6-3K_1.pt",
+      "sha256": "de76773846aeae86898803d8200276e31573a6dc8c61a3dc77f6bd0d091b881f",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/isi_complex_Mamba-S6-3K_1.pt"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/isi_complex_Mamba-S6-3K_2.pt",
+      "sha256": "8df7b127a97c5dd1f4f7805c69ee991f38401c5ff0fd24a64de8bb24a03dbd73",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/isi_complex_Mamba-S6-3K_2.pt"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/isi_complex_Mamba2-3K_0.pt",
+      "sha256": "5e64ee068b62cbdd791773e029bfbbb737c3684f34fbe5a47d2bd0e80c207784",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/isi_complex_Mamba2-3K_0.pt"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/isi_complex_Mamba2-3K_1.pt",
+      "sha256": "3f212109b8a2b47d1a399fdc64373cb01d9c2c96726be380011214197c327468",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/isi_complex_Mamba2-3K_1.pt"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/isi_complex_Mamba2-3K_2.pt",
+      "sha256": "81a5c948cd2d6967901cbc525bb489b946ee047aad4e4fd0bbb8ad023a6ce049",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/isi_complex_Mamba2-3K_2.pt"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/isi_complex_Transformer-3K_0.pt",
+      "sha256": "113c30d1493364c76e9f9fafaddcf416d4e4563b863b4c25ad5cd93a7a072916",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/isi_complex_Transformer-3K_0.pt"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/isi_complex_Transformer-3K_1.pt",
+      "sha256": "56638202cb224a8cf44cc33cea2ce6075bb27caddb91467e3bb7318380d0f224",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/isi_complex_Transformer-3K_1.pt"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/isi_complex_Transformer-3K_2.pt",
+      "sha256": "71a25342c97b61ca913e1a1ff3d38ddc729bf47af359fcb7daef343689fdf7a1",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/reproduction_checkpoints/sequence/isi_complex_Transformer-3K_2.pt"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/results/reproduction_seq_memory.json",
+      "sha256": "7b4a9ce45fcc0bc61d39c8deb96aad8aebca5a75a8c5902139ec949c8eb3e401",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/outputs/results/reproduction_seq_memory.json"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/references/results/seq_models_on_memory.json",
+      "sha256": "ad07c32795f53e6993751e1f8514eb0760ea9168e8ed325582da0dc339e615f9",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/references/results/seq_models_on_memory.json"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/references/results/penalty_common_targets.json",
+      "sha256": "52547e01e768f88d6fea547551727a746f19c820f682f9ddee2a657d15c44e3d",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-sequence_memory/sequence_memory/references/results/penalty_common_targets.json"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-coded_matched/coded_matched/job.json",
+      "sha256": "a80269e8f5a46c51b5306fbdaec60998aec36aa9fc6ba6babff86392999e1bc7",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-coded_matched/coded_matched/job.json"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-coded_matched/coded_matched/comparison.json",
+      "sha256": "ca38accecd08cb9f231f328b821fb21ab858d1b63b1f6845e1440c0316925d40",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-coded_matched/coded_matched/comparison.json"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-coded_matched/coded_matched/run.log",
+      "sha256": "a9ef5c1b4782ed29584d32f0e6a05b3af9f468982aa9316eb1233cbad711655e",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-coded_matched/coded_matched/run.log"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-coded_matched/coded_matched/outputs/results/coded_matched_metrics.json",
+      "sha256": "2a28a4875735ce2b7e9de8843308f94fc27efd2a0a54036387b2661e9f081518",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-coded_matched/coded_matched/outputs/results/coded_matched_metrics.json"
+    },
+    {
+      "path": "results/reproduction/gha-39024026594-1-coded_matched/coded_matched/references/results/coded_matched_metrics.json",
+      "sha256": "b7c421a3f441fa19a05e1dc93e35a11e1aab601ee5d3110c2f2333597d89cc6e",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction/gha-39024026594-1-coded_matched/coded_matched/references/results/coded_matched_metrics.json"
+    }
+  ],
+  "same_host_control": {
+    "seed": 42,
+    "trial_ber_count": 110,
+    "different_trial_ber_values": 0,
+    "initial_weights_equal": true,
+    "final_weights_equal": true,
+    "scope": "Native MLP only; full original budget; same host/environment; new declared seed42."
+  },
+  "limits": "Historical canonical Torch states/checkpoints are absent. Seeded sequence/coded discrepancies remain unexplained; they cannot be attributed to missing canonical Torch seeding alone. Fixed-checkpoint paired tests do not measure training-population uncertainty. Minimum-size training grid, pilot studies, adaptive tails and matched Mamba were not rerun."
+}

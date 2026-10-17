@@ -1,0 +1,21 @@
+{
+  "status": "MATCH",
+  "difference_count": 0,
+  "differences": [],
+  "classical_control_differences": [],
+  "reference_files": [
+    "results/penalty_common_targets.json"
+  ],
+  "matching_reference": [
+    "results/penalty_common_targets.json"
+  ],
+  "ignored_paths": [
+    "/git_rev"
+  ],
+  "numeric_tolerance": {
+    "rtol": 1e-12,
+    "atol": 1e-14
+  },
+  "scope": "Table 6.7, Appendix 9.6 and minimum-size conclusions; saved-curve reanalysis",
+  "interpretation": "MATCH means the selected scientific fields agree within roundoff; not byte identity, statistical equivalence or independent validation of every thesis claim."
+}

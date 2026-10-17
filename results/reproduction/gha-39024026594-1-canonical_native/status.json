@@ -1,0 +1,27 @@
+{
+  "run_id": "gha-39024026594-1-canonical_native",
+  "source_commit": "c0394f0da5dac449594b89a9794fe251fad75e76",
+  "branch": "",
+  "pid": 2303,
+  "started_at": "2026-10-17T10:13:26.499215+00:00",
+  "status": "REVIEW_REQUIRED",
+  "jobs": [
+    {
+      "id": "canonical_native",
+      "kind": "new_training_replication",
+      "worker": "canonical",
+      "stage": "7.10",
+      "outputs": [
+        "results/modulation/qpsk_rayleigh.json"
+      ],
+      "seed": 20261017,
+      "scope": "Original native protocol, 100 epochs; new declared PyTorch seed, absent historical checkpoints/RNG",
+      "status": "RETRAINING_DIFFERENCE_REQUIRES_REVIEW",
+      "started_at": "2026-10-17T10:13:26.725142+00:00",
+      "finished_at": "2026-10-17T10:49:37.625853+00:00",
+      "elapsed_seconds": 2170.9
+    }
+  ],
+  "updated_at": "2026-10-17T10:49:37.697052+00:00",
+  "finished_at": "2026-10-17T10:49:37.697049+00:00"
+}

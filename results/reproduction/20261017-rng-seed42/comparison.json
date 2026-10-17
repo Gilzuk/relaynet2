@@ -1,0 +1,38 @@
+{
+  "legacy_default": {
+    "initial_weights_exact": false,
+    "training_data_exact": true,
+    "final_weights_exact": false,
+    "ber_trials_exact": false,
+    "differing_trial_ber_cells": 102,
+    "max_abs_mean_ber_difference": 0.0007000000000000062
+  },
+  "all_seeded": {
+    "initial_weights_exact": true,
+    "training_data_exact": true,
+    "final_weights_exact": true,
+    "ber_trials_exact": true,
+    "differing_trial_ber_cells": 0,
+    "max_abs_mean_ber_difference": 0.0
+  },
+  "versus_historical": {
+    "legacy_default_2": {
+      "ber_trials_exact": false,
+      "max_abs_mean_ber_difference": 0.0009299999999999864
+    },
+    "legacy_default_1": {
+      "ber_trials_exact": false,
+      "max_abs_mean_ber_difference": 0.0016299999999999926
+    },
+    "all_seeded_2": {
+      "ber_trials_exact": false,
+      "max_abs_mean_ber_difference": 0.0015000000000000013
+    },
+    "all_seeded_1": {
+      "ber_trials_exact": false,
+      "max_abs_mean_ber_difference": 0.0015000000000000013
+    }
+  },
+  "status": "SEEDED_REPLAY_EXACT_ON_THIS_HOST",
+  "limits": "Native MLP only, full original budget and construction order. Explicit seed 42 plus deterministic algorithms is a new controlled run, not a recovered historical RNG state. Same-host repetition is not a guarantee across hardware or library versions."
+}

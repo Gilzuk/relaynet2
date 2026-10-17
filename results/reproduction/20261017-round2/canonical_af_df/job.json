@@ -1,0 +1,53 @@
+{
+  "id": "canonical_af_df",
+  "kind": "deterministic_simulation",
+  "worker": "baselines",
+  "outputs": [
+    "results/reproduction_canonical_af_df.json"
+  ],
+  "references": [
+    "results/modulation/qpsk_rayleigh.json",
+    "results/normalized_3k/3k_rayleigh.json"
+  ],
+  "scope": "Fresh AF/DF evaluation: 11 SNRs, 10 trials \u00d7 10,000 bits, trial seeds 0\u20139",
+  "status": "FAILED",
+  "started_at": "2026-10-17T08:48:09.501524+00:00",
+  "reference_files": [
+    {
+      "path": "results/modulation/qpsk_rayleigh.json",
+      "sha256": "d2382010c95ae645d1687b4a3de4230ccfce54821487aa2437625448ce206b6f",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/634ec5c3572b0b6848bf5adb3f7cc61251c8c733/results/modulation/qpsk_rayleigh.json"
+    },
+    {
+      "path": "results/normalized_3k/3k_rayleigh.json",
+      "sha256": "1706260ae27a97b0d82adf2d763969cd6ea438d600861ac420fc720be8a311de",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/634ec5c3572b0b6848bf5adb3f7cc61251c8c733/results/normalized_3k/3k_rayleigh.json"
+    }
+  ],
+  "source_commit": "634ec5c3572b0b6848bf5adb3f7cc61251c8c733",
+  "timeout_seconds": 28800,
+  "command": [
+    "/workspace/scratch/781ec23bff5d/repro-venv/bin/python",
+    "-u",
+    "scripts/reproduction_worker.py",
+    "--job",
+    "canonical_af_df",
+    "--threads",
+    "2"
+  ],
+  "environment_overrides": {
+    "OMP_NUM_THREADS": "2",
+    "OPENBLAS_NUM_THREADS": "2",
+    "MKL_NUM_THREADS": "2",
+    "NUMEXPR_NUM_THREADS": "2",
+    "PYTHONHASHSEED": "0",
+    "MPLBACKEND": "Agg",
+    "CUDA_VISIBLE_DEVICES": ""
+  },
+  "pid": 23,
+  "elapsed_seconds": 10.0,
+  "returncode": 2,
+  "artifacts": [],
+  "finished_at": "2026-10-17T08:48:19.515502+00:00",
+  "log_sha256": "8eeb5ec1fb586c01a378e0dd1b12802c1dc23602ae316c2cf5295829e6492bea"
+}

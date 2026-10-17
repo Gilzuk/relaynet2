@@ -1,0 +1,25 @@
+{
+  "source_commit": "c0394f0da5dac449594b89a9794fe251fad75e76",
+  "jobs": [
+    {
+      "id": "coded_matched",
+      "kind": "seeded_retraining",
+      "worker": "script",
+      "script": "coded_matched_metrics.py",
+      "outputs": [
+        "results/coded_matched_metrics.json"
+      ],
+      "env": {
+        "CMM_TRIALS": "30",
+        "CMM_SNRS": "0,4,8,12,16,20"
+      },
+      "ignored": [
+        "/seconds"
+      ],
+      "scope": "Full matched coded comparison: 30 trials \u00d7 500 frames at six SNRs; hard/soft MLP, no Mamba"
+    }
+  ],
+  "training_difference_policy": "flag and investigate; never tune to match or infer equivalence",
+  "timeout_hours_per_job": 5.5,
+  "threads_per_worker": 2
+}

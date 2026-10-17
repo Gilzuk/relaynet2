@@ -6,6 +6,8 @@ checks a declared subset of the thesis against those results. Recomputing a
 saved comparison and retraining an original neural checkpoint are different
 tasks; exact canonical retraining is not possible from the retained record.
 
+For the four October validation jobs, use the [researcher protocol](docs/round2_reproduction_protocol.md): exact environment, one-script launch, per-study seeds/budgets, weight inventory and explicit missing records. `requirements-round2.txt` is the environment of those jobs; the legacy setup below uses a different dependency set.
+
 ```bash
 git clone https://github.com/Gilzuk/relaynet2
 cd relaynet2
@@ -27,7 +29,7 @@ Two distinct claims, checkable independently:
 
 1. **The thesis matches its data.** A declared subset of numerical table cells
    and prose numbers is compared against the file that produced it; it does not
-   cover every number or figure. This is `make verify`: **873 values,
+   cover every number or figure. This is `make verify`: **892 values,
    0 discrepancies** (2026-10-17), exit code 1 on any mismatch.
 2. **Experiments can be rerun under stated limits.** Seed formulas and budgets
    belong to each driver. `--seed 42` does not seed every PyTorch RNG in the
@@ -46,7 +48,7 @@ above it.
 | Tier | Command | Time | Needs | What it establishes |
 |---|---|---|---|---|
 | 0 | `make verify` | ~1 min | numpy, scipy | Declared numerical coverage matches saved data |
-| 0 | `make test` | < 1 min | + pytest | Implementation and analysis regression tests; optional Mamba-2 tests may skip |
+| 0 | `make test` | depends on environment | + pytest | Implementation and analysis regression tests; optional Mamba-2 tests may skip |
 | 1 | `make repro-unknown` | budget dependent; potentially hours | numpy, scipy | Runs six legacy BPSK drivers, then verifies; does not run later fixed-budget confirmations or every Chapter 6 study |
 | 1b | `make repro-qpsk` | ~20 min | numpy, scipy | Recomputes the QPSK unknown-channel study (ISI → AWGN and → Rayleigh) |
 | 2 | `make repro-full` | hours | **+ torch** | Runs the legacy driver, then verifies; revision studies below are separate |
@@ -193,7 +195,7 @@ calibrate_simulator.py        E1 calibration: simulator vs closed-form BER (Eb/N
 verify_thesis_tables.py       Checks the thesis against its data sources
 results/                      Committed experiment outputs (JSON + figures)
 e6_unknown_channel_results/   Committed unknown-channel outputs (.npy + figures)
-tests/                        351 tests (pytest)
+tests/                        Implementation and evidence checks (pytest)
 thesis/                       LaTeX sources, figures, fonts, CHANGELOG
   main.tex                      Compile with XeLaTeX; includes the chapters below
   chapters/ch0N_*.tex           One file per chapter. After ch05 the file numbers run
@@ -222,17 +224,16 @@ scripts/check_env.py          Environment doctor
 - **Hardware can affect numerical results.** Fixed data and weights remove
   training variation, but floating-point/backend differences can still change
   a decision close to a boundary. Bit identity must be checked, not assumed.
-- **Floating-point across platforms.** Different BLAS builds can perturb the
-  last displayed digit of an evaluation, and the verifier's rounding tolerance
-  absorbs this.
-- **Seeded training is exact only on one machine.** Retraining the
-  sequence-on-memory relays with the same seed gave identical weights in every
-  fresh process on one machine. On another machine with the same installed
-  software it gave a different relay: Mamba-S6 moved by 0.21 dB and the
-  Transformer by 0.89 dB, while the MLP was identical. Per-seed penalties and
-  three-seed spreads of trained sequence models therefore change from machine to
-  machine (Sec. 6.4.2). Rerun them on your machine and compare
-  best-of-three values, not individual seeds.
+- **Floating-point across platforms.** BLAS/backend differences can affect
+  optimization and decisions; the effect is not guaranteed to stay in the last
+  displayed digit. Preserve discrepancies rather than expanding a tolerance.
+- **Repeatability is an empirical check, not a seed guarantee.** Earlier
+  tested configurations repeated on one host but differed on another. The
+  later full-budget MLP seed-42 control repeated exactly on its host. The new
+  sequence study also differs for the MLP, despite repeated seed IDs. Preserve
+  every seed curve and compare common-target penalties, censored cases and
+  spread by execution environment; best-of-three agreement alone is insufficient.
+  These differences do not by themselves invalidate the original measurements.
 - **Canonical inference and missing records.** The VAE already decodes its
   latent mean deterministically; sampling is used in training, not evaluation.
   Exact retraining of the canonical learned relays is not possible: PyTorch
@@ -249,10 +250,11 @@ scripts/check_env.py          Environment doctor
 `make verify` exits 1 and prints each mismatch as
 `table | cell | published | source | difference`.
 
-- After re-running an experiment, a small difference within Monte-Carlo noise
-  is expected; the tolerance should absorb it. A large difference means the
-  thesis and the data genuinely disagree.
-- If a table changed, update the LaTeX to match the data source, never the
-  reverse.
-- `make check` first if something looks structurally wrong — a missing results
-  directory reports as a skip rather than a mismatch.
+- First distinguish a missing/corrupted historical input from a new training
+  realization. A new-run difference is not automatically a transcription error
+  or evidence that the original measurement was wrong.
+- Preserve both records and inspect run configuration, RNG policy, environment
+  and comparison fields. Change manuscript claims only with identified evidence;
+  never overwrite historical results or tune tolerances to force agreement.
+- Report missing inputs and skipped checks explicitly; an incomplete check does
+  not establish a pass for the omitted evidence.

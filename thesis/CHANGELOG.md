@@ -14,6 +14,18 @@ produced them; it does not cover every number or figure.
 
 ---
 
+## [Final skeptical and reproduction-detail audit] — 2026-10-17
+
+Correct the early local/transmitted relay notation, per-study CSI/channel scope, initialization exceptions and coded I/Q input order. Add the complete matched-coded training recipe and disclose missing trained coded weights. Qualify cGAN design rationales, nominal parameter matching, weighted-decoder causation and finite-grid capacity/optimality statements. The new model audit strictly loads all 48 retained canonical/sequence checkpoints, confirms their documented parameter/window counts and records S6's unused projection in nominal totals. Historical BER tables, source data and figures are unchanged. The independent-researcher guide distinguishes dependency sets, seeds/call order, budgets, source revisions, artifact availability and recovery limits. No training job was started or stopped. See `docs/final_skeptical_model_triage_2026-10-17.md` and `docs/round2_reproduction_protocol.md`. Numerical checks 892/0; 64 focused tests pass; PDF remains 120 numbered / 136 total pages.
+
+## [Training-realization interpretation] — 2026-10-17
+
+At the author's request, Section 7.1.4 now presents the October runs as additional training replications and seed-sensitivity evidence. Differences alone do not invalidate original measurements. Explicitly distinguish the new canonical bootstrap state, the repeated sequence IDs 0/1/2, the same-initial-seed coded replication and the native MLP seed-42 repeatability control. No historical values or archived comparison statuses are changed, and no new training job is launched. The assessment JSON now records and checks seed-group design. Advisor drafts use the same interpretation.
+
+## [Full-budget validation] — 2026-10-17
+
+All four hosted reruns completed and their evidence was archived at `dc7c02c00cbebdfb566362a810ab4b45cb6abbe0`. New Section 7.1.4 reports changed learned measurements, exact classical controls, fresh paired tests and the limited seed-42 repeatability control. Historical numeric tables/plots remain unchanged. Scope the canonical 0.004 bound, pointwise ordering and earlier repeatability claims to their historical runs. Link `results/round2_rerun_assessment.json` through the master ledger. Concise discussion preserves the 120-page limit (136 PDF pages). Numerical verifier 892/0; 64 focused tests passed. Updated advisor drafts remain unsent; PR #184 remains draft. See `docs/round2_rerun_manuscript_update_2026-10-17.md`.
+
 ## [Khina round 2] — 2026-10-17
 
 - **Skeptical re-audit and publication authorization.** Correct sequence input-skip/read-out and Transformer details, VAE decoding/topology, canonical randomness and archived-checkpoint wording, Table 6.7’s separate training protocol, padding/device/ledger inconsistencies and unsupported causal interpretations. Correct two censored-median exactness flags without changing numerical penalties. Cite snapshot `218a1c550cb8b917a95d9545c5211e109985bf38`. Current verification: 873/0, provenance clean, 348 tests passed / 4 optional skips, 120 countable / 136 total pages. The author authorized push and merge, followed by reproduction experiments on a new branch. See `docs/skeptical_reaudit_2026-10-17.md`. Earlier local-only notes below are historical.

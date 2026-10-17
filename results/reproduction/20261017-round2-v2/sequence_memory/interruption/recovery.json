@@ -1,0 +1,98 @@
+{
+  "detected_at": "2026-10-17T10:08:47.025763+00:00",
+  "last_heartbeat_at": "2026-10-17T09:07:25.101473+00:00",
+  "session_id": 87408,
+  "session_probe": "Unknown process id 87408",
+  "status": "INTERRUPTED_SESSION_LOST",
+  "cause": "Execution session unavailable; exact termination mechanism and time not known.",
+  "completed_seed_count": 16,
+  "source_commit": "43ce4a6fbfe2a147a8c77c0fb06e44fcd5d7d5e2",
+  "output_artifacts": [
+    {
+      "path": "outputs/reproduction_checkpoints/sequence/isi_MLP-3K_0.pt",
+      "sha256": "241c6db1418b7b31429358e3ae50e86b641ee38c47689478cafca6128d4de2c0",
+      "bytes": 20432
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/sequence/isi_MLP-3K_1.pt",
+      "sha256": "b15b182ad897db9b829f710199bc9d0b7c043654f00bade0bac319265cb4d92d",
+      "bytes": 20432
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/sequence/isi_MLP-3K_2.pt",
+      "sha256": "65d4b77cee3ba60cde01491ab1d6af619a845ff15fa0e5d385ef06872baa125b",
+      "bytes": 20432
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/sequence/isi_Mamba-S6-3K_0.pt",
+      "sha256": "624453910f14de7a970687be737e64dcf33c0366d66838d3ca7c910157963e28",
+      "bytes": 27470
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/sequence/isi_Mamba-S6-3K_1.pt",
+      "sha256": "1fff8770618aa121fa1f26b03acb7c61e038bd9e80ec7b59bf9ce0e409cf4d17",
+      "bytes": 27470
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/sequence/isi_Mamba-S6-3K_2.pt",
+      "sha256": "684fcea511c2062bb876aba0f6bf32c6b9b583f843ea6cf6e8243e3c08485f97",
+      "bytes": 27470
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/sequence/isi_Mamba2-3K_0.pt",
+      "sha256": "89807ce57051feb5259d406935d66a55d395947512a8eddb905d496ef9f4529a",
+      "bytes": 27738
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/sequence/isi_Mamba2-3K_1.pt",
+      "sha256": "e8f86123e4014ca0a36c96e5894982ee43ce48dfabbd31484806c64af2952d7b",
+      "bytes": 27738
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/sequence/isi_Mamba2-3K_2.pt",
+      "sha256": "6197e5689958c8272a0699ccdae5530bdf1f85525448e73f006b83407c9af991",
+      "bytes": 27738
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/sequence/isi_Transformer-3K_0.pt",
+      "sha256": "e58f891dc0896415cb6a0ea16dfad1fa6dd0305ca38934d6050ac4b94d7a66ae",
+      "bytes": 26937
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/sequence/isi_Transformer-3K_1.pt",
+      "sha256": "959e38c85792123fa9479cfdf85cf9896c19a1b888cc465cc78704cef17b8866",
+      "bytes": 26937
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/sequence/isi_Transformer-3K_2.pt",
+      "sha256": "3808617da4de3edcb0ef183a223cf94826d9c39abd377aefe8c0e6c357032fbd",
+      "bytes": 26937
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/sequence/isi_complex_MLP-3K_0.pt",
+      "sha256": "ddab752ff9b7778e88149dc7827f21528f9fad8b024b7bc22e52fcc05679d69c",
+      "bytes": 20584
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/sequence/isi_complex_MLP-3K_1.pt",
+      "sha256": "679bf4ab460d6ae72204a8440d6d2ac4bc47660ab6a7c6d00185813d4fbf8449",
+      "bytes": 20584
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/sequence/isi_complex_MLP-3K_2.pt",
+      "sha256": "6f4056e308b1b35ea66dec0c049dfb6c03e4b5fadac970cede3c10023800294a",
+      "bytes": 20584
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/sequence/isi_complex_Transformer-3K_0.pt",
+      "sha256": "348a051205ef5dc83052684cafa595cbc8b4620c771bdbcbe026accd304e8415",
+      "bytes": 27273
+    },
+    {
+      "path": "outputs/results/reproduction_seq_memory.json",
+      "sha256": "1fa59dc98e8573892b0b4a5368ee00cd479ae5d9112271933e86daf767d2e77c",
+      "bytes": 88021
+    }
+  ],
+  "recovery": "Preserve all completed outputs/checkpoints. Use new run IDs for unfinished work on persistent execution; no seed is dropped or old evidence overwritten."
+}

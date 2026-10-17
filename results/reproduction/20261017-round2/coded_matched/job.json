@@ -1,0 +1,54 @@
+{
+  "id": "coded_matched",
+  "kind": "seeded_retraining",
+  "worker": "script",
+  "script": "coded_matched_metrics.py",
+  "outputs": [
+    "results/coded_matched_metrics.json"
+  ],
+  "env": {
+    "CMM_TRIALS": "30",
+    "CMM_SNRS": "0,4,8,12,16,20"
+  },
+  "ignored": [
+    "/seconds"
+  ],
+  "scope": "Full matched coded comparison: 30 trials \u00d7 500 frames at six SNRs; hard/soft MLP, no Mamba",
+  "status": "FAILED",
+  "started_at": "2026-10-17T08:48:39.549553+00:00",
+  "reference_files": [
+    {
+      "path": "results/coded_matched_metrics.json",
+      "sha256": "b7c421a3f441fa19a05e1dc93e35a11e1aab601ee5d3110c2f2333597d89cc6e",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/634ec5c3572b0b6848bf5adb3f7cc61251c8c733/results/coded_matched_metrics.json"
+    }
+  ],
+  "source_commit": "634ec5c3572b0b6848bf5adb3f7cc61251c8c733",
+  "timeout_seconds": 28800,
+  "command": [
+    "/workspace/scratch/781ec23bff5d/repro-venv/bin/python",
+    "-u",
+    "scripts/reproduction_worker.py",
+    "--job",
+    "coded_matched",
+    "--threads",
+    "2"
+  ],
+  "environment_overrides": {
+    "OMP_NUM_THREADS": "2",
+    "OPENBLAS_NUM_THREADS": "2",
+    "MKL_NUM_THREADS": "2",
+    "NUMEXPR_NUM_THREADS": "2",
+    "PYTHONHASHSEED": "0",
+    "MPLBACKEND": "Agg",
+    "CUDA_VISIBLE_DEVICES": "",
+    "CMM_TRIALS": "30",
+    "CMM_SNRS": "0,4,8,12,16,20"
+  },
+  "pid": 38,
+  "elapsed_seconds": 10.0,
+  "returncode": 2,
+  "artifacts": [],
+  "finished_at": "2026-10-17T08:48:49.568527+00:00",
+  "log_sha256": "935d36af5b9a221a70f965f93bb86fc76352b4204c595028964c23b5cb7b1186"
+}

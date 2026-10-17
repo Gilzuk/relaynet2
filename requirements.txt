@@ -2,6 +2,8 @@ numpy>=1.22
 matplotlib>=3.5
 scipy>=1.8
 pytest>=7.0
-# PyTorch is optional — only required for the CGAN relay with WGAN-GP training.
+# PyTorch is optional for the NumPy-only studies and saved-data verification.
+# Faithful canonical learned-relay reproduction requires it (MLP/Hybrid Torch
+# path, VAE, cGAN and sequence models), as does the sequence-on-memory suite.
 # Install manually if needed:
 #   pip install torch --index-url https://download.pytorch.org/whl/cpu

@@ -1,0 +1,53 @@
+{
+  "id": "canonical_paired_analysis",
+  "kind": "analysis",
+  "worker": "script",
+  "script": "canonical_paired_tests.py",
+  "outputs": [
+    "results/canonical_paired_tests.json"
+  ],
+  "ignored": [],
+  "scope": "Tables 5.2\u20135.3 paired comparisons; saved-curve reanalysis",
+  "status": "MATCH",
+  "started_at": "2026-10-17T08:50:34.703846+00:00",
+  "reference_files": [
+    {
+      "path": "results/canonical_paired_tests.json",
+      "sha256": "4ecf1052441a52e4dbde70e962e73dd3c9566a725c5d3c4cfb108e86a27ae8ed",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/43ce4a6fbfe2a147a8c77c0fb06e44fcd5d7d5e2/results/canonical_paired_tests.json"
+    }
+  ],
+  "source_commit": "43ce4a6fbfe2a147a8c77c0fb06e44fcd5d7d5e2",
+  "timeout_seconds": 28800,
+  "command": [
+    "/workspace/scratch/781ec23bff5d/repro-venv/bin/python",
+    "-u",
+    "scripts/reproduction_worker.py",
+    "--job",
+    "canonical_paired_analysis",
+    "--threads",
+    "2"
+  ],
+  "environment_overrides": {
+    "OMP_NUM_THREADS": "2",
+    "OPENBLAS_NUM_THREADS": "2",
+    "MKL_NUM_THREADS": "2",
+    "NUMEXPR_NUM_THREADS": "2",
+    "PYTHONHASHSEED": "0",
+    "MPLBACKEND": "Agg",
+    "CUDA_VISIBLE_DEVICES": ""
+  },
+  "pid": 24,
+  "elapsed_seconds": 20.1,
+  "returncode": 0,
+  "artifacts": [
+    {
+      "path": "outputs/results/canonical_paired_tests.json",
+      "sha256": "4ecf1052441a52e4dbde70e962e73dd3c9566a725c5d3c4cfb108e86a27ae8ed",
+      "bytes": 35698
+    }
+  ],
+  "difference_count": 0,
+  "finished_at": "2026-10-17T08:50:54.784131+00:00",
+  "log_sha256": "cd96c793a74d02b0fab3144b6e5e183f3cc3292e0a929fcfa3c840204512e7bc"
+}
