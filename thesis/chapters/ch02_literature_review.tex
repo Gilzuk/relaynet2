@@ -164,7 +164,7 @@ The application of generative models to relay processing has, to the best of our
 Two sequence-modeling paradigms are evaluated as relay functions in this thesis, and what matters here is
 their inductive bias and their cost rather than their internal machinery, which is standard and is not
 reproduced. \textbf{Transformers} \cite{Vaswani2017Attention} use multi-head self-attention. In the bidirectional encoder configuration used here, every position
-attends to every other through learned query, key and value projections, giving a global receptive field over the buffered window; a causal (decoder) Transformer instead attends only to the past, and would not see the right-hand half of the symmetric window this thesis feeds its relays; the two Mamba relays evaluated here are causal in this sense (Remark~\ref{rem:window-causality}). The cost is
+attends to every other through learned query, key and value projections, giving a global receptive field over the buffered window; a causal (decoder) Transformer instead attends only to the past, and would not see the right-hand half of the symmetric window this thesis feeds its relays; the two simplified Mamba relays evaluated here (Section~\ref{sec:relay-strategies}) are causal in this sense (Remark~\ref{rem:window-causality}). The cost is
 $O(n^2)$ time and memory in the window length $n$. Because attention is permutation-equivariant, sinusoidal
 positional encodings supply the ordering the relay needs to distinguish symbols within its window. For the
 11-symbol window used throughout, the quadratic term is negligible; what the architecture costs is

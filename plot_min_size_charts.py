@@ -67,7 +67,7 @@ def chart_window_crossover(d):
     snrs = d["snr_db"]
     groups = [("Memoryless channels (1 tap)", 1),
               ("Channels with memory (3 taps)", 3)]
-    fig, axes = plt.subplots(1, 2, figsize=(11, 7), sharey=True)
+    fig, axes = plt.subplots(1, 2, figsize=(11, 6.2), sharey=True)
 
     for ax, (title, mem) in zip(axes, groups):
         chans = [(n, r) for n, r in d["channels"].items() if r["memory"] == mem]
@@ -121,7 +121,7 @@ def chart_window_crossover(d):
                  fontsize=16, y=0.99)
     axes[0].set_ylim(top=16.0)   # headroom for the lower-bound arrows (shared y)
     # explicit margins: tight_layout shrinks the axes into the outside legends
-    fig.subplots_adjust(left=0.08, right=0.98, top=0.84, bottom=0.42, wspace=0.10)
+    fig.subplots_adjust(left=0.08, right=0.98, top=0.83, bottom=0.40, wspace=0.10)
     fig.savefig("results/minsize_window_crossover.png", dpi=150,
                 bbox_inches="tight")
     plt.close(fig)

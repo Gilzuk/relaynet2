@@ -110,7 +110,7 @@ Unlike H1--H4, which assume the canonical memoryless channel throughout, H5 deli
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
 \item
-  \textbf{Implement nine relay strategies and compare eight of them} spanning four paradigms among those compared --- no learning (AF, DF), supervised learning (MLP, Hybrid), generative modeling (VAE), and sequence modeling (Transformer, Mamba-S6, Mamba-2 SSD); the ninth, a conditional GAN (cGAN), is implemented but excluded from the comparison on cost grounds.
+  \textbf{Implement nine relay strategies and compare eight of them} spanning four paradigms among those compared --- no learning (AF, DF), supervised learning (MLP, Hybrid), generative modeling (VAE), and sequence modeling (Transformer and simplified Mamba-S6 and Mamba-2 SSD implementations, Section~\ref{sec:relay-strategies}); the ninth, a conditional GAN (cGAN), is implemented but excluded from the comparison on cost grounds.
 \item
   \textbf{Evaluate on the canonical setup:} SISO Rayleigh fast fading with QPSK, with symbol-wise DF checked against the closed-form two-hop composition on that same channel as the analytical calibration.
 \item

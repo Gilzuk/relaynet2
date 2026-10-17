@@ -158,7 +158,7 @@ coded & QPSK & The coded link of Section~\ref{sec:coded-block-df} & Zero-forced 
 \end{longtable}}
 
 \begin{longtable}[]{@{}llllllll@{}}
-\caption[Smallest relay per degradation budget]{Smallest relay meeting a given degradation budget against the window-5, 169-parameter MLP retrained on each channel (the published MLP-756 for the coded row), written as parameters and window. Most memoryless rows settle at window~1, but flat gain and nonlinear bias require wider windows at the strictest budget; every three-tap row except the composite requires window~5 or~7 until a full decibel is conceded. A dash indicates that no smaller configuration meets that budget. Penalties follow the definition in Appendix~\ref{sec:appendix-g-channel-specs}}\label{tbl:table-minsize}\tabularnewline
+\caption[Smallest relay per degradation budget]{Smallest relay meeting a given degradation budget against the window-5, 169-parameter MLP retrained on each channel (the published MLP-756 for the coded row), written as parameters and window. Most memoryless rows settle at window~1, but flat gain and nonlinear bias require wider windows at the strictest budget; every three-tap row except the composite requires window~5 or~7 until a full decibel is conceded. A dash indicates that no smaller configuration meets that budget; one that misses a target the reference reaches meets none, which removes the coded row's earlier 372p and 244p entries. Penalties follow the definition in Appendix~\ref{sec:appendix-g-channel-specs}}\label{tbl:table-minsize}\tabularnewline
 \toprule\noalign{}
 Channel & Taps & $\le$0~dB & $\le$0.1~dB & $\le$0.25~dB & $\le$0.5~dB & $\le$1~dB & $\le$2~dB \\
 \midrule\noalign{}
@@ -178,27 +178,25 @@ ISI & 3 & 73p w7 & 73p w7 & 57p w5 & 57p w5 & 37p w7 & 21p w3 \\
 ISI (complex) & 3 & 73p w7 & 73p w7 & 73p w7 & 73p w7 & 57p w5 & 21p w3 \\
 ISI + Rayleigh & 3 & 145p w7 & 73p w7 & 73p w7 & 73p w7 & 37p w7 & 21p w3 \\
 composite & 3 & 145p w7 & 73p w7 & 57p w5 & 21p w3 & 21p w3 & 6p w3 \\
-coded & code & 372p w9 & 244p w5 & 244p w5 & 18p w1 & 18p w1 & 18p w1 \\
+coded & code & --- & --- & --- & 18p w1 & 18p w1 & 18p w1 \\
 \end{longtable}
 
 \subsection{Results Figures}\label{sec:results-figures-minsize}
 
 \begin{figure}[htbp]
 \centering
-\pandocbounded{\includegraphics[width=\linewidth,height=0.8\textheight,keepaspectratio]{results/minsize_window_crossover.png}}
-\caption[Window against channel memory]{SNR penalty against each channel's classical comparator as the relay window widens, for the best configuration at each width. The reader should observe that the two panels behave oppositely: on the memoryless channels the penalty is flat to within a fifth of a decibel across every window (see inset), so the window buys nothing, while on the three-tap channels it falls by 8 to 11~dB between window~1 and window~7. This is the sense in which the relay's window must be matched to the channel's impulse response}\label{fig:minsize-crossover}
-\end{figure}
+\pandocbounded{\includegraphics[width=\linewidth,height=0.42\textheight,keepaspectratio]{results/minsize_window_crossover.png}}
+\caption[Window against channel memory]{SNR penalty against each channel's classical comparator as the relay window widens, for the best configuration at each width. The reader should observe that the two panels behave oppositely: on the memoryless channels the penalty is flat to within a fifth of a decibel across every window (see inset), so the window buys nothing, while on the three-tap channels it falls by more than 8~dB between window~1 and window~7. Window-1 points there are lower bounds (open markers). This is the sense in which the relay's window must be matched to the channel's impulse response}\label{fig:minsize-crossover}
 
-\begin{figure}[htbp]
-\centering
-\pandocbounded{\includegraphics[width=\linewidth,height=0.8\textheight,keepaspectratio]{results/minsize_vs_degradation_budget.png}}
+\vspace{6pt}
+\pandocbounded{\includegraphics[width=\linewidth,height=0.36\textheight,keepaspectratio]{results/minsize_vs_degradation_budget.png}}
 \caption[Smallest relay per degradation budget]{Smallest relay meeting a given degradation budget against MLP-169, drawn as a step function because the horizontal axis is a budget the designer chooses rather than a measured quantity. Most memoryless cases reach four parameters once a small degradation is allowed, while strict zero-degradation budgets require larger models for flat gain and nonlinear bias; the three-tap channels need between 6 and 145 depending on the permitted degradation}\label{fig:minsize-budget}
 \end{figure}
 
 
 \begin{table}[htbp]
 \centering
-\caption[Across-initialization spread]{Spread in SNR penalty between the best and worst of three initializations at an identical configuration, summarized over all configurations swept on each channel. The reader should observe that on five of the nine channels the median spread is comparable to or larger than the entire effect of varying model size, so a single-initialization size comparison on those channels measures the draw rather than the architecture. Penalties follow the definition in Appendix~\ref{sec:appendix-g-channel-specs}}\label{tbl:seed-spread}
+\caption[Across-initialization spread]{Spread in SNR penalty between the best and worst of three initializations at an identical configuration, summarized over all configurations swept on each channel. The reader should observe that on five of the nine channels the median spread is comparable to or larger than the entire effect of varying model size, so a single-initialization size comparison on those channels measures the draw rather than the architecture. Configurations in which no seed reaches every target the comparator reaches have no defined spread and are not counted; three ISI (complex) spreads are lower bounds, and so are the statistics marked $\geq$ (the earlier rule gave that row a maximum of $3.182$~dB). Penalties follow the definition in Appendix~\ref{sec:appendix-g-channel-specs}}\label{tbl:seed-spread}
 \begin{tabular}{lrrrr}
 \toprule
 Channel & Configs & Median (dB) & 90th pct.\ (dB) & Max (dB) \\
@@ -207,20 +205,20 @@ rayleigh      & 17 & 0.008 & 0.019 & 0.028 \\
 composite     & 16 & 0.036 & 0.165 & 0.195 \\
 awgn          & 17 & 0.055 & 0.116 & 0.138 \\
 isi\_rayleigh & 16 & 0.177 & 0.588 & 0.795 \\
-isi           & 18 & 0.195 & 0.705 & 0.996 \\
-isi\_complex  & 17 & 0.332 & 2.325 & 3.182 \\
+isi           & 16 & 0.189 & 0.738 & 0.996 \\
 branch\_asym  & 17 & 0.388 & 0.892 & 1.013 \\
+isi\_complex  & 15 & 0.404 & ${\geq}1.110$ & ${\geq}1.555$ \\
 flat\_gain    & 17 & 0.622 & 1.000 & 1.250 \\
 nlbias        & 17 & 1.231 & 1.242 & 1.245 \\
 \midrule
-All           & 152 & 0.180 & 1.229 & 3.182 \\
+All           & 148 & 0.176 & ${\geq}1.226$ & ${\geq}1.555$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \begin{table}[htbp]
 \centering
-\caption[Across-initialization spread at the 3K budget]{Spread in SNR penalty against symbol-wise DF between the best and worst of three initializations, for the equal-budget architectures on the canonical channel. The reader should observe the Transformer row: its spread is five times the roughly $0.18$~dB that H4's $4.1\%$ high-SNR architecture spread corresponds to, so a single run of that architecture cannot resolve the effect H4 claims. Every other architecture is comfortably inside it. Three seeds on one machine; Section~\ref{sec:sequence-on-memory} finds that such spreads change between machines. Penalties follow the definition in Appendix~\ref{sec:appendix-g-channel-specs}}\label{tbl:seed-spread-3k}
+\caption[Across-initialization spread at the 3K budget]{Spread in SNR penalty against symbol-wise DF between the best and worst of three initializations, for the equal-budget architectures on the canonical channel. The reader should observe the Transformer row: its spread is at least five times the roughly $0.18$~dB that H4's $4.1\%$ high-SNR architecture spread corresponds to, so a single run of that architecture cannot resolve the effect H4 claims. Every other architecture is comfortably inside it. Three seeds on one machine; Section~\ref{sec:sequence-on-memory} finds that such spreads change between machines. Values marked $\geq$ are initializations that do not reach $10^{-2}$ by 20~dB, where DF does; they and the spreads they enter are lower bounds. Penalties follow the definition in Appendix~\ref{sec:appendix-g-channel-specs}}\label{tbl:seed-spread-3k}
 \begin{tabular}{lrrr}
 \toprule
 Architecture & Params & Per-seed penalty vs DF (dB) & Spread (dB) \\
@@ -228,8 +226,8 @@ Architecture & Params & Per-seed penalty vs DF (dB) & Spread (dB) \\
 Mamba2-3K       & 3{,}004 & $+1.113$, $+1.094$, $+1.098$ & 0.019 \\
 Mamba-S6-3K     & 3{,}027 & $+1.123$, $+1.110$, $+1.082$ & 0.041 \\
 MLP-3K          & 3{,}004 & $+0.133$, $+0.162$, $+0.189$ & 0.055 \\
-VAE-3K          & 3{,}037 & $+0.072$, $+0.228$, $+0.142$ & 0.156 \\
-Transformer-3K  & 3{,}007 & $+2.039$, $+1.147$, $+1.133$ & \textbf{0.906} \\
+VAE-3K          & 3{,}037 & $+0.072$, ${\geq}{+0.228}$, $+0.142$ & ${\geq}0.156$ \\
+Transformer-3K  & 3{,}007 & ${\geq}{+2.039}$, $+1.147$, ${\geq}{+1.133}$ & $\mathbf{{\geq}0.892}$ \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -245,7 +243,7 @@ Eight Transformer initializations are shown in the following figures: seven clus
 \begin{figure}[htbp]
 \centering
 \pandocbounded{\includegraphics[width=0.78\linewidth,height=0.34\textheight,keepaspectratio]{results/transformer_loss_vs_penalty.png}}
-\caption[Training loss against SNR penalty]{Final training loss against SNR penalty for the eight Transformer initializations and the four-seed Mamba-S6 control. The correlation over all eight seeds is $r=+0.998$, but that figure is the outlier's leverage: among the seven runs that converge it is $r=-0.38$ ($p=0.41$), so loss identifies the failure and carries no information about relative quality once training has succeeded}\label{fig:transformer-loss-penalty}
+\caption[Training loss against SNR penalty]{Final training loss against SNR penalty for the eight Transformer initializations and the four-seed Mamba-S6 control. The correlation over all eight seeds is $r=+0.998$, but that figure is the outlier's leverage: among the seven runs that converge it is $r=-0.38$ ($p=0.41$), so loss identifies the failure and carries no information about relative quality once training has succeeded. Three runs, the failing one included, miss $10^{-2}$ by 20~dB, so their values are lower bounds}\label{fig:transformer-loss-penalty}
 \end{figure}
 
 
@@ -276,7 +274,7 @@ A three-tap least-squares fit can be identifiable from five pilots if its design
 
 For bit-MAP decisions under the same model and side information, giving the detector a full sequence cannot increase its minimum expected bit error relative to a window. This observation-ordering argument is not a bound on a particular Viterbi-versus-MLP BER gap, because Viterbi optimizes sequence error. No windowed bit-MAP ablation separates truncation, approximation, finite training, and optimization effects here. The BPSK required-SNR penalties range from $0.26$ to $2.53$~dB at the stated targets. They cannot be attributed solely to the 170-parameter budget.
 
-\paragraph{Supplementary numerical checks.} The across-seed spread in SNR penalty against DF in the separate native-architecture replication is $0.004$~dB for Mamba-S6, $0.007$ for the Hybrid, $0.013$ for Mamba-2, $0.043$ for the MLP, $0.075$ for the Transformer and $0.091$ for the VAE. These finite three-seed ranges are not confidence bounds on failure probabilities.
+\paragraph{Supplementary numerical checks.} The across-seed spread in SNR penalty against DF in the separate native-architecture replication is $0.004$~dB for Mamba-S6, $0.007$ for the Hybrid, $0.013$ for Mamba-2, $0.043$ for the MLP, and at least $0.075$ for the Transformer and $0.091$ for the VAE (one initialization of each misses $10^{-2}$). These finite three-seed ranges are not confidence bounds on failure probabilities.
 
 For the QPSK linear-MMSE detail run, the attained MSE at 16~dB is $0.0666,\allowbreak\ 0.0374,\allowbreak\ 0.0354,\allowbreak\ 0.0333$ for $N=3,5,7,11$. The required-SNR penalties at targets $10^{-1}$ and $10^{-2}$ are respectively $+3.24, +2.98, +2.79, +2.65$ and $+6.34, +4.27, +4.13, +4.02$~dB. These measurements do not imply monotonic BER at every target.
 
@@ -319,12 +317,12 @@ Coded memory ({\footnotesize\texttt{joint\_\allowbreak{}latency\_\allowbreak{}me
 
 \paragraph{Training.} Each learned relay is trained once, at SNR $5$, $10$ and $15$~dB in equal proportions, on data drawn from the Hop-1 model of its own study, with fixed sample counts and epochs (for example $1.2\times10^{5}$ windows and $25$ epochs for the fixed ISI, and $1.6\times10^{5}$ windows and $30$ epochs for the composite studies). The network used for evaluation is the one left after the final epoch; no validation-based checkpoint selection or early stopping is applied. The sequence-model wrappers of the canonical comparison differ: they restore the epoch with the lowest training loss (Section~\ref{sec:training-protocol}).
 
-\paragraph{Single-number SNR penalties.} All required-SNR penalties use one definition, implemented in \texttt{ber\_metrics.py}. For a BER target $t$, the SNR at which a curve reaches $t$ is found by linear interpolation of $\ln \mathrm{BER}$ against SNR in dB between the two measured points that bracket $t$, taking the last such crossing. A zero-error point cannot be interpolated in log scale: if the preceding point lies above $t$, the crossing is placed at the zero-error point's SNR, which can only overstate the SNR the curve needs. The penalty at $t$ is the relay's SNR minus the reference's, positive when the relay needs more. A target that either curve does not bracket is dropped rather than extrapolated. Tables~\ref{tbl:mmse-baseline}, \ref{tbl:seq-on-memory}, \ref{tbl:table-minsize}, \ref{tbl:seed-spread} and~\ref{tbl:seed-spread-3k} report one number per configuration: the largest penalty over the reachable targets among $10^{-1}$, $10^{-2}$ and $10^{-3}$, or a dash when none is reachable. Their aggregation over training seeds differs, as follows.
+\paragraph{Single-number SNR penalties.} All required-SNR penalties use one definition, implemented in \texttt{ber\_metrics.py}. For a BER target $t$, the SNR at which a curve reaches $t$ is found by linear interpolation of $\ln \mathrm{BER}$ against SNR in dB between the two measured points that bracket $t$, taking the last such crossing. A zero-error point cannot be interpolated in log scale: if the preceding point lies above $t$, the crossing is placed at the zero-error point's SNR, which can only overstate the SNR the curve needs. The penalty at $t$ is the relay's SNR minus the reference's, positive when the relay needs more. The targets are fixed by the reference curve: of $10^{-1}$, $10^{-2}$ and $10^{-3}$, those the reference reaches within the tested SNR range form a common set for every curve compared against it. A curve that misses a target in that set needs more than the highest tested SNR there, so its penalty at that target is only bounded below, by that SNR minus the reference's, and is marked as a lower bound rather than dropped. Tables~\ref{tbl:mmse-baseline}, \ref{tbl:seq-on-memory}, \ref{tbl:table-minsize}, \ref{tbl:seed-spread} and~\ref{tbl:seed-spread-3k} report one number per configuration: the largest penalty over the common set, itself a lower bound when a target is missed. Their aggregation over training seeds differs, as follows.
 \begin{itemize}
 \tightlist
-\item Table~\ref{tbl:mmse-baseline}: the equalizer has no training seed; the learned-relay column is the best of three seeds of the best size-sweep configuration.
+\item Table~\ref{tbl:mmse-baseline}: the learned-relay column is the best of three seeds of the best size-sweep configuration.
 \item Table~\ref{tbl:seq-on-memory}: the best of three seeds, with the spread in brackets.
-\item Table~\ref{tbl:table-minsize}: the candidate's worst-of-seeds BER at each SNR, against the reference relay's mean-of-seeds curve.
-\item Tables~\ref{tbl:seed-spread} and~\ref{tbl:seed-spread-3k}: the largest minus the smallest per-seed penalty.
+\item Table~\ref{tbl:table-minsize}: the candidate's worst-of-seeds BER at each SNR, against the reference relay's mean-of-seeds curve; a candidate with only a lower bound meets no budget.
+\item Tables~\ref{tbl:seed-spread} and~\ref{tbl:seed-spread-3k}: the largest minus the smallest per-seed penalty, a lower bound when a seed is bounded.
 \end{itemize}
-Because the penalty can grow with the target, a single number depends on which targets are reachable. The fixed-ISI comparison with genie MLSE is therefore reported per target ($10^{-1}$ to $10^{-4}$), computed from \texttt{results/e6\_matched\_protocol.json} by \texttt{e6\_isi\_penalty.py}.
+\texttt{penalty\_\allowbreak{}common\_\allowbreak{}targets.py} recomputes them from the stored per-seed curves and reproduces the earlier values, which kept only the targets both curves reach. The fixed-ISI comparison with genie MLSE is reported per target ($10^{-1}$ to $10^{-4}$), computed from \texttt{results/e6\_matched\_protocol.json} by \texttt{e6\_isi\_penalty.py}.

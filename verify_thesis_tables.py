@@ -269,6 +269,7 @@ MIN_CELLS = {
     "prose:seq-rerun": 19,
     # red-team fixes (2026-10-14): corrected blind intervals, fixed-gain AF, Fig. 6.7(b), Table 6.6 median.
     "prose:timing-mmse-median": 6,
+    "prose:khina-round2": 60,
 }
 
 # Checks allowed to skip, with the reason. A skip means the check could not run
@@ -772,8 +773,12 @@ def check_joint_latency(tex, rep):
     }
     macs = {"AF": 2, "DF-hard (symbol-wise)": 0,
             "MLP w=5": 2*5*8 + 4*8, "MLP w=11": 2*11*8 + 4*8, "MLP w=21": 2*21*8 + 4*8,
-            "MLSE D=2": 2*4**3, "MLSE D=3": 2*4**3, "MLSE D=15": 2*4**3,
-            "block DF": 16, "block DF + MLSE": 16 + 2*4**3}
+            "MLSE D=2": 2**4, "MLSE D=3": 2**4, "MLSE D=15": 2**4,
+            "block DF": 16, "block DF + MLSE": 16 + 2**4}
+    # MLSE rows give the exactly factorized count 2^(L+1) first and the
+    # implemented joint trellis 2*M^L in brackets (Khina round 2).
+    joint = {"MLSE D=2": 2*4**3, "MLSE D=3": 2*4**3, "MLSE D=15": 2*4**3,
+             "block DF + MLSE": 16 + 2*4**3}
 
     for row in data_rows(body):
         if not row:
@@ -784,6 +789,12 @@ def check_joint_latency(tex, rep):
         src = rows[key]
         rep.cell(T, f"{key}/delay", row[1][0], row[1][1], src["latency_symbols"])
         rep.cell(T, f"{key}/macs", row[2][0], row[2][1], macs[key])
+        if key in joint:
+            m = re.search(r"\((\d+)\)", row[2][0])
+            if m:
+                rep.cell(T, f"{key}/macs joint", m.group(1), float(m.group(1)), joint[key])
+            else:
+                rep.cell(T, f"{key}/macs joint", "missing", float("nan"), joint[key])
         rep.cell(T, f"{key}/ber12", row[3][0], row[3][1], src["ber"][snr_i])
     rep.finish_table(T, before)
 
@@ -816,8 +827,8 @@ def check_joint_memory(tex, rep):
         if not row or row[0][1] is None:
             continue
         L = int(row[0][1])
-        rep.cell(T, f"L={L}/states", row[1][0], row[1][1], 4 ** (L - 1))
-        rep.cell(T, f"L={L}/mlse_macs", row[2][0], row[2][1], 2 * 4 ** L)
+        rep.cell(T, f"L={L}/mlse_macs_factorized", row[1][0], row[1][1], 2 ** (L + 1))
+        rep.cell(T, f"L={L}/mlse_macs_joint", row[2][0], row[2][1], 2 * 4 ** L)
         rep.cell(T, f"L={L}/relay_macs", row[3][0], row[3][1], 2 * 11 * 8 + 4 * 8)
         if len(row) > 4 and row[4][1] is not None and L in mlse:
             rep.cell(T, f"L={L}/mlse_ber", row[4][0], row[4][1], mlse[L])
@@ -2036,14 +2047,23 @@ def check_seed_spread_native_prose(tex, rep):
     sent = tex[i:i + 460]
     names = {"Mamba-S6": "Mamba S6", "the Hybrid": "Hybrid", "Mamba-2": "Mamba2 (SSD)",
              "the MLP": "MLP (169p)", "the Transformer": "Transformer", "the VAE": "VAE"}
-    found = re.findall(r"\$(\d+\.\d+)\$(?:~dB)? for ([A-Za-z0-9 -]+?)(?=,|\s+and|\.)", sent)
+    found = re.findall(r"\$(\d+\.\d+)\$(?:~dB)? for ([A-Za-z0-9 -]+?)(?=,|\s+and|\.|\s*\()", sent)
     if len(found) != 6:
         return rep.skip(T, f"expected 6 spreads in the sentence, found {len(found)}")
+    # Comparable targets (Khina round 2): a seed that misses a target DF reaches
+    # makes the spread a lower bound, which the sentence must say ("at least").
+    from ber_metrics import penalty_common, spread_of_seeds
+    d = json.load(open(src_path))
+    bounded = sent[sent.find("at least"):] if "at least" in sent else ""
     for val, label in found:
         key = names.get(label.strip())
         if key is None:
             return rep.skip(T, f"unrecognised architecture label {label!r}")
-        rep.cell(T, f"spread/{key}", val, float(val), src[key]["spread_db"])
+        spr, flag = spread_of_seeds([penalty_common(d["snr_db"], r["ber"], d["df_ber"])
+                                     for r in src[key]["runs"]])
+        rep.cell(T, f"spread/{key}", val, float(val), spr)
+        rep.cell(T, f"spread/{key} marked as a bound", "1" if label.strip() in bounded else "0",
+                 float(label.strip() in bounded), float(flag == ">"))
     rep.finish_table(T, before)
 
 
@@ -2271,6 +2291,19 @@ def check_seq_on_memory(tex, rep):
     with open(src_path) as fh:
         seq = json.load(fh)
     channels = seq.get("channels", {})
+    from ber_metrics import penalty_common, best_of_seeds, spread_of_seeds
+    snr = seq["snr_db"]
+
+    def comparable(ch, aname):
+        """Best and spread over seeds on the targets MLSE reaches (Khina round 2)."""
+        c = channels[ch]
+        res = [penalty_common(snr, r["ber"], c["baseline_ber"]) for r in c["archs"][aname]["runs"]]
+        return best_of_seeds(res), spread_of_seeds(res)
+    raw_rows = {}
+    for line in body.split("\\\\"):
+        cells = [x.strip() for x in line.split("&")]
+        if len(cells) == 5:
+            raw_rows[cells[0].lower()] = cells
     ch_map = [("bpsk", "isi"), ("qpsk", "isi_complex"), ("composite", "composite")]
     arch_cols = [(1, "MLP-3K"), (2, "Transformer-3K"), (3, "Mamba-S6-3K"), (4, "Mamba2-3K")]
     for row in data_rows(body):
@@ -2291,10 +2324,18 @@ def check_seq_on_memory(tex, rep):
             pub_text, pub_val = row[col]
             if pub_val is None:
                 continue
-            arch_data = ch_data.get("archs", {}).get(aname, {})
-            src = arch_data.get("best_db")
-            if src is not None and not math.isnan(src):
-                rep.cell(T, f"{src_key}/{aname}", pub_text, pub_val, src)
+            if aname not in ch_data.get("archs", {}):
+                continue
+            (best, bflag), (spr, sflag) = comparable(src_key, aname)
+            rep.cell(T, f"{src_key}/{aname}", pub_text, pub_val, best)
+            raw = next((v for k, v in raw_rows.items() if label in k or k in label), None)
+            if raw is not None:
+                m = re.search(r"\((\$\{>\}|>)?\s*([\d.]+)", raw[col])
+                if m:
+                    shown = (">" if m.group(1) else "") + m.group(2)
+                    rep.cell(T, f"{src_key}/{aname} spread", m.group(2), float(m.group(2)), spr)
+                    rep.cell(T, f"{src_key}/{aname} spread bound marked", "1" if shown[:1] == ">" else "0",
+                             float(shown[:1] == ">"), float(sflag == ">"))
     rep.finish_table(T, before)
 
 
@@ -2379,40 +2420,47 @@ def check_seq_rerun_prose(tex, rep):
         pt = penalty_table(snr, run["ber"], rec["baseline_ber"])["per_target"]
         return {t: v["db_penalty"] for t, v in pt.items() if v["snr_base"] == v["snr_base"]}
 
-    # Table 6.7 dagger note: the two Mamba-2 QPSK seeds that do reach 1e-3.
-    m = re.search(r"the other two, which reach it, give \$\+([\d.]+)\$ and \$\+([\d.]+)\$", tex)
+    # Table 6.7 dagger note (comparable targets, Khina round 2): the Mamba-2 QPSK
+    # seed that misses 1e-3 is a lower bound, and the earlier rule scored it lower.
+    from ber_metrics import penalty_common
     q = pub["channels"]["isi_complex"]
+    m = re.search(r"penalty is only bounded below \(\$>\+([\d.]+)\$\).*?scored it at \$\+([\d.]+)\$", tex, re.S)
     if m:
-        full = [per_target(q, r)[1e-3] for r in q["archs"]["Mamba2-3K"]["runs"]
-                if per_target(q, r)[1e-3] == per_target(q, r)[1e-3]]
-        for g, v in zip(m.groups(), sorted(full)):
-            rep.cell(T, "Mamba-2 QPSK penalty at 1e-3", g, float(g), v)
-    # Margin at QPSK when seeds that miss a target MLSE reaches are set aside.
-    m = re.search(r"\(\$([\d.]+)\$~dB at QPSK without the marked initialization\)", tex)
+        res = [penalty_common(snr, r["ber"], q["baseline_ber"]) for r in q["archs"]["Mamba2-3K"]["runs"]]
+        lb = [r["worst_db"] for r in res if r["lower_bound"]]
+        rep.cell(T, "Mamba-2 QPSK missing seed, lower bound", m.group(1), float(m.group(1)), lb[0] if lb else float("nan"))
+        rep.cell(T, "Mamba-2 QPSK missing seed, earlier rule", m.group(2), float(m.group(2)),
+                 min(r["db"] for r in q["archs"]["Mamba2-3K"]["runs"]))
+    # MLP lead over the best sequence architecture on the two ISI channels.
+    m = re.search(r"by \$([\d.]+)\$ and \$([\d.]+)\$~dB on the two ISI cases", tex)
     if m:
-        def best_full(a):
-            ok = [r["db"] for r in q["archs"][a]["runs"]
-                  if all(v == v for v in per_target(q, r).values())]
-            return min(ok) if ok else float("inf")
-        runner = min(best_full(a) for a in ("Transformer-3K", "Mamba-S6-3K", "Mamba2-3K"))
-        rep.cell(T, "QPSK margin, full-target seeds", m.group(1), float(m.group(1)),
-                 runner - q["archs"]["MLP-3K"]["best_db"])
+        from ber_metrics import best_of_seeds
+        for g, ch in zip(m.groups(), ("isi", "isi_complex")):
+            c = pub["channels"][ch]
+            b = {a: best_of_seeds([penalty_common(snr, r["ber"], c["baseline_ber"]) for r in c["archs"][a]["runs"]])[0]
+                 for a in c["archs"]}
+            rep.cell(T, f"MLP lead, {ch}", g, float(g),
+                     min(b[a] for a in ("Transformer-3K", "Mamba-S6-3K", "Mamba2-3K")) - b["MLP-3K"])
     # Reproducibility paragraph.
     rerun = {"MLP-3K": (ctl, "MLP-3K"), "Transformer-3K": (ctl, "Transformer-3K"),
              "Mamba-S6-3K": (ro, "Mamba-S6-3K|center"), "Mamba2-3K": (ro, "Mamba2-3K|center")}
-    m = re.search(r"reproduced ten of the twelve best values within \$([\d.]+)\$~dB "
-                  r"\(not the Transformer's or Mamba-2's at QPSK\)", tex)
+    m = re.search(r"reproduced eleven of the twelve best values within \$([\d.]+)\$~dB "
+                  r"\(not the Transformer's at QPSK\)", tex)
     if m:
+        from ber_metrics import best_of_seeds
         lim = float(m.group(1))
-        diffs = {(c, a): abs(pub["channels"][c]["archs"][a]["best_db"]
-                             - src["channels"][c]["archs"][key]["best_db"])
+        def cbest(d, c, a):
+            rec = d["channels"][c]
+            return best_of_seeds([penalty_common(snr, r["ber"], rec["baseline_ber"])
+                                  for r in rec["archs"][a]["runs"]])[0]
+        diffs = {(c, a): abs(cbest(pub, c, a) - cbest(src, c, key))
                  for c in ("isi", "isi_complex", "composite")
                  for a, (src, key) in rerun.items()}
-        named = {("isi_complex", "Transformer-3K"), ("isi_complex", "Mamba2-3K")}
-        rep.cell(T, "largest best-value difference, other ten cells", m.group(1), lim,
+        named = {("isi_complex", "Transformer-3K")}
+        rep.cell(T, "largest best-value difference, other eleven cells", m.group(1), lim,
                  max(v for k, v in diffs.items() if k not in named))
         within = sum(1 for k, v in diffs.items() if v <= lim + tol_for(m.group(1)))
-        rep.cell(T, "best values within the margin (count)", "10", 10, within)
+        rep.cell(T, "best values within the margin (count)", "11", 11, within)
     m = re.search(r"Mamba-S6 spread \$([\d.]+)\$ and \$([\d.]+)\$~dB instead of \$([\d.]+)\$ "
                   r"and \$([\d.]+)\$, and the Transformer \$([\d.]+)\$ and \$([\d.]+)\$ instead "
                   r"of \$([\d.]+)\$ and \$([\d.]+)\$", tex)
@@ -2503,6 +2551,133 @@ def check_timing_and_mmse_median_prose(tex, rep):
     rep.finish_table(T, before)
 
 
+def check_khina_round2(tex, rep):
+    """Numbers introduced in answer to Khina's second round.
+
+    * Table 4.4 (tbl:canonical-runs) and the Sec. 4.3.3 run identification,
+      against results/canonical_run_provenance.json;
+    * the comparable-target penalties of Tables 9.4 (coded row), 9.5 and 9.6
+      and of the Sec. 7.2.1, 4.3.4 and appendix prose, recomputed here from the
+      stored per-seed curves with ber_metrics.penalty_common rather than read
+      from penalty_common_targets.json, so the check is independent of that
+      script.
+    """
+    from ber_metrics import penalty_common, spread_of_seeds
+    T = "prose:khina-round2"; before = rep.checked
+    R = os.path.join(ROOT, "results")
+    prov = json.load(open(os.path.join(R, "canonical_run_provenance.json")))
+    # Table 4.4: parameters, windows and gradient windows per row.
+    body = tabular_body(tex, "tbl:canonical-runs")
+    rows = {"MLP": ("table_5_2", ["MLP (169p)"]), "Hybrid (MLP part)": ("table_5_2", ["Hybrid"]),
+            "VAE": ("table_5_2", ["VAE"]), "Transformer": ("table_5_2", ["Transformer"]),
+            "Mamba-S6 / Mamba-2": ("table_5_2", ["Mamba S6", "Mamba2 (SSD)"]),
+            "MLP-3K, Hybrid-3K": ("table_5_3", ["MLP-3K", "Hybrid-3K"]),
+            "VAE-3K": ("table_5_3", ["VAE-3K"]),
+            "Sequence models, 3K": ("table_5_3", ["Transformer-3K", "Mamba-3K", "Mamba2-3K"])}
+    if body is not None:
+        for line in body.split("\\\\"):
+            c = [x.strip() for x in line.split("&")]
+            if len(c) != 7 or c[0] not in rows:
+                continue
+            tab, names = rows[c[0]]
+            recs = [prov["relays"][tab][n] for n in names]
+            params = [int(x) for x in re.findall(r"\d+", c[1].replace("{,}", ""))]
+            want = sorted({r["params"] for r in recs})
+            rep.cell(T, f"{c[0]}/params", c[1], float(params[0]), float(want[0]))
+            if len(params) > 1:
+                rep.cell(T, f"{c[0]}/params (2)", c[1], float(params[-1]), float(want[-1]))
+            rep.cell(T, f"{c[0]}/window", c[2], float(c[2]), float(recs[0]["window"]))
+            snrs = [int(x) for x in re.findall(r"\d+", c[3])]
+            rep.cell(T, f"{c[0]}/training SNRs", c[3], float(snrs == recs[0]["training_snrs_db"]), 1.0)
+            w = [int(x) for x in re.findall(r"\d+", c[4].replace("{,}", ""))]
+            rep.cell(T, f"{c[0]}/windows", c[4], float(w[0]), float(recs[0]["windows"]))
+            if len(w) > 1:
+                rep.cell(T, f"{c[0]}/gradient windows", c[4], float(w[1]), float(recs[0]["gradient_windows"]))
+    # Run identification in Sec. 4.3.3.
+    for key, run in prov["runs"].items():
+        for field in ("code_commit", "data_commit"):
+            rep.cell(T, f"{key}/{field}", run[field], float(run[field] in tex), 1.0)
+        rep.cell(T, f"{key}/AF and DF reproduce", "1", 1.0,
+                 float(all(run["af_df_reproduce_bit_for_bit"].values())))
+    m = re.search(r"in \$2\{,\}892\$~s for training", tex)
+    rep.cell(T, "Table 5.2 stage seconds", "2892", float(bool(m)) * 2892, float(prov["runs"]["table_5_2"]["stage_seconds"]))
+    m = re.search(r"\$746\.6\$~s", tex)
+    rep.cell(T, "Table 5.3 stage seconds", "746.6", float(bool(m)) * 746.6, float(prov["runs"]["table_5_3"]["stage_seconds"]))
+    # Size-sweep seed spreads (Table 9.5 pooled row; Sec. 4.3.4 and 7.2.1 prose).
+    ms = json.load(open(os.path.join(R, "mlp_min_size_all_channels.json")))
+    sp, flags = [], []
+    for c in ms["channels"].values():
+        base = c.get("baseline_ber", c["df_ber"])
+        for cfg in c["sweep"]:
+            v, f = spread_of_seeds([penalty_common(ms["snr_db"], r["ber"], base) for r in cfg["seed_runs"]])
+            if v == v:
+                sp.append(v); flags.append(f)
+    m = re.search(r"All\s*& (\d+) & ([\d.]+) & \$\{\\geq\}([\d.]+)\$ & \$\{\\geq\}([\d.]+)\$", tex)
+    if m:
+        rep.cell(T, "Table 9.5 pooled configurations", m.group(1), float(m.group(1)), float(len(sp)))
+        rep.cell(T, "Table 9.5 pooled median", m.group(2), float(m.group(2)), float(np.median(sp)))
+        rep.cell(T, "Table 9.5 pooled 90th percentile", m.group(3), float(m.group(3)), float(np.percentile(sp, 90)))
+        rep.cell(T, "Table 9.5 pooled maximum", m.group(4), float(m.group(4)), float(max(sp)))
+    for m in re.finditer(r"median (?:across-initialization spread is )?\$([\d.]+)\$~dB(?: over (\d+) configurations| is not a universal)", tex):
+        rep.cell(T, "pooled median spread (prose)", m.group(1), float(m.group(1)), float(np.median(sp)))
+        if m.group(2):
+            rep.cell(T, "pooled configurations (prose)", m.group(2), float(m.group(2)), float(len(sp)))
+    # Table 9.6: per-seed penalties, bounds and spreads.
+    ss = json.load(open(os.path.join(R, "seed_spread_architectures.json")))
+    ss_body = tabular_body(tex, "tbl:seed-spread-3k") or ""
+    for a, v in ss["architectures"].items():
+        res = [penalty_common(ss["snr_db"], r["ber"], ss["df_ber"]) for r in v["runs"]]
+        m = re.search(re.escape(a) + r"\s*& [\d{},]+ & (.*?) & (.*?) \\\\", ss_body)
+        if not m:
+            continue
+        cells = [x.strip() for x in m.group(1).split(",")]
+        for k, (cell, r) in enumerate(zip(cells, res)):
+            num = float(re.search(r"([\d.]+)", cell).group(1))
+            rep.cell(T, f"Table 9.6 {a} seed {k}", cell, num, r["worst_db"])
+            rep.cell(T, f"Table 9.6 {a} seed {k} bound marked", cell, float("geq" in cell), float(r["lower_bound"]))
+        spr, f = spread_of_seeds(res)
+        rep.cell(T, f"Table 9.6 {a} spread", m.group(2), float(re.search(r"([\d.]+)", m.group(2)).group(1)), spr)
+        rep.cell(T, f"Table 9.6 {a} spread bound marked", m.group(2), float("geq" in m.group(2)), float(f == ">"))
+        if a == "Transformer-3K":
+            m2 = re.search(r"whereas the Transformer's is at least \$([\d.]+)\$~dB", tex)
+            if m2:
+                rep.cell(T, "Transformer spread (Sec. 7.6)", m2.group(1), float(m2.group(1)), spr)
+    # Coded size sweep (Sec. 7.2.1): worst-of-seeds penalties against block DF.
+    rng = {}
+    for f in ("coded_min_size.json", "coded_min_size_matched.json"):
+        c = json.load(open(os.path.join(R, f)))
+        vals = [penalty_common(c["snr_db"], np.max([r["ber"] for r in x["seed_runs"]], axis=0), c["df_ber"])
+                for x in c["sweep"]]
+        rng[f] = vals
+    m = re.search(r"penalties of \$\+([\d.]+)\$--\$\+([\d.]+)\$~dB under its hard read-out against unweighted block DF, and at least \$\+([\d.]+)\$~dB against matched block DF", tex)
+    if m:
+        u = [r["worst_db"] for r in rng["coded_min_size.json"]]
+        rep.cell(T, "coded sweep, unweighted low", m.group(1), float(m.group(1)), min(u))
+        rep.cell(T, "coded sweep, unweighted high", m.group(2), float(m.group(2)), max(u))
+        rep.cell(T, "coded sweep, matched lowest", m.group(3), float(m.group(3)),
+                 min(r["worst_db"] for r in rng["coded_min_size_matched.json"]))
+    # Window 1 -> 7 gain: "more than 8 dB" must be a true lower bound on every three-tap channel.
+    gains = []
+    for c in ms["channels"].values():
+        if c["memory"] <= 1:
+            continue
+        base = c.get("baseline_ber", c["df_ber"])
+        best = {}
+        for w in (1, 7):
+            res = [penalty_common(ms["snr_db"], r["ber"], base) for x in c["sweep"] if x["window"] == w for r in x["seed_runs"]]
+            best[w] = min(r["worst_db"] for r in res)
+        gains.append(best[1] - best[7])
+    n8 = len(re.findall(r"more than 8~dB", tex))
+    rep.cell(T, "window-gain statements found", str(n8), float(n8 >= 3), 1.0)
+    rep.cell(T, "smallest window 1->7 gain exceeds 8 dB", "8", 8.0, 8.0 if min(gains) > 8.0 else min(gains))
+    # Table 9.4 coded row: no smaller configuration meets the strict budgets.
+    m = re.search(r"coded & code & (.*?) \\\\", tex)
+    if m:
+        cells = [x.strip() for x in m.group(1).split("&")]
+        rep.cell(T, "Table 9.4 coded row, strict budgets dashed", m.group(1), float(all(x == "---" for x in cells[:3])), 1.0)
+    rep.finish_table(T, before)
+
+
 def main():
     global TEX_DIR, MC_SLACK
     ap = argparse.ArgumentParser()
@@ -2552,7 +2727,7 @@ def main():
               check_af_conventional_prose, check_isi_penalty_prose, check_hybrid_branch_prose,
               check_coded_matched, check_flat_conclusion_prose, check_coded_matched_secondary,
               check_qpsk_controls_prose, check_bcjr_benchmark,
-              check_seed_spread_native_prose,
+              check_seed_spread_native_prose, check_khina_round2,
               check_soft_df_calibration_prose,
               check_mmse_monotonicity_prose,
               check_joint_latency, check_joint_memory,
