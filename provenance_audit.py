@@ -132,6 +132,10 @@ REGISTRY = {
         "canonical_run_provenance.py", ["results/canonical_run_provenance.json"],
         ["Sec. 4.3.3 canonical-run description (Tables 5.2-5.3 runs, window counts, parameters)",
          "tbl:canonical-runs"]),
+    "Canonical relays: paired tests": (
+        "canonical_paired_tests.py", ["results/canonical_paired_tests.json"],
+        ["prose: Sec. 5.2 and 5.3 differences between the canonical relays (paired Wilcoxon)",
+         "fig:fig10 caption", "Fig. 5.2 caption"]),
     "SNR penalties on comparable target sets": (
         "penalty_common_targets.py", ["results/penalty_common_targets.json"],
         ["tbl:seq-on-memory", "tbl:table-minsize", "tbl:seed-spread", "tbl:seed-spread-3k",
