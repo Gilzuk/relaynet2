@@ -32,6 +32,9 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 
 # experiment -> (script, [output files], [published tables/figures])
 REGISTRY = {
+    "Round-2 archived-rerun assessment": (
+        "scripts/assess_round2_reruns.py", ["results/round2_rerun_assessment.json"],
+        ["sec:round2-rerun-validation; fresh paired tests and historical/rerun distinctions"]),
     "Historical seed-42 MLP repeatability control": (
         "scripts/audit_rng_reproducibility.py",
         ["results/reproduction/20261017-rng-seed42/comparison.json",

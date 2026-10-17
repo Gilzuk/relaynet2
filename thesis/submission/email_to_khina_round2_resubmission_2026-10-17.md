@@ -6,7 +6,7 @@ Hi Anatoly,
 
 Thank you for your detailed feedback. I have addressed all six remaining points and am resubmitting the revised thesis:
 
-[Revised thesis PDF](https://github.com/Gilzuk/relaynet2/blob/42e3e386e0b6d1c137a84cf609b51e9581e7e69a/thesis/main.pdf)
+[Revised thesis PDF](https://github.com/Gilzuk/relaynet2/blob/experiments/round2-reproduction-20261017/thesis/main.pdf)
 
 The revisions cover the following:
 
@@ -17,7 +17,7 @@ The revisions cover the following:
 5. **Principal comparisons:** Matched decoding now leads the coded discussion, and factorized-trellis counts appear in the main complexity comparisons. The earlier comparisons remain as shorter diagnostics.
 6. **Scope and presentation:** I reconciled the causality and input-context statements, consistently identified the simplified Mamba implementations, corrected the ten-pilot caption, provided an identifiable code revision and fixed Chapter 5’s running headers.
 
-I also completed a further consistency and reproduction-detail audit. The revised thesis is within the 120-page limit, and all 873 numerical checks against the recorded results pass.
+I also completed full-budget validation runs. Classical controls reproduced exactly, while learned numerical results differed. The revised thesis reports these differences separately, qualifies the historical BER bound and initialization spreads, and retains the original tables as historical measurements. Fresh paired tests preserve the matched-coded conclusion, but I do not claim exact historical learned-result reproduction. The numerical verifier now checks 892 values against the recorded evidence.
 
 Thank you again for your careful review and guidance.
 

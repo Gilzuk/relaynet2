@@ -1,5 +1,8 @@
 # Active Context (update this file first, every session)
 
+**Completed rerun review (2026-10-17; supersedes live-status notes below):** All four hosted workers in run 39024026594 completed at frozen source c0394f0, exit 0, scientific status RETRAINING_DIFFERENCE_REQUIRES_REVIEW. Classical arrays match exactly. Archive job succeeded; commit dc7c02c00cbebdfb566362a810ab4b45cb6abbe0 contains every job (index missing_jobs=[]). No experiment was stopped or restarted. Section 7.1.4 now reports the new VAE gap, sequence penalty/spread changes, fresh canonical/coded paired tests and seed-42 control limits; historical tables and plots are unchanged. New scripts/assess_round2_reruns.py checks hashes and produces results/round2_rerun_assessment.json. Verification: 892 values / 0 inconsistencies, 64 focused tests passed; rebuilt PDF 120 numbered / 136 total pages, bundles and preview synchronized, revised pages visually inspected. Existing font-feature/duplicate table-anchor warnings remain, but no undefined refs/citations, missing characters or overfull boxes. Advisor drafts updated and unsent. Publish to existing draft PR #184 with [skip ci] to prevent duplicate experiments; do not claim a new CI pass or merge while discrepancies remain unresolved. Details: docs/round2_rerun_manuscript_update_2026-10-17.md.
+
+
 _Last updated: 2026-10-17_
 
 ### Current state: merged thesis and separate reproduction branch

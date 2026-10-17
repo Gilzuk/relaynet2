@@ -56,7 +56,7 @@ finite-length coded forwarding.
 On the coded link, the original comparisons used decoder metrics that ignore
 symbol-dependent reliability. With reliability-weighted (matched) metrics at the
 relay and the destination, block decode-and-forward has lower BER than both
-learned relays at every tested SNR (30 of 30 paired trials), so their published
+MLP read-outs at every tested SNR (30 of 30 paired trials), so their published
 high-SNR advantage came from the metric.
 
 The fixed three-tap BPSK MLP has BER 0.0065 at 8 dB versus matched genie MLSE

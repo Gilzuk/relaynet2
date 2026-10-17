@@ -4,6 +4,8 @@ PR [183](https://github.com/Gilzuk/relaynet2/pull/183) was merged at `42e3e386e0
 
 Current evidence and investigation: [results/reproduction/README.md](../results/reproduction/README.md). The initial setup attempt failed before simulation; the corrected local run `20261017-round2-v2` then lost its session after 09:07:25 UTC. Four completed checks matched and 16 training seeds/checkpoints were recovered. Both attempts remain preserved. Do not interpret their old heartbeat or PID as proof of continued execution.
 
+All four hosted jobs in run 39024026594 have now completed. Their complete evidence is committed at `dc7c02c00cbebdfb566362a810ab4b45cb6abbe0`; all learned comparisons require review, with exact classical controls. The [post-run assessment](round2_rerun_manuscript_update_2026-10-17.md) explains the manuscript updates and fresh paired tests. No new run was launched for this assessment.
+
 ## Persistent hosted execution
 
 [`.github/workflows/round2-reproduction.yml`](../.github/workflows/round2-reproduction.yml) runs the four unfinished jobs independently on GitHub Actions when the declared workflow/runner/dependency files change on PR 184's branch. It is restricted to this repository and `experiments/round2-reproduction-20261017`; it never cancels an existing run on a new push. Every job checks out the exact PR head SHA and records its actual environment. Python 3.12.14, NumPy 2.3.5, SciPy 1.17.0, Matplotlib 3.10.8 and CPU Torch 2.8.0 are declared; CPU/hardware differences remain visible. Training, evaluation budgets and comparison tolerances are unchanged.

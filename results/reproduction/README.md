@@ -1,5 +1,7 @@
 # Round-2 reproduction evidence
 
+**Completed hosted run:** all four full-budget jobs finished with worker exit 0 and `RETRAINING_DIFFERENCE_REQUIRES_REVIEW`. Classical controls match exactly. The [archive index](gha-39024026594-1-index.json) lists all four attempts, with no missing jobs; evidence was committed at `dc7c02c00cbebdfb566362a810ab4b45cb6abbe0`. The learned discrepancies remain unresolved. See the [manuscript assessment](../../docs/round2_rerun_manuscript_update_2026-10-17.md) and [fresh statistics](../round2_rerun_assessment.json). Older live/interruption notes below describe earlier states.
+
 ## Seed-42 control and explicit RNG policies
 
 The [historical RNG audit](../../docs/rng_reproducibility_audit_2026-10-17.md)
