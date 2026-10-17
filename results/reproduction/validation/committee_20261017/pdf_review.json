@@ -1,0 +1,45 @@
+{
+  "baseline_commit": "5eb34ab3ed01bc9df17498358656965af2fa916b",
+  "baseline_pdf_sha256": "9be23d2c30ad49d793ec5ab029c12d669d4f91a02164ab7f6fea70314406207c",
+  "review_pdf_sha256": "4262e711607c6cdf1e0cd877754b7883ee3300305118ddb45e0c1aeea7c206c6",
+  "physical_pages": 136,
+  "body_first_physical": 14,
+  "body_last_physical": 133,
+  "body_numbered_pages": 120,
+  "frontmatter_pages": 13,
+  "hebrew_backmatter_pages": 3,
+  "changed_text_pages": [
+    3,
+    4,
+    5,
+    40
+  ],
+  "critical_latex_messages": [],
+  "visual_review_pages": [
+    1,
+    3,
+    4,
+    40,
+    55,
+    69,
+    92,
+    102,
+    133,
+    136
+  ],
+  "chapter5_running_headers": {
+    "64": true,
+    "65": true,
+    "66": true,
+    "67": true,
+    "68": true,
+    "69": true,
+    "70": true,
+    "71": true,
+    "72": true,
+    "73": true,
+    "74": true,
+    "75": true,
+    "76": true
+  }
+}

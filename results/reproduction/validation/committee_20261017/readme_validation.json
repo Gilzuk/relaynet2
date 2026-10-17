@@ -1,0 +1,40 @@
+{
+  "old_example_error": "run_monte_carlo() got an unexpected keyword argument 'channel'",
+  "new_example_repeat_exact": true,
+  "shape": [
+    5,
+    10
+  ],
+  "snrs": [
+    0,
+    2,
+    4,
+    6,
+    8
+  ],
+  "means": [
+    0.14298000000000002,
+    0.07063,
+    0.02437,
+    0.00467,
+    0.00038
+  ],
+  "missing_local_readme_links": [],
+  "legacy_16qam_current_20db": {
+    "MLP 4-cls": 0.05491,
+    "MLP 16-cls": 0.038400000000000004,
+    "VAE 4-cls": 0.05382,
+    "VAE 16-cls": 0.03762,
+    "Hybrid 4-cls": 0.05362,
+    "Hybrid 16-cls": 0.03748,
+    "Transformer 4-cls": 0.0536,
+    "Transformer 16-cls": 0.03813999999999999,
+    "Mamba-S6 4-cls": 0.05421,
+    "Mamba-S6 16-cls": 0.03934,
+    "Mamba2 4-cls": 0.053810000000000004,
+    "Mamba2 16-cls": 0.049530000000000005,
+    "AF": 0.044980000000000006,
+    "DF": 0.03748
+  },
+  "scope": "CPU DF smoke example; no learned training; not historical reproduction"
+}

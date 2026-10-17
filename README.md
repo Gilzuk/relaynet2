@@ -1,283 +1,265 @@
-# RelayNet2 — Learned and Classical Relay Strategies for Two-Hop Communication
+# RelayNet2 — Learned and Classical Two-Hop Relay Communication
 
-[![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://python.org)
-[![PyTorch](https://img.shields.io/badge/PyTorch-2.6+-red.svg)](https://pytorch.org)
-[![CUDA](https://img.shields.io/badge/CUDA-12.4-green.svg)](https://developer.nvidia.com/cuda-toolkit)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![CI](https://github.com/Gilzuk/relaynet2/actions/workflows/ci.yml/badge.svg)](https://github.com/Gilzuk/relaynet2/actions/workflows/ci.yml)
-[![Experiments](https://img.shields.io/badge/Experiments-18-blue.svg)](#recent-experiments-summary)
 
-A framework for comparing **classical and AI-based relay strategies** in two-hop relay communication, over **AWGN and Rayleigh fading** SISO channels, with **BPSK, QPSK and 16-QAM** modulation.
-
-> **Thesis vs. framework scope.** This repository contains both the `relaynet` simulation **framework** (whose full capabilities are described below) and the M.Sc. **thesis** it supports, under [`thesis/`](thesis/). The thesis deliberately fixes a **single canonical setup** — SISO on both hops, i.i.d. Rayleigh fast fading, complex baseband, Gray-coded QPSK, uncoded BER — and varies only the relay function. Its **principal contribution** is **learned relaying under unknown/mismatched channels** (carried on BPSK); the higher-order-modulation extension is not part of the current build. MIMO, Rician relay comparison, and 16-PSK were removed from both the thesis and the framework, and are recorded as *future work* (Rician is retained only to draw the fading-distribution figure). See the [Thesis](#thesis-msc) section.
-
----
-
-## What the thesis found
-
-The M.Sc. thesis this framework supports is *Deep Learning Architectures for Two-Hop
-Relay Communication* (Tel Aviv University, Gil Zukerman, 2026). Its result in one
-sentence: **on a matched, memoryless two-hop relay channel no learned relay evaluated
-here improves on classical decode-and-forward, while on channels whose memory or
-impairments fall outside that model a compact learned relay restores reliable relaying —
-without a demonstrated advantage over matched MLSE in the resolved comparisons.**
-<sub>Source: `thesis/chapters/ch09_summary.tex`, closing paragraph.</sub>
-
-**Research question.** Under what channel-information and channel-memory conditions can a
-learned relay improve upon or complement classical AF/DF processing in two-hop wireless
-communication?
-<sub>Source: `thesis/chapters/ch03_objectives.tex`, §Two Research Questions.</sub>
-
-The following four groups organize separate experiments, not a one-factor-at-a-time ablation
-<sub>(source: `thesis/chapters/ch07_unknown_and_mismatch_channels.tex`, Table `tbl:layers`)</sub>:
-
-| Layer | Conditions | Classical comparator | Result |
-|---|---|---|---|
-| 1 | Memoryless, known channel, perfect CSI | Symbol-wise DF, zero parameters | **Classical wins.** DF `0.1218` vs the MLP's `0.1229` at 8 dB — the learned relay matches DF, at 169 parameters against none |
-| 2 | + 3-tap ISI, CSI still perfect | Viterbi MLSE with exact taps | **Classical wins, by a widening margin.** DF rises from `0.1802` at 8 dB to `0.2457` at 20 dB; the MLP restores the link (`0.0065` at 8 dB) but genie MLSE records `0.001354` there, and `<3.0e-8` at 16 dB against the MLP's `1.20e-7`. The required-SNR penalty grows with the target: `+0.26` dB at BER 10⁻¹, `+1.18` at 10⁻², `+1.88` at 10⁻³, `+2.53` at 10⁻⁴ — not a fixed offset |
-| 3 | + finite pilot budget | Pilot-aided LS estimate, then MLSE | **Crossover.** At 10 dB LS+MLSE holds `0.0283` on 200 pilots and `0.0335` on 20; by 10 pilots it degrades to `0.0545`, not resolved from the pilot-free MLP (`0.0486`), which leads at 5 pilots |
-| 4 | + unseen realization from the trained family, per block | CMA blind equalization | **Learned relay leads to 12 dB.** MLP `0.0955` vs CMA `0.1182` at 8 dB; resolved over 50 paired draws from 0 to 12 dB, not from 14 dB (`e6_blind_intervals.py`); decision-directed blind MLSE is unstable |
-
-> **Superseded data in the tree.** `e6_unknown_channel_results/e6_viterbi_awgn.npy`
-> holds the *original* genie and pilot-LS Viterbi curves. Those were generated when the
-> real-valued AWGN branch put the whole of N₀ in its single dimension, which is 3.01 dB
-> pessimistic, and they do **not** reproduce under the current code — the stored `0.0072`
-> at 8 dB is `0.001354` on the present convention. The published Viterbi cells now come
-> from `results/e6_matched_protocol.json` and `results/e6_matched_highsnr.json`
-> (`e6_matched_protocol.py`, `e6_matched_highsnr.py`). The old file is retained only as a
-> provenance record; do not compare against it, and note that re-running
-> `e6_viterbi_ported.py` today would overwrite it with correct-convention numbers.
-
-**The boundary of the claim.** The learned relay is trained and tested within the same
-parametric impairment family, so the supported property is *realization-agnostic, not
-family-agnostic*; generalization to a structurally different family is untested.
-<sub>Source: `thesis/chapters/ch07_unknown_and_mismatch_channels.tex`, §Layer-2 baselines.</sub>
-
-**What the thesis does not claim.** Not a verdict on classical receiver design — reduced-state
-sequence estimation, decision feedback and hybrid model-based detectors were not evaluated.
-No MIMO, no multiple relays, no full duplex. No hardware, quantization or energy validation.
-Comparisons were not prespecified and carry no multiplicity correction. Viterbi is not a BER
-bound: MLSE minimizes *sequence* error, and the BER-optimal comparator is bit-MAP/BCJR,
-measured at the QPSK relay output only, not as an end-to-end benchmark.
-<sub>Sources: `thesis/chapters/ch01_introduction.tex`, Table `tbl:assumptions-claims`;
-`thesis/chapters/ch04_methods.tex`, §Statistical Significance Testing;
-`thesis/chapters/ch07_unknown_and_mismatch_channels.tex`, §A BER-Optimal Benchmark.</sub>
-
-The compiled thesis is `thesis/main.pdf` (120 numbered pages from Chapter 1 through the appendices; 136 PDF pages including front matter and the Hebrew abstract). The sections below document the
-`relaynet` simulation framework itself.
-
----
-
-## Table of Contents
-
-- [Overview](#overview)
-- [Thesis (M.Sc.)](#thesis-msc)
-- [Channel Types](#channel-types)
-- [Antenna Topologies](#antenna-topologies)
-- [Relay Strategies](#relay-strategies)
-- [Architecture](#architecture)
-- [Key Findings](#key-findings)
-- [Unknown-Channel Contribution](#unknown-channel-contribution)
-- [Verifying the Thesis Against Its Data](#verifying-the-thesis-against-its-data)
-- [Appendix — Proof of Claims](#appendix--proof-of-claims)
-- [Recent Experiments Summary](#recent-experiments-summary)
-- [BER Results — Original Models](#ber-results--original-models)
-- [Normalized 3K-Parameter Comparison](#normalized-3k-parameter-comparison)
-- [AI Model Architectures](#ai-model-architectures)
-- [Project Structure](#project-structure)
-- [Quick Start](#quick-start)
-- [Testing](#testing)
-- [Checkpoints Summary](#checkpoints-summary)
-- [Citation](#citation)
-- [License](#license)
-
----
-
-## Overview
-
-This project implements and compares **9 relay strategies** (2 classical + 7 AI-based) across **2 channel types** (AWGN, Rayleigh) and **3 modulation schemes** (BPSK, QPSK, 16-QAM) to evaluate the potential of generative AI and modern sequence models for two-hop relay communication. The link has no direct source--destination path, so the thesis uses "relay" rather than "cooperative", which conventionally implies a direct path combined with the relayed one.
-
-### Relay Methods
-
-| Method | Type | Architecture | Parameters |
-|--------|------|-------------|-----------|
-| AF | Classical | Amplify-and-Forward | 0 |
-| **DF** | Classical | Decode-and-Forward | 0 |
-| **MLP (Minimal)** | Supervised | Feedforward NN | 169 |
-| **Hybrid** | SNR-Adaptive | MLP + DF switching | 169 |
-| **VAE** | Generative | Variational Autoencoder | 1,777 |
-| **CGAN** | Adversarial | Conditional GAN (WGAN-GP) | 2,946 |
-| **Transformer** | Attention | Multi-head Self-Attention | 17,697 |
-| **Mamba S6** | State Space | Selective State Space Model | 24,001 |
-| **Mamba-2 SSD** | State Space | Structured State Space Duality | 26,179 |
-
-### Channel Types
-
-| Channel | Key Characteristic |
-|---------|--------------------|
-| **AWGN** | Additive white Gaussian noise only |
-| **Rayleigh** | Flat fading, no line-of-sight (NLOS) |
-
-## Thesis (M.Sc.)
-
-The M.Sc. thesis *"Deep Learning Architectures for Two-Hop Relay Communication: A Comparative Study of Classical and Neural Network Relay Strategies"* (Gil Zukerman, Tel Aviv University, 2026) lives under [`thesis/`](thesis/).
-
-| Item | Location |
-|------|----------|
-| LaTeX source (chapters, bibliography, figures) | `thesis/main.tex`, `thesis/chapters/`, `thesis/results/` |
-| Compiled PDF | `thesis/main.pdf`, `thesis_preview.pdf` |
-| **Overleaf-ready package** (self-contained, bundled fonts) | `thesis_overleaf.zip` |
-| Submission variant of the same package | `thesis_overleaf_clean.zip` |
-| Overleaf project linked through GitHub | [`Gilzuk/relaynet2-thesis`](https://github.com/Gilzuk/relaynet2-thesis), generated by `scripts/overleaf_sync.py --repo`; never edited directly |
-
-> The two bundles once differed: `thesis_overleaf.zip` kept the inline `\REV{}`
-> revision records and the `_clean` one stripped them. The manuscript no longer
-> contains any, so both now build from identical sources and differ only in the
-> variant line of their generated README. Either can be uploaded.
-
-**Building.** Compile with **XeLaTeX** (required for `fontspec` + `polyglossia` Hebrew); all fonts are bundled in `thesis/fonts/`, so no system-font installation is needed. See `thesis/OVERLEAF.md`. To use Overleaf: upload `thesis_overleaf.zip`, set **Menu → Compiler → XeLaTeX**, main document `main.tex`.
-
-**Structure.** The thesis fixes one canonical setup — SISO, i.i.d. Rayleigh fast fading on both hops, complex baseband, Gray-coded **QPSK**, uncoded — and varies only the relay function:
-
-| Chapter | Content |
-|---------|---------|
-| Ch 1–4 | Introduction, background, research objectives (H1–H5), methods |
-| Ch 5 | **Core experiments** on the canonical setup: channel-model validation, relay comparison, parameter normalization and complexity, plus the coded block-DF study with both unweighted and reliability-weighted (matched) decoder metrics |
-| Ch 6 | **Principal contribution:** learned relaying under **unknown and mismatched channels** (H5) — see below |
-| Ch 7–8 | Discussion and conclusions; summary |
-| Ch 9 | Appendices 9.1–9.6: model hyperparameters, reproducibility, experiment ledger, minimum-relay-size sweep, verification of headline claims, channel models and penalty definition of Ch 6 |
-
-The higher-order-modulation extension (16-QAM, joint 2D $N$-class classification) is **not** part of the current build; its source remains under `thesis/chapters/` but is commented out of `main.tex`. QPSK is the canonical modulation rather than an extension.
-
-The unknown-channel study (Ch 6) is reproduced in this framework by the `e6_*_ported.py` scripts (see [Unknown-Channel Contribution](#unknown-channel-contribution)).
-
----
-
-## Channel Types
-
-### AWGN (Additive White Gaussian Noise)
-
-The simplest channel model — a clean additive noise channel:
-
-```
-y = x + n,    n ~ N(0, σ²)
-```
-
-### Rayleigh Fading
-
-Models non-line-of-sight (NLOS) propagation with multiplicative fading:
-
-```
-y = h · x + n,    h ~ CN(0, 1),    n ~ CN(0, σ²)
-Equalization: x̂ = y / h   (perfect CSI)
-```
-
-## Relay Strategies
-
-### Classical Relays
-
-- **AF (Amplify-and-Forward):** Amplifies the received noisy signal and retransmits — simple but propagates noise.
-- **DF (Decode-and-Forward):** Demodulates, re-modulates, and retransmits — eliminates noise at the relay but introduces demodulation errors.
-
-### AI-Based Relays
-
-- **MLP (Minimal):** A compact 2-layer feedforward neural network (window_size=5, hidden=24). Uses a sliding window to process each bit with its neighbors. Only 169 parameters.
-- **Hybrid:** SNR-adaptive relay that switches between its own MLP sub-network (low SNR) and DF (high SNR) by comparing a received-power SNR estimate with a fixed 5 dB threshold. On the zero-forced Rayleigh observation the estimate is not the operating SNR, so the canonical switch falls between 6 and 8 dB (`hybrid_branch_selection.py`).
-- **VAE (Variational Autoencoder):** Probabilistic generative model that learns a latent representation of the clean signal. Encoder maps to a latent space; decoder reconstructs the signal.
-- **CGAN (Conditional GAN):** Wasserstein GAN with gradient penalty. The generator learns to denoise conditioned on the noisy input; the critic provides adversarial training signal.
-- **Transformer:** Multi-head self-attention over a sliding window of symbols. Captures global dependencies with O(n²) complexity. Architecture: d_model=32, heads=4, layers=2.
-- **Mamba S6 (Selective State Space):** Linear-time sequence model with input-dependent state transitions. Captures long-range dependencies with O(n) complexity. Architecture: d_model=32, d_state=16, layers=2.
-- **Mamba-2 SSD (Structured State Space Duality):** Successor to Mamba S6 using the SSD formulation, which restricts the state transition to a scalar-times-identity structure to unlock matmul-based training. Architecture: d_model=32, d_state=16, layers=2.
-
----
-
-## Architecture
-
-```
-                     Two-Hop Relay Network
-                     =====================
-
-    Source ──── Channel ────► Relay ──── Channel ────► Destination
-                  │              ▲              │
-             [AWGN/Fading]    [AI or        [AWGN/Fading]
-                           Classical]
-    Topology:  SISO (1x1)
-    Channels:  AWGN  |  Rayleigh
-    Relays:    AF │ DF │ MLP │ Hybrid │ VAE │ CGAN │ Transformer │ Mamba S6 │ Mamba-2 SSD
-```
-
-Each relay strategy is evaluated on both SISO channels (AWGN and Rayleigh) using Monte Carlo simulation with 95% confidence intervals (10 trials × 10,000 bits per SNR point).
-
----
-
-## Key Findings
-
-The thesis findings are bounded by the implemented configurations:
-
-- In the canonical uncoded QPSK/Rayleigh comparison, feedforward relays improve on the implemented block-normalized AF at low SNR; against conventional AF the MLP's 0 dB margin is 0.003 (fixed gain) to 0.007 (variable gain) rather than 0.073, the sequence relays fall behind it at 0-4 dB, and the feedforward relays track DF. DF matches or exceeds the evaluated learned relays from 6 dB upward.
-- Small tested networks can be competitive. The experiments do not establish overfitting, universal minimum size, or equal performance across all architectures and training seeds.
-- On the fixed BPSK ISI channel, the 170-parameter MLP improves strongly on AF/zero-threshold DF but trails matched MLSE over the resolved range. Fixed-budget validation stops at 16 dB.
-- The learned relays have training-family knowledge. Pilot and blind results do not demonstrate generalization to new impairment families.
-- On the coded link, the original comparisons used decoder metrics that ignore symbol-dependent reliability. With reliability-weighted (matched) metrics at the relay and destination, block DF has lower BER than both learned relays at every tested SNR (30/30 paired trials); the learned relays' published high-SNR advantage came from the metric (`coded_matched_metrics.py`, thesis Sec. 5.5.2). Arithmetic and reference-program timing are not hardware deployment results.
-
-Historical framework tables below are retained as archival demonstrations, not the current thesis's numerical authority. Use the thesis tables and their declared experiment files. A recorded zero means no errors observed in a finite run—insufficient data to estimate a positive BER—not zero true BER or an infinite improvement.
-
----
-
-## Unknown-Channel Contribution
-
-The thesis's principal contribution (Ch 6, hypothesis **H5**) studies **learned relaying when the channel is unknown to, or mismatched with, the classical relay's model class** — the regime where a fixed minimal MLP is the one that still works. It is reproduced in this framework by the `e6_*_ported.py` scripts, with figures/data in [`e6_unknown_channel_results/`](e6_unknown_channel_results/).
-
-Three relay architectures appear in these studies, and two of them coincidentally have the same parameter count, so the labels are worth reading carefully: the canonical relay is $5 \to 24 \to 1$ (169 parameters), the unknown-ISI and flat-memory relays are $11 \to 13 \to 1$ (**170**), and the composite, blind and pilot-budget relays take complex I/Q pairs, $22 \to 7 \to 1$ (169 again).
-
-| Study | Script | Key result |
-|-------|--------|-----------|
-| Unknown ISI + control | `e6_sim_ported.py` | AF/DF pinned at the **analytic 0.25 ISI floor** (DF *non-monotonic* in SNR); the 170-param MLP restores reliable relaying |
-| Viterbi MLSE benchmark | `e6_matched_protocol.py` | Matched genie MLSE has target-dependent 0.26–2.53 dB penalties; 200-pilot LS is close |
-| Flat (memoryless) control | `e6_flat_ported.py` | Unknown phase/gain/asymmetry: classical **does not fail**, MLP has similar measured BER in these controls; no universal causal isolation |
-| Scalar MAP relay | `e6_scalar_map.py` | A non-monotonic symbol-wise MAP rule removes the 0.25 floor but stays far above the windowed MLP (0.099 vs 1.09e-4 at 12 dB): the large gain needs temporal context |
-| Composite cascade | `e6_composite_ported.py` | ISI × PA-nonlinearity × unknown phase: the family-trained MLP recovers from raw I/Q; pilot-aided LS Viterbi is lower at 8 dB (0.0674 vs 0.1073) and both reach 0.0025 at 20 dB |
-| Posterior-free (blind) | `e6_blind_ported.py` | MLP leads the evaluated CMA from 0 to 12 dB (paired Wilcoxon p <= 0.003; 0.0955 vs 0.1182 at 8 dB); from 14 dB the two are not resolved (2.6e-3 vs 3.3e-3 at 20 dB, MLP better on 19 of 50 draws). It needs no per-block adaptation and avoids decision-directed MLSE's instability |
-| Partial posterior | `e6_partial_ported.py` | Pilot-budget crossover at 10 dB: Viterbi leads at 20 pilots, is not resolved from the MLP at 10 and trails at 5; MLP is pilot-free and flat |
-| Complexity | `e6_complexity_ported.py` | Joint-trellis Viterbi cost grows as $M^L$ (with real taps a square QAM trellis factorizes exactly into two $\sqrt{M}$-ary trellises, $2M^{L/2}$ branch metrics); the relay's cost is constant **for a fixed architecture** (~330 flops/sym) and 58–82× faster in wall-clock (single-threaded, median of seven runs; `scripts/plot_e6_timing.py` draws Fig. 6.7(b) from the committed data). Holding the window fixed as memory grows is a choice, not a law: spanning longer memory generally widens the window, and the relay's cost then grows roughly linearly in it |
-
-**Bottom line (H5):** the tested learned relay improves on specified AF/DF or mismatched baselines. No resolved advantage over matched MLSE is demonstrated. Training-family dependence, measurement endpoint, and architecture-specific cost remain part of the claim.
-
-The scope is narrower than "family-agnostic": the network is trained on the same impairment family it is tested on, so its weights carry prior information about that family. What it does without is **per-block** channel state — no pilots, no explicit identification, no online adaptation, on a realization it has not seen. It is not evaluated on a structurally different family absent from training.
-
----
-
-## Verifying the Thesis Against Its Data
-
-Selected numerical tables and prose are checked against their declared artifacts. These checks do not cover every claim or certify scientific correctness:
+Code, experiment records and the M.Sc. thesis *Deep Learning Architectures for
+Two-Hop Relay Communication* (Gil Zukerman, Tel Aviv University, 2026).
+The system has one half-duplex relay and no direct source–destination path.
+
+- **Read the thesis:** [PDF](thesis/main.pdf), [LaTeX source](thesis/main.tex).
+- **Reproduce or inspect the evidence:** [researcher protocol](docs/round2_reproduction_protocol.md),
+  [experiment ledger](memory-bank/table_provenance.md), [reproduction archive](results/reproduction/README.md).
+- **Edit in Overleaf:** [generated thesis repository](https://github.com/Gilzuk/relaynet2-thesis),
+  [build instructions](thesis/OVERLEAF.md).
+
+## Scope and principal findings
+
+The canonical comparison is **uncoded Gray-QPSK, two-hop SISO, i.i.d. per-symbol
+Rayleigh fading and perfect receiver-side CSI**. It evaluates AF, symbol-wise DF
+and six learned configurations. The coherent front end uses CSI; the learned
+canonical relays receive zero-forced samples without explicit channel magnitudes.
+Separate studies change the channel, receiver information or coding. They include
+BPSK and faded QPSK with ISI, nonlinear composite channels, finite-pilot and blind
+receivers, and coded QPSK/16-QAM controls. These studies are not a single controlled
+ablation. The older standalone 16-QAM classifier extension is outside the thesis.
+
+| Comparison | Supported conclusion | Evidence |
+|---|---|---|
+| Canonical uncoded relays | No learned advantage over DF is resolved in the reported paired tests. At 8 dB, historical DF BER is 0.1218 versus MLP 0.1229. Against conventional finite-power AF, the MLP's 0-dB margin is only 0.003–0.007, depending on gain rule. | Tables 5.2–5.3; [canonical data](results/modulation/qpsk_rayleigh.json); [AF controls](results/af_block_and_conventional.json) |
+| Matched coded decoding | With reliability-weighted metrics, block DF has lower BER than **both hard and soft MLP read-outs**, at all six SNRs and in all 30 paired trials per point. Matched Mamba was **not evaluated**. The earlier high-SNR MLP advantage concerns the unweighted decoder. | Principal §5.5.1; [historical matched data](results/coded_matched_metrics.json); [additional-run assessment](results/round2_rerun_assessment.json) |
+| Fixed three-tap BPSK ISI | The 170-parameter MLP improves strongly on the evaluated AF/zero-threshold DF, but trails matched genie MLSE over the resolved range: 0.0065 versus 0.001354 at 8 dB. MLP validation ends at 16 dB; its 18–20-dB tail remains unvalidated. | Chapter 6; [matched protocol](results/e6_matched_protocol.json); [fixed-budget tail](results/e6_matched_highsnr.json) |
+| Finite pilots and blind processing | At 10 dB the MLP trails LS+MLSE at 20 pilots, is not resolved from it at 10, and leads at 5. In the separate blind study it leads the evaluated CMA through 12 dB, with no resolved difference from 14 dB. | Figure 6.5; [pilot/blind methods](thesis/chapters/ch07_unknown_and_mismatch_channels.tex) |
+| Computation on the real-tap coded-QPSK channel | Exact I/Q factorization gives two binary MLSE trellises: 16/64/256 multiplications per symbol at 3/5/7 taps. The separate 220-parameter MLP uses 208 MACs; the arithmetic crossover is about 6.7 taps. MLSE has lower measured BER. | Main Tables 6.8–6.9; [factorization check](factorized_mlse_equivalence.py) |
+
+These are configuration-specific measurements. They do not establish universal
+learned-relay superiority, overfitting as a mechanism, a universal minimum network,
+new-family generalization, or hardware latency/energy savings. Training-family
+knowledge is retained in the learned weights. MLSE minimizes sequence error;
+the BCJR control measures **relay-output** BER only, not end-to-end BER.
+
+A zero observed error count is not zero true BER. Similar rounded values,
+unchanged rankings and failure to reject a paired test do not establish statistical
+equivalence. Reported paired tests are exploratory and uncorrected for multiple
+comparisons; fixed-checkpoint Monte Carlo intervals exclude retraining variance.
+
+## Reproduction: choose the intended operation
+
+Use a full git checkout and record `git rev-parse HEAD`. The following environment
+matches the **October validation**; it does not recover missing historical versions.
+Linux is required by the coded driver's multiprocessing `fork`. The archived run's
+CPU, BLAS, package and thread records remain part of its execution context.
 
 ```bash
-python verify_thesis_tables.py    # published cells vs their data sources
-python provenance_audit.py        # every result file is committed and newer than its script
+python3.12 -m venv .venv-round2
+. .venv-round2/bin/activate
+python -m pip install -r requirements-round2.txt
+python -m pip install torch==2.8.0+cpu --index-url https://download.pytorch.org/whl/cpu
+python --version
 ```
 
-`verify_thesis_tables.py` reads the LaTeX, extracts each published value, and compares it against the `.json`/`.npy` that generated it, with a tolerance set by the number of decimals shown. It currently checks **892 cells across 45 tables and prose claims**.
+The recorded Python version is **3.12.14**; the dependency file pins NumPy 2.3.5,
+SciPy 1.17.0, Matplotlib 3.10.8 and pytest 9.1.1. CUDA is not required. The older
+`requirements-repro.txt` describes a different environment.
 
-`provenance_audit.py` links each experiment to its script, its output files and the commit that produced them, and fails if a result is uncommitted or predates the script that generates it. `python provenance_audit.py --tables` regenerates the per-table reproduction ledger in `memory-bank/table_provenance.md`.
+### 1. Check committed evidence without training
 
-**The checks are themselves tested.** A verifier that examines nothing reports the same "OK" as one that examines everything and finds no problem, and that gap has hidden real defects here — a check that validated constants against their own arithmetic and could never fail, and an earlier one that read three of ten rows while printing OK. So:
+```bash
+python scripts/assess_round2_reruns.py --check
+python scripts/audit_round2_models.py --check
+python verify_thesis_tables.py
+python provenance_audit.py
+```
 
-- `MIN_CELLS` records the coverage each check is expected to reach; a shortfall fails rather than passing quietly.
-- A check that cannot run at all fails unless explicitly allowlisted in `ALLOWED_SKIPS`.
-- `tests/test_verifier_catches_drift.py` perturbs a published number in a scratch copy of the thesis and asserts the owning check flags it.
+The numerical verifier currently checks **892 cells/prose values** against their
+declared artifacts. The model audit verifies **48 saved checkpoints**. These checks
+have defined coverage; they do not certify every sentence or scientific conclusion.
+The [protocol](docs/round2_reproduction_protocol.md) maps each experiment to its
+architectures, scaling, training/evaluation budgets, RNG policy and output files.
 
-**Bibliography identifiers.** `scripts/verify_citations.py` checks each entry in
-`thesis/chapters/references.bib` against the publisher record, and its output is
-committed under `docs/research/`. 47 of the 64 entries carry a DOI or arXiv
-eprint; `docs/research/bib-identifiers-applied.json` records which were written
-and on what basis. The remaining 17 are listed there too, with the reason each
-was withheld -- nine are books whose record carries no DOI, and eight had only a
-nearest-title Crossref hit whose registrant prefix disagreed with the entry's own
-venue, which is how a title match can point at a different work. Without this, nothing proves a check *can* fail.
+### 2. Train additional round-2 realizations with one script
 
-Run the whole suite with `pytest`.
+```bash
+python scripts/reproduce_round2.py --list
+python scripts/reproduce_round2.py --run-id independent-round2-001 --jobs sequence_memory coded_matched canonical_native canonical_3k --threads 2 --timeout-hours 5.5 --background
+cat results/reproduction/independent-round2-001/status.json
+```
 
----
+Choose a **new run ID** for each attempt. The script freezes committed source,
+uses isolated worktrees, and retains logs, comparisons and available weights.
+Local jobs are sequential; `--background` detaches the launcher but cannot survive
+host shutdown. The coded job can fork six SNR workers, so two numerical threads
+per worker is not a two-core cap on the whole run. The timeout is a limit, not a
+runtime estimate. See each job's `job.json`, `comparison.json` and logs when
+classifying completion: a learned-result difference is not a worker crash.
+
+The focused runner declares Python/NumPy/Torch bootstrap seed **20261017**, requests
+deterministic Torch algorithms, and preserves original driver-local seeds.
+Canonical training data use `42 + training SNR`; evaluation trials use 0–9.
+Sequence initialization IDs are 0/1/2; coded initialization is 0 with shuffle seed
+42. A default data seed of 42 alone never established deterministic training.
+
+### 3. Inspect or execute the broader thesis plan
+
+```bash
+python scripts/reproduce_all.py                     # plan only; no experiments
+python scripts/reproduce_all.py --json              # machine-readable plan
+# Full execution is expensive; run only when the host/budget is appropriate:
+python scripts/reproduce_all.py --run --run-id independent-full-001 --seed 42 --threads 2
+```
+
+This runner has **73 entries: 68 producers, two archive analyses and three
+historical archive references**. Its default global bootstrap seed is **42**, while
+driver-local seeds still take precedence. It retains per-step outputs, hashes,
+RNG states and available checkpoints, rejects stale/missing outputs, and propagates
+failures. Partial plans may use committed upstream inputs; those inputs are recorded.
+The complete plan has **not** been executed end to end. A plan entry or an archived
+reference is not evidence of a new experiment. See the [runner review](docs/full_runner_review_2026-10-17.md).
+
+### What can and cannot be reproduced
+
+| Evidence | Status and limit |
+|---|---|
+| Historical canonical Tables 5.2–5.3 | Actual architectures, training paths, scaling and budgets are documented in §4.3.3/Table 4.2 and [canonical provenance](results/canonical_run_provenance.json). Historical Torch RNG states, learned weights, library versions and epoch losses are unavailable. Exact learned replay is not possible from the retained record. |
+| Classical canonical controls | AF/DF per-trial arrays reproduce exactly under the checked protocol. This does not certify learned replay. |
+| Four October hosted jobs | All workers completed. Learned outputs differ from the historical records; classical controls match. [Assessment JSON](results/round2_rerun_assessment.json) preserves numerical and statistical discrepancies. These are additional training-realization/seed-sensitivity observations, not proof that the originals were incorrect or that every difference was caused by a changed initial seed. |
+| Saved weights | Twelve new canonical and 36 sequence checkpoints are retained. The hosted coded classifier weights were not saved; only its trial results and configuration are available. |
+| Explicit seed-42 control | Two full-budget native MLP controls matched initial/final weights and all 110 trial BERs on one host. This does not establish every-model or cross-platform bitwise repeatability. |
+| Secondary studies | Pilot sweeps, the full minimum-size training grid, adaptive rare-event tails and matched Mamba were not newly executed by the four-job validation. |
+
+Immutable references: experimental/derived-result snapshot
+[`80b4545adcc6`](https://github.com/Gilzuk/relaynet2/tree/80b4545adcc66e4be1f435364f7ec927e87f6414);
+hosted execution source
+[`c0394f0da5da`](https://github.com/Gilzuk/relaynet2/tree/c0394f0da5dac449594b89a9794fe251fad75e76);
+hosted evidence archive
+[`dc7c02c00cbe`](https://github.com/Gilzuk/relaynet2/tree/dc7c02c00cbebdfb566362a810ab4b45cb6abbe0/results/reproduction).
+Later RNG instrumentation does not apply retroactively to that hosted run.
+
+## Implemented relay models
+
+Counts below are the native framework definitions, not every study's architecture.
+The canonical experiment excludes cGAN; the ISI and coded MLPs have different input,
+hidden and output dimensions. Per-study settings take precedence over this overview.
+
+| Relay | Native parameters | Implementation / context |
+|---|---:|---|
+| AF / symbol-wise DF | 0 | Block-normalized amplification / constellation detection |
+| MLP / Hybrid | 169 each | 5→24→1; Hybrid has its own MLP and a fixed-threshold blockwise switch |
+| VAE | 1,777 | Seven-sample window; latent sampling during training, latent-mean decoding at inference |
+| Transformer | 17,697 | 11-sample window, width 32, four heads, two layers; attention within the window |
+| Simplified Mamba-S6 | 24,001 | Width 32, state size 16, two layers; causal scan read at the centre of an 11-sample window |
+| Simplified Mamba-2 SSD | 26,179 | Width 32, state size 16, two layers; causal centre readout |
+| cGAN prototype | 2,946 | WGAN-GP; includes training-only critic parameters; excluded from the canonical tables |
+
+The two Mamba implementations are simplified research implementations, not the
+reference fused Mamba kernels. Their centre readout uses **six samples up to the
+current sample**, versus all eleven for the canonical Transformer. S6 omits the
+reference convolution/gate and has an unused C-projection still included in its
+nominal parameter count. Sharing a window length or parameter budget does not
+isolate architecture, capacity or optimization effects.
+
+Local causality is distinct from transmission causality: block power normalization
+couples transmitted symbols across the whole block, and Hybrid also selects its
+branch from a block statistic. The canonical learned relays process each QPSK
+axis without input rescaling (±1/√2 versus training ±1), normalize each output axis
+to unit power, and use measured forwarded power to set Hop-2 noise. See §4.1.5 and
+§4.3.3 for the exact normalization and SNR conventions.
+
+## Framework examples and historical experiments
+
+`run_experiments.py` is the **legacy framework runner**, with 18 registered jobs.
+Its numeric identifiers such as `7.10` and `7.17` are experiment IDs, **not current
+thesis section numbers**. It is distinct from the full-thesis and focused round-2
+runners above. Quick mode changes budgets and cannot reproduce published tables.
+
+```bash
+python run_experiments.py --list
+python run_experiments.py --exp 7.2 --quick
+```
+
+A small reproducible CPU example, uncoded BPSK/AWGN:
+
+```python
+from relaynet.relays.df import DecodeAndForwardRelay
+from relaynet.simulation.runner import run_monte_carlo
+from relaynet.simulation.statistics import compute_confidence_interval
+from relaynet.channels.awgn import awgn_channel
+
+relay = DecodeAndForwardRelay(prefer_gpu=False)
+snrs, means, trials = run_monte_carlo(
+    relay, snr_range=range(0, 9, 2), channel_fn=awgn_channel,
+    num_bits_per_trial=10000, num_trials=10, seed_offset=0,
+    modulation="bpsk",
+)
+lo, hi = compute_confidence_interval(trials)
+for snr, ber, lower, upper in zip(snrs, means, lo, hi):
+    print(f"SNR={snr:2d} dB  BER={ber:.4e}  CI=[{lower:.4e}, {upper:.4e}]")
+```
+
+These are across-trial Student-t intervals, not a rare-event confidence procedure.
+The framework BPSK bit map is 0→−1, 1→+1; its QPSK map uses 0→+1 on each axis.
+Individual experiment drivers can use their own bit labels. Preserve their mapping,
+call order and seeds for sample-level replay.
+
+Older framework demonstrations remain in [results/](results/), [checkpoints/](checkpoints/)
+and git history. In particular, [16-QAM classifier data](results/all_relays_16class/all_relays_16class.json)
+are outside the current thesis. The former README's 20-dB classifier numbers do
+not match that current JSON and are not repeated as current results. Finite-SNR
+values do not prove an irreducible error floor; separate I/Q classification is not
+inherently a structural limitation for separable square-QAM likelihoods. Neither
+zero observed errors nor rounded equality supports infinite improvement or
+statistical equivalence to DF. Historical development labels such as “overfitting
+found” and “best parameter efficiency” are not established thesis conclusions.
+
+The old `e6_unknown_channel_results/e6_viterbi_awgn.npy` contains a superseded
+real-noise convention and is retained for provenance. Use the matched-protocol
+JSON files linked above for the published MLSE comparison. Re-running legacy
+scripts in place can overwrite historical outputs; use the isolated runners for
+reproduction evidence.
+
+## Thesis build and repository layout
+
+| Location | Purpose |
+|---|---|
+| `relaynet/` | Channel, modulation, relay, simulation and statistics library |
+| `run_experiments.py`, `e6_*.py`, `coded_*.py` | Experiment producers; their individual settings define each study |
+| `scripts/reproduce_round2.py`, `scripts/reproduce_all.py` | Isolated execution and evidence retention |
+| `results/`, `e6_unknown_channel_results/` | Current and historical records; consult the ledger before comparison |
+| `thesis/chapters/` | Chapters 1–4 methods/background; 5 core experiments; 6 unknown/mismatched channels; 7–8 discussion/summary; 9 appendices 9.1–9.7 |
+| `thesis/main.pdf`, `thesis_preview.pdf` | Built thesis and identical top-level preview |
+| `thesis_overleaf.zip`, `thesis_overleaf_clean.zip` | Generated self-contained Overleaf packages with bundled fonts |
+| `tests/`, `docs/`, `memory-bank/` | Tests, review/protocol records and project history |
+
+Build with **XeLaTeX** (including Hebrew support):
+
+```bash
+cd thesis
+latexmk -xelatex -interaction=nonstopmode -halt-on-error main.tex
+cd ..
+cp thesis/main.pdf thesis_preview.pdf
+python scripts/build_bundles.py
+```
+
+In Overleaf select XeLaTeX and `main.tex`. Both bundles derive from the same active
+source graph; no revision annotations remain in the current manuscript. The
+[thesis mirror](https://github.com/Gilzuk/relaynet2-thesis) is generated by
+`scripts/overleaf_project.py` / `scripts/overleaf_sync.py`; edit this source repository
+and regenerate it. Do not edit the mirror directly. A linked Overleaf project may
+still need a GitHub pull after the mirror updates.
+
+The PDF has **120 Arabic-numbered body pages and 136 physical pages**, including
+13 front-matter and three Hebrew back-matter pages. These are separate counts;
+formal acceptance of the faculty's page-count convention is an administrative matter.
+
+## Tests
+
+```bash
+python -m pytest tests/ -q
+```
+
+Use the reported pass/skip counts for the checked-out revision and installed
+dependencies. Tests cover channels, modulation, relays, simulation, statistical
+analyses, evidence checks and reproduction orchestration. They do not substitute
+for full-budget experiment execution or scientific review.
 
 ## Appendix — Proof of Claims
 
@@ -328,438 +310,7 @@ Corrected BPSK required-SNR penalties are 0.26, 1.18, 1.88 and 2.53 dB at BER ta
 
 ---
 
-## BER Results — Original Models
-
-### AWGN Channel (0–20 dB)
-
-| SNR (dB) | AF | DF | MLP (169p) | Hybrid | VAE | CGAN | Transformer | Mamba S6 | Mamba-2 SSD |
-|----------|----|----|-------|--------|-----|------|-------------|----------|-------------|
-| 0 | 0.291 | 0.268 | 0.264 | 0.262 | 0.376 | **0.261** | 0.267 | 0.269 | 0.270 |
-| 4 | 0.154 | 0.112 | 0.112 | 0.113 | 0.330 | **0.111** | 0.114 | 0.111 | **0.111** |
-| 8 | 0.044 | **0.010** | 0.015 | **0.010** | 0.291 | 0.013 | 0.014 | **0.010** | 0.012 |
-| 12 | 0.0027 | **1.67e-04** | **1.67e-04** | **1.67e-04** | 0.269 | 3.33e-04 | 3.33e-04 | **1.67e-04** | **1.67e-04** |
-| 16 | **0** | **0** | **0** | **0** | 0.258 | **0** | **0** | **0** | **0** |
-| 20 | **0** | **0** | **0** | **0** | 0.250 | **0** | **0** | **0** | **0** |
-
-> At 8+ dB, DF (0 parameters) matches or beats all AI methods. CGAN achieves the best AI performance at low SNR (0–4 dB) on AWGN.
-
-### Results Plots
-
-Per-channel BER comparison plots with 95% confidence intervals are in the `results/` directory:
-
-| Channel | Plot |
-|---------|------|
-| AWGN | `results/awgn_comparison_ci.png` |
-| Rayleigh | `results/fading_comparison.png` |
-| Model Complexity | `results/complexity_comparison_all_relays.png` |
-
----
-
-## Normalized 3K-Parameter Comparison
-
-In this historical framework demonstration, six AI models were scaled to approximately 3,000 parameters. Equal counts do not control depth, width, window, state size or training. The current thesis comparison uses its own declared data sources:
-
-| Model | Parameters | Configuration |
-|-------|-----------|---------------|
-| MLP-3K | 3,004 | window=11, hidden=231 |
-| Hybrid-3K | 3,004 | window=11, hidden=231 (+ DF switching) |
-| VAE-3K | 3,037 | window=11, latent=10, hidden=(44, 20) |
-| CGAN-3K | 3,004 | window=11, noise=8, g_hidden=(30, 30, 16), c_hidden=(32, 16) |
-| Transformer-3K | 3,007 | window=11, d_model=18, heads=2, layers=1 |
-| Mamba-3K | 3,027 | window=11, d_model=16, d_state=6, layers=1 |
-
-### 3K BER Results Across All Channels
-
-#### AWGN
-
-| SNR (dB) | MLP-3K | Hybrid-3K | VAE-3K | CGAN-3K | Transformer-3K | Mamba-3K |
-|----------|----------|-----------|--------|---------|----------------|----------|
-| 0 | 2.65e-1 | 2.65e-1 | 2.67e-1 | 2.69e-1 | **2.61e-1** | 2.60e-1 |
-| 10 | 2.68e-3 | 1.44e-3 | 9.48e-3 | 2.00e-3 | 1.88e-3 | **1.84e-3** |
-| 20 | **0** | **0** | **0** | **0** | **0** | **0** |
-
-#### Rayleigh Fading
-
-| SNR (dB) | MLP-3K | Hybrid-3K | VAE-3K | CGAN-3K | Transformer-3K | Mamba-3K |
-|----------|----------|-----------|--------|---------|----------------|----------|
-| 0 | 2.59e-1 | 2.58e-1 | 2.70e-1 | 2.54e-1 | 2.50e-1 | **2.49e-1** |
-| 10 | 4.87e-2 | 4.84e-2 | 5.60e-2 | 4.74e-2 | 4.65e-2 | **4.64e-2** |
-| 20 | 5.84e-3 | 5.68e-3 | 7.08e-3 | 5.64e-3 | 5.64e-3 | **5.60e-3** |
-
-### Normalized 3K Plots
-
-| Plot | Description |
-|------|-------------|
-| `results/normalized_3k_awgn.png` | AWGN channel, all 6 models at ~3K params |
-| `results/normalized_3k_rayleigh.png` | Rayleigh fading, all 6 models at ~3K params |
-| `results/normalized_3k_all_channels.png` | **Consolidated 2×3 grid** of all channels |
-
----
-
-## AI Model Architectures
-
-### Mamba S6 (Selective State Space Model)
-
-```
-State equation: x_k = exp(Δ·A) · x_{k-1} + Δ·B · u_k
-Output:         y_k = C · x_k + D · u_k
-Selective:      Δ, B, C = f(input)    ← input-dependent!
-Complexity:     O(n) — linear in sequence length
-```
-
-Original: d_model=32, d_state=16, layers=2 → **24,001 params**
-3K: d_model=16, d_state=6, layers=1 → **3,027 params**
-
-### Transformer (Multi-Head Self-Attention)
-
-```
-Attention:  softmax(Q·Kᵀ / √d_k) · V
-Complexity: O(n²) — quadratic in sequence length
-```
-
-Original: d_model=32, heads=4, layers=2, feedforward width 64 → **17,697 params**
-3K: d_model=18, heads=2, layers=1 → **3,007 params**
-
-### MLP (Minimal Feedforward)
-
-```
-Input:   window of noisy symbols (size 5 or 11)
-Layer 1: input → hidden (ReLU)
-Output:  hidden → 1 (Tanh)
-```
-
-Original: window=5, hidden=24 → **169 params**
-3K: window=11, hidden=231 → **3,004 params**
-
-### VAE (Variational Autoencoder)
-
-```
-Encoder:  x → μ, log(σ²)    (latent space)
-Sample:   z = μ + σ · ε      (reparameterization trick)
-Decoder:  z → x̂              (reconstruction)
-Loss:     MSE + β · KL(q||p)
-```
-
-Original: hidden=(32, 16), latent=8 → **1,777 params**
-3K: hidden=(44, 20), latent=10 → **3,037 params**
-
-### CGAN (Conditional GAN / WGAN-GP)
-
-```
-Generator:  (noisy_signal, noise_z) → denoised_signal
-Critic:     (signal, condition) → realness_score
-Training:   Wasserstein loss + gradient penalty (λ=10) + L1 reconstruction (λ_L1=20)
-```
-
-Original: g_hidden=(32, 32, 16), c_hidden=(32, 16), noise=8 → **2,946 params**
-3K: g_hidden=(30, 30, 16), c_hidden=(32, 16), noise=8 → **3,004 params**
-
-### Hybrid (SNR-Adaptive)
-
-```python
-def process(received):                      # called per axis on the zero-forced block
-    est_snr = estimate_snr(received)        # 10*log10(1/(P_rx - 1)): assumes unit signal power
-    if est_snr < 5.0:                       # fixed threshold, not learned
-        return mlp_relay.process(received)  # own MLP sub-network, trained at 2/4/6 dB
-    return df_relay.process(received)
-```
-
-The estimate is not the operating SNR on the zero-forced Rayleigh observation (each axis carries
-power 1/2 and the noise is heavy-tailed), so in the canonical run the switch falls between 6 and
-8 dB (`hybrid_branch_selection.py`, thesis Sec. 4.2).
-
----
-
-## Project Structure
-
-```
-relaynet2/
-├── relaynet/                         # Core library package
-│   ├── channels/
-│   │   ├── awgn.py                       # AWGN channel
-│   │   ├── fading.py                     # Rayleigh & Rician fading (Rician used for the fading-PDF figure only)
-│   ├── modulation/
-│   │   └── bpsk.py                       # BPSK modulation/demodulation
-│   ├── relays/
-│   │   ├── af.py                         # Amplify-and-Forward
-│   │   ├── df.py                         # Decode-and-Forward
-│   │   ├── genai.py                      # Minimal MLP (feedforward NN)
-│   │   ├── hybrid.py                     # SNR-adaptive Hybrid relay
-│   │   ├── vae.py                        # Variational Autoencoder relay
-│   │   ├── cgan.py                       # Conditional GAN relay (WGAN-GP)
-│   │   └── base.py                       # Abstract relay base class
-│   ├── simulation/
-│   │   ├── runner.py                     # Monte Carlo BER simulation
-│   │   └── statistics.py                 # CI, significance tests
-│   ├── visualization/
-│   │   └── plots.py                      # BER plotting utilities
-│   └── utils/
-│       └── torch_compat.py               # PyTorch device helpers
-│
-├── checkpoints/                      # 22+ implementation checkpoints
-│   ├── checkpoint_01_channel.py          # AWGN channel model
-│   ├── checkpoint_02_modulation.py       # BPSK modulation
-│   ├── checkpoint_03_nodes.py            # Source/Relay/Destination nodes
-│   ├── checkpoint_04_simulation.py       # Simulation framework
-│   ├── checkpoint_05_plotting.py         # BER plotting
-│   ├── checkpoint_06_decode_forward.py   # DF relay
-│   ├── checkpoint_07_comparative_plot.py # AF vs DF comparison
-│   ├── checkpoint_08_genai_relay.py      # MLP relay
-│   ├── checkpoint_09_final_comparison.py # 3-way comparison
-│   ├── checkpoint_10_rl_relay.py         # RL (Q-Learning) relay
-│   ├── checkpoint_11_enhanced_training.py# Enhanced MLP
-│   ├── checkpoint_12_maximum_training.py # Maximum MLP
-│   ├── checkpoint_13_minimal_complexity.py # Minimal 169-param MLP
-│   ├── checkpoint_14_complexity_comparison_plot.py
-│   ├── checkpoint_15_vae_relay.py        # VAE relay
-│   ├── checkpoint_16_cgan_pytorch.py     # CGAN relay (PyTorch)
-│   ├── checkpoint_17_final_comparison.py # 4-way comparison
-│   ├── checkpoint_18_transformer_relay.py# Transformer relay
-│   ├── checkpoint_19_transformer_comparison.py
-│   ├── checkpoint_20_mamba_s6_relay.py   # Mamba S6 relay
-│   ├── checkpoint_21_final_with_mamba.py # Full comparison
-│   ├── checkpoint_22_master_ber_chart.py # Master BER charts
-│   └── checkpoint_22_normalized_3k.py    # 3K-param model factories
-│
-├── scripts/
-│   ├── run_full_comparison.py            # Full pipeline: train + evaluate all
-│   └── plot_normalized_3k.py             # Standalone 3K comparison plots
-│
-├── tests/                            # unit and integration tests (pytest)
-│   ├── test_channels.py                  # AWGN and Rayleigh channel tests
-│   ├── test_modulation.py                # BPSK modulation tests
-│   ├── test_relays.py                    # All relay strategy tests
-│   ├── test_simulation.py                # Monte Carlo runner tests
-│   └── test_statistics.py                # CI & significance tests
-│
-├── results/                          # Generated BER plots, JSON, charts
-│   ├── bpsk_comparison/                  # §7.2–7.7 BPSK relay comparisons
-│   ├── normalized_3k/                    # §7.8 equal-parameter comparison
-│   ├── modulation/                       # §7.10 BPSK→QPSK→QAM16
-│   ├── qam16_activation/                 # §7.11 activation study
-│   ├── classify_vs_regress/              # §7.13 classification formulation
-│   ├── classify_activations/             # §7.13 activation sweep
-│   ├── classify_closing_gap/             # §7.13 closing the DF gap
-│   ├── csi/                              # §7.14–7.15 CSI injection
-│   ├── e2e/                              # §7.16 end-to-end autoencoder
-│   ├── all_relays_16class/               # §7.17 16-class 2D (all 7 archs)
-│   ├── classify_16class/                 # §7.17 MLP 16-class variants
-│   ├── channel_analysis/                 # §7.1 channel model analysis
-│   ├── activation_comparison/            # legacy activation comparison
-│   ├── logs/                             # experiment failure logs
-│   └── ...
-│
-├── thesis/                           # M.Sc. thesis (canonical restructured version)
-│   ├── main.tex                          # XeLaTeX root (compiler set via magic comment)
-│   ├── main.pdf                          # compiled thesis
-│   ├── chapters/                         # ch01–ch09 + frontmatter, appendices
-│   ├── results/                          # thesis figures
-│   ├── fonts/                            # bundled TTF/OTF (Times New Roman, Arial, Courier New, David CLM)
-│   └── OVERLEAF.md                       # Overleaf compile instructions
-├── thesis_preview.pdf                # compiled thesis (top-level copy)
-├── thesis_overleaf.zip               # self-contained Overleaf upload package
-├── thesis_overleaf_clean.zip         # same sources; the annotation-stripped variant
-│
-├── e6_sim_ported.py                  # Unknown-channel study (Ch 6) ported to relaynet:
-├── e6_viterbi_ported.py              #   ISI, Viterbi-MLSE benchmark, flat control,
-├── e6_flat_ported.py                 #   composite cascade, blind/partial posterior,
-├── e6_composite_ported.py            #   and complexity — see Unknown-Channel Contribution
-├── e6_blind_ported.py
-├── e6_partial_ported.py
-├── e6_complexity_ported.py
-├── e6_unknown_channel_results/       # figures + .npy data for the ported unknown-channel studies
-│
-├── run_experiments.py                # Unified experiment runner (18 experiments)
-├── make.ps1                          # PowerShell build script (Windows)
-├── Makefile                          # GNU Make build script (Linux/macOS)
-├── EXPERIMENT_GUIDELINES.md          # Developer guide for experiments
-├── CHART_GUIDELINES.md               # Publication chart rules (22 rules)
-├── README.md
-├── TECHNICAL_REPORT.md               # Mathematical details
-├── MAMBA_FINAL_REPORT.md             # Mamba S6 analysis
-├── FINAL_SUMMARY.md                  # Project summary
-├── IMPLEMENTATION_PLAN.md            # Development plan
-└── CHECKPOINT_LOG.md                 # Development log
-```
-
----
-
-## Quick Start
-
-### Requirements
-
-```bash
-pip install numpy matplotlib torch scipy
-```
-
-
-```bash
-pip install torch --index-url https://download.pytorch.org/whl/cu124
-```
-
-### Run Experiments (Unified Runner)
-
-All 18 experiments are managed through `run_experiments.py`:
-
-```bash
-# List all available experiments
-python run_experiments.py --list
-
-# Run all experiments (quick mode — reduced samples/epochs)
-python run_experiments.py --quick
-
-# Run a specific experiment
-python run_experiments.py --exp 7.17 --quick
-
-# Force retrain (ignore cached checkpoints)
-python run_experiments.py --exp 7.2 --retrain
-
-# Regenerate all charts from saved JSON (no retraining)
-python run_experiments.py --regen-charts
-```
-
-### Build Script (PowerShell)
-
-A `make.ps1` script provides shorthand targets:
-
-```powershell
-.\make.ps1 help            # Show all targets
-.\make.ps1 list            # List experiments
-.\make.ps1 quick           # Run all experiments (quick)
-.\make.ps1 exp -s 7.17     # Run specific experiment
-.\make.ps1 retrain -s 7.2  # Force retrain
-.\make.ps1 charts          # Regenerate charts from JSON
-.\make.ps1 clean           # Clean all generated outputs
-```
-
-A GNU `Makefile` is also included for Linux/macOS.
-
-### Legacy Comparison Scripts
-
-```bash
-# Full pipeline: train + evaluate all (legacy)
-python scripts/run_full_comparison.py --include-sequence-models --include-normalized
-
-# Standalone 3K comparison plots
-python scripts/plot_normalized_3k.py --full
-```
-
-### Run a Single Relay Programmatically
-
-```python
-from relaynet.relays.df import DecodeAndForwardRelay
-from relaynet.simulation.runner import run_monte_carlo
-from relaynet.channels.awgn import awgn_channel
-
-relay = DecodeAndForwardRelay()
-results = run_monte_carlo(relay, snr_range=range(0, 21, 2),
-                          channel=awgn_channel, num_bits=10000, num_trials=10)
-for snr, ber, ci_lo, ci_hi in results:
-    print(f"SNR={snr:2d} dB  BER={ber:.4e}  CI=[{ci_lo:.4e}, {ci_hi:.4e}]")
-```
-
----
-
-## Testing
-
-Run the current test suite with the command below. Optional PyTorch/Mamba tests skip when their dependencies are unavailable; use the reported counts for the checked-out revision:
-
-```bash
-python -m pytest tests/ -q
-# Collection and pass/skip counts depend on the revision and installed optional dependencies.
-```
-
-Tests cover:
-- **Channels:** AWGN noise power, Rayleigh and Rician fading statistics
-- **Modulation:** BPSK modulate/demodulate correctness
-- **Relays:** All 6 AI relays + 2 classical relays (training, inference, parameter counts)
-- **Simulation:** Monte Carlo runner, BER computation
-- **Statistics:** Confidence intervals, Wilcoxon significance tests
-
----
-
-## Checkpoints Summary
-
-| CP | Description | Key Result |
-|----|-------------|-----------|
-| 01 | AWGN Channel | Noise model implementation |
-| 02 | BPSK Modulation | Modulation/demodulation |
-| 03 | Network Nodes | Source/Relay/Destination |
-| 04 | Simulation | Two-hop relay framework |
-| 05 | Plotting | BER visualization |
-| 06 | DF Relay | Classical baseline |
-| 07 | AF vs DF | DF >> AF |
-| 08 | MLP Relay | First AI relay |
-| 09 | 3-way Comparison | MLP beats AF |
-| 10 | RL Relay | Q-Learning approach |
-| 11 | Enhanced MLP | Better training |
-| 12 | Maximum MLP | Overfitting found |
-| 13 | **Minimal (169p)** | **Best parameter efficiency** |
-| 14 | Complexity Plot | Params vs performance |
-| 15 | VAE Relay | Probabilistic generative model |
-| 16 | CGAN Relay | Adversarial generative model |
-| 17 | 4-way Comparison | DF/Minimal/VAE/CGAN |
-| 18 | Transformer | Multi-head attention relay |
-| 19 | Transformer vs DF | Attention-based comparison |
-| 20 | **Mamba S6** | **Selective state space relay** |
-| 21 | Full Comparison | All 9 methods compared |
-| 22 | Master BER Charts | Final visualization + **3K normalized comparison** |
-
----
-
-## Recent Experiments Summary
-
-All experiments are managed through the unified `run_experiments.py` runner (18 experiments, §7.1–§7.17 + constellation diagrams). Every experiment supports `--quick` mode, saves `.pt` checkpoints, exports `.json` for chart regeneration, and logs failures automatically.
-
-| Section | Experiment | Results Directory |
-|---------|-----------|-------------------|
-| §7.1 | Channel Model Analysis | `results/channel_analysis/` |
-| §7.2 | BPSK AWGN Relay Comparison | `results/bpsk_comparison/` |
-| §7.3 | BPSK Rayleigh Relay Comparison | `results/bpsk_comparison/` |
-| §7.8 | Normalized 3K Comparison | `results/normalized_3k/` |
-| §7.9 | Master 2×3 Chart | `results/bpsk_comparison/` |
-| §7.10 | Modulation Comparison (BPSK → QPSK → QAM16) | `results/modulation/` |
-| §7.11 | QAM16 Activation Study | `results/qam16_activation/` |
-| §7.13 | Classification vs Regression + Activations + Closing Gap | `results/classify_vs_regress/`, `results/classify_activations/`, `results/classify_closing_gap/` |
-| §7.17 | 16-Class 2D QAM16 (all 7 architectures) | `results/all_relays_16class/` |
-
-### Modulation Extension — §7.10 (BPSK → QPSK → 16-QAM)
-
-- **QPSK**: All BPSK findings generalise fully via I/Q splitting — BER curves are identical to BPSK across all 9 relays.
-- **16-QAM**: BPSK-trained relays exhibit an irreducible BER floor (~0.18–0.25 at 16 dB) due to `tanh` compressing the 4-level PAM amplitudes.
-
-### Classification vs Regression — §7.13
-
-Three sub-studies explore the classification formulation for 16-QAM relaying:
-
-- **Classify vs Regress**: Classification MLP (4-class) achieves ~1.3× lower BER than regression MLP at 20 dB
-- **Activation Sweep**: 8 hidden/output activation combinations; H:Sigmoid wins overall, O:Sigmoid is the only catastrophic failure
-- **Closing the DF Gap**: 6 progressive enhancements (window, SNR range, hidden size) reduce the classification gap to DF from 8.1× to 1.0× at 20 dB
-
-### 16-Class 2D Classification — §7.17 (Key Breakthrough)
-
-**Problem**: Per-axis I/Q splitting classifies 4 levels independently per axis, producing a structural BER floor of ~0.0081 at 20 dB.
-
-**Solution**: Treat the relay as a **joint 2D classifier** over all 16 QAM constellation points. The model receives (y_I, y_Q) and outputs 16 logits. All 7 relay architectures tested in both 4-class and 16-class modes (14 variants total).
-
-| Relay | 4-cls BER @ 20 dB | 16-cls BER @ 20 dB | Improvement |
-|---|---|---|---|
-| MLP (472p) | 0.00811 | **0.00002** | 405× |
-| VAE (2,112p) | 0.00810 | **0.00000** | ∞ |
-| CGAN (3,361p) | 0.35340 | 0.28370 | 1.2× |
-| Hybrid (472p) | 0.00811 | **0.00000** | ∞ |
-| Transformer (17,984p) | 0.00810 | **0.00001** | 810× |
-| Mamba S6 (24,288p) | 0.00810 | **0.00009** | 90× |
-| Mamba-2 SSD (26,466p) | 0.00811 | **0.00197** | 4.1× |
-| DF (classical) | 0.00000 | — | — |
-
-**Key finding**: The top-3 16-class variants (Hybrid, VAE, MLP) **match classical DF** at 20 dB — the first time neural relays achieve near-zero BER on 16-QAM. The structural floor is an artefact of I/Q splitting, not a fundamental limitation of neural architectures. CGAN remains the poorest performer; Mamba-2 lags behind its S6 predecessor.
-
----
-
-## Citation
-
-If you use this work, please cite:
+## Citation and license
 
 ```bibtex
 @mastersthesis{zukerman2026relay,
@@ -772,6 +323,5 @@ If you use this work, please cite:
 }
 ```
 
-## License
-
-MIT License — see [LICENSE](LICENSE) for details.
+`setup.py` declares an MIT license classifier, but this revision contains no
+standalone license text. The former README link to `LICENSE` was broken.
