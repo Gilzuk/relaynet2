@@ -1,0 +1,1805 @@
+{
+ "description": "Paired tests behind the Chapter 5 statements about which canonical relays differ.",
+ "test": "two-sided Wilcoxon signed-rank, 10 paired trials, uncorrected",
+ "alpha": 0.05,
+ "tables": {
+  "table_5_2": {
+   "vs_DF": {
+    "MLP (169p)": [
+     {
+      "snr_db": 0,
+      "mean_diff": 0.0012600000000000055,
+      "p": 0.009765625,
+      "resolved": true
+     },
+     {
+      "snr_db": 2,
+      "mean_diff": 0.0015500000000000015,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 4,
+      "mean_diff": 0.001429999999999998,
+      "p": 0.005859375,
+      "resolved": true
+     },
+     {
+      "snr_db": 6,
+      "mean_diff": -3.999999999999559e-05,
+      "p": 0.671875,
+      "resolved": false
+     },
+     {
+      "snr_db": 8,
+      "mean_diff": 0.0011200000000000001,
+      "p": 0.015625,
+      "resolved": true
+     },
+     {
+      "snr_db": 10,
+      "mean_diff": 0.0007700000000000013,
+      "p": 0.01171875,
+      "resolved": true
+     },
+     {
+      "snr_db": 12,
+      "mean_diff": 0.0006599999999999988,
+      "p": 0.0078125,
+      "resolved": true
+     },
+     {
+      "snr_db": 14,
+      "mean_diff": 0.0005199999999999996,
+      "p": 0.021484375,
+      "resolved": true
+     },
+     {
+      "snr_db": 16,
+      "mean_diff": 0.0001800000000000003,
+      "p": 0.0546875,
+      "resolved": false
+     },
+     {
+      "snr_db": 18,
+      "mean_diff": 0.00018000000000000047,
+      "p": 0.189453125,
+      "resolved": false
+     },
+     {
+      "snr_db": 20,
+      "mean_diff": 0.00019999999999999982,
+      "p": 0.125,
+      "resolved": false
+     }
+    ],
+    "Hybrid": [
+     {
+      "snr_db": 0,
+      "mean_diff": -0.0007900000000000019,
+      "p": 0.0625,
+      "resolved": false
+     },
+     {
+      "snr_db": 2,
+      "mean_diff": 0.000709999999999994,
+      "p": 0.3125,
+      "resolved": false
+     },
+     {
+      "snr_db": 4,
+      "mean_diff": 5.000000000000282e-05,
+      "p": 0.921875,
+      "resolved": false
+     },
+     {
+      "snr_db": 6,
+      "mean_diff": 0.0010900000000000076,
+      "p": 0.017578125,
+      "resolved": true
+     },
+     {
+      "snr_db": 8,
+      "mean_diff": 0.0001899999999999985,
+      "p": 0.25,
+      "resolved": false
+     },
+     {
+      "snr_db": 10,
+      "mean_diff": 0.0002699999999999994,
+      "p": 1.0,
+      "resolved": false
+     },
+     {
+      "snr_db": 12,
+      "mean_diff": -5.000000000000004e-05,
+      "p": 1.0,
+      "resolved": false
+     },
+     {
+      "snr_db": 14,
+      "mean_diff": 0.0,
+      "p": 1.0,
+      "resolved": false
+     },
+     {
+      "snr_db": 16,
+      "mean_diff": 0.0,
+      "p": 1.0,
+      "resolved": false
+     },
+     {
+      "snr_db": 18,
+      "mean_diff": 0.0,
+      "p": 1.0,
+      "resolved": false
+     },
+     {
+      "snr_db": 20,
+      "mean_diff": 0.0,
+      "p": 1.0,
+      "resolved": false
+     }
+    ],
+    "VAE": [
+     {
+      "snr_db": 0,
+      "mean_diff": 0.002219999999999994,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 2,
+      "mean_diff": 0.0025800000000000046,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 4,
+      "mean_diff": 0.003510000000000002,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 6,
+      "mean_diff": 0.0023700000000000027,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 8,
+      "mean_diff": 0.0017299999999999982,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 10,
+      "mean_diff": 0.0016300000000000023,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 12,
+      "mean_diff": 0.0009099999999999997,
+      "p": 0.01171875,
+      "resolved": true
+     },
+     {
+      "snr_db": 14,
+      "mean_diff": 0.0002899999999999993,
+      "p": 0.21484375,
+      "resolved": false
+     },
+     {
+      "snr_db": 16,
+      "mean_diff": 0.00016999999999999966,
+      "p": 0.2890625,
+      "resolved": false
+     },
+     {
+      "snr_db": 18,
+      "mean_diff": 6.00000000000005e-05,
+      "p": 0.5,
+      "resolved": false
+     },
+     {
+      "snr_db": 20,
+      "mean_diff": 0.0,
+      "p": 1.0,
+      "resolved": false
+     }
+    ],
+    "Transformer": [
+     {
+      "snr_db": 0,
+      "mean_diff": 0.06776,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 2,
+      "mean_diff": 0.06506,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 4,
+      "mean_diff": 0.05392000000000001,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 6,
+      "mean_diff": 0.03605000000000001,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 8,
+      "mean_diff": 0.02065,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 10,
+      "mean_diff": 0.01012,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 12,
+      "mean_diff": 0.004859999999999998,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 14,
+      "mean_diff": 0.00249,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 16,
+      "mean_diff": 0.0014500000000000003,
+      "p": 0.00390625,
+      "resolved": true
+     },
+     {
+      "snr_db": 18,
+      "mean_diff": 0.0005600000000000004,
+      "p": 0.009765625,
+      "resolved": true
+     },
+     {
+      "snr_db": 20,
+      "mean_diff": 0.0004199999999999997,
+      "p": 0.013671875,
+      "resolved": true
+     }
+    ],
+    "Mamba S6": [
+     {
+      "snr_db": 0,
+      "mean_diff": 0.07341,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 2,
+      "mean_diff": 0.07158,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 4,
+      "mean_diff": 0.059289999999999995,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 6,
+      "mean_diff": 0.039720000000000005,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 8,
+      "mean_diff": 0.022970000000000004,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 10,
+      "mean_diff": 0.011559999999999999,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 12,
+      "mean_diff": 0.00574,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 14,
+      "mean_diff": 0.0031999999999999993,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 16,
+      "mean_diff": 0.0013500000000000005,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 18,
+      "mean_diff": 0.00052,
+      "p": 0.0078125,
+      "resolved": true
+     },
+     {
+      "snr_db": 20,
+      "mean_diff": 0.0002499999999999999,
+      "p": 0.0078125,
+      "resolved": true
+     }
+    ],
+    "Mamba2 (SSD)": [
+     {
+      "snr_db": 0,
+      "mean_diff": 0.06949999999999998,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 2,
+      "mean_diff": 0.06758000000000002,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 4,
+      "mean_diff": 0.05528999999999999,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 6,
+      "mean_diff": 0.03630000000000001,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 8,
+      "mean_diff": 0.01982,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 10,
+      "mean_diff": 0.009399999999999999,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 12,
+      "mean_diff": 0.004139999999999997,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 14,
+      "mean_diff": 0.001959999999999999,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 16,
+      "mean_diff": 0.0005700000000000007,
+      "p": 0.0234375,
+      "resolved": true
+     },
+     {
+      "snr_db": 18,
+      "mean_diff": 0.00023000000000000017,
+      "p": 0.08984375,
+      "resolved": false
+     },
+     {
+      "snr_db": 20,
+      "mean_diff": 3.999999999999976e-05,
+      "p": 0.5546875,
+      "resolved": false
+     }
+    ]
+   },
+   "vs_MLP169": {
+    "Hybrid": [
+     {
+      "snr_db": 0,
+      "mean_diff": -0.0020500000000000075,
+      "p": 0.01953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 2,
+      "mean_diff": -0.0008400000000000074,
+      "p": 0.068359375,
+      "resolved": false
+     },
+     {
+      "snr_db": 4,
+      "mean_diff": -0.0013799999999999952,
+      "p": 0.080078125,
+      "resolved": false
+     },
+     {
+      "snr_db": 6,
+      "mean_diff": 0.0011300000000000032,
+      "p": 0.0546875,
+      "resolved": false
+     },
+     {
+      "snr_db": 8,
+      "mean_diff": -0.0009300000000000017,
+      "p": 0.037109375,
+      "resolved": true
+     },
+     {
+      "snr_db": 10,
+      "mean_diff": -0.0005000000000000019,
+      "p": 0.0703125,
+      "resolved": false
+     },
+     {
+      "snr_db": 12,
+      "mean_diff": -0.0007099999999999988,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 14,
+      "mean_diff": -0.0005199999999999996,
+      "p": 0.021484375,
+      "resolved": true
+     },
+     {
+      "snr_db": 16,
+      "mean_diff": -0.0001800000000000003,
+      "p": 0.0546875,
+      "resolved": false
+     },
+     {
+      "snr_db": 18,
+      "mean_diff": -0.00018000000000000047,
+      "p": 0.189453125,
+      "resolved": false
+     },
+     {
+      "snr_db": 20,
+      "mean_diff": -0.00019999999999999982,
+      "p": 0.125,
+      "resolved": false
+     }
+    ],
+    "VAE": [
+     {
+      "snr_db": 0,
+      "mean_diff": 0.0009599999999999886,
+      "p": 0.16015625,
+      "resolved": false
+     },
+     {
+      "snr_db": 2,
+      "mean_diff": 0.0010300000000000031,
+      "p": 0.0234375,
+      "resolved": true
+     },
+     {
+      "snr_db": 4,
+      "mean_diff": 0.002080000000000004,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 6,
+      "mean_diff": 0.002409999999999998,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 8,
+      "mean_diff": 0.000609999999999998,
+      "p": 0.361328125,
+      "resolved": false
+     },
+     {
+      "snr_db": 10,
+      "mean_diff": 0.0008600000000000011,
+      "p": 0.005859375,
+      "resolved": true
+     },
+     {
+      "snr_db": 12,
+      "mean_diff": 0.0002500000000000009,
+      "p": 0.275390625,
+      "resolved": false
+     },
+     {
+      "snr_db": 14,
+      "mean_diff": -0.00023000000000000033,
+      "p": 0.546875,
+      "resolved": false
+     },
+     {
+      "snr_db": 16,
+      "mean_diff": -1.0000000000000633e-05,
+      "p": 0.91796875,
+      "resolved": false
+     },
+     {
+      "snr_db": 18,
+      "mean_diff": -0.00011999999999999996,
+      "p": 0.375,
+      "resolved": false
+     },
+     {
+      "snr_db": 20,
+      "mean_diff": -0.00019999999999999982,
+      "p": 0.14453125,
+      "resolved": false
+     }
+    ],
+    "Transformer": [
+     {
+      "snr_db": 0,
+      "mean_diff": 0.06649999999999999,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 2,
+      "mean_diff": 0.06351,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 4,
+      "mean_diff": 0.052490000000000016,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 6,
+      "mean_diff": 0.03609,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 8,
+      "mean_diff": 0.019530000000000002,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 10,
+      "mean_diff": 0.009349999999999999,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 12,
+      "mean_diff": 0.0042,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 14,
+      "mean_diff": 0.0019700000000000004,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 16,
+      "mean_diff": 0.0012699999999999999,
+      "p": 0.00390625,
+      "resolved": true
+     },
+     {
+      "snr_db": 18,
+      "mean_diff": 0.00037999999999999997,
+      "p": 0.09765625,
+      "resolved": false
+     },
+     {
+      "snr_db": 20,
+      "mean_diff": 0.00021999999999999987,
+      "p": 0.19921875,
+      "resolved": false
+     }
+    ],
+    "Mamba S6": [
+     {
+      "snr_db": 0,
+      "mean_diff": 0.07214999999999999,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 2,
+      "mean_diff": 0.07003000000000001,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 4,
+      "mean_diff": 0.05786,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 6,
+      "mean_diff": 0.039760000000000004,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 8,
+      "mean_diff": 0.02185,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 10,
+      "mean_diff": 0.010789999999999998,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 12,
+      "mean_diff": 0.005080000000000002,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 14,
+      "mean_diff": 0.0026799999999999997,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 16,
+      "mean_diff": 0.0011700000000000002,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 18,
+      "mean_diff": 0.0003399999999999995,
+      "p": 0.05078125,
+      "resolved": false
+     },
+     {
+      "snr_db": 20,
+      "mean_diff": 5.000000000000004e-05,
+      "p": 0.7421875,
+      "resolved": false
+     }
+    ],
+    "Mamba2 (SSD)": [
+     {
+      "snr_db": 0,
+      "mean_diff": 0.06824,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 2,
+      "mean_diff": 0.06603,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 4,
+      "mean_diff": 0.053860000000000005,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 6,
+      "mean_diff": 0.03634,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 8,
+      "mean_diff": 0.0187,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 10,
+      "mean_diff": 0.008629999999999997,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 12,
+      "mean_diff": 0.0034799999999999983,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 14,
+      "mean_diff": 0.0014399999999999997,
+      "p": 0.013671875,
+      "resolved": true
+     },
+     {
+      "snr_db": 16,
+      "mean_diff": 0.0003900000000000004,
+      "p": 0.087890625,
+      "resolved": false
+     },
+     {
+      "snr_db": 18,
+      "mean_diff": 4.99999999999997e-05,
+      "p": 0.71484375,
+      "resolved": false
+     },
+     {
+      "snr_db": 20,
+      "mean_diff": -0.00016000000000000007,
+      "p": 0.12109375,
+      "resolved": false
+     }
+    ]
+   },
+   "feedforward_pairs": {
+    "MLP (169p) - Hybrid": [
+     {
+      "snr_db": 0,
+      "mean_diff": 0.0020500000000000075,
+      "p": 0.01953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 2,
+      "mean_diff": 0.0008400000000000074,
+      "p": 0.068359375,
+      "resolved": false
+     },
+     {
+      "snr_db": 4,
+      "mean_diff": 0.0013799999999999952,
+      "p": 0.080078125,
+      "resolved": false
+     },
+     {
+      "snr_db": 6,
+      "mean_diff": -0.0011300000000000032,
+      "p": 0.0546875,
+      "resolved": false
+     },
+     {
+      "snr_db": 8,
+      "mean_diff": 0.0009300000000000017,
+      "p": 0.037109375,
+      "resolved": true
+     },
+     {
+      "snr_db": 10,
+      "mean_diff": 0.0005000000000000019,
+      "p": 0.0703125,
+      "resolved": false
+     },
+     {
+      "snr_db": 12,
+      "mean_diff": 0.0007099999999999988,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 14,
+      "mean_diff": 0.0005199999999999996,
+      "p": 0.021484375,
+      "resolved": true
+     },
+     {
+      "snr_db": 16,
+      "mean_diff": 0.0001800000000000003,
+      "p": 0.0546875,
+      "resolved": false
+     },
+     {
+      "snr_db": 18,
+      "mean_diff": 0.00018000000000000047,
+      "p": 0.189453125,
+      "resolved": false
+     },
+     {
+      "snr_db": 20,
+      "mean_diff": 0.00019999999999999982,
+      "p": 0.125,
+      "resolved": false
+     }
+    ],
+    "MLP (169p) - VAE": [
+     {
+      "snr_db": 0,
+      "mean_diff": -0.0009599999999999886,
+      "p": 0.16015625,
+      "resolved": false
+     },
+     {
+      "snr_db": 2,
+      "mean_diff": -0.0010300000000000031,
+      "p": 0.0234375,
+      "resolved": true
+     },
+     {
+      "snr_db": 4,
+      "mean_diff": -0.002080000000000004,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 6,
+      "mean_diff": -0.002409999999999998,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 8,
+      "mean_diff": -0.000609999999999998,
+      "p": 0.361328125,
+      "resolved": false
+     },
+     {
+      "snr_db": 10,
+      "mean_diff": -0.0008600000000000011,
+      "p": 0.005859375,
+      "resolved": true
+     },
+     {
+      "snr_db": 12,
+      "mean_diff": -0.0002500000000000009,
+      "p": 0.275390625,
+      "resolved": false
+     },
+     {
+      "snr_db": 14,
+      "mean_diff": 0.00023000000000000033,
+      "p": 0.546875,
+      "resolved": false
+     },
+     {
+      "snr_db": 16,
+      "mean_diff": 1.0000000000000633e-05,
+      "p": 0.91796875,
+      "resolved": false
+     },
+     {
+      "snr_db": 18,
+      "mean_diff": 0.00011999999999999996,
+      "p": 0.375,
+      "resolved": false
+     },
+     {
+      "snr_db": 20,
+      "mean_diff": 0.00019999999999999982,
+      "p": 0.14453125,
+      "resolved": false
+     }
+    ],
+    "Hybrid - VAE": [
+     {
+      "snr_db": 0,
+      "mean_diff": -0.003009999999999996,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 2,
+      "mean_diff": -0.0018700000000000105,
+      "p": 0.009765625,
+      "resolved": true
+     },
+     {
+      "snr_db": 4,
+      "mean_diff": -0.003459999999999999,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 6,
+      "mean_diff": -0.0012799999999999951,
+      "p": 0.01171875,
+      "resolved": true
+     },
+     {
+      "snr_db": 8,
+      "mean_diff": -0.0015399999999999997,
+      "p": 0.00390625,
+      "resolved": true
+     },
+     {
+      "snr_db": 10,
+      "mean_diff": -0.001360000000000003,
+      "p": 0.005859375,
+      "resolved": true
+     },
+     {
+      "snr_db": 12,
+      "mean_diff": -0.0009599999999999997,
+      "p": 0.01171875,
+      "resolved": true
+     },
+     {
+      "snr_db": 14,
+      "mean_diff": -0.0002899999999999993,
+      "p": 0.21484375,
+      "resolved": false
+     },
+     {
+      "snr_db": 16,
+      "mean_diff": -0.00016999999999999966,
+      "p": 0.2890625,
+      "resolved": false
+     },
+     {
+      "snr_db": 18,
+      "mean_diff": -6.00000000000005e-05,
+      "p": 0.5,
+      "resolved": false
+     },
+     {
+      "snr_db": 20,
+      "mean_diff": 0.0,
+      "p": 1.0,
+      "resolved": false
+     }
+    ]
+   },
+   "max_abs_mean_diff_vs_DF": {
+    "MLP (169p)": 0.0015500000000000015,
+    "Hybrid": 0.0010900000000000076,
+    "VAE": 0.003510000000000002,
+    "Transformer": 0.06776,
+    "Mamba S6": 0.07341,
+    "Mamba2 (SSD)": 0.06949999999999998
+   }
+  },
+  "table_5_3": {
+   "vs_DF": {
+    "MLP-3K": [
+     {
+      "snr_db": 0,
+      "mean_diff": 0.0023899999999999976,
+      "p": 0.00390625,
+      "resolved": true
+     },
+     {
+      "snr_db": 2,
+      "mean_diff": 0.0028000000000000026,
+      "p": 0.005859375,
+      "resolved": true
+     },
+     {
+      "snr_db": 4,
+      "mean_diff": 0.0025200000000000027,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 6,
+      "mean_diff": 0.0020800000000000068,
+      "p": 0.00390625,
+      "resolved": true
+     },
+     {
+      "snr_db": 8,
+      "mean_diff": 0.0011300000000000004,
+      "p": 0.0078125,
+      "resolved": true
+     },
+     {
+      "snr_db": 10,
+      "mean_diff": 0.0005999999999999992,
+      "p": 0.04296875,
+      "resolved": true
+     },
+     {
+      "snr_db": 12,
+      "mean_diff": 0.0006899999999999996,
+      "p": 0.03125,
+      "resolved": true
+     },
+     {
+      "snr_db": 14,
+      "mean_diff": 0.00075,
+      "p": 0.0078125,
+      "resolved": true
+     },
+     {
+      "snr_db": 16,
+      "mean_diff": 0.00015000000000000012,
+      "p": 0.333984375,
+      "resolved": false
+     },
+     {
+      "snr_db": 18,
+      "mean_diff": 0.0002800000000000002,
+      "p": 0.0390625,
+      "resolved": true
+     },
+     {
+      "snr_db": 20,
+      "mean_diff": 0.00017999999999999977,
+      "p": 0.0625,
+      "resolved": false
+     }
+    ],
+    "Hybrid-3K": [
+     {
+      "snr_db": 0,
+      "mean_diff": 0.00544,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 2,
+      "mean_diff": 0.006240000000000007,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 4,
+      "mean_diff": 0.00522,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 6,
+      "mean_diff": 0.004750000000000004,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 8,
+      "mean_diff": 0.0011200000000000001,
+      "p": 0.125,
+      "resolved": false
+     },
+     {
+      "snr_db": 10,
+      "mean_diff": 0.00047999999999999985,
+      "p": 1.0,
+      "resolved": false
+     },
+     {
+      "snr_db": 12,
+      "mean_diff": 3.0000000000000167e-05,
+      "p": 1.0,
+      "resolved": false
+     },
+     {
+      "snr_db": 14,
+      "mean_diff": 0.0,
+      "p": 1.0,
+      "resolved": false
+     },
+     {
+      "snr_db": 16,
+      "mean_diff": 0.0,
+      "p": 1.0,
+      "resolved": false
+     },
+     {
+      "snr_db": 18,
+      "mean_diff": 0.0,
+      "p": 1.0,
+      "resolved": false
+     },
+     {
+      "snr_db": 20,
+      "mean_diff": 0.0,
+      "p": 1.0,
+      "resolved": false
+     }
+    ],
+    "VAE-3K": [
+     {
+      "snr_db": 0,
+      "mean_diff": 0.00872,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 2,
+      "mean_diff": 0.008089999999999996,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 4,
+      "mean_diff": 0.007160000000000005,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 6,
+      "mean_diff": 0.005270000000000002,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 8,
+      "mean_diff": 0.00488,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 10,
+      "mean_diff": 0.0027100000000000015,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 12,
+      "mean_diff": 0.0024799999999999983,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 14,
+      "mean_diff": 0.0012900000000000001,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 16,
+      "mean_diff": 0.0005500000000000001,
+      "p": 0.005859375,
+      "resolved": true
+     },
+     {
+      "snr_db": 18,
+      "mean_diff": 0.0004500000000000004,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 20,
+      "mean_diff": 0.0004199999999999997,
+      "p": 0.00390625,
+      "resolved": true
+     }
+    ],
+    "Transformer-3K": [
+     {
+      "snr_db": 0,
+      "mean_diff": 0.07311999999999999,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 2,
+      "mean_diff": 0.07164,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 4,
+      "mean_diff": 0.05988,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 6,
+      "mean_diff": 0.04108,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 8,
+      "mean_diff": 0.023990000000000004,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 10,
+      "mean_diff": 0.01219,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 12,
+      "mean_diff": 0.005999999999999999,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 14,
+      "mean_diff": 0.0026799999999999992,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 16,
+      "mean_diff": 0.0014000000000000002,
+      "p": 0.00390625,
+      "resolved": true
+     },
+     {
+      "snr_db": 18,
+      "mean_diff": 0.00049,
+      "p": 0.0078125,
+      "resolved": true
+     },
+     {
+      "snr_db": 20,
+      "mean_diff": 0.0002599999999999998,
+      "p": 0.05078125,
+      "resolved": false
+     }
+    ],
+    "Mamba-3K": [
+     {
+      "snr_db": 0,
+      "mean_diff": 0.06702000000000001,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 2,
+      "mean_diff": 0.06499999999999999,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 4,
+      "mean_diff": 0.05317000000000001,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 6,
+      "mean_diff": 0.03466,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 8,
+      "mean_diff": 0.018800000000000004,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 10,
+      "mean_diff": 0.008919999999999997,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 12,
+      "mean_diff": 0.00406,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 14,
+      "mean_diff": 0.00206,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 16,
+      "mean_diff": 0.0005400000000000005,
+      "p": 0.03125,
+      "resolved": true
+     },
+     {
+      "snr_db": 18,
+      "mean_diff": 0.00016000000000000026,
+      "p": 0.3984375,
+      "resolved": false
+     },
+     {
+      "snr_db": 20,
+      "mean_diff": 2.9999999999999818e-05,
+      "p": 0.71875,
+      "resolved": false
+     }
+    ],
+    "Mamba2-3K": [
+     {
+      "snr_db": 0,
+      "mean_diff": 0.06641999999999999,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 2,
+      "mean_diff": 0.06402,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 4,
+      "mean_diff": 0.0523,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 6,
+      "mean_diff": 0.034010000000000006,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 8,
+      "mean_diff": 0.01866,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 10,
+      "mean_diff": 0.008799999999999999,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 12,
+      "mean_diff": 0.00427,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 14,
+      "mean_diff": 0.00206,
+      "p": 0.00390625,
+      "resolved": true
+     },
+     {
+      "snr_db": 16,
+      "mean_diff": 0.0006099999999999998,
+      "p": 0.0234375,
+      "resolved": true
+     },
+     {
+      "snr_db": 18,
+      "mean_diff": 0.00035999999999999975,
+      "p": 0.0078125,
+      "resolved": true
+     },
+     {
+      "snr_db": 20,
+      "mean_diff": 4.9999999999999874e-05,
+      "p": 0.7109375,
+      "resolved": false
+     }
+    ]
+   },
+   "vs_MLP169": {
+    "MLP-3K": [
+     {
+      "snr_db": 0,
+      "mean_diff": 0.0011299999999999921,
+      "p": 0.10546875,
+      "resolved": false
+     },
+     {
+      "snr_db": 2,
+      "mean_diff": 0.0012500000000000011,
+      "p": 0.02734375,
+      "resolved": true
+     },
+     {
+      "snr_db": 4,
+      "mean_diff": 0.0010900000000000048,
+      "p": 0.02734375,
+      "resolved": true
+     },
+     {
+      "snr_db": 6,
+      "mean_diff": 0.0021200000000000025,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 8,
+      "mean_diff": 1.0000000000000287e-05,
+      "p": 0.82421875,
+      "resolved": false
+     },
+     {
+      "snr_db": 10,
+      "mean_diff": -0.0001700000000000021,
+      "p": 0.2109375,
+      "resolved": false
+     },
+     {
+      "snr_db": 12,
+      "mean_diff": 3.0000000000000858e-05,
+      "p": 0.71875,
+      "resolved": false
+     },
+     {
+      "snr_db": 14,
+      "mean_diff": 0.00023000000000000033,
+      "p": 0.1328125,
+      "resolved": false
+     },
+     {
+      "snr_db": 16,
+      "mean_diff": -3.0000000000000167e-05,
+      "p": 0.84375,
+      "resolved": false
+     },
+     {
+      "snr_db": 18,
+      "mean_diff": 9.999999999999975e-05,
+      "p": 0.4296875,
+      "resolved": false
+     },
+     {
+      "snr_db": 20,
+      "mean_diff": -2.0000000000000052e-05,
+      "p": 0.70703125,
+      "resolved": false
+     }
+    ],
+    "Hybrid-3K": [
+     {
+      "snr_db": 0,
+      "mean_diff": 0.0041799999999999945,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 2,
+      "mean_diff": 0.004690000000000005,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 4,
+      "mean_diff": 0.0037900000000000017,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 6,
+      "mean_diff": 0.00479,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 8,
+      "mean_diff": 0.0,
+      "p": 0.845703125,
+      "resolved": false
+     },
+     {
+      "snr_db": 10,
+      "mean_diff": -0.00029000000000000136,
+      "p": 0.19140625,
+      "resolved": false
+     },
+     {
+      "snr_db": 12,
+      "mean_diff": -0.0006299999999999986,
+      "p": 0.015625,
+      "resolved": true
+     },
+     {
+      "snr_db": 14,
+      "mean_diff": -0.0005199999999999996,
+      "p": 0.021484375,
+      "resolved": true
+     },
+     {
+      "snr_db": 16,
+      "mean_diff": -0.0001800000000000003,
+      "p": 0.0546875,
+      "resolved": false
+     },
+     {
+      "snr_db": 18,
+      "mean_diff": -0.00018000000000000047,
+      "p": 0.189453125,
+      "resolved": false
+     },
+     {
+      "snr_db": 20,
+      "mean_diff": -0.00019999999999999982,
+      "p": 0.125,
+      "resolved": false
+     }
+    ],
+    "VAE-3K": [
+     {
+      "snr_db": 0,
+      "mean_diff": 0.007459999999999994,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 2,
+      "mean_diff": 0.0065399999999999955,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 4,
+      "mean_diff": 0.005730000000000008,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 6,
+      "mean_diff": 0.005309999999999998,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 8,
+      "mean_diff": 0.0037599999999999995,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 10,
+      "mean_diff": 0.00194,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 12,
+      "mean_diff": 0.0018199999999999994,
+      "p": 0.00390625,
+      "resolved": true
+     },
+     {
+      "snr_db": 14,
+      "mean_diff": 0.0007700000000000005,
+      "p": 0.025390625,
+      "resolved": true
+     },
+     {
+      "snr_db": 16,
+      "mean_diff": 0.00036999999999999983,
+      "p": 0.01953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 18,
+      "mean_diff": 0.00026999999999999995,
+      "p": 0.13671875,
+      "resolved": false
+     },
+     {
+      "snr_db": 20,
+      "mean_diff": 0.00021999999999999987,
+      "p": 0.0546875,
+      "resolved": false
+     }
+    ],
+    "Transformer-3K": [
+     {
+      "snr_db": 0,
+      "mean_diff": 0.07185999999999998,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 2,
+      "mean_diff": 0.07008999999999999,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 4,
+      "mean_diff": 0.05845,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 6,
+      "mean_diff": 0.04112,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 8,
+      "mean_diff": 0.02287,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 10,
+      "mean_diff": 0.011419999999999998,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 12,
+      "mean_diff": 0.00534,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 14,
+      "mean_diff": 0.0021599999999999996,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 16,
+      "mean_diff": 0.00122,
+      "p": 0.005859375,
+      "resolved": true
+     },
+     {
+      "snr_db": 18,
+      "mean_diff": 0.0003099999999999995,
+      "p": 0.12890625,
+      "resolved": false
+     },
+     {
+      "snr_db": 20,
+      "mean_diff": 5.999999999999998e-05,
+      "p": 0.828125,
+      "resolved": false
+     }
+    ],
+    "Mamba-3K": [
+     {
+      "snr_db": 0,
+      "mean_diff": 0.06576,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 2,
+      "mean_diff": 0.06345,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 4,
+      "mean_diff": 0.05174000000000001,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 6,
+      "mean_diff": 0.034699999999999995,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 8,
+      "mean_diff": 0.01768,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 10,
+      "mean_diff": 0.008149999999999996,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 12,
+      "mean_diff": 0.0034000000000000015,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 14,
+      "mean_diff": 0.0015400000000000004,
+      "p": 0.00390625,
+      "resolved": true
+     },
+     {
+      "snr_db": 16,
+      "mean_diff": 0.00036000000000000024,
+      "p": 0.22265625,
+      "resolved": false
+     },
+     {
+      "snr_db": 18,
+      "mean_diff": -2.0000000000000225e-05,
+      "p": 0.83984375,
+      "resolved": false
+     },
+     {
+      "snr_db": 20,
+      "mean_diff": -0.00017,
+      "p": 0.2890625,
+      "resolved": false
+     }
+    ],
+    "Mamba2-3K": [
+     {
+      "snr_db": 0,
+      "mean_diff": 0.06516,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 2,
+      "mean_diff": 0.062470000000000005,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 4,
+      "mean_diff": 0.05087000000000001,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 6,
+      "mean_diff": 0.03404999999999999,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 8,
+      "mean_diff": 0.01754,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 10,
+      "mean_diff": 0.008029999999999999,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 12,
+      "mean_diff": 0.0036100000000000012,
+      "p": 0.001953125,
+      "resolved": true
+     },
+     {
+      "snr_db": 14,
+      "mean_diff": 0.0015400000000000004,
+      "p": 0.015625,
+      "resolved": true
+     },
+     {
+      "snr_db": 16,
+      "mean_diff": 0.0004299999999999995,
+      "p": 0.09375,
+      "resolved": false
+     },
+     {
+      "snr_db": 18,
+      "mean_diff": 0.00017999999999999925,
+      "p": 0.1953125,
+      "resolved": false
+     },
+     {
+      "snr_db": 20,
+      "mean_diff": -0.00014999999999999996,
+      "p": 0.234375,
+      "resolved": false
+     }
+    ]
+   },
+   "max_abs_mean_diff_vs_DF": {
+    "MLP-3K": 0.0028000000000000026,
+    "Hybrid-3K": 0.006240000000000007,
+    "VAE-3K": 0.00872,
+    "Transformer-3K": 0.07311999999999999,
+    "Mamba-3K": 0.06702000000000001,
+    "Mamba2-3K": 0.06641999999999999
+   }
+  }
+ }
+}

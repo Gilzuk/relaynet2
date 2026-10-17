@@ -1,0 +1,48 @@
+{
+  "id": "common_target_analysis",
+  "kind": "analysis",
+  "worker": "script",
+  "script": "penalty_common_targets.py",
+  "outputs": [
+    "results/penalty_common_targets.json"
+  ],
+  "ignored": [
+    "/git_rev"
+  ],
+  "scope": "Table 6.7, Appendix 9.6 and minimum-size conclusions; saved-curve reanalysis",
+  "status": "FAILED",
+  "started_at": "2026-10-17T08:47:49.464673+00:00",
+  "reference_files": [
+    {
+      "path": "results/penalty_common_targets.json",
+      "sha256": "52547e01e768f88d6fea547551727a746f19c820f682f9ddee2a657d15c44e3d",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/634ec5c3572b0b6848bf5adb3f7cc61251c8c733/results/penalty_common_targets.json"
+    }
+  ],
+  "source_commit": "634ec5c3572b0b6848bf5adb3f7cc61251c8c733",
+  "timeout_seconds": 28800,
+  "command": [
+    "/workspace/scratch/781ec23bff5d/repro-venv/bin/python",
+    "-u",
+    "scripts/reproduction_worker.py",
+    "--job",
+    "common_target_analysis",
+    "--threads",
+    "2"
+  ],
+  "environment_overrides": {
+    "OMP_NUM_THREADS": "2",
+    "OPENBLAS_NUM_THREADS": "2",
+    "MKL_NUM_THREADS": "2",
+    "NUMEXPR_NUM_THREADS": "2",
+    "PYTHONHASHSEED": "0",
+    "MPLBACKEND": "Agg",
+    "CUDA_VISIBLE_DEVICES": ""
+  },
+  "pid": 13,
+  "elapsed_seconds": 10.0,
+  "returncode": 2,
+  "artifacts": [],
+  "finished_at": "2026-10-17T08:47:59.482999+00:00",
+  "log_sha256": "7b0fb1b6cb81cc2c8ad18a37126ca5cc509bc59a92b17528447ad3258dfcda7f"
+}

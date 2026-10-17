@@ -6,6 +6,8 @@ checks a declared subset of the thesis against those results. Recomputing a
 saved comparison and retraining an original neural checkpoint are different
 tasks; exact canonical retraining is not possible from the retained record.
 
+For the four October validation jobs, use the [researcher protocol](docs/round2_reproduction_protocol.md): exact environment, one-script launch, per-study seeds/budgets, weight inventory and explicit missing records. `requirements-round2.txt` is the environment of those jobs; the legacy setup below uses a different dependency set.
+
 ```bash
 git clone https://github.com/Gilzuk/relaynet2
 cd relaynet2
@@ -27,7 +29,7 @@ Two distinct claims, checkable independently:
 
 1. **The thesis matches its data.** A declared subset of numerical table cells
    and prose numbers is compared against the file that produced it; it does not
-   cover every number or figure. This is `make verify`: **873 values,
+   cover every number or figure. This is `make verify`: **892 values,
    0 discrepancies** (2026-10-17), exit code 1 on any mismatch.
 2. **Experiments can be rerun under stated limits.** Seed formulas and budgets
    belong to each driver. `--seed 42` does not seed every PyTorch RNG in the
@@ -46,11 +48,11 @@ above it.
 | Tier | Command | Time | Needs | What it establishes |
 |---|---|---|---|---|
 | 0 | `make verify` | ~1 min | numpy, scipy | Declared numerical coverage matches saved data |
-| 0 | `make test` | < 1 min | + pytest | Implementation and analysis regression tests; optional Mamba-2 tests may skip |
+| 0 | `make test` | depends on environment | + pytest | Implementation and analysis regression tests; optional Mamba-2 tests may skip |
 | 1 | `make repro-unknown` | budget dependent; potentially hours | numpy, scipy | Runs six legacy BPSK drivers, then verifies; does not run later fixed-budget confirmations or every Chapter 6 study |
 | 1b | `make repro-qpsk` | ~20 min | numpy, scipy | Recomputes the QPSK unknown-channel study (ISI → AWGN and → Rayleigh) |
 | 2 | `make repro-full` | hours | **+ torch** | Runs the legacy driver, then verifies; revision studies below are separate |
-| 3 | `make reproduce-all` | many hours | **+ torch** | Re-runs every registered experiment in a separate worktree, compares each output with the committed file, then verifies; published results untouched (`make reproduce-plan` prints the plan) |
+| 3 | `make reproduce-all` | many hours | **+ torch** | Runs registered producers in a separate worktree, retains historical records as references, compares fresh outputs and verifies (`make reproduce-plan` prints the plan) |
 
 ### Tier 0 — verification
 
@@ -100,33 +102,85 @@ nine-relay training pass took ~3.2 hours, of which the CGAN alone was ~2 hours
 (64%). On CPU it is substantially slower. For a smoke test rather than a
 publication-quality run, use `make quick`.
 
-### Tier 3 — re-run every registered experiment, without touching the archive
+### Tier 3 — execute registered producers and preserve comparison evidence
 
 ```bash
-make reproduce-plan     # print the ordered plan; runs nothing
-make reproduce-all      # run it in a separate worktree, then verify
+make reproduce-plan                  # inspect the plan; runs nothing
+make reproduce-all                   # full budgets, detached worktree, then verify
+python scripts/reproduce_all.py --run --seed 42 --threads 2 --only 'ISI required-SNR'
 ```
 
-`scripts/reproduce_all.py` builds its plan from `provenance_audit.REGISTRY` plus the producers the registry
-does not list: the two canonical `run_experiments.py` stages behind Tables 5.2 and 5.3 (the commands in
-ledger C4) and the original unweighted coded studies. Matched coded reruns get `CODED_METRIC=matched
-CODED_TRIALS=30`; `coded_min_size_matched.py` gets `CODED_METRIC=matched` with its own budget. A step that
-reads another step's result file runs after it. Options: `--only REGEX`, `--skip REGEX`, `--no-torch`,
-`--json`, `--keep-worktree`, `--no-verify`.
+Commit source changes first. The runner uses that exact `HEAD`, rejects tracked
+uncommitted changes, and never writes generated results over the published files
+in the working checkout. A full run can take many hours or longer on CPU; the
+fixed-budget rare-event studies alone request billions of bits. This review did
+**not** execute every full-budget producer.
 
-`--run` checks out the committed `HEAD` into a detached worktree and runs every step there, so the archived
-results are never overwritten and uncommitted changes are not part of a run. Evidence goes to
-`results/reproduce_all/<run-id>/`: the plan and environment, a log per step, a copy of every declared output,
-and `comparison.json`, which compares each regenerated file with the committed one by SHA-256 (MATCH,
-DIFFERS, MISSING or NEW). Differences are recorded for review, not accepted under a tolerance.
-`verify_thesis_tables.py` then runs inside the worktree against the regenerated data.
+The plan accounts for every `provenance_audit.REGISTRY` output and adds the two
+canonical stages behind Tables 5.2–5.3 plus the unweighted coded studies. Three
+historical records (the dated round-2 suite manifest, RNG audit and original-driver
+control) are **archive references**, not commands to run again at their historic
+paths. Their outputs are copied and hashed without being called reproductions.
+The retained-model audit and rerun assessment analyze the existing immutable
+archive. The rare-event original and replicate use source-seed bases 1000 and
+7000 respectively, with distinct output paths. Matched coded variants set
+`CODED_METRIC=matched CODED_TRIALS=30`; the matched minimum-size driver retains
+its own budget.
 
-Seeded experiments should MATCH. The learned columns of Tables 5.2 and 5.3 will DIFFER: the canonical runs
-seeded their training data and evaluation trials but not PyTorch.
+Each child process starts with Python, NumPy and (when required) PyTorch seeded
+with **42** by default. `--seed` changes this bootstrap, not driver-local trial,
+training-data or initialization seeds. Torch deterministic algorithms are enabled;
+unsupported nondeterministic operations fail. `--threads` defaults to 2. RNG states
+before and after the driver, package versions, relevant environment settings,
+Torch build details, exact arguments and source commit are retained. Inherited
+coded-study overrides are cleared before explicit step settings are applied.
+These controls support same-environment repetition; they do not guarantee bitwise
+identity across hardware or software versions or recover missing historical RNG
+states/checkpoints.
 
-For the round-2 experiments, `scripts/reproduce_round2.py` (PR #184) is the more detailed runner, with
-frozen-source jobs, reference hashes and per-field comparisons in GitHub Actions. `reproduce_all.py` is the
-complete list: it also covers the experiments outside that suite.
+Dependency ordering uses literal-path hints and explicit ordering of writers to
+a shared file. Dynamic imports/paths are not a complete dataflow analysis.
+`--only`, `--skip` and `--no-torch` make partial plans; omitted upstream producers
+are recorded as **committed archival inputs**, not freshly reproduced results.
+`--no-torch` conservatively excludes local transitive Torch imports, including
+optional imports. Any failed producer blocks later execution and the verifier,
+because independence of dynamic inputs cannot be guaranteed.
+
+Evidence is written to a **new** `results/reproduce_all/<run-id>/` directory:
+`plan.json`, `summary.json`, `comparison.json`, and numbered per-step directories
+with `job.json`, `run.log`, RNG states and output snapshots. Every shared-file
+version is preserved separately. Changed files under `results/`, `weights/` and
+`reproduction_checkpoints/` are also retained and hashed. Drivers that never save
+trained weights still cannot provide checkpoint replay; `--keep-worktree` retains
+the disposable checkout for inspection. Existing evidence directories are rejected.
+Progress is saved after each step; unexpected interruption keeps the worktree.
+
+Before the first producer of a declared output, its committed copy is removed
+**inside the disposable worktree**. Later shared-file writers must rewrite that
+fresh output. A no-op cannot pass by finding an old result. Comparisons use exact
+SHA-256 file bytes, with no numerical tolerance:
+
+| Status | Meaning |
+|---|---|
+| `BYTE_MATCH` | Successful producer wrote a file with the committed bytes |
+| `BYTES_DIFFER_REVIEW` / `NEW` | Successful producer wrote different/new bytes; scientific interpretation requires review |
+| `MISSING` / `NOT_REGENERATED` | Producer did not supply a fresh declared output |
+| `PARTIAL_OUTPUT` | Output exists but its producer failed |
+| `ARCHIVE_REFERENCE` | Copied historical evidence; no new experiment was executed |
+
+CLI exit **1** means a failed/missing/stale/blocked step, setup error or failed
+thesis verifier. Exit **2** means completed steps with differing/new bytes needing
+review. Exit **0** means no such failures or byte differences, within the selected
+plan and requested checks. `--no-verify` is explicitly recorded and does not
+certify thesis consistency. File differences can include metadata or timing;
+`BYTE_MATCH` is not a statistical equivalence test. Historical learned runs with
+missing states are additional seeded realizations, not exact reproductions;
+differences alone do not invalidate the original results or establish their cause.
+
+Use `scripts/reproduce_round2.py` for the focused suite's frozen jobs, per-field
+comparisons and model-specific checkpoint evidence. `reproduce_all.py` provides
+broader orchestration, not a claim that the entire thesis has been rerun or every
+historical training state recovered.
 
 ---
 
@@ -222,7 +276,7 @@ calibrate_simulator.py        E1 calibration: simulator vs closed-form BER (Eb/N
 verify_thesis_tables.py       Checks the thesis against its data sources
 results/                      Committed experiment outputs (JSON + figures)
 e6_unknown_channel_results/   Committed unknown-channel outputs (.npy + figures)
-tests/                        351 tests (pytest)
+tests/                        Implementation and evidence checks (pytest)
 thesis/                       LaTeX sources, figures, fonts, CHANGELOG
   main.tex                      Compile with XeLaTeX; includes the chapters below
   chapters/ch0N_*.tex           One file per chapter. After ch05 the file numbers run
@@ -251,17 +305,16 @@ scripts/check_env.py          Environment doctor
 - **Hardware can affect numerical results.** Fixed data and weights remove
   training variation, but floating-point/backend differences can still change
   a decision close to a boundary. Bit identity must be checked, not assumed.
-- **Floating-point across platforms.** Different BLAS builds can perturb the
-  last displayed digit of an evaluation, and the verifier's rounding tolerance
-  absorbs this.
-- **Seeded training is exact only on one machine.** Retraining the
-  sequence-on-memory relays with the same seed gave identical weights in every
-  fresh process on one machine. On another machine with the same installed
-  software it gave a different relay: Mamba-S6 moved by 0.21 dB and the
-  Transformer by 0.89 dB, while the MLP was identical. Per-seed penalties and
-  three-seed spreads of trained sequence models therefore change from machine to
-  machine (Sec. 6.4.2). Rerun them on your machine and compare
-  best-of-three values, not individual seeds.
+- **Floating-point across platforms.** BLAS/backend differences can affect
+  optimization and decisions; the effect is not guaranteed to stay in the last
+  displayed digit. Preserve discrepancies rather than expanding a tolerance.
+- **Repeatability is an empirical check, not a seed guarantee.** Earlier
+  tested configurations repeated on one host but differed on another. The
+  later full-budget MLP seed-42 control repeated exactly on its host. The new
+  sequence study also differs for the MLP, despite repeated seed IDs. Preserve
+  every seed curve and compare common-target penalties, censored cases and
+  spread by execution environment; best-of-three agreement alone is insufficient.
+  These differences do not by themselves invalidate the original measurements.
 - **Canonical inference and missing records.** The VAE already decodes its
   latent mean deterministically; sampling is used in training, not evaluation.
   Exact retraining of the canonical learned relays is not possible: PyTorch
@@ -278,10 +331,11 @@ scripts/check_env.py          Environment doctor
 `make verify` exits 1 and prints each mismatch as
 `table | cell | published | source | difference`.
 
-- After re-running an experiment, a small difference within Monte-Carlo noise
-  is expected; the tolerance should absorb it. A large difference means the
-  thesis and the data genuinely disagree.
-- If a table changed, update the LaTeX to match the data source, never the
-  reverse.
-- `make check` first if something looks structurally wrong — a missing results
-  directory reports as a skip rather than a mismatch.
+- First distinguish a missing/corrupted historical input from a new training
+  realization. A new-run difference is not automatically a transcription error
+  or evidence that the original measurement was wrong.
+- Preserve both records and inspect run configuration, RNG policy, environment
+  and comparison fields. Change manuscript claims only with identified evidence;
+  never overwrite historical results or tune tolerances to force agreement.
+- Report missing inputs and skipped checks explicitly; an incomplete check does
+  not establish a pass for the omitted evidence.

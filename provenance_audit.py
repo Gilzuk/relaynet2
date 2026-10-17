@@ -22,6 +22,7 @@ that was silently true for e6_sim_ported_results.npy for ten days.
 
 import io
 import hashlib
+import json
 import os
 import re
 import subprocess
@@ -31,6 +32,25 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 
 # experiment -> (script, [output files], [published tables/figures])
 REGISTRY = {
+    "Round-2 retained model checkpoint audit": (
+        "scripts/audit_round2_models.py", ["results/round2_model_checkpoint_audit.json"],
+        ["model compatibility audit; no new training or BER results"]),
+    "Round-2 archived-rerun assessment": (
+        "scripts/assess_round2_reruns.py", ["results/round2_rerun_assessment.json"],
+        ["sec:round2-rerun-validation; fresh paired tests and historical/rerun distinctions"]),
+    "Historical seed-42 MLP repeatability control": (
+        "scripts/audit_rng_reproducibility.py",
+        ["results/reproduction/20261017-rng-seed42/comparison.json",
+         "results/reproduction/20261017-rng-seed42/manifest.json"],
+        ["same-host RNG control only; does not replace Table 5.2"]),
+    "Round-2 reproduction evidence (separate from published inputs)": (
+        "scripts/reproduce_round2.py",
+        ["results/reproduction/20261017-round2-v2/manifest.json"],
+        ["new reproduction suite; status and scope in results/reproduction/README.md"]),
+    "Original-driver MLP reproduction control": (
+        "scripts/reproduction_original_control.py",
+        ["results/reproduction/20261017-original-control/comparison.json"],
+        ["instrumentation control only; does not replace Table 6.7"]),
     "Coded error location, matched metrics": (
         "coded_error_mechanism.py", ["results/coded_error_mechanism_matched.json"], ["tbl:table38 matched rows"]),
     "Coded reliable regime, matched metrics": (
@@ -219,7 +239,7 @@ def params_of(script):
     return out
 
 
-def last_commit(path):
+def last_commit(path, revision="HEAD"):
     """(sha, iso-date, author, subject, epoch-timestamp) for path's last commit.
 
     Both a short date (for display) and a full timestamp (for the staleness
@@ -234,7 +254,7 @@ def last_commit(path):
     if not os.path.exists(os.path.join(ROOT, path)):
         return None
     out = subprocess.run(
-        ["git", "log", "-1", "--format=%h\t%cs\t%an\t%s\t%ct", "--", path],
+        ["git", "log", "-1", "--format=%h\t%cs\t%an\t%s\t%ct", revision, "--", path],
         cwd=ROOT, capture_output=True, text=True).stdout.strip()
     if not out:
         return None
@@ -284,14 +304,33 @@ REVIEWED_STALE = {
 }
 
 
+# An archived attempt describes its frozen producer, not later runner changes.
+# Pin independently of the manifest, and reject a mismatched declaration. This
+# is not a stale-data exception for any current thesis input.
+FROZEN_RUN_SOURCES = {
+    "results/reproduction/20261017-round2-v2/manifest.json":
+        "43ce4a6fbfe2a147a8c77c0fb06e44fcd5d7d5e2",
+}
+
+
 def audit():
     rows, warn = [], []
     for name, (script, outputs, artefacts) in sorted(REGISTRY.items()):
-        s = last_commit(script)
         for out in outputs:
+            revision = FROZEN_RUN_SOURCES.get(out, "HEAD")
+            s = last_commit(script, revision)
             o = last_commit(out)
             status = "ok"
-            if s is None:
+            valid_source = True
+            if out in FROZEN_RUN_SOURCES:
+                try:
+                    with open(os.path.join(ROOT, out), encoding="utf-8") as f:
+                        valid_source = json.load(f).get("source_commit") == revision
+                except (OSError, ValueError):
+                    valid_source = False
+            if not valid_source:
+                status = "FROZEN SOURCE MISMATCH"
+            elif s is None:
                 status = "SCRIPT MISSING"
             elif o is None:
                 status = "DATA UNCOMMITTED"
@@ -310,6 +349,7 @@ def audit():
                 warn.append((name, status, script, out,
                              s[1] if s else "-", o[1] if o else "-"))
             rows.append({"experiment": name, "script": script, "output": out,
+                         "producer_revision": revision,
                          "script_commit": s, "data_commit": o,
                          "artefacts": artefacts, "status": status})
     return rows, warn

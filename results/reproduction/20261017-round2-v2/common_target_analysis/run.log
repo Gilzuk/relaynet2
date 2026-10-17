@@ -1,0 +1,66 @@
+Preparing worktree (detached HEAD 43ce4a6)
+HEAD is now at 43ce4a6 fix: populate isolated sparse worktree before running experiments
+Table 6.7 (best of three, spread):
+  isi          MLP-3K          published +1.97 (0.39)  common +1.97 (0.39)  unreached [[], [], []]
+  isi          Transformer-3K  published +3.52 (0.33)  common +3.52 (0.33)  unreached [[], [], []]
+  isi          Mamba-S6-3K     published +4.30 (1.15)  common +4.30 (1.15)  unreached [[], [], []]
+  isi          Mamba2-3K       published +4.55 (0.14)  common +4.55 (0.14)  unreached [[], [], []]
+  isi_complex  MLP-3K          published +2.58 (0.07)  common +2.58 (0.07)  unreached [[], [], []]
+  isi_complex  Transformer-3K  published +5.96 (0.45)  common +5.96 (0.45)  unreached [[], [], []]
+  isi_complex  Mamba-S6-3K     published +5.72 (1.33)  common +5.72 (1.33)  unreached [[], [], []]
+  isi_complex  Mamba2-3K       published +4.69 (2.12)  common +5.83 (>3.28)  unreached [[], ['0.001'], []]  <-- CHANGES
+  composite    MLP-3K          published -2.08 (0.03)  common -2.08 (0.03)  unreached [[], [], []]
+  composite    Transformer-3K  published -1.76 (0.03)  common -1.76 (0.03)  unreached [[], [], []]
+  composite    Mamba-S6-3K     published -1.56 (0.08)  common -1.56 (0.08)  unreached [[], [], []]
+  composite    Mamba2-3K       published -1.60 (0.06)  common -1.60 (0.06)  unreached [[], [], []]
+Table 6.6:
+  isi          eq {'3': ('+6.48', '+6.58'), '5': ('+4.31', '+4.40'), '7': ('+4.14', '+4.23'), '11': ('+3.95', '+4.04')}  learned old +1.67 (median +1.69) new +1.67 (median +1.69) cfg 433p w7
+  isi_complex  eq {'3': ('+7.81', '+7.81'), '5': ('+9.11', '+9.11'), '7': ('+5.02', '+5.02'), '11': ('+4.83', '+4.84')}  learned old +3.03 (median +3.46) new +3.03 (median +3.46) cfg 433p w7
+  composite    eq {'3': ('-0.31', '-0.33'), '5': ('-0.34', '-0.37'), '7': ('-0.35', '-0.37'), '11': ('-0.42', '-0.44')}  learned old -2.26 (median -2.23) new -2.26 (median -2.23) cfg 289p w7
+Table 9.4 (budget cells):
+  awgn           old ['4p w1', '4p w1', '4p w1', '4p w1', '4p w1', '4p w1']
+                 new ['4p w1', '4p w1', '4p w1', '4p w1', '4p w1', '4p w1']  missing-target configs: 0
+  rayleigh       old ['4p w1', '4p w1', '4p w1', '4p w1', '4p w1', '4p w1']
+                 new ['4p w1', '4p w1', '4p w1', '4p w1', '4p w1', '4p w1']  missing-target configs: 0
+  flat_gain      old ['21p w3', '21p w3', '21p w3', '4p w1', '4p w1', '4p w1']
+                 new ['21p w3', '21p w3', '21p w3', '4p w1', '4p w1', '4p w1']  missing-target configs: 0
+  branch_asym    old ['4p w1', '4p w1', '4p w1', '4p w1', '4p w1', '4p w1']
+                 new ['4p w1', '4p w1', '4p w1', '4p w1', '4p w1', '4p w1']  missing-target configs: 0
+  nlbias         old ['29p w5', '4p w1', '4p w1', '4p w1', '4p w1', '4p w1']
+                 new ['29p w5', '4p w1', '4p w1', '4p w1', '4p w1', '4p w1']  missing-target configs: 0
+  isi            old ['73p w7', '73p w7', '57p w5', '57p w5', '37p w7', '21p w3']
+                 new ['73p w7', '73p w7', '57p w5', '57p w5', '37p w7', '21p w3']  missing-target configs: 5
+  isi_complex    old ['73p w7', '73p w7', '73p w7', '73p w7', '57p w5', '21p w3']
+                 new ['73p w7', '73p w7', '73p w7', '73p w7', '57p w5', '21p w3']  missing-target configs: 9
+  isi_rayleigh   old ['145p w7', '73p w7', '73p w7', '73p w7', '37p w7', '21p w3']
+                 new ['145p w7', '73p w7', '73p w7', '73p w7', '37p w7', '21p w3']  missing-target configs: 5
+  composite      old ['145p w7', '73p w7', '57p w5', '21p w3', '21p w3', '6p w3']
+                 new ['145p w7', '73p w7', '57p w5', '21p w3', '21p w3', '6p w3']  missing-target configs: 5
+  coded          old ['372p w9', '244p w5', '244p w5', '18p w1', '18p w1', '18p w1']
+                 new ['-', '-', '-', '18p w1', '18p w1', '18p w1']  <-- CHANGES  missing-target configs: 3
+Table 9.5 (seed spread):
+  awgn           old  17 0.055 0.116 0.138   new  17 0.055 0.116 0.138  bounded 0 undefined 0
+  rayleigh       old  17 0.008 0.019 0.028   new  17 0.008 0.019 0.028  bounded 0 undefined 0
+  flat_gain      old  17 0.622 1.000 1.250   new  17 0.622 1.000 1.250  bounded 0 undefined 0
+  branch_asym    old  17 0.388 0.892 1.013   new  17 0.388 0.892 1.013  bounded 0 undefined 0
+  nlbias         old  17 1.231 1.242 1.245   new  17 1.231 1.242 1.245  bounded 0 undefined 0
+  isi            old  18 0.195 0.705 0.996   new  16 0.189 0.738 0.996  bounded 0 undefined 5
+  isi_complex    old  17 0.332 2.325 3.182   new  15 0.404 1.110 1.555  bounded 3 undefined 6
+  isi_rayleigh   old  16 0.177 0.588 0.795   new  16 0.177 0.588 0.795  bounded 0 undefined 5
+  composite      old  16 0.036 0.165 0.195   new  16 0.036 0.165 0.195  bounded 0 undefined 5
+  All            old 152 0.180 1.229 3.182   new 148 0.176 1.226 1.555  bounded 3 undefined 
+Table 9.6:
+  MLP-3K          published spread 0.055  old [0.13345654645925542, 0.16230176489827208, 0.18868327941473062]  new [0.13345654645925542, 0.16230176489827208, 0.18868327941473062] [False, False, False] spread 0.055
+  VAE-3K          published spread 0.156  old [0.07223264704515486, 0.2284038958256982, 0.14214932768859256]  new [0.07223264704515486, 0.2284038958256982, 0.14214932768859256] [False, True, False] spread >0.156
+  Transformer-3K  published spread 0.906  old [2.038608191364583, 1.1466998265818216, 1.1329781895138833]  new [2.038608191364583, 1.1466998265818216, 1.1329781895138833] [True, False, True] spread >0.892
+  Mamba-S6-3K     published spread 0.041  old [1.1229398669663517, 1.1098248662948915, 1.0819153426565293]  new [1.1229398669663517, 1.1098248662948915, 1.0819153426565293] [False, False, False] spread 0.041
+  Mamba2-3K       published spread 0.019  old [1.1125993990133605, 1.0939218613278179, 1.0975154717489506]  new [1.1125993990133605, 1.0939218613278179, 1.0975154717489506] [False, False, False] spread 0.019
+Native spreads: {'MLP (169p)': (0.043, '0.043'), 'Hybrid': (0.007, '0.007'), 'VAE': (0.091, '>0.091'), 'Transformer': (0.075, '>0.075'), 'Mamba S6': (0.004, '0.004'), 'Mamba2 (SSD)': (0.013, '0.013')}
+Transformer instability: per-seed new [2.039, 1.147, 1.133, 1.13, 1.164, 1.162, 1.131, 1.156] bounds [True, False, True, False, False, True, False, False] r {'all': 0.9984969724214788, 'converged': -0.37673654573176907}
+Coded coded_min_size.json: range old +1.10..+1.91  new +1.10..+1.91  changed []
+Coded coded_min_size_matched.json: range old +7.58..+9.77  new +9.61..+10.30  changed [(244, 7.58, '>10.30'), (372, 7.58, '>10.30'), (564, 7.59, '9.82'), (756, 7.59, '9.77')]
+Window crossover (memory channels): {'isi': {'1': '>12.95', '3': '3.60', '5': '2.75', '7': '1.67'}, 'isi_complex': {'1': '>11.14', '3': '5.51', '5': '4.82', '7': '3.03'}, 'isi_rayleigh': {'1': '>9.56', '3': '0.74', '5': '-0.22', '7': '-0.90'}, 'composite': {'1': '>9.40', '3': '-1.91', '5': '-2.11', '7': '-2.26'}}
+  w1->w7 gain: {'isi': '>11.27', 'isi_complex': '>8.10', 'isi_rayleigh': '>10.47', 'composite': '>11.65'}
+Seq rerun: outside 0.25 dB, comparable rule ['isi_complex/Transformer-3K']; published rule ['isi_complex/Transformer-3K', 'isi_complex/Mamba2-3K']
+Table 9.5 exactness: {'awgn': {'median_exact': True, 'p90_exact': True, 'max_exact': True}, 'rayleigh': {'median_exact': True, 'p90_exact': True, 'max_exact': True}, 'flat_gain': {'median_exact': True, 'p90_exact': True, 'max_exact': True}, 'branch_asym': {'median_exact': True, 'p90_exact': True, 'max_exact': True}, 'nlbias': {'median_exact': True, 'p90_exact': True, 'max_exact': True}, 'isi': {'median_exact': True, 'p90_exact': True, 'max_exact': True}, 'isi_complex': {'median_exact': True, 'p90_exact': False, 'max_exact': False}, 'isi_rayleigh': {'median_exact': True, 'p90_exact': True, 'max_exact': True}, 'composite': {'median_exact': True, 'p90_exact': True, 'max_exact': True}, 'All': {'median_exact': True, 'p90_exact': False, 'max_exact': False}}
+saved results/penalty_common_targets.json

@@ -1,0 +1,21 @@
+{
+  "status": "MATCH",
+  "difference_count": 0,
+  "differences": [],
+  "classical_control_differences": [],
+  "reference_files": [
+    "results/modulation/qpsk_rayleigh.json",
+    "results/normalized_3k/3k_rayleigh.json"
+  ],
+  "matching_reference": [
+    "results/modulation/qpsk_rayleigh.json",
+    "results/normalized_3k/3k_rayleigh.json"
+  ],
+  "ignored_paths": [],
+  "numeric_tolerance": {
+    "rtol": 1e-12,
+    "atol": 1e-14
+  },
+  "scope": "Fresh AF/DF evaluation: 11 SNRs, 10 trials \u00d7 10,000 bits, trial seeds 0\u20139",
+  "interpretation": "MATCH means the selected scientific fields agree within roundoff; not byte identity, statistical equivalence or independent validation of every thesis claim."
+}

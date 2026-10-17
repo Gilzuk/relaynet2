@@ -1,0 +1,146 @@
+{
+  "run_id": "20261017-round2",
+  "source_commit": "634ec5c3572b0b6848bf5adb3f7cc61251c8c733",
+  "branch": "experiments/round2-reproduction-20261017",
+  "pid": 5,
+  "started_at": "2026-10-17T08:47:49.210102+00:00",
+  "status": "REVIEW_REQUIRED",
+  "jobs": [
+    {
+      "id": "common_target_analysis",
+      "kind": "analysis",
+      "worker": "script",
+      "script": "penalty_common_targets.py",
+      "outputs": [
+        "results/penalty_common_targets.json"
+      ],
+      "ignored": [
+        "/git_rev"
+      ],
+      "scope": "Table 6.7, Appendix 9.6 and minimum-size conclusions; saved-curve reanalysis",
+      "status": "FAILED",
+      "started_at": "2026-10-17T08:47:49.464673+00:00",
+      "finished_at": "2026-10-17T08:47:59.482999+00:00",
+      "elapsed_seconds": 10.0
+    },
+    {
+      "id": "canonical_paired_analysis",
+      "kind": "analysis",
+      "worker": "script",
+      "script": "canonical_paired_tests.py",
+      "outputs": [
+        "results/canonical_paired_tests.json"
+      ],
+      "ignored": [],
+      "scope": "Tables 5.2\u20135.3 paired comparisons; saved-curve reanalysis",
+      "status": "FAILED",
+      "started_at": "2026-10-17T08:47:59.485426+00:00",
+      "finished_at": "2026-10-17T08:48:09.500335+00:00",
+      "elapsed_seconds": 10.0
+    },
+    {
+      "id": "canonical_af_df",
+      "kind": "deterministic_simulation",
+      "worker": "baselines",
+      "outputs": [
+        "results/reproduction_canonical_af_df.json"
+      ],
+      "references": [
+        "results/modulation/qpsk_rayleigh.json",
+        "results/normalized_3k/3k_rayleigh.json"
+      ],
+      "scope": "Fresh AF/DF evaluation: 11 SNRs, 10 trials \u00d7 10,000 bits, trial seeds 0\u20139",
+      "status": "FAILED",
+      "started_at": "2026-10-17T08:48:09.501524+00:00",
+      "finished_at": "2026-10-17T08:48:19.515502+00:00",
+      "elapsed_seconds": 10.0
+    },
+    {
+      "id": "factorized_mlse",
+      "kind": "deterministic_simulation",
+      "worker": "script",
+      "script": "factorized_mlse_equivalence.py",
+      "outputs": [
+        "results/factorized_mlse_equivalence.json"
+      ],
+      "ignored": [
+        "/git_rev"
+      ],
+      "scope": "Full joint/factorized control: L=3,5,7; six SNRs; 2,000 symbols per block; original depths",
+      "status": "FAILED",
+      "started_at": "2026-10-17T08:48:19.516611+00:00",
+      "finished_at": "2026-10-17T08:48:29.530113+00:00",
+      "elapsed_seconds": 10.0
+    },
+    {
+      "id": "sequence_memory",
+      "kind": "seeded_retraining",
+      "worker": "sequence",
+      "outputs": [
+        "results/reproduction_seq_memory.json"
+      ],
+      "references": [
+        "results/seq_models_on_memory.json",
+        "results/penalty_common_targets.json"
+      ],
+      "scope": "All 3 channels \u00d7 4 architectures \u00d7 seeds 0,1,2; original 40 epochs and 20\u00d720,000-bit budget",
+      "status": "FAILED",
+      "started_at": "2026-10-17T08:48:29.532089+00:00",
+      "finished_at": "2026-10-17T08:48:39.548140+00:00",
+      "elapsed_seconds": 10.0
+    },
+    {
+      "id": "coded_matched",
+      "kind": "seeded_retraining",
+      "worker": "script",
+      "script": "coded_matched_metrics.py",
+      "outputs": [
+        "results/coded_matched_metrics.json"
+      ],
+      "env": {
+        "CMM_TRIALS": "30",
+        "CMM_SNRS": "0,4,8,12,16,20"
+      },
+      "ignored": [
+        "/seconds"
+      ],
+      "scope": "Full matched coded comparison: 30 trials \u00d7 500 frames at six SNRs; hard/soft MLP, no Mamba",
+      "status": "FAILED",
+      "started_at": "2026-10-17T08:48:39.549553+00:00",
+      "finished_at": "2026-10-17T08:48:49.568527+00:00",
+      "elapsed_seconds": 10.0
+    },
+    {
+      "id": "canonical_native",
+      "kind": "new_training_replication",
+      "worker": "canonical",
+      "stage": "7.10",
+      "outputs": [
+        "results/modulation/qpsk_rayleigh.json"
+      ],
+      "seed": 20261017,
+      "scope": "Original native protocol, 100 epochs; new declared PyTorch seed, absent historical checkpoints/RNG",
+      "status": "FAILED",
+      "started_at": "2026-10-17T08:48:49.569583+00:00",
+      "finished_at": "2026-10-17T08:48:59.582817+00:00",
+      "elapsed_seconds": 10.0
+    },
+    {
+      "id": "canonical_3k",
+      "kind": "new_training_replication",
+      "worker": "canonical",
+      "stage": "7.8",
+      "outputs": [
+        "results/normalized_3k/3k_rayleigh.json"
+      ],
+      "seed": 20261017,
+      "scope": "Original 3K protocol, 100 epochs; new declared PyTorch seed, absent historical checkpoints/RNG",
+      "status": "FAILED",
+      "started_at": "2026-10-17T08:48:59.583920+00:00",
+      "finished_at": "2026-10-17T08:49:09.597725+00:00",
+      "elapsed_seconds": 10.0
+    }
+  ],
+  "updated_at": "2026-10-17T08:49:09.598818+00:00",
+  "finished_at": "2026-10-17T08:49:09.598815+00:00"
+}

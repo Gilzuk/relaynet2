@@ -1,0 +1,14 @@
+{
+  "command": [
+    "/workspace/scratch/781ec23bff5d/repro-venv/bin/python",
+    "-u",
+    "/workspace/scratch/781ec23bff5d/relaynet2-review/scripts/audit_rng_reproducibility.py",
+    "--source-dir",
+    "/workspace/scratch/781ec23bff5d/relaynet2-review/_reproduction_work/20261017-rng-seed42-historical",
+    "--output-dir",
+    "/workspace/scratch/781ec23bff5d/relaynet2-review/results/reproduction/20261017-rng-seed42/legacy_default_2",
+    "--worker",
+    "legacy_default"
+  ],
+  "returncode": 0
+}

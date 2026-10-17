@@ -1,0 +1,29 @@
+{
+  "run_id": "gha-39024026594-1-sequence_memory",
+  "source_commit": "c0394f0da5dac449594b89a9794fe251fad75e76",
+  "branch": "",
+  "pid": 2551,
+  "started_at": "2026-10-17T10:13:29.977133+00:00",
+  "status": "REVIEW_REQUIRED",
+  "jobs": [
+    {
+      "id": "sequence_memory",
+      "kind": "seeded_retraining",
+      "worker": "sequence",
+      "outputs": [
+        "results/reproduction_seq_memory.json"
+      ],
+      "references": [
+        "results/seq_models_on_memory.json",
+        "results/penalty_common_targets.json"
+      ],
+      "scope": "All 3 channels \u00d7 4 architectures \u00d7 seeds 0,1,2; original 40 epochs and 20\u00d720,000-bit budget",
+      "status": "RETRAINING_DIFFERENCE_REQUIRES_REVIEW",
+      "started_at": "2026-10-17T10:13:30.227904+00:00",
+      "finished_at": "2026-10-17T11:00:50.796167+00:00",
+      "elapsed_seconds": 2840.6
+    }
+  ],
+  "updated_at": "2026-10-17T11:00:50.848415+00:00",
+  "finished_at": "2026-10-17T11:00:50.848412+00:00"
+}

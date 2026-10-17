@@ -1,0 +1,15 @@
+Preparing worktree (detached HEAD 43ce4a6)
+HEAD is now at 43ce4a6 fix: populate isolated sparse worktree before running experiments
+table_5_2 MLP (169p)      DF ahead at [0, 2, 4, 8, 10, 12, 14]; relay ahead at []; max |diff| 0.0016
+table_5_2 Hybrid          DF ahead at [6]; relay ahead at []; max |diff| 0.0011
+table_5_2 VAE             DF ahead at [0, 2, 4, 6, 8, 10, 12]; relay ahead at []; max |diff| 0.0035
+table_5_2 Transformer     DF ahead at [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20]; relay ahead at []; max |diff| 0.0678
+table_5_2 Mamba S6        DF ahead at [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20]; relay ahead at []; max |diff| 0.0734
+table_5_2 Mamba2 (SSD)    DF ahead at [0, 2, 4, 6, 8, 10, 12, 14, 16]; relay ahead at []; max |diff| 0.0695
+table_5_3 MLP-3K          DF ahead at [0, 2, 4, 6, 8, 10, 12, 14, 18]; relay ahead at []; max |diff| 0.0028
+table_5_3 Hybrid-3K       DF ahead at [0, 2, 4, 6]; relay ahead at []; max |diff| 0.0062
+table_5_3 VAE-3K          DF ahead at [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20]; relay ahead at []; max |diff| 0.0087
+table_5_3 Transformer-3K  DF ahead at [0, 2, 4, 6, 8, 10, 12, 14, 16, 18]; relay ahead at []; max |diff| 0.0731
+table_5_3 Mamba-3K        DF ahead at [0, 2, 4, 6, 8, 10, 12, 14, 16]; relay ahead at []; max |diff| 0.0670
+table_5_3 Mamba2-3K       DF ahead at [0, 2, 4, 6, 8, 10, 12, 14, 16, 18]; relay ahead at []; max |diff| 0.0664
+saved results/canonical_paired_tests.json

@@ -1,0 +1,10 @@
+Sequence architectures on channels with memory
+1 architectures x 3 seeds, trained on the channel under test
+
+  === isi (bpsk, baseline MLSE: near-optimal) ===
+    MLP-3K           dB vs MLSE:  +2.36   +1.97   +2.07   best +1.97  spread 0.399   [28s]
+
+==========================================================================
+  isi            best MLP-3K at +1.97 dB  |  MLP +1.97 vs best sequence n/a
+  saved results/seq_models_on_memory.json
+INSTRUMENTATION_CONTROL_MATCH 0 differences vs replay; 12 vs published

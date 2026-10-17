@@ -1,0 +1,23 @@
+Preparing worktree (detached HEAD 43ce4a6)
+HEAD is now at 43ce4a6 fix: populate isolated sparse worktree before running experiments
+  L=3  0 dB: 7 decoder settings, disagreements 0
+  L=3  4 dB: 7 decoder settings, disagreements 0
+  L=3  8 dB: 7 decoder settings, disagreements 0
+  L=3 12 dB: 7 decoder settings, disagreements 0
+  L=3 16 dB: 7 decoder settings, disagreements 0
+  L=3 20 dB: 7 decoder settings, disagreements 0
+  L=5  0 dB: 8 decoder settings, disagreements 0
+  L=5  4 dB: 8 decoder settings, disagreements 0
+  L=5  8 dB: 8 decoder settings, disagreements 0
+  L=5 12 dB: 8 decoder settings, disagreements 0
+  L=5 16 dB: 8 decoder settings, disagreements 0
+  L=5 20 dB: 8 decoder settings, disagreements 0
+  L=7  0 dB: 7 decoder settings, disagreements 0
+  L=7  4 dB: 7 decoder settings, disagreements 0
+  L=7  8 dB: 7 decoder settings, disagreements 0
+  L=7 12 dB: 7 decoder settings, disagreements 0
+  L=7 16 dB: 7 decoder settings, disagreements 0
+  L=7 20 dB: 7 decoder settings, disagreements 0
+
+compared 264,000 symbols; disagreements: 0
+wrote results/factorized_mlse_equivalence.json

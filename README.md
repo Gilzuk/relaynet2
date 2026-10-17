@@ -256,7 +256,7 @@ python verify_thesis_tables.py    # published cells vs their data sources
 python provenance_audit.py        # every result file is committed and newer than its script
 ```
 
-`verify_thesis_tables.py` reads the LaTeX, extracts each published value, and compares it against the `.json`/`.npy` that generated it, with a tolerance set by the number of decimals shown. It currently checks **873 cells across 44 tables and prose claims**.
+`verify_thesis_tables.py` reads the LaTeX, extracts each published value, and compares it against the `.json`/`.npy` that generated it, with a tolerance set by the number of decimals shown. It currently checks **892 cells across 45 tables and prose claims**.
 
 `provenance_audit.py` links each experiment to its script, its output files and the commit that produced them, and fails if a result is uncommitted or predates the script that generates it. `python provenance_audit.py --tables` regenerates the per-table reproduction ledger in `memory-bank/table_provenance.md`.
 
@@ -525,7 +525,7 @@ relaynet2/
 │   ├── run_full_comparison.py            # Full pipeline: train + evaluate all
 │   └── plot_normalized_3k.py             # Standalone 3K comparison plots
 │
-├── tests/                            # 358 collected tests (pytest)
+├── tests/                            # unit and integration tests (pytest)
 │   ├── test_channels.py                  # AWGN and Rayleigh channel tests
 │   ├── test_modulation.py                # BPSK modulation tests
 │   ├── test_relays.py                    # All relay strategy tests
@@ -662,11 +662,11 @@ for snr, ber, ci_lo, ci_hi in results:
 
 ## Testing
 
-The current suite collects 358 tests. With PyTorch and the Mamba-2 module all 358 pass; without them four optional tests skip:
+Run the current test suite with the command below. Optional PyTorch/Mamba tests skip when their dependencies are unavailable; use the reported counts for the checked-out revision:
 
 ```bash
 python -m pytest tests/ -q
-# 358 passed (354 passed, 4 skipped without the optional PyTorch/Mamba-2 module)
+# Collection and pass/skip counts depend on the revision and installed optional dependencies.
 ```
 
 Tests cover:

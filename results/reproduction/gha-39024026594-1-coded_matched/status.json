@@ -1,0 +1,33 @@
+{
+  "run_id": "gha-39024026594-1-coded_matched",
+  "source_commit": "c0394f0da5dac449594b89a9794fe251fad75e76",
+  "branch": "",
+  "pid": 2549,
+  "started_at": "2026-10-17T10:13:29.172108+00:00",
+  "status": "REVIEW_REQUIRED",
+  "jobs": [
+    {
+      "id": "coded_matched",
+      "kind": "seeded_retraining",
+      "worker": "script",
+      "script": "coded_matched_metrics.py",
+      "outputs": [
+        "results/coded_matched_metrics.json"
+      ],
+      "env": {
+        "CMM_TRIALS": "30",
+        "CMM_SNRS": "0,4,8,12,16,20"
+      },
+      "ignored": [
+        "/seconds"
+      ],
+      "scope": "Full matched coded comparison: 30 trials \u00d7 500 frames at six SNRs; hard/soft MLP, no Mamba",
+      "status": "RETRAINING_DIFFERENCE_REQUIRES_REVIEW",
+      "started_at": "2026-10-17T10:13:29.435550+00:00",
+      "finished_at": "2026-10-17T11:22:00.702030+00:00",
+      "elapsed_seconds": 4111.3
+    }
+  ],
+  "updated_at": "2026-10-17T11:22:00.746303+00:00",
+  "finished_at": "2026-10-17T11:22:00.746298+00:00"
+}

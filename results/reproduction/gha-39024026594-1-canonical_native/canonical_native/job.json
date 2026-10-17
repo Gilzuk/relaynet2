@@ -1,0 +1,118 @@
+{
+  "id": "canonical_native",
+  "kind": "new_training_replication",
+  "worker": "canonical",
+  "stage": "7.10",
+  "outputs": [
+    "results/modulation/qpsk_rayleigh.json"
+  ],
+  "seed": 20261017,
+  "scope": "Original native protocol, 100 epochs; new declared PyTorch seed, absent historical checkpoints/RNG",
+  "status": "RETRAINING_DIFFERENCE_REQUIRES_REVIEW",
+  "started_at": "2026-10-17T10:13:26.725142+00:00",
+  "reference_files": [
+    {
+      "path": "results/modulation/qpsk_rayleigh.json",
+      "sha256": "d2382010c95ae645d1687b4a3de4230ccfce54821487aa2437625448ce206b6f",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/c0394f0da5dac449594b89a9794fe251fad75e76/results/modulation/qpsk_rayleigh.json"
+    }
+  ],
+  "source_commit": "c0394f0da5dac449594b89a9794fe251fad75e76",
+  "timeout_seconds": 19800.0,
+  "command": [
+    "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+    "-u",
+    "scripts/reproduction_worker.py",
+    "--job",
+    "canonical_native",
+    "--threads",
+    "2"
+  ],
+  "environment_overrides": {
+    "OMP_NUM_THREADS": "2",
+    "OPENBLAS_NUM_THREADS": "2",
+    "MKL_NUM_THREADS": "2",
+    "NUMEXPR_NUM_THREADS": "2",
+    "PYTHONHASHSEED": "0",
+    "MPLBACKEND": "Agg",
+    "CUDA_VISIBLE_DEVICES": ""
+  },
+  "pid": 2312,
+  "elapsed_seconds": 2170.9,
+  "returncode": 0,
+  "artifacts": [
+    {
+      "path": "outputs/reproduction_checkpoints/canonical_native/Hybrid.pt",
+      "sha256": "462fcce7081e39089ba67230e21725140a97faf64a6024b2447ab5d1db1dea24",
+      "bytes": 8590
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/canonical_native/MLP_169p_.pt",
+      "sha256": "5c4bca08949ed8a42bd470b5a31ae441a9598010cbdc2b48e4ad3341e08fcd23",
+      "bytes": 8751
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/canonical_native/Mamba2_SSD_.pt",
+      "sha256": "31ad63d433654685df53fa66258696f3d75670dc7fc12c886d5b92f1fb8324ae",
+      "bytes": 126248
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/canonical_native/Mamba_S6.pt",
+      "sha256": "532f11e1de36f72011548191ba6128b4a78cfdf2b2157130061e3c55d131976a",
+      "bytes": 115991
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/canonical_native/Transformer.pt",
+      "sha256": "e869a8690dccf5fe1ba2058a7d169621848ac5e3c90b69fe76a62e4699d84cec",
+      "bytes": 90267
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/canonical_native/VAE.pt",
+      "sha256": "115961f932ee9a06081cf7b4efe2d58830cd3cfb36a2709ff5f32c62a80da352",
+      "bytes": 17250
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/canonical_native/protocol.json",
+      "sha256": "c5c7f6fa362950527835f7d63cff85f339651d1e233c4b72ecfe08c76f5f022c",
+      "bytes": 474
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/canonical_native/torch_rng_before_construction.pt",
+      "sha256": "81c84046655ab159c9099b72c93a419674095e0c83affdae9cb5ed6803be492d",
+      "bytes": 6851
+    },
+    {
+      "path": "outputs/results/modulation/bpsk_awgn.json",
+      "sha256": "e84ae72bc3bfcd49eb9503758136b374b99764e70cc8865d913a17226bdb0dfd",
+      "bytes": 23006
+    },
+    {
+      "path": "outputs/results/modulation/bpsk_awgn_ci.png",
+      "sha256": "bc3d4304e4835f94e27ff0bf3cb9b10fde551e643a916373e41b04fb9f15f5bf",
+      "bytes": 195596
+    },
+    {
+      "path": "outputs/results/modulation/qam16_rayleigh.json",
+      "sha256": "77dea930db56a9a0c4c5937f0e02cd9ab4734543582291d2a8c1bb4acff8998b",
+      "bytes": 25803
+    },
+    {
+      "path": "outputs/results/modulation/qam16_rayleigh_ci.png",
+      "sha256": "fd3c99c8c1c35092177224b002da94b1bfb6062c05b77e95b07d96a953f0e7e8",
+      "bytes": 157381
+    },
+    {
+      "path": "outputs/results/modulation/qpsk_rayleigh.json",
+      "sha256": "3383e50339bf8f6cd8b87804ec82a556ae8d118b174325f28b3090b121998f22",
+      "bytes": 25975
+    },
+    {
+      "path": "outputs/results/modulation/qpsk_rayleigh_ci.png",
+      "sha256": "e30850bf0b12e4bd404c318d515317b7a3fe77ed822b6d7af99ddc94ae2133ca",
+      "bytes": 189527
+    }
+  ],
+  "difference_count": 635,
+  "finished_at": "2026-10-17T10:49:37.625853+00:00",
+  "log_sha256": "30a98dd3d004dd11f9eed95cf16e66d97fbcdf98bd7005658b5837e27411ba0d"
+}

@@ -270,6 +270,7 @@ MIN_CELLS = {
     # red-team fixes (2026-10-14): corrected blind intervals, fixed-gain AF, Fig. 6.7(b), Table 6.6 median.
     "prose:timing-mmse-median": 6,
     "prose:khina-round2": 60,
+    "prose:round2-rerun": 19,
 }
 
 # Checks allowed to skip, with the reason. A skip means the check could not run
@@ -2500,7 +2501,7 @@ def check_seq_rerun_prose(tex, rep):
         c = next(c for c in rpt["cases"] if c["arch"] == "Transformer-3K")
         rep.cell(T, "Transformer cross-machine shift", m.group(1), float(m.group(1)),
                  abs(c["db"] - c["committed_rerun_db"]))
-    if "Seeded training repeats bit for bit on one machine" in tex:
+    if "The tested configurations repeated bit for bit on one machine" in tex:
         # every repeated configuration must give one weight hash and the repeat's BER curve
         bad = 0
         for c in rpt["cases"]:
@@ -2751,6 +2752,50 @@ def check_khina_round2(tex, rep):
     rep.finish_table(T, before)
 
 
+
+def check_round2_rerun_prose(tex, rep):
+    """Recompute new-run claims from archived raw arrays, not old test results."""
+    from scripts.assess_round2_reruns import assess
+    data = assess()
+    T = "prose:round2-rerun"; before = rep.checked
+    start = tex.index(r"\label{sec:round2-rerun-validation}")
+    end = tex.index(r"\section{Capacity, Context and Training Variation}", start)
+    body = tex[start:end]
+    def cells(pattern, values, title):
+        m = re.search(pattern, body)
+        if m:
+            for i, (g, value) in enumerate(zip(m.groups(), values)):
+                rep.cell(T, f"{title} {i}", g, float(g), value)
+    native = data["canonical"]["canonical_native"]
+    gap = native["max_gap_vs_DF"]["VAE"]
+    cells(r"VAE--DF BER gap is \$([\d.]+)\$ at \$([\d.]+)\$", [gap["abs_mean_ber_gap"], gap["snr_db"]], "native gap")
+    q = data["sequence"]["isi_complex"]["summaries"]
+    cells(r"penalty changes from \$([\d.]+)\$ to \$([\d.]+)\$", [q["Transformer-3K"][x]["new_best"] for x in ("historical", "rerun")], "Transformer penalty")
+    cells(r"spread changes from \$>([\d.]+)\$ to \$([\d.]+)\$", [q["Mamba2-3K"][x]["new_spread"] for x in ("historical", "rerun")], "Mamba2 spread")
+    if 'previously unsuccessful seed now reaches' in body:
+        rep.cell(T, "historical spread lower-bound flag", "1", 1, int(q["Mamba2-3K"]["historical"]["new_spread_flag"] == ">"))
+        rep.cell(T, "rerun unreached targets", "0", 0, sum(len(v) for v in q["Mamba2-3K"]["rerun"]["unreached"]))
+    coded = [v for rows in data["coded"].values() for v in rows.values()]
+    cells(r"all \$([\d]+)\$ paired trials at each of the \$([\d]+)\$ SNRs", [min(v["DF_wins"] for v in coded), len(data["coded"])], "coded comparison")
+    if r"p<10^{-5}" in body:
+        rep.cell(T, "fresh coded paired p bound", "<0.00001", "<0.00001", max(v["paired_vs_DF"]["p"] for v in coded))
+    ctl = data["same_host_control"]
+    cells(r"seeded to \$([\d]+)\$", [ctl["seed"]], "control seed")
+    cells(r"all \$([\d]+)\$ trial BERs", [ctl["trial_ber_count"]], "control trials")
+    if 'identical weights' in body:
+        rep.cell(T, "initial/final weights equal", "1", 1, int(ctl["initial_weights_equal"] and ctl["final_weights_equal"]))
+        rep.cell(T, "control differing trial BERs", "0", 0, ctl["different_trial_ber_values"])
+    if 'Some canonical pointwise rankings change' in body:
+        rep.cell(T, "strict canonical reversals exist", "1", 1, int(any(v["strict_pointwise_reversals"] for v in data["canonical"].values())))
+    if 'ordering is unchanged on all three channels' in body:
+        rep.cell(T, "sequence order unchanged", "3", 3, sum(v["order_unchanged"] for v in data["sequence"].values()))
+    if 'Classical control curves reproduced exactly' in body:
+        rep.cell(T, "classical jobs matching", "4", 4, sum(not v["classical_control_differences"] for v in data["jobs"].values()))
+    if 'Fresh paired tests resolve no learned advantage over DF' in body:
+        rep.cell(T, "resolved learned advantages over DF", "0", 0, sum(r["resolved"] and r["mean_diff"] < 0 for v in data["canonical"].values() for rows in v["paired_vs_DF"].values() for r in rows))
+    rep.finish_table(T, before)
+
+
 def main():
     global TEX_DIR, MC_SLACK
     ap = argparse.ArgumentParser()
@@ -2805,7 +2850,7 @@ def main():
               check_mmse_monotonicity_prose,
               check_joint_latency, check_joint_memory,
               check_nlbias_prose, check_coded_fer_prose, check_mamba_lookahead_prose,
-              check_seq_rerun_prose, check_timing_and_mmse_median_prose]
+              check_seq_rerun_prose, check_timing_and_mmse_median_prose, check_round2_rerun_prose]
     for chk in checks:
         try:
             chk(tex, rep)

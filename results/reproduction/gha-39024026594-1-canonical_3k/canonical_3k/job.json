@@ -1,0 +1,138 @@
+{
+  "id": "canonical_3k",
+  "kind": "new_training_replication",
+  "worker": "canonical",
+  "stage": "7.8",
+  "outputs": [
+    "results/normalized_3k/3k_rayleigh.json"
+  ],
+  "seed": 20261017,
+  "scope": "Original 3K protocol, 100 epochs; new declared PyTorch seed, absent historical checkpoints/RNG",
+  "status": "RETRAINING_DIFFERENCE_REQUIRES_REVIEW",
+  "started_at": "2026-10-17T10:13:27.449196+00:00",
+  "reference_files": [
+    {
+      "path": "results/normalized_3k/3k_rayleigh.json",
+      "sha256": "1706260ae27a97b0d82adf2d763969cd6ea438d600861ac420fc720be8a311de",
+      "url": "https://github.com/Gilzuk/relaynet2/blob/c0394f0da5dac449594b89a9794fe251fad75e76/results/normalized_3k/3k_rayleigh.json"
+    }
+  ],
+  "source_commit": "c0394f0da5dac449594b89a9794fe251fad75e76",
+  "timeout_seconds": 19800.0,
+  "command": [
+    "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+    "-u",
+    "scripts/reproduction_worker.py",
+    "--job",
+    "canonical_3k",
+    "--threads",
+    "2"
+  ],
+  "environment_overrides": {
+    "OMP_NUM_THREADS": "2",
+    "OPENBLAS_NUM_THREADS": "2",
+    "MKL_NUM_THREADS": "2",
+    "NUMEXPR_NUM_THREADS": "2",
+    "PYTHONHASHSEED": "0",
+    "MPLBACKEND": "Agg",
+    "CUDA_VISIBLE_DEVICES": ""
+  },
+  "pid": 2529,
+  "elapsed_seconds": 750.5,
+  "returncode": 0,
+  "artifacts": [
+    {
+      "path": "outputs/reproduction_checkpoints/canonical_3k/Hybrid-3K.pt",
+      "sha256": "a9151f474a20c3e5b269e1a6a04bfe7d11be65cf6174133061d1eaf43330ed0f",
+      "bytes": 20079
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/canonical_3k/MLP-3K.pt",
+      "sha256": "2424191fc1aec290d1c044e50f6f8351dba0af1b0b1e94f13db280b0c73cf414",
+      "bytes": 19918
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/canonical_3k/Mamba-3K.pt",
+      "sha256": "ba6a73da0132f7538e31f63c71253b8f0c1ea8b334c1c73ee8accc26471ee1be",
+      "bytes": 26807
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/canonical_3k/Mamba2-3K.pt",
+      "sha256": "f26d5e3bbe106a2ce548b94872ce26bfe207ac28a09fd0074afc2a28d498cd43",
+      "bytes": 26644
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/canonical_3k/Transformer-3K.pt",
+      "sha256": "498ae0562efe108455aa5cc2b3bdcbe78e98575ae1fb5c898586daa69d7e8094",
+      "bytes": 26397
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/canonical_3k/VAE-3K.pt",
+      "sha256": "f2ec0875500b7cd687b02e22b8dd6a174c06e9d850b1e60a60f5397acaf0ad8a",
+      "bytes": 22625
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/canonical_3k/protocol.json",
+      "sha256": "145dad51e4a77cb1c56e33ab63c338e99b552de6c9d5ad96fccc689eee74d151",
+      "bytes": 473
+    },
+    {
+      "path": "outputs/reproduction_checkpoints/canonical_3k/torch_rng_before_construction.pt",
+      "sha256": "81c84046655ab159c9099b72c93a419674095e0c83affdae9cb5ed6803be492d",
+      "bytes": 6851
+    },
+    {
+      "path": "outputs/results/normalized_3k/3k_awgn.json",
+      "sha256": "c03ced89bd22f82587f8cb90efda0926b4876f66c39280ac7824720e965549f5",
+      "bytes": 22998
+    },
+    {
+      "path": "outputs/results/normalized_3k/3k_awgn.png",
+      "sha256": "903c421ad2912715e5b6b121fcb342212c8c6f3b289fca799b97a1df9d53bd85",
+      "bytes": 212606
+    },
+    {
+      "path": "outputs/results/normalized_3k/3k_rayleigh.json",
+      "sha256": "c4542e72c2327c93f473fcf6ed643532594c0ea3c67ceee29488924b70566beb",
+      "bytes": 25948
+    },
+    {
+      "path": "outputs/results/normalized_3k/3k_rayleigh.png",
+      "sha256": "7806f782121a28817db2c8c35a6b38b88a784406c31cf1408e808774d52fa050",
+      "bytes": 192609
+    },
+    {
+      "path": "outputs/weights/seed_42/3k/hybrid-3k.pt",
+      "sha256": "d72fa233581e5b1d65d32a896f097a20c9bf3d9c75673473b43eb8d9c771bcfe",
+      "bytes": 14513
+    },
+    {
+      "path": "outputs/weights/seed_42/3k/mamba-3k.pt",
+      "sha256": "67ce5b099d4ea1063ad8ad31eb943ace3d833bf0e280f93a08fea05fd76f21bd",
+      "bytes": 20601
+    },
+    {
+      "path": "outputs/weights/seed_42/3k/mamba2-3k.pt",
+      "sha256": "1b372ebb0542d1b109f7efeecf902c21feea08d291be37e9145934f8a6cdf17c",
+      "bytes": 20437
+    },
+    {
+      "path": "outputs/weights/seed_42/3k/mlp-3k.pt",
+      "sha256": "0b09f6a8bf65613e8bf93fec68c294581d032e60d06bdecd0d05face01f9793f",
+      "bytes": 14483
+    },
+    {
+      "path": "outputs/weights/seed_42/3k/transformer-3k.pt",
+      "sha256": "27768644bef6da0ee4c204b8c7026fc72bc1253b14e4cd09b0c8c6f7cb4bec00",
+      "bytes": 20249
+    },
+    {
+      "path": "outputs/weights/seed_42/3k/vae-3k.pt",
+      "sha256": "4515506dfd8db3baa454e22d40121190d2b64b7f83d137966afa48e568fe2b44",
+      "bytes": 16933
+    }
+  ],
+  "difference_count": 633,
+  "finished_at": "2026-10-17T10:25:57.967280+00:00",
+  "log_sha256": "a5a716957bf82cfb294e066c25dd1fbab67d3dba29fdedd380fe7cf6784b2fce"
+}
