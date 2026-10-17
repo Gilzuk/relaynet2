@@ -331,7 +331,7 @@ SNR (dB) & hard block-DF & soft block-DF & MLP hard & MLP soft & oracle \\
 
 Soft and hard block-DF have similar reported BER at 16~dB under these decoder metrics. At 20~dB the nominal-variance soft block-DF is worse, and with the assumed variance doubled the two are not resolved (footnote to Table~\ref{tbl:table39}). This does not isolate hard quantization as the cause of the gap, nor prove a general disadvantage of decoding at a relay.
 
-Under the unweighted metrics the coded study therefore shows a configuration-specific high-SNR benefit for the learned relays and a benefit from soft MLP read-out; Section~\ref{sec:coded-matched-metrics} shows that the first does not survive matched decoding.
+Under the unweighted metrics the coded study therefore shows a configuration-specific high-SNR benefit for the learned relays and a benefit from soft MLP read-out; Section~\ref{sec:coded-matched-metrics} shows that the first does not survive matched decoding for the two MLP read-outs, the only learned relays rerun; the coded Mamba relay was not rerun.
 
 \subsection{Throughput and Latency: What the BER Tables Leave Out}\label{sec:coded-latency-throughput}
 

@@ -22,6 +22,11 @@ author's approval). Commits: 02459a0 (code and data: `ber_metrics.penalty_common
   future change. Lessons: apply the thesis's declared paired test before writing 'no difference'; one reference curve per
   table row; matched/factorized results first; search for every statement of a claim when fixing one. Open judgement
   items: Fig. 6.7(a) plots joint counts; matched columns sit last in Tables 5.10/5.12/5.13; Table 9.5 'five of nine'.
+- Implementation facts confirmed 2026-10-17 (external review): canonical learned relays (and both Hybrid branches)
+  normalize each real axis to unit power and recombine without renormalizing (complex power 2; AF/DF power 1); Hop 2
+  scales noise to measured power (relaynet/channels/fading.py). Sequence wrappers keep weights when loss < best - 1e-5,
+  patience=0. The tag thesis-2026-10 does not exist yet: create it on the #183 merge commit and verify with
+  git ls-remote before the thesis is sent.
 - The Hebrew reminder email about the 17 Oct deadline exists only in chat; the author said not to commit it.
 - Author's rule (2026-10-17): script names must be references, not embedded in the text. The thesis cites code as [C1]..[C40]
   via `\coderef{key}` (macros `\codeentry`/`\coderef` in thesis/main.tex); keys are defined in the ledger rows of

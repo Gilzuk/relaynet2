@@ -25,7 +25,7 @@ New Table 4.2 gives each learned relay as trained:
 - parameters, window and training SNRs;
 - the number of training windows, and the part used for gradient steps;
 - Adam learning rate and batch size;
-- the checkpoint kept.
+- the checkpoint kept: the final epoch, or for the sequence models the last epoch whose mean training loss improved on the best kept loss by more than 10⁻⁵ (early stopping was off).
 
 All relays train for 100 epochs on BPSK ±1 over real AWGN, with seeded training data. The section also states how the relays are applied: per axis to the zero-forced observation without rescaling, so each axis carries ±1/√2 against the ±1 of training, with the output normalized over the 5,000-symbol block.
 
@@ -48,12 +48,13 @@ A script recomputes every affected table from the stored per-seed curves. The ch
 - **Window effect.** "8 to 11 dB between window 1 and window 7" becomes "more than 8 dB", since the window-1 values on the three-tap channels are lower bounds (open markers in Fig. 9.1).
 - **Coded size sweep (Ch. 8).** The range against unweighted block DF is +1.24 to +1.92 dB. The thesis had printed +1.86 to +1.92 dB, which the data never supported; this is an earlier error found in the recheck. Against matched block DF the penalty is at least +9.75 dB, replacing +7.6 to +9.9. The lower values came from configurations that miss 10⁻³.
 
-The architecture ranking, the minimum-size conclusions outside the coded row, and Table 6.6 are unchanged: every curve in them reaches every common target.
+The MLP remains best on all three channels of Table 6.7, and the minimum-size conclusions outside the coded row are unchanged. On ISI (QPSK) the best-seed numerical order of Mamba-S6 and Mamba-2 reverses (5.72 against 5.83 dB). This is a numerical ordering, not evidence that either architecture is better, and the thesis does not read the order of the sequence models as resolved.
 
 **3. Matched-decoding scope.** Only the MLP hard and soft read-outs were rerun with matched metrics. Every statement that "both" or "all" learned relays lose to matched block DF now names those two read-outs and says that the coded Mamba relay was not rerun. This applies to Sec. 5.5.1, Chapter 1, Chapter 8, Chapter 9 and the abstract.
 
 **4. Formal problem (Sec. 4.1.5).**
 - **The relay map.** The relay applies a local function f to each observation, u[i] = f(I_R[i]), and transmits α(u)·u[i]. Here α is the block normalization, so the relay map α·f is a block map and not a symbol map.
+- **As implemented.** AF and DF normalize the complex block. The canonical learned relays normalize each real axis separately, so they transmit α(u_I)·u_I[i] + j·α(u_Q)·u_Q[i]: unit power per axis and power 2 for the complex block, against 1 for AF and DF. Hop 2 sets its noise from the measured block power, so the operating SNR is the same for every relay. The Hybrid also chooses between its MLP and DF per axis and per block, from that axis's block power, so even its local rule depends on the block. Secs. 4.1.3, 4.1.5, 4.2 and 4.5.3 now describe this map.
 - **Power and objective.** The power constraint holds by construction of α. It constrains the block map, not f. The problem is min over f of P_b(α·f).
 - **Differentiability.** The blanket nondifferentiability statement is replaced. The empirical error count is piecewise constant in the parameters, so its gradient vanishes almost everywhere. The expected P_b, averaged over the Hop-2 noise and fading, is a smooth function of the forwarded values (Q-functions), and it could be differentiated through α and f. That requires the second hop and the destination rule in the training loop, which a relay trained on Hop 1 does not have.
 

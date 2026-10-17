@@ -74,6 +74,14 @@ Dr. Khina's six remaining points are addressed; the reply is
   per-target values +0.01-0.03 dB). The rest order matched/factorized results
   first and remove contradictions (Sec. 7.1.3 Hybrid training SNRs, Sec. 4.3.4
   test count, Sec. 5.5 trial budgets, five-pilot wording, Table 9.7 script names).
+- **External review of the round-2 PR.** Applied: Secs. 4.1.3, 4.1.5, 4.2 and
+  4.5.3 now describe the executed per-axis normalization of the canonical learned
+  relays (unit power per axis, complex power 2 against 1 for AF/DF; Hop-2 noise
+  follows measured power, so the SNR is unchanged) and the Hybrid's per-axis,
+  per-block branch choice; the sequence wrappers' checkpoint rule is stated
+  exactly (improvement > 1e-5, early stopping off); the Sec. 5.5.3 and Ch. 8 coded
+  conclusions are scoped to the MLP read-outs; the reply no longer says the
+  architecture ranking is unchanged (Mamba-S6 and Mamba-2 swap on ISI QPSK).
 - **Hebrew abstract.** The complexity and coded sentences are re-drafted to
   mirror the English (`HEBREW_ABSTRACT_SYNC.md`); not yet author-approved.
 - **Verification.** New `prose:khina-round2` check; verifier 873 cells, 0

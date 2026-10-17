@@ -91,7 +91,7 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | Canonical runs: identification and configuration |
 | reproduce | `python canonical_run_provenance.py` |
 | data file | `results/canonical_run_provenance.json` |
-| data commit | `02459a0` 2026-10-16 (Claude) |
+| data commit | `acf7688` 2026-10-17 (Claude) |
 | provenance | ok |
 | SNRS | `np.arange(0, 21, 2)` |
 
@@ -604,7 +604,7 @@ rests on. Do not hand-edit; re-run the script.
 | experiment | Canonical runs: identification and configuration |
 | reproduce | `python canonical_run_provenance.py` |
 | data file | `results/canonical_run_provenance.json` |
-| data commit | `02459a0` 2026-10-16 (Claude) |
+| data commit | `acf7688` 2026-10-17 (Claude) |
 | provenance | ok |
 | SNRS | `np.arange(0, 21, 2)` |
 
