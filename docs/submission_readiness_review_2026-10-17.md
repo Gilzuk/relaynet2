@@ -111,3 +111,16 @@ now reference the exact reviewed PDF, include the final statistical and VAE
 corrections, distinguish historical measurements from corrected summaries, and
 state the missing records and execution limits. Both remain **unsent drafts**.
 No experiment was started, stopped, restarted or modified during this final check.
+
+### PDF quotations in the advisor email
+
+At the author's request, the short email now supports each of the six responses
+with direct quotations from the reviewed PDF, including printed page and section
+references. The PDF on current main and the cited immutable snapshot have the
+same SHA-256 recorded above. All 21 quotations were checked against extracted PDF text,
+normalizing only line wrapping and typesetting hyphenation; mathematical wording
+and numerical values were not paraphrased inside quotation marks. The quotation
+inventory is saved in
+[`email_quote_evidence_2026-10-17.json`](../thesis/submission/email_quote_evidence_2026-10-17.json).
+This follow-up changes submission documents only; no manuscript rebuild or
+experiment rerun was needed. The email remains an unsent draft.
