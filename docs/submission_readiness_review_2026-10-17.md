@@ -124,3 +124,21 @@ inventory is saved in
 [`email_quote_evidence_2026-10-17.json`](../thesis/submission/email_quote_evidence_2026-10-17.json).
 This follow-up changes submission documents only; no manuscript rebuild or
 experiment rerun was needed. The email remains an unsent draft.
+
+### Published Overleaf mirror
+
+On 17 October 2026, the author requested synchronization of
+`Gilzuk/relaynet2-thesis`. Its `main` now points to
+[`0278959d9e981f0e0b8d8e7dcef0c8d3dab1c1a9`](https://github.com/Gilzuk/relaynet2-thesis/commit/0278959d9e981f0e0b8d8e7dcef0c8d3dab1c1a9),
+generated from the merged source snapshot `5eb34ab3ed01bc9df17498358656965af2fa916b`.
+All 52 published files match that source revision's clean Overleaf bundle; 17
+files changed from the previous mirror. The preceding mirror at `abf77f815abee`
+matched all 52 files in the clean bundle at its declared source `fe8198b`, so no
+independent mirror edits were overwritten. Publication was a guarded
+fast-forward, with the old mirror retained as the parent.
+
+The published tree (`582ce71d3906f81fb38d70959d281ddf67cff5e0`) and PDF were
+fetched back and verified. The published `thesis.pdf` is byte-identical to the
+reviewed `thesis/main.pdf`, with the SHA-256 recorded above. This updates the
+GitHub mirror; the linked Overleaf project still requires its GitHub Pull action.
+The source manuscript, experimental results and background jobs were unchanged.
