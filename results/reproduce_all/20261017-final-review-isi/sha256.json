@@ -1,0 +1,12 @@
+{
+  "comparison.json": "d12067de76149509081b37b5bf8f4eee6604cf213fbc4600c40a129f33a431ae",
+  "input_manifest.json": "9902fdbd27bd13b37286d2ab630a75dff6eaa3835f5bcf160e871787ae0e4146",
+  "plan.json": "dc503998b2e1f46b0ebe55fcc09c19ca06cba31900d8383d7822b3dc15491154",
+  "steps/001-isi_required_snr_penalties_mlp_vs_genie_viterbi/job.json": "341754ea061ab16f6037669135cf22fc204aa0b5a61d9de5fa19b880e7108f90",
+  "steps/001-isi_required_snr_penalties_mlp_vs_genie_viterbi/outputs/results/e6_isi_penalty.json": "54380cfc7b270ee314757b61d14efb39b76d43509881ae4df310f6058f0ce63f",
+  "steps/001-isi_required_snr_penalties_mlp_vs_genie_viterbi/rng_after.json": "b3492288c1ad7e8d4109146200daa332733efc3484f439e3433d79da76b7a63b",
+  "steps/001-isi_required_snr_penalties_mlp_vs_genie_viterbi/rng_before.json": "acafd5d0b799d9cb6883fd7b8b1bede28e5f8bd2521fb5a5a608acfb737c6ec7",
+  "steps/001-isi_required_snr_penalties_mlp_vs_genie_viterbi/run.log": "a624f56a919bf5b253f6766e8e472a5cd7728a85092de62e7086f51f70dc59e0",
+  "summary.json": "253ef1138818d70cdc8a512c771efa9b1a43e0580eeac7f044b49c6bb25f0d94",
+  "verify.log": "3dc0e80358a32d80ab9452634cd082bf039765215bece1f3b6bd4461df7d4b6c"
+}

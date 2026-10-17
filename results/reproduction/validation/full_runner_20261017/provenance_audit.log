@@ -1,0 +1,179 @@
+Canonical AF: block length and conventional AF af_block_and_conventional.json ok
+   script af_block_and_conventional.py 52e1126 2026-10-12
+   data   af_block_and_conventional.json 52e1126 2026-10-12  [Claude]
+Canonical Hybrid branch selection (replay) hybrid_branch_selection.json   ok
+   script hybrid_branch_selection.py   ef7deaf 2026-10-12
+   data   hybrid_branch_selection.json ef7deaf 2026-10-12  [Claude]
+Canonical relays: paired tests     canonical_paired_tests.json    ok
+   script canonical_paired_tests.py    80b4545 2026-10-17
+   data   canonical_paired_tests.json  80b4545 2026-10-17  [Gilzuk]
+Canonical runs: identification and configuration canonical_run_provenance.json  ok
+   script canonical_run_provenance.py  218a1c5 2026-10-17
+   data   canonical_run_provenance.json 218a1c5 2026-10-17  [Gilzuk]
+Coded K sweeps (QPSK, 16-QAM), matched metrics coded_df_experiment_matched.json ok
+   script coded_k_sweep_qam16.py       3c271cb 2026-10-12
+   data   coded_df_experiment_matched.json 3c271cb 2026-10-12  [Gilzuk]
+Coded error location, matched metrics coded_error_mechanism_matched.json ok
+   script coded_error_mechanism.py     3c271cb 2026-10-12
+   data   coded_error_mechanism_matched.json 3c271cb 2026-10-12  [Gilzuk]
+Coded link-adaptation envelopes, matched block DF coded_matched_envelopes.json   ok
+   script coded_matched_envelopes.py   3c271cb 2026-10-12
+   data   coded_matched_envelopes.json 3c271cb 2026-10-12  [Gilzuk]
+Coded min size, matched block-DF baseline coded_min_size_matched.json    ok
+   script coded_min_size_matched.py    3c271cb 2026-10-12
+   data   coded_min_size_matched.json  3c271cb 2026-10-12  [Gilzuk]
+Coded minimum size                 coded_min_size.json            ok
+   script coded_min_size.py            ac26dab 2026-08-29
+   data   coded_min_size.json          ac26dab 2026-08-29  [Claude]
+Coded rate adaptation, matched metrics coded_rate_adaptation_matched.json ok
+   script coded_rate_adaptation.py     3c271cb 2026-10-12
+   data   coded_rate_adaptation_matched.json 3c271cb 2026-10-12  [Gilzuk]
+Coded relaying with matched (|h|^2-weighted) metrics coded_matched_metrics.json     ok
+   script coded_matched_metrics.py     ebd76d4 2026-10-12
+   data   coded_matched_metrics.json   73cd2f2 2026-10-12  [Claude]
+Coded reliable regime, matched metrics coded_reliable_regime_matched.json ok
+   script coded_reliable_regime.py     3c271cb 2026-10-12
+   data   coded_reliable_regime_matched.json 3c271cb 2026-10-12  [Gilzuk]
+Corrected composite AF, fixed budget codex_composite_af_validation.json ok
+   script scripts/codex_composite_af_validation.py b7ca2e6 2026-09-17
+   data   codex_composite_af_validation.json b7ca2e6 2026-09-17  [Gilzuk]
+Cross-architecture seed spread (native) seed_spread_native_architectures.json ok
+   script seed_spread_native_architectures.py eea1e18 2026-09-05
+   data   seed_spread_native_architectures.json eea1e18 2026-09-05  [Claude]
+E6 QPSK unknown channel            e6_qpsk_unknown_channel_results.npy ok
+   script e6_qpsk_unknown_channel.py   0441455 2026-08-31
+   data   e6_qpsk_unknown_channel_results.npy aaddb79 2026-09-01  [Claude]
+E6 Viterbi AWGN consistency rerun  codex_viterbi_consistency_awgn.npy ok
+   script e6_viterbi_codex_consistency.py e303c37 2026-09-15
+   data   codex_viterbi_consistency_awgn.npy e303c37 2026-09-15  [Gilzuk]
+E6 Viterbi AWGN consistency rerun  codex_viterbi_consistency_awgn.json ok
+   script e6_viterbi_codex_consistency.py e303c37 2026-09-15
+   data   codex_viterbi_consistency_awgn.json e303c37 2026-09-15  [Gilzuk]
+E6 blind / posterior-free          e6_blind_ported_results.npy    ok
+   script e6_blind_ported.py           96e8884 2026-08-31
+   data   e6_blind_ported_results.npy  455c119 2026-08-31  [Claude]
+E6 blind regime, corrected intervals (red-team check) e6_blind_intervals.json        ok
+   script e6_blind_intervals.py        3310796 2026-10-13
+   data   e6_blind_intervals.json      c41d5f4 2026-10-13  [Claude]
+E6 complexity: measured inference time e6_complexity_ported_results.npy ok
+   script e6_complexity_ported.py      bd09832 2026-10-14
+   data   e6_complexity_ported_results.npy 9d2bd85 2026-10-14  [Claude]
+E6 composite cascade               e6_composite_ported_results.npy ok
+   script e6_composite_ported.py       96e8884 2026-08-31
+   data   e6_composite_ported_results.npy 455c119 2026-08-31  [Claude]
+E6 flat control                    e6_flat_ported_results.npy     ok
+   script e6_flat_ported.py            1abc850 2026-10-12
+   data   e6_flat_ported_results.npy   3af82e2 2026-10-12  [Claude]
+E6 pilot-budget sweep              e6_partial_ported_results.npy  ok
+   script e6_partial_ported.py         96e8884 2026-08-31
+   data   e6_partial_ported_results.npy 2512cb2 2026-08-31  [Claude]
+E6 unknown ISI (S1-S4)             e6_sim_ported_results.npy      stale, reviewed: metadata-only fix (3fc7f91): single writer for the .npy plus persisted rare_event_meta; no simulated value depends on it. That run's error counts are in results/e6_sim_rerun_progress.txt. Later, the per-SNR cap split (1G at 16 dB / 10G at 18-20 dB) was unified to the adaptive rule 10x-first-error with a single 10G ceiling at every first-error SNR; the committed 16 dB run stopped at 334M bits (first error at 33.4M, extended tenfold), so the old 1G ceiling never bound and the same run under the new ceiling is bit-identical.
+   script e6_sim_ported.py             0a94217 2026-09-03
+   data   e6_sim_ported_results.npy    aaddb79 2026-09-01  [Claude]
+Factorized QPSK MLSE equivalence   factorized_mlse_equivalence.json ok
+   script factorized_mlse_equivalence.py f8a2f2f 2026-10-12
+   data   factorized_mlse_equivalence.json f8a2f2f 2026-10-12  [Claude]
+Fixed-budget 16 dB remeasurement   rare_event_fixed_budget_16db.json ok
+   script rare_event_fixed_budget.py   63c7728 2026-09-14
+   data   rare_event_fixed_budget_16db.json 63c7728 2026-09-14  [Claude]
+Fixed-budget 16 dB remeasurement   rare_event_fixed_budget_16db_replicate.json ok
+   script rare_event_fixed_budget.py   63c7728 2026-09-14
+   data   rare_event_fixed_budget_16db_replicate.json 3cad129 2026-09-14  [Claude]
+Historical seed-42 MLP repeatability control comparison.json                ok
+   script scripts/audit_rng_reproducibility.py c192560 2026-10-17
+   data   comparison.json              c192560 2026-10-17  [Gilzuk]
+Historical seed-42 MLP repeatability control manifest.json                  ok
+   script scripts/audit_rng_reproducibility.py c192560 2026-10-17
+   data   manifest.json                c192560 2026-10-17  [Gilzuk]
+ISI required-SNR penalties (MLP vs genie Viterbi) e6_isi_penalty.json            ok
+   script e6_isi_penalty.py            2885723 2026-10-12
+   data   e6_isi_penalty.json          2885723 2026-10-12  [Claude]
+ISI slicer floor, closed form      isi_slicer_floor.json          ok
+   script isi_slicer_floor.py          0441455 2026-08-31
+   data   isi_slicer_floor.json        0441455 2026-08-31  [Claude]
+Joint latency/memory               joint_latency_memory.json      ok
+   script joint_latency_memory.py      ab2cb8b 2026-08-31
+   data   joint_latency_memory.json    ef0f4b7 2026-08-31  [Claude]
+MAC accounting                     unified_latency_axis.json      ok
+   script unified_latency_axis.py      ab2cb8b 2026-08-31
+   data   unified_latency_axis.json    ab2cb8b 2026-08-31  [Claude]
+MMSE complexity-matched baseline   mmse_equalizer.json            stale, reviewed: additive change (859027f): main() now also persists per-target penalties and attained MMSE to mmse_equalizer_detail.json, which was committed from the same run. The headline JSON is not stale -- it reproduced byte-identically on that re-run, so git recorded no change to it and its last commit predates the script edit.
+   script mmse_equalizer.py            859027f 2026-09-01
+   data   mmse_equalizer.json          b1ea325 2026-08-31  [Claude]
+MMSE complexity-matched baseline   mmse_equalizer_detail.json     ok
+   script mmse_equalizer.py            859027f 2026-09-01
+   data   mmse_equalizer_detail.json   859027f 2026-09-01  [Claude]
+Mamba readout on memory: bidirectional seq_models_on_memory_bidirectional.json ok
+   script seq_models_on_memory_bidirectional.py 713438d 2026-10-13
+   data   seq_models_on_memory_bidirectional.json 5dd8e41 2026-10-13  [Claude]
+Mamba readout on memory: centre control and full window seq_models_on_memory_readout.json ok
+   script seq_models_on_memory_readout.py ecf1c7e 2026-10-13
+   data   seq_models_on_memory_readout.json 5dd8e41 2026-10-13  [Claude]
+Matched-protocol high-SNR Viterbi  e6_matched_highsnr.json        ok
+   script e6_matched_highsnr.py        3f3f371 2026-09-15
+   data   e6_matched_highsnr.json      3f3f371 2026-09-15  [Gilzuk]
+Matched-protocol unknown-ISI comparison e6_matched_protocol.json       ok
+   script e6_matched_protocol.py       2f704c0 2026-09-14
+   data   e6_matched_protocol.json     2f704c0 2026-09-14  [Gilzuk]
+Memory sweep, precision re-run     joint_memory_precision.json    ok
+   script joint_memory_precision.py    aea0454 2026-08-31
+   data   joint_memory_precision.json  ef0f4b7 2026-08-31  [Claude]
+Minimum relay size, 9 channels     mlp_min_size_all_channels.json stale, reviewed: comment correction plus a display-name change to the isi_rayleigh comparator ('MLSE' -> 'MLSE (taps only)'). Same relay object, same numbers; only the JSON's `baseline` label would differ on a re-run.
+   script mlp_min_size_all_channels.py 97a1db5 2026-08-31
+   data   mlp_min_size_all_channels.json 1336b84 2026-08-29  [Claude]
+Minimum size, window x depth       mlp_min_size_bisect.json       ok
+   script mlp_min_size_bisect.py       d5da563 2026-08-29
+   data   mlp_min_size_bisect.json     a18b10d 2026-08-29  [Claude]
+Original-driver MLP reproduction control comparison.json                ok
+   script scripts/reproduction_original_control.py 5efe8e3 2026-10-17
+   data   comparison.json              5efe8e3 2026-10-17  [Gilzuk]
+QPSK BCJR/APP benchmark            qpsk_bcjr_benchmark.json       stale, reviewed: endpoint clarification in docstring/console text only; numerical code unchanged
+   script qpsk_bcjr_benchmark.py       b7ca2e6 2026-09-17
+   data   qpsk_bcjr_benchmark.json     97d33c2 2026-09-05  [Claude]
+QPSK error decomposition           qpsk_error_decomposition.json  ok
+   script qpsk_error_decomposition.py  bcb39ef 2026-09-01
+   data   qpsk_error_decomposition.json bcb39ef 2026-09-01  [Claude]
+QPSK trellis controls              qpsk_trellis_controls.json     ok
+   script qpsk_trellis_controls.py     db0af37 2026-09-03
+   data   qpsk_trellis_controls.json   db0af37 2026-09-03  [copilot-swe-agent[bot]]
+Rare-event estimator bias          rare_event_estimator_bias.json ok
+   script rare_event_estimator_bias.py 581730f 2026-09-14
+   data   rare_event_estimator_bias.json 581730f 2026-09-14  [Claude]
+Round-2 archived-rerun assessment  round2_rerun_assessment.json   ok
+   script scripts/assess_round2_reruns.py 80b4545 2026-10-17
+   data   round2_rerun_assessment.json 80b4545 2026-10-17  [Gilzuk]
+Round-2 reproduction evidence (separate from published inputs) manifest.json                  ok
+   script scripts/reproduce_round2.py  43ce4a6 2026-10-17
+   data   manifest.json                5efe8e3 2026-10-17  [Gilzuk]
+Round-2 retained model checkpoint audit round2_model_checkpoint_audit.json ok
+   script scripts/audit_round2_models.py f4be6d4 2026-10-17
+   data   round2_model_checkpoint_audit.json f4be6d4 2026-10-17  [Gilzuk]
+SNR penalties on comparable target sets penalty_common_targets.json    ok
+   script penalty_common_targets.py    218a1c5 2026-10-17
+   data   penalty_common_targets.json  218a1c5 2026-10-17  [Gilzuk]
+Scalar MAP relay on unknown ISI    e6_scalar_map.json             ok
+   script e6_scalar_map.py             0a22e41 2026-10-12
+   data   e6_scalar_map.json           0a22e41 2026-10-12  [Claude]
+Seed spread, equal budget          seed_spread_architectures.json ok
+   script seed_spread_architectures.py 863a939 2026-08-29
+   data   seed_spread_architectures.json 0ca3432 2026-08-30  [Claude]
+Sequence models on memory          seq_models_on_memory.json      stale, reviewed: 6048c95 touched only main()'s console reporting -- a NaN guard around min() over architectures that reached no target. Every value written to the JSON is computed before that code runs.
+   script seq_models_on_memory.py      6048c95 2026-08-30
+   data   seq_models_on_memory.json    8880cc0 2026-08-30  [Claude]
+Sequence models on memory: MLP/Transformer rerun seq_models_on_memory_rerun_controls.json ok
+   script seq_models_on_memory_rerun_controls.py 31e39ff 2026-10-13
+   data   seq_models_on_memory_rerun_controls.json 5dd8e41 2026-10-13  [Claude]
+Sequence models on memory: retraining fingerprints seq_models_on_memory_repeat_probe.jsonl ok
+   script seq_models_on_memory_repeat_probe.py 0098c31 2026-10-13
+   data   seq_models_on_memory_repeat_probe.jsonl c981c87 2026-10-13  [Claude]
+Sequence models on memory: seeded-retraining repeat seq_models_on_memory_repeat.json ok
+   script seq_models_on_memory_repeat.py 1f57401 2026-10-13
+   data   seq_models_on_memory_repeat.json 0f2794b 2026-10-13  [Claude]
+Soft block-DF variance calibration coded_soft_df_calibration.json ok
+   script coded_soft_df_calibration.py aa36771 2026-08-24
+   data   coded_soft_df_calibration.json 6a8e156 2026-08-24  [Claude]
+Transformer instability            transformer_instability.json   ok
+   script transformer_instability.py   90c98cf 2026-08-29
+   data   transformer_instability.json ce59ed1 2026-08-30  [Claude]
+
+All declared outputs are committed and no data predates its script.

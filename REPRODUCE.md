@@ -52,6 +52,7 @@ above it.
 | 1 | `make repro-unknown` | budget dependent; potentially hours | numpy, scipy | Runs six legacy BPSK drivers, then verifies; does not run later fixed-budget confirmations or every Chapter 6 study |
 | 1b | `make repro-qpsk` | ~20 min | numpy, scipy | Recomputes the QPSK unknown-channel study (ISI → AWGN and → Rayleigh) |
 | 2 | `make repro-full` | hours | **+ torch** | Runs the legacy driver, then verifies; revision studies below are separate |
+| 3 | `make reproduce-all` | many hours | **+ torch** | Runs registered producers in a separate worktree, retains historical records as references, compares fresh outputs and verifies (`make reproduce-plan` prints the plan) |
 
 ### Tier 0 — verification
 
@@ -100,6 +101,86 @@ and ledger C4–C5. Inspect `--list` and select the intended experiment.
 nine-relay training pass took ~3.2 hours, of which the CGAN alone was ~2 hours
 (64%). On CPU it is substantially slower. For a smoke test rather than a
 publication-quality run, use `make quick`.
+
+### Tier 3 — execute registered producers and preserve comparison evidence
+
+```bash
+make reproduce-plan                  # inspect the plan; runs nothing
+make reproduce-all                   # full budgets, detached worktree, then verify
+python scripts/reproduce_all.py --run --seed 42 --threads 2 --only 'ISI required-SNR'
+```
+
+Commit source changes first. The runner uses that exact `HEAD`, rejects tracked
+uncommitted changes, and never writes generated results over the published files
+in the working checkout. A full run can take many hours or longer on CPU; the
+fixed-budget rare-event studies alone request billions of bits. This review did
+**not** execute every full-budget producer.
+
+The plan accounts for every `provenance_audit.REGISTRY` output and adds the two
+canonical stages behind Tables 5.2–5.3 plus the unweighted coded studies. Three
+historical records (the dated round-2 suite manifest, RNG audit and original-driver
+control) are **archive references**, not commands to run again at their historic
+paths. Their outputs are copied and hashed without being called reproductions.
+The retained-model audit and rerun assessment analyze the existing immutable
+archive. The rare-event original and replicate use source-seed bases 1000 and
+7000 respectively, with distinct output paths. Matched coded variants set
+`CODED_METRIC=matched CODED_TRIALS=30`; the matched minimum-size driver retains
+its own budget.
+
+Each child process starts with Python, NumPy and (when required) PyTorch seeded
+with **42** by default. `--seed` changes this bootstrap, not driver-local trial,
+training-data or initialization seeds. Torch deterministic algorithms are enabled;
+unsupported nondeterministic operations fail. `--threads` defaults to 2. RNG states
+before and after the driver, package versions, relevant environment settings,
+Torch build details, exact arguments and source commit are retained. Inherited
+coded-study overrides are cleared before explicit step settings are applied.
+These controls support same-environment repetition; they do not guarantee bitwise
+identity across hardware or software versions or recover missing historical RNG
+states/checkpoints.
+
+Dependency ordering uses literal-path hints and explicit ordering of writers to
+a shared file. Dynamic imports/paths are not a complete dataflow analysis.
+`--only`, `--skip` and `--no-torch` make partial plans; omitted upstream producers
+are recorded as **committed archival inputs**, not freshly reproduced results.
+`--no-torch` conservatively excludes local transitive Torch imports, including
+optional imports. Any failed producer blocks later execution and the verifier,
+because independence of dynamic inputs cannot be guaranteed.
+
+Evidence is written to a **new** `results/reproduce_all/<run-id>/` directory:
+`plan.json`, `summary.json`, `comparison.json`, and numbered per-step directories
+with `job.json`, `run.log`, RNG states and output snapshots. Every shared-file
+version is preserved separately. Changed files under `results/`, `weights/` and
+`reproduction_checkpoints/` are also retained and hashed. Drivers that never save
+trained weights still cannot provide checkpoint replay; `--keep-worktree` retains
+the disposable checkout for inspection. Existing evidence directories are rejected.
+Progress is saved after each step; unexpected interruption keeps the worktree.
+
+Before the first producer of a declared output, its committed copy is removed
+**inside the disposable worktree**. Later shared-file writers must rewrite that
+fresh output. A no-op cannot pass by finding an old result. Comparisons use exact
+SHA-256 file bytes, with no numerical tolerance:
+
+| Status | Meaning |
+|---|---|
+| `BYTE_MATCH` | Successful producer wrote a file with the committed bytes |
+| `BYTES_DIFFER_REVIEW` / `NEW` | Successful producer wrote different/new bytes; scientific interpretation requires review |
+| `MISSING` / `NOT_REGENERATED` | Producer did not supply a fresh declared output |
+| `PARTIAL_OUTPUT` | Output exists but its producer failed |
+| `ARCHIVE_REFERENCE` | Copied historical evidence; no new experiment was executed |
+
+CLI exit **1** means a failed/missing/stale/blocked step, setup error or failed
+thesis verifier. Exit **2** means completed steps with differing/new bytes needing
+review. Exit **0** means no such failures or byte differences, within the selected
+plan and requested checks. `--no-verify` is explicitly recorded and does not
+certify thesis consistency. File differences can include metadata or timing;
+`BYTE_MATCH` is not a statistical equivalence test. Historical learned runs with
+missing states are additional seeded realizations, not exact reproductions;
+differences alone do not invalidate the original results or establish their cause.
+
+Use `scripts/reproduce_round2.py` for the focused suite's frozen jobs, per-field
+comparisons and model-specific checkpoint evidence. `reproduce_all.py` provides
+broader orchestration, not a claim that the entire thesis has been rerun or every
+historical training state recovered.
 
 ---
 

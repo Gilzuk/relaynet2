@@ -1,0 +1,11 @@
+[
+  {
+    "path": "results/e6_isi_penalty.json",
+    "committed_sha256": "54380cfc7b270ee314757b61d14efb39b76d43509881ae4df310f6058f0ce63f",
+    "status": "BYTE_MATCH",
+    "observed_sha256": "54380cfc7b270ee314757b61d14efb39b76d43509881ae4df310f6058f0ce63f",
+    "step": "ISI required-SNR penalties (MLP vs genie Viterbi)",
+    "step_status": "COMPLETED",
+    "evidence": "steps/001-isi_required_snr_penalties_mlp_vs_genie_viterbi/outputs/results/e6_isi_penalty.json"
+  }
+]

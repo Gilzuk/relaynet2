@@ -1,0 +1,6 @@
+$ python3 e6_isi_penalty.py
+BER 1e-01: MLP  2.677 dB  VIT-genie  2.416 dB  penalty +0.261 dB
+BER 1e-02: MLP  7.363 dB  VIT-genie  6.187 dB  penalty +1.176 dB
+BER 1e-03: MLP 10.060 dB  VIT-genie  8.175 dB  penalty +1.885 dB
+BER 1e-04: MLP 12.029 dB  VIT-genie  9.500 dB  penalty +2.529 dB
+wrote results/e6_isi_penalty.json

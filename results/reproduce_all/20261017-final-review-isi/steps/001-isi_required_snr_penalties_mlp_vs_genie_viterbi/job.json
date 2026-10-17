@@ -1,0 +1,21 @@
+{
+  "name": "ISI required-SNR penalties (MLP vs genie Viterbi)",
+  "script": "e6_isi_penalty.py",
+  "args": [],
+  "env": {},
+  "outputs": [
+    "results/e6_isi_penalty.json"
+  ],
+  "kind": "experiment",
+  "needs_torch": false,
+  "after": [
+    "Matched-protocol unknown-ISI comparison"
+  ],
+  "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+  "archived_dependencies": [
+    "Matched-protocol unknown-ISI comparison"
+  ],
+  "seed": 42,
+  "threads": 2,
+  "source_commit": "fef5916ad7c7049fe5814a9a825ef69de38d5dd3"
+}

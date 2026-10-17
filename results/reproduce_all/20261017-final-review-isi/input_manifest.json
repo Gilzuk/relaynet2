@@ -1,0 +1,13 @@
+{
+  "source_commit": "fef5916ad7c7049fe5814a9a825ef69de38d5dd3",
+  "scope": "Cheap derived-analysis integration; simulation input is committed archival BER data.",
+  "sha256": {
+    "results/e6_matched_protocol.json": "1d682879cfdd419c549e8f863194814df60853f87dbeb339c7e19961c41fcc1b",
+    "e6_isi_penalty.py": "cfcb8df5f78b9547686ea3dc9c5f2865b4c19ca4976f4f91cc72a723675b19e3",
+    "ber_metrics.py": "9f29609ceedc022552f1a45d7daa111b3f625551ddaeaa4254876e4b0e6982a5",
+    "scripts/reproduce_all.py": "33d946e377ca03d7e59958229f2601f2b0a39c750b1c9f432d57c3c8d2c9877b",
+    "scripts/reproduce_all_worker.py": "26bd16c8436eabe356922b0f5e9cfe88136423e9b499f961bc42715688fd0db4",
+    "provenance_audit.py": "dfa2fd1dd86fc6716112da5c76aebb99ddde37f1ce1c52c3b4c52bf15557a5a9",
+    "verify_thesis_tables.py": "f36c8761888fcffbde36b2b7997190193dae6714ac7bff36e442f180c5d1d952"
+  }
+}

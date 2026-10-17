@@ -1,0 +1,1166 @@
+[
+  {
+    "name": "Canonical comparison (Table 5.2)",
+    "script": "run_experiments.py",
+    "args": [
+      "--exp",
+      "7.10",
+      "--num-trials",
+      "10",
+      "--bits-per-trial",
+      "10000",
+      "--snr-min",
+      "0",
+      "--snr-max",
+      "20",
+      "--snr-step",
+      "2",
+      "--skip-relays",
+      "cgan",
+      "--retrain"
+    ],
+    "env": {},
+    "outputs": [
+      "results/modulation/qpsk_rayleigh.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": true,
+    "after": [],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "Equal-budget comparison (Table 5.3)",
+    "script": "run_experiments.py",
+    "args": [
+      "--exp",
+      "7.8",
+      "--num-trials",
+      "10",
+      "--bits-per-trial",
+      "10000",
+      "--snr-min",
+      "0",
+      "--snr-max",
+      "20",
+      "--snr-step",
+      "2",
+      "--skip-relays",
+      "cgan",
+      "--retrain"
+    ],
+    "env": {},
+    "outputs": [
+      "results/normalized_3k/3k_rayleigh.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": true,
+    "after": [],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "Coded block DF, K sweep (unweighted)",
+    "script": "coded_df_experiment.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "results/coded_df_experiment.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": true,
+    "after": [],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "Coded K sweep, QPSK (unweighted)",
+    "script": "coded_k_sweep_qpsk.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "results/coded_df_experiment.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": true,
+    "after": [
+      "Coded block DF, K sweep (unweighted)"
+    ],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "Coded K sweep, 16-QAM (unweighted)",
+    "script": "coded_k_sweep_qam16.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "results/coded_df_experiment.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": true,
+    "after": [
+      "Coded K sweep, QPSK (unweighted)"
+    ],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "Coded learned MLP relay (unweighted)",
+    "script": "coded_learned_relay.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "results/coded_df_experiment.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": true,
+    "after": [
+      "Coded K sweep, 16-QAM (unweighted)"
+    ],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "Coded Mamba relay (unweighted)",
+    "script": "coded_mamba_relay.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "results/coded_df_experiment.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": true,
+    "after": [
+      "Coded learned MLP relay (unweighted)"
+    ],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "Coded high-SNR paired re-test",
+    "script": "coded_high_budget_test.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "results/coded_high_budget_test.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": true,
+    "after": [],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "Coded error location (unweighted)",
+    "script": "coded_error_mechanism.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "results/coded_error_mechanism.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": true,
+    "after": [],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "Coded reliable regime (unweighted)",
+    "script": "coded_reliable_regime.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "results/coded_reliable_regime.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": true,
+    "after": [],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "Coded soft-decision relaying",
+    "script": "coded_soft_decision.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "results/coded_soft_decision.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": true,
+    "after": [],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "Coded equal throughput (unweighted)",
+    "script": "coded_latency_throughput.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "results/coded_latency_throughput.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": false,
+    "after": [
+      "Coded Mamba relay (unweighted)"
+    ],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "Coded rate adaptation (unweighted)",
+    "script": "coded_rate_adaptation.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "results/coded_rate_adaptation.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": false,
+    "after": [],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "Coded readiness budget (unweighted)",
+    "script": "coded_latency_capacity.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "results/coded_latency_capacity.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": false,
+    "after": [
+      "Coded rate adaptation (unweighted)"
+    ],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "Coded K sweep, QPSK, matched metrics",
+    "script": "coded_k_sweep_qpsk.py",
+    "args": [],
+    "env": {
+      "CODED_METRIC": "matched",
+      "CODED_TRIALS": "30"
+    },
+    "outputs": [
+      "results/coded_df_experiment_matched.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": true,
+    "after": [
+      "Coded Mamba relay (unweighted)"
+    ],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "Coded equal throughput, matched metrics",
+    "script": "coded_latency_throughput.py",
+    "args": [],
+    "env": {
+      "CODED_METRIC": "matched",
+      "CODED_TRIALS": "30"
+    },
+    "outputs": [
+      "results/coded_latency_throughput_matched.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": false,
+    "after": [
+      "Coded Mamba relay (unweighted)",
+      "Coded equal throughput (unweighted)"
+    ],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "Coded readiness budget, matched metrics",
+    "script": "coded_latency_capacity.py",
+    "args": [],
+    "env": {
+      "CODED_METRIC": "matched",
+      "CODED_TRIALS": "30"
+    },
+    "outputs": [
+      "results/coded_latency_capacity_matched.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": false,
+    "after": [
+      "Coded rate adaptation (unweighted)",
+      "Coded readiness budget (unweighted)"
+    ],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "Round-2 retained model checkpoint audit",
+    "script": "scripts/audit_round2_models.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "results/round2_model_checkpoint_audit.json"
+    ],
+    "kind": "archive_analysis",
+    "needs_torch": true,
+    "after": [],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "Round-2 archived-rerun assessment",
+    "script": "scripts/assess_round2_reruns.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "results/round2_rerun_assessment.json"
+    ],
+    "kind": "archive_analysis",
+    "needs_torch": false,
+    "after": [],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "Historical seed-42 MLP repeatability control",
+    "script": "scripts/audit_rng_reproducibility.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "results/reproduction/20261017-rng-seed42/comparison.json",
+      "results/reproduction/20261017-rng-seed42/manifest.json"
+    ],
+    "kind": "archive_reference",
+    "reason": "Historical frozen-source RNG audit; requires an explicit source and output directory.",
+    "needs_torch": false,
+    "after": [],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "Round-2 reproduction evidence (separate from published inputs)",
+    "script": "scripts/reproduce_round2.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "results/reproduction/20261017-round2-v2/manifest.json"
+    ],
+    "kind": "archive_reference",
+    "reason": "Historical suite manifest, not a standalone producer of that dated archive.",
+    "needs_torch": false,
+    "after": [],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "Original-driver MLP reproduction control",
+    "script": "scripts/reproduction_original_control.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "results/reproduction/20261017-original-control/comparison.json"
+    ],
+    "kind": "archive_reference",
+    "reason": "Historical retained-checkpoint control; requires its original evidence and replay snapshot.",
+    "needs_torch": false,
+    "after": [],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "Coded error location, matched metrics",
+    "script": "coded_error_mechanism.py",
+    "args": [],
+    "env": {
+      "CODED_METRIC": "matched",
+      "CODED_TRIALS": "30"
+    },
+    "outputs": [
+      "results/coded_error_mechanism_matched.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": true,
+    "after": [
+      "Coded error location (unweighted)"
+    ],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "Coded reliable regime, matched metrics",
+    "script": "coded_reliable_regime.py",
+    "args": [],
+    "env": {
+      "CODED_METRIC": "matched",
+      "CODED_TRIALS": "30"
+    },
+    "outputs": [
+      "results/coded_reliable_regime_matched.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": true,
+    "after": [
+      "Coded reliable regime (unweighted)"
+    ],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "Coded K sweeps (QPSK, 16-QAM), matched metrics",
+    "script": "coded_k_sweep_qam16.py",
+    "args": [],
+    "env": {
+      "CODED_METRIC": "matched",
+      "CODED_TRIALS": "30"
+    },
+    "outputs": [
+      "results/coded_df_experiment_matched.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": true,
+    "after": [
+      "Coded Mamba relay (unweighted)",
+      "Coded K sweep, QPSK, matched metrics"
+    ],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "Coded rate adaptation, matched metrics",
+    "script": "coded_rate_adaptation.py",
+    "args": [],
+    "env": {
+      "CODED_METRIC": "matched",
+      "CODED_TRIALS": "30"
+    },
+    "outputs": [
+      "results/coded_rate_adaptation_matched.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": false,
+    "after": [
+      "Coded rate adaptation (unweighted)"
+    ],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "Coded link-adaptation envelopes, matched block DF",
+    "script": "coded_matched_envelopes.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "results/coded_matched_envelopes.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": false,
+    "after": [
+      "Coded rate adaptation (unweighted)",
+      "Coded rate adaptation, matched metrics"
+    ],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "Coded relaying with matched (|h|^2-weighted) metrics",
+    "script": "coded_matched_metrics.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "results/coded_matched_metrics.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": true,
+    "after": [
+      "Coded soft-decision relaying"
+    ],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "Factorized QPSK MLSE equivalence",
+    "script": "factorized_mlse_equivalence.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "results/factorized_mlse_equivalence.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": true,
+    "after": [],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "Scalar MAP relay on unknown ISI",
+    "script": "e6_scalar_map.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "results/e6_scalar_map.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": true,
+    "after": [],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "Canonical Hybrid branch selection (replay)",
+    "script": "hybrid_branch_selection.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "results/hybrid_branch_selection.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": true,
+    "after": [
+      "Canonical comparison (Table 5.2)"
+    ],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "Canonical AF: block length and conventional AF",
+    "script": "af_block_and_conventional.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "results/af_block_and_conventional.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": true,
+    "after": [
+      "Canonical comparison (Table 5.2)"
+    ],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "Corrected composite AF, fixed budget",
+    "script": "scripts/codex_composite_af_validation.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "e6_unknown_channel_results/codex_composite_af_validation.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": true,
+    "after": [],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "Matched-protocol high-SNR Viterbi",
+    "script": "e6_matched_highsnr.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "results/e6_matched_highsnr.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": true,
+    "after": [],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "Matched-protocol unknown-ISI comparison",
+    "script": "e6_matched_protocol.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "results/e6_matched_protocol.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": true,
+    "after": [],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "ISI required-SNR penalties (MLP vs genie Viterbi)",
+    "script": "e6_isi_penalty.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "results/e6_isi_penalty.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": false,
+    "after": [
+      "Matched-protocol unknown-ISI comparison"
+    ],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "Fixed-budget 16 dB remeasurement (original)",
+    "script": "rare_event_fixed_budget.py",
+    "args": [
+      "--src-base",
+      "1000",
+      "--out",
+      "results/rare_event_fixed_budget_16db.json"
+    ],
+    "env": {},
+    "outputs": [
+      "results/rare_event_fixed_budget_16db.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": true,
+    "after": [],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "Fixed-budget 16 dB remeasurement (replicate)",
+    "script": "rare_event_fixed_budget.py",
+    "args": [
+      "--src-base",
+      "7000",
+      "--out",
+      "results/rare_event_fixed_budget_16db_replicate.json"
+    ],
+    "env": {},
+    "outputs": [
+      "results/rare_event_fixed_budget_16db_replicate.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": true,
+    "after": [
+      "Fixed-budget 16 dB remeasurement (original)"
+    ],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "Rare-event estimator bias",
+    "script": "rare_event_estimator_bias.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "results/rare_event_estimator_bias.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": false,
+    "after": [],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "QPSK error decomposition",
+    "script": "qpsk_error_decomposition.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "results/qpsk_error_decomposition.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": true,
+    "after": [],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "Cross-architecture seed spread (native)",
+    "script": "seed_spread_native_architectures.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "results/seed_spread_native_architectures.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": true,
+    "after": [],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "Soft block-DF variance calibration",
+    "script": "coded_soft_df_calibration.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "results/coded_soft_df_calibration.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": true,
+    "after": [],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "QPSK BCJR/APP benchmark",
+    "script": "qpsk_bcjr_benchmark.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "results/qpsk_bcjr_benchmark.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": true,
+    "after": [],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "QPSK trellis controls",
+    "script": "qpsk_trellis_controls.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "results/qpsk_trellis_controls.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": true,
+    "after": [],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "ISI slicer floor, closed form",
+    "script": "isi_slicer_floor.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "results/isi_slicer_floor.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": false,
+    "after": [],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "E6 unknown ISI (S1-S4)",
+    "script": "e6_sim_ported.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "e6_unknown_channel_results/e6_sim_ported_results.npy"
+    ],
+    "kind": "experiment",
+    "needs_torch": true,
+    "after": [],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "E6 Viterbi AWGN consistency rerun",
+    "script": "e6_viterbi_codex_consistency.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "e6_unknown_channel_results/codex_viterbi_consistency_awgn.npy",
+      "e6_unknown_channel_results/codex_viterbi_consistency_awgn.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": true,
+    "after": [],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "E6 flat control",
+    "script": "e6_flat_ported.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "e6_unknown_channel_results/e6_flat_ported_results.npy"
+    ],
+    "kind": "experiment",
+    "needs_torch": true,
+    "after": [],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "E6 composite cascade",
+    "script": "e6_composite_ported.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "e6_unknown_channel_results/e6_composite_ported_results.npy"
+    ],
+    "kind": "experiment",
+    "needs_torch": true,
+    "after": [],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "E6 pilot-budget sweep",
+    "script": "e6_partial_ported.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "e6_unknown_channel_results/e6_partial_ported_results.npy"
+    ],
+    "kind": "experiment",
+    "needs_torch": true,
+    "after": [],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "E6 blind / posterior-free",
+    "script": "e6_blind_ported.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "e6_unknown_channel_results/e6_blind_ported_results.npy"
+    ],
+    "kind": "experiment",
+    "needs_torch": true,
+    "after": [],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "E6 blind regime, corrected intervals (red-team check)",
+    "script": "e6_blind_intervals.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "results/e6_blind_intervals.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": true,
+    "after": [
+      "E6 blind / posterior-free"
+    ],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "E6 complexity: measured inference time",
+    "script": "e6_complexity_ported.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "e6_unknown_channel_results/e6_complexity_ported_results.npy"
+    ],
+    "kind": "experiment",
+    "needs_torch": true,
+    "after": [],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "Canonical runs: identification and configuration",
+    "script": "canonical_run_provenance.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "results/canonical_run_provenance.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": true,
+    "after": [
+      "Canonical comparison (Table 5.2)",
+      "Equal-budget comparison (Table 5.3)"
+    ],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "Canonical relays: paired tests",
+    "script": "canonical_paired_tests.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "results/canonical_paired_tests.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": false,
+    "after": [
+      "Canonical comparison (Table 5.2)",
+      "Equal-budget comparison (Table 5.3)"
+    ],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "E6 QPSK unknown channel",
+    "script": "e6_qpsk_unknown_channel.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "e6_unknown_channel_results/e6_qpsk_unknown_channel_results.npy"
+    ],
+    "kind": "experiment",
+    "needs_torch": true,
+    "after": [],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "Minimum relay size, 9 channels",
+    "script": "mlp_min_size_all_channels.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "results/mlp_min_size_all_channels.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": true,
+    "after": [],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "Minimum size, window x depth",
+    "script": "mlp_min_size_bisect.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "results/mlp_min_size_bisect.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": true,
+    "after": [],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "Coded minimum size",
+    "script": "coded_min_size.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "results/coded_min_size.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": true,
+    "after": [],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "Coded min size, matched block-DF baseline",
+    "script": "coded_min_size_matched.py",
+    "args": [],
+    "env": {
+      "CODED_METRIC": "matched"
+    },
+    "outputs": [
+      "results/coded_min_size_matched.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": true,
+    "after": [
+      "Coded minimum size"
+    ],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "Seed spread, equal budget",
+    "script": "seed_spread_architectures.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "results/seed_spread_architectures.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": true,
+    "after": [],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "Transformer instability",
+    "script": "transformer_instability.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "results/transformer_instability.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": true,
+    "after": [],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "MMSE complexity-matched baseline",
+    "script": "mmse_equalizer.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "results/mmse_equalizer.json",
+      "results/mmse_equalizer_detail.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": true,
+    "after": [],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "Sequence models on memory",
+    "script": "seq_models_on_memory.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "results/seq_models_on_memory.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": true,
+    "after": [],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "Mamba readout on memory: centre control and full window",
+    "script": "seq_models_on_memory_readout.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "results/seq_models_on_memory_readout.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": true,
+    "after": [
+      "Sequence models on memory"
+    ],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "Mamba readout on memory: bidirectional",
+    "script": "seq_models_on_memory_bidirectional.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "results/seq_models_on_memory_bidirectional.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": true,
+    "after": [],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "Sequence models on memory: MLP/Transformer rerun",
+    "script": "seq_models_on_memory_rerun_controls.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "results/seq_models_on_memory_rerun_controls.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": true,
+    "after": [
+      "Sequence models on memory"
+    ],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "SNR penalties on comparable target sets",
+    "script": "penalty_common_targets.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "results/penalty_common_targets.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": false,
+    "after": [
+      "Coded min size, matched block-DF baseline",
+      "Cross-architecture seed spread (native)",
+      "Minimum relay size, 9 channels",
+      "Coded minimum size",
+      "Seed spread, equal budget",
+      "Transformer instability",
+      "MMSE complexity-matched baseline",
+      "Sequence models on memory",
+      "Mamba readout on memory: centre control and full window",
+      "Sequence models on memory: MLP/Transformer rerun"
+    ],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "Sequence models on memory: seeded-retraining repeat",
+    "script": "seq_models_on_memory_repeat.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "results/seq_models_on_memory_repeat.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": true,
+    "after": [
+      "Sequence models on memory",
+      "Mamba readout on memory: centre control and full window",
+      "Sequence models on memory: MLP/Transformer rerun"
+    ],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "Sequence models on memory: retraining fingerprints",
+    "script": "seq_models_on_memory_repeat_probe.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "results/seq_models_on_memory_repeat_probe.jsonl"
+    ],
+    "kind": "experiment",
+    "needs_torch": true,
+    "after": [],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "Joint latency/memory",
+    "script": "joint_latency_memory.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "results/joint_latency_memory.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": true,
+    "after": [],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "Memory sweep, precision re-run",
+    "script": "joint_memory_precision.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "results/joint_memory_precision.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": true,
+    "after": [],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  },
+  {
+    "name": "MAC accounting",
+    "script": "unified_latency_axis.py",
+    "args": [],
+    "env": {},
+    "outputs": [
+      "results/unified_latency_axis.json"
+    ],
+    "kind": "experiment",
+    "needs_torch": false,
+    "after": [],
+    "dependency_method": "literal-path hints plus ordered shared-output writers; dynamic inputs not inferred",
+    "archived_dependencies": []
+  }
+]
