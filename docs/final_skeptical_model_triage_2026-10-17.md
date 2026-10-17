@@ -45,7 +45,7 @@ secondary experiment, software backend or possible scientific interpretation.
 |---|---|
 | Actual canonical configurations and explicit uncertainties | §4.3.3, Table 4.2 and `results/canonical_run_provenance.json`; architecture inventory cross-checked against retained new weights. Historical Torch states/weights/versions/losses unavailable and disclosed. |
 | Comparable SNR penalties, rankings, spreads and size conclusions | Fixed reference target sets, per-target censoring, corrected `results/penalty_common_targets.json`, Tables 6.7 and Appendix 9.6. The new assessment preserves old/new values separately; no dropping failed targets. Minimum size means smallest tested within the stated grid, not a mathematical bound. |
-| Matched-Mamba scope | §5.5.2 explicitly covers hard/soft MLP only; no matched-Mamba result is invented. New coded training details and missing-weight disclosure added. |
+| Matched-Mamba scope | §5.5.1 explicitly covers hard/soft MLP only; no matched-Mamba result is invented. New coded training details and missing-weight disclosure added. |
 | Formal problem and differentiability | Local map plus normalization consistently specified; empirical hard loss separated from potentially differentiable noise-averaged BER. |
 | Correct comparisons lead | Matched coded results lead; factorized trellis counts are in the main complexity comparison. Unweighted/joint results remain diagnostics. |
 | Remaining scope/presentation | Past-only Mamba local scan distinguished from block normalization; common input context qualified; simplified implementations named; ten-pilot difference unresolved; immutable archive identified; rendered Chapter 5 headers corrected. |

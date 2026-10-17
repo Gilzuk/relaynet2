@@ -1,23 +1,25 @@
-Subject: Revised thesis — round-2 corrections and resubmission
+Subject: Revised thesis — response to round-2 feedback
 
-Draft for the author; not sent.
+Draft for Gil to send; not sent. Reviewed submission snapshot: `5eb34ab3ed01bc9df17498358656965af2fa916b`.
 
 Hi Anatoly,
 
-Thank you for your detailed feedback. I have addressed all six remaining points and am resubmitting the revised thesis:
+Thank you for your detailed feedback. I have addressed the six remaining requests in the revised thesis:
 
-[Revised thesis PDF](https://github.com/Gilzuk/relaynet2/blob/experiments/round2-reproduction-20261017/thesis/main.pdf)
+[Revised thesis PDF](https://github.com/Gilzuk/relaynet2/blob/5eb34ab3ed01bc9df17498358656965af2fa916b/thesis/main.pdf)
 
-The revisions cover the following:
+1. **Canonical runs:** Section 4.3.3 and Table 4.2 now identify the actual architectures, training channels and scaling, sample counts, epochs, optimizer settings, checkpoint selection and evaluation budgets. Missing historical weights, training RNG states and software versions are explicitly disclosed.
+2. **SNR penalties:** The comparisons use reference-defined BER target sets and retain unsuccessful targets as bounds. I rechecked the architecture ordering, initialization spreads and minimum-size statements against the saved per-seed curves; size conclusions are limited to the tested grid.
+3. **Matched decoding:** The principal coded comparison in Section 5.5.1 covers the evaluated hard and soft MLP read-outs. It explicitly states that matched Mamba was not evaluated.
+4. **Formal problem:** The local relay function is separated from block-wide normalization. The training difficulty of empirical hard decisions is distinguished from the possible differentiability of noise-averaged expected BER.
+5. **Principal comparisons:** Matched decoding leads the coded discussion, and factorized-trellis counts appear directly in the main complexity tables. Unweighted decoding and the joint trellis remain diagnostic comparisons.
+6. **Scope and presentation:** The causality and input-context statements are qualified, the simplified Mamba implementations are identified consistently, the ten-pilot difference remains unresolved in Figure 6.5's caption, an immutable code revision is provided, and Chapter 5's running headers are corrected.
 
-1. **Canonical results:** I documented the actual architectures, training configurations, scaling, sample counts, optimizer settings, checkpoint selection and evaluation budgets. Missing historical information, including the original learned checkpoints and PyTorch RNG state, is explicitly identified.
-2. **SNR penalties:** I corrected the comparisons to use common BER targets, retaining unsuccessful cases as explicit bounds, and rechecked the architecture rankings, initialization spreads and minimum-size conclusions.
-3. **Matched decoding:** The conclusions now explicitly cover the evaluated hard and soft MLP variants. The absence of a matched Mamba comparison is stated.
-4. **Formal problem:** I separated the local relay function from block-wide normalization and corrected the discussion of empirical hard-decision loss versus expected BER.
-5. **Principal comparisons:** Matched decoding now leads the coded discussion, and factorized-trellis counts appear in the main complexity comparisons. The earlier comparisons remain as shorter diagnostics.
-6. **Scope and presentation:** I reconciled the causality and input-context statements, consistently identified the simplified Mamba implementations, corrected the ten-pilot caption, provided an identifiable code revision and fixed Chapter 5’s running headers.
+The final review also corrected signed-rank ties by using integer error-count differences and reconciled the VAE description with its implementation: latent sampling occurs during training, while inference decodes the latent mean. These corrections preserve the principal conclusions within the evaluated scope: no resolved canonical learned-relay advantage over DF, and a matched block-DF advantage over both evaluated coded MLP read-outs.
 
-I also added full-budget training replications and repeated multi-seed tests. These supplement the original measurements; differences between trained realizations do not by themselves show that the original results were incorrect. The revised thesis separates the new canonical realizations, the repeated three-seed sequence study and the same-seed repeatability control. Classical controls reproduce exactly, and fresh paired tests preserve the matched-coded conclusion. Original tables remain intact, with the numerical variation and limits of seed attribution reported alongside them. The numerical verifier checks 892 values against the recorded evidence.
+Section 7.1.4 reports the additional training runs separately from the historical measurements. Classical control arrays match in the four archived hosted replications; learned results vary. The repeated sequence seed IDs and unchanged coded initialization mean these differences cannot all be attributed to changed initial seeds. A separate seed-42 MLP control repeats exactly on one host. Missing historical states and the absent trained classifier weights in the coded rerun remain explicit limitations; the original BER measurements are retained.
+
+The revised document has 120 numbered body pages. The numerical verifier checks 892 values with no inconsistencies; the current software suite passes 386 tests. The repository contains the point-by-point response, reproducibility instructions, seeded execution script, logs, checkpoints where available, and comparison JSON files. The broader full-experiment plan has not been executed in full.
 
 Thank you again for your careful review and guidance.
 
