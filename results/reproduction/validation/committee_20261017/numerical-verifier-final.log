@@ -1,0 +1,59 @@
+
+==========================================================================
+THESIS TABLE VERIFICATION  (published .tex  vs  experiment data source)
+==========================================================================
+table                      cells   flagged   status
+--------------------------------------------------------------------------
+tbl:table2                    54         0   OK
+tbl:layers                    15         0   OK
+tbl:table8                    48         0   OK
+tbl:tableE6                   19         0   OK
+tbl:tableE6flat               24         0   OK
+tbl:tableE6qpsk               20         0   OK
+prose:E6blind                 12         0   OK
+prose:E6partial               13         0   OK
+prose:E6composite              6         0   OK
+tbl:table34                   30         0   OK
+tbl:table37                    6         0   OK
+tbl:table38                   10         0   OK
+tbl:table39                   30         0   OK
+tbl:table40                   12         0   OK
+tbl:table41                   15         0   OK
+tbl:table42                   27         0   OK
+tbl:table43                   18         0   OK
+tbl:table44                   20         0   OK
+tbl:mmse-baseline             15         0   OK
+tbl:seq-on-memory             36         0   OK
+arch:relay-param-counts        5         0   OK
+consistency:proof-copies       7         0   OK
+tbl:slicer-floor-inline       24         0   OK
+prose:qpsk-decomposition       4         0   OK
+prose:scalar-map               7         0   OK
+prose:af-conventional         21         0   OK
+prose:isi-penalty             20         0   OK
+prose:hybrid-branch           21         0   OK
+tbl:coded-matched             54         0   OK
+prose:flat-conclusion          2         0   OK
+coded-matched-secondary       43         0   OK
+prose:qpsk-controls            3         0   OK
+tbl:bcjr-benchmark            12         0   OK
+prose:seed-spread-native      12         0   OK
+prose:khina-round2           106         0   OK
+prose:soft-df-calibration       2         0   OK
+prose:mmse-monotonicity       12         0   OK
+tbl:joint-latency             34         0   OK
+tbl:joint-memory              21         0   OK
+prose:nlbias                   3         0   OK
+prose:coded-fer                2         0   OK
+prose:mamba-lookahead          2         0   OK
+prose:seq-rerun               20         0   OK
+prose:timing-mmse-median       6         0   OK
+prose:round2-rerun            19         0   OK
+--------------------------------------------------------------------------
+cells checked: 892   inconsistencies: 0
+
+All checked cells match their data source within display-rounding tolerance.
+
+Informational (not pass/fail):
+  tbl:table13, tbl:table25 report machine-dependent wall-clock timing;
+  re-run run_experiments.py / the sequence-model benchmark to refresh those.

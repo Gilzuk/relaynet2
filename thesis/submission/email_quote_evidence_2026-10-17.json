@@ -4,7 +4,7 @@
   "pdf_url": "https://github.com/Gilzuk/relaynet2/blob/908687650929a74a969f74fa679f67633b8c3793/thesis/main.pdf",
   "pdf_sha256": "4262e711607c6cdf1e0cd877754b7883ee3300305118ddb45e0c1aeea7c206c6",
   "email_path": "thesis/submission/email_to_khina_round2_resubmission_2026-10-17.md",
-  "email_sha256": "822562ef7e40097e96e8e0bd58895068d69a8a1d9e34f384f5f8342c96bf66ed",
+  "email_sha256": "0188a38e4f237c778f91574953081d2fbc4356f9b27ef92505309ae2107ce920",
   "verification_date": "2026-10-17",
   "method": "Each curly-double-quoted email excerpt is a contiguous substring of its cited PDF page after collapsing whitespace and either preserving or removing line-break hyphens. No wording, case or numerical substitutions. Running-header quotation checked on every cited page. Printed body page n is physical PDF page n+13.",
   "quotes_verified": 21,
@@ -286,5 +286,5 @@
       "verified": true
     }
   ],
-  "publication_state": "Corrected PDF in open PR #189; main and generated mirror not yet updated."
+  "publication_state": "Corrected PDF merged through PR #189 at 2b817cde45e5fe09d4824b0c33826623a5f53394; generated-mirror publication follows PR #188 integration. Email remains unsent."
 }

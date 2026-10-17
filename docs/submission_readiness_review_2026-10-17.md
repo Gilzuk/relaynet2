@@ -11,7 +11,7 @@ are unchanged. Fresh verifier 892/0, 32 document/verifier tests and clean PDF
 build checks pass. The earlier 386-test result below is unchanged-code evidence.
 
 All six round-2 scientific items remain addressed. **The earlier readiness verdict
-below is qualified:** integrate PR #189, publish its generated mirror, and confirm
+below is qualified:** PR #189 is merged; publish its generated mirror and confirm
 the accepted page-count convention before unconditional submission clearance.
 The December 2025 faculty instructions say 120 pages including appendices but do
 not explicitly exclude front/back matter; the repo assumes exclusion. The PDF is
@@ -21,9 +21,11 @@ violation. The full [committee report](https://github.com/Gilzuk/relaynet2/blob/
 records the criteria, repairs and evidence.
 
 The email draft now links to that immutable corrected PDF and its quotation
-inventory was reverified. It is unsent. PR #189 is open, and the currently published
-mirror remains at `0278959d9e981f0e0b8d8e7dcef0c8d3dab1c1a9`; do not mistake a
-prepared correction for a completed merge or Overleaf pull.
+inventory was reverified. It is unsent. PR #189 merged at
+`2b817cde45e5fe09d4824b0c33826623a5f53394`; PR #188 integrates that main and the
+submission records. At this integration snapshot the mirror remains at
+`0278959d9e981f0e0b8d8e7dcef0c8d3dab1c1a9`. Generated-mirror publication is next;
+a repository update does not establish that an Overleaf session has pulled it.
 
 ## Earlier targeted review (retained record)
 

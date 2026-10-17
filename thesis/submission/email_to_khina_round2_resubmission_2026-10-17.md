@@ -1,6 +1,6 @@
 Subject: Revised thesis — response to round-2 feedback
 
-Draft for Gil to send; not sent. Corrected PDF is in unmerged PR #189; integrate it and publish the generated mirror before sending. Confirm the accepted faculty page count. Reviewed submission snapshot: `908687650929a74a969f74fa679f67633b8c3793`.
+Draft for Gil to send; not sent. The corrected PDF was merged through PR #189 at `2b817cde45e5fe09d4824b0c33826623a5f53394`. Verify generated-mirror publication before sending. Confirm the accepted faculty page count. Reviewed submission snapshot: `908687650929a74a969f74fa679f67633b8c3793`.
 
 Hi Anatoly,
 
