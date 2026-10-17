@@ -2,6 +2,22 @@
 
 _Last updated: 2026-10-17_
 
+### Latest (2026-10-17): #183 merged; VAE follow-up; two reproduction PRs
+
+- #183 merged as merge commit 42e3e38 (so the archive commit 218a1c5 cited in Sec. 4.3.4 stays reachable). The
+  Ch. 2 VAE correction (56a97cf) was pushed minutes after the merge and missed it; it is re-applied on branch
+  fix/vae-inference-ch2 as its own PR. The evaluated VAE decodes the encoder mean at inference (relaynet/relays/vae.py
+  infer/_infer); it samples z only in training.
+- Two reproduction PRs are open: #184 (author's draft, experiments/round2-reproduction-20261017): frozen-source
+  worktree runner scripts/reproduce_round2.py, evidence under results/reproduction/<run-id>, never overwrites published
+  results, GitHub Actions jobs; it covers the round-2 suite only. #185 (tools/reproduce-all): plan of every registered
+  experiment (REGISTRY + EXTRA), but runs in place. Do not merge both as competing runners; see the session for the
+  recommendation.
+- #184 findings to keep in view (not yet accepted into the thesis): canonical retraining differs in 633/635 fields with
+  classical controls exact; sequence-memory rerun moves the QPSK Transformer best 5.96 -> 6.64 dB and Mamba-2 seed 1 now
+  reaches 1e-3 (spread >3.28 -> 0.97); best-of-three order unchanged; explicit seeding + deterministic Torch repeats
+  bit for bit on one host but still differs from the historical result by up to 0.0015 mean BER.
+
 ### Current authorization, audit and reproduction request
 
 The author authorized “Merge and push”, then requested another skeptical audit and fixes to inconsistent sentences or missing reproduction details. Latest instruction: publish first, create a new experiments-reproduction branch, run a script in the background, retain evidence and reference JSON links, and flag/resolve/report inconsistencies. Earlier pending-confirmation notes below are historical.
