@@ -30,6 +30,10 @@ CHAPTERS = ROOT / "thesis" / "chapters"
 # (check name, file, exact published text to perturb, replacement)
 # Each replacement must be a value the source data does NOT support.
 MUTATIONS = [
+    ("prose:khina-round2", "appendices.tex",
+     r"times were $2{,}892$", r"times were $2{,}992$"),
+    ("prose:khina-round2", "appendices.tex",
+     r"$746.6$~s, respectively", r"$846.6$~s, respectively"),
     ("prose:round2-rerun", "ch08_discussion.tex",
      r"VAE--DF BER gap is $0.00640$", r"VAE--DF BER gap is $0.00400$"),
     ("tbl:tableE6", "ch07_unknown_and_mismatch_channels.tex",

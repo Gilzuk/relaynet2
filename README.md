@@ -246,7 +246,7 @@ source graph; no revision annotations remain in the current manuscript. The
 and regenerate it. Do not edit the mirror directly. A linked Overleaf project may
 still need a GitHub pull after the mirror updates.
 
-The PDF has **120 Arabic-numbered body pages and 136 physical pages**, including
+The PDF has **119 Arabic-numbered body pages and 135 physical pages**, including
 13 front-matter and three Hebrew back-matter pages. These are separate counts;
 formal acceptance of the faculty's page-count convention is an administrative matter.
 

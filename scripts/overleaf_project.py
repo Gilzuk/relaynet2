@@ -129,7 +129,7 @@ Chapters 1–4 give background, objectives and methods; Chapter 5 gives the cano
 and coded experiments; Chapter 6 gives the unknown/mismatched-channel studies;
 Chapters 7–8 discuss and summarize; Chapter 9 contains Appendices 9.1–9.7.
 The standalone historical 16-QAM classifier extension is not included; the coded
-16-QAM controls are included. The PDF has 120 Arabic-numbered body pages and 136
+16-QAM controls are included. The PDF has 119 Arabic-numbered body pages and 135
 physical pages (13 front-matter and three Hebrew back-matter pages).
 
 A GitHub update to this generated repository is not itself evidence that a linked

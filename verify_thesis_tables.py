@@ -2578,7 +2578,7 @@ def check_timing_and_mmse_median_prose(tex, rep):
 def check_khina_round2(tex, rep):
     """Numbers introduced in answer to Khina's second round.
 
-    * Table 4.4 (tbl:canonical-runs) and the Sec. 4.3.3 run identification,
+    * Table 4.2 (tbl:canonical-runs) and the appendix canonical run records,
       against results/canonical_run_provenance.json;
     * the comparable-target penalties of Tables 9.4 (coded row), 9.5 and 9.6
       and of the Sec. 7.2.1, 4.3.4 and appendix prose, recomputed here from the
@@ -2617,16 +2617,18 @@ def check_khina_round2(tex, rep):
             rep.cell(T, f"{c[0]}/windows", c[4], float(w[0]), float(recs[0]["windows"]))
             if len(w) > 1:
                 rep.cell(T, f"{c[0]}/gradient windows", c[4], float(w[1]), float(recs[0]["gradient_windows"]))
-    # Run identification in Sec. 4.3.3.
+    # Run identification is retained in the appendix reproducibility section.
     for key, run in prov["runs"].items():
         for field in ("code_commit", "data_commit"):
             rep.cell(T, f"{key}/{field}", run[field], float(run[field] in tex), 1.0)
         rep.cell(T, f"{key}/AF and DF reproduce", "1", 1.0,
                  float(all(run["af_df_reproduce_bit_for_bit"].values())))
-    m = re.search(r"in \$2\{,\}892\$~s for training", tex)
-    rep.cell(T, "Table 5.2 stage seconds", "2892", float(bool(m)) * 2892, float(prov["runs"]["table_5_2"]["stage_seconds"]))
-    m = re.search(r"\$746\.6\$~s", tex)
-    rep.cell(T, "Table 5.3 stage seconds", "746.6", float(bool(m)) * 746.6, float(prov["runs"]["table_5_3"]["stage_seconds"]))
+    m = re.search(r"Recorded training-and-evaluation times were \$([^$]+)\$ and \$([^$]+)\$~s", tex)
+    for index, key in enumerate(("table_5_2", "table_5_3"), start=1):
+        published = m.group(index).replace("{,}", "") if m else "missing"
+        value = float(published) if m else float("nan")
+        rep.cell(T, f"Table 5.{index + 1} stage seconds", published, value,
+                 float(prov["runs"][key]["stage_seconds"]))
     # Size-sweep seed spreads (Table 9.5 pooled row; Sec. 4.3.4 and 7.2.1 prose).
     ms = json.load(open(os.path.join(R, "mlp_min_size_all_channels.json")))
     sp, flags = [], []
