@@ -74,6 +74,17 @@ rests on. Do not hand-edit; re-run the script.
 | SNRS | `[0, 4, 8, 12, 16, 20]` |
 | TRAIN_SNRS | `[5, 10, 15]` |
 
+## `Sec. 4.3.3 canonical-run description (Tables 5.2-5.3 runs, window counts, parameters)`
+
+| field | value |
+|---|---|
+| experiment | Canonical runs: identification and configuration |
+| reproduce | `python canonical_run_provenance.py` |
+| data file | `results/canonical_run_provenance.json` |
+| data commit | `02459a0` 2026-10-16 (Claude) |
+| provenance | ok |
+| SNRS | `np.arange(0, 21, 2)` |
+
 ## `constraint-length paragraph`
 
 | field | value |
@@ -267,6 +278,16 @@ rests on. Do not hand-edit; re-run the script.
 | reproduce | `python qpsk_error_decomposition.py` |
 | data file | `results/qpsk_error_decomposition.json` |
 | data commit | `e35d9b7` 2026-09-04 (Gilzuk) |
+| provenance | ok |
+
+## `prose: Sec. 6.4.2 rerun, coded size sweep, seed spreads (App. 9.6)`
+
+| field | value |
+|---|---|
+| experiment | SNR penalties on comparable target sets |
+| reproduce | `python penalty_common_targets.py` |
+| data file | `results/penalty_common_targets.json` |
+| data commit | `02459a0` 2026-10-16 (Claude) |
 | provenance | ok |
 
 ## `prose: closed-form slicer BER table`
@@ -546,6 +567,17 @@ rests on. Do not hand-edit; re-run the script.
 | provenance | **stale, reviewed: endpoint clarification in docstring/console text only; numerical code unchanged** |
 | SNRS | `[0, 4, 8, 12, 16, 20]` |
 
+## `tbl:canonical-runs`
+
+| field | value |
+|---|---|
+| experiment | Canonical runs: identification and configuration |
+| reproduce | `python canonical_run_provenance.py` |
+| data file | `results/canonical_run_provenance.json` |
+| data commit | `02459a0` 2026-10-16 (Claude) |
+| provenance | ok |
+| SNRS | `np.arange(0, 21, 2)` |
+
 ## `tbl:coded-matched`
 
 | field | value |
@@ -640,42 +672,31 @@ rests on. Do not hand-edit; re-run the script.
 
 | field | value |
 |---|---|
-| experiment | Seed spread, equal budget |
-| reproduce | `python seed_spread_architectures.py` |
-| data file | `results/seed_spread_architectures.json` |
-| data commit | `e35d9b7` 2026-09-04 (Gilzuk) |
+| experiment | SNR penalties on comparable target sets |
+| reproduce | `python penalty_common_targets.py` |
+| data file | `results/penalty_common_targets.json` |
+| data commit | `02459a0` 2026-10-16 (Claude) |
 | provenance | ok |
-| EPOCHS | `100` |
-| N_TRIALS | `20` |
-| SEED | `0` |
-| SNRS | `[0, 4, 8, 12, 16, 20]` |
-| TRAIN_SNRS | `[5, 10, 15]` |
 
 ## `tbl:seed-spread-3k`
 
 | field | value |
 |---|---|
-| experiment | Seed spread, equal budget |
-| reproduce | `python seed_spread_architectures.py` |
-| data file | `results/seed_spread_architectures.json` |
-| data commit | `e35d9b7` 2026-09-04 (Gilzuk) |
+| experiment | SNR penalties on comparable target sets |
+| reproduce | `python penalty_common_targets.py` |
+| data file | `results/penalty_common_targets.json` |
+| data commit | `02459a0` 2026-10-16 (Claude) |
 | provenance | ok |
-| EPOCHS | `100` |
-| N_TRIALS | `20` |
-| SEED | `0` |
-| SNRS | `[0, 4, 8, 12, 16, 20]` |
-| TRAIN_SNRS | `[5, 10, 15]` |
 
 ## `tbl:seq-on-memory`
 
 | field | value |
 |---|---|
-| experiment | Sequence models on memory |
-| reproduce | `python seq_models_on_memory.py` |
-| data file | `results/seq_models_on_memory.json` |
-| data commit | `e35d9b7` 2026-09-04 (Gilzuk) |
+| experiment | SNR penalties on comparable target sets |
+| reproduce | `python penalty_common_targets.py` |
+| data file | `results/penalty_common_targets.json` |
+| data commit | `02459a0` 2026-10-16 (Claude) |
 | provenance | ok |
-| TRAIN_SNRS | `[5, 10, 15]` |
 
 ## `tbl:table-minsize`
 

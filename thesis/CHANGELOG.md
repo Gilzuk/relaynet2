@@ -1,7 +1,8 @@
 # Changelog
 
-Notable changes to the thesis, newest first. The response to the October 2026
-review is `submission/reply_to_khina_2026-10.md` (one paragraph per comment, with
+Notable changes to the thesis, newest first. The responses to the October 2026
+reviews are `submission/reply_to_khina_2026-10.md` and
+`submission/reply_to_khina_round2_2026-10.md` (one paragraph per comment, with
 the thesis location of each fix) and the task chain behind it is `HANDOVER.md` at
 the repository root. Earlier rounds were recorded in review-response appendices
 that the current build no longer includes.
@@ -12,6 +13,55 @@ declared subset of table cells and prose numbers against the data files that
 produced them; it does not cover every number or figure.
 
 ---
+
+## [Khina round 2] — 2026-10-17
+
+Dr. Khina's six remaining points are addressed; the reply is
+`submission/reply_to_khina_round2_2026-10.md`. 120 countable pages.
+
+- **Canonical runs (point 1).** Sec. 4.3.3 identifies the runs behind
+  Tables 5.2 and 5.3 (commands, code commits b4059e6 / 4cf9753, data commits
+  69a470c / d27fcf7, budget, hardware, 2,892 s and 746.6 s). New Table 4.2
+  (`tbl:canonical-runs`) gives each learned relay's training as executed:
+  parameters, window, training SNRs, window counts (and the part used for
+  gradients), Adam settings and the checkpoint kept. The section states what
+  cannot be established (unseeded initialization, batch order and VAE noise;
+  weights not saved). `canonical_run_provenance.py` derives the counts and
+  shows that today's code reproduces both tables' AF and DF columns bit for bit.
+- **Comparable-target penalties (point 2).** The reference curve fixes the
+  targets; a relay that misses one gets a lower bound, marked ≥, instead of
+  having the target dropped (`ber_metrics.penalty_common`,
+  `penalty_common_targets.py`). Changed numbers: Table 6.7 Mamba-2 at ISI (QPSK)
+  +5.83 dB, spread >3.28 (was +4.69, 2.12; the old seed needs >+9.11); MLP lead
+  there 3.14 dB; cross-machine rerun eleven of twelve within 0.25 dB (was ten);
+  Table 9.4 coded row has no configuration under the three strictest budgets
+  (was 372p w9, 244p w5, 244p w5); Table 9.5 pooled 148 configurations, median
+  0.176, P90 ≥1.226, max ≥1.555 (was 152, 0.180, 1.229, 3.182); Table 9.6 VAE and
+  Transformer spreads at least 0.156 and 0.892 dB (Transformer was 0.906); native
+  Transformer and VAE spreads at least 0.075 and 0.091; window gain "more than
+  8 dB" (was 8–11); coded sweep +1.24–+1.92 dB against unweighted block DF (the
+  printed +1.86 lower end was an earlier error) and at least +9.75 dB against
+  matched block DF (was +7.6–+9.9). Fig. 9.1 shows bounds as open markers.
+- **Matched-decoding scope (point 3).** Statements about learned relays losing
+  to matched block DF are restricted to the two MLP read-outs; the coded Mamba
+  relay was not rerun (Sec. 5.5.1, Ch. 1, 8, 9, abstract).
+- **Formal problem (point 4).** Sec. 4.1.5 separates the local function f from
+  the block normalization α (the relay map α·f is a block map) and replaces the
+  nondifferentiability statement.
+- **Principal comparisons (point 5).** The coded section opens with matched
+  decoding (Sec. 5.5.1); the unweighted pipeline and unweighted soft relaying
+  are diagnostics (5.5.2, 5.5.3). Tables 6.8 and 6.9 lead with factorized
+  trellis counts; the crossover is 6.70 taps, with the joint-trellis 3.35 as a
+  diagnostic. The abstracts lead with the factorized comparison.
+- **Scope and presentation (point 6).** Remark 4.1 (past-only processing
+  evaluated only through the simplified Mamba relays); Sec. 4.4 (eleven-sample
+  window is not a common context); simplified Mamba named in Ch. 1–5; Fig. 6.5
+  caption (ten pilots not resolved); archive tag `thesis-2026-10` named;
+  Chapter 5 running header.
+- **Hebrew abstract.** The complexity and coded sentences are re-drafted to
+  mirror the English (`HEBREW_ABSTRACT_SYNC.md`); not yet author-approved.
+- **Verification.** New `prose:khina-round2` check; verifier 858 cells, 0
+  inconsistencies; 351 tests.
 
 ## [Red-team fixes] — 2026-10-14
 

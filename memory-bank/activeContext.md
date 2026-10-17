@@ -1,6 +1,24 @@
 # Active Context (update this file first, every session)
 
-_Last updated: 2026-10-14_
+_Last updated: 2026-10-17_
+
+### Latest (2026-10-17): Khina's second round addressed (branch fix/khina-round2)
+
+Dr. Khina sent six remaining points. All are addressed on `fix/khina-round2` (PR into main, not merged; wait for the
+author's approval). Commits: 02459a0 (code and data: `ber_metrics.penalty_common`, `penalty_common_targets.py`,
+`canonical_run_provenance.py`, tests, REGISTRY rows), 5d19033 (thesis + PDF), then docs.
+
+- Canonical runs: Table 5.2 = `--exp 7.10 --retrain --skip-relays cgan` from b4059e6 (data 69a470c, 2,892 s);
+  Table 5.3 = `--exp 7.8` from 4cf9753 (data d27fcf7, 746.6 s). New Table 4.2 (`tbl:canonical-runs`) lists each relay's
+  training as executed. Unseeded init/batch order/VAE noise and unsaved weights are stated; the March checkpoints in
+  `trained_weights_layernorm` are stale NumPy weights, not the canonical ones.
+- Penalty rule: the reference fixes the target set; a missed target is a lower bound (snr_max - snr_ref), marked >=.
+  All changed numbers are in thesis/CHANGELOG.md [Khina round 2] and the reply.
+- Hebrew abstract: complexity/coded sentence re-drafted; NOT approved yet (thesis/HEBREW_ABSTRACT_SYNC.md).
+- After merge (with approval): create tag `thesis-2026-10` on the merge commit (Sec. 4.3.4 names it) and republish
+  the mirror with `scripts/overleaf_sync.py --repo` under the author's identity.
+- Verifier 858 cells / 0, 351 tests, provenance audit clean, 120 countable pages (136 PDF pages).
+- The Hebrew reminder email about the 17 Oct deadline exists only in chat; the author said not to commit it.
 
 ### Latest (2026-10-14): reply to Khina made concise
 

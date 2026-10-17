@@ -1,8 +1,17 @@
-# Hebrew abstract: approved by the author (2026-10-13; margin change approved 2026-10-14)
+# Hebrew abstract: one sentence re-drafted 2026-10-17, awaiting the author's approval (earlier text approved 2026-10-13/14)
 
 **Status 2026-10-13: approved.** The author reviewed the rendered Hebrew abstract (page xii of the
 #175 build) and the two changes of the committee-audit round below, and approved them ("Hebrew ok").
 The earlier notes below are kept as the record of how the text was drafted.
+
+**Update 2026-10-17 (Khina round 2) — drafted, NOT yet approved by the author.** The English abstract's
+complexity and coded sentences changed (factorized MLSE first; the coded reversal scoped to the learned
+MLP relays), and the Hebrew paragraph was re-drafted to mirror them. The drafted Hebrew reads:
+"גלאי \textenglish{MLSE} המופרד במדויק לרכיבי \textenglish{I/Q} דורש פחות פעולות כפל מממסר זה עד שישה
+מקדמים ופי \textenglish{1.23} יותר בשבעה, ושומר על שיעור שגיאה נמוך יותר; ספירת הטרליס המשותף שמומש,
+החוצה את עלות הממסר בין שלושה לחמישה מקדמים, היא כלי אבחון של מימוש זה בלבד." and, in the coded
+sentence, "יתרונם של ממסרי ה־\textenglish{MLP} הנלמדים". Everything else in the Hebrew abstract is the
+approved text. It renders on page xii (PDF page 134 of 136).
 
 **Update 2026-10-14 (red-team findings, R2) — approved by the author on 2026-10-14 ("Approve Hebrew").** One number in the
 approved text changed, mirroring the English abstract: the MLP's 0 dB margin against conventional

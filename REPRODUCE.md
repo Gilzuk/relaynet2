@@ -23,8 +23,8 @@ Two distinct claims, checkable independently:
 
 1. **The thesis matches its data.** A declared subset of numerical table cells
    and prose numbers is compared against the file that produced it; it does not
-   cover every number or figure. This is `make verify`: **732 values,
-   0 discrepancies** (2026-10-14), exit code 1 on any mismatch.
+   cover every number or figure. This is `make verify`: **858 values,
+   0 discrepancies** (2026-10-17), exit code 1 on any mismatch.
 2. **The data can be regenerated.** The experiments are re-runnable from
    scratch. The unknown-channel pipeline is fully seeded and reproduces its
    committed `.npy` files **bit-for-bit**; `run_experiments.py` is seeded via
@@ -40,7 +40,7 @@ above it.
 | Tier | Command | Time | Needs | What it establishes |
 |---|---|---|---|---|
 | 0 | `make verify` | ~1 min | numpy, scipy | Every thesis number matches its data source |
-| 0 | `make test` | < 1 min | + pytest | 347 tests over channels, modulation, coding, relays, statistics and the verification tooling |
+| 0 | `make test` | < 1 min | + pytest | 351 tests over channels, modulation, coding, relays, statistics and the verification tooling |
 | 1 | `make repro-unknown` | ~40 min | numpy, scipy | Recomputes the whole unknown-channel study (Ch. 6), then verifies |
 | 1b | `make repro-qpsk` | ~20 min | numpy, scipy | Recomputes the QPSK unknown-channel study (ISI → AWGN and → Rayleigh) |
 | 2 | `make repro-full` | hours | **+ torch** | Recomputes every experiment, including all neural relays |
@@ -166,7 +166,7 @@ calibrate_simulator.py        E1 calibration: simulator vs closed-form BER (Eb/N
 verify_thesis_tables.py       Checks the thesis against its data sources
 results/                      Committed experiment outputs (JSON + figures)
 e6_unknown_channel_results/   Committed unknown-channel outputs (.npy + figures)
-tests/                        347 tests (pytest)
+tests/                        351 tests (pytest)
 thesis/                       LaTeX sources, figures, fonts, CHANGELOG
   main.tex                      Compile with XeLaTeX; includes the chapters below
   chapters/ch0N_*.tex           One file per chapter. After ch05 the file numbers run
