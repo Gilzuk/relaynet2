@@ -538,3 +538,4 @@ New: `e6_complexity_ported.py` timing protocol and committed output, `scripts/pl
 provenance clean, 347 tests, 120 countable pages. #176 merged as 225d70e. Deleting the merged
 remote branches was refused by the proxy and then skipped at the author's direction.
 
+Session note (2026-10-17, reproduction script): scripts/reproduce_all.py (branch tools/reproduce-all, off main) re-runs every thesis experiment in dependency order from provenance_audit.REGISTRY plus EXTRA producers (canonical 7.10/7.8 stages, unweighted coded studies, three matched reruns), dry run by default, --run logs to results/reproduce_logs/ and verifies; make reproduce-plan / reproduce-all; tests/test_reproduce_all.py (5 tests). Test count after this PR alone 352; after both it and #183 merge, 356 in 26 modules, so the thesis counts (Sec. 4.3.4, App. 9.2) and README/REPRODUCE must be updated by whichever merges second.
