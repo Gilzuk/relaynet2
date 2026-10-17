@@ -32,6 +32,9 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 
 # experiment -> (script, [output files], [published tables/figures])
 REGISTRY = {
+    "Round-2 retained model checkpoint audit": (
+        "scripts/audit_round2_models.py", ["results/round2_model_checkpoint_audit.json"],
+        ["model compatibility audit; no new training or BER results"]),
     "Round-2 archived-rerun assessment": (
         "scripts/assess_round2_reruns.py", ["results/round2_rerun_assessment.json"],
         ["sec:round2-rerun-validation; fresh paired tests and historical/rerun distinctions"]),

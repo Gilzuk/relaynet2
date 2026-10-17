@@ -6,9 +6,11 @@ Current evidence and investigation: [results/reproduction/README.md](../results/
 
 All four hosted jobs in run 39024026594 have now completed. Their complete evidence is committed at `dc7c02c00cbebdfb566362a810ab4b45cb6abbe0`; the numerical comparator flags learned differences for review, with exact classical controls. These runs supplement the training-realization and multi-seed evidence; they do not, from numerical disagreement alone, invalidate original measurements. The sequence study repeats the same three seed IDs, and the coded study retains its initialization seed; not all differences can be attributed to changed seeds. The [post-run assessment](round2_rerun_manuscript_update_2026-10-17.md) explains the manuscript updates and fresh paired tests. No new run was launched for this assessment.
 
+For exact setup, per-model budgets, input ordering and missing-record limits, see the [independent researcher protocol](round2_reproduction_protocol.md).
+
 ## Persistent hosted execution
 
-[`.github/workflows/round2-reproduction.yml`](../.github/workflows/round2-reproduction.yml) runs the four unfinished jobs independently on GitHub Actions when the declared workflow/runner/dependency files change on PR 184's branch. It is restricted to this repository and `experiments/round2-reproduction-20261017`; it never cancels an existing run on a new push. Every job checks out the exact PR head SHA and records its actual environment. Python 3.12.14, NumPy 2.3.5, SciPy 1.17.0, Matplotlib 3.10.8 and CPU Torch 2.8.0 are declared; CPU/hardware differences remain visible. Training, evaluation budgets and comparison tolerances are unchanged.
+[`.github/workflows/round2-reproduction.yml`](../.github/workflows/round2-reproduction.yml) runs the four training jobs independently on GitHub Actions when the declared workflow/runner/dependency files change on PR 184's branch. It is restricted to this repository and `experiments/round2-reproduction-20261017`; it never cancels an existing run on a new push. Every job checks out the exact PR head SHA and records its actual environment. Python 3.12.14, NumPy 2.3.5, SciPy 1.17.0, Matplotlib 3.10.8 and CPU Torch 2.8.0 are declared; CPU/hardware differences remain visible. Training, evaluation budgets and comparison tolerances are unchanged.
 
 Each experiment has a 5.5-hour timeout inside a 350-minute workflow job, leaving time to harvest failures. Fresh IDs include workflow run, attempt and experiment. The complete sequence study is repeated on the new host; seeds are not spliced across environments. Upload runs even when the comparator requires review. An independent final job copies the artifacts to versioned `results/reproduction/gha-*` directories, verifies their source revisions, refuses to overwrite previous evidence, records missing jobs explicitly, and commits only evidence to the reproduction branch. Artifacts are also retained for 90 days. There is no automatic merge or replacement of published thesis inputs. A nonzero comparison exit can mean a learned result needs review; inspect the JSON status rather than treating every red check as a setup failure.
 
@@ -52,8 +54,8 @@ are archived under `outputs/reproduction_checkpoints/rng/`; local-generator
 seeds and the original call order support replay from the beginning. These
 snapshots do not implement mid-job resume. See the
 [historical RNG audit and full-budget seed-42 control](rng_reproducibility_audit_2026-10-17.md).
-The already launched hosted run 39024026594 uses frozen source `c0394f0` and
-continues with its original settings; the new flags/snapshots apply only to
+The completed hosted run 39024026594 used frozen source `c0394f0` and
+retained its original settings; the new flags/snapshots apply only to
 later runs. Same-host seed-42 MLP repeats matched exactly, but cross-environment
 identity and historical learned-result recovery remain unestablished.
 
