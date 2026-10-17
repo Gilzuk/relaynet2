@@ -1,7 +1,8 @@
 # Changelog
 
-Notable changes to the thesis, newest first. The response to the October 2026
-review is `submission/reply_to_khina_2026-10.md` (one paragraph per comment, with
+Notable changes to the thesis, newest first. The responses to the October 2026
+reviews are `submission/reply_to_khina_2026-10.md` and
+`submission/reply_to_khina_round2_2026-10.md` (one paragraph per comment, with
 the thesis location of each fix) and the task chain behind it is `HANDOVER.md` at
 the repository root. Earlier rounds were recorded in review-response appendices
 that the current build no longer includes.
@@ -12,6 +13,100 @@ declared subset of table cells and prose numbers against the data files that
 produced them; it does not cover every number or figure.
 
 ---
+
+## [Khina round 2] — 2026-10-17
+
+- **Skeptical re-audit and publication authorization.** Correct sequence input-skip/read-out and Transformer details, VAE decoding/topology, canonical randomness and archived-checkpoint wording, Table 6.7’s separate training protocol, padding/device/ledger inconsistencies and unsupported causal interpretations. Correct two censored-median exactness flags without changing numerical penalties. Cite snapshot `218a1c550cb8b917a95d9545c5211e109985bf38`. Current verification: 873/0, provenance clean, 348 tests passed / 4 optional skips, 120 countable / 136 total pages. The author authorized push and merge, followed by reproduction experiments on a new branch. See `docs/skeptical_reaudit_2026-10-17.md`. Earlier local-only notes below are historical.
+
+- **Abstract wording follow-up.** Synchronize Hebrew and English: real-tap factorization, explicit 1.23-times cost ratio, evaluated hard/soft MLP outputs, and QPSK relay-output BCJR scope. Clarify the Hebrew i.i.d. condition. No experiments or stored BER results changed.
+
+Dr. Khina's six remaining points are addressed; the reply is
+`submission/reply_to_khina_round2_2026-10.md`. The current review builds to 120 countable pages (136 total).
+
+- **Final examiner-style review.** Put matched columns and corrected winner emphasis first; redraw Figure 6.7 with factorized counts. Qualify local causality versus block normalization, the unsupported loss correlation, the regeneration interpretation and the arithmetic-budget conclusion. No experiments rerun.
+
+- **Independent follow-up to e58e94d (local; push requires author confirmation).**
+  Use the existing immutable experimental snapshot e58e94d9d6136963ef56a9b3586f5b437d8075fd
+  instead of claiming the future release tag exists. Express the formal relay map
+  with a block normalization operator and qualify the smoothness argument.
+  State the optimizer options left at historical library defaults. Reduce the
+  two unweighted main subsections to one paragraph each, retaining five tables
+  and three unweighted figures in Appendix 9.7 (Tables 9.8–9.12, Figures 9.5–9.7).
+  Remove the unverified five-of-nine size-effect comparison and the unsupported
+  claim that the VAE's lower-bound spread is small. Figure 9.4 now marks the three
+  censored penalties with open symbols and upward arrows and makes no correlation
+  claim from treating bounds as measurements. No experiment or BER data changed.
+  Independent exact paired tests confirm the new canonical conclusions; verifier
+  873/0, provenance audit clean, local pytest 347 passed / 4 optional skips.
+  Clean build: 120 countable pages, 136 PDF pages, no errors, undefined references
+  or overfull boxes. See the independent follow-up in the checklist report.
+- **Canonical runs (point 1).** Sec. 4.3.3 identifies the runs behind
+  Tables 5.2 and 5.3 (commands, code commits b4059e6 / 4cf9753, data commits
+  69a470c / d27fcf7, budget, hardware, 2,892 s and 746.6 s). New Table 4.2
+  (`tbl:canonical-runs`) gives each learned relay's training as executed:
+  parameters, window, training SNRs, window counts (and the part used for
+  gradients), Adam settings and the checkpoint kept. The section states what
+  cannot be established (unseeded initialization, batch order and VAE noise;
+  weights not saved). `canonical_run_provenance.py` derives the counts and
+  shows that today's code reproduces both tables' AF and DF columns bit for bit.
+- **Comparable-target penalties (point 2).** The reference curve fixes the
+  targets; a relay that misses one gets a lower bound, marked ≥, instead of
+  having the target dropped (`ber_metrics.penalty_common`,
+  `penalty_common_targets.py`). Changed numbers: Table 6.7 Mamba-2 at ISI (QPSK)
+  +5.83 dB, spread >3.28 (was +4.69, 2.12; the old seed needs >+9.11); MLP lead
+  there 3.14 dB; cross-machine rerun eleven of twelve within 0.25 dB (was ten);
+  Table 9.4 coded row has no configuration under the three strictest budgets
+  (was 372p w9, 244p w5, 244p w5); Table 9.5 pooled 148 configurations, median
+  0.176, P90 ≥1.226, max ≥1.555 (was 152, 0.180, 1.229, 3.182); Table 9.6 VAE and
+  Transformer spreads at least 0.156 and 0.892 dB (Transformer was 0.906); native
+  Transformer and VAE spreads at least 0.075 and 0.091; window gain "more than
+  8 dB" (was 8–11); coded sweep +1.24–+1.92 dB against unweighted block DF (the
+  printed +1.86 lower end was an earlier error) and at least +9.75 dB against
+  matched block DF (was +7.6–+9.9). Fig. 9.1 shows bounds as open markers.
+- **Matched-decoding scope (point 3).** Statements about learned relays losing
+  to matched block DF are restricted to the two MLP read-outs; the coded Mamba
+  relay was not rerun (Sec. 5.5.1, Ch. 1, 8, 9, abstract).
+- **Formal problem (point 4).** Sec. 4.1.5 separates the local function f from
+  the block normalization α (the relay map α·f is a block map) and replaces the
+  nondifferentiability statement.
+- **Principal comparisons (point 5).** The coded section opens with matched
+  decoding (Sec. 5.5.1); the unweighted pipeline and unweighted soft relaying
+  are diagnostics (5.5.2, 5.5.3). Tables 6.8 and 6.9 lead with factorized
+  trellis counts; the crossover is 6.70 taps, with the joint-trellis 3.35 as a
+  diagnostic. The abstracts lead with the factorized comparison.
+- **Scope and presentation (point 6).** Remark 4.1 (past-only processing
+  evaluated only through the simplified Mamba relays); Sec. 4.4 (eleven-sample
+  window is not a common context); simplified Mamba named in Ch. 1–5; Fig. 6.5
+  caption (ten pilots not resolved); archive tag `thesis-2026-10` named;
+  Chapter 5 running header.
+- **Code references (author's request).** Scripts and result files are no longer
+  named in the running text. The text cites them as [C1]–[C40] (`\coderef` in
+  `main.tex`), and the master experiment ledger (Appendix 9.3, Table 9.2) is now
+  the single place that names each script, the result files whose names differ,
+  and where each result is used; the canonical commands and commits are its
+  notes. App. 9.2 test count 351 in 25 modules.
+- **Khina-checklist pass (author's request).** `docs/khina_checklist_review_2026-10-17.md`:
+  22 findings, 19 fixed. Two change stated results: the canonical feedforward
+  relays are not indistinguishable from DF (paired Wilcoxon on the shared trials:
+  DF ahead at 7 of 11 SNRs against the MLP and the VAE, 1 against the Hybrid;
+  never behind; `canonical_paired_tests.py`, ledger C6), and Table 6.6 now
+  measures every column against the size sweep's MLSE curve (ISI BPSK equalizer
+  -0.09 dB, composite +0.02 dB; lead 1.8-2.3 dB, was 1.8-2.4; App. 9.5.6 QPSK
+  per-target values +0.01-0.03 dB). The rest order matched/factorized results
+  first and remove contradictions (Sec. 7.1.3 Hybrid training SNRs, Sec. 4.3.4
+  test count, Sec. 5.5 trial budgets, five-pilot wording, Table 9.7 script names).
+- **External review of the round-2 PR.** Applied: Secs. 4.1.3, 4.1.5, 4.2 and
+  4.5.3 now describe the executed per-axis normalization of the canonical learned
+  relays (unit power per axis, complex power 2 against 1 for AF/DF; Hop-2 noise
+  follows measured power, so the SNR is unchanged) and the Hybrid's per-axis,
+  per-block branch choice; the sequence wrappers' checkpoint rule is stated
+  exactly (improvement > 1e-5, early stopping off); the Sec. 5.5.3 and Ch. 8 coded
+  conclusions are scoped to the MLP read-outs; the reply no longer says the
+  architecture ranking is unchanged (Mamba-S6 and Mamba-2 swap on ISI QPSK).
+- **Hebrew abstract.** The complexity and coded sentences are re-drafted to
+  mirror the English (`HEBREW_ABSTRACT_SYNC.md`); not yet author-approved.
+- **Verification.** New `prose:khina-round2` check; verifier 873 cells, 0
+  inconsistencies; 351 tests.
 
 ## [Red-team fixes] — 2026-10-14
 

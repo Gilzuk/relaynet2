@@ -20,7 +20,7 @@ import json
 
 import numpy as np
 
-from ber_metrics import penalty_table
+from ber_metrics import penalty_table, penalty_common
 
 BUDGETS = [0.0, 0.1, 0.25, 0.5, 1.0, 2.0]
 
@@ -36,15 +36,17 @@ def rows_for(sweep, snrs, ref_w, ref_h, base_ber):
         if x["params"] >= ref_params:
             continue
         worst = np.max([s["ber"] for s in x["seed_runs"]], axis=0)
-        p_ref = penalty_table(snrs, worst, ref)
-        if not p_ref["targets_reached"]:
+        # Comparable targets: the reference fixes the target set; a candidate
+        # that misses one of them is bounded below and meets no budget.
+        p_ref = penalty_common(snrs, worst, ref)
+        if p_ref["worst_db"] != p_ref["worst_db"] or p_ref["lower_bound"]:
             continue
-        p_base = penalty_table(snrs, worst, base_ber)
+        p_base = penalty_common(snrs, worst, base_ber)
         out.append({"params": x["params"], "window": x["window"],
                     "hidden": x["hidden"],
-                    "db_ref": p_ref["worst_db_penalty"],
-                    "db_base": (p_base["worst_db_penalty"]
-                                if p_base["targets_reached"] else np.nan)})
+                    "db_ref": p_ref["worst_db"],
+                    "db_base": (p_base["worst_db"]
+                                if not p_base["lower_bound"] else np.nan)})
     return out, ref_params, ref
 
 

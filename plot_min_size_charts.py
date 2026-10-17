@@ -21,7 +21,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 
-from ber_metrics import penalty_table, DEFAULT_TARGETS
+from ber_metrics import penalty_table, penalty_common, best_of_seeds, DEFAULT_TARGETS
 
 PALETTE = ["#0072B2", "#D55E00", "#009E73", "#7B3294", "#8C6D00"]
 MARKERS = ["o", "s", "^", "D", "v"]
@@ -44,21 +44,22 @@ def load(p):
     return json.load(open(p))
 
 
-def best_db_by_window(r, snrs):
-    """Best (lowest) dB penalty achieved at each window width."""
+def best_db_by_window(r, snrs, with_flags=False):
+    """Best (lowest) dB penalty achieved at each window width.
+
+    Comparable targets (ber_metrics.penalty_common): the baseline fixes the
+    target set, and a seed that misses one of its targets is only a lower
+    bound. A window whose every seed misses a target is returned with flag ">",
+    drawn as an open marker with an upward arrow.
+    """
     base = np.asarray(r.get("baseline_ber", r["df_ber"]), dtype=float)
-    out = {}
+    out, flags = {}, {}
     for w in WINDOWS:
-        vals = []
-        for x in r["sweep"]:
-            if x["window"] != w:
-                continue
-            for s in x["seed_runs"]:
-                p = penalty_table(snrs, s["ber"], base)
-                if p["targets_reached"]:
-                    vals.append(p["worst_db_penalty"])
-        out[w] = min(vals) if vals else np.nan
-    return out
+        res = [penalty_common(snrs, s["ber"], base)
+               for x in r["sweep"] if x["window"] == w for s in x["seed_runs"]]
+        v, f = best_of_seeds(res) if res else (np.nan, "nan")
+        out[w], flags[w] = (v, f) if f != "nan" else (np.nan, f)
+    return (out, flags) if with_flags else out
 
 
 # ── 1. the central finding: window helps only where the channel has memory ──
@@ -66,24 +67,34 @@ def chart_window_crossover(d):
     snrs = d["snr_db"]
     groups = [("Memoryless channels (1 tap)", 1),
               ("Channels with memory (3 taps)", 3)]
-    fig, axes = plt.subplots(1, 2, figsize=(11, 5), sharey=True)
+    fig, axes = plt.subplots(1, 2, figsize=(11, 6.2), sharey=True)
 
     for ax, (title, mem) in zip(axes, groups):
         chans = [(n, r) for n, r in d["channels"].items() if r["memory"] == mem]
         for i, (n, r) in enumerate(chans):
-            by_w = best_db_by_window(r, snrs)
+            by_w, fl = best_db_by_window(r, snrs, with_flags=True)
             xs = [w for w in WINDOWS if by_w[w] == by_w[w]]
             ys = [by_w[w] for w in xs]
             ax.plot(xs, ys, marker=MARKERS[i % len(MARKERS)],
                     color=PALETTE[i % len(PALETTE)], linewidth=LW,
                     markersize=6, label=f"{n}  ({r['baseline']})")
+            for w, y in zip(xs, ys):
+                if fl[w] == ">":   # lower bound: every seed misses a target
+                    ax.plot([w], [y], marker=MARKERS[i % len(MARKERS)], markersize=9,
+                            markerfacecolor="white", markeredgecolor=PALETTE[i % len(PALETTE)],
+                            linestyle="none", zorder=4)
+                    ax.annotate("", xy=(w + 0.12 * i, y + 2.0), xytext=(w + 0.12 * i, y + 0.45),
+                                arrowprops=dict(arrowstyle="-|>", color=PALETTE[i % len(PALETTE)], lw=1.4,
+                                                mutation_scale=12))
         ax.axhline(0, color=BLACK, linewidth=1.0, linestyle="--", zorder=1)
         ax.set_title(title)
         ax.set_xlabel("Relay window (symbols)")
         ax.set_xticks(WINDOWS)
-        ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.16),
+        ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.20),
                   frameon=False, ncol=1)
     axes[0].set_ylabel("SNR penalty vs classical baseline (dB)")
+    axes[1].text(0.30, 0.97, "open marker with arrow: lower bound\n(no seed reaches every baseline target)",
+                 transform=axes[1].transAxes, fontsize=9, color=GREY, va="top")
     # the "matches baseline" note lives on the right panel, where there is
     # room; on the left it collided with the inset
     axes[1].annotate("0 dB = matches baseline", xy=(6.0, 0), xytext=(4.4, 5.6),
@@ -108,7 +119,9 @@ def chart_window_crossover(d):
     ins.grid(alpha=0.2)
     fig.suptitle("A wider window pays off only when the channel has memory",
                  fontsize=16, y=0.99)
-    fig.tight_layout()
+    axes[0].set_ylim(top=16.0)   # headroom for the lower-bound arrows (shared y)
+    # explicit margins: tight_layout shrinks the axes into the outside legends
+    fig.subplots_adjust(left=0.08, right=0.98, top=0.83, bottom=0.40, wspace=0.10)
     fig.savefig("results/minsize_window_crossover.png", dpi=150,
                 bbox_inches="tight")
     plt.close(fig)

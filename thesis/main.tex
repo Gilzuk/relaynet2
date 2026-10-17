@@ -165,6 +165,14 @@
             pdfsubject={M.Sc. Thesis, Tel Aviv University, 2026}]{hyperref}
 \usepackage{cleveref}
 
+%% ── Code references ──────────────────────────────────────────
+% Scripts and result files are named only in the ledger (Appendix,
+% tbl:ledger); the text cites them as [C1], [C2], ... via \coderef{key}.
+\newcounter{coderef}
+\renewcommand{\thecoderef}{C\arabic{coderef}}
+\newcommand{\codeentry}[1]{\refstepcounter{coderef}\label{code:#1}\thecoderef}
+\newcommand{\coderef}[1]{[\ref{code:#1}]}
+
 %% ── Bibliography ─────────────────────────────────────────────
 % \usepackage[numbers,sort&compress]{natbib}
 \bibliographystyle{IEEEtran}

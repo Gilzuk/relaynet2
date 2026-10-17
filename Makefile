@@ -3,9 +3,9 @@
 # Reproduction suite (start here after cloning -- see REPRODUCE.md):
 #   make setup          - Install pinned dependencies
 #   make check          - Report what this machine can reproduce
-#   make verify         - Check all thesis values against their data sources
+#   make verify         - Check declared thesis values against their data sources
 #   make repro-unknown  - Re-run the unknown-channel study, then verify
-#   make repro-full     - Re-run everything (hours, needs torch)
+#   make repro-full     - Run the legacy experiment driver (hours, needs torch)
 #   make thesis         - Build the thesis PDF
 #
 # Experiment runner:
@@ -50,10 +50,10 @@ help: ## Show this help
 	@echo "  REPRODUCTION (see REPRODUCE.md)"
 	@echo "    make setup           Install pinned dependencies"
 	@echo "    make check           Report what this machine can reproduce"
-	@echo "    make verify          Tier 0: check every thesis value vs its data source (~1 min)"
+	@echo "    make verify          Tier 0: check declared thesis values vs their data sources (~1 min)"
 	@echo "    make repro-unknown   Tier 1: re-run unknown-channel study + verify (~40 min)"
 	@echo "    make repro-qpsk      Tier 1b: re-run the QPSK unknown-channel study (~20 min)"
-	@echo "    make repro-full      Tier 2: re-run every experiment (hours, needs torch)"
+	@echo "    make repro-full      Tier 2: run the legacy experiment driver (hours, needs torch)"
 	@echo "    make bundles         Rebuild the two Overleaf zips from thesis/"
 	@echo ""
 	@echo "  OVERLEAF SYNC (see thesis/OVERLEAF_SYNC.md)"
@@ -90,8 +90,8 @@ setup: ## Install the pinned dependency set
 check: ## Report which reproduction tiers this machine can run
 	@$(PYTHON) scripts/check_env.py
 
-verify: ## Tier 0: verify every thesis number against its data source
-	@echo ">> Verifying every thesis table cell and quantitative claim..."
+verify: ## Tier 0: verify declared thesis values against their data sources
+	@echo ">> Verifying declared thesis table cells and quantitative claims..."
 	$(PYTHON) verify_thesis_tables.py
 
 repro-unknown: ## Tier 1: recompute the unknown-channel study, then verify
@@ -102,10 +102,10 @@ repro-qpsk: ## Tier 1b: recompute the QPSK unknown-channel study
 	@echo ">> QPSK unknown channel: ISI hop 1, AWGN and Rayleigh hop 2..."
 	$(PYTHON) e6_qpsk_unknown_channel.py
 
-repro-full: ## Tier 2: recompute every experiment (hours; requires torch)
+repro-full: ## Tier 2: run the legacy experiment driver (hours; requires torch)
 	@$(PYTHON) -c "import torch" 2>/dev/null || \
 	  { echo "ERROR: torch required for this target -- see requirements-repro.txt"; exit 1; }
-	@echo ">> Re-running all experiments. Hours; a GPU is strongly advised."
+	@echo ">> Running the legacy experiment driver; revision studies have separate commands."
 	$(PYTHON) $(RUNNER) --all --seed $(SEED)
 	$(MAKE) verify
 

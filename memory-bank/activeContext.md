@@ -1,6 +1,64 @@
 # Active Context (update this file first, every session)
 
-_Last updated: 2026-10-14_
+_Last updated: 2026-10-17_
+
+### Current authorization, audit and reproduction request
+
+The author authorized “Merge and push”, then requested another skeptical audit and fixes to inconsistent sentences or missing reproduction details. Latest instruction: publish first, create a new experiments-reproduction branch, run a script in the background, retain evidence and reference JSON links, and flag/resolve/report inconsistencies. Earlier pending-confirmation notes below are historical.
+
+The re-audit is complete (`docs/skeptical_reaudit_2026-10-17.md`): architecture/input-skip, VAE, canonical RNG/checkpoint, Table 6.7 protocol, padding/device/ledger and causal-scope corrections; two censored-median flags fixed with no numerical penalty changes. Verification 873/0; provenance clean; 348 passed / 4 optional skips; PDF 120 countable / 136 total. Immutable experimental snapshot 218a1c550cb8b917a95d9545c5211e109985bf38. No training/BER rerun during the audit. Next: push and merge PR #183, branch from updated main and launch evidence-preserving reproduction. Reply unsent.
+
+### Local follow-up (2026-10-17): confirmation required before push
+
+The author subsequently requested “Fix”. Both abstracts now specify real-tap factorization and hard/soft MLP scope; the Hebrew 1.23-times ratio, i.i.d. wording and QPSK BCJR endpoint were corrected and visually checked. Both abstracts fit one page. Final author reading is distinct from technical completion; no author sign-off or push permission is inferred.
+
+The author explicitly said **do not push without confirmation**. Local branch
+`fix/khina-round2-codex-review` is based on the reread PR #183 head `e58e94d`.
+The previous draft against `af6e939` is safely stashed; do not reapply it wholesale,
+because the latest PR already fixes its normalization, checkpoint, ranking and
+scope findings. The follow-up preserves those commits and addresses the remaining
+archive claim, formal notation, short diagnostics, and censored-spread interpretation.
+Five diagnostic tables and three unweighted figures move to Appendix 9.7. Figure 9.4 is redrawn
+from stored curves with three lower-bound markers; no experiment was rerun.
+The existing snapshot e58e94d9d6136963ef56a9b3586f5b437d8075fd now identifies the
+experimental code and data; the release tag is optional and must not be claimed to exist.
+Verification: 873 cells / 0 inconsistencies; provenance clean; 347 tests passed,
+4 skipped without optional PyTorch/Mamba-2; 119 countable pages / 135 PDF pages,
+clean PDF build. The final examiner-style pass resolves both remaining presentation
+choices: factorized counts lead Figure 6.7, and matched table columns come first.
+Causality, loss-correlation, regeneration and budget statements are also qualified.
+See docs/final_submission_review_2026-10-17.md. The unverified
+five-of-nine caption is resolved by removing the unsupported count. Nothing pushed.
+
+### Latest (2026-10-17): Khina's second round addressed (branch fix/khina-round2)
+
+Dr. Khina sent six remaining points. All are addressed on `fix/khina-round2` (PR into main, not merged; wait for the
+author's approval). Commits: 02459a0 (code and data: `ber_metrics.penalty_common`, `penalty_common_targets.py`,
+`canonical_run_provenance.py`, tests, REGISTRY rows), 5d19033 (thesis + PDF), then docs.
+
+- Canonical runs: Table 5.2 = `--exp 7.10 --retrain --skip-relays cgan` from b4059e6 (data 69a470c, 2,892 s);
+  Table 5.3 = `--exp 7.8` from 4cf9753 (data d27fcf7, 746.6 s). New Table 4.2 (`tbl:canonical-runs`) lists each relay's
+  training as executed. Unseeded init/batch order/VAE noise and unsaved weights are stated; the March checkpoints in
+  `trained_weights_layernorm` are stale NumPy weights, not the canonical ones.
+- Penalty rule: the reference fixes the target set; a missed target is a lower bound (snr_max - snr_ref), marked >=.
+  All changed numbers are in thesis/CHANGELOG.md [Khina round 2] and the reply.
+- Hebrew abstract: complexity/coded sentence re-drafted; NOT approved yet (thesis/HEBREW_ABSTRACT_SYNC.md).
+- After merge (with approval): optionally create release tag `thesis-2026-10` and republish
+  the mirror with `scripts/overleaf_sync.py --repo` under the author's identity.
+- Verifier 873 cells / 0, 351 tests, provenance audit clean, 120 countable pages (136 PDF pages).
+- Khina-checklist pass done (docs/khina_checklist_review_2026-10-17.md): use its K1-K9 classes as the checklist for any
+  future change. Lessons: apply the thesis's declared paired test before writing 'no difference'; one reference curve per
+  table row; matched/factorized results first; search for every statement of a claim when fixing one. Open judgement
+  items: Fig. 6.7(a) plots joint counts; matched columns sit last in Tables 5.10/5.12/5.13; Table 9.5 'five of nine' was resolved in the local follow-up above.
+- Implementation facts confirmed 2026-10-17 (external review): canonical learned relays (and both Hybrid branches)
+  normalize each real axis to unit power and recombine without renormalizing (complex power 2; AF/DF power 1); Hop 2
+  scales noise to measured power (relaynet/channels/fading.py). Sequence wrappers keep weights when loss < best - 1e-5,
+  patience=0. The tag thesis-2026-10 does not exist; the manuscript instead cites the existing immutable snapshot.
+- The Hebrew reminder email about the 17 Oct deadline exists only in chat; the author said not to commit it.
+- Author's rule (2026-10-17): script names must be references, not embedded in the text. The thesis cites code as [C1]..[C40]
+  via `\coderef{key}` (macros `\codeentry`/`\coderef` in thesis/main.tex); keys are defined in the ledger rows of
+  appendices.tex (tbl:ledger). New experiments: add a ledger row and cite it; never write a .py/.json name in prose.
+  The same applies to reply emails (refer to the ledger entry).
 
 ### Latest (2026-10-14): reply to Khina made concise
 

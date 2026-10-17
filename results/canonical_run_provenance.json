@@ -1,0 +1,333 @@
+{
+ "description": "Which runs produced the canonical Tables 5.2 and 5.3, and with what settings.",
+ "git_rev": "8ad7de7c161c30776772b3b7b5b9330bc77c9913",
+ "runs": {
+  "table_5_2": {
+   "file": "results/modulation/qpsk_rayleigh.json",
+   "stage": "7.10",
+   "code_commit": "b4059e6",
+   "data_commit": "69a470c",
+   "command": "python3 run_experiments.py --exp 7.10 --num-trials 10 --bits-per-trial 10000 --snr-min 0 --snr-max 20 --snr-step 2 --skip-relays cgan --retrain",
+   "stage_seconds": 2892,
+   "hardware": "4-core CPU, no CUDA",
+   "created": "2026-08-17T19:10:21.854815",
+   "relays": [
+    "AF",
+    "DF",
+    "MLP (169p)",
+    "Hybrid",
+    "VAE",
+    "Transformer",
+    "Mamba S6",
+    "Mamba2 (SSD)"
+   ],
+   "af_df_reproduce_bit_for_bit": {
+    "AF": true,
+    "DF": true
+   },
+   "executed_files_changed_since_code_commit": [
+    "checkpoints/checkpoint_20_mamba_s6_relay.py",
+    "checkpoints/checkpoint_23_mamba2_relay.py"
+   ],
+   "change_note": "the Mamba wrappers' only change is an optional readout argument (default 'center', the configuration these runs used)",
+   "trials": 10,
+   "bits_per_trial": 10000,
+   "snr_db": [
+    0,
+    2,
+    4,
+    6,
+    8,
+    10,
+    12,
+    14,
+    16,
+    18,
+    20
+   ],
+   "trial_seeds": "0-9, the same at every SNR and for every relay"
+  },
+  "table_5_3": {
+   "file": "results/normalized_3k/3k_rayleigh.json",
+   "stage": "7.8",
+   "code_commit": "4cf9753",
+   "data_commit": "d27fcf7",
+   "command": "python3 run_experiments.py --exp 7.8 --num-trials 10 --bits-per-trial 10000 --snr-min 0 --snr-max 20 --snr-step 2 --skip-relays cgan --retrain",
+   "stage_seconds": 746.6,
+   "hardware": "4-core CPU, no CUDA",
+   "created": "2026-08-17T21:25:14.697901",
+   "relays": [
+    "MLP-3K",
+    "Hybrid-3K",
+    "VAE-3K",
+    "Transformer-3K",
+    "Mamba-3K",
+    "Mamba2-3K",
+    "AF",
+    "DF"
+   ],
+   "af_df_reproduce_bit_for_bit": {
+    "AF": true,
+    "DF": true
+   },
+   "executed_files_changed_since_code_commit": [
+    "checkpoints/checkpoint_20_mamba_s6_relay.py",
+    "checkpoints/checkpoint_23_mamba2_relay.py"
+   ],
+   "change_note": "the Mamba wrappers' only change is an optional readout argument (default 'center', the configuration these runs used)",
+   "trials": 10,
+   "bits_per_trial": 10000,
+   "snr_db": [
+    0,
+    2,
+    4,
+    6,
+    8,
+    10,
+    12,
+    14,
+    16,
+    18,
+    20
+   ],
+   "trial_seeds": "0-9, the same at every SNR and for every relay"
+  }
+ },
+ "relays": {
+  "table_5_2": {
+   "MLP (169p)": {
+    "params": 169,
+    "window": 5,
+    "training_snrs_db": [
+     5,
+     10,
+     15
+    ],
+    "training_data": "BPSK +-1 over real AWGN",
+    "nominal_samples": 25000,
+    "windows": 24987,
+    "gradient_windows": 24987,
+    "epochs": 100,
+    "optimizer": "Adam lr=0.01 batch=32",
+    "loss": "MSE",
+    "checkpoint": "final epoch",
+    "hidden_size": 24
+   },
+   "Hybrid": {
+    "params": 169,
+    "window": 5,
+    "training_snrs_db": [
+     2,
+     4,
+     6
+    ],
+    "training_data": "BPSK +-1 over real AWGN",
+    "nominal_samples": 25000,
+    "windows": 24987,
+    "gradient_windows": 24987,
+    "epochs": 100,
+    "optimizer": "Adam lr=0.01 batch=32",
+    "loss": "MSE",
+    "checkpoint": "final epoch",
+    "snr_threshold": 5.0
+   },
+   "VAE": {
+    "params": 1777,
+    "window": 7,
+    "training_snrs_db": [
+     5,
+     10,
+     15
+    ],
+    "training_data": "BPSK +-1 over real AWGN",
+    "nominal_samples": 50000,
+    "windows": 49980,
+    "gradient_windows": 49980,
+    "epochs": 100,
+    "optimizer": "Adam lr=0.001 batch=64",
+    "loss": "beta-VAE (MSE + 0.1 KL)",
+    "checkpoint": "final epoch",
+    "latent_size": 8,
+    "hidden_sizes": [
+     32,
+     16
+    ],
+    "beta": 0.1
+   },
+   "Transformer": {
+    "params": 17697,
+    "window": 11,
+    "training_snrs_db": [
+     5,
+     10,
+     15
+    ],
+    "training_data": "BPSK +-1 over real AWGN",
+    "nominal_samples": 50000,
+    "windows": 49968,
+    "gradient_windows": 42473,
+    "epochs": 100,
+    "optimizer": "Adam lr=0.001 batch=64",
+    "loss": "MSE",
+    "checkpoint": "lowest mean training loss: kept when below the best kept loss by more than 1e-5, early stopping off (15% held out)",
+    "use_input_norm": false
+   },
+   "Mamba S6": {
+    "params": 24001,
+    "window": 11,
+    "training_snrs_db": [
+     5,
+     10,
+     15
+    ],
+    "training_data": "BPSK +-1 over real AWGN",
+    "nominal_samples": 50000,
+    "windows": 49968,
+    "gradient_windows": 42473,
+    "epochs": 100,
+    "optimizer": "Adam lr=0.001 batch=64",
+    "loss": "MSE",
+    "checkpoint": "lowest mean training loss: kept when below the best kept loss by more than 1e-5, early stopping off (15% held out)",
+    "use_input_norm": false,
+    "readout": "center"
+   },
+   "Mamba2 (SSD)": {
+    "params": 26179,
+    "window": 11,
+    "training_snrs_db": [
+     5,
+     10,
+     15
+    ],
+    "training_data": "BPSK +-1 over real AWGN",
+    "nominal_samples": 50000,
+    "windows": 49968,
+    "gradient_windows": 42473,
+    "epochs": 100,
+    "optimizer": "Adam lr=0.001 batch=64",
+    "loss": "MSE",
+    "checkpoint": "lowest mean training loss: kept when below the best kept loss by more than 1e-5, early stopping off (15% held out)",
+    "use_input_norm": false,
+    "readout": "center"
+   }
+  },
+  "table_5_3": {
+   "MLP-3K": {
+    "params": 3004,
+    "window": 11,
+    "training_snrs_db": [
+     5,
+     10,
+     15
+    ],
+    "training_data": "BPSK +-1 over real AWGN",
+    "nominal_samples": 25000,
+    "windows": 24969,
+    "gradient_windows": 24969,
+    "epochs": 100,
+    "optimizer": "Adam lr=0.01 batch=32",
+    "loss": "MSE",
+    "checkpoint": "final epoch",
+    "hidden_size": 231
+   },
+   "Hybrid-3K": {
+    "params": 3004,
+    "window": 11,
+    "training_snrs_db": [
+     5,
+     10,
+     15
+    ],
+    "training_data": "BPSK +-1 over real AWGN",
+    "nominal_samples": 25000,
+    "windows": 24969,
+    "gradient_windows": 24969,
+    "epochs": 100,
+    "optimizer": "Adam lr=0.01 batch=32",
+    "loss": "MSE",
+    "checkpoint": "final epoch",
+    "snr_threshold": 5.0
+   },
+   "VAE-3K": {
+    "params": 3037,
+    "window": 11,
+    "training_snrs_db": [
+     5,
+     10,
+     15
+    ],
+    "training_data": "BPSK +-1 over real AWGN",
+    "nominal_samples": 25000,
+    "windows": 24969,
+    "gradient_windows": 24969,
+    "epochs": 100,
+    "optimizer": "Adam lr=0.001 batch=64",
+    "loss": "beta-VAE (MSE + 0.1 KL)",
+    "checkpoint": "final epoch",
+    "latent_size": 10,
+    "hidden_sizes": [
+     44,
+     20
+    ],
+    "beta": 0.1
+   },
+   "Transformer-3K": {
+    "params": 3007,
+    "window": 11,
+    "training_snrs_db": [
+     5,
+     10,
+     15
+    ],
+    "training_data": "BPSK +-1 over real AWGN",
+    "nominal_samples": 25000,
+    "windows": 24969,
+    "gradient_windows": 21224,
+    "epochs": 100,
+    "optimizer": "Adam lr=0.001 batch=64",
+    "loss": "MSE",
+    "checkpoint": "lowest mean training loss: kept when below the best kept loss by more than 1e-5, early stopping off (15% held out)",
+    "use_input_norm": false
+   },
+   "Mamba-3K": {
+    "params": 3027,
+    "window": 11,
+    "training_snrs_db": [
+     5,
+     10,
+     15
+    ],
+    "training_data": "BPSK +-1 over real AWGN",
+    "nominal_samples": 25000,
+    "windows": 24969,
+    "gradient_windows": 21224,
+    "epochs": 100,
+    "optimizer": "Adam lr=0.001 batch=64",
+    "loss": "MSE",
+    "checkpoint": "lowest mean training loss: kept when below the best kept loss by more than 1e-5, early stopping off (15% held out)",
+    "use_input_norm": false,
+    "readout": "center"
+   },
+   "Mamba2-3K": {
+    "params": 3004,
+    "window": 11,
+    "training_snrs_db": [
+     5,
+     10,
+     15
+    ],
+    "training_data": "BPSK +-1 over real AWGN",
+    "nominal_samples": 25000,
+    "windows": 24969,
+    "gradient_windows": 21224,
+    "epochs": 100,
+    "optimizer": "Adam lr=0.001 batch=64",
+    "loss": "MSE",
+    "checkpoint": "lowest mean training loss: kept when below the best kept loss by more than 1e-5, early stopping off (15% held out)",
+    "use_input_norm": false,
+    "readout": "center"
+   }
+  }
+ },
+ "not_reproducible": "PyTorch's RNG was not seeded (weight initialization, sequence splits/dropout, MLP/sequence batch order and VAE latent training noise). VAE batch order uses seeded NumPy; evaluation decodes its latent mean. The canonical checkpoints are absent from the archived record, so learned columns cannot be regenerated exactly; training data are seeded (seed 42 + training SNR)."
+}

@@ -61,35 +61,43 @@ def chart_spread():
 
 
 def chart_loss_vs_penalty():
+    # Retain missed targets as lower bounds, as in the principal penalty tables.
+    from ber_metrics import penalty_common
     d = json.load(open("results/transformer_instability.json"))
-    t, m = d["runs"]["Transformer-3K"], d["runs"]["Mamba-S6-3K"]
     fig, ax = plt.subplots(figsize=(8, 5))
-    for runs, name, c, mk in ((t, "Transformer-3K (8 seeds)", PALETTE[1], MARKERS[1]),
-                              (m, "Mamba-S6-3K control (4 seeds)", PALETTE[2], MARKERS[2])):
-        ax.plot([r["final_loss"] for r in runs], [r["db_penalty"] for r in runs],
-                linestyle="none", marker=mk, markersize=9, color=c,
-                markeredgecolor="white", markeredgewidth=1.2, label=name)
-    r0 = [r for r in t if r["seed"] == 0][0]
-    ax.annotate("seed 0: loss 11x the median,\nthe only run that fails",
-                xy=(r0["final_loss"], r0["db_penalty"]), xytext=(0.0026, 1.62),
-                fontsize=11, color=BLACK,
+    inset = ax.inset_axes([0.10, 0.43, 0.43, 0.36])
+    for name, label, c, mk in (("Transformer-3K", "Transformer-3K (8 seeds)", PALETTE[1], MARKERS[1]),
+                               ("Mamba-S6-3K", "Mamba-S6-3K control (4 seeds)", PALETTE[2], MARKERS[2])):
+        for i, r in enumerate(d["runs"][name]):
+            penalty = penalty_common(d["snr_db"], r["ber"], d["df_ber"])
+            x, y, bound = r["final_loss"], penalty["worst_db"], penalty["lower_bound"]
+            for panel in (ax, inset):
+                panel.plot(x, y, linestyle="none", marker=mk, markersize=8,
+                           color=c, markerfacecolor="white" if bound else c,
+                           markeredgewidth=1.2, label=label if i == 0 else None)
+                if bound:
+                    panel.annotate("", xy=(x, y + (0.10 if panel is ax else 0.025)),
+                                   xytext=(x, y), arrowprops=dict(arrowstyle="->", color=c, lw=1.0))
+    r0 = next(r for r in d["runs"]["Transformer-3K"] if r["seed"] == 0)
+    y0 = penalty_common(d["snr_db"], r0["ber"], d["df_ber"])["worst_db"]
+    ax.annotate("seed 0: higher final loss", xy=(r0["final_loss"], y0),
+                xytext=(0.008, 1.62), fontsize=11, color=BLACK,
                 arrowprops=dict(arrowstyle="->", color=BLACK, lw=0.8))
-    lo = np.array([r["final_loss"] for r in t])
-    db = np.array([r["db_penalty"] for r in t])
     ax.set_xscale("log")
     ax.set_xlabel("Final training loss")
     ax.set_ylabel("SNR penalty vs DF (dB)")
-    ax.set_title("Loss detects the failure, but not fine-grained quality")
-    keep = lo <= 5 * np.median(lo)
-    ax.text(0.03, 0.95,
-            f"r = {np.corrcoef(lo, db)[0,1]:+.3f} over all 8 seeds, but that is the\n"
-            f"outlier's leverage: r = {np.corrcoef(lo[keep], db[keep])[0,1]:+.2f} "
-            f"(p = 0.41) among the 7\nthat converge, where loss carries no BER signal.",
-            transform=ax.transAxes, fontsize=11, color=BLACK, va="top")
-    ax.legend(loc="lower right", frameon=False)
+    ax.set_title("Training loss and SNR penalty across initializations")
+    ax.set_ylim(1.04, 2.28)
+    inset.set_xlim(0.0017, 0.0025)
+    inset.set_ylim(1.06, 1.23)
+    inset.set_title("Low-loss cluster", fontsize=11)
+    inset.tick_params(labelsize=9)
+    inset.ticklabel_format(axis="x", style="sci", scilimits=(-3, -3))
+    ax.legend(loc="lower right", frameon=False, fontsize=10)
+    ax.text(0, -0.25, "Open markers and upward arrows: lower bounds; target BER 10⁻² not reached.",
+            transform=ax.transAxes, fontsize=10, color=BLACK)
     fig.tight_layout()
-    fig.savefig("results/transformer_loss_vs_penalty.png", dpi=150,
-                bbox_inches="tight")
+    fig.savefig("results/transformer_loss_vs_penalty.png", dpi=150, bbox_inches="tight")
     plt.close(fig)
 
 

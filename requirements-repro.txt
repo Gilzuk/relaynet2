@@ -1,8 +1,9 @@
-# Pinned dependency set used to produce the committed results.
+# Pinned dependency set for the later reproduction suite.
 #
-# These are the exact versions the reproduction suite was last validated
-# against. Newer versions will very likely work -- the code uses only stable
-# NumPy/SciPy APIs -- but pin here if you need bit-identical output.
+# These are the versions recorded for that validation, not a recovered
+# environment lock for every historical run. The canonical runs did not
+# record library versions or PyTorch RNG state. Pins alone do not guarantee
+# bit-identical retraining across machines; see REPRODUCE.md.
 #
 # Install:  python3 -m pip install -r requirements-repro.txt
 

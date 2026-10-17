@@ -256,7 +256,7 @@ python verify_thesis_tables.py    # published cells vs their data sources
 python provenance_audit.py        # every result file is committed and newer than its script
 ```
 
-`verify_thesis_tables.py` reads the LaTeX, extracts each published value, and compares it against the `.json`/`.npy` that generated it, with a tolerance set by the number of decimals shown. It currently checks **498 cells across 26 tables and prose claims**.
+`verify_thesis_tables.py` reads the LaTeX, extracts each published value, and compares it against the `.json`/`.npy` that generated it, with a tolerance set by the number of decimals shown. It currently checks **873 cells across 44 tables and prose claims**.
 
 `provenance_audit.py` links each experiment to its script, its output files and the commit that produced them, and fails if a result is uncommitted or predates the script that generates it. `python provenance_audit.py --tables` regenerates the per-table reproduction ledger in `memory-bank/table_provenance.md`.
 
@@ -525,7 +525,7 @@ relaynet2/
 │   ├── run_full_comparison.py            # Full pipeline: train + evaluate all
 │   └── plot_normalized_3k.py             # Standalone 3K comparison plots
 │
-├── tests/                            # 347 tests (pytest)
+├── tests/                            # 352 collected tests (pytest)
 │   ├── test_channels.py                  # AWGN and Rayleigh channel tests
 │   ├── test_modulation.py                # BPSK modulation tests
 │   ├── test_relays.py                    # All relay strategy tests
@@ -662,11 +662,11 @@ for snr, ber, ci_lo, ci_hi in results:
 
 ## Testing
 
-All 347 tests pass:
+The current suite collects 352 tests. This audit environment passed 348 and skipped four optional PyTorch/Mamba-2 tests:
 
 ```bash
 python -m pytest tests/ -q
-# 347 passed
+# 348 passed, 4 skipped (without the optional PyTorch/Mamba-2 module)
 ```
 
 Tests cover:
